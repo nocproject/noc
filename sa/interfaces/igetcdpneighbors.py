@@ -8,24 +8,36 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import (DictParameter, ListOfParameter, StringParameter,
-                   InterfaceNameParameter, IPParameter)
+from .base import (
+    DictParameter,
+    ListOfParameter,
+    StringParameter,
+    InterfaceNameParameter,
+    IPParameter,
+)
 
 
 class IGetCDPNeighbors(BaseInterface):
-    returns = DictParameter(attrs={
-        # Local device id: FQDN or serial number
-        "device_id": StringParameter(),
-        "neighbors": ListOfParameter(element=DictParameter(attrs={
-            # Remote device id: FQDN or serial number
+    returns = DictParameter(
+        attrs={
+            # Local device id: FQDN or serial number
             "device_id": StringParameter(),
-            # Local interface
-            "local_interface": InterfaceNameParameter(),
-            # Remote interface
-            "remote_interface": StringParameter(),
-            # Remote IP
-            "remote_ip": IPParameter(required=False)
-        }))
-    })
+            "neighbors": ListOfParameter(
+                element=DictParameter(
+                    attrs={
+                        # Remote device id: FQDN or serial number
+                        "device_id": StringParameter(),
+                        # Local interface
+                        "local_interface": InterfaceNameParameter(),
+                        # Remote interface
+                        "remote_interface": StringParameter(),
+                        # Remote IP
+                        "remote_ip": IPParameter(required=False),
+                    }
+                )
+            ),
+        }
+    )

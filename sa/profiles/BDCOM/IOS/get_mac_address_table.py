@@ -14,7 +14,7 @@ from noc.core.mac import MAC
 
 
 class Script(BaseScript):
-    name = 'BDCOM.IOS.get_mac_address_table'
+    name = "BDCOM.IOS.get_mac_address_table"
     interface = IGetMACAddressTable
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -27,10 +27,5 @@ class Script(BaseScript):
             cmd += " %s" % MAC(mac).to_cisco()
         r = []
         for i in parse_table(self.cli(cmd), allow_extend=True):
-            r += [{
-                "vlan_id": i[0],
-                "mac": i[1],
-                "interfaces": [i[3]],
-                "type": "D"
-            }]
+            r += [{"vlan_id": i[0], "mac": i[1], "interfaces": [i[3]], "type": "D"}]
         return r

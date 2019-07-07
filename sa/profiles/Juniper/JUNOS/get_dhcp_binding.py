@@ -10,6 +10,7 @@
 import re
 import datetime
 import time
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
@@ -21,7 +22,9 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+\d+\s+(?P<mac>\S+)\s+"
-        r"(?P<expires>\d+)\s+BOUND\s+\S+\s*$", re.IGNORECASE | re.MULTILINE)
+        r"(?P<expires>\d+)\s+BOUND\s+\S+\s*$",
+        re.IGNORECASE | re.MULTILINE,
+    )
 
     def execute(self):
         if not self.profile.command_exist(self, "dhcp server"):
@@ -31,10 +34,12 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(data):
             e = match.group("expires")
             expire = datetime.datetime.fromtimestamp(time.time() + int(e))
-            r += [{
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "expiration": expire,
-                "type": "A"
-            }]
+            r += [
+                {
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "expiration": expire,
+                    "type": "A",
+                }
+            ]
         return r

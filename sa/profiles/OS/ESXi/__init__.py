@@ -16,10 +16,11 @@ class Profile(BaseProfile):
     # pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
     pattern_unprivileged_prompt = r"^([\w\~\-\.\/]*\s+)\$\s*"
     pattern_prompt = r"^([\w\~\-\.\/]*\s+)#\s*"
-    pattern_syntax_error = \
-        r"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory" \
-        r"|\w+: \w+: command not found" \
+    pattern_syntax_error = (
+        r"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory"
+        r"|\w+: \w+: command not found"
         r"|\w+: \w+: \w+: No such file or directory)"
+    )
     command_disable_pager = "export LANG=en_GB.UTF-8"
     # command_super = "su"
     command_exit = "exit"

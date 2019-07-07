@@ -17,7 +17,9 @@ class Script(BaseScript):
 
     def execute_cli(self):
         try:
-            v = self.cli_detail("/interface ethernet switch vlan print detail without-paging", cached=True)
+            v = self.cli_detail(
+                "/interface ethernet switch vlan print detail without-paging", cached=True
+            )
             r = [{"vlan_id": d["vlan-id"]} for n, f, d in v if not f]
         except self.CLISyntaxError:
             r = []

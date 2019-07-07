@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -19,10 +20,10 @@ class Script(BaseScript):
 
     rx_stat = re.compile(
         r"Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\), round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+) ms",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping"
         cmd += " %s" % address
         ping = self.cli(cmd)

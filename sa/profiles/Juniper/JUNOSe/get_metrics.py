@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import six
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.slot import SlotRule
@@ -17,15 +18,13 @@ from noc.lib.text import parse_table
 
 class Script(GetMetricsScript):
     name = "Juniper.JUNOSe.get_metrics"
-    OID_RULES = [
-        SlotRule
-    ]
+    OID_RULES = [SlotRule]
 
     @metrics(
         ["Subscribers | Summary"],
         has_capability="BRAS | PPTP",
         volatile=False,
-        access=None  # CLI version
+        access=None,  # CLI version
     )
     def get_subscribers_metrics(self, metrics):
         """
@@ -45,5 +44,5 @@ class Script(GetMetricsScript):
                     id=("Subscribers | Summary", None),
                     path=("0", str(slot), ""),
                     value=int(rtt),
-                    multi=True
+                    multi=True,
                 )

@@ -28,10 +28,14 @@ class Script(BaseScript):
         r = {}
         unknown_interfaces = []
         d = {}
-        for doid, descr in self.snmp.getnext(mib["IF-MIB::ifDescr"], max_retries=self.get_getnext_retires()):
+        for doid, descr in self.snmp.getnext(
+            mib["IF-MIB::ifDescr"], max_retries=self.get_getnext_retires()
+        ):
             dindex = int(doid.split(".")[-1])
             d[dindex] = descr
-        for oid, name in self.snmp.getnext(mib["IF-MIB::ifName"], max_retries=self.get_getnext_retires()):
+        for oid, name in self.snmp.getnext(
+            mib["IF-MIB::ifName"], max_retries=self.get_getnext_retires()
+        ):
             index = int(oid.split(".")[-1])
             if not name:
                 continue

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,9 +20,10 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_mac = re.compile(r"\s+MAC\s+Addresses\s+:\s+(?P<base>\S+)\n"
-                        r"\s+Number\s+of\s+MACs\s+:\s+(?P<count>\d+)\n",
-                        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_mac = re.compile(
+        r"\s+MAC\s+Addresses\s+:\s+(?P<base>\S+)\n" r"\s+Number\s+of\s+MACs\s+:\s+(?P<count>\d+)\n",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         try:
@@ -42,9 +44,6 @@ class Script(BaseScript):
             count = int(match.group("count"))
             if count == 0:
                 continue
-            r += [{
-                "first_chassis_mac": base,
-                "last_chassis_mac": MAC(base).shift(count - 1)
-            }]
+            r += [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
 
         return r

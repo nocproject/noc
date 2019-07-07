@@ -37,9 +37,11 @@ class Script(BaseScript):
         Check box has LLDP enabled
         """
         r = self.cli("display lldp local")
-        return "LLDP is not enabled" not in r \
-            and "Global status of LLDP: Disable" not in r \
-                and "LLDP enable status:           disable" not in r
+        return (
+            "LLDP is not enabled" not in r
+            and "Global status of LLDP: Disable" not in r
+            and "LLDP enable status:           disable" not in r
+        )
 
     def has_lldp_snmp(self):
         """
@@ -73,8 +75,7 @@ class Script(BaseScript):
         Check box has UDLD enabled
         """
         r = self.cli("display dldp")
-        return "Global DLDP is not enabled" not in r \
-            and "DLDP global status : disable" not in r
+        return "Global DLDP is not enabled" not in r and "DLDP global status : disable" not in r
 
     @false_on_cli_error
     def has_stack(self):
@@ -101,9 +102,16 @@ class Script(BaseScript):
 
             if self.has_snmp():
                 s_pos = 0
-                for index, entity_type, entity_pos in list(self.snmp.get_tables(
-                        [mib["ENTITY-MIB::entPhysicalClass"], mib["ENTITY-MIB::entPhysicalParentRelPos"]],
-                        bulk=True, cached=True)):
+                for index, entity_type, entity_pos in list(
+                    self.snmp.get_tables(
+                        [
+                            mib["ENTITY-MIB::entPhysicalClass"],
+                            mib["ENTITY-MIB::entPhysicalParentRelPos"],
+                        ],
+                        bulk=True,
+                        cached=True,
+                    )
+                ):
                     if entity_type == 5:
                         s_pos = entity_pos
                     elif entity_type == 9:
@@ -135,10 +143,17 @@ class Script(BaseScript):
     def get_modules(self):
         modules = set()
         if self.has_snmp():
-            for index, entity_descr, entity_class, entity_fru in list(self.snmp.get_tables(
-                    [mib["ENTITY-MIB::entPhysicalDescr"], mib["ENTITY-MIB::entPhysicalClass"],
-                     mib["ENTITY-MIB::entPhysicalIsFRU"]],
-                    bulk=False, cached=True)):
+            for index, entity_descr, entity_class, entity_fru in list(
+                self.snmp.get_tables(
+                    [
+                        mib["ENTITY-MIB::entPhysicalDescr"],
+                        mib["ENTITY-MIB::entPhysicalClass"],
+                        mib["ENTITY-MIB::entPhysicalIsFRU"],
+                    ],
+                    bulk=False,
+                    cached=True,
+                )
+            ):
                 if entity_class == 9 and entity_fru == 2:
                     modules.add(str(index.split(".")[-1]))
         return list(modules)

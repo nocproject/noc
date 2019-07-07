@@ -8,6 +8,7 @@
 
 # Python modules
 from noc.core.script.base import BaseScript
+
 # NOC modules
 from noc.sa.interfaces.igetconfig import IGetConfig
 
@@ -17,13 +18,13 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        config = ''
+        config = ""
         for i in self.attrs:
-            if i.startswith('config'):
+            if i.startswith("config"):
                 files = {}
-                files['name'] = self.attrs[i]
+                files["name"] = self.attrs[i]
                 conf = str(self.cli("/bin/cat " + str(self.attrs[i])))
-                files['config'] = conf
+                files["config"] = conf
                 config.append(files)
         if not config:
             config = self.cli("cat /tmp/system.cfg 2>/dev/null")

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -30,7 +31,8 @@ class Script(BaseScript):
         r"^  System name        : (?P<system_name>.+?)\n"
         r"(^  System description : (?P<system_descr>.+?)\n)?"
         r"(^  System capabilities supported : (?P<system_caps_s>.+?)\n)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
@@ -48,7 +50,7 @@ class Script(BaseScript):
                 "MAC Address": 4,
                 "Network Address": 5,
                 "Interface Name": 6,
-                "local": 7
+                "local": 7,
             }.get(match.group("chassis_type"))
             n["remote_chassis_id"] = match.group("chassis_id").strip()
             n["remote_port_subtype"] = {
@@ -58,7 +60,7 @@ class Script(BaseScript):
                 "Network Address": 4,
                 "Interface Name": 5,
                 "Agent Circuit ID": 6,
-                "Locally assigned": 7
+                "Locally assigned": 7,
             }.get(match.group("port_id_type"))
             n["remote_port"] = match.group("port_id").strip()
             n["remote_port_description"] = match.group("port_descr").strip()
@@ -71,9 +73,14 @@ class Script(BaseScript):
                     c = c.strip()
                     if c:
                         cap |= {
-                            "Other": 1, "Repeater": 2, "Bridge": 4,
-                            "WLAN Access Point": 8, "Router": 16, "TTelephone": 32,
-                            "DOCSIS Cable Device": 64, "Station Only": 128
+                            "Other": 1,
+                            "Repeater": 2,
+                            "Bridge": 4,
+                            "WLAN Access Point": 8,
+                            "Router": 16,
+                            "TTelephone": 32,
+                            "DOCSIS Cable Device": 64,
+                            "Station Only": 128,
                         }[c]
                 n["remote_capabilities"] = cap
             i["neighbors"] += [n]

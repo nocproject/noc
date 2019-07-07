@@ -20,8 +20,7 @@ class Profile(BaseProfile):
     pattern_username = r"^user id :"
     pattern_prompt = r"^=>"
     pattern_more = r"^Press any key to continue or Esc to stop scrolling."
-    pattern_syntax_error = \
-        r"Syntax error|Command line error|Illegal command name"
+    pattern_syntax_error = r"Syntax error|Command line error|Illegal command name"
     command_more = " "
     command_exit = "exit"
     command_save_config = "save"

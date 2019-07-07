@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -20,9 +21,8 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_range = re.compile(
-        r"Base MAC Address\s*:\s*(?P<mac>\S+)\s+"
-        r"MAC Address block size\s*:\s*(?P<count>\d+)",
-        re.DOTALL | re.IGNORECASE
+        r"Base MAC Address\s*:\s*(?P<mac>\S+)\s+" r"MAC Address block size\s*:\s*(?P<count>\d+)",
+        re.DOTALL | re.IGNORECASE,
     )
 
     def execute_cli(self):
@@ -34,16 +34,10 @@ class Script(BaseScript):
         v = self.cli("admin show diag chassis eeprom-info")
         macs = []
         for f, t in [
-            (mac, MAC(mac).shift(int(count) - 1))
-            for mac, count in self.rx_range.findall(v)
+            (mac, MAC(mac).shift(int(count) - 1)) for mac, count in self.rx_range.findall(v)
         ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
                 macs += [[f, t]]
-        return [
-            {
-                "first_chassis_mac": f,
-                "last_chassis_mac": t
-            } for f, t in macs
-        ]
+        return [{"first_chassis_mac": f, "last_chassis_mac": t} for f, t in macs]

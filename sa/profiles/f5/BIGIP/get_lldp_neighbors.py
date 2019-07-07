@@ -21,12 +21,12 @@ class Script(BaseScript):
         for h, data in self.parse_blocks(v):
             for row in data.splitlines():
                 lp, rc, rp = row.split(None, 2)
-                r += [{
-                    "local_interface": lp,
-                    "neighbors": [{
-                        "remote_chassis_id": rc,
-                        "remote_port": rp,
-                        "remote_capabilities": 0
-                    }]
-                }]
+                r += [
+                    {
+                        "local_interface": lp,
+                        "neighbors": [
+                            {"remote_chassis_id": rc, "remote_port": rp, "remote_capabilities": 0}
+                        ],
+                    }
+                ]
         return r

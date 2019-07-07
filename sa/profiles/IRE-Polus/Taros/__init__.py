@@ -13,15 +13,4 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "IRE-Polus.Taros"
-    matchers = {
-        "is_BS": {
-            "platform": {
-                "$regex": "BS",
-            }
-        },
-        "is_EAU": {
-            "platform": {
-                "$regex": "EAU",
-            }
-        }
-    }
+    matchers = {"is_BS": {"platform": {"$regex": "BS"}}, "is_EAU": {"platform": {"$regex": "EAU"}}}

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -19,7 +20,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(
         r"^(?:\s+|\*)(?P<mac>\S+)\s+(?P<vlan>\S+)\s+(?P<port>(?:\d+/\d+|CPU))\s*(?:Static)?\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
@@ -38,10 +39,12 @@ class Script(BaseScript):
                     break
         v = self.cli(c, cached=True)
         for match in self.rx_mac.finditer(v):
-            r += [{
-                'vlan_id': vlans[match.group("vlan")],
-                'mac': match.group("mac"),
-                'interfaces': [match.group("port")],
-                'type': "C" if match.group("port") == "CPU" else "D"
-            }]
+            r += [
+                {
+                    "vlan_id": vlans[match.group("vlan")],
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("port")],
+                    "type": "C" if match.group("port") == "CPU" else "D",
+                }
+            ]
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -25,7 +26,7 @@ class Script(BaseScript):
         # r"^CPSwVersion       : (?P<cpsversion>[^ ,]+)\n"
         r".*CPSwVersion.*(?P<version>.{21,}) PRIMARY .*\n"
         r".*DPSwVersion       : (?P<dpsversion>[^ ,]+)\n",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
     # FlexGain ACE24 N.1.1.401.38
@@ -37,7 +38,7 @@ class Script(BaseScript):
         # r".*CPSwVersion.*(?P<cpsversion>[^ ,]+) .*\n"
         # r".*DPSwVersion       : WDDI (?P<dpsversion>[^ ,]+)\n"
         ,
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
     # FIX  в N.1.1.401.38 нет SN и получить его нереально ?
@@ -71,5 +72,5 @@ class Script(BaseScript):
             "attributes": {
                 "hwversion": match.group("hwversion"),
                 "cpldversion": match.group("cpldversion"),
-            }
+            },
         }

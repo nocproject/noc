@@ -8,6 +8,7 @@
 
 import re
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
@@ -24,15 +25,14 @@ class Script(BaseScript):
 
     splitter = re.compile("\s*-+\n")
 
-    status_map = {
-        "online": "active",  # associated
-        "offline": "inactive",  # disassociating
-    }
+    status_map = {"online": "active", "offline": "inactive"}  # associated  # disassociating
     INACTIVE_STATE = {"initial"}
 
-    detail_map = {"ont distance(m)": "ont_distance",
-                  "ont ip 0 address/mask": "ont_address",
-                  "last down cause": "down_cause"}
+    detail_map = {
+        "ont distance(m)": "ont_distance",
+        "ont ip 0 address/mask": "ont_address",
+        "last down cause": "down_cause",
+    }
 
     def execute_cli(self, **kwargs):
         r = {}
@@ -54,7 +54,7 @@ class Script(BaseScript):
                         # '                                       F/S/P   ONT         SN         Control     Run      Config   Match    Protect',
                         # '          ID                     flag        state    state    state    side',
                         # '  -----------------------------------------------------------------------------'
-                        header[0] = header[0][len(header[0]) - len(str.lstrip(header[0])) - 2:]
+                        header[0] = header[0][len(header[0]) - len(str.lstrip(header[0])) - 2 :]
                     head = parse_table_header(header)
                     del head[2]  # remove empty header
                     tables_data += self.profile.parse_table1(body, head)
@@ -72,11 +72,15 @@ class Script(BaseScript):
                     if "F/S/P/ONT-ID" in t:
                         ont_id = t["F/S/P/ONT-ID"][0].replace(" ", "")
                         if ont_id in r:
-                            r[ont_id].update({
-                                "vendor": t["Vendor ID"][0],
-                                "model": t["ONT"][0] + t["Model"][0] if t["Model"] else "",
-                                "version": t["Software Version"][0] if t["Software Version"] else ""
-                            })
+                            r[ont_id].update(
+                                {
+                                    "vendor": t["Vendor ID"][0],
+                                    "model": t["ONT"][0] + t["Model"][0] if t["Model"] else "",
+                                    "version": t["Software Version"][0]
+                                    if t["Software Version"]
+                                    else "",
+                                }
+                            )
                         continue
                     status = "other"
                     if "ONT ID" in t:
@@ -103,7 +107,7 @@ class Script(BaseScript):
                         "type": "ont",
                         "serial": serial + t["SN"][0],
                         "description": "",
-                        "location": ""
+                        "location": "",
                     }
         for ont_id in r:
             # if r[ont_id]["status"] != "active":
@@ -122,10 +126,15 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         r = {}
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))}
+        names = {
+            x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))
+        }
         for ont_index, ont_serial, ont_descr in self.snmp.get_tables(
-                [mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntDespt"]], bulk=False
+            [
+                mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"],
+                mib["HUAWEI-XPON-MIB::hwGponDeviceOntDespt"],
+            ],
+            bulk=False,
         ):
             ifindex, ont_id = ont_index.split(".")
             ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
@@ -137,14 +146,19 @@ class Script(BaseScript):
                 "type": "ont",
                 "serial": ont_serial.encode("hex").upper(),
                 "description": ont_descr,
-                "location": ""
+                "location": "",
             }
-        for ont_index, ont_status in self.snmp.get_tables([mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus"]]):
+        for ont_index, ont_status in self.snmp.get_tables(
+            [mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus"]]
+        ):
             r[ont_index]["status"] = "active" if ont_status == 1 else "inactive"
         for ont_index, ont_version, ont_vendor, ont_model in self.snmp.get_tables(
-                [mib["HUAWEI-XPON-MIB::hwGponDeviceOntVersion"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntVendorId"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntProductId"]], bulk=False
+            [
+                mib["HUAWEI-XPON-MIB::hwGponDeviceOntVersion"],
+                mib["HUAWEI-XPON-MIB::hwGponDeviceOntVendorId"],
+                mib["HUAWEI-XPON-MIB::hwGponDeviceOntProductId"],
+            ],
+            bulk=False,
         ):
             if ont_version != -1:
                 r[ont_index]["version"] = ont_version
@@ -153,7 +167,7 @@ class Script(BaseScript):
             if ont_vendor != -1:
                 r[ont_index]["vendor"] = ont_vendor
         for ont_index, ont_distance in self.snmp.get_tables(
-                [mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRanging"]], bulk=False
+            [mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRanging"]], bulk=False
         ):
             if ont_distance != -1:
                 r[ont_index]["distance"] = ont_distance

@@ -9,16 +9,14 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Juniper.EX2500"
-    pattern_more = [
-        (r"^--More--", " "),
-        (r"^Sure you want to close this session", "y\n")
-    ]
+    pattern_more = [(r"^--More--", " "), (r"^Sure you want to close this session", "y\n")]
     command_super = "enable"
     # command_enter_config = "configure terminal"
     # command_leave_config = "exit"
@@ -29,5 +27,5 @@ class Profile(BaseProfile):
     rogue_chars = [
         "\r",
         re.compile(r"\n\n.*?\n"),
-        re.compile(r"\n.*?:TELNET-ALERT:.*?\nvia TELNET/SSH From host .*?\n")
+        re.compile(r"\n.*?:TELNET-ALERT:.*?\nvia TELNET/SSH From host .*?\n"),
     ]

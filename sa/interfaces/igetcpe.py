@@ -7,11 +7,17 @@
 # ---------------------------------------------------------------------
 
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import (StringParameter, InterfaceNameParameter,
-                   IPv4Parameter, MACAddressParameter, DictListParameter,
-                   IntParameter)
+from .base import (
+    StringParameter,
+    InterfaceNameParameter,
+    IPv4Parameter,
+    MACAddressParameter,
+    DictListParameter,
+    IntParameter,
+)
 
 
 class IGetCPE(BaseInterface):
@@ -44,34 +50,27 @@ class IGetCPE(BaseInterface):
     * location - CPE location string
     * distance - Calculated distance in meters
     """
-    returns = DictListParameter(attrs={
-        "id": StringParameter(),
-        "global_id": StringParameter(),
-        "name": StringParameter(required=False),
-        "status": StringParameter(choices=[
-            "active",
-            "inactive",
-            "approval",
-            "firmware",
-            "provisioning",
-            "other"
-        ], default="active"),
-        "type": StringParameter(choices=[
-            "ap",
-            "dsl",
-            "ont",
-            "docsis",
-            "other"
-        ]),
-        "interface": InterfaceNameParameter(required=False),
-        "vendor": StringParameter(required=False),
-        "model": StringParameter(required=False),
-        "version": StringParameter(required=False),
-        "serial": StringParameter(required=False),
-        "ip": IPv4Parameter(required=False),
-        "mac": MACAddressParameter(required=False),
-        "modulation": StringParameter(required=False),
-        "description": StringParameter(required=False),
-        "location": StringParameter(required=False),
-        "distance": IntParameter(required=False)
-    })
+
+    returns = DictListParameter(
+        attrs={
+            "id": StringParameter(),
+            "global_id": StringParameter(),
+            "name": StringParameter(required=False),
+            "status": StringParameter(
+                choices=["active", "inactive", "approval", "firmware", "provisioning", "other"],
+                default="active",
+            ),
+            "type": StringParameter(choices=["ap", "dsl", "ont", "docsis", "other"]),
+            "interface": InterfaceNameParameter(required=False),
+            "vendor": StringParameter(required=False),
+            "model": StringParameter(required=False),
+            "version": StringParameter(required=False),
+            "serial": StringParameter(required=False),
+            "ip": IPv4Parameter(required=False),
+            "mac": MACAddressParameter(required=False),
+            "modulation": StringParameter(required=False),
+            "description": StringParameter(required=False),
+            "location": StringParameter(required=False),
+            "distance": IntParameter(required=False),
+        }
+    )

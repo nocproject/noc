@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -18,7 +19,8 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
-        r"^(?P<interface>\S+).+\s+(?P<status>up|down)\s+.*$", re.IGNORECASE)
+        r"^(?P<interface>\S+).+\s+(?P<status>up|down)\s+.*$", re.IGNORECASE
+    )
     rx_digit = re.compile(r"^[0-9]+$")
 
     def execute_cli(self, interface=None):
@@ -31,24 +33,20 @@ class Script(BaseScript):
         for ll in self.cli(cmd).splitlines():
             match = self.rx_interface_status.match(ll)
             if match:
-                r += [{
-                    "interface": match.group("interface"),
-                    "status": match.group("status").lower() == "up"
-                }]
+                r += [
+                    {
+                        "interface": match.group("interface"),
+                        "status": match.group("status").lower() == "up",
+                    }
+                ]
         return r
 
     def execute_snmp(self):
         # Get interface status
         r = []
         # IF-MIB::ifName, IF-MIB::ifOperStatus
-        for i, n, s in self.snmp.join([
-            "1.3.6.1.2.1.31.1.1.1.1",
-            "1.3.6.1.2.1.2.2.1.8"
-        ]):
-            if (
-                    n.startswith("stack-port") or
-                    n.startswith("Logical-int")
-            ):
+        for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
+            if n.startswith("stack-port") or n.startswith("Logical-int"):
                 continue
             # ifOperStatus up(1)
             if self.rx_digit.match(n):

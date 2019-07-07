@@ -17,14 +17,18 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^\s*(?:vlan \d+\s+)?(?P<interface>g?e?\d\S*)\s+(?P<ip>\d\S+)\s+"
-        r"(?P<mac>\S+)\s+(?:[Dd]ynamic|[Ss]tatic)", re.MULTILINE)
+        r"(?P<mac>\S+)\s+(?:[Dd]ynamic|[Ss]tatic)",
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
         for match in self.rx_line.finditer(self.cli("show arp")):
-            r += [{
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "interface": match.group("interface")
-            }]
+            r += [
+                {
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface"),
+                }
+            ]
         return r

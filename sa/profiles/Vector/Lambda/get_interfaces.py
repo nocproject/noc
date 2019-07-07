@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,7 +22,8 @@ class Script(BaseScript):
     rx_net = re.compile(
         r"MAC\s+addr\s+:\s+(?P<mac>\S+)\n"
         r"IP addr\s+:\s+(?P<ip>\S+)\n"
-        r"Netmask\s+:\s+(?P<mask>\S+)\n", re.MULTILINE
+        r"Netmask\s+:\s+(?P<mask>\S+)\n",
+        re.MULTILINE,
     )
     rx_port = re.compile(r"Receiver (?P<port>\S) power")
 
@@ -35,37 +37,45 @@ class Script(BaseScript):
             ip = IPv4(ipaddr, mask)
         else:
             raise self.NotSupportedError
-        iface = [{
-            "name": "mgmt",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "management",
-            "mac": mac,
-            "subinterfaces": [{
+        iface = [
+            {
                 "name": "mgmt",
-                "enabled_afi": ["IPv4"],
-                "mac": mac,
-                "ipv4_addresses": [ip],
                 "admin_status": True,
                 "oper_status": True,
-            }]
-        }]
+                "type": "management",
+                "mac": mac,
+                "subinterfaces": [
+                    {
+                        "name": "mgmt",
+                        "enabled_afi": ["IPv4"],
+                        "mac": mac,
+                        "ipv4_addresses": [ip],
+                        "admin_status": True,
+                        "oper_status": True,
+                    }
+                ],
+            }
+        ]
 
         dev = self.cli("dev dump")
         for match in self.rx_port.finditer(dev):
-            iface += [{
-                "name": "Input %s" % match.group("port"),
+            iface += [
+                {
+                    "name": "Input %s" % match.group("port"),
+                    "admin_status": True,
+                    "oper_status": True,
+                    "type": "physical",
+                    "subinterfaces": [],
+                }
+            ]
+        iface += [
+            {
+                "name": "Output",
                 "admin_status": True,
                 "oper_status": True,
                 "type": "physical",
-                "subinterfaces": []
-            }]
-        iface += [{
-            "name": "Output",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "physical",
-            "subinterfaces": []
-        }]
+                "subinterfaces": [],
+            }
+        ]
 
         return [{"interfaces": iface}]

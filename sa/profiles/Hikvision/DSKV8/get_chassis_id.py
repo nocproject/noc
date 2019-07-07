@@ -8,6 +8,7 @@
 
 # Python modules
 import xml.etree.ElementTree as ElementTree
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -28,7 +29,4 @@ class Script(BaseScript):
                 mac = child.text
                 break
 
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

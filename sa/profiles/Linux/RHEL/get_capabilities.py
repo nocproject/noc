@@ -36,7 +36,7 @@ class Script(BaseScript):
         r1 = self.cli("/bin/ps aux | grep [l]advd")
 
         # for lldpd daemon need check CDP enable in config. LLDPD_OPTIONS="-c" in /etc/sysconfig/lldpd
-        r2 = self.cli("/bin/ps aux | grep \"[/]usr/sbin/lldpd -c\"")
+        r2 = self.cli('/bin/ps aux | grep "[/]usr/sbin/lldpd -c"')
 
         if r1 or r2:
             return True

@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -24,12 +25,9 @@ class Script(BaseScript):
     k_v_re = re.compile(r"(?P<key>\S+)\s*:\s*(?P<value>\S+)", re.IGNORECASE)
 
     def execute(self):
-        r = {"mode": "RSTP",
-             "instances": []}
+        r = {"mode": "RSTP", "instances": []}
 
-        instance = {"id": 0,
-                    "vlans": "1-4095",
-                    "interfaces": []}
+        instance = {"id": 0, "vlans": "1-4095", "interfaces": []}
         try:
             # RSTP
             v = self.cli("show rstp port-info detail")
@@ -50,24 +48,35 @@ class Script(BaseScript):
                         "root_id": kv["designated-root"].split(":", 2)[2],
                         "root_priority": int("".join(kv["designated-root"].split(":", 2)[:2]), 16),
                         "bridge_id": kv["designated-root"].split(":", 2)[2],
-                        "bridge_priority": int("".join(kv["designated-root"].split(":", 2)[:2]), 16)
-                    })
+                        "bridge_priority": int(
+                            "".join(kv["designated-root"].split(":", 2)[:2]), 16
+                        ),
+                    }
+                )
             elif "stp port parameters" in e:
                 # Port parameter block
                 kv = dict(self.k_v_re.findall(e))
-                instance["interfaces"] += [{
-                    "interface": "ethernet:%d" % (int(kv["port"]) + 1),
-                    "port_id": "%d.%s" % (int(kv["designated-port"].split(":")[0], 16),
-                                          int(kv["designated-port"].split(":")[1], 16)),
-                    "state": kv["state"],
-                    "role": kv["role"],
-                    "priority": int("".join(kv["designated-bridge"].split(":", 2)[:2]), 16),
-                    "designated_bridge_id": kv["designated-bridge"].split(":", 2)[2],
-                    "designated_bridge_priority": int(kv["designated-port"].split(":")[0], 16),
-                    "designated_port_id": "%d.%s" % (int(kv["designated-port"].split(":")[0], 16),
-                                                     int(kv["designated-port"].split(":")[1], 16)),
-                    "point_to_point": kv["oper-p2p"] == "p2p",
-                    "edge": kv["oper-edge-port"] != "no-edge-port"
-                }]
+                instance["interfaces"] += [
+                    {
+                        "interface": "ethernet:%d" % (int(kv["port"]) + 1),
+                        "port_id": "%d.%s"
+                        % (
+                            int(kv["designated-port"].split(":")[0], 16),
+                            int(kv["designated-port"].split(":")[1], 16),
+                        ),
+                        "state": kv["state"],
+                        "role": kv["role"],
+                        "priority": int("".join(kv["designated-bridge"].split(":", 2)[:2]), 16),
+                        "designated_bridge_id": kv["designated-bridge"].split(":", 2)[2],
+                        "designated_bridge_priority": int(kv["designated-port"].split(":")[0], 16),
+                        "designated_port_id": "%d.%s"
+                        % (
+                            int(kv["designated-port"].split(":")[0], 16),
+                            int(kv["designated-port"].split(":")[1], 16),
+                        ),
+                        "point_to_point": kv["oper-p2p"] == "p2p",
+                        "edge": kv["oper-edge-port"] != "no-edge-port",
+                    }
+                ]
         r["instances"] += [instance]
         return r

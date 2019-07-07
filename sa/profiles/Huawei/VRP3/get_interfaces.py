@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,28 +22,33 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^\s*MAC address:\s+(?P<mac>\S+)")
     rx_ip = re.compile(
-        r"^\s*IP address\s*:\s+(?P<ip>\S+)\s*\n"
-        r"^\s*Subnet mask\s*:\s+(?P<mask>\S+)\s*\n", re.MULTILINE
+        r"^\s*IP address\s*:\s+(?P<ip>\S+)\s*\n" r"^\s*Subnet mask\s*:\s+(?P<mask>\S+)\s*\n",
+        re.MULTILINE,
     )
     rx_vlan = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")
     rx_pvc = re.compile(
         r"^\s*\d+\s+(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+"
-        r"(?P<vci>\d+)\s+LAN\s+0/0/(?P<vlan>\d+)(?:\(\S+\)|)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
+        r"(?P<vci>\d+)\s+LAN\s+0/0/(?P<vlan>\d+)(?:\(\S+\)|)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n",
+        re.MULTILINE,
     )
 
     rx_pvc2 = re.compile(
         r"\s+\d+\s+LAN\s+0/0/(?P<vlan>\d+)(?:\(\S+\)|)\s+\S+\s+\S+\s+"
-        r"(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n", re.MULTILINE
+        r"(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n",
+        re.MULTILINE,
     )
 
     rx_pvc3 = re.compile(
         r"^\s*\d+\s+(?P<ifname>\S+\s+\d+\s+\d+\s+\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)"
-        r"\s+LAN\s+0\s+0\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
+        r"\s+LAN\s+0\s+0\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n",
+        re.MULTILINE,
     )
 
     rx_pvc4 = re.compile(
         r"\s+\d+\s+LAN\s+\d+\s+\d+\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+"
-        r"(?P<ifname>\S+\s+\d+\s+\d+\s+\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n", re.MULTILINE)
+        r"(?P<ifname>\S+\s+\d+\s+\d+\s+\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n",
+        re.MULTILINE,
+    )
 
     def execute(self):
         interfaces = []
@@ -52,23 +58,17 @@ class Script(BaseScript):
         iface = {
             "name": "FE:0/0/1",
             "type": "physical",
-            "subinterfaces":
-                [{
-                    "name": "FE:0/0/1",
-                    "enabled_afi": ["BRIDGE"],
-                    "tagged_vlans": vlans
-                }]
+            "subinterfaces": [
+                {"name": "FE:0/0/1", "enabled_afi": ["BRIDGE"], "tagged_vlans": vlans}
+            ],
         }
         interfaces += [iface]
         iface = {
             "name": "FE:0/0/2",
             "type": "physical",
-            "subinterfaces":
-                [{
-                    "name": "FE:0/0/2",
-                    "enabled_afi": ["BRIDGE"],
-                    "tagged_vlans": vlans
-                }]
+            "subinterfaces": [
+                {"name": "FE:0/0/2", "enabled_afi": ["BRIDGE"], "tagged_vlans": vlans}
+            ],
         }
         interfaces += [iface]
         with self.configure():
@@ -88,7 +88,7 @@ class Script(BaseScript):
                     "enabled_afi": ["BRIDGE", "ATM"],
                     "vpi": int(match.group("vpi")),
                     "vci": int(match.group("vci")),
-                    "vlan_ids": int(match.group("vlan"))
+                    "vlan_ids": int(match.group("vlan")),
                 }
                 found = False
                 for i in interfaces:
@@ -109,7 +109,7 @@ class Script(BaseScript):
         with self.configure():
             c = self.cli("show nms")
             match = self.rx_vlan.search(c)
-            vlan = int(match.group('vlanid'))
+            vlan = int(match.group("vlanid"))
         iface = {
             "name": "mgmt",
             "type": "SVI",
@@ -124,9 +124,9 @@ class Script(BaseScript):
                     "mac": mac,
                     "enabled_afi": ["IPv4"],
                     "ipv4_addresses": [ip_address],
-                    "vlan_ids": vlan
+                    "vlan_ids": vlan,
                 }
-            ]
+            ],
         }
         interfaces += [iface]
         return [{"interfaces": interfaces}]

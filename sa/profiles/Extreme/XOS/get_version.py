@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,8 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_platform = re.compile(r"^Card type:\s+(?P<platform>\S+)", re.MULTILINE)
-    rx_version = re.compile(
-        r"^(?:EXOS )?[Vv]ersion:\s+(?P<version>\S+)", re.MULTILINE)
+    rx_version = re.compile(r"^(?:EXOS )?[Vv]ersion:\s+(?P<version>\S+)", re.MULTILINE)
     rx_active_slot = re.compile(r"^\*\S+\s[\d-]+\s(?P<slot_num>[\d-]).*$", re.MULTILINE)
 
     def execute(self):
@@ -33,8 +33,4 @@ class Script(BaseScript):
             v = self.cli("debug hal show version slot %s" % slot)
         platform = self.rx_platform.search(v).group("platform")
         version = self.rx_version.search(v).group("version")
-        return {
-            "vendor": "Extreme",
-            "platform": platform,
-            "version": version
-        }
+        return {"vendor": "Extreme", "platform": platform, "version": version}

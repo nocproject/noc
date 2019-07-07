@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -19,13 +20,13 @@ class Script(BaseScript):
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss.",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_stat = re.compile(
-        r"^rtt min/avg/max/mdev = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)/(?P<mdev>.+)\s.",
-        re.MULTILINE)
+        r"^rtt min/avg/max/mdev = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)/(?P<mdev>.+)\s.", re.MULTILINE
+    )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping %s" % address
         if count:
             cmd += " count %d" % int(count)
@@ -38,16 +39,15 @@ class Script(BaseScript):
         #    cmd+=" df-bit"
         ping = self.cli(cmd)
         result = self.rx_result.search(ping)
-        r = {
-            "success": result.group("success"),
-            "count": result.group("count"),
-        }
+        r = {"success": result.group("success"), "count": result.group("count")}
         stat = self.rx_stat.search(ping)
         if stat:
-            r.update({
-                "min": stat.group("min"),
-                "avg": stat.group("avg"),
-                "max": stat.group("max"),
-                "mdev": stat.group("mdev"),
-            })
+            r.update(
+                {
+                    "min": stat.group("min"),
+                    "avg": stat.group("avg"),
+                    "max": stat.group("max"),
+                    "mdev": stat.group("mdev"),
+                }
+            )
         return r

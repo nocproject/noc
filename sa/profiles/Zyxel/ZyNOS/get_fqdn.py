@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
@@ -17,8 +18,7 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_fqdn"
     interface = IGetFQDN
 
-    rx_hostname = re.compile(r"^System Name\s+:\s+(?P<hostname>\S+)$",
-                            re.MULTILINE)
+    rx_hostname = re.compile(r"^System Name\s+:\s+(?P<hostname>\S+)$", re.MULTILINE)
 
     def execute(self):
         fqdn = ""

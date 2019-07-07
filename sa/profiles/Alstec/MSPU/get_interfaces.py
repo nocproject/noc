@@ -22,18 +22,14 @@ class Script(BaseScript):
         6: "physical",  # ethernetCsmacd
         24: "loopback",  # softwareLoopback
         0: "physical",  # gigabitEthernet
-        53: "SVI"  # propVirtual
+        53: "SVI",  # propVirtual
     }
 
     rx_iface = re.compile(
-        r"^(?P<ifname>\S+\d+)\s+Link encap:Ethernet\s+HWaddr (?P<mac>\S+)",
-        re.MULTILINE)
-    rx_flags = re.compile(
-        r"^\s+(?P<flags>.+)\s+MTU:(?P<mtu>\d+)\s+Metric:\d+",
-        re.MULTILINE)
-    rx_ip = re.compile(
-        r"^\s+inet addr:(?P<ip>\S+)\s+Bcast:\S+\s+ Mask:(?P<mask>\S+)",
-        re.MULTILINE)
+        r"^(?P<ifname>\S+\d+)\s+Link encap:Ethernet\s+HWaddr (?P<mac>\S+)", re.MULTILINE
+    )
+    rx_flags = re.compile(r"^\s+(?P<flags>.+)\s+MTU:(?P<mtu>\d+)\s+Metric:\d+", re.MULTILINE)
+    rx_ip = re.compile(r"^\s+inet addr:(?P<ip>\S+)\s+Bcast:\S+\s+ Mask:(?P<mask>\S+)", re.MULTILINE)
 
     def execute_cli(self):
         interfaces = []
@@ -58,14 +54,14 @@ class Script(BaseScript):
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "mac": mac,
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             sub = {
                 "name": ifname,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "mac": mac,
-                "mtu": mtu
+                "mtu": mtu,
             }
             match = self.rx_ip.search(l)
             if match:
@@ -73,7 +69,7 @@ class Script(BaseScript):
                 ip_subnet = match.group("mask")
                 ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                 sub["ipv4_addresses"] = [ip_address]
-                sub["enabled_afi"] = ['IPv4']
+                sub["enabled_afi"] = ["IPv4"]
             # found = False
             if "." in ifname:
                 parent, vlan = ifname.split(".")

@@ -12,8 +12,10 @@ import re
 import numpy as np
 from itertools import dropwhile
 from collections import defaultdict
+
 # Third-party modules
 from six.moves import zip_longest, zip
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -27,20 +29,22 @@ class Profile(BaseProfile):
         (r" [Aa]re you sure?\S+", "y\n\r"),
         (r"^Delete flash:", "y\n\r"),
         (r"^Squeeze flash:", "y\n\r"),
-        (r"^The password needs to be changed\. Change now\? \[Y\/N\]\:", "n\n\r")
+        (r"^The password needs to be changed\. Change now\? \[Y\/N\]\:", "n\n\r"),
     ]
-    pattern_prompt = \
-        r"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)" \
+    pattern_prompt = (
+        r"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)"
         r"(?:-[a-zA-Z0-9/\_]+)*[>#\]\)]"
-    pattern_syntax_error = \
-        r"(ERROR: |% Wrong parameter found at|" \
-        r"% Unrecognized command found at|" \
-        r"Error:Too many parameters found|" \
-        r"% Too many parameters found at|" \
-        r"% Ambiguous command found at|" \
-        r"Error:\s*Unrecognized command found at|" \
-        r"Error:\s*Wrong parameter found at|" \
+    )
+    pattern_syntax_error = (
+        r"(ERROR: |% Wrong parameter found at|"
+        r"% Unrecognized command found at|"
+        r"Error:Too many parameters found|"
+        r"% Too many parameters found at|"
+        r"% Ambiguous command found at|"
+        r"Error:\s*Unrecognized command found at|"
+        r"Error:\s*Wrong parameter found at|"
         r"Error:\s*Incomplete command found at)"
+    )
 
     command_more = " "
     config_volatile = ["^%.*?$"]
@@ -61,54 +65,25 @@ class Profile(BaseProfile):
         ("hints", "protocols", "spanning-tree", "status", True),
         ("hints", "protocols", "loop-detect", "status", False),
     ]
-    config_applicators = [
-        "noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator",
-    ]
+    config_applicators = ["noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator"]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
     matchers = {
-        "is_kernel_3": {
-            "version": {
-                "$gte": "3.0",
-                "$lt": "5.0"
-            }
-        },
-        "is_kernelgte_5": {
-            "version": {
-                "$gte": "5.0"
-            }
-        },
+        "is_kernel_3": {"version": {"$gte": "3.0", "$lt": "5.0"}},
+        "is_kernelgte_5": {"version": {"$gte": "5.0"}},
         "is_bad_platform": {
-            "version": {
-                "$in": ["5.20"]
-            },
-            "platform": {
-                "$in": ["S5628F", "S5628F-HI"]
-            }
+            "version": {"$in": ["5.20"]},
+            "platform": {"$in": ["S5628F", "S5628F-HI"]},
         },
-        "is_ne_platform": {
-            "platform": {
-                "$regex": "^NE"
-            }
-        },
-        "is_ar": {
-            "platform": {
-                "$regex": r"^AR\d+.+"
-            }
-        },
-        "is_extended_entity_mib_supported": {
-            "caps": {
-                "$in": ["Huawei | MIB | ENTITY-EXTENT-MIB"]
-            }
-        },
-        "is_stack": {
-            "caps": {
-                "$in": ["Stack | Members"]
-            }
-        }
+        "is_ne_platform": {"platform": {"$regex": "^NE"}},
+        "is_ar": {"platform": {"$regex": r"^AR\d+.+"}},
+        "is_extended_entity_mib_supported": {"caps": {"$in": ["Huawei | MIB | ENTITY-EXTENT-MIB"]}},
+        "is_stack": {"caps": {"$in": ["Stack | Members"]}},
     }
 
-    rx_ver = re.compile(r"((?:(\d)\.(\d+))\s*)?\(?(?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)(?:B(\d+)|)(?:SPC(\d+)|)\)?")
+    rx_ver = re.compile(
+        r"((?:(\d)\.(\d+))\s*)?\(?(?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)(?:B(\d+)|)(?:SPC(\d+)|)\)?"
+    )
     rx_ver_kern = re.compile(r"\s*(\d)\.(\d+)\s*")
     rx_ver_rel = re.compile(r"\(?(?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)(?:B(\d+)|)(?:SPC(\d+)|)\)?")
 
@@ -154,9 +129,16 @@ class Profile(BaseProfile):
         a, b = self.rx_ver.search(str(x)).groups()[1:], self.rx_ver.search(str(y)).groups()[1:]
         # if set(self.rx_ver.search(x).groups()) and self.rx_ver.search(y):
         if any(a) and any(b):
-            r = list(dropwhile(lambda s: s == 0,
-                               [(int(a) > int(b)) - (int(a) < int(b)) for a, b in zip(a, b)   # noqa
-                                if a is not None and b is not None]))
+            r = list(
+                dropwhile(
+                    lambda s: s == 0,
+                    [
+                        (int(a) > int(b)) - (int(a) < int(b))
+                        for a, b in zip(a, b)  # noqa
+                        if a is not None and b is not None
+                    ],
+                )
+            )
             return r[0] if r else 0
         else:
             return None
@@ -192,7 +174,7 @@ class Profile(BaseProfile):
         "40GE": "physical",
         "100GE": "physical",
         "Serial": None,
-        "Pos": None
+        "Pos": None,
     }
 
     rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
@@ -215,8 +197,8 @@ class Profile(BaseProfile):
         return "\n".join(r)
 
     rx_interface_name = re.compile(
-        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)"
-        r"(?P<number>[\d/]+(\.\d+)?)$")
+        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)" r"(?P<number>[\d/]+(\.\d+)?)$"
+    )
 
     def convert_interface_name(self, s):
         """
@@ -235,16 +217,19 @@ class Profile(BaseProfile):
         match = self.rx_interface_name.match(s)
         if not match:
             return s
-        return "%s%s" % ({
-            "Loop": "LoopBack",
-            "Ten-GigabitEthernet": "XGigabitEthernet",
-            "XGE": "XGigabitEthernet",
-            "GE": "GigabitEthernet",
-            "Eth": "Ethernet",
-            "MEth": "M-Ethernet",
-            "VE": "Virtual-Ethernet"
-            # "Vlanif": "Vlan-interface" - need testing
-        }[match.group("type")], match.group("number"))
+        return "%s%s" % (
+            {
+                "Loop": "LoopBack",
+                "Ten-GigabitEthernet": "XGigabitEthernet",
+                "XGE": "XGigabitEthernet",
+                "GE": "GigabitEthernet",
+                "Eth": "Ethernet",
+                "MEth": "M-Ethernet",
+                "VE": "Virtual-Ethernet"
+                # "Vlanif": "Vlan-interface" - need testing
+            }[match.group("type")],
+            match.group("number"),
+        )
 
     def convert_mac(self, mac):
         """
@@ -277,10 +262,8 @@ class Profile(BaseProfile):
         :return:
         """
         # @todo migrate to parse_block
-        k_v_splitter = re.compile(
-            r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
-        part_splitter = re.compile(
-            r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
+        k_v_splitter = re.compile(r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
+        part_splitter = re.compile(r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
         r = {}
         is_table = False
         is_part = False
@@ -336,10 +319,15 @@ class Profile(BaseProfile):
         for line in e.splitlines():
             if not line:
                 continue
-            if (line.startswith("LoopBack") or line.startswith("MEth") or
-                    line.startswith("Ethernet") or
-                    line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or
-                    line.startswith("Vlanif") or line.startswith("NULL")):
+            if (
+                line.startswith("LoopBack")
+                or line.startswith("MEth")
+                or line.startswith("Ethernet")
+                or line.startswith("GigabitEthernet")
+                or line.startswith("XGigabitEthernet")
+                or line.startswith("Vlanif")
+                or line.startswith("NULL")
+            ):
                 current_iface = line.split()[0]
                 continue
             # k, v count
@@ -385,13 +373,13 @@ class Profile(BaseProfile):
         empty_header = None
         header = {}
 
-        for num, lines in enumerate(zip_longest(*v, fillvalue='-')):
+        for num, lines in enumerate(zip_longest(*v, fillvalue="-")):
             #
             if empty_header is None:
-                empty_header = (' ',) * len(lines)
+                empty_header = (" ",) * len(lines)
                 head += [lines]
                 continue
-            if set(head[-1]) == {' '} and lines != empty_header:
+            if set(head[-1]) == {" "} and lines != empty_header:
                 head = np.array(head)
                 # Transpone list header string
                 header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])
@@ -431,10 +419,8 @@ class Profile(BaseProfile):
 
         r = defaultdict(dict)
         part_name = ""
-        k_v_splitter = re.compile(
-            r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
-        part_splitter = re.compile(
-            r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
+        k_v_splitter = re.compile(r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
+        part_splitter = re.compile(r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
 
         # r = {}
         is_table = False  # Table block, start after -----

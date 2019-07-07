@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
@@ -22,7 +23,4 @@ class Script(BaseScript):
             mac = c.get("root.Network.eth%d.MACAddress" % i)
             if mac is not None:
                 macs += [mac]
-        return [{
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        } for mac in sorted(macs)]  # noqa: F812
+        return [{"first_chassis_mac": m, "last_chassis_mac": m} for m in sorted(macs)]

@@ -31,23 +31,21 @@ class Script(GetMetricsScript):
             if bv.metric in self.ALL_IFACE_METRICS:
                 id = tuple(bv.path + [bv.metric])
                 if id in m:
-                    self.set_metric(
-                        id=bv.id,
-                        metric=bv.metric,
-                        value=m[id],
-                        ts=ts,
-                        path=bv.path,
-                    )
+                    self.set_metric(id=bv.id, metric=bv.metric, value=m[id], ts=ts, path=bv.path)
 
     def get_iface_metrics(self):
         r = {}
         v = self.cli("show interfaces counters")
         v = self.profile.parse_ifaces(v)
-        metric_map = {"CRC Align Errors": "Interface | Errors | CRC",
-                      "Frames Too Long": "Interface | Errors | Frame"}
+        metric_map = {
+            "CRC Align Errors": "Interface | Errors | CRC",
+            "Frames Too Long": "Interface | Errors | Frame",
+        }
         for iface in v:
             for m in metric_map:
                 if m not in v[iface]:
                     continue
-                r[("", "", "", self.profile.convert_interface_name(iface), metric_map[m])] = int(v[iface][m])
+                r[("", "", "", self.profile.convert_interface_name(iface), metric_map[m])] = int(
+                    v[iface][m]
+                )
         return r

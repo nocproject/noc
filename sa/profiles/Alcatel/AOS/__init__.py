@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -26,8 +27,7 @@ class Profile(BaseProfile):
 
     def cmp_version(self, x, y):
         return cmp(
-            [int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)]
+            [int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)]
         )
 
     def convert_interface_name(self, s):

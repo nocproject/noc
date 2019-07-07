@@ -8,9 +8,11 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
 from six.moves import zip
+
 # NOC modiles
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -28,7 +30,8 @@ class Script(BaseScript):
         r"^-+\s*\n"
         r"^Remote Entities Count : [1-9]+\s*\n"
         r"(?P<entities>.+?): \d+\s*\n\n",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
     rx_entity = re.compile(
         r"^Entity \d+\s*\n"
         r"^\s+Chassis ID Subtype\s+:(?P<chassis_id_subtype>.+)\s*\n"
@@ -40,40 +43,48 @@ class Script(BaseScript):
         r"^\s+System Description\s+:(?P<system_description>.*)"
         r"^\s+System Capabilities\s+:(?P<system_capabilities>.+?)\s*\n"
         r"^\s+Management Address Count",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     def execute_snmp(self):
         neighb = (
-            "remote_chassis_id_subtype", "remote_chassis_id",
-            "remote_port_subtype", "remote_port",
-            "remote_port_description", "remote_system_name",
-            "remote_system_description", "remote_capabilities"
+            "remote_chassis_id_subtype",
+            "remote_chassis_id",
+            "remote_port_subtype",
+            "remote_port",
+            "remote_port_description",
+            "remote_system_name",
+            "remote_system_description",
+            "remote_capabilities",
         )
         r = []
         local_ports = {}
         # Get LocalPort Table
-        for v in self.snmp.get_tables([
-            "1.0.8802.1.1.2.1.3.7.1.2",  # LLDP-MIB::lldpLocPortIdSubtype
-            "1.0.8802.1.1.2.1.3.7.1.4"  # LLDP-MIB::lldpLocPortDesc
-        ]):
+        for v in self.snmp.get_tables(
+            [
+                "1.0.8802.1.1.2.1.3.7.1.2",  # LLDP-MIB::lldpLocPortIdSubtype
+                "1.0.8802.1.1.2.1.3.7.1.4",  # LLDP-MIB::lldpLocPortDesc
+            ]
+        ):
             local_ports[v[0]] = {
                 "local_interface": self.profile.convert_interface_name(v[2]),
-                "local_interface_subtype": v[1]
+                "local_interface_subtype": v[1],
             }
-        for v in self.snmp.get_tables([
-            "1.0.8802.1.1.2.1.4.1.1.4",  # LLDP-MIB::lldpRemChassisIdSubtype
-            "1.0.8802.1.1.2.1.4.1.1.5",  # LLDP-MIB::lldpRemChassisId
-            "1.0.8802.1.1.2.1.4.1.1.6",  # LLDP-MIB::lldpRemPortIdSubtype
-            "1.0.8802.1.1.2.1.4.1.1.7",  # LLDP-MIB::lldpRemPortId
-            "1.0.8802.1.1.2.1.4.1.1.8",  # LLDP-MIB::lldpRemPortDesc
-            "1.0.8802.1.1.2.1.4.1.1.9",  # LLDP-MIB::lldpRemSysName
-            "1.0.8802.1.1.2.1.4.1.1.10",  # LLDP-MIB::lldpRemSysDesc
-            "1.0.8802.1.1.2.1.4.1.1.12"  # LLDP-MIB::lldpRemSysCapEnabled
-        ]):
+        for v in self.snmp.get_tables(
+            [
+                "1.0.8802.1.1.2.1.4.1.1.4",  # LLDP-MIB::lldpRemChassisIdSubtype
+                "1.0.8802.1.1.2.1.4.1.1.5",  # LLDP-MIB::lldpRemChassisId
+                "1.0.8802.1.1.2.1.4.1.1.6",  # LLDP-MIB::lldpRemPortIdSubtype
+                "1.0.8802.1.1.2.1.4.1.1.7",  # LLDP-MIB::lldpRemPortId
+                "1.0.8802.1.1.2.1.4.1.1.8",  # LLDP-MIB::lldpRemPortDesc
+                "1.0.8802.1.1.2.1.4.1.1.9",  # LLDP-MIB::lldpRemSysName
+                "1.0.8802.1.1.2.1.4.1.1.10",  # LLDP-MIB::lldpRemSysDesc
+                "1.0.8802.1.1.2.1.4.1.1.12",  # LLDP-MIB::lldpRemSysCapEnabled
+            ]
+        ):
             neigh = dict(zip(neighb, v[1:]))
             if neigh["remote_chassis_id_subtype"] == 4:
-                neigh["remote_chassis_id"] = \
-                    MAC(neigh["remote_chassis_id"])
+                neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
             if neigh["remote_port_subtype"] == 3:
                 neigh["remote_port"] = MAC(neigh["remote_port"])
             for i in neigh:
@@ -81,16 +92,22 @@ class Script(BaseScript):
                     neigh[i] = neigh[i].rstrip("\x00")
             if neigh["remote_capabilities"]:
                 neigh["remote_capabilities"] = int(
-                    "".join(x for x in reversed("{0:016b}".format(
-                        ord(neigh["remote_capabilities"]) << 8 + 0x0
-                    ))), 2
+                    "".join(
+                        x
+                        for x in reversed(
+                            "{0:016b}".format(ord(neigh["remote_capabilities"]) << 8 + 0x0)
+                        )
+                    ),
+                    2,
                 )
             else:
                 neigh["remote_capabilities"] = 0
-            r += [{
-                "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
-                "neighbors": [neigh]
-            }]
+            r += [
+                {
+                    "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
+                    "neighbors": [neigh],
+                }
+            ]
         return r
 
     def execute_cli(self):
@@ -100,14 +117,10 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for match in self.rx_port.finditer(v):
-            i = {
-                "local_interface": match.group("port"),
-                "neighbors": []
-            }
+            i = {"local_interface": match.group("port"), "neighbors": []}
             for m in self.rx_entity.finditer(match.group("entities")):
                 n = {}
-                remote_chassis_id_subtype = \
-                    m.group("chassis_id_subtype").replace("_", " ")
+                remote_chassis_id_subtype = m.group("chassis_id_subtype").replace("_", " ")
                 n["remote_chassis_id_subtype"] = {
                     "chassis component": 1,
                     "interface alias": 2,
@@ -116,11 +129,10 @@ class Script(BaseScript):
                     "macaddress": 4,
                     "network address": 5,
                     "interface name": 6,
-                    "local": 7
+                    "local": 7,
                 }[remote_chassis_id_subtype.strip().lower()]
                 n["remote_chassis_id"] = m.group("chassis_id").strip()
-                remote_port_subtype = \
-                    m.group("port_id_subtype").replace("_", " ")
+                remote_port_subtype = m.group("port_id_subtype").replace("_", " ")
                 n["remote_port_subtype"] = {
                     "interface alias": 1,
                     # DES-3526 6.00 B48, DES-3526 6.00 B49,
@@ -133,18 +145,16 @@ class Script(BaseScript):
                     "interface name": 5,
                     "agent circuit id": 6,
                     "locally assigned": 7,
-                    "local": 7
+                    "local": 7,
                 }[remote_port_subtype.strip().lower()]
                 n["remote_port"] = m.group("port_id").strip()
                 if n["remote_port_subtype"] == 3:
                     try:
-                        n["remote_port"] = \
-                            MACAddressParameter().clean(n["remote_port"])
+                        n["remote_port"] = MACAddressParameter().clean(n["remote_port"])
                     except ValueError:
                         continue
                 if n["remote_port_subtype"] == 4:
-                    n["remote_port"] = \
-                        IPv4Parameter().clean(n["remote_port"])
+                    n["remote_port"] = IPv4Parameter().clean(n["remote_port"])
 
                 if m.group("port_description").strip():
                     p = m.group("port_description").strip()
@@ -170,7 +180,7 @@ class Script(BaseScript):
                         "Router": 16,
                         "Telephone": 32,
                         "DOCSIS Cable Device": 64,
-                        "Station Only": 128
+                        "Station Only": 128,
                     }[c]
                 n["remote_capabilities"] = caps
                 i["neighbors"] += [n]

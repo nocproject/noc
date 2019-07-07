@@ -7,17 +7,28 @@
 # ---------------------------------------------------------------------
 
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, DictParameter, IPv4Parameter,
-                   MACAddressParameter, DateTimeParameter, StringParameter)
+from .base import (
+    ListOfParameter,
+    DictParameter,
+    IPv4Parameter,
+    MACAddressParameter,
+    DateTimeParameter,
+    StringParameter,
+)
 
 
 class IGetDHCPBinding(BaseInterface):
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "ip": IPv4Parameter(),
-        "mac": MACAddressParameter(),
-        "expiration": DateTimeParameter(),
-        "type": StringParameter()  # Choices=["A","M"]
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(
+            attrs={
+                "ip": IPv4Parameter(),
+                "mac": MACAddressParameter(),
+                "expiration": DateTimeParameter(),
+                "type": StringParameter(),  # Choices=["A","M"]
+            }
+        )
+    )
     preview = "NOC.sa.managedobject.scripts.ShowDHCPBinding"

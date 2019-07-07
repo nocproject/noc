@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -18,13 +19,13 @@ class Script(BaseScript):
     interface = IGetDOMStatus
 
     rx_line = re.compile(
-        r"^(?P<interface>\S+)\s+(?P<temp_c>(\d+|N/A|N/S))\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_rx_dbm>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(No|Yes|N/A|N/S)")
+        r"^(?P<interface>\S+)\s+(?P<temp_c>(\d+|N/A|N/S))\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_rx_dbm>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(No|Yes|N/A|N/S)"
+    )
 
     def execute(self, interface=None):
         cmd = "show fiber-ports optical-transceiver detailed"
         if interface is not None:
-            cmd = "show fiber-ports optical-transceiver interface %s detailed"\
-                % interface
+            cmd = "show fiber-ports optical-transceiver interface %s detailed" % interface
         try:
             v = self.cli(cmd)
         except self.CLISyntaxError:
@@ -50,12 +51,14 @@ class Script(BaseScript):
             optical_tx_dbm = match.group("optical_tx_dbm")
             if optical_tx_dbm == "N/A" or optical_tx_dbm == "N/S":
                 optical_tx_dbm = None
-            r.append({
-                "interface": match.group("interface"),
-                "temp_c": temp_c,
-                "voltage_v": voltage_v,
-                "current_ma": current_ma,
-                "optical_rx_dbm": optical_rx_dbm,
-                "optical_tx_dbm": optical_tx_dbm
-            })
+            r.append(
+                {
+                    "interface": match.group("interface"),
+                    "temp_c": temp_c,
+                    "voltage_v": voltage_v,
+                    "current_ma": current_ma,
+                    "optical_rx_dbm": optical_rx_dbm,
+                    "optical_tx_dbm": optical_tx_dbm,
+                }
+            )
         return r

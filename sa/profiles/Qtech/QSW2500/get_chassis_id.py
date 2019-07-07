@@ -19,7 +19,4 @@ class Script(BaseScript):
     def execute_cli(self):
         ver = self.cli("show version", cached=True)
         match = self.profile.rx_ver.search(ver)
-        return {
-            "first_chassis_mac": match.group("mac"),
-            "last_chassis_mac": match.group("mac")
-        }
+        return {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}

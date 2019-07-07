@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -22,7 +23,9 @@ class Script(BaseScript):
         r"^vlan database\s*\n"
         r"^vlan (?P<vlans>\S+)\s*\n"
         r"(vlan name \d \"\S+\"\s*\n)*"
-        r"exit\s*\n", re.MULTILINE)
+        r"exit\s*\n",
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []

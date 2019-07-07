@@ -36,4 +36,6 @@ class Script(BaseScript):
         Check box has oam enabled
         """
         r = self.cli("show ethernet oam summary")
-        return "There are no interfaces with Ethernet Link OAM configured" not in r  # @todo:  not tested
+        return (
+            "There are no interfaces with Ethernet Link OAM configured" not in r
+        )  # @todo:  not tested

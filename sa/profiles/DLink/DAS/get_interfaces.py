@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -27,7 +28,7 @@ class Script(BaseScript):
         r"^Configured Speed.+\n"
         r"^Profile Name.+\n"
         r"^Mgmt VLAN Index\s+: (?P<vlan_id>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_stats = re.compile(
         r"^Interface\s+: (?P<name>\S+)\s+Description\s+: (?P<descr>.*)\n"
@@ -35,18 +36,17 @@ class Script(BaseScript):
         r"^Bandwidth\s+: \d+\s+Phy Adddr\s+: (?P<mac>\S+)\s*\n"
         r"^Last Change\(sec\).+\n"
         r"^Admin Status\s+: (?P<admin_status>\S+)\s+Operational Status : (?P<oper_status>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_port_id = re.compile(
-        r"^Port Id\s+: (?P<id>\d+)\s+IfName\s+: (?P<name>\S+)\s*\n",
-        re.MULTILINE
+        r"^Port Id\s+: (?P<id>\d+)\s+IfName\s+: (?P<name>\S+)\s*\n", re.MULTILINE
     )
     rx_vlan = re.compile(
         r"^VLAN Index\s+: (?P<vlan_id>\d+)\s*\n"
         r"^VLAN Status.+\n"
         r"^Egress Ports\s+: (?P<ports>.+)\n"
         r"^Untagged Ports\s+: (?P<untagged>.+)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     IF_TYPES = {
         "ETHERNET": "physical",
@@ -68,13 +68,15 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_status") == "Up",
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": match.group("name"),
-                    "admin_status": match.group("admin_status") == "Up",
-                    "oper_status": match.group("oper_status") == "Up",
-                    # "ifindex": 1,
-                    "enabled_afi": ['BRIDGE']
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("name"),
+                        "admin_status": match.group("admin_status") == "Up",
+                        "oper_status": match.group("oper_status") == "Up",
+                        # "ifindex": 1,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
             }
             if match.group("mtu") != "0":
                 i["subinterfaces"][0]["mtu"] = match.group("mtu")

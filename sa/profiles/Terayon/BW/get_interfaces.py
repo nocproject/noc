@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,25 +22,22 @@ class Script(BaseScript):
     rx_sh_int = re.compile(
         r"^(?P<interface>\d+\S*)\s+(?P<type>\S+)\s+(?P<mtu>\d+)\s+\d+\s+"
         r"(?P<mac>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down)",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_sub = re.compile(
-        r"^(?P<interface>\d+\S*\.\d+)\s+VLAN\s+(?P<vlan_id>\d+)\s+(?P<mtu>\d+)\s*\n",
-        re.MULTILINE
+        r"^(?P<interface>\d+\S*\.\d+)\s+VLAN\s+(?P<vlan_id>\d+)\s+(?P<mtu>\d+)\s*\n", re.MULTILINE
     )
     rx_ip = re.compile(
         r"^(?P<ip>\d\S+)\s+(?P<mask>\d+\S+)\s+(?:primary|secondary)\s+"
         r"(?P<interface>\d+\S*)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
         interfaces = []
         v = self.cli("show interfaces", cached=True)
         for match in self.rx_sh_int.finditer(v):
-            if match.group("type") in [
-                "cableDownstream", "cableUpstream", "cableUsChannel"
-            ]:
+            if match.group("type") in ["cableDownstream", "cableUpstream", "cableUsChannel"]:
                 continue
             name = match.group("interface")
             mac = match.group("mac")
@@ -53,14 +51,16 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "mtu": mtu,
-                "subinterfaces": [{
-                    "name": name,
-                    "mac": mac,
-                    "admin_status": a_stat,
-                    "oper_status": o_stat,
-                    "mtu": mtu,
-                    "enabled_afi": ["BRIDGE"]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": name,
+                        "mac": mac,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "mtu": mtu,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
             }
             interfaces += [iface]
         for match in self.rx_sub.finditer(v):
@@ -69,12 +69,14 @@ class Script(BaseScript):
                 if i["name"] == ifname:
                     if i["subinterfaces"][0]["name"] == ifname:
                         i["subinterfaces"] = []
-                    i["subinterfaces"] += [{
-                        "name": match.group("interface"),
-                        "mtu": match.group("mtu"),
-                        "enabled_afi": ["BRIDGE"],
-                        "vlan_ids": [match.group("vlan_id")]
-                    }]
+                    i["subinterfaces"] += [
+                        {
+                            "name": match.group("interface"),
+                            "mtu": match.group("mtu"),
+                            "enabled_afi": ["BRIDGE"],
+                            "vlan_ids": [match.group("vlan_id")],
+                        }
+                    ]
                     break
         v = self.cli("show interfaces ip-brief")
         for match in self.rx_ip.finditer(v):

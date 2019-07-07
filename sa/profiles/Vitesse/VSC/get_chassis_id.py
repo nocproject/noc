@@ -17,13 +17,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_mac = re.compile(
-        r"^Bridge ID\s+: \d+\.(?P<mac>\S+)", re.MULTILINE)
+    rx_mac = re.compile(r"^Bridge ID\s+: \d+\.(?P<mac>\S+)", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show spanning-tree", cached=True)
         match = self.rx_mac.search(v)
-        return {
-            "first_chassis_mac": match.group("mac"),
-            "last_chassis_mac": match.group("mac")
-        }
+        return {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}

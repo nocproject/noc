@@ -22,12 +22,12 @@ class Profile(BaseProfile):
     pattern_password = r"Password>"
     # pattern_prompt = r"^(?P<hostname>\S+)\s*[#>]"
     # pattern_prompt = r"^(?P<hostname>\S+)(?<!Login)(?<!Password)\s*[#>]"
-    pattern_prompt = \
+    pattern_prompt = (
         r"^[\s\*]*(?P<hostname>[\S\s]+)(?<!Login)(?<!Password)\s*(\(\S+\)){0,4}(]|)[#>]"
+    )
     pattern_syntax_error = r"Syntax error"
     pattern_operation_error = r"ERROR: Permission denied."
-    pattern_more = \
-        "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
+    pattern_more = "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
     command_more = "a"
     command_exit = "exit"
 

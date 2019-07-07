@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,24 +19,21 @@ class Script(BaseScript):
     name = "OS.FreeBSD.get_interfaces"
     interface = IGetInterfaces
     rx_if_name = re.compile(
-        r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?"
-        r" mtu (?P<mtu>\d+)$")
+        r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?" r" mtu (?P<mtu>\d+)$"
+    )
     rx_if_descr = re.compile(r"^\tdescription: (?P<descr>.+)\s*$")
     rx_if_mac = re.compile(r"^\tether (?P<mac>\S+)\s*$")
-    rx_if_inet = re.compile(
-        r"^\tinet (?P<inet>\S+) netmask (?P<netmask>\S+)\s*(broadcast .+)?$")
+    rx_if_inet = re.compile(r"^\tinet (?P<inet>\S+) netmask (?P<netmask>\S+)\s*(broadcast .+)?$")
     rx_if_inet6 = re.compile(
-        r"^\tinet6 (?P<inet6>\S+) prefixlen (?P<prefixlen>\S+)\s*(scopeid .+)?$")
-    rx_if_status = re.compile(
-        r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
-    rx_if_vlan = re.compile(
-        r"^\tvlan: (?P<vlan>[1-9]\d*).+parent interface: (?P<parent>\S+)$")
+        r"^\tinet6 (?P<inet6>\S+) prefixlen (?P<prefixlen>\S+)\s*(scopeid .+)?$"
+    )
+    rx_if_status = re.compile(r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
+    rx_if_vlan = re.compile(r"^\tvlan: (?P<vlan>[1-9]\d*).+parent interface: (?P<parent>\S+)$")
     rx_if_wlan = re.compile(r"^\tssid .+$")
     rx_if_bridge = re.compile(r"^\tgroups:.+?bridge.*?$")
     rx_if_bridge_m = re.compile(r"^\tmember: (?P<ifname>\S+) flags=\d+<.+>$")
     rx_if_bridge_s = re.compile(r"cost \d+ proto r?stp$")
-    rx_if_bridge_i = re.compile(
-        r"\t\s+ifmaxaddr \d+ port (?P<ifindex>\d+) priority \d+")
+    rx_if_bridge_i = re.compile(r"\t\s+ifmaxaddr \d+ port (?P<ifindex>\d+) priority \d+")
 
     def add_iface(self):
         if "type" in self.iface:
@@ -132,9 +130,7 @@ class Script(BaseScript):
                 continue
             match = self.rx_if_vlan.search(s)
             if match:
-                self.subiface.update({
-                    "vlan_ids": [int(match.group("vlan"))]
-                })
+                self.subiface.update({"vlan_ids": [int(match.group("vlan"))]})
                 self.parent = match.group("parent")
                 continue
             for i in self.portchannel:
@@ -164,7 +160,7 @@ class Script(BaseScript):
                 caps = {
                     "name": ifname,
                     "ifindex": match.group("ifindex"),
-                    "parent": self.iface["name"]
+                    "parent": self.iface["name"],
                 }
                 match = self.rx_if_bridge_s.search(s)
                 if match:

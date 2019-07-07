@@ -18,7 +18,9 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+"
-        r"(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$", re.MULTILINE)
+        r"(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -28,18 +30,15 @@ class Script(BaseScript):
                 vlan_oid = []
                 if mac is not None:
                     mac = mac.lower()
-                for v in self.snmp.get_tables([
-                    "1.3.6.1.2.1.17.7.1.2.2.1.2"
-                ], bulk=True):
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"], bulk=True):
                     vlan_oid.append(v[0])
 
                 # mac iface type
-                for v in self.snmp.get_tables([
-                    "1.3.6.1.2.1.17.7.1.2.2.1.2",
-                    "1.3.6.1.2.1.17.7.1.2.2.1.3"
-                ], bulk=True):
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.17.7.1.2.2.1.2", "1.3.6.1.2.1.17.7.1.2.2.1.3"], bulk=True
+                ):
                     if v[1]:
-                        macar = v[0].split('.')[1:]
+                        macar = v[0].split(".")[1:]
                         chassis = ":".join(["%02x" % int(c) for c in macar])
                         if mac is not None:
                             if chassis == mac:
@@ -51,8 +50,8 @@ class Script(BaseScript):
                     if not v[2] or int(v[2]) > 3 or int(v[2]) < 1:
                         continue
                     iface = self.snmp.get(
-                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]),
-                        cached=True)  # IF-MIB
+                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True
+                    )  # IF-MIB
                     if interface is not None:
                         if iface == interface:
                             pass
@@ -60,7 +59,7 @@ class Script(BaseScript):
                             continue
                     for i in vlan_oid:
                         if v[0] in i:
-                            vlan_id = int(i.split('.')[0])
+                            vlan_id = int(i.split(".")[0])
                             break
                     if vlan is not None:
                         if vlan_id == vlan:
@@ -68,12 +67,14 @@ class Script(BaseScript):
                         else:
                             continue
 
-                    r.append({
-                        "interfaces": [iface],
-                        "mac": chassis,
-                        "type": {"3": "D", "2": "S", "1": "S"}[str(v[2])],
-                        "vlan_id": vlan_id,
-                    })
+                    r.append(
+                        {
+                            "interfaces": [iface],
+                            "mac": chassis,
+                            "type": {"3": "D", "2": "S", "1": "S"}[str(v[2])],
+                            "vlan_id": vlan_id,
+                        }
+                    )
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -94,17 +95,19 @@ class Script(BaseScript):
                         break
         r = []
         for match in self.rx_line.finditer(self.cli(cmd)):
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("interfaces")],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S",
-                    "deleteontimeout": "D",
-                    "deleteonreset": "D",
-                    "permanent": "S",
-                    "self": "S"
-                }[match.group("type").lower()],
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("interfaces")],
+                    "type": {
+                        "dynamic": "D",
+                        "static": "S",
+                        "deleteontimeout": "D",
+                        "deleteonreset": "D",
+                        "permanent": "S",
+                        "self": "S",
+                    }[match.group("type").lower()],
+                }
+            ]
         return r

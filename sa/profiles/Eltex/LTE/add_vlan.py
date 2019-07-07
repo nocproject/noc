@@ -17,14 +17,14 @@ class Script(BaseScript):
 
     def execute(self, vlan_id, name, tagged_ports):
         with self.profile.switch(self):
-                self.cli("configure")
-                self.cli("vlan %d" % vlan_id)
-                if name:
-                    self.cli("name %s" % name)
-                if tagged_ports:
-                    for port in tagged_ports:
-                        self.cli("tagged %s" % port)
-                self.cli("exit")
-                self.cli("exit")
+            self.cli("configure")
+            self.cli("vlan %d" % vlan_id)
+            if name:
+                self.cli("name %s" % name)
+            if tagged_ports:
+                for port in tagged_ports:
+                    self.cli("tagged %s" % port)
+            self.cli("exit")
+            self.cli("exit")
         self.save_config()
         return True

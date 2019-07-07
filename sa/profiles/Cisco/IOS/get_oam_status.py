@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
@@ -42,9 +43,5 @@ class Script(BaseScript):
                 ic = match.group("caps")
                 if "L" in ic:
                     caps += ["L"]
-                r += [{
-                    "interface": iface,
-                    "remote_mac": mac,
-                    "caps": caps
-                }]
+                r += [{"interface": iface, "remote_mac": mac, "caps": caps}]
         return r

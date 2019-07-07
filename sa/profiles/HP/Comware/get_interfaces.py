@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -24,20 +23,24 @@ class Script(BaseScript):
         r"(^\s*Line protocol current state\s*:\s*(?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\s*\n)?"
         r"(^\s*IP (?:Packet Frame Type:|Sending Frames\' Format is) PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)\s*\n)?"
         r"^\s*Description\s*:(?P<descr>[^\n]*)\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
     rx_mtu = re.compile("The Maximum Frame Length is (?P<mtu>\d+)")
-    rx_port_type = re.compile(
-        "Port link-type: (?P<port_type>hybrid|access|trunk)")
+    rx_port_type = re.compile("Port link-type: (?P<port_type>hybrid|access|trunk)")
     rx_port_other = re.compile(
         r"^\s*Tagged   VLAN ID : (?P<tagged>[^\n]+)\n"
-        r"^\s*Untagged VLAN ID : (?P<untagged>[^\n]+)\n", re.MULTILINE)
+        r"^\s*Untagged VLAN ID : (?P<untagged>[^\n]+)\n",
+        re.MULTILINE,
+    )
     rx_port_trunk = re.compile(
-        r"^\s*VLAN passing  : (?P<passing>[^\n]+)\n"
-        r"^\s*VLAN permitted: (?P<permitted>[^\n]+)\n", re.MULTILINE)
+        r"^\s*VLAN passing  : (?P<passing>[^\n]+)\n" r"^\s*VLAN permitted: (?P<permitted>[^\n]+)\n",
+        re.MULTILINE,
+    )
     rx_ip = re.compile(r"Internet Address is (?P<ip>\S+) Primary")
     rx_ips = re.compile(r"Internet Address is (?P<ip>\S+) Sub")
     rx_mac = re.compile(
-        r"IP (?:Packet Frame Type:|Sending Frames' Format is) PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)")
+        r"IP (?:Packet Frame Type:|Sending Frames' Format is) PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)"
+    )
     rx_sh_vlan = re.compile(
         r"^(?P<interface>\S+) current state\s*:\s*(?P<oper_status>UP|DOWN|DOWN \( Administratively \))\s*\n"
         r"^Line protocol current state\s*:\s*(?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\s*\n"
@@ -46,7 +49,8 @@ class Script(BaseScript):
         r"(^Internet protocol processing\s*:\s*\S+\s*\n)?"
         r"^Description\s*:(?P<descr>.*?)\n"
         r"^The Maximum Transmit Unit is (?P<mtu>\d+)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_name = re.compile(r"^Vlan-interface(?P<vlan>\d+)?")
     rx_isis = re.compile(r"Interface:\s+(?P<iface>\S+)")
 
@@ -71,8 +75,7 @@ class Script(BaseScript):
             if not match:
                 continue
             ifname = match.group("interface")
-            if ifname.startswith("Bridge-Aggregation") \
-            or ifname.startswith("Route-Aggregation"):
+            if ifname.startswith("Bridge-Aggregation") or ifname.startswith("Route-Aggregation"):
                 iftype = "aggregated"
             elif ifname.startswith("LoopBack"):
                 iftype = "loopback"
@@ -93,7 +96,7 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             sub = {
                 "name": ifname,
@@ -124,16 +127,13 @@ class Script(BaseScript):
                     match2 = self.rx_port_other.search(i)
                     if match2.group("untagged") and match2.group("untagged") != "none":
                         sub["untagged_vlan"] = int(match2.group("untagged"))
-                    tagged = match2.group("tagged")
                     if match2.group("tagged") and match2.group("tagged") != "none":
-                        sub["tagged_vlan"] = \
-                        self.expand_rangelist(match2.group("tagged"))
+                        sub["tagged_vlan"] = self.expand_rangelist(match2.group("tagged"))
                 if port_type == "trunk":
                     match2 = self.rx_port_trunk.search(i)
                     if match2.group("passing") and match2.group("passing") != "none":
                         passing = match2.group("passing").replace("1(default vlan),", "")
-                        sub["tagged_vlan"] = \
-                        self.expand_rangelist(passing)
+                        sub["tagged_vlan"] = self.expand_rangelist(passing)
             iface["subinterfaces"] += [sub]
             if ifname in portchannel_members:
                 ai, is_lacp = portchannel_members[ifname]
@@ -157,14 +157,9 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
-            sub = {
-                "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_afi": []
-            }
+            sub = {"name": ifname, "admin_status": a_stat, "oper_status": o_stat, "enabled_afi": []}
             if match.group("descr"):
                 iface["description"] = match.group("descr").strip()
                 sub["description"] = match.group("descr").strip()
@@ -202,14 +197,9 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
-            sub = {
-                "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_afi": []
-            }
+            sub = {"name": ifname, "admin_status": a_stat, "oper_status": o_stat, "enabled_afi": []}
             if match.group("descr"):
                 iface["description"] = match.group("descr").strip()
                 sub["description"] = match.group("descr").strip()

@@ -2,12 +2,10 @@
 # ----------------------------------------------------------------------
 # Raisecom.RCIOS.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -22,7 +20,7 @@ class Script(BaseScript):
         r = []
         v = self.cli("show version", cached=True)
         for line in v.splitlines():
-            r = line.split(':', 1)
+            r = line.split(":", 1)
             if r[0].strip() == "Version":
                 version = r[1].strip()
             if r[0].strip() == "Device":
@@ -37,9 +35,5 @@ class Script(BaseScript):
             "vendor": "Raisecom",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "Serial Number": serial,
-                "Boot PROM": bootstrap,
-                "HW version": hw_rev
-            }
+            "attributes": {"Serial Number": serial, "Boot PROM": bootstrap, "HW version": hw_rev},
         }

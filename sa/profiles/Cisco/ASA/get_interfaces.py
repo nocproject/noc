@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,20 +19,22 @@ class Script(BaseScript):
     name = "Cisco.ASA.get_interfaces"
     interface = IGetInterfaces
 
-    rx_int = re.compile(r"(?P<interface>\S+)\s\"(?P<alias>[\w-]*)\"\,\sis(\sadministratively)?"
-                        r"\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)",
-                        re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(r"MAC\saddress\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
-                        re.MULTILINE | re.IGNORECASE)
-    rx_vlan = re.compile(r"VLAN\sIdentifier\s(?P<vlan>\w+)",
-                         re.MULTILINE | re.IGNORECASE)
-    rx_ospf = re.compile(r"^(?P<name>\w+)\sis\sup|down\,",
-                         re.MULTILINE | re.IGNORECASE)
-    rx_ip = re.compile(r"IP\saddress\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\, "
-                       r"subnet mask (?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
-                       re.MULTILINE | re.IGNORECASE)
-    rx_snmp_int = re.compile(r"Interface\snumber\sis\s(?P<ifindex>\w+)",
-                             re.MULTILINE | re.IGNORECASE)
+    rx_int = re.compile(
+        r"(?P<interface>\S+)\s\"(?P<alias>[\w-]*)\"\,\sis(\sadministratively)?"
+        r"\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_mac = re.compile(r"MAC\saddress\s(?P<mac>\w{4}\.\w{4}\.\w{4})", re.MULTILINE | re.IGNORECASE)
+    rx_vlan = re.compile(r"VLAN\sIdentifier\s(?P<vlan>\w+)", re.MULTILINE | re.IGNORECASE)
+    rx_ospf = re.compile(r"^(?P<name>\w+)\sis\sup|down\,", re.MULTILINE | re.IGNORECASE)
+    rx_ip = re.compile(
+        r"IP\saddress\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\, "
+        r"subnet mask (?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_snmp_int = re.compile(
+        r"Interface\snumber\sis\s(?P<ifindex>\w+)", re.MULTILINE | re.IGNORECASE
+    )
 
     def get_ospfint(self):
         v = self.cli("show ospf interface")
@@ -63,7 +66,11 @@ class Script(BaseScript):
             match = self.rx_int.search(s)
             if match:
                 ifname = match.group("interface")
-                if ifname.startswith("Virtual") or ifname.startswith("Tunnel") or ifname.startswith("Internal-"):
+                if (
+                    ifname.startswith("Virtual")
+                    or ifname.startswith("Tunnel")
+                    or ifname.startswith("Internal-")
+                ):
                     continue
                 a_stat = match.group("admin_status").lower() == "up"
                 o_stat = match.group("oper_status").lower() == "up"
@@ -79,18 +86,17 @@ class Script(BaseScript):
                     "description": alias,
                     "mac": mac,
                     "enabled_afi": [],
-                    "enabled_protocols": []
+                    "enabled_protocols": [],
                 }
                 match = self.rx_ip.search(s)
                 if match:
-                    ip = IPv4(match.group("ip"),
-                              netmask=match.group("mask")).prefix
+                    ip = IPv4(match.group("ip"), netmask=match.group("mask")).prefix
                     sub["ipv4_addresses"] = [ip]
                     sub["enabled_afi"] += ["IPv4"]
                 match = self.rx_vlan.search(s)
                 if match:
                     vlan = match.group("vlan")
-                    if vlan != 'none':
+                    if vlan != "none":
                         sub["vlan_ids"] = [vlan]
                     else:
                         self.logger.error("Not configured VlanId on subinterfaces %s" % ifname)
@@ -112,7 +118,7 @@ class Script(BaseScript):
                         "type": iftype,
                         "mac": mac,
                         "enabled_protocols": [],
-                        "subinterfaces": [sub]
+                        "subinterfaces": [sub],
                     }
                     if ifindex:
                         iface["snmp_ifindex"] = ifindex
@@ -137,8 +143,9 @@ class Script(BaseScript):
                 continue
         return [{"interfaces": interfaces}]
 
-    rx_int_snmp = re.compile(r"^Adaptive\sSecurity\sAppliance\s'(?P<interface>\S+)'\sinterface",
-                             re.IGNORECASE)
+    rx_int_snmp = re.compile(
+        r"^Adaptive\sSecurity\sAppliance\s'(?P<interface>\S+)'\sinterface", re.IGNORECASE
+    )
 
     def get_ifindex_map(self):
         """
@@ -153,8 +160,8 @@ class Script(BaseScript):
                     if t[i].startswith("ControlEthernet"):
                         continue
                     intf = self.rx_int_snmp.match(t[i])
-                    intf.group('interface')
-                    m[intf.group('interface')] = i
+                    intf.group("interface")
+                    m[intf.group("interface")] = i
             except self.snmp.TimeOutError:
                 pass
         return m

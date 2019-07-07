@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'FeNikS'
+__author__ = "FeNikS"
 # ---------------------------------------------------------------------
 # Sencore.Probe.get_version
 # ---------------------------------------------------------------------
@@ -10,6 +10,7 @@ __author__ = 'FeNikS'
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,13 +21,9 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_version = re.compile(
-        r"<software_version>(?P<data>.*?)</software_version>",
-        re.MULTILINE | re.DOTALL
+        r"<software_version>(?P<data>.*?)</software_version>", re.MULTILINE | re.DOTALL
     )
-    rx_platform = re.compile(
-        r"<product>(?P<data>.*?)</product>",
-        re.MULTILINE | re.DOTALL
-    )
+    rx_platform = re.compile(r"<product>(?P<data>.*?)</product>", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         platform = "Probe"
@@ -42,8 +39,4 @@ class Script(BaseScript):
             if match:
                 platform = match.group("data")
 
-        return {
-            "vendor": "Sencore",
-            "platform": platform,
-            "version": version
-        }
+        return {"vendor": "Sencore", "platform": platform, "version": version}

@@ -29,10 +29,12 @@ class Script(BaseScript):
         t = parse_table(cmd, footer="^show mac-address-table")
         for i in t:
             if is_int(i[0]):
-                r += [{
-                    "vlan_id": i[0],
-                    "mac": i[1],
-                    "interfaces": [self.profile.convert_interface_name(i[4])],
-                    "type": "D" if i[2] == "learned" else "S"
-                }]
+                r += [
+                    {
+                        "vlan_id": i[0],
+                        "mac": i[1],
+                        "interfaces": [self.profile.convert_interface_name(i[4])],
+                        "type": "D" if i[2] == "learned" else "S",
+                    }
+                ]
         return r

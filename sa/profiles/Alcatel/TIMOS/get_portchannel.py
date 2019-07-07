@@ -15,12 +15,8 @@ class Script(BaseScript):
     name = "Alcatel.TIMOS.get_portchannel"
     interface = IGetPortchannel
 
-    rx_lag = re.compile(
-        r"^(?P<number>\d+)\s+up\s+(?P<opr>up|down)\s+",
-        re.MULTILINE)
-    rx_port = re.compile(
-        r"^(\d+\(e\))?\s+(?P<port>\d+/\d+/\d+)\s+(?P<adm>up|down)",
-        re.MULTILINE)
+    rx_lag = re.compile(r"^(?P<number>\d+)\s+up\s+(?P<opr>up|down)\s+", re.MULTILINE)
+    rx_port = re.compile(r"^(\d+\(e\))?\s+(?P<port>\d+/\d+/\d+)\s+(?P<adm>up|down)", re.MULTILINE)
 
     def execute(self):
         try:
@@ -29,11 +25,7 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         r = []
         for match in self.rx_lag.finditer(v):
-            i = {
-                "interface": "lag-%s" % match.group("number"),
-                "members": [],
-                "type": "L"
-            }
+            i = {"interface": "lag-%s" % match.group("number"), "members": [], "type": "L"}
             c = self.cli("show lag %s port" % match.group("number"))
             for match1 in self.rx_port.finditer(c):
                 i["members"] += [match1.group("port")]

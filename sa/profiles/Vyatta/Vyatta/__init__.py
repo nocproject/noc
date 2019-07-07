@@ -15,10 +15,7 @@ class Profile(BaseProfile):
     name = "Vyatta.Vyatta"
     pattern_username = r"[Ll]ogin: (?!\S+)"
     pattern_prompt = r"^(?P<username>\S+)@(?P<hostname>\S+):[^$]+\$ "
-    pattern_more = [
-        (r"^:", " "),
-        (r"\[confirm\]", "\n")
-    ]
+    pattern_more = [(r"^:", " "), (r"\[confirm\]", "\n")]
     command_disable_pager = "set terminal length 0"
     command_enter_config = "configure"
     command_leave_config = "commit\nexit"

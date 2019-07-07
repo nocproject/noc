@@ -25,7 +25,5 @@ class Script(BaseScript):
         for v in vlans:
             if int(v) == 1:
                 continue
-            r += [{
-                "vlan_id": int(v),
-            }]
+            r += [{"vlan_id": int(v)}]
         return r

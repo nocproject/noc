@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -22,7 +23,7 @@ class Profile(BaseProfile):
         (r"\{\s<cr>.*\s\}:", "\n"),
         (r"^Are you sure?\[Y/N\]", "y\n"),
         (r"^\{ terminal\<K\> \}\:", "terminal\n"),
-        (r"\{ <cr>\|interface<K> \}\:", "\n")
+        (r"\{ <cr>\|interface<K> \}\:", "\n"),
     ]
     pattern_username = r"^Username:"
     pattern_password = r"^Password:"
@@ -33,17 +34,17 @@ class Profile(BaseProfile):
     command_save_config = "save"
     enable_cli_session = False  # With False mixin commands output over script
     pattern_prompt = r"(?P<hostname>\S+)(?:\(.*)?#"
-    pattern_unprivileged_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9-_\.\/()]+)(?:-[a-zA-Z0-9/]+)*>$"
-    pattern_syntax_error = \
-        r"(% Unknown command, the error locates at \'^\'|  Logged Fail!|" \
+    pattern_unprivileged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\/()]+)(?:-[a-zA-Z0-9/]+)*>$"
+    pattern_syntax_error = (
+        r"(% Unknown command, the error locates at \'^\'|  Logged Fail!|"
         r"System is busy, please try after a while)"
+    )
     rogue_chars = [
         re.compile(r"\x1b\[39D\s+\x1b\[39D"),
         re.compile(r"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
         re.compile(r"\r\n\s+Note: Terminal users login \(IP: \S+ \)"),
         re.compile(r"\r\nWarning: Battery is low power!"),
-        "\r"
+        "\r",
     ]
     # to one SNMP GET request
     snmp_metrics_get_chunk = 30
@@ -59,7 +60,7 @@ class Profile(BaseProfile):
         "loo": "loopback",
         "m-e": "management",
         "nul": "null",
-        "vla": "SVI"
+        "vla": "SVI",
     }
 
     @classmethod

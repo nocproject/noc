@@ -16,6 +16,7 @@ class Script(BaseScript):
     """
     Opticin.OS.get_switchport
     """
+
     name = "Opticin.OS.get_switchport"
     interface = IGetSwitchport
     cache = True
@@ -34,7 +35,7 @@ class Script(BaseScript):
                 "802.1Q Enabled": False,
                 "tagged": "",
                 "status": bool(status),
-                "untagged": untagged
+                "untagged": untagged,
             }
             r += [swport]
         return r

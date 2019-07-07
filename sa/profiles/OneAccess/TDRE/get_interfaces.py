@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -28,13 +29,11 @@ class Script(BaseScript):
         r"^\s+ifSpeed = \d+\s*\n"
         r"(^.+\n)?"
         r"^\s+snmpIndex = (?P<snmp_ifindex>\d+)\s*\n",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
     rx_vlan = re.compile(
-        r"^\s+vid = (?P<vlan_id>\d+)\s*\n"
-        r"(?P<ports>.+?)\n"
-        r"^\s+localPort",
-        re.MULTILINE | re.DOTALL
+        r"^\s+vid = (?P<vlan_id>\d+)\s*\n" r"(?P<ports>.+?)\n" r"^\s+localPort",
+        re.MULTILINE | re.DOTALL,
     )
     rx_vlan_port = re.compile("hwPort(?P<port>\d) = (?P<type>\S+)")
     rx_mac = re.compile("macAddress = (?P<mac>\S+)")
@@ -49,13 +48,10 @@ class Script(BaseScript):
         r"^\s+{\s*"
         r"(^\s+.+\n)?"
         r"^\s+}\s*",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
-    IF_TYPES = {
-        "softwareLoopback": "loopback",
-        "ethernet-csmacd": "SVI"
-    }
+    IF_TYPES = {"softwareLoopback": "loopback", "ethernet-csmacd": "SVI"}
 
     def execute(self):
         interfaces = []
@@ -63,7 +59,7 @@ class Script(BaseScript):
         for etherswitch in ["1", "2"]:
             c = self.cli("GET ethernet%s/" % etherswitch)
             match = self.rx_eth_iface.search(c)
-            ifname = match.group("ifname").replace("\"", "")
+            ifname = match.group("ifname").replace('"', "")
             # ifname = "port" + ifname[-1]
             iface = {
                 "name": ifname,
@@ -71,39 +67,39 @@ class Script(BaseScript):
                 "type": "physical",
                 # "description": match.group("ifname").replace("\"", ""),
                 "snmp_ifindex": match.group("snmp_ifindex"),
-                "subinterfaces": [{
-                    "name": ifname,
-                    "oper_status": match.group("oper_status") == "up",
-                    "enabled_afi": ["BRIDGE"],
-                    "mtu": match.group("mtu"),
-                    "tagged_vlans": []
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "oper_status": match.group("oper_status") == "up",
+                        "enabled_afi": ["BRIDGE"],
+                        "mtu": match.group("mtu"),
+                        "tagged_vlans": [],
+                    }
+                ],
             }
             interfaces += [iface]
-            c = self.cli(
-                "GET ethernet%s/" % etherswitch, command_submit="\x09"
-            )
+            c = self.cli("GET ethernet%s/" % etherswitch, command_submit="\x09")
             self.cli("")
             for i in self.rx_hw_port.finditer(c):
-                v = self.cli(
-                    "GET ethernet%s/%s/" % (etherswitch, i.group("port"))
-                )
+                v = self.cli("GET ethernet%s/%s/" % (etherswitch, i.group("port")))
                 match = self.rx_eth_iface.search(v)
-                ifname = match.group("ifname").replace("\"", "")
+                ifname = match.group("ifname").replace('"', "")
                 ifname = "port" + ifname[-1]
                 iface = {
                     "name": ifname,
                     "oper_status": match.group("oper_status") == "up",
                     "type": "physical",
-                    "description": match.group("ifname").replace("\"", ""),
+                    "description": match.group("ifname").replace('"', ""),
                     "snmp_ifindex": match.group("snmp_ifindex"),
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "oper_status": match.group("oper_status") == "up",
-                        "enabled_afi": ["BRIDGE"],
-                        "mtu": match.group("mtu"),
-                        "tagged_vlans": []
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "oper_status": match.group("oper_status") == "up",
+                            "enabled_afi": ["BRIDGE"],
+                            "mtu": match.group("mtu"),
+                            "tagged_vlans": [],
+                        }
+                    ],
                 }
                 interfaces += [iface]
             c = self.cli("GET ethernet%s/vtuTable[]/" % etherswitch)
@@ -117,25 +113,21 @@ class Script(BaseScript):
                     for i in interfaces:
                         if port == i["name"]:
                             if vtype == "untag":
-                                i["subinterfaces"][0][
-                                    "untagged_vlan"
-                                ] = vlan_id
+                                i["subinterfaces"][0]["untagged_vlan"] = vlan_id
                             else:
-                                i["subinterfaces"][0][
-                                    "tagged_vlans"
-                                ] += [vlan_id]
+                                i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
                             break
         c = self.cli("GET ip/router/interfaces[]/")
         for match in self.rx_ip_iface.finditer(c):
             ip = match.group("ip_address")
             mask = IPv4.netmask_to_len(match.group("ip_mask"))
-            ifname = match.group("descr").replace("\"", "")
+            ifname = match.group("descr").replace('"', "")
             sub = {
                 "name": ifname,
                 # "admin_status": True,
                 "oper_status": match.group("oper_status") == "up",
                 "enabled_afi": ["IPv4"],
-                "ipv4_addresses": ["%s/%s" % (ip, mask)]
+                "ipv4_addresses": ["%s/%s" % (ip, mask)],
             }
             found = False
             if ifname.startswith("eth"):
@@ -153,7 +145,7 @@ class Script(BaseScript):
                 # "admin_status": True,
                 "oper_status": match.group("oper_status") == "up",
                 "type": self.IF_TYPES[match.group("iftype")],
-                "subinterfaces": [sub]
+                "subinterfaces": [sub],
             }
             interfaces += [iface]
         c = self.cli("GET bridge/bridgeGroup/macAddress")

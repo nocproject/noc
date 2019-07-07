@@ -19,7 +19,4 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.profile.get_hardware(self)
-        return {
-            "first_chassis_mac": v["mac"],
-            "last_chassis_mac": v["mac"]
-        }
+        return {"first_chassis_mac": v["mac"], "last_chassis_mac": v["mac"]}

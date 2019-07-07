@@ -20,14 +20,18 @@ class Script(BaseScript):
         r"System description\s+:\s+(?P<platform>\S+).+System hardware version"
         r"\s+:\s+(?P<hversion>\S+?),?\s+System software version"
         r"\s+:\s+v(?P<version>\S+?),?\s+Release\(\d+\)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
     rx_ver1 = re.compile(
         r"^(?P<platform>D\S+)\s+System Version\s*.+?"
         r"Backplane H/W version:(?P<hversion>\S+)\s+.+?"
-        r"Serial#:(?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL)
+        r"Serial#:(?P<serial>\S+)\s*\n",
+        re.MULTILINE | re.DOTALL,
+    )
     rx_ver2 = re.compile(
         r"Bootloader:\s+(?P<bootprom>\S+)\s*\n\s+Runtime:\s+(?P<version>\S+)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         c = self.cli("show version", cached=True)
@@ -37,9 +41,7 @@ class Script(BaseScript):
                 "vendor": "DLink",
                 "platform": match.group("platform"),
                 "version": match.group("version"),
-                "attributes": {
-                    "HW version": match.group("hversion")
-                }
+                "attributes": {"HW version": match.group("hversion")},
             }
         else:
             match = self.rx_ver1.search(c)
@@ -52,8 +54,8 @@ class Script(BaseScript):
                     "attributes": {
                         "Boot PROM": match1.group("bootprom"),
                         "HW version": match.group("hversion"),
-                        "Serial Number": match.group("serial")
-                    }
+                        "Serial Number": match.group("serial"),
+                    },
                 }
             else:
                 raise self.NotSupportedError()

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -25,7 +26,7 @@ class Script(BaseScript):
         r"(?P<vlan>\S+)\s+"
         r"(?P<expire>\d+)\s+"
         r"resolved$",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -35,9 +36,5 @@ class Script(BaseScript):
             mac = match.group("mac")
             if mac == "incomplete":
                 continue
-            r += [{
-                "ip": match.group("address"),
-                "mac": mac,
-                "interface": match.group("vlan")
-            }]
+            r += [{"ip": match.group("address"), "mac": mac, "interface": match.group("vlan")}]
         return r

@@ -29,13 +29,9 @@ class Script(BaseScript):
         #
         to_create = db_vlans - dev_vlans
         for vlan in to_create:
-            self.scripts.add_vlan(vlan_id=vlan, name=v_map[vlan],
-                tagged_ports=tagged_ports)
+            self.scripts.add_vlan(vlan_id=vlan, name=v_map[vlan], tagged_ports=tagged_ports)
         to_remove = dev_vlans - db_vlans
         for vlan in to_remove:
             self.scripts.remove_vlan(vlan_id=vlan)
 
-        return {
-            "created": list(to_create),
-            "removed": list(to_remove)
-        }
+        return {"created": list(to_create), "removed": list(to_remove)}

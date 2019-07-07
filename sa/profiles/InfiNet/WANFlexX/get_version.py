@@ -39,9 +39,6 @@ class Script(BaseScript):
             "vendor": "InfiNet",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "HW version": hardware,
-                "Serial Number": sn
-            }
+            "attributes": {"HW version": hardware, "Serial Number": sn},
         }
         return r

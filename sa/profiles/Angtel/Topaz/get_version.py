@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,13 +21,15 @@ class Script(BaseScript):
 
     rx_port = re.compile(
         r"^(?P<port>(?:Fa|Gi|Te|Po)\S+)\s+(?P<type>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+(?:Up|Down|Not Present)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_ver = re.compile(
         r"^\s*SW version\s+(?P<version>\S+).*\n"
         r"^\s*Boot version\s+(?P<bootprom>\S+).*\n"
-        r"^\s*HW version\s*(?P<hardware>\S+)?.*\n", re.MULTILINE)
-    rx_serial = re.compile(
-        r"^\s*Serial number :\s*(?P<serial>\S+)?")
+        r"^\s*HW version\s*(?P<hardware>\S+)?.*\n",
+        re.MULTILINE,
+    )
+    rx_serial = re.compile(r"^\s*Serial number :\s*(?P<serial>\S+)?")
 
     PLATFORM = {
         (0, 2, 8): "2O-8E",
@@ -34,7 +37,7 @@ class Script(BaseScript):
         (0, 4, 8): "4O-8E",
         (0, 2, 16): "2O-16E",
         (0, 2, 24): "2O-24E",
-        (2, 0, 8): "2X-8E"
+        (2, 0, 8): "2X-8E",
     }
 
     def execute(self):
@@ -67,9 +70,7 @@ class Script(BaseScript):
             "vendor": "Angtel",
             "platform": "Topaz-%s" % platform,
             "version": match.group("version"),
-            "attributes": {
-                "Boot PROM": match.group("bootprom")
-            }
+            "attributes": {"Boot PROM": match.group("bootprom")},
         }
         if match.group("hardware"):
             r["attributes"]["HW version"] = match.group("hardware")

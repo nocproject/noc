@@ -21,10 +21,5 @@ class Script(BaseScript):
         for l in v.splitlines():
             parts = l.split()
             if parts and parts[0] == "s1" and parts[-1] == "learned":
-                r += [{
-                    "vlan_id": 1,
-                    "mac": parts[2],
-                    "interfaces": [parts[3]],
-                    "type": "D"
-                }]
+                r += [{"vlan_id": 1, "mac": parts[2], "interfaces": [parts[3]], "type": "D"}]
         return r

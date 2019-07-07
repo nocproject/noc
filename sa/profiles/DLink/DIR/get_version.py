@@ -19,33 +19,26 @@ class Script(BaseScript):
 
     def execute(self, **kwargs):
         baseURL = "/cliget.cgi?cmd="
-        r = {"vendor": "DLink",
-             "platform": "DIR Undefined",
-             "version": ""}
+        r = {"vendor": "DLink", "platform": "DIR Undefined", "version": ""}
 
-        param = {"platform": "$sys_model",
-                 "hw_ver": "$hw_cver",
-                 "version": "$sw_ver"}
+        param = {"platform": "$sys_model", "hw_ver": "$hw_cver", "version": "$sw_ver"}
         # /cliget.cgi?cmd=$sys_model%;echo"%;$hw_cver%;echo"%;$sw_ver%;echo"
-        req = "%;".join(["%;".join((param[p], "echo\"")) for p in param])
+        req = "%;".join(["%;".join((param[p], 'echo"')) for p in param])
 
         urlpath = baseURL + req + ";"
         self.logger.debug("URL path is: %s" % urlpath)
         try:
             rr = self.http.get(urlpath)
         except HTTPError:
-            return {"vendor": "DLink",
-                    "version": "",
-                    "platform": ""}
+            return {"vendor": "DLink", "version": "", "platform": ""}
         rr = rr.splitlines()
 
         self.logger.debug("Result: %s " % rr)
         if rr:
-            r = {"vendor": "DLink",
-                 "platform": rr[0],
-                 "version": rr[2],
-                 "attributes": {
-                    "HW version": rr[1],
-                 }
-                 }
+            r = {
+                "vendor": "DLink",
+                "platform": rr[0],
+                "version": rr[2],
+                "attributes": {"HW version": rr[1]},
+            }
         return r

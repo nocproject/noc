@@ -11,6 +11,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+
 # Python modules
 import re
 
@@ -22,7 +23,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
-        version = ''
+        version = ""
         data = self.scripts.get_config()
         match = rx_version.search(data)
         if match:
@@ -31,5 +32,5 @@ class Script(BaseScript):
         return {
             "vendor": "Harmonic",
             "platform": "bNSG 9000",
-            "version": version if version else "Unknown"
+            "version": version if version else "Unknown",
         }

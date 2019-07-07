@@ -24,7 +24,7 @@ class Script(BaseScript):
         c = self.cli("show sfp front-port %s" % interface)
         t = parse_table(c, allow_wrap=True)
         for i in t:
-            port = ' '.join(i[0].split())
+            port = " ".join(i[0].split())
             if not port.startswith("front-port"):
                 continue
             temp_c = i[1]
@@ -42,12 +42,14 @@ class Script(BaseScript):
             optical_tx_dbm = i[5]
             if optical_tx_dbm in ["N/A", "N/S"]:
                 optical_tx_dbm = None
-            r += [{
-                "interface": port,
-                "temp_c": temp_c,
-                "voltage_v": voltage_v,
-                "current_ma": current_ma,
-                "optical_rx_dbm": optical_rx_dbm,
-                "optical_tx_dbm": optical_tx_dbm
-            }]
+            r += [
+                {
+                    "interface": port,
+                    "temp_c": temp_c,
+                    "voltage_v": voltage_v,
+                    "current_ma": current_ma,
+                    "optical_rx_dbm": optical_rx_dbm,
+                    "optical_tx_dbm": optical_tx_dbm,
+                }
+            ]
         return r

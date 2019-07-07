@@ -28,19 +28,15 @@ class Script(BaseScript):
             else:
                 admin_status = False
                 oper_status = False
-            r = {
-                'interface': name,
-                'admin_status': admin_status,
-                'oper_status': oper_status
-            }
+            r = {"interface": name, "admin_status": admin_status, "oper_status": oper_status}
             result += [r]
         r = {
-            'interface': "eth0",
-            'admin_status': True,
-            'oper_status': True,
-            'full_duplex': True,
-            'in_speed': 10000,
-            'out_speed': 10000
+            "interface": "eth0",
+            "admin_status": True,
+            "oper_status": True,
+            "full_duplex": True,
+            "in_speed": 10000,
+            "out_speed": 10000,
         }
         result += [r]
         return result

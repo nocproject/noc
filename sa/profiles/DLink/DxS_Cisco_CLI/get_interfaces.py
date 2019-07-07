@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,44 +19,44 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_line = re.compile(
-        r"\w*=+\s+"
-        r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE)
-    rx_line_vlan = re.compile(r"\w*=+\s+VLAN",
-                              re.MULTILINE)
+        r"\w*=+\s+" r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE
+    )
+    rx_line_vlan = re.compile(r"\w*=+\s+VLAN", re.MULTILINE)
     rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")
-    rx_name = re.compile(r"^(?P<name>\S+ \S+) is (?P<status>UP|DOWN)\s*,",
-                         re.MULTILINE)
+    rx_name = re.compile(r"^(?P<name>\S+ \S+) is (?P<status>UP|DOWN)\s*,", re.MULTILINE)
     rx_descr = re.compile(
-        r"\s+interface's description:(\"\"|\"(?P<description>.+)\")",
-        re.MULTILINE)
-    rx_mac_local = re.compile(r"Hardware is  VLAN, address is (?P<mac>.\S+)",
-                              re.MULTILINE | re.IGNORECASE)
+        r"\s+interface's description:(\"\"|\"(?P<description>.+)\")", re.MULTILINE
+    )
+    rx_mac_local = re.compile(
+        r"Hardware is  VLAN, address is (?P<mac>.\S+)", re.MULTILINE | re.IGNORECASE
+    )
     rx_line_ip = re.compile(r"\n", re.MULTILINE | re.IGNORECASE)
-    rx_ip_iface = re.compile(r"(?P<vlan_name>.+)",
-                             re.MULTILINE | re.IGNORECASE)
+    rx_ip_iface = re.compile(r"(?P<vlan_name>.+)", re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
     rx_des = re.compile(r"Description:\s+(?P<des>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)",
-                       re.MULTILINE | re.IGNORECASE)
+    rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)", re.MULTILINE | re.IGNORECASE)
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
-    rx_ospf = re.compile(r"^(?P<if_ospf>.+)\s+is up, line protocol is up",
-                         re.MULTILINE | re.IGNORECASE)
+    rx_ospf = re.compile(
+        r"^(?P<if_ospf>.+)\s+is up, line protocol is up", re.MULTILINE | re.IGNORECASE
+    )
     rx_igmp = re.compile(
         r"^\s*Interface (?P<if_igmp>.+?)\s+\(Index \d+\)\s*\n IGMP Active",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_pim = re.compile(
-        r"^\s*\d+\S+\s+(?P<if_pim>.+?)\s+\d+\s+v\S+\s+\d+\s+\d+",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*\d+\S+\s+(?P<if_pim>.+?)\s+\d+\s+v\S+\s+\d+\s+\d+", re.MULTILINE | re.IGNORECASE
+    )
     rx_lldp_gs = re.compile(r"Global\s+status\s+of\s+LLDP\s+:\s+Enable")
-    rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
-                         re.MULTILINE | re.IGNORECASE)
+    rx_lldp = re.compile(
+        r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable", re.MULTILINE | re.IGNORECASE
+    )
     types = {
-        "Gi": "physical",    # GigabitEthernet
-        "Lo": "loopback",    # Loopback
+        "Gi": "physical",  # GigabitEthernet
+        "Lo": "loopback",  # Loopback
         "Ag": "aggregated",  # Port-channel/Portgroup
-        "Te": "physical",    # TenGigabitEthernet
-        "VL": "SVI",         # VLAN, found on C3500XL
-        "Vl": "SVI"
+        "Te": "physical",  # TenGigabitEthernet
+        "VL": "SVI",  # VLAN, found on C3500XL
+        "Vl": "SVI",
     }
 
     def execute(self):
@@ -120,7 +121,7 @@ class Script(BaseScript):
         for swp in self.scripts.get_switchport():
             switchports[swp["interface"]] = (
                 swp["untagged"] if "untagged" in swp else None,
-                swp["tagged"]
+                swp["tagged"],
             )
         v = "\n" + v
         portchannel_members = {}
@@ -129,11 +130,7 @@ class Script(BaseScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
-        i = {
-            "forwarding_instance": "default",
-            "interfaces": [],
-            "type": "physical"
-        }
+        i = {"forwarding_instance": "default", "interfaces": [], "type": "physical"}
         # Portchanel
         for s in self.rx_line.split(v)[1:]:
             n = {}
@@ -161,13 +158,15 @@ class Script(BaseScript):
             n["admin_status"] = True
             n["oper_status"] = status
             n["description"] = description
-            n["subinterfaces"] = [{
-                "name": iface,
-                "description": description,
-                "admin_status": True,
-                "oper_status": status,
-                "enabled_afi": ["BRIDGE"],
-            }]
+            n["subinterfaces"] = [
+                {
+                    "name": iface,
+                    "description": description,
+                    "admin_status": True,
+                    "oper_status": status,
+                    "enabled_afi": ["BRIDGE"],
+                }
+            ]
             if ifindex != 0:
                 n["snmp_ifindex"] = ifindex
             if lldp_enable and iface in lldp:
@@ -215,21 +214,25 @@ class Script(BaseScript):
             if iface in pim:
                 enabled_protocols += ["PIM"]
 
-            iface = {"name": iface,
-                     "type": "SVI",
-                     "admin_status": True,
-                     "oper_status": True,
-                     "mac": mac,
-                     "subinterfaces": [{
-                             "name": iface,
-                             "admin_status": True,
-                             "oper_status": True,
-                             "enabled_afi": ["IPv4"],
-                             "ipv4_addresses": ip_list,
-                             "mac": mac,
-                             "enabled_protocols": enabled_protocols,
-                             "vlan_ids": vlan_ids,
-                     }]}
+            iface = {
+                "name": iface,
+                "type": "SVI",
+                "admin_status": True,
+                "oper_status": True,
+                "mac": mac,
+                "subinterfaces": [
+                    {
+                        "name": iface,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": ip_list,
+                        "mac": mac,
+                        "enabled_protocols": enabled_protocols,
+                        "vlan_ids": vlan_ids,
+                    }
+                ],
+            }
             if ifindex != 0:
                 iface["snmp_ifindex"] = ifindex
             if description:

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DIR.login
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ class Script(BaseScript):
     """
     Try to log in
     """
+
     name = "DLink.DIR.login"
     interface = ILogin
     requires = []
@@ -23,5 +24,5 @@ class Script(BaseScript):
         try:
             self.http.get("/")
             return True
-        except:
+        except Exception:
             return False

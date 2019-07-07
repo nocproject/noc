@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,8 +19,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(r"Version:\s+(?P<platform>\S+)+\ (?P<version>\S+)",
-                        re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(
+        r"Version:\s+(?P<platform>\S+)+\ (?P<version>\S+)", re.MULTILINE | re.DOTALL
+    )
     rx_snmp_ver = re.compile(r"(?P<platform>\S+)+\ (?P<version>\S+)")
 
     def execute(self):
@@ -30,7 +32,7 @@ class Script(BaseScript):
                 return {
                     "vendor": "Fortinet",
                     "platform": match.group("platform"),
-                    "version": match.group("version")
+                    "version": match.group("version"),
                 }
             except self.snmp.TimeOutError:
                 pass

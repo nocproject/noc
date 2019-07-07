@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modiles
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlicense import IGetLicense
@@ -24,7 +25,8 @@ class Script(BaseScript):
         r"(^\s*nlevel: (?P<nlevel>\d+)\n)?"
         r"(^\s*level: (?P<level>\S+)\n)?"
         r"(^\s*features:.*(?P<features>\.*)$)?",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         v = self.cli("system license print")
@@ -32,9 +34,7 @@ class Script(BaseScript):
         if match.group("nlevel"):
             level = int(match.group("nlevel"))
         if match.group("level"):
-            level = {
-                "free": 1, "p1": 2, "p2": 3, "p-unlimited": 4
-            }[match.group("level").lower()]
+            level = {"free": 1, "p1": 2, "p2": 3, "p-unlimited": 4}[match.group("level").lower()]
         r = {
             "software-id": match.group("sid"),
             "upgradable-to": match.group("upto"),

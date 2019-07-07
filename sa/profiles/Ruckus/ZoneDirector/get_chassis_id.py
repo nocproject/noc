@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -25,7 +26,4 @@ class Script(BaseScript):
         v = self.cli("show sysinfo")
         match = self.re_search(self.rx_mac, v)
         base = match.group("id")
-        return [{
-            "first_chassis_mac": base,
-            "last_chassis_mac": base
-        }]
+        return [{"first_chassis_mac": base, "last_chassis_mac": base}]

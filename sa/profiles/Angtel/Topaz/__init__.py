@@ -22,7 +22,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
         (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n"),
-        (r"^\s*This action will cause loss of configuration.Proceed\?\s*\(Y/N\)", "Y\n")
+        (r"^\s*This action will cause loss of configuration.Proceed\?\s*\(Y/N\)", "Y\n"),
     ]
     command_exit = "exit"
 

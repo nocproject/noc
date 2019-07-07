@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
@@ -26,9 +28,12 @@ class ObjectNotification(NOCModel):
         db_table = "sa_objectnotification"
         app_label = "sa"
 
-    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Selector"), on_delete=models.CASCADE)
-    notification_group = models.ForeignKey(NotificationGroup, verbose_name=_("Notification Group"),
-                                           on_delete=models.CASCADE)
+    selector = models.ForeignKey(
+        ManagedObjectSelector, verbose_name=_("Selector"), on_delete=models.CASCADE
+    )
+    notification_group = models.ForeignKey(
+        NotificationGroup, verbose_name=_("Notification Group"), on_delete=models.CASCADE
+    )
     # Events
     config_changed = models.BooleanField(_("Config changed"), default=False)
     alarm_risen = models.BooleanField(_("Alarm risen"), default=False)

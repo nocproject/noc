@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -17,13 +18,12 @@ class Script(BaseScript):
     name = "Eltex.PON.get_interface_status"
     interface = IGetInterfaceStatus
 
-    rx_uplink = re.compile(
-        r"^\s+(?P<interface>\S+ \d+)$",
-        re.MULTILINE)
+    rx_uplink = re.compile(r"^\s+(?P<interface>\S+ \d+)$", re.MULTILINE)
 
     rx_status = re.compile(
-        r"^(?P<interface>\S+ \d+)\s+(?P<status>up|down)\s+\S+\s+\S+\s+\S+"
-        r"(\s+\S+|)\s*$", re.MULTILINE)
+        r"^(?P<interface>\S+ \d+)\s+(?P<status>up|down)\s+\S+\s+\S+\s+\S+" r"(\s+\S+|)\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
@@ -54,26 +54,17 @@ class Script(BaseScript):
             if interface:
                 cmd = "show interfaces status %s\r" % interface
                 match = self.rx_status.search(self.cli(cmd))
-                r.append({
-                        "interface": interface,
-                        "status": match.group("status") == "up"
-                        })
+                r.append({"interface": interface, "status": match.group("status") == "up"})
             else:
                 cmd = "show uplink interfaces\r"
                 for match in self.rx_uplink.finditer(self.cli(cmd)):
                     interface = match.group("interface")
                     cmd = "show interfaces status %s\r" % interface
                     match = self.rx_status.search(self.cli(cmd))
-                    r.append({
-                            "interface": interface,
-                            "status": match.group("status") == "up"
-                            })
+                    r.append({"interface": interface, "status": match.group("status") == "up"})
                 for port in range(8):
                     interface = "pon-port " + str(port)
                     cmd = "show interfaces status %s\r" % interface
                     match = self.rx_status.search(self.cli(cmd))
-                    r.append({
-                            "interface": interface,
-                            "status": match.group("status") == "up"
-                            })
+                    r.append({"interface": interface, "status": match.group("status") == "up"})
         return r

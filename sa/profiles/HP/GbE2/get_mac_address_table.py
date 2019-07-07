@@ -2,15 +2,14 @@
 # ---------------------------------------------------------------------
 # HP.GbE2.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
@@ -38,10 +37,5 @@ class Script(BaseScript):
                     continue
                 if v == "4095":  # Built-in vlans on port 19
                     continue
-                r += [{
-                    "vlan_id": v,
-                    "mac": m,
-                    "interfaces": [p],
-                    "type": "D"
-                }]
+                r += [{"vlan_id": v, "mac": m, "interfaces": [p], "type": "D"}]
         return r

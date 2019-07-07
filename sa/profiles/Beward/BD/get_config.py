@@ -16,6 +16,10 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self, **kwargs):
-        config = self.http.get("/cgi-bin/admin/param.cgi?action=list", json=False, cached=True, use_basic=True)
-        users = self.http.get("/cgi-bin/admin/privacy.cgi?", json=False, cached=True, use_basic=True)
+        config = self.http.get(
+            "/cgi-bin/admin/param.cgi?action=list", json=False, cached=True, use_basic=True
+        )
+        users = self.http.get(
+            "/cgi-bin/admin/privacy.cgi?", json=False, cached=True, use_basic=True
+        )
         return config + users

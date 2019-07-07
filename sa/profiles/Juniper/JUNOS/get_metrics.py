@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.slot import SlotRule
@@ -15,15 +16,13 @@ from .oidrules.slot import SlotRule
 
 class Script(GetMetricsScript):
     name = "Juniper.JUNOS.get_metrics"
-    OID_RULES = [
-        SlotRule
-    ]
+    OID_RULES = [SlotRule]
 
     @metrics(
         ["Subscribers | Summary"],
         #        has_capability="BRAS | PPPoE",
         volatile=False,
-        access="S"  # not CLI version
+        access="S",  # not CLI version
     )
     def get_subscribers_metrics(self, metrics):
         if self.is_gte_16:
@@ -31,18 +30,20 @@ class Script(GetMetricsScript):
                 oid2 = oid.split("1.3.6.1.4.1.2636.3.64.1.1.1.5.1.3.")
                 interf = oid2[1].split(".")
                 del interf[0]
-                slot = ''
+                slot = ""
                 for x in interf:
                     slot += chr(int(x))
                 self.set_metric(
                     id=("Subscribers | Summary", None),
                     path=("0", str(slot), ""),
                     value=int(v),
-                    multi=True)
+                    multi=True,
+                )
         else:
             metric = self.snmp.get("1.3.6.1.4.1.2636.3.64.1.1.1.2.0")
             self.set_metric(
                 id=("Subscribers | Summary", None),
                 path=("0", "", ""),
                 value=int(metric),
-                multi=True)
+                multi=True,
+            )

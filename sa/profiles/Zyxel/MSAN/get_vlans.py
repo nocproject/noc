@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.core.script.base import BaseScript

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -49,8 +50,5 @@ class Script(BaseScript):
                 while not self.rx_name.search(vlans[i]):
                     i += 1
                 match_n = self.rx_name.search(vlans[i])
-                r.append({
-                    "vlan_id": int(match_v.group("vlan")),
-                    "name": match_n.group("name")
-                    })
+                r.append({"vlan_id": int(match_v.group("vlan")), "name": match_n.group("name")})
         return r

@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -24,13 +25,16 @@ class Script(BaseScript):
         r"^\s*VxWorks: \S+\s*\n"
         r"^\s*Kernel: WIND version \S+\s*\n"
         r"^\s*ADSL(?:2PLUS)? over (?:POTS|ISDN) GS firmware version:\s+(?P<version>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_inv1 = re.compile(
-        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+"
-        r"(?P<serial>[NZ]\S+)\s+", re.MULTILINE)
+        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+" r"(?P<serial>[NZ]\S+)\s+",
+        re.MULTILINE,
+    )
     rx_inv2 = re.compile(
-        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+[UN]\S+\s+"
-        r"(?P<serial>[0-9A-Z\/]+)\s+", re.MULTILINE)
+        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+[UN]\S+\s+" r"(?P<serial>[0-9A-Z\/]+)\s+",
+        re.MULTILINE,
+    )
 
     def execute(self):
         c = self.cli("show version", cached=True)
@@ -38,7 +42,7 @@ class Script(BaseScript):
         r = {
             "vendor": "Iskratel",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }
         c = self.cli("show board", cached=True)
         match = self.rx_inv1.search(c)

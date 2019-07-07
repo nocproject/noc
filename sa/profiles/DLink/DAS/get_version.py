@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -27,7 +28,7 @@ class Script(BaseScript):
         r"^CPSwVersion\s+: .+\n"
         r"^CPSwVersion\(Build\): (?P<version>\S+).*\n"
         r"^DPSwVersion\s+: .+\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ver2 = re.compile(
         r"^Object-id\s+: (?P<sys_oid>\S+)\s*\n"
@@ -35,7 +36,7 @@ class Script(BaseScript):
         r"^HwVersion\s+:(?P<hardware>.*)\n"
         r"^CPSwVersion\s+: (?P<version>\S+)\s*\n"
         r"^DPSwVersion\s+: .+",
-        re.MULTILINE
+        re.MULTILINE,
     )
     OID_TABLE = {
         "1.3.6.1.4.1.171.10.65.1": "DAS-32xx",
@@ -59,15 +60,8 @@ class Script(BaseScript):
             match = self.rx_ver2.search(v)
         if not platform.startswith("DAS-"):
             platform = self.OID_TABLE[match.group("sys_oid")]
-        r = {
-            "vendor": "DLink",
-            "platform": platform,
-            "version": match.group("version"),
-        }
-        if (
-            match.group("hardware") and
-            match.group("hardware").strip()
-        ):
+        r = {"vendor": "DLink", "platform": platform, "version": match.group("version")}
+        if match.group("hardware") and match.group("hardware").strip():
             r["attributes"] = {}
             r["attributes"]["HW version"] = match.group("hardware").strip()
         return r

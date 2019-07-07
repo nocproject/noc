@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,19 +19,16 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
     rx_ver = re.compile(
-        r"^Allied Telesis (?P<platform>AT[/\w-]+) version "
-        r"(?P<version>[\d.]+-[\d]+)", re.MULTILINE | re.DOTALL)
+        r"^Allied Telesis (?P<platform>AT[/\w-]+) version " r"(?P<version>[\d.]+-[\d]+)",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         if self.has_snmp():
             try:
                 pl = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.6.1")
                 ver = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.5.1")
-                return {
-                    "vendor": "Allied Telesis",
-                    "platform": pl,
-                    "version": ver.lstrip("v")
-                }
+                return {"vendor": "Allied Telesis", "platform": pl, "version": ver.lstrip("v")}
             except self.snmp.TimeOutError:
                 pass
         v = self.cli("show system")
@@ -38,5 +36,5 @@ class Script(BaseScript):
         return {
             "vendor": "Allied Telesis",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

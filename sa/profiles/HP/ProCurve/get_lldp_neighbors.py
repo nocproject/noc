@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -21,12 +22,20 @@ class Script(BaseScript):
     rx_split = re.compile(r"^\s*----.+?\n", re.MULTILINE | re.DOTALL)
     rx_line = re.compile(r"^\s*(?P<port>\S+)\s*|", re.MULTILINE | re.DOTALL)
     # rx_chassis_id=re.compile(r"^\s*ChassisId\s*:\s*(.{17})",re.MULTILINE|re.DOTALL|re.IGNORECASE)
-    rx_chassis_id = re.compile(r"ChassisType\s*:\s*(\S+).+?ChassisId\s*:\s*([a-zA-Z0-9\.\- ]+)",
-                               re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_chassis_id = re.compile(
+        r"ChassisType\s*:\s*(\S+).+?ChassisId\s*:\s*([a-zA-Z0-9\.\- ]+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
     rx_port_id = re.compile(r"^\s*PortId\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_sys_name = re.compile(r"^\s*SysName\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_sys_descr = re.compile(r"^\s*System Descr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_port_descr = re.compile(r"^\s*PortDescr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_sys_name = re.compile(
+        r"^\s*SysName\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
+    rx_sys_descr = re.compile(
+        r"^\s*System Descr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
+    rx_port_descr = re.compile(
+        r"^\s*PortDescr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
     rx_cap = re.compile(r"^\s*System Capabilities Enabled\s*:(.*?)$", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
@@ -62,12 +71,16 @@ class Script(BaseScript):
             }[match.group(1)]
             remote_chassis_id = match.group(2).strip().replace(" ", "")
             if remote_chassis_id_subtype == 4:
-                remote_chassis_id = "%s-%s" % (remote_chassis_id[:6], remote_chassis_id[6:])  # Convert to HP-style mac
+                remote_chassis_id = "%s-%s" % (
+                    remote_chassis_id[:6],
+                    remote_chassis_id[6:],
+                )  # Convert to HP-style mac
             else:
                 remote_chassis_id = remote_chassis_id.strip()
             n = {
                 "remote_chassis_id": remote_chassis_id,
-                "remote_port_subtype": 5, "remote_chassis_id_subtype": remote_chassis_id_subtype
+                "remote_port_subtype": 5,
+                "remote_chassis_id_subtype": remote_chassis_id_subtype,
             }
             # Get remote port
             match = self.rx_port_id.search(v)
@@ -94,9 +107,15 @@ class Script(BaseScript):
                     if not c:
                         continue
                     caps |= {
-                        "other": 1, "repeater": 2, "bridge": 4,
-                        "wlanaccesspoint": 8, "router": 16, "telephone": 32,
-                        "docsis": 64, "station": 128, "station-only": 128
+                        "other": 1,
+                        "repeater": 2,
+                        "bridge": 4,
+                        "wlanaccesspoint": 8,
+                        "router": 16,
+                        "telephone": 32,
+                        "docsis": 64,
+                        "station": 128,
+                        "station-only": 128,
                     }[c.lower()]
             n["remote_capabilities"] = caps
             i["neighbors"] += [n]

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -22,13 +23,13 @@ class Script(BaseScript):
         "ma": "management",
         "vl": "SVI",
         "po": "aggregated",
-        "lo": "loopback"
+        "lo": "loopback",
     }
 
     rx_iface = re.compile(
         r"^(?P<name>\S+) is \S+, line protocol is \S+\n"
         r"Hardware is [^,]+, address is (?P<mac>\S+)",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
 
     def execute(self, interface=None):
@@ -36,10 +37,12 @@ class Script(BaseScript):
         # Ethernet ports
         v = self.cli("show interface")
         for match in self.rx_iface.finditer(v):
-            interfaces += [{
-                "name": match.group("name"),
-                "type": "physical",
-                "mac": match.group("mac"),
-                "subinterfaces": []
-            }]
+            interfaces += [
+                {
+                    "name": match.group("name"),
+                    "type": "physical",
+                    "mac": match.group("mac"),
+                    "subinterfaces": [],
+                }
+            ]
         return [{"interfaces": interfaces}]

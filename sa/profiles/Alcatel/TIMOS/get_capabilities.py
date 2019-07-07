@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -17,14 +18,14 @@ class Script(BaseScript):
     name = "Alcatel.TIMOS.get_capabilities"
     cache = True
 
-    CHECK_SNMP_GET = {
-        "BRAS | IPoE": "1.3.6.1.4.1.6527.3.1.2.33.1.107.1.65.1"
-    }
+    CHECK_SNMP_GET = {"BRAS | IPoE": "1.3.6.1.4.1.6527.3.1.2.33.1.107.1.65.1"}
     rx_lldp = re.compile(r"Admin Enabled\s+: True")
     rx_port = re.compile(
         r"^(?P<port>\d+/\d+/\d+)\s+(?:Up|Down)\s+(?:Yes|No)\s+"
         r"(?:Up|Down|Link Up)\s+\d+\s+\d+\s+(?:\d+|\-)\s+\S+\s+\S+\s+"
-        r"(?:xgige|xcme)", re.MULTILINE)
+        r"(?:xgige|xcme)",
+        re.MULTILINE,
+    )
     rx_oam = re.compile("Admin State\s+: up", re.MULTILINE)
 
     @false_on_cli_error

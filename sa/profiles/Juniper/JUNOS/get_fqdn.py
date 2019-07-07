@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.mib import mib
 from noc.core.script.base import BaseScript
@@ -19,9 +20,8 @@ class Script(BaseScript):
     interface = IGetFQDN
 
     rx_config = re.compile(
-        r"^host-name (?P<hostname>\S+);\s+"
-        r"^domain-name (?P<dname>\S+);$",
-        re.MULTILINE)
+        r"^host-name (?P<hostname>\S+);\s+" r"^domain-name (?P<dname>\S+);$", re.MULTILINE
+    )
 
     def execute_snmp(self):
         fqnd = self.snmp.get(mib["SNMPv2-MIB::sysName.0"])

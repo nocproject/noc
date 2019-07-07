@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -28,7 +29,7 @@ class Script(BaseScript):
         r"^\s+IP binding \S+\.\s*\n"
         r"^\s+MulitiCast Flood Mode is \d+\.\s*\n"
         r"^\s+Vlan id is (?P<vlan_id>\d+)\.\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):

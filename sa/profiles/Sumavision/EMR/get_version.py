@@ -8,7 +8,8 @@
 
 # Python modules
 import re
-    # NOC modules
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -28,5 +29,5 @@ class Script(BaseScript):
         return {
             "vendor": "Sumavision",
             "platform": "EMR",
-            "version": version if version else "Unknown"
+            "version": version if version else "Unknown",
         }

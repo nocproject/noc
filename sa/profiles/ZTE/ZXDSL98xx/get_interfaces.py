@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -31,29 +32,23 @@ class Script(BaseScript):
         r"^IP address\s+: (?P<ip>\S+)\s*\n"
         r"^Netmask\s+: (?P<mask>\S+)\s*\n"
         r"^MAC address\s+: (?P<outband_mac>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ip_9806h = re.compile(
         r"^\s+(?P<ip>\d+\S+\d+)\s+(?P<mask>\d+\S+\d+)\s+"
         r"(?P<vlan_id>\d+)\s+(?P<ifname>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ip_host = re.compile(
-        r"^Host IP address\s+: (?P<ip>\S+)\s*\n"
-        r"^Host IP mask\s+: (?P<mask>\S+)\s*\n",
-        re.MULTILINE
+        r"^Host IP address\s+: (?P<ip>\S+)\s*\n" r"^Host IP mask\s+: (?P<mask>\S+)\s*\n",
+        re.MULTILINE,
     )
-    rx_sub = re.compile(
-        r"^\s+(?P<ip>\d+\S+)\s+(?P<mask>\d+\S+)\s+(?P<vlan_id>\d+)",
-        re.MULTILINE
-    )
+    rx_sub = re.compile(r"^\s+(?P<ip>\d+\S+)\s+(?P<mask>\d+\S+)\s+(?P<vlan_id>\d+)", re.MULTILINE)
     rx_card = re.compile(
-        r"^(?P<slot>\d+)\s+\S+\s+\S+\s+\S+\s+(?P<ports>\d+)\s+\S+\s*\n",
-        re.MULTILINE
+        r"^(?P<slot>\d+)\s+\S+\s+\S+\s+\S+\s+(?P<ports>\d+)\s+\S+\s*\n", re.MULTILINE
     )
     rx_card_9806h = re.compile(
-        r"^\s+(?P<slot>\d+)\s+\d+\s+\S+\s+(?P<ports>\d+)\s+\d+\s+\S+\s+Inservice\s*\n",
-        re.MULTILINE
+        r"^\s+(?P<slot>\d+)\s+\d+\s+\S+\s+(?P<ports>\d+)\s+\d+\s+\S+\s+Inservice\s*\n", re.MULTILINE
     )
     rx_ethernet = re.compile(
         r"^Interface\s+: .+\n"
@@ -62,7 +57,7 @@ class Script(BaseScript):
         r"^AdminStatus\s+: (?P<admin_status>\S+)\s+LinkStatus\(Eth\)\s+: (?P<oper_status>\S+)\s*\n"
         r"^ifType\s+: Ethernet\s+.+\n"
         r"^ifMtu\s+: (?P<mtu>\d+)\s+.+\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_if_admin_status = re.compile(r"AdminStatus\s+:\s+(?P<status>\S+)")
     rx_if_oper_status = re.compile(r"LinkStatus\s+:\s+(?P<status>\S+)")
@@ -72,7 +67,7 @@ class Script(BaseScript):
         r"^Interface\s+: \S+\s*\n"
         r"^Tagged VLAN list\s+:(?P<tagged>.*)\n"
         r"^Untagged VLAN list\s+:(?P<untagged>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     # Do not optimize this.
     rx_adsl = re.compile(
@@ -85,7 +80,7 @@ class Script(BaseScript):
         r"^\s*\n"
         r"^AdminStatus\s+: (?P<admin_status>\S+)\s+LinkStatus\(ADSL\)\s+: (?P<oper_status>\S+)\s*\n"
         r"^ifType\s+: ADSL\s+ifMtu\s+: (?P<mtu>\d+)\s+.+\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     # Do not optimize this.
     rx_pvc = re.compile(
@@ -97,12 +92,12 @@ class Script(BaseScript):
         r"^\d+/\d+\s+PVC6\s+(?P<vpi6>\d+)\s+(?P<vci6>\d+).*\n"
         r"^\d+/\d+\s+PVC7\s+(?P<vpi7>\d+)\s+(?P<vci7>\d+).*\n"
         r"^\d+/\d+\s+PVC8\s+(?P<vpi8>\d+)\s+(?P<vci8>\d+).*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_pvc_9806h = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<pvcid>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+"
         r"(?P<pvid>\d+)\s+\S+\s+(?P<state>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -114,7 +109,7 @@ class Script(BaseScript):
                 "name": "inband",
                 "type": "SVI",
                 "mac": match.group("inband_mac"),
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             sub_number = 0
             for match1 in self.rx_sub.finditer(match.group("subs")):
@@ -125,8 +120,7 @@ class Script(BaseScript):
                     "name": "inband%s" % sub_number,
                     "enabled_afi": ["IPv4"],
                     "ipv4_addresses": [ip_address],
-                    "vlan_ids": [match1.group("vlan_id")]
-
+                    "vlan_ids": [match1.group("vlan_id")],
                 }
                 sub_number = sub_number + 1
                 i["subinterfaces"] += [sub]
@@ -138,11 +132,9 @@ class Script(BaseScript):
                 "name": "outb",
                 "type": "SVI",
                 "mac": match.group("outband_mac"),
-                "subinterfaces": [{
-                    "name": "outband",
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [ip_address],
-                }]
+                "subinterfaces": [
+                    {"name": "outband", "enabled_afi": ["IPv4"], "ipv4_addresses": [ip_address]}
+                ],
             }
         else:
             match = self.rx_ip_9806h.search(v)
@@ -153,12 +145,14 @@ class Script(BaseScript):
                 i = {
                     "name": match.group("ifname"),
                     "type": "SVI",
-                    "subinterfaces": [{
-                        "name": match.group("ifname"),
-                        "enabled_afi": ["IPv4"],
-                        "ipv4_addresses": [ip_address],
-                        "vlan_ids": [match.group("vlan_id")]
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": match.group("ifname"),
+                            "enabled_afi": ["IPv4"],
+                            "ipv4_addresses": [ip_address],
+                            "vlan_ids": [match.group("vlan_id")],
+                        }
+                    ],
                 }
                 interfaces += [i]
             else:
@@ -172,11 +166,9 @@ class Script(BaseScript):
             i = {
                 "name": "host",
                 "type": "management",
-                "subinterfaces": [{
-                    "name": "host",
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [ip_address]
-                }]
+                "subinterfaces": [
+                    {"name": "host", "enabled_afi": ["IPv4"], "ipv4_addresses": [ip_address]}
+                ],
             }
             interfaces += [i]
         except self.CLISyntaxError:
@@ -200,13 +192,15 @@ class Script(BaseScript):
                         "type": "physical",
                         "admin_status": match.group("admin_status") == "enable",
                         "oper_status": match.group("oper_status") == "up",
-                        "subinterfaces": [{
-                            "name": ifname,
-                            "enabled_afi": ["BRIDGE"],
-                            "mtu": match.group("mtu"),
-                            "admin_status": match.group("admin_status") == "enable",
-                            "oper_status": match.group("oper_status") == "up",
-                        }]
+                        "subinterfaces": [
+                            {
+                                "name": ifname,
+                                "enabled_afi": ["BRIDGE"],
+                                "mtu": match.group("mtu"),
+                                "admin_status": match.group("admin_status") == "enable",
+                                "oper_status": match.group("oper_status") == "up",
+                            }
+                        ],
                     }
                     interfaces += [i]
                 match = self.rx_adsl.search(v)
@@ -216,67 +210,76 @@ class Script(BaseScript):
                         "type": "physical",
                         "admin_status": match.group("admin_status") == "enable",
                         "oper_status": match.group("oper_status") == "up",
-                        "subinterfaces": []
+                        "subinterfaces": [],
                     }
                     v = self.cli("show atm pvc interface %s" % ifname)
                     match1 = self.rx_pvc.search(v)
-                    i["subinterfaces"] = [{
-                        "name": "%s/%s" % (ifname, "1"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid1")],
-                        "vpi": match1.group("vpi1"),
-                        "vci": match1.group("vci1")
-                    }, {
-                        "name": "%s/%s" % (ifname, "2"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid2")],
-                        "vpi": match1.group("vpi2"),
-                        "vci": match1.group("vci2")
-                    }, {
-                        "name": "%s/%s" % (ifname, "3"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid3")],
-                        "vpi": match1.group("vpi3"),
-                        "vci": match1.group("vci3")
-                    }, {
-                        "name": "%s/%s" % (ifname, "4"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid4")],
-                        "vpi": match1.group("vpi4"),
-                        "vci": match1.group("vci4")
-                    }, {
-                        "name": "%s/%s" % (ifname, "5"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid5")],
-                        "vpi": match1.group("vpi5"),
-                        "vci": match1.group("vci5")
-                    }, {
-                        "name": "%s/%s" % (ifname, "6"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid6")],
-                        "vpi": match1.group("vpi6"),
-                        "vci": match1.group("vci6")
-                    }, {
-                        "name": "%s/%s" % (ifname, "7"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid7")],
-                        "vpi": match1.group("vpi7"),
-                        "vci": match1.group("vci7")
-                    }, {
-                        "name": "%s/%s" % (ifname, "8"),
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "mtu": match.group("mtu"),
-                        "vlan_ids": [match.group("pvid8")],
-                        "vpi": match1.group("vpi8"),
-                        "vci": match1.group("vci8")
-                    }]
+                    i["subinterfaces"] = [
+                        {
+                            "name": "%s/%s" % (ifname, "1"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid1")],
+                            "vpi": match1.group("vpi1"),
+                            "vci": match1.group("vci1"),
+                        },
+                        {
+                            "name": "%s/%s" % (ifname, "2"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid2")],
+                            "vpi": match1.group("vpi2"),
+                            "vci": match1.group("vci2"),
+                        },
+                        {
+                            "name": "%s/%s" % (ifname, "3"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid3")],
+                            "vpi": match1.group("vpi3"),
+                            "vci": match1.group("vci3"),
+                        },
+                        {
+                            "name": "%s/%s" % (ifname, "4"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid4")],
+                            "vpi": match1.group("vpi4"),
+                            "vci": match1.group("vci4"),
+                        },
+                        {
+                            "name": "%s/%s" % (ifname, "5"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid5")],
+                            "vpi": match1.group("vpi5"),
+                            "vci": match1.group("vci5"),
+                        },
+                        {
+                            "name": "%s/%s" % (ifname, "6"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid6")],
+                            "vpi": match1.group("vpi6"),
+                            "vci": match1.group("vci6"),
+                        },
+                        {
+                            "name": "%s/%s" % (ifname, "7"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid7")],
+                            "vpi": match1.group("vpi7"),
+                            "vci": match1.group("vci7"),
+                        },
+                        {
+                            "name": "%s/%s" % (ifname, "8"),
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "mtu": match.group("mtu"),
+                            "vlan_ids": [match.group("pvid8")],
+                            "vpi": match1.group("vpi8"),
+                            "vci": match1.group("vci8"),
+                        },
+                    ]
                     interfaces += [i]
                 match = self.rx_ether_type.search(v)
                 if match:
@@ -289,21 +292,25 @@ class Script(BaseScript):
                         "type": "physical",
                         "admin_status": admin_status,
                         "oper_status": oper_status,
-                        "subinterfaces": [{
-                            "name": ifname,
-                            "enabled_afi": ["BRIDGE"],
-                            "admin_status": admin_status,
-                            "oper_status": oper_status,
-                        }]
+                        "subinterfaces": [
+                            {
+                                "name": ifname,
+                                "enabled_afi": ["BRIDGE"],
+                                "admin_status": admin_status,
+                                "oper_status": oper_status,
+                            }
+                        ],
                     }
                     v = self.cli("show interface %s vlan-config" % ifname)
                     match = self.rx_ether_vlan.search(v)
                     if match.group("tagged").strip():
-                        i["subinterfaces"][0]["tagged_vlans"] = \
-                            self.expand_rangelist(match.group("tagged").strip())
+                        i["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(
+                            match.group("tagged").strip()
+                        )
                     if match.group("tagged").strip():
-                        i["subinterfaces"][0]["tagged_vlans"] = \
-                            self.expand_rangelist(match.group("tagged").strip())
+                        i["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(
+                            match.group("tagged").strip()
+                        )
 
                     interfaces += [i]
                 match = self.rx_adsl_type.search(v)
@@ -317,7 +324,7 @@ class Script(BaseScript):
                         "type": "physical",
                         "admin_status": admin_status,
                         "oper_status": oper_status,
-                        "subinterfaces": []
+                        "subinterfaces": [],
                     }
                     v = self.cli("show atm vc %s" % ifname)
                     for match in self.rx_pvc_9806h.finditer(v):
@@ -328,7 +335,7 @@ class Script(BaseScript):
                             "enabled_afi": ["BRIDGE", "ATM"],
                             "vlan_ids": [match.group("pvid")],
                             "vpi": match.group("vpi"),
-                            "vci": match.group("vci")
+                            "vci": match.group("vci"),
                         }
                         i["subinterfaces"] += [sub]
 

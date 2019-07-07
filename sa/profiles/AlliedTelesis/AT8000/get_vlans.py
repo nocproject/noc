@@ -19,8 +19,5 @@ class Script(BaseScript):
         r = []
         v = self.cli("show vlan", cached=True)
         for match in self.profile.rx_vlan.finditer(v):
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "name": match.group("name")
-            }]
+            r += [{"vlan_id": match.group("vlan_id"), "name": match.group("name")}]
         return r

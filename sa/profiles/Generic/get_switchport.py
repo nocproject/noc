@@ -10,6 +10,7 @@
 import six
 from itertools import compress
 from binascii import hexlify
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -48,7 +49,7 @@ class Script(BaseScript):
                 # "port_type": port_type,
                 "untagged": pvid,
                 "tagged": [],
-                "members": []
+                "members": [],
             }
 
         # Getting Tagged
@@ -58,7 +59,9 @@ class Script(BaseScript):
             ports_list = hexlify(ports_list)
             if ports_list not in decode_ports_list:
                 ports_list_mask = ["{0:04b}".format(int(x, 16)) for x in ports_list]
-                decode_ports_list[ports_list] = list(compress(iface_list, [int(x) for x in "".join(ports_list_mask)]))
+                decode_ports_list[ports_list] = list(
+                    compress(iface_list, [int(x) for x in "".join(ports_list_mask)])
+                )
             for p in decode_ports_list[ports_list]:
                 if vlan_num == result[p]["untagged"]:
                     # Perhaps port is switchport @todo getting port type

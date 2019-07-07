@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -23,40 +24,42 @@ class Script(BaseScript):
     rx_version = re.compile(
         r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali)\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE Software,\s)?"
         r"(?P<platform>.+?) Software \((?P<image>[^)]+)\), (Experimental )?"
-        r"Version (?P<version>[^\s,]+)", re.MULTILINE | re.DOTALL)
+        r"Version (?P<version>[^\s,]+)",
+        re.MULTILINE | re.DOTALL,
+    )
     rx_snmp_ver = re.compile(
         r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) Software "
         r"\((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^,]+),",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
     rx_platform = re.compile(
         r"^cisco (?P<platform>\S+) \(\S+\) processor( \(revision.+?\))? with",
-        re.IGNORECASE | re.MULTILINE)
+        re.IGNORECASE | re.MULTILINE,
+    )
     rx_old_platform = re.compile(r"^(?P<platform>\S+) chassis")
-    rx_invalid_platforms = re.compile(
-        r"IOS[\-\s]XE|EGR|Catalyst( \S+)? L3 Switch|s\d+\S+")
+    rx_invalid_platforms = re.compile(r"IOS[\-\s]XE|EGR|Catalyst( \S+)? L3 Switch|s\d+\S+")
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
         r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>\S+)?\s*, "
-        r"SN:\s(?P<serial>\S+)?", re.MULTILINE | re.DOTALL)
+        r"SN:\s(?P<serial>\S+)?",
+        re.MULTILINE | re.DOTALL,
+    )
     rx_7100 = re.compile(
-        r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? "
-        r"(?:Universal Broadband Router|chassis)")
+        r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? " r"(?:Universal Broadband Router|chassis)"
+    )
     rx_ver = re.compile(
         r"Model revision number\s+:\s+(?P<revision>\S+)\s*\n"
         r"Motherboard revision number\s+:\s+\S+\s*\n"
         r"Model number\s+:\s+(?P<part_no>\S+)\s*\n"
         r"System serial number\s+:\s+(?P<serial>\S+)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
     rx_ver1 = re.compile(
-        r"^cisco (?P<part_no>\S+) \(\S+\) processor( "
-        r"\(revision(?P<revision>.+?)\))? with",
-        re.IGNORECASE | re.MULTILINE)
-    IGNORED_SERIAL = {
-        "H22L714"
-    }
-    IGNORED_NAMES = {
-        "c7201"
-    }
+        r"^cisco (?P<part_no>\S+) \(\S+\) processor( " r"\(revision(?P<revision>.+?)\))? with",
+        re.IGNORECASE | re.MULTILINE,
+    )
+    IGNORED_SERIAL = {"H22L714"}
+    IGNORED_NAMES = {"c7201"}
 
     def clear_platform(self, platform):
         """
@@ -145,15 +148,13 @@ class Script(BaseScript):
                 if name in self.IGNORED_NAMES:
                     continue
                 if (
-                    (
-                        i == 0 or pid.startswith("CISCO") or
-                        pid.startswith("WS-C")
-                    ) and
-                    not pid.startswith("WS-CAC-") and
-                    not pid.endswith("-MB") and
-                    "Clock" not in descr and "VTT FRU" not in descr and
-                    "C2801 Motherboard " not in descr and
-                    "xx Switch Stack" not in descr
+                    (i == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
+                    and not pid.startswith("WS-CAC-")
+                    and not pid.endswith("-MB")
+                    and "Clock" not in descr
+                    and "VTT FRU" not in descr
+                    and "C2801 Motherboard " not in descr
+                    and "xx Switch Stack" not in descr
                 ):
                     if pid in ("", "N/A"):
                         if self.rx_7100.search(descr):

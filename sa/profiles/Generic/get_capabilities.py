@@ -8,8 +8,10 @@
 
 # Python modules
 import functools
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilities import IGetCapabilities
@@ -30,11 +32,7 @@ class Script(BaseScript):
     # Dict of capability -> oid to check against snmp GET
     CHECK_SNMP_GET = {}
     #
-    SNMP_CAPS = {
-        SNMP_v1: "SNMP | v1",
-        SNMP_v2c: "SNMP | v2c",
-        SNMP_v3: "SNMP | v3"
-    }
+    SNMP_CAPS = {SNMP_v1: "SNMP | v1", SNMP_v2c: "SNMP | v2c", SNMP_v3: "SNMP | v3"}
 
     def check_snmp_get(self, oid, version=None):
         """
@@ -53,9 +51,7 @@ class Script(BaseScript):
         Check SNMP response to GETNEXT/BULK
         """
         try:
-            r = self.snmp.getnext(oid, bulk=bulk,
-                                  only_first=only_first,
-                                  version=version)
+            r = self.snmp.getnext(oid, bulk=bulk, only_first=only_first, version=version)
             return r and any(r)
         except (self.snmp.TimeOutError, SNMPError):
             return False
@@ -71,25 +67,21 @@ class Script(BaseScript):
         return r
 
     def has_snmp_bulk(self):
-        return self.check_snmp_getnext(self.SNMP_BULK_CHECK_OID,
-                                       version=SNMP_v2c,
-                                       bulk=True)
+        return self.check_snmp_getnext(self.SNMP_BULK_CHECK_OID, version=SNMP_v2c, bulk=True)
 
     def has_snmp_ifmib(self, version=None):
         """
         Check IF-MIB support
         """
-        return self.check_snmp_getnext(mib["IF-MIB::ifIndex"],
-                                       only_first=True,
-                                       version=version)
+        return self.check_snmp_getnext(mib["IF-MIB::ifIndex"], only_first=True, version=version)
 
     def has_snmp_ifmib_hc(self, version=None):
         """
         Check IF-MIB 64 bit counters
         """
-        return self.check_snmp_getnext(mib["IF-MIB::ifHCInOctets"],
-                                       only_first=True,
-                                       version=version)
+        return self.check_snmp_getnext(
+            mib["IF-MIB::ifHCInOctets"], only_first=True, version=version
+        )
 
     def return_false(self, **kwargs):
         return False
@@ -101,7 +93,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_lldp_cli",
             snmp_handler="has_lldp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_cdp(self):
@@ -111,7 +103,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_cdp_cli",
             snmp_handler="has_cdp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_oam(self):
@@ -121,7 +113,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_oam_cli",
             snmp_handler="has_oam_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_stp(self):
@@ -131,7 +123,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_stp_cli",
             snmp_handler="has_stp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_udld(self):
@@ -141,7 +133,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_udld_cli",
             snmp_handler="has_udld_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_ipv6(self):
@@ -151,7 +143,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_ipv6_cli",
             snmp_handler="has_ipv6_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_hsrp(self):
@@ -162,7 +154,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_hsrp_cli",
             snmp_handler="has_hsrp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_vrrp_v2(self):
@@ -173,7 +165,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_vrrp_v2_cli",
             snmp_handler="has_vrrp_v2_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_vrrp_v3(self):
@@ -184,7 +176,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_vrrp_v3_cli",
             snmp_handler="has_vrrp_v3_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_bgp(self):
@@ -195,7 +187,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_bgp_cli",
             snmp_handler="has_bgp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_ospf_v2(self):
@@ -206,7 +198,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_ospf_v2_cli",
             snmp_handler="has_ospf_v2_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_ospf_v3(self):
@@ -217,7 +209,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_ospf_v3_cli",
             snmp_handler="has_ospf_v3_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_isis(self):
@@ -228,7 +220,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_isis_cli",
             snmp_handler="has_isis_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_ldp(self):
@@ -239,7 +231,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_ldp_cli",
             snmp_handler="has_ldp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_rsvp(self):
@@ -250,7 +242,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_rsvp_cli",
             snmp_handler="has_rsvp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_lacp(self):
@@ -261,7 +253,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_lacp_cli",
             snmp_handler="has_lacp_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_bfd(self):
@@ -272,7 +264,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_bfd_cli",
             snmp_handler="has_bfd_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def has_rep(self):
@@ -283,7 +275,7 @@ class Script(BaseScript):
         return self.call_method(
             cli_handler="has_rep_cli",
             snmp_handler="has_rep_snmp",
-            fallback_handler=self.return_false
+            fallback_handler=self.return_false,
         )
 
     def execute_platform_cli(self, caps):
@@ -436,6 +428,7 @@ def false_on_cli_error(f):
             return f(*args, **kwargs)
         except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError):
             return False
+
     return wrapper
 
 
@@ -446,4 +439,5 @@ def false_on_snmp_error(f):
             return f(*args, **kwargs)
         except SNMPError:
             return False
+
     return wrapper_snmp

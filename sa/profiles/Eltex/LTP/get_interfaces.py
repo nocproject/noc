@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -23,7 +24,7 @@ class Script(BaseScript):
         r"^\s+Ipaddr:\s+(?P<ip>\S+)\s*\n"
         r"^\s+Netmask:\s+(?P<mask>\S+)\s*\n"
         r"^\s+Vlan management:\s+(?P<vlan_id>\d+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_mac = re.compile(r"^\s+MAC address: (?P<mac>\S+)", re.MULTILINE)
     rx_status = re.compile(r"^.+\d\s+(?P<oper_status>up|down|off)", re.MULTILINE)
@@ -51,10 +52,7 @@ class Script(BaseScript):
         iface = {
             "name": ifname,
             "type": "physical",
-            "subinterfaces": [{
-                "name": ifname,
-                "enabled_afi": ["BRIDGE"]
-            }]
+            "subinterfaces": [{"name": ifname, "enabled_afi": ["BRIDGE"]}],
         }
         if untagged != "N/S":
             iface["subinterfaces"][0]["untagged_vlan"] = int(untagged)
@@ -78,24 +76,22 @@ class Script(BaseScript):
                         for iface in interfaces:
                             if iface["name"] == ifname:
                                 if "tagged_vlans" in iface["subinterfaces"][0]:
-                                    iface["subinterfaces"][0][
-                                        "tagged_vlans"
-                                    ] += [vlan_id]
+                                    iface["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
                                 else:
-                                    iface["subinterfaces"][0][
-                                        "tagged_vlans"
-                                    ] = [vlan_id]
+                                    iface["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
                                 found = True
                                 break
                         if not found:
                             iface = {
                                 "name": ifname,
                                 "type": "physical",
-                                "subinterfaces": [{
-                                    "name": ifname,
-                                    "enabled_afi": ["BRIDGE"],
-                                    "tagged_vlans": [vlan_id]
-                                }]
+                                "subinterfaces": [
+                                    {
+                                        "name": ifname,
+                                        "enabled_afi": ["BRIDGE"],
+                                        "tagged_vlans": [vlan_id],
+                                    }
+                                ],
                             }
                             interfaces += [iface]
                 if i[3] != "none":
@@ -105,20 +101,20 @@ class Script(BaseScript):
                         found = False
                         for iface in interfaces:
                             if iface["name"] == ifname:
-                                iface["subinterfaces"][0][
-                                    "untagged_vlan"
-                                ] = vlan_id
+                                iface["subinterfaces"][0]["untagged_vlan"] = vlan_id
                                 found = True
                                 break
                         if not found:
                             iface = {
                                 "name": ifname,
                                 "type": "physical",
-                                "subinterfaces": [{
-                                    "name": ifname,
-                                    "enabled_afi": ["BRIDGE"],
-                                    "untagged_vlan": vlan_id
-                                }]
+                                "subinterfaces": [
+                                    {
+                                        "name": ifname,
+                                        "enabled_afi": ["BRIDGE"],
+                                        "untagged_vlan": vlan_id,
+                                    }
+                                ],
                             }
                             interfaces += [iface]
             for i in interfaces:
@@ -138,22 +134,22 @@ class Script(BaseScript):
                     pass
         c = self.cli("show management")
         match = self.rx_mgmt.search(c)
-        ip_address = "%s/%s" % (
-            match.group("ip"), IPv4.netmask_to_len(match.group("mask"))
-        )
+        ip_address = "%s/%s" % (match.group("ip"), IPv4.netmask_to_len(match.group("mask")))
         iface = {
             "name": "management",
             "type": "SVI",
             "admin_status": True,
             "oper_status": True,
-            "subinterfaces": [{
-                "name": "management",
-                "admin_status": True,
-                "oper_status": True,
-                "enabled_afi": ["IPv4"],
-                "ipv4_addresses": [ip_address],
-                "vlan_ids": int(match.group("vlan_id"))
-            }]
+            "subinterfaces": [
+                {
+                    "name": "management",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "enabled_afi": ["IPv4"],
+                    "ipv4_addresses": [ip_address],
+                    "vlan_ids": int(match.group("vlan_id")),
+                }
+            ],
         }
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         iface["mac"] = mac

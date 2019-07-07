@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -29,7 +30,7 @@ class Script(BaseScript):
         r"^Time remaining: \d+\s*\n"
         r"^system capabilities:.*\n"
         r"^enabled capabilities:(?P<caps>.*?)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -59,9 +60,15 @@ class Script(BaseScript):
                 c = c.strip()
                 if c and c != "not":
                     caps |= {
-                        "O": 1, "P": 2, "B": 4,
-                        "W": 8, "R": 16, "r": 16, "T": 32,
-                        "C": 64, "S": 128
+                        "O": 1,
+                        "P": 2,
+                        "B": 4,
+                        "W": 8,
+                        "R": 16,
+                        "r": 16,
+                        "T": 32,
+                        "C": 64,
+                        "S": 128,
                     }[c]
             """
             if "O" in i[4]:
@@ -86,19 +93,15 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": chassis_id_subtype,
                 "remote_port": port_id,
                 "remote_port_subtype": port_id_subtype,
-                "remote_capabilities": caps
+                "remote_capabilities": caps,
             }
             if i[3]:
                 neighbor["remote_system_name"] = i[3]
-            r += [{
-                "local_interface": i[0],
-                "neighbors": [neighbor]
-            }]
+            r += [{"local_interface": i[0], "neighbors": [neighbor]}]
         if not t:
             for iface in self.scripts.get_interface_status():
                 c = self.cli(
-                    "show lldp neighbors interface %s" % iface["interface"],
-                    ignore_errors=True
+                    "show lldp neighbors interface %s" % iface["interface"], ignore_errors=True
                 )
                 c = c.replace("\n\n", "\n")
                 neighbors = []
@@ -126,16 +129,22 @@ class Script(BaseScript):
                                 break
                             if c and (c != "--"):
                                 caps |= {
-                                    "O": 1, "P": 2, "B": 4,
-                                    "W": 8, "R": 16, "r": 16, "T": 32,
-                                    "C": 64, "S": 128
+                                    "O": 1,
+                                    "P": 2,
+                                    "B": 4,
+                                    "W": 8,
+                                    "R": 16,
+                                    "r": 16,
+                                    "T": 32,
+                                    "C": 64,
+                                    "S": 128,
                                 }[c]
                     neighbor = {
                         "remote_chassis_id": chassis_id,
                         "remote_chassis_id_subtype": chassis_id_subtype,
                         "remote_port": port_id,
                         "remote_port_subtype": port_id_subtype,
-                        "remote_capabilities": caps
+                        "remote_capabilities": caps,
                     }
                     port_descr = match.group("port_descr").strip()
                     system_name = match.group("system_name").strip()
@@ -148,8 +157,5 @@ class Script(BaseScript):
                         neighbor["remote_system_description"] = system_descr
                     neighbors += [neighbor]
                 if neighbors:
-                    r += [{
-                        "local_interface": iface["interface"],
-                        "neighbors": neighbors
-                    }]
+                    r += [{"local_interface": iface["interface"], "neighbors": neighbors}]
         return r

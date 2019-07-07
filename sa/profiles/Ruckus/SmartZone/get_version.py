@@ -26,9 +26,7 @@ class Script(BaseScript):
                     "vendor": "Ruckus",
                     "version": "3.4.1.0.38",  # no oid
                     "platform": platform,
-                    "attributes": {
-                        "SN": serial
-                    }
+                    "attributes": {"SN": serial},
                 }
             except self.snmp.TimeOutError:
                 pass

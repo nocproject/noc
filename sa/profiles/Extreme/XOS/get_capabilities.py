@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -46,9 +47,11 @@ class Script(BaseScript):
         :return:
         """
         cmd = self.cli("show lacp")
-        cmd = [c for c in cmd.splitlines() if
-               ("LACP Up" in c and "Yes" in c) or
-               ("LACP Enabled" in c and "Yes" in c)]
+        cmd = [
+            c
+            for c in cmd.splitlines()
+            if ("LACP Up" in c and "Yes" in c) or ("LACP Enabled" in c and "Yes" in c)
+        ]
         return len(cmd) == 2
 
     def execute_platform_cli(self, caps):

@@ -20,10 +20,13 @@ class Script(BaseScript):
         r"(?P<count>\d+) packets transmitted, "
         r"(?P<success>\d+) packets received, \d+% packet loss\n"
         r"round-trip( \(ms\))? min/avg/max = "
-        r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE)
+        r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
+        re.MULTILINE,
+    )
     rx_result2 = re.compile(
         r"(?P<count>\d+) packets transmitted, "
-        r"(?P<success>\d+) packets received, \d+% packet loss")
+        r"(?P<success>\d+) packets received, \d+% packet loss"
+    )
 
     def execute(self, address, count=None, source_address=None, size=None):
         if is_ipv4(address):
@@ -54,11 +57,8 @@ class Script(BaseScript):
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
             match = self.rx_result2.search(s)
-            return {
-                "success": match.group("success"),
-                "count": match.group("count")
-            }
+            return {"success": match.group("success"), "count": match.group("count")}

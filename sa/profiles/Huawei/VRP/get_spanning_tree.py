@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -51,8 +52,10 @@ class Script(BaseScript):
                     "desi": "designated",
                     "mast": "master",
                     "????": "nonstp",
-                    "_": "unknown"
-                }[R[2].lower()],  # @todo: refine roles
+                    "_": "unknown",
+                }[
+                    R[2].lower()
+                ],  # @todo: refine roles
                 "state": {
                     "dis": "disabled",
                     "discarding": "discarding",
@@ -61,29 +64,33 @@ class Script(BaseScript):
                     "??": "learning",
                     "forwarding": "forwarding",
                     "listening": "listen",
-                    "lbk": "loopback"
-                }[R[3].lower()]  # @todo: refine states
+                    "lbk": "loopback",
+                }[
+                    R[3].lower()
+                ],  # @todo: refine states
             }
         return ports
 
-    rx_stp_disabled = re.compile(
-        "Protocol Status\s+:\s*Disabled", re.MULTILINE)
+    rx_stp_disabled = re.compile("Protocol Status\s+:\s*Disabled", re.MULTILINE)
 
     rx_mstp_region = re.compile(
         r"Region name\s+:(?P<region>\S+).+Revision level\s+:(?P<revision>\d+)",
-        re.DOTALL | re.MULTILINE | re.IGNORECASE)
+        re.DOTALL | re.MULTILINE | re.IGNORECASE,
+    )
 
     rx_mstp_instance = re.compile(r"^\s*(\d+)\s+(.+)?", re.MULTILINE)
 
     rx_mstp0_bridge = re.compile(
         r"CIST\sBridge\s+:(?P<bridge_priority>\d+)(\s*|)\.(?P<bridge_id>\S+).+?"
         r"CIST\sRoot/ERPC\s+:(?P<root_priority>\d+)(\s*|)\.(?P<root_id>\S+)\s",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     rx_mstp_bridge = re.compile(
         r"MSTI\sBridge\sID\s+:(?P<bridge_priority>\d+)(\s*|)\.(?P<bridge_id>\S+).+?"
         r"MSTI\sRegRoot/[IE]RPC\s+:(?P<root_priority>\d+)(\s*|)\.(?P<root_id>\S+)\s",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     rx_mstp0_interfaces = re.compile(
         r"^----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
@@ -95,7 +102,8 @@ class Script(BaseScript):
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).*?"
         r"\s+Port\sEdged\s+:Config=(?P<edge_config>\S+)\s/\sActive=(?P<edge_status>\S+).+?"
         r"\s+Point-to-point\s+:Config=(?P<ptop_config>\S+)\s/\sActive=(?P<ptop_status>\S+)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     rx_mstp_interfaces = re.compile(
         r"----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
@@ -104,7 +112,8 @@ class Script(BaseScript):
         r"\s+Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
         r"\s+(Desg\.|Designated)\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).*?",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def process_mstp(self, ports=None):
         check_d = re.compile("\s*\d+\s*")
@@ -115,11 +124,8 @@ class Script(BaseScript):
             "mode": "MSTP",
             "instances": [],
             "configuration": {
-                "MSTP": {
-                    "region": match.group("region"),
-                    "revision": int(match.group("revision")),
-                }
-            }
+                "MSTP": {"region": match.group("region"), "revision": int(match.group("revision"))}
+            },
         }
         iv = {}  # instance -> vlans
         instance_table = v.splitlines()[6:]
@@ -154,19 +160,20 @@ class Script(BaseScript):
                 else:
                     match = self.rx_mstp_bridge.search(I)
                     v2 = self.rx_mstp_interfaces.finditer(I)
-                r["instances"] += [{
-                    "id": int(instance_id),
-                    "vlans": iv[instance_id],
-                    "root_id": match.group("root_id"),
-                    "root_priority": match.group("root_priority"),
-                    "bridge_id": match.group("bridge_id"),
-                    "bridge_priority": match.group("bridge_priority"),
-                }]
+                r["instances"] += [
+                    {
+                        "id": int(instance_id),
+                        "vlans": iv[instance_id],
+                        "root_id": match.group("root_id"),
+                        "root_priority": match.group("root_priority"),
+                        "bridge_id": match.group("bridge_id"),
+                        "bridge_priority": match.group("bridge_priority"),
+                    }
+                ]
                 if instance_id not in interfaces:
                     interfaces[instance_id] = []
                 for match in v2:
-                    interface = self.profile.convert_interface_name(
-                        match.group("interface"))
+                    interface = self.profile.convert_interface_name(match.group("interface"))
                     if interface not in ports[instance_id]:
                         continue
                     ptop = False
@@ -175,19 +182,20 @@ class Script(BaseScript):
                         ptop = match.group("ptop_status") == "true"
                         edge = match.group("edge_status") == "true"
                     port_attrs = ports[instance_id][interface]
-                    interfaces[instance_id] += [{
-                        "interface": interface,
-                        "port_id": "%s.%s" % (match.group("priority"), match.group("port_id")),
-                        "state": port_attrs["state"],
-                        "role": port_attrs["role"],
-                        "priority": match.group("priority"),
-                        "designated_bridge_id": match.group("designated_bridge_id"),
-                        "designated_bridge_priority": match.group(
-                            "designated_bridge_priority"),
-                        "designated_port_id": match.group("designated_port_id"),
-                        "point_to_point": ptop,
-                        "edge": edge
-                    }]
+                    interfaces[instance_id] += [
+                        {
+                            "interface": interface,
+                            "port_id": "%s.%s" % (match.group("priority"), match.group("port_id")),
+                            "state": port_attrs["state"],
+                            "role": port_attrs["role"],
+                            "priority": match.group("priority"),
+                            "designated_bridge_id": match.group("designated_bridge_id"),
+                            "designated_bridge_priority": match.group("designated_bridge_priority"),
+                            "designated_port_id": match.group("designated_port_id"),
+                            "point_to_point": ptop,
+                            "edge": edge,
+                        }
+                    ]
         for st in r["instances"]:
             st["interfaces"] = interfaces[st["id"]]
         return r

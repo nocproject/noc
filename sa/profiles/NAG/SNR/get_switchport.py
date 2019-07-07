@@ -49,40 +49,41 @@ class Script(BaseScript):
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
                 for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.2.1.4", "1.3.6.1.2.1.17.7.1.4.2.1.5"],
-                        bulk=True):
+                    [
+                        "1.3.6.1.2.1.17.7.1.4.2.1.3",
+                        "1.3.6.1.2.1.17.7.1.4.2.1.4",
+                        "1.3.6.1.2.1.17.7.1.4.2.1.5",
+                    ],
+                    bulk=True,
+                ):
                     tagged = v[2]
                     untagged = v[3]
 
                     s = self.hex_to_bin(untagged)
                     un = []
                     for i in range(len(s)):
-                        if s[i] == '1':
+                        if s[i] == "1":
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
                             if iface not in port_vlans:
-                                port_vlans.update({iface: {
-                                    "tagged": [],
-                                    "untagged": '',
-                                }})
+                                port_vlans.update({iface: {"tagged": [], "untagged": ""}})
                             port_vlans[iface]["untagged"] = v[1]
                             un += [str(i + 1)]
 
                     s = self.hex_to_bin(tagged)
                     for i in range(len(s)):
-                        if s[i] == '1' and str(i + 1) not in un:
+                        if s[i] == "1" and str(i + 1) not in un:
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
                             if iface not in port_vlans:
-                                port_vlans.update({iface: {
-                                    "tagged": [],
-                                    "untagged": '',
-                                }})
+                                port_vlans.update({iface: {"tagged": [], "untagged": ""}})
                             port_vlans[iface]["tagged"].append(v[1])
 
                 # Get switchport description
                 port_descr = {}
-                for iface, description in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
+                for iface, description in self.snmp.join_tables(
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"
+                ):
                     port_descr.update({iface: description})
             except self.snmp.TimeOutError:
                 raise Exception("Not implemented")
@@ -103,7 +104,7 @@ class Script(BaseScript):
                                         status = True
                                 description = port_descr[name]
                                 if not description:
-                                    description = ''
+                                    description = ""
                                 members = p["members"]
                                 portchannels.remove(p)
                                 write = True
@@ -115,7 +116,7 @@ class Script(BaseScript):
                             status = False
                         description = port_descr[name]
                         if not description:
-                            description = ''
+                            description = ""
                         members = []
                         write = True
                     if write:
@@ -126,7 +127,7 @@ class Script(BaseScript):
                         swp = {
                             "status": status,
                             "description": description,
-                            "802.1Q Enabled": len(port_vlans.get(name, '')) > 0,
+                            "802.1Q Enabled": len(port_vlans.get(name, "")) > 0,
                             "802.1ad Tunnel": vlan_stack_status.get(name, False),
                             "tagged": tagged,
                         }

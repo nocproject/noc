@@ -9,6 +9,7 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -24,11 +25,9 @@ class Script(BaseScript):
         r" +(?P<vstatus>enabled|disabled)[ 0-9]+\n([ \-xnf]+)\n"
         r" +(?P<portmask>[\-tu]+)"
         r" *(?P<uplinkmask>[\-tu]*)",
-        re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(
-        r"MAC\saddress:\s(?P<mac>\S+)\s*",
-        re.IGNORECASE
+        re.MULTILINE | re.IGNORECASE,
     )
+    rx_mac = re.compile(r"MAC\saddress:\s(?P<mac>\S+)\s*", re.IGNORECASE)
 
     def execute(self):
         # Management ip interface
@@ -37,26 +36,29 @@ class Script(BaseScript):
         sys_mac = self.cli("sys info show")
         mac = re.findall(self.rx_mac, sys_mac)[0]
         vl = mgmt_vlan.splitlines()[0].split(":")[1].strip()
-        ip = [IPv4(parse_table(ipif)[0][1],
-                   netmask=parse_table(ipif)[0][2]).prefix]
-        i = [{
-            "admin_status": True,
-            "enabled_protocols": [],
-            "mac": mac,
-            "name": parse_table(ipif)[0][0],
-            "oper_status": True,
-            "subinterfaces": [{
+        ip = [IPv4(parse_table(ipif)[0][1], netmask=parse_table(ipif)[0][2]).prefix]
+        i = [
+            {
                 "admin_status": True,
-                "enabled_afi": ["IPv4"],
                 "enabled_protocols": [],
-                "ipv4_addresses": ip,
                 "mac": mac,
                 "name": parse_table(ipif)[0][0],
                 "oper_status": True,
-                "vlan_ids": [vl]
-            }],
-            "type": "SVI"
-        }]
+                "subinterfaces": [
+                    {
+                        "admin_status": True,
+                        "enabled_afi": ["IPv4"],
+                        "enabled_protocols": [],
+                        "ipv4_addresses": ip,
+                        "mac": mac,
+                        "name": parse_table(ipif)[0][0],
+                        "oper_status": True,
+                        "vlan_ids": [vl],
+                    }
+                ],
+                "type": "SVI",
+            }
+        ]
         # ADSL ports
         phy_ports = self.cli("adsl show")
         oper_ports = self.cli("statistics adsl show")  # noqa
@@ -81,25 +83,29 @@ class Script(BaseScript):
                     self.logger.info("Skipping star vlan")
                     continue
                 if s[0] == phy[0]:
-                    sub += [{
-                        "name": s[0],
-                        "admin_status": True,
-                        "oper_status": True,
-                        "enabled_afi": ["ATM", "BRIDGE"],
-                        "description": description,
-                        "untagged_vlan": s[3],
-                        "vpi": s[1],
-                        "vci": s[2]
-                    }]
-            i += [{
-                "name": phy[0],
-                "type": "physical",
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "description": description,
-                "subinterfaces": sub,
-                "snmp_ifindex": phy[0]
-            }]
+                    sub += [
+                        {
+                            "name": s[0],
+                            "admin_status": True,
+                            "oper_status": True,
+                            "enabled_afi": ["ATM", "BRIDGE"],
+                            "description": description,
+                            "untagged_vlan": s[3],
+                            "vpi": s[1],
+                            "vci": s[2],
+                        }
+                    ]
+            i += [
+                {
+                    "name": phy[0],
+                    "type": "physical",
+                    "admin_status": admin_status,
+                    "oper_status": oper_status,
+                    "description": description,
+                    "subinterfaces": sub,
+                    "snmp_ifindex": phy[0],
+                }
+            ]
         # Enet ports info
         enet_ports = self.cli("statistics enet")
         tagged = defaultdict(list)
@@ -118,20 +124,24 @@ class Script(BaseScript):
                 oper_status = False
             elif parse_table(enet_ports)[y][1] == "link down":
                 oper_status = False
-            i += [{
-                "name": "enet%d" % (y + 1),
-                "type": "physical",
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "mac": mac,
-                "snmp_ifindex": y + 49,
-                "subinterfaces": [{
-                    "admin_status": admin_status,
-                    "enabled_afi": ["BRIDGE"],
-                    "oper_status": oper_status,
+            i += [
+                {
                     "name": "enet%d" % (y + 1),
+                    "type": "physical",
+                    "admin_status": admin_status,
+                    "oper_status": oper_status,
                     "mac": mac,
-                    "tagged_vlans": tagged[y + 1]
-                }]
-            }]
+                    "snmp_ifindex": y + 49,
+                    "subinterfaces": [
+                        {
+                            "admin_status": admin_status,
+                            "enabled_afi": ["BRIDGE"],
+                            "oper_status": oper_status,
+                            "name": "enet%d" % (y + 1),
+                            "mac": mac,
+                            "tagged_vlans": tagged[y + 1],
+                        }
+                    ],
+                }
+            ]
         return [{"interfaces": i}]

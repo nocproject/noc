@@ -15,14 +15,15 @@ class Script(BaseScript):
     """
     Brocade.CER-ADV.add_vlan
     """
-    name = 'Brocade.CER-ADV.add_vlan'
+
+    name = "Brocade.CER-ADV.add_vlan"
     interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports):
         with self.configure():
-            self.cli('vlan %d name %s' % (vlan_id, name))
+            self.cli("vlan %d name %s" % (vlan_id, name))
             if tagged_ports:
-                self.cli('tagged ' + ' '.join(tagged_ports))
-            self.cli('exit')
+                self.cli("tagged " + " ".join(tagged_ports))
+            self.cli("exit")
         self.save_config()
         return True

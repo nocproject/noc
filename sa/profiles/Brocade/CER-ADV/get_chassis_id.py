@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -17,13 +18,15 @@ class Script(BaseScript):
     """
     Brocade.CER-ADV.get_chassis_id
     """
-    name = 'Brocade.CER-ADV.get_chassis_id'
+
+    name = "Brocade.CER-ADV.get_chassis_id"
     interface = IGetChassisID
-    rx_mac = re.compile('([0-9a-f]{4}\\.[0-9a-f]{4}\\.[0-9a-f]{4})', re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_mac = re.compile(
+        "([0-9a-f]{4}\\.[0-9a-f]{4}\\.[0-9a-f]{4})", re.IGNORECASE | re.MULTILINE | re.DOTALL
+    )
 
     def execute(self):
-        v = self.cli('show chassis')
+        v = self.cli("show chassis")
         match = self.re_search(self.rx_mac, v)
         mac = match.group(1)
-        return {'first_chassis_mac': mac,
-         'last_chassis_mac': mac}
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

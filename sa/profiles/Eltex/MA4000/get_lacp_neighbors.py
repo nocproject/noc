@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
@@ -17,11 +18,7 @@ class Script(BaseScript):
     name = "Eltex.MA4000.get_lacp_neighbors"
     interface = IGetLACPNeighbors
 
-    rx_cg = re.compile(
-        r"^Channel group \d+\s*\n"
-        r"^\s*Mode: LACP\s*\n",
-        re.MULTILINE
-    )
+    rx_cg = re.compile(r"^Channel group \d+\s*\n" r"^\s*Mode: LACP\s*\n", re.MULTILINE)
     rx_members = re.compile(
         r"^\s*Channel group.*\n"
         r"^\s*Actor System\s+Partner System\s*\n"
@@ -33,7 +30,7 @@ class Script(BaseScript):
         r"^\s*Port Number:\s+(?P<local_port_id>\d+)\s+(?P<remote_port_id>\d+)\s*\n"
         r"^\s*Port Priority:.*\n"
         r"^\s*LACP Activity:.*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -42,11 +39,7 @@ class Script(BaseScript):
             c = self.cli("show channel-group lacp %s" % cg)
             match = self.rx_cg.search(c)
             if match:
-                i = {
-                    "lag_id": cg,
-                    "interface": "port-channel %s" % cg,
-                    "bundle": []
-                }
+                i = {"lag_id": cg, "interface": "port-channel %s" % cg, "bundle": []}
                 for match1 in self.rx_members.finditer(c):
                     if match1.group("remote_sys_id") == "00:00:00:00:00:00":
                         continue

@@ -21,8 +21,5 @@ class Script(BaseScript):
         r = []
         c = self.cli("show vlan", cached=True)
         for i in parse_table(c, allow_wrap=True, n_row_delim=","):
-            r += [{
-                "vlan_id": i[0],
-                "name": i[2]
-            }]
+            r += [{"vlan_id": i[0], "name": i[2]}]
         return r

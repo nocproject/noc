@@ -9,8 +9,10 @@
 # Python modules
 import re
 from threading import Lock
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.icommands import ICommands
@@ -22,6 +24,7 @@ class Script(BaseScript):
     """
     Execute a list of CLI commands and return a list of results
     """
+
     name = "Generic.commands"
     interface = ICommands
     requires = []
@@ -29,10 +32,7 @@ class Script(BaseScript):
     CMD_SEP = "\n\n"
 
     def execute(self, commands, ignore_cli_errors=False, include_commands=False):
-        r = {
-            "errors": False,
-            "output": []
-        }
+        r = {"errors": False, "output": []}
         for cmd in self.format_multiline(commands):
             try:
                 out = self.cli(cmd)

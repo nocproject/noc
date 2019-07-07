@@ -17,7 +17,10 @@ import time
 class Script(BaseScript):
     name = "DLink.DxS.get_dhcp_binding"
     interface = IGetDHCPBinding
-    rx_line = re.compile(r"^(?P<name>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<type>Ethernet)\s+(?P<status>Automatic|Manual)\s+(?P<expire>.+?).*$", re.IGNORECASE | re.MULTILINE)
+    rx_line = re.compile(
+        r"^(?P<name>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<type>Ethernet)\s+(?P<status>Automatic|Manual)\s+(?P<expire>.+?).*$",
+        re.IGNORECASE | re.MULTILINE,
+    )
 
     def execute(self):
         try:
@@ -31,10 +34,12 @@ class Script(BaseScript):
                 expire = d
             else:
                 expire = datetime.datetime.fromtimestamp(time.time() + int(d))
-            r += [{
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "expiration": expire,
-                "type": match.group("status")[0].upper(),
-            }]
+            r += [
+                {
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "expiration": expire,
+                    "type": match.group("status")[0].upper(),
+                }
+            ]
         return r

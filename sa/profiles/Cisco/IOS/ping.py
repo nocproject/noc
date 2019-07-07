@@ -16,10 +16,11 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
         r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"
-        r" ms)?", re.MULTILINE | re.DOTALL)
+        r" ms)?",
+        re.MULTILINE | re.DOTALL,
+    )
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         cmd = "ping ip %s" % address
         if count:
             cmd += " count %d" % int(count)
@@ -34,9 +35,9 @@ class Script(BaseScript):
         pr = self.cli(cmd)
         match = self.rx_result.search(pr)
         return {
-                "success": match.group("success"),
-                "count": match.group("count"),
-                "min": match.group("min") if match.group("min") else 0.0,
-                "avg": match.group("avg") if match.group("avg") else 0.0,
-                "max": match.group("max") if match.group("max") else 0.0,
-            }
+            "success": match.group("success"),
+            "count": match.group("count"),
+            "min": match.group("min") if match.group("min") else 0.0,
+            "avg": match.group("avg") if match.group("avg") else 0.0,
+            "max": match.group("max") if match.group("max") else 0.0,
+        }

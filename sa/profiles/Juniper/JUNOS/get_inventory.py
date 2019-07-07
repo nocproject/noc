@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -21,8 +22,7 @@ class Script(BaseScript):
     UNKNOWN_XCVR = "NoName | Transceiver | Unknown"
 
     rx_chassis = re.compile(
-        r"^Chassis\s+(?P<revision>REV \d+)?\s+(?P<serial>\S+)\s+(?P<rest>.+)$",
-        re.IGNORECASE
+        r"^Chassis\s+(?P<revision>REV \d+)?\s+(?P<serial>\S+)\s+(?P<rest>.+)$", re.IGNORECASE
     )
 
     rx_part = re.compile(
@@ -30,7 +30,9 @@ class Script(BaseScript):
         r"(?P<revision>rev \d+|\S{1,6})?\s+"
         r"(?P<part_no>\d{3}-\d{6}|NON-JNPR|BUILTIN)\s+"
         r"(?P<serial>\S+)\s+"
-        r"(?P<rest>.+)$", re.IGNORECASE)
+        r"(?P<rest>.+)$",
+        re.IGNORECASE,
+    )
 
     TYPE_MAP = {
         "CHASSIS": "CHASSIS",
@@ -45,7 +47,7 @@ class Script(BaseScript):
         "PIC": "PIC",
         "XCVR": "XCVR",
         "FTC": "FAN",
-        "FAN TRAY": "FAN"
+        "FAN TRAY": "FAN",
     }
 
     IGNORED = {
@@ -58,7 +60,7 @@ class Script(BaseScript):
             "710-017560",  # 710-017560
             "750-021778",  # RE-SRX210B
             "710-015273",  # RE-J4350-2540
-            "710-017560"   # RE-J2320-2000
+            "710-017560",  # RE-J2320-2000
         }
     }
 
@@ -81,8 +83,7 @@ class Script(BaseScript):
                 match = self.rx_chassis.search(line)
                 if match:
                     rev = match.group("revision")
-                    yield ("Chassis", rev, None,
-                           match.group("serial"), match.group("rest"))
+                    yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
     def execute(self):
         self.chassis_no = None
@@ -95,9 +96,9 @@ class Script(BaseScript):
             # Detect type
             t, number = self.get_type(name)
             if not t:
-                self.logger.error("Unknown module: %s %s %s %s %s",
-                                  name, revision, part_no,
-                                  serial, description)
+                self.logger.error(
+                    "Unknown module: %s %s %s %s %s", name, revision, part_no, serial, description
+                )
                 continue
             # Discard virtual chassis and ignored part numbers
             if description == "Virtual Chassis":
@@ -126,22 +127,21 @@ class Script(BaseScript):
             elif serial == "BUILTIN" or serial in chassis_sn:
                 builtin = True
                 part_no = []
-            if (
-                t == "CHASSIS" and number is None and
-                self.chassis_no is not None
-            ):
+            if t == "CHASSIS" and number is None and self.chassis_no is not None:
                 number = self.chassis_no
             # Submit object
-            objects += [{
-                "type": t,
-                "number": number,
-                "vendor": vendor,
-                "serial": serial,
-                "description": description,
-                "part_no": part_no,
-                "revision": revision,
-                "builtin": builtin
-            }]
+            objects += [
+                {
+                    "type": t,
+                    "number": number,
+                    "vendor": vendor,
+                    "serial": serial,
+                    "description": description,
+                    "part_no": part_no,
+                    "revision": revision,
+                    "builtin": builtin,
+                }
+            ]
         return objects
 
     def get_type(self, name):
@@ -169,7 +169,6 @@ class Script(BaseScript):
             # SFP+-10G-LR
             t, s, m = n
         else:
-            self.logger.error("Cannot detect transceiver type: '%s'",
-                              description)
+            self.logger.error("Cannot detect transceiver type: '%s'", description)
             return self.UNKNOWN_XCVR
         return "NoName | Transceiver | %s | %s %s" % (s, t, m)

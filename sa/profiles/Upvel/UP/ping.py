@@ -16,8 +16,7 @@ import re
 class Script(BaseScript):
     name = "Upvel.UP.ping"
     interface = IPing
-    rx_result = re.compile(
-        r"Sent (?P<count>\d+) packets, received (?P<success>\d+) OK, \d+ bad")
+    rx_result = re.compile(r"Sent (?P<count>\d+) packets, received (?P<success>\d+) OK, \d+ bad")
 
     def execute(self, address, count=None, source_address=None, size=None):
         if is_ipv4(address):

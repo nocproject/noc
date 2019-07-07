@@ -9,6 +9,7 @@
 # Python modules
 import re
 from noc.core.script.base import BaseScript
+
 # NOC modules
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
@@ -18,11 +19,10 @@ class Script(BaseScript):
     interface = IGetFQDN
 
     rx_hostname = re.compile(r"^hostname (?P<hostname>\S+)$", re.MULTILINE)
-    rx_domain_name = re.compile(
-        r"^ip domain name (?P<domain>\S+)$", re.MULTILINE)
+    rx_domain_name = re.compile(r"^ip domain name (?P<domain>\S+)$", re.MULTILINE)
 
     def execute(self):
-        fqdn = ''
+        fqdn = ""
         # Try SNMP first
         if self.has_snmp():
             try:
@@ -37,5 +37,5 @@ class Script(BaseScript):
             fqdn = match.group("hostname")
             match = self.rx_domain_name.search(v)
             if match:
-                fqdn = fqdn + '.' + match.group("domain")
+                fqdn = fqdn + "." + match.group("domain")
         return fqdn

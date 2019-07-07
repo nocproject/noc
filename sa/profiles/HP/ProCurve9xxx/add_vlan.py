@@ -19,7 +19,7 @@ class Script(BaseScript):
         with self.configure():
             self.cli("vlan %d name %s" % (vlan_id, name))
             if tagged_ports:
-                self.cli("tagged " + " " . join(tagged_ports))
+                self.cli("tagged " + " ".join(tagged_ports))
             self.cli("exit")
         self.save_config()
         return True

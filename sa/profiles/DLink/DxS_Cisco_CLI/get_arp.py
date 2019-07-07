@@ -16,15 +16,18 @@ class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_arp"
     interface = IGetARP
     rx_line = re.compile(
-        r"^Internet\s+(?P<ip>\S+)\s+(\d+|\-\-)\s+(?P<mac>\S+)\s+arpa\s+"
-        r"(?P<interface>.+)\s*$", re.MULTILINE)
+        r"^Internet\s+(?P<ip>\S+)\s+(\d+|\-\-)\s+(?P<mac>\S+)\s+arpa\s+" r"(?P<interface>.+)\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
         for match in self.rx_line.finditer(self.cli("show arp")):
-            r += [{
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "interface": match.group("interface").strip()
-                }]
+            r += [
+                {
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface").strip(),
+                }
+            ]
         return r

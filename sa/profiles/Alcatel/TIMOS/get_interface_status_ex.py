@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -31,6 +32,7 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
+
             def f(x):
                 return x
 
@@ -47,20 +49,17 @@ class Script(BaseScript):
             try:
                 v = self.profile.convert_interface_name(name)
             except InterfaceTypeError as e:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, e
-                )
+                self.logger.debug("Ignoring unknown interface %s: %s", name, e)
                 unknown_interfaces += [name]
                 continue
-            r[ifindex] = {
-                "interface": v
-            }
+            r[ifindex] = {"interface": v}
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
         # @todo Return index on format tmnxChassisIndex, tmnxPortPortID, needed fix get_iftable
-        self.apply_table(r, "1.3.6.1.4.1.6527.3.1.2.2.4.2.1.39", "oper_status", lambda x: x in [4, 5])
+        self.apply_table(
+            r, "1.3.6.1.4.1.6527.3.1.2.2.4.2.1.39", "oper_status", lambda x: x in [4, 5]
+        )
         # Apply ifSpeed
         s_table = self.get_iftable("IF-MIB::ifSpeed")
         highspeed = set()
@@ -84,8 +83,7 @@ class Script(BaseScript):
                         r[ifindex]["in_speed"] = s * 1000
                         r[ifindex]["out_speed"] = s * 1000
         if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
+            self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
         return list(six.itervalues(r))
 
     def execute_snmp(self, interfaces=None, **kwargs):

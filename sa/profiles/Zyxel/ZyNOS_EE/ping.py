@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -18,10 +19,10 @@ class Script(BaseScript):
     interface = IPing
     rx_result = re.compile(
         r"^\s+(?P<count>\d+)\s+(?P<success>\d+)\s+\d+\s+\d+\s+(?P<avg>\d+)\s+\d+\s+(?P<max>\d+)\s+(?P<min>\d+)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ip ping %s" % address
         success = 0
         count = 3  # 3 times by default
@@ -34,10 +35,4 @@ class Script(BaseScript):
             min = match.group("min")
             avg = match.group("avg")
             max = match.group("max")
-        return {
-            "success": success,
-            "count": count,
-            "min": min,
-            "avg": avg,
-            "max": max,
-            }
+        return {"success": success, "count": count, "min": min, "avg": avg, "max": max}

@@ -8,14 +8,19 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NETWORK_ADDRESS, LLDP_PORT_SUBTYPE_NAME, LLDP_PORT_SUBTYPE_LOCAL
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_LOCAL,
 )
 
 
@@ -30,11 +35,15 @@ class Script(BaseScript):
 
     rx_lldp_nei = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)\s+(\(\d\.\d\))?(?P<chassis_id>\S+)\s+"
-        r"(?P<port_id>\S+)\s+\d+\s+\d+", re.DOTALL | re.MULTILINE)
+        r"(?P<port_id>\S+)\s+\d+\s+\d+",
+        re.DOTALL | re.MULTILINE,
+    )
     rx_edp_nei = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)\s+(?P<name>\S+)\s+"
         r"[0-9a-f]{2}:[0-9a-f]{2}:(?P<chassis_id>\S+)\s+"
-        r"\d:(?P<port_id>\d+)\s+\d+\s+\d+", re.DOTALL | re.MULTILINE)
+        r"\d:(?P<port_id>\d+)\s+\d+\s+\d+",
+        re.DOTALL | re.MULTILINE,
+    )
     rx_lldp_detail = re.compile(
         r"^\s+- Chassis ID type\s*: (?P<chassis_id_subtype>.+)\n"
         r"^\s+Chassis ID\s*: (?P<chassis_id>\S+)\s*\n"
@@ -48,15 +57,16 @@ class Script(BaseScript):
         r"(^\s+- Port Description: (?P<port_descr>.+)\n)?"
         r"(^\s+- Management Address Subtype:.+)?"
         r"^\s+- IEEE802.3 MAC/PHY Configuration/Status\s*\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
     chassis_types = {
         "MAC address (4)": LLDP_CHASSIS_SUBTYPE_MAC,
-        "Network address (5); Address type: IPv4 (1)": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
+        "Network address (5); Address type: IPv4 (1)": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
     }
     port_types = {
         "MAC address (3)": LLDP_PORT_SUBTYPE_MAC,
         "ifName (5)": LLDP_PORT_SUBTYPE_NAME,
-        "Locally assigned (7)": LLDP_PORT_SUBTYPE_LOCAL
+        "Locally assigned (7)": LLDP_PORT_SUBTYPE_LOCAL,
     }
 
     def execute(self):
@@ -96,36 +106,27 @@ class Script(BaseScript):
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
-                "remote_port_subtype": remote_port_subtype
+                "remote_port_subtype": remote_port_subtype,
             }
-            if is_ipv4(n["remote_chassis_id"]) \
-                    or is_ipv6(n["remote_chassis_id"]):
+            if is_ipv4(n["remote_chassis_id"]) or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             else:
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_MAC
             try:
-                c = self.cli(
-                    "show lldp ports %s neighbors detailed" % local_interface
-                )
+                c = self.cli("show lldp ports %s neighbors detailed" % local_interface)
                 match = self.rx_lldp_detail.search(c)
                 if match:
                     port_descr = match.group("port_descr")
                     if port_descr:
-                        n["remote_port_description"] = \
-                            port_descr.replace("\"", "").strip()
+                        n["remote_port_description"] = port_descr.replace('"', "").strip()
                         n["remote_port_description"] = re.sub(
                             r"\\\n\s*", "", n["remote_port_description"]
                         )
-                    n["remote_system_name"] = match.group(
-                        "system_name"
-                    ).replace("\"", "").strip()
-                    n["remote_system_name"] = re.sub(
-                        r"\\\n\s*", "", n["remote_system_name"]
-                    )
+                    n["remote_system_name"] = match.group("system_name").replace('"', "").strip()
+                    n["remote_system_name"] = re.sub(r"\\\n\s*", "", n["remote_system_name"])
                     sys_descr = match.group("system_descr")
                     if sys_descr:
-                        n["remote_system_description"] =  \
-                            sys_descr.replace("\"", "").strip()
+                        n["remote_system_description"] = sys_descr.replace('"', "").strip()
                         n["remote_system_description"] = re.sub(
                             r"\\\n\s*", "", n["remote_system_description"]
                         )
@@ -173,12 +174,11 @@ class Script(BaseScript):
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
-                "remote_port_subtype": remote_port_subtype
+                "remote_port_subtype": remote_port_subtype,
             }
             if remote_system_name:
                 n["remote_system_name"] = remote_system_name
-            if is_ipv4(n["remote_chassis_id"]) \
-                    or is_ipv6(n["remote_chassis_id"]):
+            if is_ipv4(n["remote_chassis_id"]) or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             else:
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_MAC

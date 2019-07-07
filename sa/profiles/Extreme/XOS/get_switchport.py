@@ -2,16 +2,17 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+
 # @todo: only SNMP version, vrf support
 
 
@@ -24,26 +25,17 @@ class Script(BaseScript):
     rx_line = re.compile(r"\n+Port:\s+", re.MULTILINE)
 
     rx_descr_if = re.compile(
-        r"^(?P<interface>\d+(\:\d+)?)(\s+)?(?P<description>\S+)?(\s+\S+)?",
-        re.MULTILINE
+        r"^(?P<interface>\d+(\:\d+)?)(\s+)?(?P<description>\S+)?(\s+\S+)?", re.MULTILINE
     )
-    rx_snmp_name_eth = re.compile(
-        r"^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.MULTILINE
-    )
-    rx_body_port = re.compile(
-        r"^(?P<interface>\d+(\:\d+)?)(\S+)?", re.MULTILINE
-    )
+    rx_snmp_name_eth = re.compile(r"^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.MULTILINE)
+    rx_body_port = re.compile(r"^(?P<interface>\d+(\:\d+)?)(\S+)?", re.MULTILINE)
     rx_body_untagvl = re.compile(
-        r"^\s+Name:\s+\S+\s+Internal\s+Tag\s+=\s+(?P<avlan>\d+).+",
-        re.MULTILINE
+        r"^\s+Name:\s+\S+\s+Internal\s+Tag\s+=\s+(?P<avlan>\d+).+", re.MULTILINE
     )
     rx_body_tagvl = re.compile(
-        r"^\s+Name:\s+\S+\s+802\.1Q\s+Tag\s+=\s+(?P<tvlan>\d+).+",
-        re.MULTILINE
+        r"^\s+Name:\s+\S+\s+802\.1Q\s+Tag\s+=\s+(?P<tvlan>\d+).+", re.MULTILINE
     )
-    rx_body_omode = re.compile(
-        r"^\s+Link\s+State:\s+(?P<omode>\S+).+", re.MULTILINE
-    )
+    rx_body_omode = re.compile(r"^\s+Link\s+State:\s+(?P<omode>\S+).+", re.MULTILINE)
 
     def get_description(self):
         r = []
@@ -52,7 +44,7 @@ class Script(BaseScript):
                 for pr in self.snmp.get_tables(
                     ["1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.31.1.1.1.18"]
                 ):  # 1.3.6.1.2.1.31.1.1.1.1
-                    if (int(pr[0]) >= 1000000):
+                    if int(pr[0]) >= 1000000:
                         continue
                     match = self.rx_snmp_name_eth.search(pr[1])
                     if match:
@@ -68,12 +60,12 @@ class Script(BaseScript):
             match = self.rx_descr_if.match(l.strip())
             if not match:
                 continue
-            r += [{
-                "interface": self.profile.convert_interface_name(
-                    match.group("interface")
-                ),
-                "description": match.group("description")
-            }]
+            r += [
+                {
+                    "interface": self.profile.convert_interface_name(match.group("interface")),
+                    "description": match.group("description"),
+                }
+            ]
         return r
 
     def execute(self):
@@ -99,9 +91,7 @@ class Script(BaseScript):
             for ss in s.strip().split("\n"):
                 match = self.rx_body_port.search(ss)
                 if match:
-                    interface = self.profile.convert_interface_name(
-                        match.group("interface")
-                    )
+                    interface = self.profile.convert_interface_name(match.group("interface"))
                 match = self.rx_body_omode.search(ss)
                 if match:
                     omodeif = match.group("omode").strip()
@@ -116,7 +106,7 @@ class Script(BaseScript):
             iface = {
                 "interface": interface,
                 "status": omodeif != "Read",
-                "tagged": [v for v in tagged if v in known_vlans],
+                "tagged": [vvv for vvv in tagged if vvv in known_vlans],
                 "members": portchannels.get(interface, []),
                 "802.1Q Enabled": is_trunk,
                 "802.1ad Tunnel": False,

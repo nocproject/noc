@@ -6,6 +6,7 @@
 
 # Third-party modules
 from six.moves import zip
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
@@ -33,7 +34,7 @@ class Script(BaseScript):
                 for line in r:
                     """Get context list from table"""
                     line = line.strip()
-                    if line == '':
+                    if line == "":
                         continue
                     row = line.split()
                     if row[0] == "Total":
@@ -57,7 +58,9 @@ class Script(BaseScript):
                 for c in contexts:
                     """Get configs for context"""
                     config = self.get_config(c["URL"])
-                    complete_config += "!{0}{1}{2}\n{3}\n".format("=" * 40, c["ContextName"], "=" * 40, config)
+                    complete_config += "!{0}{1}{2}\n{3}\n".format(
+                        "=" * 40, c["ContextName"], "=" * 40, config
+                    )
                 return complete_config
         config = self.cli("more system:running-config")
         config = self.strip_first_lines(config, 3)

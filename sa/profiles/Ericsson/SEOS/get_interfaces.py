@@ -9,6 +9,7 @@
 # Python modules
 from collections import defaultdict
 import time
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -33,7 +34,7 @@ class Script(BaseScript):
         135: "SVI",  # l2vlan
         161: "aggregated",  # ieee8023adLag
         53: "SVI",  # propVirtual
-        54: "physical"  # propMultiplexor
+        54: "physical",  # propMultiplexor
     }
 
     def execute_snmp(self, interface=None):
@@ -68,8 +69,11 @@ class Script(BaseScript):
                 "description": self.convert_description(iface.get("description", "")),
                 "type": i_type,
                 "admin_status": iface["admin_status"] if iface.get("admin_status") else False,
-                "oper_status": iface["oper_status"] if iface.get("oper_status") else iface["admin_status"]
-                if iface.get("admin_status") else False,
+                "oper_status": iface["oper_status"]
+                if iface.get("oper_status")
+                else iface["admin_status"]
+                if iface.get("admin_status")
+                else False,
                 "snmp_ifindex": l,
             }
             if iface.get("mac_address") and is_mac(iface["mac_address"]):
@@ -85,7 +89,8 @@ class Script(BaseScript):
                         "description": self.convert_description(l.get("description", "")),
                         "type": "SVI",
                         "enabled_afi": ["BRIDGE"]
-                        if l["type"] in ["physical", "aggregated"] else [],
+                        if l["type"] in ["physical", "aggregated"]
+                        else [],
                         "admin_status": l["admin_status"],
                         "oper_status": l["oper_status"],
                         "snmp_ifindex": l["snmp_ifindex"],

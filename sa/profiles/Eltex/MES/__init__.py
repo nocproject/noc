@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -23,44 +24,34 @@ class Profile(BaseProfile):
         (r"<return>, Quit: q or <ctrl>", " "),
         (r"q or <ctrl>+z", " "),
         (r"Overwrite file \[startup-config\].... \(Y\/N\)", "Y"),
-        (r"Would you like to continue \? \(Y\/N\)\[N\]", "Y")
+        (r"Would you like to continue \? \(Y\/N\)\[N\]", "Y"),
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
-    pattern_syntax_error = \
-        r"% (Unrecognized command|Incomplete command|" \
-        r"Wrong number of parameters or invalid range, size or " \
+    pattern_syntax_error = (
+        r"% (Unrecognized command|Incomplete command|"
+        r"Wrong number of parameters or invalid range, size or "
         r"characters entered)"
+    )
     command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
-    pattern_prompt = \
-        r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)?" \
-        r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)?" r"(?:\(config[^\)]*\))?#"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
     config_tokenizer = "indent"
-    config_tokenizer_settings = {
-        "line_comment": "!",
-        "end_of_context": "exit"
-    }
+    config_tokenizer_settings = {"line_comment": "!", "end_of_context": "exit"}
     config_normalizer = "MESNormalizer"
     confdb_defaults = [
         ("hints", "interfaces", "defaults", "admin-status", True),
         ("hints", "protocols", "lldp", "status", True),
         ("hints", "protocols", "spanning-tree", "status", False),
         ("hints", "protocols", "spanning-tree", "priority", "32768"),
-        ("hints", "protocols", "loop-detect", "status", False)
+        ("hints", "protocols", "loop-detect", "status", False),
     ]
 
-    matchers = {
-        "is_has_image": {
-            "image": {
-                "$regex": r"^\S+"
-            }
-        }
-    }
+    matchers = {"is_has_image": {"image": {"$regex": r"^\S+"}}}
 
     PLATFORMS = {
         "24": "MES-3124",
@@ -89,39 +80,39 @@ class Profile(BaseProfile):
         "88": "MES-2308",
         "89": "MES-2308P",
         "92": "MES-2324P",
-        "98": "MES-3508P"
+        "98": "MES-3508P",
     }
 
     def get_platform(self, s):
         return self.PLATFORMS.get(s)
 
     INTERFACE_TYPES = {
-        "as": "physical",    # Async
-        "at": "physical",    # ATM
+        "as": "physical",  # Async
+        "at": "physical",  # ATM
         "bv": "aggregated",  # BVI
         "bu": "aggregated",  # Bundle
         # "C": "physical",     # @todo: fix
-        "ca": "physical",    # Cable
-        "cd": "physical",    # CDMA Ix
-        "ce": "physical",    # Cellular
-        "et": "physical",    # Ethernet
-        "fa": "physical",    # FastEthernet
-        "gi": "physical",    # GigabitEthernet
-        "gr": "physical",    # Group-Async
-        "lo": "loopback",    # Loopback
+        "ca": "physical",  # Cable
+        "cd": "physical",  # CDMA Ix
+        "ce": "physical",  # Cellular
+        "et": "physical",  # Ethernet
+        "fa": "physical",  # FastEthernet
+        "gi": "physical",  # GigabitEthernet
+        "gr": "physical",  # Group-Async
+        "lo": "loopback",  # Loopback
         "oo": "management",  # oob
         "mf": "aggregated",  # Multilink Frame Relay
         "mu": "aggregated",  # Multilink-group interface
         "po": "aggregated",  # Port-channel/Portgroup
         # "R": "aggregated",   # @todo: fix
-        "sr": "physical",    # Spatial Reuse Protocol
-        "se": "physical",    # Serial
+        "sr": "physical",  # Spatial Reuse Protocol
+        "se": "physical",  # Serial
         "st": "management",  # Stack-port
-        "te": "physical",    # TenGigabitEthernet
-        "fo": "physical",    # FortyGigabitEthernet
-        "tu": "tunnel",      # Tunnel
-        "vl": "SVI",         # VLAN, found on C3500XL
-        "xt": "SVI"          # Extended Tag ATM
+        "te": "physical",  # TenGigabitEthernet
+        "fo": "physical",  # FortyGigabitEthernet
+        "tu": "tunnel",  # Tunnel
+        "vl": "SVI",  # VLAN, found on C3500XL
+        "xt": "SVI",  # Extended Tag ATM
     }
 
     @classmethod
@@ -132,7 +123,7 @@ class Profile(BaseProfile):
     rx_eltex_interface_name = re.compile(
         r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
         r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)?",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
 
     def convert_interface_name(self, s):
@@ -148,7 +139,6 @@ class Profile(BaseProfile):
         elif s in ["oob", "stack-port"]:
             return s
         elif match:
-            return "%s %s" % (match.group("type").capitalize(),
-                              match.group("number"))
+            return "%s %s" % (match.group("type").capitalize(), match.group("number"))
         else:
             raise InterfaceTypeError("Invalid interface '%s'" % s)

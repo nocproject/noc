@@ -16,9 +16,7 @@ class Script(BaseScript):
     interface = IGetLocalUsers
 
     def execute(self):
-        return [{
-            "username": r["name"],
-            "class": r["group"],
-            "is_active": not ("X" in f)
-        } for n, f, r in self.cli_detail(
-            "/user print detail without-paging")]
+        return [
+            {"username": r["name"], "class": r["group"], "is_active": not ("X" in f)}
+            for n, f, r in self.cli_detail("/user print detail without-paging")
+        ]

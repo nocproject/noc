@@ -2,17 +2,16 @@
 # ---------------------------------------------------------------------
 # Alstec.7200.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
@@ -20,14 +19,11 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_all = re.compile(
-        r"^(?P<vlan_id>\S\S:\S\S):(?P<mac>\S+)\s+(?P<interface>\S+)\s+\d+\s+"
-        r"(?P<type>\S+)\s*\n", re.MULTILINE)
-    rx_iface = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s*\n",
-        re.MULTILINE)
-    rx_vlan = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<type>\S+)\s*\n",
-        re.MULTILINE)
+        r"^(?P<vlan_id>\S\S:\S\S):(?P<mac>\S+)\s+(?P<interface>\S+)\s+\d+\s+" r"(?P<type>\S+)\s*\n",
+        re.MULTILINE,
+    )
+    rx_iface = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s*\n", re.MULTILINE)
+    rx_vlan = re.compile(r"^(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<type>\S+)\s*\n", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-addr-table"
@@ -61,10 +57,7 @@ class Script(BaseScript):
                 _iface = interface
             else:
                 _iface = match.group("interface")
-            r.append({
-                "vlan_id": _vlan,
-                "mac": match.group("mac"),
-                "interfaces": [_iface],
-                "type": mtype
-            })
+            r.append(
+                {"vlan_id": _vlan, "mac": match.group("mac"), "interfaces": [_iface], "type": mtype}
+            )
         return r

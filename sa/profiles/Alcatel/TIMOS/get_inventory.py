@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -19,22 +20,22 @@ class Script(BaseScript):
 
     rx_iom = re.compile(
         r"^(?P<number>\d+)\s+(?P<name>iom\S+)\s+(?:up|down)\s+(?:up|down)\s+"
-        r"\d+\s+(?P<comments>\S+)")
-    rx_imm = re.compile(
-        r"^(?P<number>\d+)\s+(?P<name>imm\d+\S+)\s+(?:up|down)\s+(?:up|down)")
+        r"\d+\s+(?P<comments>\S+)"
+    )
+    rx_imm = re.compile(r"^(?P<number>\d+)\s+(?P<name>imm\d+\S+)\s+(?:up|down)\s+(?:up|down)")
     rx_mda = re.compile(
-        r"^(?P<slot>\d+)/(?P<number>\d+)\s+(?P<name>(?:m|imm)\d+\S+)\s+(?:up|down)\s+(?:up|down)")
-    rx_cfm = re.compile(
-        r"^(?P<number>A|B)\s+(?P<name>sfm\d+\S+)\s+(?:up|down)\s+(?:up|down)")
-    rx_cpm = re.compile(
-        r"^(?P<number>A|B)\s+(?P<name>cpm\d+)\s+(?:up|down)\s+(?:up|down)")
+        r"^(?P<slot>\d+)/(?P<number>\d+)\s+(?P<name>(?:m|imm)\d+\S+)\s+(?:up|down)\s+(?:up|down)"
+    )
+    rx_cfm = re.compile(r"^(?P<number>A|B)\s+(?P<name>sfm\d+\S+)\s+(?:up|down)\s+(?:up|down)")
+    rx_cpm = re.compile(r"^(?P<number>A|B)\s+(?P<name>cpm\d+)\s+(?:up|down)\s+(?:up|down)")
     rx_ch = re.compile(
         r"^\s*Hardware Data\s*\n"
         r"^\s+Part number\s+:\s+(?P<part_no>\S+)\s*\n"
         r"^\s+CLEI code\s+:\s+(?P<clei>\S+)\s*\n"
         r"^\s+Serial number\s+:\s+(?P<serial>\S+)\s*\n"
         r"^\s+Manufacture date\s+:\s+(?P<mfg_date>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_descr = re.compile(r"^\s+Type\s+:\s+(?P<type>.+)\s*\n", re.MULTILINE)
     rx_hw = re.compile(
         r"^Hardware Data\s*\n"
@@ -43,7 +44,8 @@ class Script(BaseScript):
         r"^\s+CLEI code\s+:\s+(?P<clei>\S+)\s*\n"
         r"^\s+Serial number\s+:\s+(?P<serial>\S+)\s*\n"
         r"^\s+Manufacture date\s+:\s+(?P<mfg_date>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_flash = re.compile(
         r"^Flash\s+\-\s+cf(?P<number>\d+):\s*\n"
         r"^\s+Administrative State\s+:\s+up\s*\n"
@@ -51,7 +53,8 @@ class Script(BaseScript):
         r"^\s+Serial number\s+:\s+(?P<serial>\S+)\s*\n"
         r"^\s+Firmware revision\s+:\s+(?P<revision>\S+)\s*\n"
         r"^\s+Model number\s+:\s+(?P<part_no>.+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_date = re.compile("(?P<m>\d{2})(?P<d>\d{2})(?P<y>\d{4})")
 
     def get_date(self, d):
@@ -73,7 +76,7 @@ class Script(BaseScript):
             "vendor": "ALU",
             "part_no": [match.group("part_no")],
             "serial": match.group("serial"),
-            "mfg_date": self.get_date(match.group("mfg_date"))
+            "mfg_date": self.get_date(match.group("mfg_date")),
         }
         match = self.rx_descr.search(v)
         p["description"] = match.group("type").strip()
@@ -160,7 +163,7 @@ class Script(BaseScript):
                         "vendor": vendor,
                         "part_no": [match1.group("part_no").strip()],
                         "serial": match1.group("serial"),
-                        "revision": match1.group("revision")
+                        "revision": match1.group("revision"),
                     }
                     r += [p]
             match = self.rx_cpm.search(l)
@@ -191,7 +194,7 @@ class Script(BaseScript):
                         "vendor": vendor,
                         "part_no": [match1.group("part_no").strip()],
                         "serial": match1.group("serial"),
-                        "revision": match1.group("revision")
+                        "revision": match1.group("revision"),
                     }
                     r += [p]
         return r

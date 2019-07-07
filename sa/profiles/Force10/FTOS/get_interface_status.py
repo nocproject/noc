@@ -11,7 +11,10 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 import re
 
-rx_interface_status = re.compile(r"^(?P<interface>\S+\s+\S+)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)
+rx_interface_status = re.compile(
+    r"^(?P<interface>\S+\s+\S+)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$",
+    re.IGNORECASE,
+)
 
 
 class Script(BaseScript):
@@ -24,8 +27,7 @@ class Script(BaseScript):
                 # Get interface status
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"):
+                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"):
                     # ifOperStatus up(1)
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r
@@ -34,15 +36,14 @@ class Script(BaseScript):
         # Fallback to CLI
         r = []
         if interface:
-            cmd = "show interface %s | grep \"line protocol is\"" % interface
+            cmd = 'show interface %s | grep "line protocol is"' % interface
         else:
-            cmd = "show interface | grep \"line protocol is\""
+            cmd = 'show interface | grep "line protocol is"'
 
         for l in self.cli(cmd).splitlines():
             match = rx_interface_status.match(l)
             if match:
-                r += [{
-                    "interface": match.group("interface"),
-                    "status": match.group("status") == "up"
-                }]
+                r += [
+                    {"interface": match.group("interface"), "status": match.group("status") == "up"}
+                ]
         return r

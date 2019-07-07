@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -18,8 +19,8 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_line = re.compile(
-        r"^\S+\s+(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+\S+\s+"
-        r"(?P<interface>\S+).+$")
+        r"^\S+\s+(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+\S+\s+" r"(?P<interface>\S+).+$"
+    )
 
     def execute(self):
         return self.cli("sh iparp", list_re=self.rx_line)

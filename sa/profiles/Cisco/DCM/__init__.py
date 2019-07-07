@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-__author__ = 'boris'
+__author__ = "boris"
 from noc.core.profile.base import BaseProfile
 
 

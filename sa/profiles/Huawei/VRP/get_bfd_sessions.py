@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
@@ -19,7 +20,9 @@ class Script(BaseScript):
     rx_version = re.compile(
         r"^-+\n"
         r"^.+MIndex\s*:\s*(?P<mindex>\d+).+State\s*:\s*(?P<state>(Up|Down))\s+Name\s*:\s*(?P<name>\S+)\s*\n"
-        r"^-+", re.MULTILINE)
+        r"^-+",
+        re.MULTILINE,
+    )
 
     rx_neigh = re.compile(
         r"^-+\n"
@@ -34,7 +37,9 @@ class Script(BaseScript):
         r"(.+\n)+\s+Local\sDetect\sMulti\s*:\s*(?P<multiplier>\d+)\s+"
         r"Detect\sInterval\s\(ms\)\s*:\s*(?P<detect_time>\d+)\s*\n"
         r"(.+\n)+\s+Bind\sApplication\s*:\s*(?P<clients>.+)\s*\n"
-        r"(.+\n)+", re.MULTILINE | re.IGNORECASE)
+        r"(.+\n)+",
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     # IOS to interface client type mappings
     client_map = {
@@ -44,7 +49,7 @@ class Script(BaseScript):
         "EIGRP": "EIGRP",
         "IFNET": "IFNET",
         "BFD": "BFD",
-        "RSVP": "RSVP"
+        "RSVP": "RSVP",
     }
 
     client_ignored = ["CEF", "AUTO"]
@@ -56,18 +61,23 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for match in self.rx_neigh.finditer(s):
-            r += [{
-                "remote_address": match.group("remote_address").strip(),
-                "local_interface": match.group("local_interface").strip(),
-                "local_discriminator": int(match.group("local_discriminator")),
-                "remote_discriminator": int(match.group("remote_discriminator")),
-                "state": match.group("state").upper(),
-                "clients": [self.client_map[c] for c in match.group("clients").split()
-                            if c not in self.client_ignored],
-                # Convert microsecond
-                "tx_interval": int(match.group("tx_interval")) * 1000,
-                "multiplier": int(match.group("multiplier")),
-                # Convert microsecond
-                "detect_time": int(match.group("detect_time")) * 1000
-            }]
+            r += [
+                {
+                    "remote_address": match.group("remote_address").strip(),
+                    "local_interface": match.group("local_interface").strip(),
+                    "local_discriminator": int(match.group("local_discriminator")),
+                    "remote_discriminator": int(match.group("remote_discriminator")),
+                    "state": match.group("state").upper(),
+                    "clients": [
+                        self.client_map[c]
+                        for c in match.group("clients").split()
+                        if c not in self.client_ignored
+                    ],
+                    # Convert microsecond
+                    "tx_interval": int(match.group("tx_interval")) * 1000,
+                    "multiplier": int(match.group("multiplier")),
+                    # Convert microsecond
+                    "detect_time": int(match.group("detect_time")) * 1000,
+                }
+            ]
         return r

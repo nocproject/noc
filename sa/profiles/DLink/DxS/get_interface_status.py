@@ -21,23 +21,14 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 # Get interface status IF-MIB
-                for i, n, s in self.snmp.join([
-                    "1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"
-                ]):
-                    if '/' in n:
-                        iface = n.split('/')[1]
+                for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
+                    if "/" in n:
+                        iface = n.split("/")[1]
                         if interface is not None:
                             if interface == iface:
-                                r = [{
-                                        "interface": iface,
-                                        "status": int(s) == 1
-                                    }]
+                                r = [{"interface": iface, "status": int(s) == 1}]
                         else:
-                            r.append({
-                                        "interface": iface,
-                                        "status": int(s) == 1
-                                    })
+                            r.append({"interface": iface, "status": int(s) == 1})
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -46,15 +37,9 @@ class Script(BaseScript):
         ports = self.profile.get_ports(self, interface)
         for p in ports:
             if interface is not None:
-                if interface == p['port']:
-                    return [{
-                        "interface": interface,
-                        "status": p['status']
-                    }]
+                if interface == p["port"]:
+                    return [{"interface": interface, "status": p["status"]}]
                     break
             else:
-                r += [{
-                    "interface": p['port'],
-                    "status": p['status']
-                }]
+                r += [{"interface": p["port"], "status": p["status"]}]
         return r

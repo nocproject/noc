@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,6 +22,7 @@ class Script(BaseScript):
     @todo: IGMP
     @todo: IPv6
     """
+
     name = "Qtech.QSW2800.get_interfaces"
     interface = IGetInterfaces
 
@@ -28,9 +30,7 @@ class Script(BaseScript):
         r"^\s*(?P<interface>\S+) is (?P<admin_status>\S*\s*\S+), "
         r"line protocol is (?P<oper_status>\S+)"
     )
-    rx_description = re.compile(
-        r"alias name is (?P<description>[A-Za-z0-9\-_/\.\s\(\)]*)"
-    )
+    rx_description = re.compile(r"alias name is (?P<description>[A-Za-z0-9\-_/\.\s\(\)]*)")
     rx_ifindex = re.compile(r"index is (?P<ifindex>\d+)$")
     rx_ipv4 = re.compile(r"^\s+(?P<ip>[\d+\.]+)\s+(?P<mask>[\d+\.]+)\s+")
     rx_mac = re.compile(r"address is (?P<mac>[0-9a-f\-]+)$", re.IGNORECASE)
@@ -52,10 +52,7 @@ class Script(BaseScript):
         # get switchports
         swports = {}
         for sp in self.scripts.get_switchport():
-            swports[sp["interface"]] = (
-                sp["untagged"] if "untagged" in sp else None,
-                sp["tagged"]
-            )
+            swports[sp["interface"]] = (sp["untagged"] if "untagged" in sp else None, sp["tagged"])
 
         # get portchannels
         pc_members = {}
@@ -81,7 +78,7 @@ class Script(BaseScript):
                     "admin_status": "up" in match.group("admin_status"),
                     "oper_status": "up" in match.group("oper_status"),
                     "enabled_protocols": [],
-                    "subinterfaces": []
+                    "subinterfaces": [],
                 }
                 # detect interface type
                 if ifname.startswith("Eth"):
@@ -118,7 +115,7 @@ class Script(BaseScript):
                         "name": ifname,
                         "admin_status": iface["admin_status"],
                         "oper_status": iface["oper_status"],
-                        "enabled_afi": []
+                        "enabled_afi": [],
                     }
                     # process switchports
                     if ifname in swports:
@@ -150,9 +147,7 @@ class Script(BaseScript):
                     sub["ipv4_addresses"] = []
                     vid = self.rx_vid.search(ifname)
                     sub["vlan_ids"] = [int(vid.group("vid"))]
-                ip = IPv4(
-                    match.group("ip"), netmask=match.group("mask")
-                ).prefix
+                ip = IPv4(match.group("ip"), netmask=match.group("mask")).prefix
                 sub["ipv4_addresses"] += [ip]
             # management interface may have IP address
             if l.strip() == "IPv4 address is:" and iface["name"] == "Ethernet0":

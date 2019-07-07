@@ -10,9 +10,11 @@
 import re
 from collections import defaultdict
 import xml.etree.ElementTree as ElementTree
+
 # Third-party modules
 import six
 from six import StringIO
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -30,44 +32,58 @@ class Script(BaseScript):
     @todo: subinterfaces
     @todo: Q-in-Q
     """
+
     name = "Cisco.NXOS.get_interfaces"
     interface = IGetInterfaces
 
     rx_int_split = re.compile(r"^\S", re.MULTILINE)
-    rx_int_name = re.compile(r"^(?P<interface>.+?)\s+is\s+(?P<oper_status>up|down)(?:\s\((?P<reason>\S+?)\))?",
-                             re.MULTILINE | re.IGNORECASE)
-    rx_int_description = re.compile(r"\s+(?:\s+Description:\s(?P<desc>[^\n]+)\n)",
-                                    re.MULTILINE | re.IGNORECASE)
-    rx_int_mac = re.compile(r"\s+Hardware[\s:](?:is)?\s(.+)?,\s+address[:\s](?:is)?\s+(?P<hardw>[^\n]+)?",
-                            re.MULTILINE | re.IGNORECASE)
-    rx_int_vlan = re.compile(r"\s+Encapsulation\s(?P<encaps>\S+)\sVirtual LAN,\sVlan\sID\s(?P<vlanid>\d+)",
-                             re.MULTILINE | re.IGNORECASE)
-    rx_int_ip = re.compile(r"\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n",
-                           re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(r"^(?P<mac>\w{4}\.\w{4}\.\w{4})",
-                        re.MULTILINE | re.IGNORECASE)
+    rx_int_name = re.compile(
+        r"^(?P<interface>.+?)\s+is\s+(?P<oper_status>up|down)(?:\s\((?P<reason>\S+?)\))?",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_int_description = re.compile(
+        r"\s+(?:\s+Description:\s(?P<desc>[^\n]+)\n)", re.MULTILINE | re.IGNORECASE
+    )
+    rx_int_mac = re.compile(
+        r"\s+Hardware[\s:](?:is)?\s(.+)?,\s+address[:\s](?:is)?\s+(?P<hardw>[^\n]+)?",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_int_vlan = re.compile(
+        r"\s+Encapsulation\s(?P<encaps>\S+)\sVirtual LAN,\sVlan\sID\s(?P<vlanid>\d+)",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_int_ip = re.compile(
+        r"\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_mac = re.compile(r"^(?P<mac>\w{4}\.\w{4}\.\w{4})", re.MULTILINE | re.IGNORECASE)
 
     rx_sh_ip_int = re.compile(
         r"^(?P<interface>\S+?), Interface status: protocol-(?P<protocol_status>up|down)\/"
         r"link-(?P<link_status>up|down)\/"
         r"admin-(?P<admin_status>up|down), iod: (?P<iod>\d+),",
-        re.IGNORECASE)
+        re.IGNORECASE,
+    )
     rx_ip = re.compile(
         r"IP address: (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}), "
         r"IP subnet: (?P<ipsubnet>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
-        re.MULTILINE | re.IGNORECASE)
-    rx_sec_ip = re.compile(r"\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}), "
-                           r"IP subnet: (?P<ipsubnet>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})\s+secondary",
-                           re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_sec_ip = re.compile(
+        r"\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}), "
+        r"IP subnet: (?P<ipsubnet>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})\s+secondary",
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_ipv6 = re.compile(
-        r"\s+IPv6 address:\s+(?P<address>\S+)"
-        r"\s+IPv6 subnet:\s+(?P<net>\S+)/(?P<mask>\d+)",
-        re.MULTILINE | re.IGNORECASE)
+        r"\s+IPv6 address:\s+(?P<address>\S+)" r"\s+IPv6 subnet:\s+(?P<net>\S+)/(?P<mask>\d+)",
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(
         r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$",
-        re.IGNORECASE)
+        re.IGNORECASE,
+    )
 
     def get_ospfint(self):
         try:
@@ -86,21 +102,21 @@ class Script(BaseScript):
             c = self.cli("show interface snmp-ifindex | xml | no-more")
             nsmap = {}
             r = {}
-            for event, elem in ElementTree.iterparse(StringIO(c), events=("end", 'start-ns')):
-                if event == 'start-ns':
+            for event, elem in ElementTree.iterparse(StringIO(c), events=("end", "start-ns")):
+                if event == "start-ns":
                     ns, url = elem
                     nsmap[ns] = url
-                if event == 'end':
-                    if elem.tag == self.fixtag('', 'interface', nsmap):
+                if event == "end":
+                    if elem.tag == self.fixtag("", "interface", nsmap):
                         full_ifname = elem.text.strip()
-                    elif elem.tag == self.fixtag('', 'ifindex-dec', nsmap):
+                    elif elem.tag == self.fixtag("", "ifindex-dec", nsmap):
                         r[full_ifname] = int(elem.text.strip())
         except self.CLISyntaxError:
             try:
                 c = self.cli("show interface snmp-ifindex")
                 r = {}
                 for ll in c.splitlines():
-                    if ll == '' or '-' in ll or 'Port' in ll:
+                    if ll == "" or "-" in ll or "Port" in ll:
                         continue
                     match = ll.strip().split()
                     if match:
@@ -110,7 +126,7 @@ class Script(BaseScript):
         return r
 
     def fixtag(self, ns, tag, nsmap):
-        return '{' + nsmap[ns] + '}' + tag
+        return "{" + nsmap[ns] + "}" + tag
 
     def execute(self):
         # Get port-to-vlan mappings
@@ -125,7 +141,7 @@ class Script(BaseScript):
             for sp in self.scripts.get_switchport():
                 switchports[sp["interface"]] = (
                     sp["untagged"] if "untagged" in sp else None,
-                    sp["tagged"]
+                    sp["tagged"],
                 )
 
         # Get portchannels
@@ -145,8 +161,7 @@ class Script(BaseScript):
         for ll in self.cli("show ip interface vrf all").splitlines():
             match = self.rx_sh_ip_int.search(ll)
             if match:
-                c_iface = self.profile.convert_interface_name(
-                    match.group("interface"))
+                c_iface = self.profile.convert_interface_name(match.group("interface"))
                 continue
             # Primary ip
             match = self.rx_ip.search(ll)
@@ -194,44 +209,40 @@ class Script(BaseScript):
             nsmap = {}
             results = []
             row = []
-            for event, elem in ElementTree.iterparse(StringIO(v), events=("end", 'start-ns')):
-                if event == 'start-ns':
+            for event, elem in ElementTree.iterparse(StringIO(v), events=("end", "start-ns")):
+                if event == "start-ns":
                     ns, url = elem
                     nsmap[ns] = url
-                if event == 'end':
-                    if elem.tag == self.fixtag('', 'interface', nsmap):
+                if event == "end":
+                    if elem.tag == self.fixtag("", "interface", nsmap):
                         full_ifname = elem.text.strip()
                         if full_ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
                             continue
                         results += [row]
-                        row = {
-                            "name": full_ifname,
-                            "enabled_afi": [],
-                            "enabled_protocols": []
-                        }
+                        row = {"name": full_ifname, "enabled_afi": [], "enabled_protocols": []}
                     if full_ifname.startswith("Vlan"):
-                        if elem.tag == self.fixtag('', 'svi_line_proto', nsmap):
+                        if elem.tag == self.fixtag("", "svi_line_proto", nsmap):
                             row["oper_status"] = elem.text.strip()
-                        elif elem.tag == self.fixtag('', 'svi_admin_state', nsmap):
+                        elif elem.tag == self.fixtag("", "svi_admin_state", nsmap):
                             row["admin_status"] = elem.text
-                        elif elem.tag == self.fixtag('', 'svi_desc', nsmap):
+                        elif elem.tag == self.fixtag("", "svi_desc", nsmap):
                             row["description"] = elem.text
-                        elif elem.tag == self.fixtag('', 'svi_mac', nsmap):
+                        elif elem.tag == self.fixtag("", "svi_mac", nsmap):
                             row["mac"] = elem.text.strip()
-                        elif elem.tag == self.fixtag('', 'svi_ip_addr', nsmap):
+                        elif elem.tag == self.fixtag("", "svi_ip_addr", nsmap):
                             row["ip_addr"] = elem.text
                         continue
-                    if elem.tag == self.fixtag('', 'state', nsmap):
+                    if elem.tag == self.fixtag("", "state", nsmap):
                         row["oper_status"] = elem.text.strip()
-                    elif elem.tag == self.fixtag('', 'state_rsn_desc', nsmap):
+                    elif elem.tag == self.fixtag("", "state_rsn_desc", nsmap):
                         row["reason"] = elem.text
-                    elif elem.tag == self.fixtag('', 'desc', nsmap):
+                    elif elem.tag == self.fixtag("", "desc", nsmap):
                         row["description"] = elem.text
-                    elif elem.tag == self.fixtag('', 'eth_hw_addr', nsmap):
+                    elif elem.tag == self.fixtag("", "eth_hw_addr", nsmap):
                         row["mac"] = elem.text.strip()
-                    elif elem.tag == self.fixtag('', 'eth_encap_vlan', nsmap):
+                    elif elem.tag == self.fixtag("", "eth_encap_vlan", nsmap):
                         row["vlan_ids"] = elem.text
-                    elif elem.tag == self.fixtag('', 'eth_ip_addr', nsmap):
+                    elif elem.tag == self.fixtag("", "eth_ip_addr", nsmap):
                         row["ip_addr"] = elem.text
 
             for I in results:
@@ -250,7 +261,7 @@ class Script(BaseScript):
                             "admin_status": True,
                             "oper_status": True,
                             "type": "physical",
-                            "enabled_protocols": []
+                            "enabled_protocols": [],
                         }
                 o_stat = I["oper_status"].lower() == "up"
                 a_stat = False
@@ -261,7 +272,7 @@ class Script(BaseScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "enabled_afi": [],
-                    "enabled_protocols": []
+                    "enabled_protocols": [],
                 }
                 # Get description
                 if "description" in I:
@@ -301,9 +312,7 @@ class Script(BaseScript):
                 if "." not in ifname and ":" not in ifname:
                     iftype = self.profile.get_interface_type(ifname)
                     if not iftype:
-                        self.logger.info(
-                            "Ignoring unknown interface type: '%s", iftype
-                        )
+                        self.logger.info("Ignoring unknown interface type: '%s", iftype)
                         continue
                     iface = {
                         "name": ifname,
@@ -311,7 +320,7 @@ class Script(BaseScript):
                         "oper_status": o_stat,
                         "type": iftype,
                         "enabled_protocols": [],
-                        "subinterfaces": [sub]
+                        "subinterfaces": [sub],
                     }
 
                     if "description" in I:
@@ -345,13 +354,13 @@ class Script(BaseScript):
                     continue
                 full_ifname = match.group("interface")
                 if full_ifname.startswith("th"):
-                    full_ifname = 'E' + full_ifname
+                    full_ifname = "E" + full_ifname
                 elif full_ifname.startswith("lan"):
-                    full_ifname = 'V' + full_ifname
+                    full_ifname = "V" + full_ifname
                 elif full_ifname.startswith("gmt"):
-                    full_ifname = 'm' + full_ifname
+                    full_ifname = "m" + full_ifname
                 elif full_ifname.startswith("ort"):
-                    full_ifname = 'p' + full_ifname
+                    full_ifname = "p" + full_ifname
                 ifname = self.profile.convert_interface_name(full_ifname)
                 if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
                     continue
@@ -364,7 +373,7 @@ class Script(BaseScript):
                             "admin_status": True,
                             "oper_status": True,
                             "type": "physical",
-                            "enabled_protocols": []
+                            "enabled_protocols": [],
                         }
                 o_stat = match.group("oper_status").lower() == "up"
                 a_stat = False
@@ -377,7 +386,7 @@ class Script(BaseScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "enabled_afi": [],
-                    "enabled_protocols": []
+                    "enabled_protocols": [],
                 }
                 # Get description
                 match = self.rx_int_description.search(I)
@@ -418,9 +427,7 @@ class Script(BaseScript):
                 if "." not in ifname and ":" not in ifname:
                     iftype = self.profile.get_interface_type(ifname)
                     if not iftype:
-                        self.logger.info(
-                            "Ignoring unknown interface type: '%s", iftype
-                        )
+                        self.logger.info("Ignoring unknown interface type: '%s", iftype)
                         continue
                     iface = {
                         "name": ifname,
@@ -428,7 +435,7 @@ class Script(BaseScript):
                         "oper_status": o_stat,
                         "type": iftype,
                         "enabled_protocols": [],
-                        "subinterfaces": [sub]
+                        "subinterfaces": [sub],
                     }
                     match = self.rx_int_description.search(I)
                     if match:
@@ -452,13 +459,7 @@ class Script(BaseScript):
                         interfaces[-1]["subinterfaces"] = [sub]
 
         # Process VRFs
-        vrfs = {
-            "default": {
-                "forwarding_instance": "default",
-                "type": "ip",
-                "interfaces": []
-            }
-        }
+        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         imap = {}  # interface -> VRF
         r = self.scripts.get_mpls_vpn()
         for v in r:
@@ -466,7 +467,7 @@ class Script(BaseScript):
                 vrfs[v["name"]] = {
                     "forwarding_instance": v["name"],
                     "type": "VRF",
-                    "interfaces": []
+                    "interfaces": [],
                 }
                 rd = v.get("rd")
                 if rd:
@@ -483,8 +484,7 @@ class Script(BaseScript):
             subs = i["subinterfaces"]
             for vrf in set(imap.get(si["name"], "default") for si in subs):
                 c = i.copy()
-                c["subinterfaces"] = [si for si in subs
-                                      if imap.get(si["name"], "default") == vrf]
+                c["subinterfaces"] = [si for si in subs if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]
 
         return list(six.itervalues(vrfs))

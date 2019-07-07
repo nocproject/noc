@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -22,7 +23,8 @@ class Script(BaseScript):
     def execute(self):
         rx_line = re.compile(
             r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+"
-            r"(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE
+            r"(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)",
+            re.MULTILINE,
         )
         rx_descr = re.compile(r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
 
@@ -35,7 +37,8 @@ class Script(BaseScript):
                 r"^(?P<interface>(?:Eth|GE|TENGE)\d+/\d+/\d+)\s+"
                 r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
                 r"(?P<duplex>.+?)\s+(?P<mode>access|trunk|hybrid|trunking)\s+"
-                r"(?P<pvid>\d+)(\s*(?P<description>\S*?))$", re.MULTILINE
+                r"(?P<pvid>\d+)(\s*(?P<description>\S*?))$",
+                re.MULTILINE,
             )
             v = self.cli("display brief interface")
 
@@ -71,7 +74,8 @@ class Script(BaseScript):
                Port\slink-type:\s(?P<mode>access|trunk|hybrid|trunking)
                .*?
                (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
-               """, re.MULTILINE | re.DOTALL | re.VERBOSE
+               """,
+                re.MULTILINE | re.DOTALL | re.VERBOSE,
             )
             v = self.cli("display interface")
         else:
@@ -79,8 +83,12 @@ class Script(BaseScript):
 
         for match in rx_line.finditer(v):
             interface = match.group("interface")
-            if interface.startswith("Vlan") or interface.startswith("NULL") or interface.startswith(
-                    "DCN-Serial") or interface.startswith("Cpos-Trunk"):
+            if (
+                interface.startswith("Vlan")
+                or interface.startswith("NULL")
+                or interface.startswith("DCN-Serial")
+                or interface.startswith("Cpos-Trunk")
+            ):
                 continue
             port = {}
             tagged = []
@@ -93,7 +101,7 @@ class Script(BaseScript):
                     tagged = self.expand_rangelist(vlans)
                     # For VRP version 5.3
                     if r and r[-1]["interface"] == match.group("interface"):
-                        r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
+                        r[-1]["tagged"] += [vv for vv in tagged if vv in known_vlans]
                         continue
             members = []
             if interface.startswith("Eth-Trunk"):
@@ -111,8 +119,8 @@ class Script(BaseScript):
                 "status": interface_status.get(interface, False),
                 "802.1Q Enabled": trunk,
                 "802.1ad Tunnel": False,
-                "tagged": [v for v in tagged if v in known_vlans],
-                "members": members
+                "tagged": [vvv for vvv in tagged if vvv in known_vlans],
+                "members": members,
             }
             if match.group("mode") in ("access", "hybrid"):
                 port["untagged"] = pvid

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -18,7 +19,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
     rx_mac_4626 = re.compile(r"\d+\s+(?P<id>\S+).*?System\s+CPU", re.IGNORECASE | re.MULTILINE)
-    rx_mac_3528mv2 = re.compile(r"\sMAC\sAddress\s+\(Unit\s\d\)\s+:\s+(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
+    rx_mac_3528mv2 = re.compile(
+        r"\sMAC\sAddress\s+\(Unit\s\d\)\s+:\s+(?P<id>\S+)", re.IGNORECASE | re.MULTILINE
+    )
     rx_mac = re.compile(r"MAC Address[^:]*?:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
     # ES4626

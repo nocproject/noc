@@ -17,8 +17,7 @@ class Script(BaseScript):
     name = "SKS.SKS.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
     rx_status = re.compile(r"VLAN\s+Status\s+Name\s+Ports", re.MULTILINE)
 
     def execute(self):
@@ -27,10 +26,7 @@ class Script(BaseScript):
         if bool(self.rx_status.search(c)):
             t = parse_table(c, allow_wrap=True)
             for i in t:
-                r += [{
-                    "vlan_id": i[0],
-                    "name": i[2]
-                }]
+                r += [{"vlan_id": i[0], "name": i[2]}]
         else:
             for match in self.rx_vlan.finditer(c):
                 r += [match.groupdict()]

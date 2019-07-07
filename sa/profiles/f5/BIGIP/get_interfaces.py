@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # f5.BIGIP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,9 +22,8 @@ class Script(BaseScript):
 
     rx_self = re.compile(r"^net self \S+ {", re.MULTILINE | re.DOTALL)
     rx_self_a = re.compile(
-        r"^\s+address\s+(?P<address>\S+).+"
-        r"^\s+vlan\s+(?P<vlan>\S+)",
-        re.DOTALL | re.MULTILINE)
+        r"^\s+address\s+(?P<address>\S+).+" r"^\s+vlan\s+(?P<vlan>\S+)", re.DOTALL | re.MULTILINE
+    )
 
     def parse_kv(self, s):
         r = {}
@@ -33,7 +33,6 @@ class Script(BaseScript):
         return r
 
     def execute(self):
-        r = []
         # Get self ip
         addresses = defaultdict(list)
         v = self.cli("list /net self")
@@ -61,10 +60,8 @@ class Script(BaseScript):
                     "tag": d.get("Tag"),
                     "tagged": [],
                     "untagged": [],
-                    "ipv4_addresses": [a for a in addresses[name]
-                                       if ":" not in a],
-                    "ipv6_addresses": [a for a in addresses[name]
-                                       if ":" in a]
+                    "ipv4_addresses": [a for a in addresses[name] if ":" not in a],
+                    "ipv6_addresses": [a for a in addresses[name] if ":" in a],
                 }
                 vlans[name] = current_vlan
                 current_trunk = None
@@ -79,10 +76,7 @@ class Script(BaseScript):
                 interfaces.add(name)
             elif h.startswith("Net::Trunk"):
                 name = data.splitlines()[0].split(" ", 1)[0]
-                current_trunk = {
-                    "name": name,
-                    "members": []
-                }
+                current_trunk = {"name": name, "members": []}
                 trunks[name] = current_trunk
                 interfaces.add(name)
             elif h.startswith("Net::Interface"):
@@ -116,15 +110,17 @@ class Script(BaseScript):
                     "mtu": v["mtu"],
                     "admin_status": True,
                     "oper_status": True,
-                    "subinterfaces": [{
-                        "name": v["name"],
-                        "vlan_ids": [tag],
-                        "enabled_afi": enabled_afi,
-                        "ipv4_addresses": v["ipv4_addresses"],
-                        "ipv6_addresses": v["ipv6_addresses"],
-                        "admin_status": True,
-                        "oper_status": True,
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": v["name"],
+                            "vlan_ids": [tag],
+                            "enabled_afi": enabled_afi,
+                            "ipv4_addresses": v["ipv4_addresses"],
+                            "ipv6_addresses": v["ipv6_addresses"],
+                            "admin_status": True,
+                            "oper_status": True,
+                        }
+                    ],
                 }
                 ifaces += [iface]
             for i in v["tagged"]:
@@ -141,7 +137,7 @@ class Script(BaseScript):
                 "admin_status": True,
                 "oper_status": True,
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             if i in tagged or i in untagged:
                 si = {

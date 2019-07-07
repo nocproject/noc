@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,8 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"ArubaOS \(MODEL: (?P<platform>.+?)\), Version (?P<version>\S+)",
-        re.MULTILINE | re.DOTALL
+        r"ArubaOS \(MODEL: (?P<platform>.+?)\), Version (?P<version>\S+)", re.MULTILINE | re.DOTALL
     )
 
     def execute(self):

@@ -49,5 +49,5 @@ class Script(BaseScript):
 
         # Fallback to CLI
         config = self.cli("display current-configuration")
-        config = config.replace('                ', '')
+        config = config.replace("                ", "")
         return self.cleaned_config(config)

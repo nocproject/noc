@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
@@ -45,12 +46,7 @@ def wipe(o):
     # Wiping discovery tasks
     log.debug("Wiping discovery tasks")
     for j in [ManagedObject.BOX_DISCOVERY_JOB, ManagedObject.PERIODIC_DISCOVERY_JOB]:
-        Job.remove(
-            "discovery",
-            j,
-            key=o.id,
-            pool=o.pool.name
-        )
+        Job.remove("discovery", j, key=o.id, pool=o.pool.name)
     # Wiping FM events
     log.debug("Wiping events")
     FailedEvent.objects.filter(managed_object=o.id).delete()

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,11 +20,11 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_sw_ver = re.compile(r"SW:\sVersion\s(?P<version>\S+)",
-        re.MULTILINE | re.DOTALL)
-    rx_hw_ver = re.compile(r"HW:\sProCurve\s(?P<version>\S+)",
-        re.MULTILINE | re.DOTALL)
-    rx_snmp_ver = re.compile(r"ProCurve\s+\S+\s+\S+\s(?P<platform>\S+)\,\s+\S+\s+Version\s+(?P<version>\S+).+$")
+    rx_sw_ver = re.compile(r"SW:\sVersion\s(?P<version>\S+)", re.MULTILINE | re.DOTALL)
+    rx_hw_ver = re.compile(r"HW:\sProCurve\s(?P<version>\S+)", re.MULTILINE | re.DOTALL)
+    rx_snmp_ver = re.compile(
+        r"ProCurve\s+\S+\s+\S+\s(?P<platform>\S+)\,\s+\S+\s+Version\s+(?P<version>\S+).+$"
+    )
 
     def execute(self):
         if self.has_snmp():
@@ -33,7 +34,7 @@ class Script(BaseScript):
                 return {
                     "vendor": "HP",
                     "platform": match.group("platform"),
-                    "version": match.group("version")
+                    "version": match.group("version"),
                 }
             except self.snmp.TimeOutError:
                 pass
@@ -45,5 +46,5 @@ class Script(BaseScript):
         return {
             "vendor": "HP",
             "platform": match2.group("version"),
-            "version": match1.group("version")
+            "version": match1.group("version"),
         }

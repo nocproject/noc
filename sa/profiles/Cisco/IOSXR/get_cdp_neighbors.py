@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
@@ -33,7 +34,4 @@ class Script(BaseScript):
                 elif sl.startswith("port id"):
                     neighbor["remote_interface"] = l.split(":", 1)[-1].strip()
             r += [neighbor]
-        return {
-            "device_id": device_id,
-            "neighbors": r
-        }
+        return {"device_id": device_id, "neighbors": r}

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -18,8 +19,7 @@ class Script(BaseScript):
     name = "Alstec.7200.get_interface_status"
     interface = IGetInterfaceStatus
 
-    rx_port = re.compile(
-        r"^(?P<port>\d+/\d+).+(?P<oper_status>Up|Down)\s+", re.MULTILINE)
+    rx_port = re.compile(r"^(?P<port>\d+/\d+).+(?P<oper_status>Up|Down)\s+", re.MULTILINE)
 
     def execute(self, interface=None):
         r = []
@@ -29,8 +29,7 @@ class Script(BaseScript):
         else:
             cmd += " all"
         for match in self.rx_port.finditer(self.cli(cmd)):
-            r += [{
-                "interface": match.group('port'),
-                "status": match.group('oper_status') != "Down"
-            }]
+            r += [
+                {"interface": match.group("port"), "status": match.group("oper_status") != "Down"}
+            ]
         return r

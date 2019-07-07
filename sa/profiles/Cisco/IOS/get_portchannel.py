@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -32,10 +33,7 @@ class Script(BaseScript):
             # raise self.NotSupportedError
             return []
         for i in parse_table(s, allow_wrap=True, max_width=120):
-            iface = {
-                "interface": self.extract_iface(i[1]),
-                "members": []
-            }
+            iface = {"interface": self.extract_iface(i[1]), "members": []}
             if (len(i) == 4) and (i[2] == "LACP"):
                 iface["type"] = "L"
             else:

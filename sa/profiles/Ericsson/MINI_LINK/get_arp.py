@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -19,7 +20,9 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^\s*(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+ether\s+"
-        r"(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)\s*$", re.MULTILINE)
+        r"(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []

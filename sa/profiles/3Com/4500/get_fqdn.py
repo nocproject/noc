@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
@@ -21,12 +22,12 @@ class Script(BaseScript):
     rx_domain_name = re.compile(r"^domain (?P<domain>\S+)$", re.MULTILINE)
 
     def execute(self):
-        fqdn = ''
+        fqdn = ""
         v = self.scripts.get_config()
         match = self.rx_hostname.search(v)
         if match:
             fqdn = match.group("hostname")
             match = self.rx_domain_name.search(v)
             if match:
-                fqdn = fqdn + '.' + match.group("domain")
+                fqdn = fqdn + "." + match.group("domain")
         return fqdn

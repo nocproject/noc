@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -30,7 +31,7 @@ class Script(BaseScript):
             if name:
                 i = i + 1
                 stat = self.rx_status.search(data[i])
-                status = bool(stat.group("status") == 'Active')
+                status = bool(stat.group("status") == "Active")
                 i = i + 10
                 priv = self.rx_priv.search(data[i])
                 if priv:
@@ -41,9 +42,7 @@ class Script(BaseScript):
                     user_class = "superuser"
                 else:
                     user_class = privilege
-                r += [{
-                    "username": name.group("username"),
-                    "class": user_class,
-                    "is_active": status
-                }]
+                r += [
+                    {"username": name.group("username"), "class": user_class, "is_active": status}
+                ]
         return r

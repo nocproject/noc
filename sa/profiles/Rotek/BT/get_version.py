@@ -36,8 +36,7 @@ class Script(BaseScript):
                 "vendor": "Rotek",
                 "version": version,
                 "platform": platform,
-                "attributes": {
-                    "Serial Number": sn}
+                "attributes": {"Serial Number": sn},
             }
         else:
             platform = oid.split()[0].strip()
@@ -46,7 +45,6 @@ class Script(BaseScript):
                 "vendor": "Rotek",
                 "version": version,
                 "platform": platform,
-                "attributes": {
-                    "Serial Number": sn}
+                "attributes": {"Serial Number": sn},
             }
         return result

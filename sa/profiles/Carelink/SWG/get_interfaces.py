@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -28,7 +29,7 @@ class Script(BaseScript):
         r"^IP Router\s+: .+\n"
         r"^DNS Server\s+: .+\n"
         r"^VLAN ID\s+: (?P<vlan_id>\d+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def get_lldp(self):
@@ -61,11 +62,7 @@ class Script(BaseScript):
                 "name": i[0],
                 "type": "physical",
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": i[0],
-                    "enabled_afi": ["BRIDGE"],
-                    "untagged_vlan": i[1]
-                }]
+                "subinterfaces": [{"name": i[0], "enabled_afi": ["BRIDGE"], "untagged_vlan": i[1]}],
             }
             if i[0] in lldp:
                 iface["enabled_protocols"] += ["LLDP"]
@@ -80,7 +77,7 @@ class Script(BaseScript):
             for i in interfaces:
                 if i["subinterfaces"][0]["untagged_vlan"] == vlan_id:
                     continue
-                if (int(i["name"]) in ports):
+                if int(i["name"]) in ports:
                     if "tagged_vlans" in i["subinterfaces"][0]:
                         i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
                     else:
@@ -94,13 +91,15 @@ class Script(BaseScript):
             "name": "mgmt",
             "type": "SVI",
             "mac": mac,
-            "subinterfaces": [{
-                "name": "mgmt",
-                "vlan_ids": match.group("vlan_id"),
-                "ipv4_addresses": [ip_address],
-                "enabled_afi": ["IPv4"],
-                "mac": mac
-            }]
+            "subinterfaces": [
+                {
+                    "name": "mgmt",
+                    "vlan_ids": match.group("vlan_id"),
+                    "ipv4_addresses": [ip_address],
+                    "enabled_afi": ["IPv4"],
+                    "mac": mac,
+                }
+            ],
         }
         interfaces += [iface]
         return [{"interfaces": interfaces}]

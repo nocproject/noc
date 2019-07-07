@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -17,17 +18,14 @@ class Script(BaseScript):
     name = "OS.Linux.get_mac_address_table"
     interface = IGetMACAddressTable
 
-    rx_vlan = re.compile(
-        r"^(?P<interface>\S+)\s+\|+\s+(?P<vlan>\d+)\s+\|+\s+\S+$",
-        re.MULTILINE)
+    rx_vlan = re.compile(r"^(?P<interface>\S+)\s+\|+\s+(?P<vlan>\d+)\s+\|+\s+\S+$", re.MULTILINE)
     rx_bridge = re.compile(
-        r"^(?P<bridge>\S+)+(\s|\t)+\S+(\s|\t)+(no|yes)+(\s|\t)+(?P<interface>\S+)",
-        re.MULTILINE)
-    rx_bridge_int = re.compile(
-        r"^\s+(?P<interface>\S+)", re.MULTILINE)
+        r"^(?P<bridge>\S+)+(\s|\t)+\S+(\s|\t)+(no|yes)+(\s|\t)+(?P<interface>\S+)", re.MULTILINE
+    )
+    rx_bridge_int = re.compile(r"^\s+(?P<interface>\S+)", re.MULTILINE)
     rx_showmacs = re.compile(
-        r"^\s*(?P<port>\d+)\s+(?P<mac>\S+)\s+(no|yes)\s+(?P<type>\S+)$",
-        re.MULTILINE)
+        r"^\s*(?P<port>\d+)\s+(?P<mac>\S+)\s+(no|yes)\s+(?P<type>\S+)$", re.MULTILINE
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         vlans = {}
@@ -53,15 +51,15 @@ class Script(BaseScript):
                     i = i + 1
                     match = self.rx_bridge_int.search(br[i])
 
-# This will work only when name of bridge looks like: "'br'+vlan_id"
-# We need found more universal way for bind VLAN to bridge, but how???
-# Configuration file for vlans is in difirent place in eche
-# Linux distribution. Also I don't find any commands or records in /proc...
+        # This will work only when name of bridge looks like: "'br'+vlan_id"
+        # We need found more universal way for bind VLAN to bridge, but how???
+        # Configuration file for vlans is in difirent place in eche
+        # Linux distribution. Also I don't find any commands or records in /proc...
         r = []
         if mac is not None:
             mac = mac.lower()
         if vlan is not None:
-            bridge = 'br' + str(vlan)
+            bridge = "br" + str(vlan)
             cmd = self.cli("brctl showmacs %s" % bridge)
             for match in self.rx_showmacs.finditer(cmd):
                 if match.group("type") == "0.00":
@@ -69,8 +67,8 @@ class Script(BaseScript):
                 else:
                     typ = "D"
                 interfaces = bridges[bridge][int(match.group("port")) - 1]
-                if '.' in interfaces:
-                    interfaces = interfaces.split('.')
+                if "." in interfaces:
+                    interfaces = interfaces.split(".")
                     interfaces = interfaces[0]
                 if interface is not None:
                     if interface == interfaces:
@@ -83,16 +81,11 @@ class Script(BaseScript):
                         pass
                     else:
                         continue
-                r.append({
-                    "vlan_id": vlan,
-                    "mac": chassis,
-                    "interfaces": [interfaces],
-                    "type": typ,
-                })
+                r.append({"vlan_id": vlan, "mac": chassis, "interfaces": [interfaces], "type": typ})
             return r
 
         for vlan_id in vlans:
-            bridge = 'br' + vlan_id
+            bridge = "br" + vlan_id
             cmd = self.cli("brctl showmacs %s" % bridge)
             for match in self.rx_showmacs.finditer(cmd):
                 if match.group("type") == "0.00":
@@ -100,8 +93,8 @@ class Script(BaseScript):
                 else:
                     typ = "D"
                 interfaces = bridges[bridge][int(match.group("port")) - 1]
-                if '.' in interfaces:
-                    interfaces = interfaces.split('.')
+                if "." in interfaces:
+                    interfaces = interfaces.split(".")
                     interfaces = interfaces[0]
                 if interface is not None:
                     if interface == interfaces:
@@ -114,10 +107,12 @@ class Script(BaseScript):
                         pass
                     else:
                         continue
-                r.append({
-                    "vlan_id": vlan_id,
-                    "mac": match.group("mac"),
-                    "interfaces": [interfaces],
-                    "type": typ,
-                })
+                r.append(
+                    {
+                        "vlan_id": vlan_id,
+                        "mac": match.group("mac"),
+                        "interfaces": [interfaces],
+                        "type": typ,
+                    }
+                )
         return r

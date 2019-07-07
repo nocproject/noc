@@ -29,13 +29,18 @@ class SlotRule(OIDRule):
                 # `midplane` and `FPM Board` always return zero
                 # PIC partially duplicate velues with FPC
                 continue
-            slotid = i[len("1.3.6.1.4.1.2636.3.1.13.1.5") + 1:]
+            slotid = i[len("1.3.6.1.4.1.2636.3.1.13.1.5") + 1 :]
             oid = mib[self.expand(self.oid, {"hwSlotIndex": slotid})]
             if "MS-MIC" in desc or "MS-MPC" in desc or "MS-DPC" in desc:
                 if "CPU" in metric.metric or "Environment" in metric.metric:
                     if "Temperature" in metric.metric and "Environment" in metric.metric:
                         desc = "Temperature " + desc
-                    path = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, int(slotid.split(".")[3]), desc]
+                    path = [
+                        int(slotid.split(".")[1]) - 1,
+                        int(slotid.split(".")[2]) - 1,
+                        int(slotid.split(".")[3]),
+                        desc,
+                    ]
                 else:
                     path = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, desc]
                 yield oid, self.type, self.scale, path
@@ -46,7 +51,12 @@ class SlotRule(OIDRule):
                 if "CPU" in metric.metric or "Environment" in metric.metric:
                     if "Temperature" in metric.metric and "Environment" in metric.metric:
                         desc = "Temperature " + desc
-                    path = [int(slotid.split(".")[1]) - 1, slotid.split(".")[2], slotid.split(".")[3], desc]
+                    path = [
+                        int(slotid.split(".")[1]) - 1,
+                        slotid.split(".")[2],
+                        slotid.split(".")[3],
+                        desc,
+                    ]
                 else:
                     path = [int(slotid.split(".")[1]) - 1, slotid.split(".")[2], desc]
                 yield oid, self.type, self.scale, path

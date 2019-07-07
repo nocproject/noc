@@ -10,6 +10,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -56,6 +57,7 @@ class Profile(BaseProfile):
 
 class ZyNOSContextManager(object):
     """zynos mode context manager to use with "with" statement"""
+
     def __init__(self, script):
         self.script = script
         self.profile = script.profile

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -28,10 +29,6 @@ class Script(BaseScript):
         match = rx_version.search(ver)
         version = match.group("version")
 
-        r = {
-            "vendor": "TP-Link",
-            "platform": platform,
-            "version": version
-        }
+        r = {"vendor": "TP-Link", "platform": platform, "version": version}
 
         return r

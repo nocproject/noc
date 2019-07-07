@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -18,7 +19,9 @@ class Script(BaseScript):
     interface = IGetSwitchport
     rx_vlan_ports = re.compile(
         r"VLAN_ID:(?P<vid>\d+).+?TAG PORT:(?P<tagged>[0-9 ]*).+?"
-        r"UNTAG PORT:(?P<untagged>[0-9 ]*)\s*", re.MULTILINE | re.DOTALL)
+        r"UNTAG PORT:(?P<untagged>[0-9 ]*)\s*",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         # Get interafces status
@@ -29,11 +32,13 @@ class Script(BaseScript):
         # Get ports in vlans
         vlan_ports = []
         for match in self.rx_vlan_ports.finditer(self.cli("show vlan", cached=True)):
-            vlan_ports += [{
-                "vid": match.group("vid"),
-                "tagged": self.expand_rangelist(match.group("tagged").replace(" ", ",")),
-                "untagged": self.expand_rangelist(match.group("untagged").replace(" ", ",")),
-            }]
+            vlan_ports += [
+                {
+                    "vid": match.group("vid"),
+                    "tagged": self.expand_rangelist(match.group("tagged").replace(" ", ",")),
+                    "untagged": self.expand_rangelist(match.group("untagged").replace(" ", ",")),
+                }
+            ]
 
         # Make a list of tags for each port
         port_tags = {}
@@ -52,12 +57,12 @@ class Script(BaseScript):
         d = {}
         for name in interface_status:
             d = {
-                     "interface": name,
-                        "status": interface_status.get(name, False),
+                "interface": name,
+                "status": interface_status.get(name, False),
                 "802.1Q Enabled": len(port_tags[name].get("tags", None)) > 0,
                 "802.1ad Tunnel": False,
-                       "members": [],
-                        "tagged": port_tags[name]["tags"]
+                "members": [],
+                "tagged": port_tags[name]["tags"],
             }
             if port_tags[name]["untag"]:
                 d["untagged"] = port_tags[name]["untag"]

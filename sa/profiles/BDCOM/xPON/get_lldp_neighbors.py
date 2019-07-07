@@ -8,13 +8,18 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, LLDP_CHASSIS_SUBTYPE_LOCAL,
-    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NETWORK_ADDRESS, LLDP_PORT_SUBTYPE_LOCAL
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
 )
 
 
@@ -28,7 +33,7 @@ class Script(BaseScript):
         r"^port id: (?P<port_id>.+)\s*\n"
         r"^port description: (?P<port_descr>(.+\n)+)"
         r"^system name: (?P<system_name>.*)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -56,13 +61,10 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": chassis_id_subtype,
                 "remote_chassis_id": chassis_id,
                 "remote_port_subtype": port_id_subtype,
-                "remote_port": port_id
+                "remote_port": port_id,
             }
             port_descr = match1.group("port_descr").strip()
             if port_descr and "-- not advertised" not in port_descr:
                 neighbor["remote_port_description"] = port_descr
-            r += [{
-                "local_interface": local_interface,
-                "neighbors": [neighbor]
-            }]
+            r += [{"local_interface": local_interface, "neighbors": [neighbor]}]
         return r

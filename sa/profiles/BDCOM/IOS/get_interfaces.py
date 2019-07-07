@@ -26,18 +26,12 @@ class Script(BaseScript):
         r"(, [Aa]ddress is (?P<mac>\S+)\s*\(.+)?\s*\n"
         r"(^\s+Interface address is (?P<ip_address>\S+)\s*\n)?"
         r"^\s+MTU (?P<mtu>\d+).+\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_iface_brief = re.compile(
-        r"^(?P<ifname>\S+).+(?:up|down|shutdown)\s+(?P<vlan_id>\d+)",
-        re.MULTILINE
+        r"^(?P<ifname>\S+).+(?:up|down|shutdown)\s+(?P<vlan_id>\d+)", re.MULTILINE
     )
-    iftype = {
-        "100BASE-TX": "physical",
-        "Giga-FX": "physical",
-        "EtherSVI": "SVI",
-        "Null": "null"
-    }
+    iftype = {"100BASE-TX": "physical", "Giga-FX": "physical", "EtherSVI": "SVI", "Null": "null"}
 
     def execute(self):
         interfaces = []
@@ -50,13 +44,15 @@ class Script(BaseScript):
                 "oper_status": match.group("oper_status") == "up",
                 "enabled_protocols": [],
                 "snmp_ifindex": int(match.group("snmp_ifindex")),
-                "subinterfaces": [{
-                    "name": match.group("ifname"),
-                    "admin_status": match.group("admin_status") == "up",
-                    "oper_status": match.group("oper_status") == "up",
-                    "mtu": int(match.group("mtu")),
-                    "enabled_afi": [],
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("ifname"),
+                        "admin_status": match.group("admin_status") == "up",
+                        "oper_status": match.group("oper_status") == "up",
+                        "mtu": int(match.group("mtu")),
+                        "enabled_afi": [],
+                    }
+                ],
             }
             description = match.group("description")
             if description is not None:
@@ -80,8 +76,7 @@ class Script(BaseScript):
             ifname = self.profile.convert_interface_name(match.group("ifname"))
             for i in interfaces:
                 if ifname == i["name"]:
-                    i["subinterfaces"][0]["untagged_vlan"] = \
-                        match.group("vlan_id")
+                    i["subinterfaces"][0]["untagged_vlan"] = match.group("vlan_id")
                     break
         c = self.cli("show vlan")
         for r in parse_table(c, allow_wrap=True, n_row_delim=", "):

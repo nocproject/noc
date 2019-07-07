@@ -10,6 +10,7 @@
 import uuid
 import datetime
 from collections import OrderedDict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbeef import IGetBeef
@@ -20,6 +21,7 @@ class Script(BaseScript):
     Enter a configuration mode and execute a list of CLI commands.
     return a list of results
     """
+
     name = "Generic.get_beef"
     interface = IGetBeef
     requires = []
@@ -37,7 +39,7 @@ class Script(BaseScript):
             "cli_fsm": [],
             "mib": [],
             "mib_encoding": self.MIB_ENCODING,
-            "cli_encoding": self.CLI_ENCODING
+            "cli_encoding": self.CLI_ENCODING,
         }
         # Process CLI answers
         result["cli"] = self.get_cli_results(spec)
@@ -79,21 +81,20 @@ class Script(BaseScript):
                 pass
             # Append tracked data
             for rcmd, packets in self.iter_cli_tracking():
-                r += [{
-                    "names": cmd_answers.get(rcmd, ["setup.cli"]),
-                    "request": rcmd,
-                    "reply": [v.encode(self.CLI_ENCODING) for v in packets]
-                }]
+                r += [
+                    {
+                        "names": cmd_answers.get(rcmd, ["setup.cli"]),
+                        "request": rcmd,
+                        "reply": [v.encode(self.CLI_ENCODING) for v in packets],
+                    }
+                ]
         self.stop_tracking()
         return r
 
     def get_cli_fsm_results(self):
         r = []
         for state, reply in self.iter_cli_fsm_tracking():
-            r += [{
-                "state": state,
-                "reply": [v.encode(self.CLI_ENCODING) for v in reply]
-            }]
+            r += [{"state": state, "reply": [v.encode(self.CLI_ENCODING) for v in reply]}]
         return r
 
     def collect_snmp(self, spec):
@@ -101,16 +102,10 @@ class Script(BaseScript):
         for ans in spec["answers"]:
             if ans["type"] == "snmp-get":
                 value = self.snmp.get(ans["value"], raw_varbinds=True)
-                yield {
-                    "oid": str(ans["value"]),
-                    "value": value.encode(self.MIB_ENCODING).strip()
-                }
+                yield {"oid": str(ans["value"]), "value": value.encode(self.MIB_ENCODING).strip()}
             elif ans["type"] == "snmp-getnext":
                 for oid, value in self.snmp.getnext(ans["value"], raw_varbinds=True):
-                    yield {
-                        "oid": str(oid),
-                        "value": value.encode(self.MIB_ENCODING).strip()
-                    }
+                    yield {"oid": str(oid), "value": value.encode(self.MIB_ENCODING).strip()}
 
     def get_snmp_results(self, spec):
         r = []

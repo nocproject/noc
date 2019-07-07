@@ -28,11 +28,7 @@ class Script(BaseScript):
         for match in self.rx_id.finditer(s):
             lid = match.group("id")
             c = self.cli("display lacp link-aggregation verbose %s" % lid)
-            iface = {
-                "interface": lid,
-                "type": "L",
-                "members": []
-            }
+            iface = {"interface": lid, "type": "L", "members": []}
             for match1 in self.rx_iface.finditer(c):
                 iface["members"] += [match1.group("port")]
             r += [iface]

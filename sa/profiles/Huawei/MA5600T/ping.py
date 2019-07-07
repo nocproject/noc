@@ -21,15 +21,16 @@ class Script(BaseScript):
         r"^\s*(?P<success>\d+) packets received\s*\n"
         r"^\s*.+\n"
         r"^\s*round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms\s*\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     rx_result2 = re.compile(
         r"^\s*(?P<count>\d+) packets transmitted\s*\n"
         r"^\s*(?P<success>\d+) packets received\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping"
         if count:
             cmd += " -c %d" % int(count)
@@ -47,11 +48,8 @@ class Script(BaseScript):
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
             match = self.rx_result2.search(s)
-            return {
-                "success": match.group("success"),
-                "count": match.group("count")
-            }
+            return {"success": match.group("success"), "count": match.group("count")}

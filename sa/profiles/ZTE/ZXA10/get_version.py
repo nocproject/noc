@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # re modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,8 +21,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_version = re.compile(
-        r"^System Description: (?P<platform>\S+) Version (?P<version>\S+) Software,",
-        re.MULTILINE
+        r"^System Description: (?P<platform>\S+) Version (?P<version>\S+) Software,", re.MULTILINE
     )
 
     def execute_cli(self):
@@ -30,5 +30,5 @@ class Script(BaseScript):
         return {
             "vendor": "ZTE",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

@@ -19,14 +19,15 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^\? \((?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\) at "
-        r"(?P<mac>\S+) \[ether\] on (?P<interface>\S+)", re.MULTILINE)
+        r"(?P<mac>\S+) \[ether\] on (?P<interface>\S+)",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
         v = self.cli("context ip router arp show", cached=True)
         for match in self.rx_line.finditer(v):
-            if (interface is not None) \
-            and (interface != match.group("interface")):
+            if (interface is not None) and (interface != match.group("interface")):
                 continue
             r.append(match.groupdict())
         return r

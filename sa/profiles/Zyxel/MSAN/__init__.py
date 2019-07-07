@@ -10,6 +10,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -89,7 +90,7 @@ class Profile(BaseProfile):
             if hw in ["MSC1024GB", "MSC1224GB", "MSC1024G", "MSC1224G"]:
                 return "IES-6000"
         if slot_no == 1:
-            if (hw in ["IES1248-51", "IES1248-71"]):
+            if hw in ["IES1248-51", "IES1248-71"]:
                 return "IES-1248"
             # Need more examples
             if hw == "IES-612":

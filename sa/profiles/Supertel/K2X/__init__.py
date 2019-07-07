@@ -15,7 +15,7 @@ class Profile(BaseProfile):
     name = "Supertel.K2X"
     pattern_more = [
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
-        (r"\[Yes/press any key for no\]", "Y")
+        (r"\[Yes/press any key for no\]", "Y"),
     ]
     pattern_unprivileged_prompt = r"^\S+> "
     pattern_syntax_error = r"^%\s+(Unrecognized command|Incomplete command|\
@@ -28,9 +28,4 @@ Wrong number of parameters or invalid range, size or characters entered)$"
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^(?P<hostname>\S+)#"
 
-    platforms = {
-        "1": "K21",
-        "2": "K21-1",
-        "3": "K23",
-        "4": "K23-1",
-    }
+    platforms = {"1": "K21", "2": "K21-1", "3": "K23", "4": "K23-1"}

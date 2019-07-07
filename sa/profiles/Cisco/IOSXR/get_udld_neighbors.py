@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetudldneighbors import IGetUDLDNeighbors
@@ -26,7 +27,7 @@ class Script(BaseScript):
         r"^\s+Message\sinterval:.+\n"
         r"^\s+Timeout\sinterval:.+\n"
         r"^\s+Echo\s\d+:\s+(?P<local_device>.+),\s(?P<local_interface>.+)\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
 
     def execute(self):
@@ -39,11 +40,13 @@ class Script(BaseScript):
             match = self.rx_entry.search(p)
             if not match:
                 continue
-            r += [{
-                  "local_device": match.group("local_device"),
-                  "local_interface": match.group("local_interface"),
-                  "remote_device": match.group("remote_device"),
-                  "remote_interface": match.group("remote_interface"),
-                  "state": match.group("state").upper()
-            }]
+            r += [
+                {
+                    "local_device": match.group("local_device"),
+                    "local_interface": match.group("local_interface"),
+                    "remote_device": match.group("remote_device"),
+                    "remote_interface": match.group("remote_interface"),
+                    "state": match.group("state").upper(),
+                }
+            ]
         return r

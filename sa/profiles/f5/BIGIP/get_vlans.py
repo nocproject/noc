@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -28,8 +29,5 @@ class Script(BaseScript):
             if h.startswith("Net::Vlan: "):
                 match = self.rx_tag.search(data)
                 if match:
-                    r += [{
-                        "vlan_id": match.group("tag"),
-                        "name": h[11:]
-                    }]
+                    r += [{"vlan_id": match.group("tag"), "name": h[11:]}]
         return r

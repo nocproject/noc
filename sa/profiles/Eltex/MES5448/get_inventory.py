@@ -18,12 +18,14 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         v = self.scripts.get_version()
-        res = [{
-            "type": "CHASSIS",
-            "vendor": "ELTEX",
-            "part_no": v["platform"],
-            "serial": v["attributes"]["Serial Number"]
-        }]
+        res = [
+            {
+                "type": "CHASSIS",
+                "vendor": "ELTEX",
+                "part_no": v["platform"],
+                "serial": v["attributes"]["Serial Number"],
+            }
+        ]
 
         try:
             v = self.cli("show fiber-ports optical-transceiver-info all")

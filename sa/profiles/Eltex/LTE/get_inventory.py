@@ -18,11 +18,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         v = self.scripts.get_version()
-        p = {
-            "type": "CHASSIS",
-            "vendor": "ELTEX",
-            "part_no": v["platform"],
-        }
+        p = {"type": "CHASSIS", "vendor": "ELTEX", "part_no": v["platform"]}
         if v.get("attributes", {}).get("Serial Number", ""):
             p["serial"] = v["attributes"]["Serial Number"]
 

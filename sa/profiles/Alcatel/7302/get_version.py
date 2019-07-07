@@ -17,10 +17,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_sys = re.compile(
-        r"actual-type\s*?:\s*(?P<platform>.+?)\s*$", re.MULTILINE)
-    rx_ver = re.compile(
-        r".+?\/*(?P<version>[A-Za-z0-9.]+?)\s+\S+\s+active.*$", re.MULTILINE)
+    rx_sys = re.compile(r"actual-type\s*?:\s*(?P<platform>.+?)\s*$", re.MULTILINE)
+    rx_ver = re.compile(r".+?\/*(?P<version>[A-Za-z0-9.]+?)\s+\S+\s+active.*$", re.MULTILINE)
 
     def execute(self):
         self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
@@ -34,5 +32,5 @@ class Script(BaseScript):
         return {
             "vendor": "Alcatel",
             "platform": match_sys.group("platform"),
-            "version": match_ver.group("version")
+            "version": match_ver.group("version"),
         }

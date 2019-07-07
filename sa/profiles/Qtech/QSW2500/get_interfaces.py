@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,8 +22,9 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_port = re.compile(
-        r"^\s*(?P<port>\d+)\s*(?P<admin_status>enable|disable)\s*"
-        r"(?P<oper_status>up|down)", re.MULTILINE)
+        r"^\s*(?P<port>\d+)\s*(?P<admin_status>enable|disable)\s*" r"(?P<oper_status>up|down)",
+        re.MULTILINE,
+    )
     rx_vlan = re.compile(
         r"^Port: (?P<port>\d+)\s*\n"
         r"^Administrative Mode:.+\n"
@@ -35,12 +37,12 @@ class Script(BaseScript):
         r"^Operational Trunk Allowed VLANs:\s*(?P<op_vlans>.*)\n"
         r"^Administrative Trunk Untagged VLANs:.*\n"
         r"^Operational Trunk Untagged VLANs:\s*(?P<op_untagged>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_descr = re.compile(r"^\s*(?P<port>\d+)\s*(?P<descr>.+)\n", re.MULTILINE)
     rx_ip_iface = re.compile(
-        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
-        r"(?P<vlan_id>\d+)", re.MULTILINE)
+        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+" r"(?P<vlan_id>\d+)", re.MULTILINE
+    )
 
     def execute_cli(self):
         interfaces = []
@@ -52,12 +54,14 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_status") == "enable",
                 "oper_status": match.group("admin_status") == "up",
                 "snmp_ifindex": int(match.group("port")),
-                "subinterfaces": [{
-                    "name": match.group("port"),
-                    "admin_status": match.group("admin_status") == "enable",
-                    "oper_status": match.group("admin_status") == "up",
-                    "enabled_afi": ['BRIDGE']
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("port"),
+                        "admin_status": match.group("admin_status") == "enable",
+                        "oper_status": match.group("admin_status") == "up",
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
             }
             interfaces += [i]
         v = self.cli("show interface port switchport")
@@ -95,13 +99,15 @@ class Script(BaseScript):
                 "type": "SVI",
                 "mac": mac,
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": "ip%s" % ifname,
-                    "mac": mac,
-                    "enabled_afi": ['IPv4'],
-                    "ipv4_addresses": [ip_address],
-                    "vlan_ids": [match.group("vlan_id")]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": "ip%s" % ifname,
+                        "mac": mac,
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip_address],
+                        "vlan_ids": [match.group("vlan_id")],
+                    }
+                ],
             }
             interfaces += [i]
         return [{"interfaces": interfaces}]

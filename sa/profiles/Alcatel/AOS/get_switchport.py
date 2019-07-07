@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -16,12 +17,16 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "Alcatel.AOS.get_switchport"
     interface = IGetSwitchport
-    rx_line = re.compile(r"\n\s+(?P<interface>\S+)\s+(?P<status>\S+)\s+(?:10000|1000|100|-)\s+",
-                         re.MULTILINE)
-    rx_line_vlan = re.compile(r"^\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+(?P<vlan_type>\S+)\s+(?P<status>\S+)$",
-                              re.MULTILINE)
-    rx_line_vlan_ag = re.compile(r"^\s+(?P<vlan>\S+)\s+(?P<vlan_type>\S+)\s+(forwarding|inactive)$",
-                                 re.MULTILINE)
+    rx_line = re.compile(
+        r"\n\s+(?P<interface>\S+)\s+(?P<status>\S+)\s+(?:10000|1000|100|-)\s+", re.MULTILINE
+    )
+    rx_line_vlan = re.compile(
+        r"^\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+(?P<vlan_type>\S+)\s+(?P<status>\S+)$",
+        re.MULTILINE,
+    )
+    rx_line_vlan_ag = re.compile(
+        r"^\s+(?P<vlan>\S+)\s+(?P<vlan_type>\S+)\s+(forwarding|inactive)$", re.MULTILINE
+    )
 
     def execute(self):
         r = []
@@ -47,26 +52,27 @@ class Script(BaseScript):
                 for p in self.scripts.get_portchannel():
                     if p["interface"] == shortname:
                         members = p["members"]
-                r += [{"interface": "Ag %s" % i,
-                       "status": "enabled",
-                       "description": "",
-                       "802.1Q Enabled": "True",
-                       "802.1ad Tunnel": False,
-                       "untagged": untagged,
-                       "tagged": tagget,
-                       "members": members,
-                       }]
+                r += [
+                    {
+                        "interface": "Ag %s" % i,
+                        "status": "enabled",
+                        "description": "",
+                        "802.1Q Enabled": "True",
+                        "802.1ad Tunnel": False,
+                        "untagged": untagged,
+                        "tagged": tagget,
+                        "members": members,
+                    }
+                ]
         if members:
             for m in pc["members"]:
-                portchannel_members[m] = (i)
+                portchannel_members[m] = i
 
         for match in self.rx_line_vlan.finditer(self.cli("show vlan port")):
             members = []
             interface = match.group("interface")
             if interface not in iface_vlans:
-                iface_vlans[interface] = {
-                    "tagged": []
-                }
+                iface_vlans[interface] = {"tagged": []}
             vlan_type = match.group("vlan_type")
             if vlan_type == "default":
                 iface_vlans[interface]["untagged"] = match.group("vlan")

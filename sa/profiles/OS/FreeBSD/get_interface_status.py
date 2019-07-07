@@ -15,12 +15,11 @@ import re
 class Script(BaseScript):
     name = "OS.FreeBSD.get_interface_status"
     interface = IGetInterfaceStatus
-    rx_if_name = re.compile(
-        r"^(?P<ifname>\S+): flags=[0-9a-f]+<\S+> metric \d+ mtu \d+$")
+    rx_if_name = re.compile(r"^(?P<ifname>\S+): flags=[0-9a-f]+<\S+> metric \d+ mtu \d+$")
 
     rx_if_status = re.compile(
-        r"^\tstatus: "
-        r"(?P<status>active|no carrier|inserted|no ring|associated|running)$")
+        r"^\tstatus: " r"(?P<status>active|no carrier|inserted|no ring|associated|running)$"
+    )
 
     def execute(self, interface=None):
         r = []
@@ -33,7 +32,7 @@ class Script(BaseScript):
             if match:
                 iface = {
                     "interface": if_name,
-                    "status": not match.group("status").startswith("no ")
+                    "status": not match.group("status").startswith("no "),
                 }
                 if (interface is not None) and (interface == if_name):
                     return [iface]

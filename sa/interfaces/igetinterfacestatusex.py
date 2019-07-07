@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import (DictListParameter, InterfaceNameParameter, BooleanParameter, IntParameter)
+from .base import DictListParameter, InterfaceNameParameter, BooleanParameter, IntParameter
 
 
 class IGetInterfaceStatusEx(BaseInterface):
@@ -17,11 +18,9 @@ class IGetInterfaceStatusEx(BaseInterface):
     Returns extended interface status for all available interfaces
     including port channels and SVI
     """
+
     interfaces = DictListParameter(
-        attrs={
-            "interface": InterfaceNameParameter(),
-            "ifindex": IntParameter()
-        }, required=False
+        attrs={"interface": InterfaceNameParameter(), "ifindex": IntParameter()}, required=False
     )
     returns = DictListParameter(
         attrs={
@@ -35,7 +34,7 @@ class IGetInterfaceStatusEx(BaseInterface):
             # Output speed, kbit/s
             "out_speed": IntParameter(required=False),
             # Configured bandwidth, kbit/s
-            "bandwidth": IntParameter(required=False)
+            "bandwidth": IntParameter(required=False),
         }
     )
     preview = "NOC.sa.managedobject.scripts.ShowInterfaceStatusEx"

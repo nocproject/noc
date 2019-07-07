@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -21,14 +22,17 @@ class Script(BaseScript):
     # MSTP Mode parsing
     rx_mstp_instance_list = re.compile(r"^\s*(\d+)", re.MULTILINE)
     rx_mstp_region = re.compile(
-        r"MST Region Name:\s+(?P<region>\S+).*Revision:\s+(?P<revision>\d+)", re.MULTILINE | re.DOTALL | re.IGNORECASE
+        r"MST Region Name:\s+(?P<region>\S+).*Revision:\s+(?P<revision>\d+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_mstp_vlans = re.compile(r"^MSTI \d VLANs mapped\s+(?P<vlans>.+?)$", re.MULTILINE)
     rx_mstp_root = re.compile(
-        r"^Root\s+ID\s+Priority\s+(?P<root_priority>\d+),\s+Address\s+(?P<root_id>\S+)", re.MULTILINE
+        r"^Root\s+ID\s+Priority\s+(?P<root_priority>\d+),\s+Address\s+(?P<root_id>\S+)",
+        re.MULTILINE,
     )
     rx_mstp_bridge = re.compile(
-        r"^Bridge\s+ID\s+Priority\s+(?P<bridge_priority>\d+),\s+Address\s+(?P<bridge_id>\S+)", re.MULTILINE
+        r"^Bridge\s+ID\s+Priority\s+(?P<bridge_priority>\d+),\s+Address\s+(?P<bridge_id>\S+)",
+        re.MULTILINE,
     )
 
     def process_mstp(self):
@@ -39,11 +43,8 @@ class Script(BaseScript):
             "mode": "MSTP",
             "instances": [],
             "configuration": {
-                "MSTP": {
-                    "region": match.group("region"),
-                    "revision": match.group("revision"),
-                }
-            }
+                "MSTP": {"region": match.group("region"), "revision": match.group("revision")}
+            },
         }
         for instance_id in ["0"] + self.rx_mstp_instance_list.findall(v):
             # Get instance data
@@ -62,7 +63,9 @@ class Script(BaseScript):
             ri["bridge_priority"] = match.group("bridge_priority")
             # Process interfaces
             s1, s2, s3 = v.split("\n\nInterface")
-            for interface, port_id, priority, _, state, _, desg_bridge, desg_port_id in parse_table(s2):
+            for interface, port_id, priority, _, state, _, desg_bridge, desg_port_id in parse_table(
+                s2
+            ):
                 desg_bridge_priority, desg_bridge_id = desg_bridge.split()
                 i = {
                     "interface": interface,
@@ -71,8 +74,10 @@ class Script(BaseScript):
                         "dis": "disabled",
                         "blk": "discarding",
                         "??": "learning",
-                        "fwd": "forwarding"
-                    }[state.lower()],  # @todo: refine states
+                        "fwd": "forwarding",
+                    }[
+                        state.lower()
+                    ],  # @todo: refine states
                     "priority": priority,
                     "designated_bridge_id": desg_bridge_id,
                     "designated_bridge_priority": desg_bridge_priority,
@@ -80,7 +85,9 @@ class Script(BaseScript):
                 }
                 ri["interfaces"] += [i]
             for i, s in zip(ri["interfaces"], parse_table(s3)):
-                interface, role, port_id, priority, cost, status, cost2, link_type, edge, boundary = s
+                interface, role, port_id, priority, cost, status, cost2, link_type, edge, boundary = (
+                    s
+                )
                 i["role"] = {
                     "dis": "disabled",
                     "?": "alternate",
@@ -89,8 +96,10 @@ class Script(BaseScript):
                     "desg": "designated",
                     "???": "master",
                     "????": "nonstp",
-                    "_": "unknown"
-                }[role.lower()]  # @todo: refine roles
+                    "_": "unknown",
+                }[
+                    role.lower()
+                ]  # @todo: refine roles
                 i["point_to_point"] = "P2P" in link_type.upper()
                 i["edge"] = True if edge.lower().startswith("y") else False
             # Append instance to result

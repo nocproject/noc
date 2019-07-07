@@ -6,12 +6,14 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 rx = re.compile(
-    r"Product Name:\s+(?P<platform>\S+)$.+Software Version:\s+(?P<version>.+?)\s*\,", re.MULTILINE | re.DOTALL
+    r"Product Name:\s+(?P<platform>\S+)$.+Software Version:\s+(?P<version>.+?)\s*\,",
+    re.MULTILINE | re.DOTALL,
 )
 
 

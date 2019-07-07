@@ -18,11 +18,7 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.profile.get_hardware(self)
-        r = {
-            "vendor": "ISKRATEL",
-            "part_no": v["part_no"],
-            "serial": v["serial"]
-        }
+        r = {"vendor": "ISKRATEL", "part_no": v["part_no"], "serial": v["serial"]}
         if v["number"]:
             r["type"] = "LINECARD"
             r["number"] = v["number"]

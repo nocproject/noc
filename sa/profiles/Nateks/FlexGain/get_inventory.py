@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -28,7 +29,8 @@ class Script(BaseScript):
         r"^\s+HW Revision\s*:(?P<revision>.+)\n"
         r"^\s+S/N\s*:(?P<serial>.+)\n"
         r"^\s+Manufacture\s*:.*\n",  # Need more examples
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_slot = re.compile(
         r"^\s+Slot\s+(?P<number>\d+)\s*\n"
         r"^\s+Card Type\s*:(?P<description>.+)\n"
@@ -40,29 +42,34 @@ class Script(BaseScript):
         r"^\s+HW Revision\s*:(?P<revision>.+)\n"
         r"^\s+Manufacture\s*:.*\n"  # Need more examples
         r"^\s+S/N\s*:(?P<serial>.+)\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
         v = self.cli("show system inventory")
         match = self.rx_chassis.search(v)
-        r += [{
-            "type": "CHASSIS",
-            "vendor": "Nateks",
-            "part_no": [match.group("part_no").strip(), match.group("part_no1").strip()],
-            "revision": match.group("revision").strip(),
-            "serial": match.group("serial").strip(),
-            "description": match.group("description").strip()
-        }]
-        for match in self.rx_slot.finditer(v):
-            r += [{
-                "number": match.group("number"),
-                "type": "LINECARD",
+        r += [
+            {
+                "type": "CHASSIS",
                 "vendor": "Nateks",
                 "part_no": [match.group("part_no").strip(), match.group("part_no1").strip()],
                 "revision": match.group("revision").strip(),
                 "serial": match.group("serial").strip(),
-                "description": match.group("description").strip()
-            }]
+                "description": match.group("description").strip(),
+            }
+        ]
+        for match in self.rx_slot.finditer(v):
+            r += [
+                {
+                    "number": match.group("number"),
+                    "type": "LINECARD",
+                    "vendor": "Nateks",
+                    "part_no": [match.group("part_no").strip(), match.group("part_no1").strip()],
+                    "revision": match.group("revision").strip(),
+                    "serial": match.group("serial").strip(),
+                    "description": match.group("description").strip(),
+                }
+            ]
 
         return r

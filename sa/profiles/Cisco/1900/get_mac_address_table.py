@@ -2,18 +2,18 @@
 # ---------------------------------------------------------------------
 # Cisco.1900.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
-import noc.sa.profiles
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+
+# Python modules
 import re
 
-rx_line = re.compile(
-    r"^(?P<mac>\S+)\s+(?P<interface>\S+ \d\/\d+)\s+(?P<type>\S+)\s+All")
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+
+rx_line = re.compile(r"^(?P<mac>\S+)\s+(?P<interface>\S+ \d\/\d+)\s+(?P<type>\S+)\s+All")
 
 
 class Script(BaseScript):
@@ -34,22 +34,25 @@ class Script(BaseScript):
             if match:
                 vlan_id = "1"
                 rx_cfg = re.compile(
-                    "interface " + match.group("interface").replace("/", ".") +
-                    ".+vlan-membership static (?P<static_vlan_id>\d+)",
-                    re.DOTALL | re.MULTILINE)
+                    "interface "
+                    + match.group("interface").replace("/", ".")
+                    + ".+vlan-membership static (?P<static_vlan_id>\d+)",
+                    re.DOTALL | re.MULTILINE,
+                )
                 cfg_match = rx_cfg.search(running_config)
                 if cfg_match:
                     vlan_id = cfg_match.group("static_vlan_id")
                 if vlan is not None:
                     if int(vlan) != int(vlan_id):
                         continue
-                m_type = {"dynamic": "D",
-                          "permanent": "S"}.get(match.group("type").lower())
-                r.append({
-                    "vlan_id": vlan_id,
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interface")],
-                    "type": m_type
-                })
+                m_type = {"dynamic": "D", "permanent": "S"}.get(match.group("type").lower())
+                r.append(
+                    {
+                        "vlan_id": vlan_id,
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interface")],
+                        "type": m_type,
+                    }
+                )
 
         return r

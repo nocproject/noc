@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -32,12 +33,11 @@ class Script(BaseScript):
         r"(^.+?\n)?"
         r"(^\s+Forwarding mode is SWITCH_ACCESS, pvid is (?P<pvid>\d+), mirror \S+"
         r", loopback-detect (?P<ctp_state>\S+),.+\n)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_conf_iface = re.compile(
-        r"^interface (?P<iface>\S+)\s*\n"
-        r"((?P<cfg>.*?)\n)?"
-        r"^!\s*\n",
-        re.MULTILINE | re.DOTALL)
+        r"^interface (?P<iface>\S+)\s*\n" r"((?P<cfg>.*?)\n)?" r"^!\s*\n", re.MULTILINE | re.DOTALL
+    )
     rx_trunk = re.compile(r"switchport trunk permit vlan (?P<vlan_id>\d+)")
 
     def execute(self):
@@ -54,12 +54,14 @@ class Script(BaseScript):
                 "type": self.profile.get_interface_type(ifname),
                 "oper_status": match.group("oper") == "up",
                 "admin_status": match.group("admin") == "up",
-                "subinterfaces": [{
-                    "name": ifname,
-                    "oper_status": match.group("oper") == "up",
-                    "admin_status": match.group("admin") == "up",
-                    "enabled_afi": []
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "oper_status": match.group("oper") == "up",
+                        "admin_status": match.group("admin") == "up",
+                        "enabled_afi": [],
+                    }
+                ],
             }
             if match.group("mac"):
                 iface["mac"] = match.group("mac")
@@ -69,7 +71,7 @@ class Script(BaseScript):
             if match.group("ip_addr"):
                 ip = match.group("ip_addr")
                 netmask = str(IPv4.netmask_to_len(match.group("ip_mask")))
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
                 ip_list = [ip]
                 iface["subinterfaces"][0]["ipv4_addresses"] = ip_list
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv4"]
@@ -83,17 +85,14 @@ class Script(BaseScript):
             else:
                 iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
             if match.group("pvid"):
-                iface["subinterfaces"][0]["untagged_vlan"] = \
-                    int(match.group("pvid"))
+                iface["subinterfaces"][0]["untagged_vlan"] = int(match.group("pvid"))
             if conf_interfaces.get(ifname):
                 cfg = conf_interfaces[ifname]
                 for match in self.rx_trunk.finditer(cfg):
                     if iface["subinterfaces"][0].get("tagged_vlans"):
-                        iface["subinterfaces"][0]["tagged_vlans"] += \
-                            [int(match.group("vlan_id"))]
+                        iface["subinterfaces"][0]["tagged_vlans"] += [int(match.group("vlan_id"))]
                     else:
-                        iface["subinterfaces"][0]["tagged_vlans"] = \
-                            [int(match.group("vlan_id"))]
+                        iface["subinterfaces"][0]["tagged_vlans"] = [int(match.group("vlan_id"))]
             interfaces += [iface]
 
         return [{"interfaces": interfaces}]

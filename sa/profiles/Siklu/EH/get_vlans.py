@@ -15,15 +15,13 @@ import re
 class Script(BaseScript):
     name = "Siklu.EH.get_vlans"
     interface = IGetVlans
-    rx_vlan = re.compile(
-        r"^\s*\S+\s+(?P<vlanid>\d+)\s+\d+\s+\S+\s+\S+\s+\S+\s*\n",
-        re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*\S+\s+(?P<vlanid>\d+)\s+\d+\s+\S+\s+\S+\s+\S+\s*\n", re.MULTILINE)
 
     def execute(self):
         r = []
         c = self.cli("show vlan\n")
         for match in self.rx_vlan.finditer(c):
-            vlan_id = int(match.group('vlanid'))
+            vlan_id = int(match.group("vlanid"))
             if vlan_id == 1:
                 continue
             found = False

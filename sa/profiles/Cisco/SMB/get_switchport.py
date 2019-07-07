@@ -9,6 +9,7 @@
 # Python modules
 import re
 from time import sleep
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -21,10 +22,9 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     rx_body = re.compile(
-        r"^Port : .+"
-        r"Port Mode: (?P<amode>\S+).+"
-        r".+NATIVE[^\d]+(?P<nvlan>\d+).+",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"^Port : .+" r"Port Mode: (?P<amode>\S+).+" r".+NATIVE[^\d]+(?P<nvlan>\d+).+",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
     rx_body2 = re.compile(
         r"Name: .+\n"
         r"Switchport: enable\n"
@@ -33,12 +33,13 @@ class Script(BaseScript):
         r"Access Mode VLAN: (?P<avlan>\S+)\s*\n"
         r"Access Multicast TV VLAN: .+\n"
         r"Trunking Native Mode VLAN: (?P<nvlan>\d+)",
-        re.MULTILINE)
-    rx_portmembers = re.compile(
-        r"^\s*(?P<vid>\d+)\s+\S+\s+(?P<erule>\S+)\s+(?P<mtype>\S+)")
+        re.MULTILINE,
+    )
+    rx_portmembers = re.compile(r"^\s*(?P<vid>\d+)\s+\S+\s+(?P<erule>\S+)\s+(?P<mtype>\S+)")
     rx_trunking = re.compile(
-        r"Trunking VLANs: (?P<vlans>.+?)( \(Inactive\))?\s*\n"
-        r"General PVID:", re.MULTILINE | re.DOTALL)
+        r"Trunking VLANs: (?P<vlans>.+?)( \(Inactive\))?\s*\n" r"General PVID:",
+        re.MULTILINE | re.DOTALL,
+    )
 
     rx_descr_if = re.compile(r"^(?P<interface>\S+)\s+(?P<description>.+)$")
 
@@ -53,10 +54,12 @@ class Script(BaseScript):
                 interface = match.group("interface")
                 if interface in ("Port", "Ch", "-------"):
                     continue
-            r += [{
-                "interface": self.profile.convert_interface_name(interface),
-                "description": match.group("description")
-            }]
+            r += [
+                {
+                    "interface": self.profile.convert_interface_name(interface),
+                    "description": match.group("description"),
+                }
+            ]
         return r
 
     def execute_cli(self):
@@ -67,7 +70,7 @@ class Script(BaseScript):
 
         # Get descriptions
         descriptions = {}  # interface name -> description
-        interfaces = {}   # interface name -> status (True - up, False - down)
+        interfaces = {}  # interface name -> status (True - up, False - down)
         # Prepare interface statuses
         for p in self.get_description():
             descriptions[p["interface"]] = p["description"]
@@ -82,8 +85,8 @@ class Script(BaseScript):
 
         # Set up interface statuses
         for intstatus in self.scripts.get_interface_status():
-            if intstatus['interface'] in interfaces:
-                interfaces[intstatus['interface']] = intstatus['status']
+            if intstatus["interface"] in interfaces:
+                interfaces[intstatus["interface"]] = intstatus["status"]
 
         r = []  # reply
         # For each interface

@@ -13,14 +13,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.MES5448"
-    pattern_more = [
-        (r"--More-- or \(q\)uit", " ")
-    ]
+    pattern_more = [(r"--More-- or \(q\)uit", " ")]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
-    pattern_syntax_error = \
-        r"^% (Unrecognized command|Incomplete command|" \
-        r"Wrong number of parameters or invalid range, size or " \
+    pattern_syntax_error = (
+        r"^% (Unrecognized command|Incomplete command|"
+        r"Wrong number of parameters or invalid range, size or "
         r"characters entered)$"
+    )
     command_super = "enable"
     command_disable_pager = "terminal length 0"

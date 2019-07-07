@@ -7,10 +7,10 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -20,9 +20,10 @@ class Profile(BaseProfile):
     pattern_username = r"^>(?:\>| )User name( \(<\d+ chars\))?:"
     pattern_password = r"^>(?:\>| )(?:User )?[Pp]assword( \(<\d+ chars\))?:"
     pattern_more = [
-        (r"^--More\(Enter: next line, spacebar: next page, "
-         r"any other key: quit\)--", " "), (r"\[<frameId/slotId>\]", "\n"),
-        (r"\(y/n\) \[n\]", "y\n"), (r"\[to\]\:", "\n")
+        (r"^--More\(Enter: next line, spacebar: next page, " r"any other key: quit\)--", " "),
+        (r"\[<frameId/slotId>\]", "\n"),
+        (r"\(y/n\) \[n\]", "y\n"),
+        (r"\[to\]\:", "\n"),
     ]
     # Do not match this line: "\r\n>>User name: "
     pattern_unprivileged_prompt = r"^[^>]\S+?>"
@@ -46,7 +47,7 @@ class Profile(BaseProfile):
         'ADSL:0/1/1'
         """
 
-        if ":" in s or "mgmt" is s:
+        if ":" in s or s == "mgmt":
             return s
         match = self.rx_interface_name.match(s)
         if not match:

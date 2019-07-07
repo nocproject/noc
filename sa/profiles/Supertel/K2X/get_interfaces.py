@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # Supertel.K2X.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,40 +21,41 @@ class Script(BaseScript):
     TIMEOUT = 240
 
     rx_sh_ip_int = re.compile(
-        r"^(?P<ip>\S+)/(?P<mask>\d+)\s+(?P<interface>(\S+ \d+|\S+))\s+"
-        r"(Static|DHCP)\s*$",
-        re.MULTILINE)
+        r"^(?P<ip>\S+)/(?P<mask>\d+)\s+(?P<interface>(\S+ \d+|\S+))\s+" r"(Static|DHCP)\s*$",
+        re.MULTILINE,
+    )
 
     rx_sh_ipv6_int = re.compile(
         r"^(?P<interface>(\S+ \d+|\S+))\s+(?P<ip>\S+)(/(?P<mask>\d+)|)\s+"
         r"(manual|linklayer|Static|Dynamic)\s*$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     rx_status = re.compile(
         r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+(\S+\s+|)"
         r"(?P<oper_status>(Up|Down|Down*))",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     types = {
-        "g": "physical",    # GigabitEthernet
+        "g": "physical",  # GigabitEthernet
         "c": "aggregated",  # Port-channel/Portgroup
-        "V": "SVI",         # Vlan interface
-        "v": "SVI",         # Vlan interface
-        }
+        "V": "SVI",  # Vlan interface
+        "v": "SVI",  # Vlan interface
+    }
 
     def execute(self):
         # Get port-to-vlan mappings
-        pvm = {}
         switchports = {}  # interface -> (untagged, tagged)
         for sp in self.scripts.get_switchport():
             switchports[sp["interface"]] = (
                 sp["untagged"] if "untagged" in sp else None,
-                sp["tagged"]
-                )
+                sp["tagged"],
+            )
 
         # Get IP interfaces
         mac = self.scripts.get_chassis_id()
-        mac = mac[0]['first_chassis_mac']
+        mac = mac[0]["first_chassis_mac"]
         interfaces = []
         ip_iface = self.cli("show ip interface")
         for match in self.rx_sh_ip_int.finditer(ip_iface):
@@ -62,7 +63,7 @@ class Script(BaseScript):
             typ = self.types[ifname[:1]]
             ip = match.group("ip")
             netmask = match.group("mask")
-            ip = ip + '/' + netmask
+            ip = ip + "/" + netmask
             a_stat = True
             o_stat = True
             iface = {
@@ -71,15 +72,17 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "mac": mac,
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": a_stat,
-                    "oper_status": o_stat,
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [ip],
-                    "mac": mac,
-                    }]
-                }
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip],
+                        "mac": mac,
+                    }
+                ],
+            }
             interfaces += [iface]
 
         ip_iface = self.cli("show ipv6 interface")
@@ -89,10 +92,10 @@ class Script(BaseScript):
 
             if match.group("mask"):
                 netmask = match.group("mask")
-                ip = ip + '/' + netmask
-            elif '/' not in ip:
+                ip = ip + "/" + netmask
+            elif "/" not in ip:
                 netmask = "64"
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
 
             ifac = True
             for i in interfaces:
@@ -112,15 +115,17 @@ class Script(BaseScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "mac": mac,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": a_stat,
-                        "oper_status": o_stat,
-                        "enabled_afi": ["IPv6"],
-                        "ipv6_addresses": [ip],
-                        "mac": mac,
-                        }]
-                    }
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "admin_status": a_stat,
+                            "oper_status": o_stat,
+                            "enabled_afi": ["IPv6"],
+                            "ipv6_addresses": [ip],
+                            "mac": mac,
+                        }
+                    ],
+                }
                 interfaces += [iface]
 
         status = self.cli("show interfaces status")
@@ -141,27 +146,28 @@ class Script(BaseScript):
         for match in self.rx_status.finditer(status):
             ifname = match.group("interface")
             o_stat = match.group("oper_status").lower() == "up"
-            if ifname[:1] == 'g':
+            if ifname[:1] == "g":
                 ifindex = ifname[1:]
                 rx_config = re.compile(
                     r"^" + ifname + "\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
                     r"(?P<admin_status>(Up|Down))\s+\S+\s+\S+$",
-                    re.MULTILINE)
+                    re.MULTILINE,
+                )
             else:
                 ifindex = str(999 + int(ifname[2:]))
                 rx_config = re.compile(
                     r"^" + ifname + "\s+\S+\s+\S+\s+\S+\s+\S+\s+"
                     r"(?P<admin_status>(Up|Down))\s*$",
-                    re.MULTILINE)
+                    re.MULTILINE,
+                )
             match = rx_config.search(config)
             a_stat = match.group("admin_status").lower() == "up"
-            rx_descr = re.compile(
-                r"^" + ifname + "\s+(?P<desc>\S+)$", re.MULTILINE)
+            rx_descr = re.compile(r"^" + ifname + "\s+(?P<desc>\S+)$", re.MULTILINE)
             match = rx_descr.search(descr)
             if match:
                 description = match.group("desc")
             else:
-                description = ''
+                description = ""
 
             ifac = True
             for i in interfaces:
@@ -187,16 +193,18 @@ class Script(BaseScript):
                     "description": description,
                     "enabled_protocols": [],
                     "snmp_ifindex": ifindex,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "description": description,
-                        "admin_status": a_stat,
-                        "oper_status": o_stat,
-                        "mac": mac,
-                        "enabled_afi": [],
-                        "snmp_ifindex": ifindex
-                        }]
-                    }
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "description": description,
+                            "admin_status": a_stat,
+                            "oper_status": o_stat,
+                            "mac": mac,
+                            "enabled_afi": [],
+                            "snmp_ifindex": ifindex,
+                        }
+                    ],
+                }
                 interfaces += [iface]
 
             # Portchannel member
@@ -208,32 +216,29 @@ class Script(BaseScript):
             elif ifac:
                 iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
                 if switchports[ifname][1]:
-                    iface["subinterfaces"][0]["tagged_vlans"] = switchports[
-                        ifname][1]
+                    iface["subinterfaces"][0]["tagged_vlans"] = switchports[ifname][1]
                 if switchports[ifname][0]:
-                    iface["subinterfaces"][0]["untagged_vlan"] = switchports[
-                        ifname][0]
+                    iface["subinterfaces"][0]["untagged_vlan"] = switchports[ifname][0]
 
             # GVRP
             rx_gvrp = re.compile(
-                r"^" + ifname + "\s+Enabled\s+Normal\s+"
-                r"Enabled\s+\d+\s+\d+\s+\d+",
-                re.MULTILINE)
+                r"^" + ifname + "\s+Enabled\s+Normal\s+" r"Enabled\s+\d+\s+\d+\s+\d+", re.MULTILINE
+            )
             match = rx_gvrp.search(gvrp)
             if match:
                 iface["enabled_protocols"] += ["GVRP"]
 
             # LLDP
-            rx_lldp = re.compile(
-                r"^" + ifname + "\s+(Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
+            rx_lldp = re.compile(r"^" + ifname + "\s+(Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
             match = rx_lldp.search(lldp)
             if match:
                 iface["enabled_protocols"] += ["LLDP"]
 
             # STP
             rx_stp = re.compile(
-                r"^\s*" + ifname + "\s+enabled\s+\S+\s+\d+\s+"
-                r"\S+\s+\S+\s+(Yes|No)\s+", re.MULTILINE)
+                r"^\s*" + ifname + "\s+enabled\s+\S+\s+\d+\s+" r"\S+\s+\S+\s+(Yes|No)\s+",
+                re.MULTILINE,
+            )
             match = rx_stp.search(stp)
             if match:
                 iface["enabled_protocols"] += ["STP"]

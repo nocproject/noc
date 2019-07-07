@@ -12,7 +12,8 @@ import re
 
 rx_ver = re.compile(
     r"(?P<platform>\S+) System software Revision (?P<version>\S+)",
-    re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    re.MULTILINE | re.DOTALL | re.IGNORECASE,
+)
 
 
 class Script(BaseScript):
@@ -26,5 +27,5 @@ class Script(BaseScript):
         return {
             "vendor": "AddPac",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

@@ -27,21 +27,9 @@ class Profile(BaseProfile):
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     matchers = {
-        "is_s": {
-            "platform": {
-                "$regex": "^S"
-            }
-        },
-        "is_c": {
-            "platform": {
-                "$regex": "^C"
-            }
-        },
-        "is_e": {
-            "platform": {
-                "$regex": "^E"
-            }
-        }
+        "is_s": {"platform": {"$regex": "^S"}},
+        "is_c": {"platform": {"$regex": "^C"}},
+        "is_e": {"platform": {"$regex": "^E"}},
     }
 
     def generate_prefix_list(self, name, pl):

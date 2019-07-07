@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
@@ -27,20 +28,16 @@ class Script(BaseScript):
         r"(  Route-distinguisher: (?P<rd>\S+)\s*\n)?"
         r"(  Vrf-import: \[(?P<vrf_import>.+)\]\s*\n)?"
         r"(  Vrf-export: \[(?P<vrf_export>.+)\]\s*\n)?",
-        re.MULTILINE | re.IGNORECASE
+        re.MULTILINE | re.IGNORECASE,
     )
     rx_vrf_target = re.compile(r"target:(?P<rd>\d+:\d+)")
-    type_map = {
-        "vrf": "VRF",
-        "vpls": "VPLS",
-        "l2vpn": "VLL",
-        "evpn": "EVPN"
-    }
+    type_map = {"vrf": "VRF", "vpls": "VPLS", "l2vpn": "VLL", "evpn": "EVPN"}
 
     def execute(self, **kwargs):
         c = self.cli(
-            "help apropos \"instance\" | match \"^show route instance\" ",
-            cached=True, ignore_errors=True
+            'help apropos "instance" | match "^show route instance" ',
+            cached=True,
+            ignore_errors=True,
         )
         if "show route instance" not in c:
             return []
@@ -50,23 +47,16 @@ class Script(BaseScript):
         for match in self.rx_ri.finditer(v):
             name = match.group("name")
             rt = match.group("type").lower()
-            if (
-                name == "master" or name.startswith("__") or
-                rt not in self.type_map
-            ):
+            if name == "master" or name.startswith("__") or rt not in self.type_map:
                 continue
-            interfaces = [
-                x.strip() for x in match.group("ifaces").splitlines()
-            ]
-            interfaces = [
-                x for x in interfaces if x and not x.startswith("lsi.")
-            ]
+            interfaces = [x.strip() for x in match.group("ifaces").splitlines()]
+            interfaces = [x for x in interfaces if x and not x.startswith("lsi.")]
             vpn = {
                 "type": self.type_map[rt],
                 "status": match.group("status").lower() == "active",
                 "name": name,
                 "rd": match.group("rd"),
-                "interfaces": interfaces
+                "interfaces": interfaces,
             }
             description = match.group("description")
             if description:
