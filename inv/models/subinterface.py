@@ -11,17 +11,11 @@ from __future__ import absolute_import
 
 # Third-party modules
 import six
+from mongoengine.document import Document
+from mongoengine.fields import StringField, IntField, ListField
 
 # NOC modules
 from noc.config import config
-from noc.lib.nosql import (
-    Document,
-    PlainReferenceField,
-    ForeignKeyField,
-    StringField,
-    ListField,
-    IntField,
-)
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
@@ -29,6 +23,7 @@ from noc.core.datastream.decorator import datastream
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
 from .interfaceprofile import InterfaceProfile
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
 
 SUBINTERFACE_AFI = (
