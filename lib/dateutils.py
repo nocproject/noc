@@ -9,6 +9,7 @@
 # Python modules
 import datetime
 import bisect
+
 # NOC modules
 from noc.core.translation import ugettext as _
 
@@ -20,7 +21,7 @@ def humanize_timedelta(delta):
     d = delta.days
     s = delta.seconds
     if not d:
-        if   s < 30:
+        if s < 30:
             return _("less than a minute")
         elif s < 90:  # 1:30
             return _("1 minute")
@@ -74,8 +75,7 @@ def total_seconds(td):
     :return: seconds
     :rtype: float
     """
-    return (td.microseconds +
-            (td.seconds + td.days * 86400) * 1000000) / 1000000.0
+    return (td.microseconds + (td.seconds + td.days * 86400) * 1000000) / 1000000.0
 
 
 def hits_in_range(timestamps, start, stop):

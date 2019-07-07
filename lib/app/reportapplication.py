@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.translation import ugettext as _
 from .application import Application, view
@@ -86,16 +87,19 @@ class ReportApplication(Application):
                 form = form_class()
                 # No POST or error - render form
             if not query:
-                return self.render(request, "report_form.html",
-                                   form=form, app=self, is_report=True,
-                                   styles=self.styles,
-                                   inline_styles=self.inline_styles)
+                return self.render(
+                    request,
+                    "report_form.html",
+                    form=form,
+                    app=self,
+                    is_report=True,
+                    styles=self.styles,
+                    inline_styles=self.inline_styles,
+                )
                 # Build result
         rdata = getattr(self, "report_%s" % format)(request=request, **query)
         # Render result
         if format == "html":
-            return self.render(request, "report.html",
-                               data=rdata, app=self, is_report=True)
+            return self.render(request, "report.html", data=rdata, app=self, is_report=True)
         else:
-            return self.render_response(rdata,
-                                        content_type=self.content_types[format])
+            return self.render_response(rdata, content_type=self.content_types[format])

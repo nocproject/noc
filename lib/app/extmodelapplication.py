@@ -11,22 +11,36 @@ from __future__ import absolute_import
 import datetime
 from collections import defaultdict
 from functools import reduce
+
 # Third-party modules
 from django.http import HttpResponse
 from django.db.models.fields import (
-    CharField, BooleanField, IntegerField, FloatField,
-    DateField, DateTimeField, related)
+    CharField,
+    BooleanField,
+    IntegerField,
+    FloatField,
+    DateField,
+    DateTimeField,
+    related,
+)
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 import six
+
 # NOC modules
 from noc.sa.interfaces.base import (
-    BooleanParameter, IntParameter,
-    FloatParameter, TagsParameter,
-    NoneParameter, StringListParameter,
-    DictParameter, ListOfParameter,
-    ModelParameter, InterfaceTypeError)
+    BooleanParameter,
+    IntParameter,
+    FloatParameter,
+    TagsParameter,
+    NoneParameter,
+    StringListParameter,
+    DictParameter,
+    ListOfParameter,
+    ModelParameter,
+    InterfaceTypeError,
+)
 from noc.lib.validators import is_int
 from noc.models import is_document
 from noc.main.models.tag import Tag
@@ -48,7 +62,9 @@ class ExtModelApplication(ExtApplication):
     custom_fields = {}  # name -> handler, populated automatically
     # m2m fields
     custom_m2m_fields = {}  # Name -> Model
-    secret_fields = None  # Set of sensitive fields. "secret" permission is required to show of modify
+    secret_fields = (
+        None
+    )  # Set of sensitive fields. "secret" permission is required to show of modify
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
@@ -89,12 +105,17 @@ class ExtModelApplication(ExtApplication):
         #
         if not self.query_fields:
             # By default - search in unique text fields
-            self.query_fields = ["%s__%s" % (f.name, self.query_condition)
-                                 for f in self.model._meta.fields
-                                 if f.unique and isinstance(f, CharField)]
+            self.query_fields = [
+                "%s__%s" % (f.name, self.query_condition)
+                for f in self.model._meta.fields
+                if f.unique and isinstance(f, CharField)
+            ]
         # Add searchable custom fields
-        self.query_fields += ["%s__%s" % (f.name, self.query_condition)
-                              for f in self.get_custom_fields() if f.is_searchable]
+        self.query_fields += [
+            "%s__%s" % (f.name, self.query_condition)
+            for f in self.get_custom_fields()
+            if f.is_searchable
+        ]
 
     def get_permissions(self):
         p = super(ExtModelApplication, self).get_permissions()
@@ -127,8 +148,7 @@ class ExtModelApplication(ExtApplication):
             return StringListParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.remote_field.model
-            return ModelParameter(field.remote_field.model,
-                                  required=not field.null)
+            return ModelParameter(field.remote_field.model, required=not field.null)
         else:
             return None
 
@@ -140,18 +160,20 @@ class ExtModelApplication(ExtApplication):
 
     def get_custom_fields(self):
         from noc.main.models.customfield import CustomField
+
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_launch_info(self, request):
         li = super(ExtModelApplication, self).get_launch_info(request)
         cf = self.get_custom_fields()
         if cf:
-            li["params"].update({
-                "cust_model_fields": [f.ext_model_field for f in cf],
-                "cust_grid_columns": [f.ext_grid_column for f in cf],
-                "cust_form_fields": [f.ext_form_field for f in cf
-                                     if not f.is_hidden]
-            })
+            li["params"].update(
+                {
+                    "cust_model_fields": [f.ext_model_field for f in cf],
+                    "cust_grid_columns": [f.ext_grid_column for f in cf],
+                    "cust_form_fields": [f.ext_form_field for f in cf if not f.is_hidden],
+                }
+            )
         return li
 
     def get_Q(self, request, query):
@@ -165,9 +187,11 @@ class ExtModelApplication(ExtApplication):
             else:
                 return f
 
-        q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
-                   self.query_fields[1:],
-                   Q(**{get_q(self.query_fields[0]): query}))
+        q = reduce(
+            lambda x, y: x | Q(**{get_q(y): query}),
+            self.query_fields[1:],
+            Q(**{get_q(self.query_fields[0]): query}),
+        )
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -194,7 +218,8 @@ class ExtModelApplication(ExtApplication):
         # Strip ignored fields and convert empty strings to None
         data = dict(
             (str(k), data[k] if data[k] != "" else None)
-            for k in data if k not in self.ignored_fields
+            for k in data
+            if k not in self.ignored_fields
         )
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
@@ -238,10 +263,15 @@ class ExtModelApplication(ExtApplication):
             else:
                 np, lt = p, None
                 # Skip ignored params
-            if np in self.ignored_params or p in (self.limit_param,
-                                                  self.page_param, self.start_param,
-                                                  self.format_param, self.sort_param,
-                                                  self.query_param, self.only_param):
+            if np in self.ignored_params or p in (
+                self.limit_param,
+                self.page_param,
+                self.start_param,
+                self.format_param,
+                self.sort_param,
+                self.query_param,
+                self.only_param,
+            ):
                 continue
             v = q[p]
             if self.in_param in p:
@@ -254,10 +284,11 @@ class ExtModelApplication(ExtApplication):
                 app, fn = v.split("__", 1)
                 model = self.site.apps[app].model
                 if not is_document(model):
-                    extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
-                        self.model._meta.db_table, self.model._meta.pk.name,
+                    extra_where = '%s."%s" IN (SELECT "%s" FROM %s)' % (
+                        self.model._meta.db_table,
+                        self.model._meta.pk.name,
                         model._meta.get_field(fn).attname,
-                        model._meta.db_table
+                        model._meta.db_table,
                     )
                     if None in nq:
                         nq[None] += [extra_where]
@@ -294,7 +325,12 @@ class ExtModelApplication(ExtApplication):
         for f in o._meta.local_fields:
             if fields and f.name not in fields:
                 continue  # Restrict to selected fields
-            if self.secret_fields and f.name in self.secret_fields and getattr(o, f.name) and not self.has_secret():
+            if (
+                self.secret_fields
+                and f.name in self.secret_fields
+                and getattr(o, f.name)
+                and not self.has_secret()
+            ):
                 # Sensitive fields (limit view only to *secret* permission)
                 r[f.name] = self.SECRET_MASK
             elif f.name == "bi_id":
@@ -320,8 +356,10 @@ class ExtModelApplication(ExtApplication):
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (
-                    v is not None and not isinstance(v, six.string_types) and
-                    not isinstance(v, six.integer_types) and not isinstance(v, (bool, list))
+                    v is not None
+                    and not isinstance(v, six.string_types)
+                    and not isinstance(v, six.integer_types)
+                    and not isinstance(v, (bool, list))
                 ):
                     if isinstance(v, datetime.datetime):
                         v = v.isoformat()
@@ -348,10 +386,7 @@ class ExtModelApplication(ExtApplication):
         return r
 
     def instance_to_lookup(self, o, fields=None):
-        return {
-            "id": o.id,
-            "label": unicode(o)
-        }
+        return {"id": o.id, "label": unicode(o)}
 
     def lookup_tags(self, q, name, value):
         if not value:
@@ -489,42 +524,35 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
-        if request.META.get("CONTENT_TYPE") == 'application/json':
-            attrs, m2m_attrs = self.split_mtm(
-                self.deserialize(request.body))
+        if request.META.get("CONTENT_TYPE") == "application/json":
+            attrs, m2m_attrs = self.split_mtm(self.deserialize(request.body))
         else:
-            attrs, m2m_attrs = self.split_mtm(
-                self.deserialize_form(request))
+            attrs, m2m_attrs = self.split_mtm(self.deserialize_form(request))
         attrs, file_attrs = self.split_file(attrs)
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.body if not request._read_started else request, e)
+            self.logger.info(
+                "Bad request: %r (%s)", request.body if not request._read_started else request, e
+            )
             return self.render_json(
-                {
-                    "success": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                }, status=self.BAD_REQUEST)
+                {"success": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         try:
             # Exclude callable values from query
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
-            qattrs = dict((k, attrs[k])
-                          for k in attrs if not callable(attrs[k]))
+            qattrs = dict((k, attrs[k]) for k in attrs if not callable(attrs[k]))
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.render_json(
-                {
-                    "success": False,
-                    "message": "Duplicated record"
-                },
-                status=self.CONFLICT)
+                {"success": False, "message": "Duplicated record"}, status=self.CONFLICT
+            )
         except self.model.MultipleObjectsReturned:
-            return self.render_json({
-                "status": False,
-                "message": "Duplicated record"
-            }, status=self.CONFLICT)
+            return self.render_json(
+                {"status": False, "message": "Duplicated record"}, status=self.CONFLICT
+            )
         except self.model.DoesNotExist:
             o = self.model(**attrs)
             # Run models validators
@@ -534,16 +562,15 @@ class ExtModelApplication(ExtApplication):
                 e_msg = []
                 for f in e.message_dict:
                     e_msg += ["%s: %s" % (f, "; ".join(e.message_dict[f]))]
-                return self.render_json({
-                    "status": False,
-                    "message": "Validation error: %s" % " | ".join(e_msg)
-                }, status=self.BAD_REQUEST)
+                return self.render_json(
+                    {"status": False, "message": "Validation error: %s" % " | ".join(e_msg)},
+                    status=self.BAD_REQUEST,
+                )
             # Check permissions
             if not self.can_create(request.user, o):
-                return self.render_json({
-                    "status": False,
-                    "message": "Permission denied"
-                }, status=self.FORBIDDEN)
+                return self.render_json(
+                    {"status": False, "message": "Permission denied"}, status=self.FORBIDDEN
+                )
             # Check for duplicates
             try:
                 o.save()
@@ -554,16 +581,11 @@ class ExtModelApplication(ExtApplication):
                     self.update_file(request.FILES, o, file_attrs)
             except IntegrityError as e:
                 return self.render_json(
-                    {
-                        "status": False,
-                        "message": "Integrity error: %s" % e
-                    }, status=self.CONFLICT)
+                    {"status": False, "message": "Integrity error: %s" % e}, status=self.CONFLICT
+                )
             # Check format
             if request.is_extjs:
-                rs = {
-                    "success": True,
-                    "data": self.instance_to_dict(o)
-                }
+                rs = {"success": True, "data": self.instance_to_dict(o)}
             else:
                 rs = self.instance_to_dict(o)
             return self.response(rs, status=self.CREATED)
@@ -580,35 +602,30 @@ class ExtModelApplication(ExtApplication):
         only = request.GET.get(self.only_param)
         if only:
             only = only.split(",")
-        return self.response(self.instance_to_dict(o, fields=only),
-                             status=self.OK)
+        return self.response(self.instance_to_dict(o, fields=only), status=self.OK)
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
-        if request.META.get("CONTENT_TYPE") == 'application/json':
-            attrs, m2m_attrs = self.split_mtm(
-                self.deserialize(request.body))
+        if request.META.get("CONTENT_TYPE") == "application/json":
+            attrs, m2m_attrs = self.split_mtm(self.deserialize(request.body))
         else:
-            attrs, m2m_attrs = self.split_mtm(
-                self.deserialize_form(request))
+            attrs, m2m_attrs = self.split_mtm(self.deserialize_form(request))
         attrs, file_attrs = self.split_file(attrs)
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.body if not request._read_started else request, e)
+            self.logger.info(
+                "Bad request: %r (%s)", request.body if not request._read_started else request, e
+            )
             return self.render_json(
-                {
-                    "success": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                }, status=self.BAD_REQUEST)
+                {"success": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         except InterfaceTypeError as e:
             return self.render_json(
-                {
-                    "success": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                }, status=self.BAD_REQUEST)
+                {"success": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         # Find object
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
@@ -636,16 +653,15 @@ class ExtModelApplication(ExtApplication):
             e_msg = []
             for f in e.message_dict:
                 e_msg += ["%s: %s" % (f, "; ".join(e.message_dict[f]))]
-            return self.render_json({
-                "status": False,
-                "message": "Validation error: %s" % " | ".join(e_msg)
-            }, status=self.BAD_REQUEST)
+            return self.render_json(
+                {"status": False, "message": "Validation error: %s" % " | ".join(e_msg)},
+                status=self.BAD_REQUEST,
+            )
         # Check permissions
         if not self.can_create(request.user, o):
-            return self.render_json({
-                "status": False,
-                "message": "Permission denied"
-            }, status=self.FORBIDDEN)
+            return self.render_json(
+                {"status": False, "message": "Permission denied"}, status=self.FORBIDDEN
+            )
         # Save
         try:
             o.save()
@@ -656,15 +672,10 @@ class ExtModelApplication(ExtApplication):
                 self.update_file(request.FILES, o, file_attrs)
         except IntegrityError:
             return self.render_json(
-                {
-                    "success": False,
-                    "message": "Integrity error"
-                }, status=self.CONFLICT)
+                {"success": False, "message": "Integrity error"}, status=self.CONFLICT
+            )
         if request.is_extjs:
-            r = {
-                "success": True,
-                "data": self.instance_to_dict(o)
-            }
+            r = {"success": True, "data": self.instance_to_dict(o)}
         else:
             r = self.instance_to_dict(o)
         return self.response(r, status=self.OK)
@@ -674,53 +685,45 @@ class ExtModelApplication(ExtApplication):
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
-            return self.render_json({
-                "status": False,
-                "message": "Not found"
-            }, status=self.NOT_FOUND)
+            return self.render_json(
+                {"status": False, "message": "Not found"}, status=self.NOT_FOUND
+            )
         # Check permissions
         if not self.can_delete(request.user, o):
-            return self.render_json({
-                "status": False,
-                "message": "Permission denied"
-            }, status=self.FORBIDDEN)
+            return self.render_json(
+                {"status": False, "message": "Permission denied"}, status=self.FORBIDDEN
+            )
         try:
             o.delete()
         except ValueError as e:
             return self.render_json(
-                {
-                    "success": False,
-                    "message": "ERROR: %s" % e
-                }, status=self.CONFLICT)
+                {"success": False, "message": "ERROR: %s" % e}, status=self.CONFLICT
+            )
         return HttpResponse(status=self.DELETED)
 
-    @view(url="^actions/group_edit/$", method=["POST"],
-          access="update", api=True)
+    @view(url="^actions/group_edit/$", method=["POST"], access="update", api=True)
     def api_action_group_edit(self, request):
-        validator = DictParameter(attrs={
-            "ids": ListOfParameter(element=ModelParameter(self.model),
-                                   convert=True)
-        })
+        validator = DictParameter(
+            attrs={"ids": ListOfParameter(element=ModelParameter(self.model), convert=True)}
+        )
         rv = self.deserialize(request.body)
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
-            return self.render_json({
-                "status": False,
-                "message": "Bad request",
-                "traceback": str(e)
-            }, status=self.BAD_REQUEST)
+            return self.render_json(
+                {"status": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         objects = v["ids"]
         del v["ids"]
         try:
             v = self.clean(v)
         except ValueError as e:
-            return self.render_json({
-                "status": False,
-                "message": "Bad request",
-                "traceback": str(e)
-            }, status=self.BAD_REQUEST)
+            return self.render_json(
+                {"status": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         for o in objects:
             for p in v:
                 setattr(o, p, v[p])

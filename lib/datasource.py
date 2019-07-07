@@ -8,8 +8,10 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.settings import INSTALLED_APPS
 

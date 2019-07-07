@@ -15,7 +15,8 @@ class NOCHtmlFormatter(HtmlFormatter):
     HTML Formatter
     Returns escaped HTML text with neat line numbers
     """
-    name = 'NOC HTML'
+
+    name = "NOC HTML"
 
     def __init__(self, **kwargs):
         kwargs["linenos"] = "table"

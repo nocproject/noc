@@ -9,9 +9,9 @@
 # Python modules
 import subprocess
 import logging
-#
+
+# Third-party modules
 from psycopg2.extensions import adapt
-# Django modules
 from django.utils import tree
 from django.db.models import Q
 from django.db import connection
@@ -58,7 +58,7 @@ class TagsExpression(object):
 
     def as_sql(self, qn, connection):
         t = ",".join(str(adapt(x)) for x in self.tags)
-        return "ARRAY[%s] <@ \"%s\".%s" % (t, self.table, qn("tags")), []
+        return 'ARRAY[%s] <@ "%s".%s' % (t, self.table, qn("tags")), []
 
 
 class TagsNode(tree.Node):
@@ -115,8 +115,7 @@ def pg_sharedir():
     :return:
     """
     try:
-        p = subprocess.Popen(["pg_config", "--sharedir"],
-                             stdout=subprocess.PIPE)
+        p = subprocess.Popen(["pg_config", "--sharedir"], stdout=subprocess.PIPE)
     except OSError:
         return None
     return p.stdout.read().strip()
@@ -128,8 +127,7 @@ def pg_bindir():
     :return:
     """
     try:
-        p = subprocess.Popen(["pg_config", "--bindir"],
-                             stdout=subprocess.PIPE)
+        p = subprocess.Popen(["pg_config", "--bindir"], stdout=subprocess.PIPE)
     except OSError:
         return None
     return p.stdout.read().strip()
@@ -142,30 +140,11 @@ def check_pg_superuser():
     :rtype: bool
     """
     c = connection.cursor()
-    c.execute("""
+    c.execute(
+        """
         SELECT COUNT(*)
         FROM pg_user
         WHERE usename = USER
-            AND usesuper=true""")
+            AND usesuper=true"""
+    )
     return c.fetchall()[0][0] == 1
-
-
-def vacuum(table, analyze=False):
-    """
-    Run VACUUM on table
-    :param table: Table name
-    :param analyze: Issue ANALYZE command
-    :return:
-    """
-    pc = connection.cursor()
-    c = connection.connection
-    level = c.isolation_level
-    c.set_isolation_level(0)
-    cursor = c.cursor()
-    if analyze:
-        cmd = "VACUUM ANALYZE %s" % table
-    else:
-        cmd = "VACUUM %s" % table
-    logger.info(cmd)
-    cursor.execute(cmd)
-    c.set_isolation_level(level)

@@ -9,6 +9,7 @@
 # Third-party modules
 import six
 
+
 def deep_copy(t):
     """
     Returns copy of dict *t*, follows nested dict structures
@@ -27,6 +28,7 @@ def deep_merge(t, d):
     Merge contents of dicts *t* and *d*, including nested dicts,
     and returns merged dict. Values from *d* override values from *t*
     """
+
     def _merge(x, y):
         for k, v in six.iteritems(y):
             if isinstance(v, dict):
@@ -48,9 +50,7 @@ def get_model_id(object):
     """
     if isinstance(object._meta, dict):
         # Document
-        return u"%s.%s" % (object.__module__.split(".")[1],
-                           object.__class__.__name__)
+        return u"%s.%s" % (object.__module__.split(".")[1], object.__class__.__name__)
     else:
         # Model
-        return u"%s.%s" % (object._meta.app_label,
-                           object._meta.object_name)
+        return u"%s.%s" % (object._meta.app_label, object._meta.object_name)
