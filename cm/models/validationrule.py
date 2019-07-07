@@ -25,7 +25,7 @@ from mongoengine.signals import pre_delete
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.handler import get_handler
 
 logger = logging.getLogger(__name__)

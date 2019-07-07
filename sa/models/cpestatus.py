@@ -8,12 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
+
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from .managedobject import ManagedObject
 
 
@@ -23,9 +25,7 @@ class CPEStatus(Document):
         "collection": "cpestatuses",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            ("managed_object", "interface")
-        ]
+        "indexes": [("managed_object", "interface")],
     }
 
     managed_object = ForeignKeyField(ManagedObject)

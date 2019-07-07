@@ -9,17 +9,24 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, ReferenceField, ListField,
-                                EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ReferenceField,
+    ListField,
+    EmbeddedDocumentField,
+)
 import cachetools
+
 # NOC modules
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.thresholdprofile import ThresholdProfile
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -38,19 +45,14 @@ class SLAProfileMetrics(EmbeddedDocument):
     threshold_profile = ReferenceField(ThresholdProfile)
 
 
-@on_delete_check(check=[
-    ("sla.SLAProbe", "profile")
-])
+@on_delete_check(check=[("sla.SLAProbe", "profile")])
 @six.python_2_unicode_compatible
 class SLAProfile(Document):
     """
     SLA profile and settings
     """
-    meta = {
-        "collection": "noc.sla_profiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "noc.sla_profiles", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
     description = StringField()
     #

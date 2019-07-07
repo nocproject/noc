@@ -16,7 +16,7 @@ from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, ListField, EmbeddedDocumentField, BooleanField
 
 # NOC modules
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.ip import IP
 from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobjectselector import ManagedObjectSelector

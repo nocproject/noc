@@ -10,19 +10,21 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
 import cachetools
+
 # NOC modules
 from .vpnprofile import VPNProfile
 from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
@@ -34,30 +36,20 @@ class RouteTargetItem(EmbeddedDocument):
     """
     Global (managed_object is None) or object-local VRF topology settings
     """
+
     rd = StringField()
     managed_object = ForeignKeyField(ManagedObject)
     # forwarding_instance
-    op = StringField(choices=[
-        ("both", "both"),
-        ("import", "import"),
-        ("export", "export")
-    ])
+    op = StringField(choices=[("both", "both"), ("import", "import"), ("export", "export")])
     target = StringField()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("vc.VPN", "parent"),
-    ("vc.VLAN", "vpn")
-])
+@on_delete_check(check=[("vc.VPN", "parent"), ("vc.VLAN", "vpn")])
 @workflow
 @six.python_2_unicode_compatible
 class VPN(Document):
-    meta = {
-        "collection": "vpns",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "vpns", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     profile = PlainReferenceField(VPNProfile)

@@ -19,7 +19,7 @@ from mongoengine.fields import StringField, ListField, LongField, EmbeddedDocume
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface

@@ -22,7 +22,7 @@ import cachetools
 # NOC modules
 from noc.sa.models.action import Action
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.selectorcache import SelectorCache
 from noc.core.defer import call_later
 from noc.core.handler import get_handler

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ReportSubscription model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,13 +11,15 @@ import logging
 import time
 import datetime
 import os
+
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField, DateTimeField)
+from mongoengine.fields import StringField, BooleanField, DateTimeField
+
 # NOC modules
 from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.lib.app.site import site
 from noc.core.debug import error_report
 from noc.core.model.decorator import on_save, on_delete
@@ -30,11 +32,7 @@ logger = logging.getLogger(__name__)
 @on_save
 @on_delete
 class ReportSubscription(Document):
-    meta = {
-        "collection": "noc.reportsubscriptions",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.reportsubscriptions", "strict": False, "auto_create_index": False}
 
     # File name without extension
     file_name = StringField(unique=True)
@@ -67,9 +65,7 @@ class ReportSubscription(Document):
         Calculate and send all reports for today
         :return:
         """
-        subscriptions = list(
-            ReportSubscription.objects.filter(is_active=True)
-        )
+        subscriptions = list(ReportSubscription.objects.filter(is_active=True))
         for s in subscriptions:
             if s.can_run():
                 try:
@@ -82,14 +78,9 @@ class ReportSubscription(Document):
                     s.send_report(path)
 
     def update_status(self, status):
-        self._get_collection().update({
-            "_id": self.id
-        }, {
-            "$set": {
-                "last_status": status,
-                "last_run": datetime.datetime.now()
-            }
-        })
+        self._get_collection().update(
+            {"_id": self.id}, {"$set": {"last_status": status, "last_run": datetime.datetime.now()}}
+        )
 
     def can_run(self):
         """
@@ -107,23 +98,18 @@ class ReportSubscription(Document):
         logger.info("[%s] Building report", self.file_name)
         app_id, variant = self.report.split(":")
         if app_id not in site.apps:
-            logger.error("[%s] Invalid application %s. Skipping",
-                         self.file_name, app_id)
+            logger.error("[%s] Invalid application %s. Skipping", self.file_name, app_id)
             return None
         # Check file can be written
         today = datetime.date.today()
         dirname = os.path.join(
-            self.PREFIX,
-            "%04d" % today.year,
-            "%02d" % today.month,
-            "%02d" % today.day
+            self.PREFIX, "%04d" % today.year, "%02d" % today.month, "%02d" % today.day
         )
         if not os.path.exists(dirname):
             try:
                 os.makedirs(dirname)
             except OSError as e:
-                logger.error("[%s] Failed to create directory %s: %s",
-                             self.file_name, dirname, e)
+                logger.error("[%s] Failed to create directory %s: %s", self.file_name, dirname, e)
                 return None
         path = os.path.join(dirname, self.file_name)
         #
@@ -136,15 +122,11 @@ class ReportSubscription(Document):
         with open(path, "w") as f:
             f.write(data)
         dt = time.time() - t0
-        logger.info("[%s] Done in %.2fs (%d bytes)",
-                    self.file_name, dt, len(data))
+        logger.info("[%s] Done in %.2fs (%d bytes)", self.file_name, dt, len(data))
         return path
 
     def send_report(self, path):
-        addresses = [
-            r[2] for r in self.notification_group.members
-            if r[1] == "mail"
-        ]
+        addresses = [r[2] for r in self.notification_group.members if r[1] == "mail"]
         with open(path) as f:
             data = f.read()
         for a in addresses:
@@ -155,11 +137,8 @@ class ReportSubscription(Document):
                     "address": a,
                     "subject": self.subject,
                     "body": "",
-                    "attachments": [{
-                        "filename": self.file_name,
-                        "data": data
-                    }]
-                }
+                    "attachments": [{"filename": self.file_name, "data": data}],
+                },
             )
 
     def on_save(self):
@@ -178,23 +157,18 @@ class ReportSubscription(Document):
 
     def submit_job(self):
         logger.info("Submitting job")
-        Job.submit(
-            "scheduler",
-            self.JCLS
-        )
+        Job.submit("scheduler", self.JCLS)
 
     def remove_job(self):
         logger.info("Removing job")
-        Job.remove(
-            "scheduler",
-            self.JCLS
-        )
+        Job.remove("scheduler", self.JCLS)
 
 
 class ReportJob(Job):
     """
 
     """
+
     name = "daily"
     HOUR = 1  # @todo: Configurable
 
@@ -209,8 +183,5 @@ class ReportJob(Job):
         ts = datetime.date.today() + datetime.timedelta(days=1)
         ts = datetime.datetime.combine(ts, datetime.time(hour=self.HOUR))
         self.scheduler.set_next_run(
-            self.attrs[self.ATTR_ID],
-            status=status,
-            ts=ts,
-            duration=self.duration
+            self.attrs[self.ATTR_ID], status=status, ts=ts, duration=self.duration
         )

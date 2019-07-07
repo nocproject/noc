@@ -29,7 +29,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.cache.decorator import cachedmethod
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField, RawDictField
 from .eventlog import EventLog
 from .eventclass import EventClass
 

@@ -9,15 +9,22 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (ListField, StringField, ReferenceField,
-                                DynamicField, EmbeddedDocumentField)
+from mongoengine.fields import (
+    ListField,
+    StringField,
+    ReferenceField,
+    DynamicField,
+    EmbeddedDocumentField,
+)
+
 # NOC modules
 from noc.inv.models.capability import Capability
 from .managedobject import ManagedObject
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
 from noc.core.datastream.decorator import datastream
@@ -40,11 +47,7 @@ class CapsItem(EmbeddedDocument):
 @datastream
 @six.python_2_unicode_compatible
 class ObjectCapabilities(Document):
-    meta = {
-        "collection": "noc.sa.objectcapabilities",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.sa.objectcapabilities", "strict": False, "auto_create_index": False}
     object = ForeignKeyField(ManagedObject, primary_key=True)
     caps = ListField(EmbeddedDocumentField(CapsItem))
 
@@ -67,9 +70,7 @@ class ObjectCapabilities(Document):
         if hasattr(object, "id"):
             object = object.id
         caps = {}
-        oc = ObjectCapabilities._get_collection().find_one({
-            "_id": object
-        })
+        oc = ObjectCapabilities._get_collection().find_one({"_id": object})
         if oc:
             for c in oc["caps"]:
                 cc = Capability.get_by_id(c["capability"])
@@ -91,9 +92,7 @@ class ObjectCapabilities(Document):
             o_label = object.name
             object = object.id
         o_label += "|%s" % source
-        oc = ObjectCapabilities._get_collection().find_one({
-            "_id": object
-        }) or {}
+        oc = ObjectCapabilities._get_collection().find_one({"_id": object}) or {}
         # Update existing capabilities
         new_caps = []
         seen = set()
@@ -103,8 +102,7 @@ class ObjectCapabilities(Document):
             cs = ci.get("source")
             cv = ci.get("value")
             if not c:
-                logger.info("[%s] Removing unknown capability id %s",
-                            o_label, ci["capability"])
+                logger.info("[%s] Removing unknown capability id %s", o_label, ci["capability"])
                 continue
             cn = c.name
             seen.add(cn)
@@ -112,50 +110,37 @@ class ObjectCapabilities(Document):
                 if cn in caps:
                     if caps[cn] != cv:
                         logger.info(
-                            "[%s] Changing capability %s: %s -> %s",
-                            o_label, cn, cv, caps[cn]
+                            "[%s] Changing capability %s: %s -> %s", o_label, cn, cv, caps[cn]
                         )
                         ci["value"] = caps[cn]
                         changed = True
                 else:
-                    logger.info(
-                        "[%s] Removing capability %s",
-                        o_label, cn
-                    )
+                    logger.info("[%s] Removing capability %s", o_label, cn)
                     changed = True
                     continue
             elif cn in caps:
                 logger.info(
-                    "[%s] Not changing capability %s: "
-                    "Already set with source '%s'",
-                    o_label, cn, cs
+                    "[%s] Not changing capability %s: " "Already set with source '%s'",
+                    o_label,
+                    cn,
+                    cs,
                 )
             new_caps += [ci]
         # Add new capabilities
         for cn in set(caps) - seen:
             c = Capability.get_by_name(cn)
             if not c:
-                logger.info("[%s] Unknown capability %s, ignoring",
-                            o_label, cn)
+                logger.info("[%s] Unknown capability %s, ignoring", o_label, cn)
                 continue
-            logger.info("[%s] Adding capability %s = %s",
-                        o_label, cn, caps[cn])
-            new_caps += [{
-                "capability": c.id,
-                "value": caps[cn],
-                "source": source
-            }]
+            logger.info("[%s] Adding capability %s = %s", o_label, cn, caps[cn])
+            new_caps += [{"capability": c.id, "value": caps[cn], "source": source}]
             changed = True
 
         if changed:
             logger.info("[%s] Saving changes", o_label)
-            ObjectCapabilities._get_collection().update({
-                "_id": object
-            }, {
-                "$set": {
-                    "caps": new_caps
-                }
-            }, upsert=True)
+            ObjectCapabilities._get_collection().update(
+                {"_id": object}, {"$set": {"caps": new_caps}}, upsert=True
+            )
             cache.delete("cred-%s" % object)
         caps = {}
         for ci in new_caps:

@@ -19,7 +19,7 @@ from mongoengine.fields import (
 )
 
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 
 

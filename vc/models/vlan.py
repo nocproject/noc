@@ -11,12 +11,20 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, LongField, ListField,
-                                IntField, BooleanField, DateTimeField)
+from mongoengine.fields import (
+    StringField,
+    LongField,
+    ListField,
+    IntField,
+    BooleanField,
+    DateTimeField,
+)
 import cachetools
+
 # NOC modules
 from .vlanprofile import VLANProfile
 from .vpn import VPN
@@ -24,7 +32,7 @@ from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.inv.models.networksegment import NetworkSegment
 from noc.main.models.remotesystem import RemoteSystem
-from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check, on_save
@@ -34,9 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("vc.VLAN", "parent")
-])
+@on_delete_check(check=[("vc.VLAN", "parent")])
 @workflow
 @on_save
 @six.python_2_unicode_compatible
@@ -45,13 +51,7 @@ class VLAN(Document):
         "collection": "vlans",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            {
-                "fields": ["segment", "vlan"],
-                "unique": True
-            },
-            "expired"
-        ]
+        "indexes": [{"fields": ["segment", "vlan"], "unique": True}, "expired"],
     }
 
     name = StringField()
@@ -66,12 +66,14 @@ class VLAN(Document):
     # VxLAN VNI
     vni = IntField()
     # Translation rules when passing border
-    translation_rule = StringField(choices=[
-        # Rewrite tag to parent vlan's
-        ("map", "map"),
-        # Append parent tag as S-VLAN
-        ("push", "push")
-    ])
+    translation_rule = StringField(
+        choices=[
+            # Rewrite tag to parent vlan's
+            ("map", "map"),
+            # Append parent tag as S-VLAN
+            ("push", "push"),
+        ]
+    )
     #
     parent = PlainReferenceField("self")
     # Automatically apply segment translation rule
@@ -127,24 +129,21 @@ class VLAN(Document):
             if vt.filter.check(self.vlan):
                 logger.debug(
                     "[%s|%s|%s] Matching translation rule <%s|%s|%s>",
-                    self.segment.name, self.name, self.vlan,
-                    vt.filter.expression, vt.rule,
-                    vt.parent_vlan.vlan
+                    self.segment.name,
+                    self.name,
+                    self.vlan,
+                    vt.filter.expression,
+                    vt.rule,
+                    vt.parent_vlan.vlan,
                 )
                 if self.parent != vt.parent_vlan or self.translation_rule != vt.translation_rule:
-                    self.modify(
-                        parent=vt.parent_vlan,
-                        translation_rule=vt.rule
-                    )
+                    self.modify(parent=vt.parent_vlan, translation_rule=vt.rule)
                 return
         # No matching rule
         if self.parent or self.translation_rule:
             logger.debug("[%s|%s|%s] No matching translation rule, resetting")
             if self.parent or self.translation_rule:
-                self.modify(
-                    parent=None,
-                    translation_rule=None
-                )
+                self.modify(parent=None, translation_rule=None)
 
     def on_save(self):
         self.refresh_translation()
