@@ -19,7 +19,7 @@ def all_vendors():
     r = []
     for path in glob.glob("sa/profiles/*"):
         vendor = path.split(os.sep)[-1]
-        if vendor == "Generic":
+        if vendor == "Generic" or ".py" in vendor:
             continue
         r += [vendor]
     return r
