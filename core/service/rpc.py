@@ -23,7 +23,7 @@ import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.backport.time import perf_counter
-from .client import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
+from .error import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
