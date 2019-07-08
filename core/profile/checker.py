@@ -21,7 +21,8 @@ import cachetools
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.error import NOCError
-from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.service.client import open_sync_rpc
+from noc.core.service.error import RPCError
 from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.core.mib import mib
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c

@@ -8,9 +8,11 @@
 
 # NOC modules
 import datetime
+
 # Third-party modules
 import six
 from django.http import HttpResponse
+
 # NOC modules
 from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
@@ -21,7 +23,8 @@ from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
 from noc.aaa.models.permission import Permission
 from noc.support.cp import CPClient
-from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.service.client import open_sync_rpc
+from noc.core.service.error import RPCError
 from noc.core.translation import ugettext as _
 
 
@@ -29,6 +32,7 @@ class DesktopApplication(ExtApplication):
     """
     main.desktop application
     """
+
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         # Login restrictions
@@ -62,10 +66,7 @@ class DesktopApplication(ExtApplication):
         Render application root template
         """
         cp = CPClient()
-        ext_apps = [
-            a for a in self.site.apps
-            if isinstance(self.site.apps[a], ExtApplication)
-        ]
+        ext_apps = [a for a in self.site.apps if isinstance(self.site.apps[a], ExtApplication)]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings
         favicon_url = config.customization.favicon_url
@@ -104,13 +105,10 @@ class DesktopApplication(ExtApplication):
             "help_base_url": config.help.base_url,
             "help_branch": config.help.branch,
             "help_language": config.help.language,
-            "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info
+            "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
         }
         return self.render(
-            request, "desktop.html",
-            language=self.get_language(request),
-            apps=apps,
-            setup=setup
+            request, "desktop.html", language=self.get_language(request), apps=apps, setup=setup
         )
 
     #
@@ -136,8 +134,7 @@ class DesktopApplication(ExtApplication):
         """
         return request.user.is_authenticated()
 
-    @view(method=["GET"], url="^user_settings/$",
-          access=PermitLogged(), api=True)
+    @view(method=["GET"], url="^user_settings/$", access=PermitLogged(), api=True)
     def api_user_settings(self, request):
         """
         Get user settings
@@ -156,8 +153,8 @@ class DesktopApplication(ExtApplication):
                 "text": "All",
                 "leaf": False,
                 "expanded": True,
-                "children": self.get_navigation(request)
-            }
+                "children": self.get_navigation(request),
+            },
         }
 
     def get_navigation(self, request):
@@ -167,13 +164,11 @@ class DesktopApplication(ExtApplication):
         :param node:
         :returns:
         """
+
         def get_children(node, user):
             c = []
             for r in node:
-                n = {
-                    "id": r["id"],
-                    "text": r["title"]
-                }
+                n = {"id": r["id"], "text": r["title"]}
                 if "iconCls" in r:
                     n["iconCls"] = r["iconCls"]
                 if "children" in r:
@@ -203,8 +198,7 @@ class DesktopApplication(ExtApplication):
                 return self.response_not_found()
         return get_children(root, request.user)
 
-    @view(method=["GET"], url="^launch_info/$", access=PermitLogged(),
-          api=True)
+    @view(method=["GET"], url="^launch_info/$", access=PermitLogged(), api=True)
     def api_launch_info(self, request):
         """
         Get application launch information
@@ -219,8 +213,7 @@ class DesktopApplication(ExtApplication):
             return self.response_not_found()
         return menu["app"].get_launch_info(request)
 
-    @view(method=["POST"], url="^change_credentials/$",
-          access=PermitLogged(), api=True)
+    @view(method=["POST"], url="^change_credentials/$", access=PermitLogged(), api=True)
     def api_change_credentials(self, request):
         """
         Change user's credentials if allowed by current backend
@@ -231,19 +224,11 @@ class DesktopApplication(ExtApplication):
         try:
             r = client.change_credentials(credentials)
         except RPCError as e:
-            return self.render_json({
-                "status": False,
-                "error": str(e)
-            })
+            return self.render_json({"status": False, "error": str(e)})
         if r:
-            return self.render_json({
-                "status": True
-            })
+            return self.render_json({"status": True})
         else:
-            return self.render_json({
-                "status": False,
-                "error": _("Failed to change credentials")
-            })
+            return self.render_json({"status": False, "error": _("Failed to change credentials")})
 
     @view(method=["POST"], url="^dlproxy/$", access=True, api=True)
     def api_dlproxy(self, request):
@@ -265,12 +250,10 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        r = dict((r.key, r.value)
-                 for r in UserState.objects.filter(user_id=uid))
+        r = dict((r.key, r.value) for r in UserState.objects.filter(user_id=uid))
         return r
 
-    @view(method=["DELETE"], url="^state/(?P<name>.+)/$",
-          access=PermitLogged(), api=True)
+    @view(method=["DELETE"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
     def api_clear_state(self, request, name):
         """
         Clear user state
@@ -282,8 +265,7 @@ class DesktopApplication(ExtApplication):
         UserState.objects.filter(user_id=uid, key=name).delete()
         return True
 
-    @view(method=["POST"], url="^state/(?P<name>.+)/$",
-          access=PermitLogged(), api=True)
+    @view(method=["POST"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
     def api_set_state(self, request, name):
         """
         Clear user state
@@ -306,19 +288,19 @@ class DesktopApplication(ExtApplication):
             s.save()
         return True
 
-    @view(url="^favapps/$", method=["GET"],
-          access=PermitLogged(), api=True)
+    @view(url="^favapps/$", method=["GET"], access=PermitLogged(), api=True)
     def api_favapps(self, request):
-        favapps = [f.app for f in
-                   Favorites.objects.filter(
-                       user=request.user.id,
-                       favorite_app=True).only("app")]
+        favapps = [
+            f.app
+            for f in Favorites.objects.filter(user=request.user.id, favorite_app=True).only("app")
+        ]
         return [
             {
                 "app": fa,
                 "title": self.site.apps[fa].title,
-                "launch_info": self.site.apps[fa].get_launch_info(request)
-            } for fa in favapps
+                "launch_info": self.site.apps[fa].get_launch_info(request),
+            }
+            for fa in favapps
         ]
 
     @view(url="^about/", method=["GET"], access=True, api=True)
@@ -331,7 +313,7 @@ class DesktopApplication(ExtApplication):
                 "version": version.version,
                 "installation": config.installation_name,
                 "system_id": cp.system_uuid,
-                "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
+                "copyright": "2007-%d, The NOC Project" % datetime.date.today().year,
             }
         else:
             return {
@@ -339,5 +321,5 @@ class DesktopApplication(ExtApplication):
                 "brand": config.brand,
                 "version": version.version,
                 "installation": config.installation_name,
-                "copyright": "2007-%d, %s" % (datetime.date.today().year, config.brand)
+                "copyright": "2007-%d, %s" % (datetime.date.today().year, config.brand),
             }

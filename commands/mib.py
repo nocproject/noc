@@ -13,9 +13,11 @@ import argparse
 import re
 import os
 import datetime
+
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.service.client import open_sync_rpc
+from noc.core.service.error import RPCError
 from noc.fm.models.mib import MIB, MIBData
 from noc.services.mib.api.mib import MIBAPI
 from noc.core.error import ERR_MIB_MISSED
@@ -29,42 +31,21 @@ class Command(BaseCommand):
     svc = open_sync_rpc("mib")
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--local",
-            action="store_false",
-            help="Not use mib service for import"
-        )
+        parser.add_argument("--local", action="store_false", help="Not use mib service for import")
         subparsers = parser.add_subparsers(dest="cmd")
         # get
         get_parser = subparsers.add_parser("get")
-        get_parser.add_argument(
-            "oids",
-            nargs=argparse.REMAINDER,
-            help="SNMP OIDs"
-        )
+        get_parser.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP OIDs")
         # lookup
         lookup_parser = subparsers.add_parser("lookup")
-        lookup_parser.add_argument(
-            "oids",
-            nargs=argparse.REMAINDER,
-            help="SNMP OIDs"
-        )
+        lookup_parser.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP OIDs")
         # Make cmib "Make compiled MIB for SA and PM scripts"
         make_cmib_parser = subparsers.add_parser("make_cmib")
-        make_cmib_parser.add_argument("-o", "--output",
-                                      dest="output", default="")
-        make_cmib_parser.add_argument(
-            "oids",
-            nargs=argparse.REMAINDER,
-            help="SNMP OIDs"
-        )
+        make_cmib_parser.add_argument("-o", "--output", dest="output", default="")
+        make_cmib_parser.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP OIDs")
         # import
         import_parser = subparsers.add_parser("import")
-        import_parser.add_argument(
-            "paths",
-            nargs=argparse.REMAINDER,
-            help="Path to MIB files"
-        )
+        import_parser.add_argument("paths", nargs=argparse.REMAINDER, help="Path to MIB files")
 
     def handle(self, cmd, *args, **options):
         if options.get("local"):
@@ -131,20 +112,18 @@ class Command(BaseCommand):
             "# ----------------------------------------------------------------------",
             "",
             "# MIB Name",
-            "NAME = \"%s\"" % mib,
+            'NAME = "%s"' % mib,
             "# Metadata",
-            "LAST_UPDATED = \"%s\"" %
-            m.last_updated.isoformat().split("T")[0],
-            "COMPILED = \"%s\"" % datetime.date.today().isoformat(),
+            'LAST_UPDATED = "%s"' % m.last_updated.isoformat().split("T")[0],
+            'COMPILED = "%s"' % datetime.date.today().isoformat(),
             "# MIB Data: name -> oid",
-            "MIB = {"
+            "MIB = {",
         ]
         rr = []
         for md in sorted(
-                MIBData.objects.filter(mib=m.id),
-                key=lambda x: [int(y) for y in x.oid.split(".")]
+            MIBData.objects.filter(mib=m.id), key=lambda x: [int(y) for y in x.oid.split(".")]
         ):
-            rr += ["    \"%s\": \"%s\"" % (md.name, md.oid)]
+            rr += ['    "%s": "%s"' % (md.name, md.oid)]
         r += [",\n".join(rr)]
         r += ["}", ""]
         data = "\n".join(r)
