@@ -84,6 +84,7 @@ class BaseParameter(object):
         :return: Normalized value
         """
         from django.forms import ValidationError
+
         if not value and not self.required:
             return self.default if self.default else None
         try:
