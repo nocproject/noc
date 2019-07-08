@@ -87,7 +87,7 @@ class Link(Document):
         else:
             return u"Stale link (%s)" % self.id
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             for mo_id in self.linked_objects:
                 yield "managedobject", mo_id

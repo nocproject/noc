@@ -57,7 +57,7 @@ class ObjectCapabilities(Document):
     def on_save(self):
         cache.delete("cred-%s" % self.object.id)
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         yield "managedobject", self.object.id
 
     @classmethod

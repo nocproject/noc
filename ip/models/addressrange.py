@@ -91,7 +91,7 @@ class AddressRange(NOCModel):
             self.to_address,
         )
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:
             return
 

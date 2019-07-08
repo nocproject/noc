@@ -109,7 +109,7 @@ class ArchivedAlarm(Document):
     def __str__(self):
         return u"%s" % self.id
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
             yield "alarm", self.id
 
