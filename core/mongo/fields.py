@@ -269,7 +269,7 @@ class RawDictField(DictField):
 
     def to_python(self, value):
         return dict(
-            (k.replace(ESC1, ".").replace(ESC2, "$").replace(u"\uff0e", "."), v)
+            (k.replace(ESC1, ".").replace(ESC2, "$").replace("\uff0e", "."), v)
             for k, v in six.iteritems(value)
         )
 

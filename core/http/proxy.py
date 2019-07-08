@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.config import config
 
@@ -36,10 +37,10 @@ def setup_proxies():
     if not SYSTEM_PROXIES:
         logger.debug("No proxy servers configured")
     else:
-        logger.debug("Using proxy servers: %s",
-                     ", ".join("%s = %s" % (
-                         k, SYSTEM_PROXIES[k]
-                     ) for k in sorted(SYSTEM_PROXIES)))
+        logger.debug(
+            "Using proxy servers: %s",
+            ", ".join("%s = %s" % (k, SYSTEM_PROXIES[k]) for k in sorted(SYSTEM_PROXIES)),
+        )
 
 
 _urllib_proxies_installed = False
@@ -54,9 +55,10 @@ def setup_urllib_proxies():
     if not SYSTEM_PROXIES:
         return
     proxies = dict(
-        (k, "%s://%s:%s" % (k, SYSTEM_PROXIES[k][0], SYSTEM_PROXIES[k][1]))
-        for k in SYSTEM_PROXIES)
+        (k, "%s://%s:%s" % (k, SYSTEM_PROXIES[k][0], SYSTEM_PROXIES[k][1])) for k in SYSTEM_PROXIES
+    )
     from six.moves.urllib.request import ProxyHandler, build_opener, install_opener
+
     proxy_handler = ProxyHandler(proxies)
     opener = build_opener(proxy_handler)
     install_opener(opener)

@@ -7,6 +7,12 @@
 # ----------------------------------------------------------------------
 
 REPOS = [
-    "rpsl_as", "rpsl_asset", "rpsl_peer", "rpsl_person",
-    "rpsl_maintainer", "dnszone", "config", "object_comment"
+    "rpsl_as",
+    "rpsl_asset",
+    "rpsl_peer",
+    "rpsl_person",
+    "rpsl_maintainer",
+    "dnszone",
+    "config",
+    "object_comment",
 ]

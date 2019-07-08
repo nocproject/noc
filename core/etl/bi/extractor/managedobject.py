@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import datetime
 from noc.lib.text import ch_escape
 from collections import defaultdict
+
 # NOC modules
 from .base import BaseExtractor
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
@@ -46,11 +47,7 @@ class ManagedObjectsExtractor(BaseExtractor):
         nr = 0
         ts = datetime.datetime.now()
         # External data
-        x_data = [
-            self.get_interfaces(),
-            self.get_links(),
-            self.get_caps()
-        ]
+        x_data = [self.get_interfaces(), self.get_links(), self.get_caps()]
         sn = self.get_mo_sn()
         # Extract managed objects
         for mo in ManagedObject.objects.all():
@@ -112,66 +109,52 @@ class ManagedObjectsExtractor(BaseExtractor):
                 r[o, method] += 1
                 t[o] += 1
                 neighbors[o].update(linked)
-        return dict((o, {
-            "n_neighbors": len(neighbors[o]),
-            "n_links": t[o],
-            "nri_links": r[o, "nri"],
-            "mac_links": r[o, "mac"],
-            "stp_links": r[o, "stp"],
-            "lldp_links": r[o, "lldp"],
-            "cdp_links": r[o, "cdp"]
-        }) for o in t)
+        return dict(
+            (
+                o,
+                {
+                    "n_neighbors": len(neighbors[o]),
+                    "n_links": t[o],
+                    "nri_links": r[o, "nri"],
+                    "mac_links": r[o, "mac"],
+                    "stp_links": r[o, "stp"],
+                    "lldp_links": r[o, "lldp"],
+                    "cdp_links": r[o, "cdp"],
+                },
+            )
+            for o in t
+        )
 
     def get_interfaces(self):
         """
         Build interface counts
         :return:
         """
-        r = Interface._get_collection().aggregate([
-            {
-                "$match": {
-                    "type": "physical"
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$managed_object",
-                    "total": {
-                        "$sum": 1
-                    }
-                }
-            }
-        ])
-        return dict((d["_id"], {
-            "n_interfaces": d["total"]
-        }) for d in r)
+        r = Interface._get_collection().aggregate(
+            [
+                {"$match": {"type": "physical"}},
+                {"$group": {"_id": "$managed_object", "total": {"$sum": 1}}},
+            ]
+        )
+        return dict((d["_id"], {"n_interfaces": d["total"]}) for d in r)
 
     def get_caps(self):
         # name -> id map
         caps = dict(
             (self.CAPS_MAP[d["name"]], d["_id"])
-            for d in Capability._get_collection().find({
-                "name": {
-                    "$in": list(self.CAPS_MAP)
-                }
-            }, {
-                "_id": 1,
-                "name": 1
-            })
+            for d in Capability._get_collection().find(
+                {"name": {"$in": list(self.CAPS_MAP)}}, {"_id": 1, "name": 1}
+            )
         )
         # object -> caps
-        add_expr = dict(
-            (c, {"$in": [caps[c], "$caps.capability"]})
-            for c in caps
-        )
+        add_expr = dict((c, {"$in": [caps[c], "$caps.capability"]}) for c in caps)
         project_expr = dict((c, 1) for c in caps)
         project_expr["_id"] = 1
         return dict(
             (d["_id"], dict((x, d[x]) for x in d if x != "_id"))
-            for d in ObjectCapabilities._get_collection().aggregate([
-                {"$addFields": add_expr},
-                {"$project": project_expr}
-            ])
+            for d in ObjectCapabilities._get_collection().aggregate(
+                [{"$addFields": add_expr}, {"$project": project_expr}]
+            )
         )
 
     @staticmethod
@@ -180,6 +163,10 @@ class ManagedObjectsExtractor(BaseExtractor):
         Extract serial number from attributes
         :return:
         """
-        r = {mo_id: [serial] for mo_id, serial in
-             ManagedObjectAttribute.objects.filter(key="Serial Number").values_list("managed_object", "value")}
+        r = {
+            mo_id: [serial]
+            for mo_id, serial in ManagedObjectAttribute.objects.filter(
+                key="Serial Number"
+            ).values_list("managed_object", "value")
+        }
         return r

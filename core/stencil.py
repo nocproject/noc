@@ -50,12 +50,16 @@ class StencilRegistry:
         # width
         width = svg.attrib.get("width")
         if not width:
-            logger.info("[%s] Cannot parse stencil: <svg> tag contains no 'width' attribute", s_path)
+            logger.info(
+                "[%s] Cannot parse stencil: <svg> tag contains no 'width' attribute", s_path
+            )
             return None
         # height
         height = svg.attrib.get("height")
         if not height:
-            logger.info("[%s] Cannot parse stencil: <svg> tag contains no 'height' attribute", s_path)
+            logger.info(
+                "[%s] Cannot parse stencil: <svg> tag contains no 'height' attribute", s_path
+            )
             return None
         # Get title from <title> tag
         title_el = svg.find("{http://www.w3.org/2000/svg}title")
@@ -70,11 +74,7 @@ class StencilRegistry:
             title = "%s | %s" % (group, os.path.basename(path)[:-4])
         # Build Stencil structure
         return Stencil(
-            id=s_path,
-            title=title,
-            width=float(width),
-            height=float(height),
-            path=s_path
+            id=s_path, title=title, width=float(width), height=float(height), path=s_path
         )
 
     def load(self):
@@ -86,9 +86,8 @@ class StencilRegistry:
                 if stencil:
                     self.stencils[stencil.id] = stencil
         self.choices = sorted(
-            ((stencil_id, self.stencils[stencil_id].title)
-             for stencil_id in self.stencils),
-            key=itemgetter(1)
+            ((stencil_id, self.stencils[stencil_id].title) for stencil_id in self.stencils),
+            key=itemgetter(1),
         )
 
     def get(self, stencil_id):

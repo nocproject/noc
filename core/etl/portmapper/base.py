@@ -14,6 +14,7 @@ class PortMapperBase(type):
     """
     Process @match decorators
     """
+
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         for m in dir(n):
@@ -43,6 +44,7 @@ class BasePortMapper(six.with_metaclass(PortMapperBase, object)):
     NOC's format converted to NRI's one via methods decorated with
     @to_mappings()
     """
+
     _profile_to_local = {}
     _platform_to_local = {}
     _profile_to_remote = {}

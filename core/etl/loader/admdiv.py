@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.gis.models.division import Division
@@ -17,15 +18,9 @@ class AdmDivLoader(BaseLoader):
     """
     Administrative division loader
     """
+
     name = "admdiv"
     model = Division
-    fields = [
-        "id",
-        "parent",
-        "name",
-        "short_name"
-    ]
+    fields = ["id", "parent", "name", "short_name"]
 
-    mapped_fields = {
-        "parent": "admdiv"
-    }
+    mapped_fields = {"parent": "admdiv"}

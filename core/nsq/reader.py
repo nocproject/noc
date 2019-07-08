@@ -8,11 +8,13 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 from six.moves.urllib.parse import urlencode, urlsplit, parse_qs, urlunsplit
 import tornado.gen
 from nsq.reader import Reader as BaseReader, _utf8_params
 import ujson
+
 # NOC modules
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
@@ -45,21 +47,19 @@ class Reader(BaseReader):
             lookupd_url,
             headers={"Accept": "application/vnd.nsq; version=1.0"},
             connect_timeout=self.lookupd_connect_timeout,
-            request_timeout=self.lookupd_request_timeout
+            request_timeout=self.lookupd_request_timeout,
         )
 
         if not (200 <= code <= 299):
             metrics["error", ("type", "nsqlookupd_query_error_code %s" % code)] += 1
-            logger.warning("[%s] lookupd %s query error: %s %s",
-                           self.name, lookupd_url, code, body)
+            logger.warning("[%s] lookupd %s query error: %s %s", self.name, lookupd_url, code, body)
             return
         # Decode response
         try:
             lookup_data = ujson.loads(body)
         except ValueError as e:
             metrics["error", ("type", "nsqlookupd_invalid_json")] += 1
-            logger.warning("[%s] lookupd %s failed to parse JSON: %s",
-                           self.name, lookupd_url, e)
+            logger.warning("[%s] lookupd %s failed to parse JSON: %s", self.name, lookupd_url, e)
             return
 
         if "data" in lookup_data:

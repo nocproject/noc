@@ -10,6 +10,7 @@
 import sys
 import os
 import imp
+
 # NOC modules
 from noc.config import config
 
@@ -18,6 +19,7 @@ class ImportRouter(object):
     """
     Module importer that maps module prefixes to loader classes
     """
+
     def __init__(self, mappings):
         self.mappings = mappings
 
@@ -32,6 +34,7 @@ class NOCLoader(object):
     """
     Abstract class for prefixed loader
     """
+
     PREFIX = None
     INIT_SOURCE = ""
     packages = set()
@@ -45,8 +48,7 @@ class NOCLoader(object):
 
     def get_code(self, fullname):
         source = self.get_source(fullname)
-        return compile(source, self._get_filename(fullname),
-                       "exec", dont_inherit=True)
+        return compile(source, self._get_filename(fullname), "exec", dont_inherit=True)
 
     def get_data(self, path):
         raise NotImplementedError()
@@ -69,10 +71,7 @@ class NOCLoader(object):
         if fullname in sys.modules:
             mod = sys.modules[fullname]
         else:
-            mod = sys.modules.setdefault(
-                fullname,
-                imp.new_module(fullname)
-            )
+            mod = sys.modules.setdefault(fullname, imp.new_module(fullname))
 
         # Set a few properties required by PEP 302
         mod.__file__ = self._get_filename(fullname)
@@ -108,11 +107,12 @@ class NOCPyruleLoader(NOCLoader):
     def _get_collection(self):
         if not self.collection:
             from noc.lib.nosql import get_db
+
             self.collection = get_db()[self.COLLECTION_NAME]
         return self.collection
 
     def get_source(self, fullname):
-        key = fullname[len(self.PREFIX) + 1:]
+        key = fullname[len(self.PREFIX) + 1 :]
         if not key:
             return self.INIT_SOURCE  # Importing noc.pyrules
         try:
@@ -122,11 +122,7 @@ class NOCPyruleLoader(NOCLoader):
             if d:
                 return d.get("source", "")  # Found
             # Not found, try to resolve as package name
-            d = coll.find_one({
-                "name": {
-                    "$regex": r"^{}\.".format(key.replace(".", "\\."))
-                }
-            })
+            d = coll.find_one({"name": {"$regex": r"^{}\.".format(key.replace(".", "\\."))}})
             if d:
                 self.packages.add(fullname)
                 return self.INIT_SOURCE
@@ -140,7 +136,7 @@ class NOCCustomLoader(NOCLoader):
     PREFIX = "noc.custom"
 
     def get_source(self, fullname):
-        key = fullname[len(self.PREFIX) + 1:]
+        key = fullname[len(self.PREFIX) + 1 :]
         if not key:
             return self.INIT_SOURCE  # Importing noc.custom
         path = os.path.join(config.path.custom_path, key.replace(".", os.sep))
@@ -157,9 +153,7 @@ class NOCCustomLoader(NOCLoader):
 
 
 def _get_loader():
-    loader_map = {
-        NOCPyruleLoader.PREFIX: NOCPyruleLoader
-    }
+    loader_map = {NOCPyruleLoader.PREFIX: NOCPyruleLoader}
     if config.path.custom_path and os.path.exists(config.path.custom_path):
         loader_map[NOCCustomLoader.PREFIX] = NOCCustomLoader
     return ImportRouter(loader_map)

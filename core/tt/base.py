@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # NOC modules
 from .error import TTError, TemporaryTTError
 
@@ -30,9 +31,9 @@ class BaseTTSystem(object):
         self.name = name
         self.logger = logging.getLogger("tt.%s" % self.name)
 
-    def create_tt(self, queue, obj, reason=None,
-                  subject=None, body=None, login=None,
-                  timestamp=None):
+    def create_tt(
+        self, queue, obj, reason=None, subject=None, body=None, login=None, timestamp=None
+    ):
         """
         Create TT
         :param queue: ticket queue
@@ -89,8 +90,7 @@ class BaseTTSystem(object):
         """
         raise NotImplementedError()
 
-    def close_tt(self, tt_id, subject=None, body=None,
-                 reason=None, login=None):
+    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None):
         """
         Close TT
         :param tt_id: TT id, as returned by create_tt

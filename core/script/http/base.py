@@ -9,6 +9,7 @@
 # Third-party modules
 import ujson
 from six.moves.http_cookies import SimpleCookie
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.http.client import fetch_sync
@@ -84,7 +85,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark,
             user=user,
-            password=password
+            password=password,
         )
         if not 200 <= code <= 299:
             raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
@@ -99,7 +100,9 @@ class HTTP(object):
             self.script.root.http_cache[cache_key] = result
         return result
 
-    def post(self, path, data, headers=None, cached=False, json=False, eof_mark=None, use_basic=False):
+    def post(
+        self, path, data, headers=None, cached=False, json=False, eof_mark=None, use_basic=False
+    ):
         """
         Perform HTTP GET request
         :param path: URI
@@ -139,7 +142,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark,
             user=user,
-            password=password
+            password=password,
         )
         if not 200 <= code <= 299:
             raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .error import InterfaceTypeError
 
@@ -16,6 +17,7 @@ class BaseParameter(object):
     """
     Abstract parameter
     """
+
     def __init__(self, required=True, default=None):
         self.required = required
         self.default = default
@@ -35,8 +37,7 @@ class BaseParameter(object):
         :type msg: String
         :raises InterfaceTypeError
         """
-        raise InterfaceTypeError("%s: %s. %s" % (self.__class__.__name__,
-                                                 repr(value), msg))
+        raise InterfaceTypeError("%s: %s. %s" % (self.__class__.__name__, repr(value), msg))
 
     def clean(self, value):
         """
@@ -82,12 +83,13 @@ class BaseParameter(object):
         :type value: Arbitrary python type
         :return: Normalized value
         """
+        from django.forms import ValidationError
         if not value and not self.required:
             return self.default if self.default else None
         try:
             return self.clean(value)
         except InterfaceTypeError as e:
-            raise forms.ValidationError(e)
+            raise ValidationError(e)
 
     def get_form_field(self, label=None):
         """
@@ -97,7 +99,7 @@ class BaseParameter(object):
             "xtype": "textfield",
             "name": label,
             "fieldLabel": label,
-            "allowBlank": not self.required
+            "allowBlank": not self.required,
         }
 
 
@@ -129,6 +131,7 @@ class ORParameter(BaseParameter):
         ...
     InterfaceTypeError: IPv4Parameter: None.
     """
+
     def __init__(self, left, right):
         super(ORParameter, self).__init__()
         self.left = left

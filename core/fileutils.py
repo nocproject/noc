@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,8 +10,10 @@ import tempfile
 import hashlib
 import tarfile
 import gzip
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.version import version
 
@@ -118,6 +120,7 @@ class temporary_file(object):
          with temporary_file("line1\nline2") as p:
              subprocess.Popen(["wc","-l",p])
     """
+
     def __init__(self, text=""):
         self.text = text
 
@@ -186,9 +189,9 @@ def tail(path, lines):
             except IOError:
                 f.seek(0)
             pos = f.tell()
-            l = f.read().splitlines()
-            if len(l) >= lines or not pos:
-                return l[-lines:]
+            ln = f.read().splitlines()
+            if len(ln) >= lines or not pos:
+                return ln[-lines:]
             avg *= 1.61
 
 

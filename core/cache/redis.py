@@ -8,18 +8,17 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import redis
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
+
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
 from .base import BaseCache
 
-ignorable_redis_errors = (
-    redis.exceptions.ConnectionError,
-    redis.exceptions.TimeoutError
-)
+ignorable_redis_errors = (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError)
 
 
 class RedisCache(BaseCache):
@@ -28,7 +27,7 @@ class RedisCache(BaseCache):
         self.redis = redis.StrictRedis(
             host=config.redis.addresses[0].host,
             port=config.redis.addresses[0].port,
-            db=config.redis.db
+            db=config.redis.db,
         )
 
     @staticmethod

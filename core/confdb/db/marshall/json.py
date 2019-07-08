@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import ujson
+
 # NOC modules
 from .base import BaseMarshaller
 
@@ -21,9 +23,7 @@ class JSONMarshaller(BaseMarshaller):
     def marshall(cls, node):
         def get_node(n):
             children = [get_node(cn) for cn in n.iter_nodes()]
-            r = {
-                "node": n.token
-            }
+            r = {"node": n.token}
             if children:
                 r["children"] = children
             return r

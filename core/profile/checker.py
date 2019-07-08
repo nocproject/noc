@@ -13,9 +13,11 @@ from threading import Lock
 import re
 from collections import defaultdict
 from builtins import str, object
+
 # Third-party modules
 import six
 import cachetools
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.error import NOCError
@@ -32,13 +34,19 @@ class ProfileChecker(object):
     _rules_cache = cachetools.TTLCache(10, ttl=60)
     _re_cache = {}
 
-    def __init__(self, address=None, pool=None, logger=None, snmp_community=None,
-                 calling_service="profilechecker", snmp_version=None):
+    def __init__(
+        self,
+        address=None,
+        pool=None,
+        logger=None,
+        snmp_community=None,
+        calling_service="profilechecker",
+        snmp_version=None,
+    ):
         self.address = address
         self.pool = pool
         self.logger = PrefixLoggerAdapter(
-            logger or self.base_logger,
-            "%s][%s" % (self.pool or "", self.address or "")
+            logger or self.base_logger, "%s][%s" % (self.pool or "", self.address or "")
         )
         self.result_cache = {}  # (method, param) -> result
         self.error = None
@@ -101,7 +109,10 @@ class ProfileChecker(object):
                     self.error = str(e.message)
                     return None
         if snmp_result or http_result:
-            self.error = "Not find profile for OID: %s or HTTP string: %s" % (snmp_result, http_result)
+            self.error = "Not find profile for OID: %s or HTTP string: %s" % (
+                snmp_result,
+                http_result,
+            )
         elif not snmp_result:
             self.error = "Cannot fetch snmp data, check device for SNMP access"
         elif not http_result:
@@ -135,7 +146,7 @@ class ProfileChecker(object):
 
         }]
         """
-        self.logger.info("Compiling \"Profile Check rules\"")
+        self.logger.info('Compiling "Profile Check rules"')
         d = {}  # preference -> (method, param) -> [rule, ..]
         for r in self.get_profile_check_rules():
             if "snmp" in r.method and self.ignoring_snmp:
@@ -145,13 +156,7 @@ class ProfileChecker(object):
             k = (r.method, r.param)
             if k not in d[r.preference]:
                 d[r.preference][k] = []
-            d[r.preference][k] += [(
-                r.match_method,
-                r.value,
-                r.action,
-                r.profile,
-                r.name
-            )]
+            d[r.preference][k] += [(r.match_method, r.value, r.action, r.profile, r.name)]
         return d
 
     def iter_rules(self):
@@ -236,14 +241,8 @@ class ProfileChecker(object):
         self.logger.info("SNMP v1 GET: %s", param)
         try:
             return open_sync_rpc(
-                "activator",
-                pool=self.pool,
-                calling_service=self.calling_service
-            ).snmp_v1_get(
-                self.address,
-                self.snmp_community,
-                param
-            )
+                "activator", pool=self.pool, calling_service=self.calling_service
+            ).snmp_v1_get(self.address, self.snmp_community, param)
         except RPCError as e:
             self.logger.error("RPC Error: %s", e)
             return None
@@ -257,14 +256,8 @@ class ProfileChecker(object):
         self.logger.info("SNMP v2c GET: %s", param)
         try:
             return open_sync_rpc(
-                "activator",
-                pool=self.pool,
-                calling_service=self.calling_service
-            ).snmp_v2c_get(
-                self.address,
-                self.snmp_community,
-                param
-            )
+                "activator", pool=self.pool, calling_service=self.calling_service
+            ).snmp_v2c_get(self.address, self.snmp_community, param)
         except RPCError as e:
             self.logger.error("RPC Error: %s", e)
             return None
@@ -278,9 +271,7 @@ class ProfileChecker(object):
         self.logger.info("HTTP Request: %s", url)
         try:
             return open_sync_rpc(
-                "activator",
-                pool=self.pool,
-                calling_service=self.calling_service
+                "activator", pool=self.pool, calling_service=self.calling_service
             ).http_get(url, True)
         except RPCError as e:
             self.logger.error("RPC Error: %s", e)

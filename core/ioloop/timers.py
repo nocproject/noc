@@ -8,6 +8,7 @@
 
 # Python modules
 import random
+
 # Third-party modules
 from tornado.ioloop import IOLoop, PeriodicCallback
 from noc.config import config
@@ -20,6 +21,7 @@ if config.features.use_uvlib:
         """Schedules the given callback to be called periodically
         with random offset.
         """
+
         def __init__(self, callback, callback_time, io_loop=None):
             self.callback = callback
             if callback_time <= 0:
@@ -43,13 +45,11 @@ if config.features.use_uvlib:
 
         def start(self):
             if not self._timer:
-                self._timer = pyuv.Timer(
-                    self.io_loop._loop
-                )
+                self._timer = pyuv.Timer(self.io_loop._loop)
                 self._timer.start(
                     self._run,
                     random.random() * self.callback_time / 1000.0,
-                    self.callback_time / 1000.0
+                    self.callback_time / 1000.0,
                 )
 
         def stop(self):
@@ -61,20 +61,20 @@ if config.features.use_uvlib:
             self.callback_time = callback_time
             if self._timer:
                 self._timer.repeat = self.callback_time / 1000.0
+
+
 else:
+
     class PeriodicOffsetCallback(PeriodicCallback):
         """Schedules the given callback to be called periodically
         with random offset.
         """
+
         def start(self):
             """Starts the timer."""
             self._running = True
-            self._next_timeout = (self.io_loop.time() +
-                                  random.random() * self.callback_time / 1000.0)
-            self._timeout = self.io_loop.add_timeout(
-                self._next_timeout,
-                self._run
-            )
+            self._next_timeout = self.io_loop.time() + random.random() * self.callback_time / 1000.0
+            self._timeout = self.io_loop.add_timeout(self._next_timeout, self._run)
 
         def set_callback_time(self, callback_time):
             self.callback_time = callback_time

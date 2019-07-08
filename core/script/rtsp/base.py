@@ -11,12 +11,14 @@ from __future__ import absolute_import
 import socket
 import datetime
 import os
+
 # Third-party modules
 from six.moves.urllib.request import parse_http_list, parse_keqv_list
 import tornado.ioloop
 import tornado.iostream
 import tornado.gen
 import hashlib
+
 # NOC modules
 from noc.config import config
 from noc.core.log import PrefixLoggerAdapter
@@ -89,15 +91,11 @@ class RTSPBase(object):
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:
             return
-        self.logger.debug("Setting close timeout to %ss",
-                          session_timeout)
+        self.logger.debug("Setting close timeout to %ss", session_timeout)
         # Cannot call call_later directly due to
         # thread-safety problems
         # See tornado issue #1773
-        tornado.ioloop.IOLoop.instance().add_callback(
-            self._set_close_timeout,
-            session_timeout
-        )
+        tornado.ioloop.IOLoop.instance().add_callback(self._set_close_timeout, session_timeout)
 
     def _set_close_timeout(self, session_timeout):
         """
@@ -106,31 +104,23 @@ class RTSPBase(object):
         :return:
         """
         self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
-            session_timeout,
-            self.close
+            session_timeout, self.close
         )
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if self.tos:
-            s.setsockopt(
-                socket.IPPROTO_IP, socket.IP_TOS, self.tos
-            )
+            s.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, self.tos)
         if self.HAS_TCP_NODELAY:
             s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         if self.HAS_TCP_KEEPALIVE:
-            s.setsockopt(
-                socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1
-            )
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
             if self.HAS_TCP_KEEPIDLE:
-                s.setsockopt(socket.SOL_TCP,
-                             socket.TCP_KEEPIDLE, self.KEEP_IDLE)
+                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, self.KEEP_IDLE)
             if self.HAS_TCP_KEEPINTVL:
-                s.setsockopt(socket.SOL_TCP,
-                             socket.TCP_KEEPINTVL, self.KEEP_INTVL)
+                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPINTVL, self.KEEP_INTVL)
             if self.HAS_TCP_KEEPCNT:
-                s.setsockopt(socket.SOL_TCP,
-                             socket.TCP_KEEPCNT, self.KEEP_CNT)
+                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
 
     def set_timeout(self, timeout):
@@ -167,18 +157,18 @@ class RTSPBase(object):
             # "Host": str(u.netloc),
             # "Connection": "close",
             "CSeq": self.cseq,
-            "User-Agent": DEFAULT_USER_AGENT
+            "User-Agent": DEFAULT_USER_AGENT,
         }
         if self.auth:
             h["Authorization"] = self.auth.build_digest_header(
-                self.get_uri(), method,
-                self.headers["WWW-Authenticate"]["Digest"])
+                self.get_uri(), method, self.headers["WWW-Authenticate"]["Digest"]
+            )
         req = b"%s %s %s\r\n%s\r\n\r\n%s" % (
             method,
             self.get_uri(),
             DEFAULT_PROTOCOL,
             "\r\n".join(b"%s: %s" % (k, h[k]) for k in h),
-            body
+            body,
         )
 
         self.logger.debug("Send: %r", req)
@@ -190,10 +180,7 @@ class RTSPBase(object):
         # Create iostream and connect, when necessary
         if not self.iostream:
             self.iostream = self.create_iostream()
-            address = (
-                self.script.credentials.get("address"),
-                self.default_port
-            )
+            address = (self.script.credentials.get("address"), self.default_port)
             self.logger.debug("Connecting %s", address)
             try:
                 yield self.iostream.connect(address)
@@ -210,8 +197,10 @@ class RTSPBase(object):
             yield self.get_rtsp_response()
             if self.error and self.error.code == 401:
                 self.logger.info("Authentication needed")
-                self.auth = DigestAuth(user=self.script.credentials.get("user"),
-                                       password=self.script.credentials.get("password"))
+                self.auth = DigestAuth(
+                    user=self.script.credentials.get("user"),
+                    password=self.script.credentials.get("password"),
+                )
                 # Send command
         yield self.send()
         r = yield self.get_rtsp_response()
@@ -232,7 +221,9 @@ class RTSPBase(object):
             header, r = r.split(header_sep, 1)
             code, msg, headers = self.parse_rtsp_header(header)
             self.headers = headers
-            self.logger.debug("Parsed received, err code: %d, err message: %s, headers: %s", code, msg, headers)
+            self.logger.debug(
+                "Parsed received, err code: %d, err message: %s, headers: %s", code, msg, headers
+            )
             if code == 401:
                 self.result = ""
                 self.error = RTSPAuthFailed("%s (code=%s)" % (msg, code), code=int(code))
@@ -285,8 +276,9 @@ class RTSPBase(object):
         if not self.ioloop:
             self.logger.debug("Creating IOLoop")
             self.ioloop = tornado.ioloop.IOLoop()
-        with Span(server=self.script.credentials.get("address"),
-                  service=self.name, in_label=self.method) as s:
+        with Span(
+            server=self.script.credentials.get("address"), service=self.name, in_label=self.method
+        ) as s:
             self.ioloop.run_sync(self.submit)
             if self.error:
                 if s:
@@ -300,13 +292,9 @@ class RTSPBase(object):
         connect_retries = self.CONNECT_RETRIES
         while True:
             try:
-                f = self.iostream.read_bytes(self.BUFFER_SIZE,
-                                             partial=True)
+                f = self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
                 if self.current_timeout:
-                    r = yield tornado.gen.with_timeout(
-                        self.current_timeout,
-                        f
-                    )
+                    r = yield tornado.gen.with_timeout(self.current_timeout, f)
                 else:
                     r = yield f
             except tornado.iostream.StreamClosedError:
@@ -315,7 +303,8 @@ class RTSPBase(object):
                 if not self.is_started and connect_retries:
                     self.logger.info(
                         "Connection reset. %d retries left. Waiting %d seconds",
-                        connect_retries, self.CONNECT_TIMEOUT
+                        connect_retries,
+                        self.CONNECT_TIMEOUT,
                     )
                     while connect_retries:
                         yield tornado.gen.sleep(self.CONNECT_TIMEOUT)
@@ -323,7 +312,7 @@ class RTSPBase(object):
                         self.iostream = self.create_iostream()
                         address = (
                             self.script.credentials.get("address"),
-                            self.script.credentials.get("cli_port", self.default_port)
+                            self.script.credentials.get("cli_port", self.default_port),
                         )
                         self.logger.debug("Connecting %s", address)
                         try:
@@ -358,6 +347,7 @@ class DigestAuth(object):
     """
     Append HTTP Digest authorisation headers
     """
+
     name = "digestauth"
 
     def __init__(self, user=None, password=None):
@@ -377,8 +367,8 @@ class DigestAuth(object):
         :return:
         """
         # print("Get Digest", uri, realm, method, self.user, self.password)
-        A1 = '%s:%s:%s' % (self.user, realm, self.password)
-        A2 = '%s:%s' % (method, uri)
+        A1 = "%s:%s:%s" % (self.user, realm, self.password)
+        A2 = "%s:%s" % (method, uri)
 
         HA1 = hashlib.md5(A1).hexdigest()
         HA2 = hashlib.md5(A2).hexdigest()
@@ -400,8 +390,8 @@ class DigestAuth(object):
         qop = digest_response.get("qop", "")
         realm = digest_response["realm"] if "realm" in digest_response else self.last_realm
         nonce = digest_response["nonce"] if "nonce" in digest_response else self.last_nonce
-        algorithm = digest_response.get('algorithm')
-        opaque = digest_response.get('opaque')
+        algorithm = digest_response.get("algorithm")
+        opaque = digest_response.get("opaque")
 
         HA1, HA2 = self.get_digest(uri, realm, method)
 
@@ -409,25 +399,28 @@ class DigestAuth(object):
             self.request_id += 1
         else:
             self.request_id = 1
-        ncvalue = '%08x' % self.request_id
+        ncvalue = "%08x" % self.request_id
 
-        s = nonce.encode('utf-8')
+        s = nonce.encode("utf-8")
         # s += time.ctime().encode('utf-8')
         s += os.urandom(8)
-        cnonce = (hashlib.sha1(s).hexdigest()[:16])
+        cnonce = hashlib.sha1(s).hexdigest()[:16]
 
         if not qop:
             respdig = hashlib.md5("%s:%s:%s" % (HA1, nonce, HA2)).hexdigest()
-        elif qop == 'auth' or 'auth' in qop.split(','):
-            noncebit = "%s:%s:%s:%s:%s" % (
-                nonce, ncvalue, cnonce, 'auth', HA2
-            )
+        elif qop == "auth" or "auth" in qop.split(","):
+            noncebit = "%s:%s:%s:%s:%s" % (nonce, ncvalue, cnonce, "auth", HA2)
             respdig = hashlib.md5("%s:%s" % (HA1, noncebit)).hexdigest()
         else:
             respdig = None
 
-        base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' \
-               'response="%s"' % (self.user, realm, nonce, uri, respdig)
+        base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' 'response="%s"' % (
+            self.user,
+            realm,
+            nonce,
+            uri,
+            respdig,
+        )
 
         if opaque:
             base += ', opaque="%s"' % opaque
@@ -436,10 +429,9 @@ class DigestAuth(object):
         # if entdig:
         #     base += ', digest="%s"' % entdig
         if qop:
-            base += ', qop="auth", nc=%s, cnonce="%s"' % (
-                '%08x' % self.request_id, cnonce)
+            base += ', qop="auth", nc=%s, cnonce="%s"' % ("%08x" % self.request_id, cnonce)
         self.last_nonce = nonce
         self.last_realm = realm
         self.last_opaque = opaque
 
-        return 'Digest %s' % (str(base))
+        return "Digest %s" % (str(base))

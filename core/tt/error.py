@@ -16,4 +16,5 @@ class TemporaryTTError(TTError):
     TTSystem can raise TemporaryTTError for calls that can be restarted
     later
     """
+
     pass

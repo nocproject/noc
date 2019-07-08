@@ -11,8 +11,10 @@ from __future__ import absolute_import
 import logging
 import time
 import datetime
+
 # Third-party modules
 import tornado.gen
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
@@ -62,7 +64,7 @@ class Job(object):
 
     # Job states
     S_WAIT = "W"  # Waiting to run
-    S_RUN = "R"   # Running
+    S_RUN = "R"  # Running
     S_STOP = "S"  # Stopped by operator
     S_DISABLED = "D"  # Disabled by system
     S_SUSPEND = "s"  # Suspended by system
@@ -81,7 +83,7 @@ class Job(object):
         E_EXCEPTION: "EXCEPTION",
         E_DEFERRED: "DEFERRED",
         E_DEREFERENCE: "DEREFERENCE",
-        E_RETRY: "RETRY"
+        E_RETRY: "RETRY",
     }
 
     # List of contexts should be initialized
@@ -103,10 +105,7 @@ class Job(object):
         self.object = None
         self.start_time = None
         self.duration = None
-        self.logger = PrefixLoggerAdapter(
-            scheduler.logger,
-            self.get_display_key()
-        )
+        self.logger = PrefixLoggerAdapter(scheduler.logger, self.get_display_key())
         self.context = {}
 
     def load_context(self, data):
@@ -125,21 +124,24 @@ class Job(object):
 
     @tornado.gen.coroutine
     def run(self):
-        with Span(server=self.scheduler.name,
-                  service=self.attrs[self.ATTR_CLASS],
-                  sample=self.attrs.get(self.ATTR_SAMPLE, 0),
-                  in_label=self.attrs.get(self.ATTR_KEY, "")):
+        with Span(
+            server=self.scheduler.name,
+            service=self.attrs[self.ATTR_CLASS],
+            sample=self.attrs.get(self.ATTR_SAMPLE, 0),
+            in_label=self.attrs.get(self.ATTR_KEY, ""),
+        ):
             self.start_time = perf_counter()
             if self.is_retries_exceeded():
-                self.logger.info("[%s|%s] Retries exceeded. Remove job",
-                                 self.name, self.attrs[Job.ATTR_ID])
+                self.logger.info(
+                    "[%s|%s] Retries exceeded. Remove job", self.name, self.attrs[Job.ATTR_ID]
+                )
                 self.remove_job()
                 return
             self.logger.info(
                 "[%s] Starting at %s (Lag %.2fms)",
                 self.name,
                 self.scheduler.scheduler_id,
-                (datetime.datetime.now() - self.attrs[self.ATTR_TS]).total_seconds() * 1000.0
+                (datetime.datetime.now() - self.attrs[self.ATTR_TS]).total_seconds() * 1000.0,
             )
             # Run handler
             status = self.E_EXCEPTION
@@ -179,9 +181,11 @@ class Job(object):
                 self.logger.info("Cannot dereference")
                 status = self.E_DEREFERENCE
             self.duration = perf_counter() - self.start_time
-            self.logger.info("Completed. Status: %s (%.2fms)",
-                             self.STATUS_MAP.get(status, status),
-                             self.duration * 1000)
+            self.logger.info(
+                "Completed. Status: %s (%.2fms)",
+                self.STATUS_MAP.get(status, status),
+                self.duration * 1000,
+            )
             # Schedule next run
             if delay is None:
                 with Span(service="job.schedule_next"):
@@ -202,7 +206,7 @@ class Job(object):
                         duration=self.duration,
                         context_version=self.context_version,
                         context=ctx,
-                        context_key=ctx_key
+                        context_key=ctx_key,
                     )
 
     def handler(self, **kwargs):
@@ -238,11 +242,7 @@ class Job(object):
                 return False
         # Adjust logging
         self.logger.set_prefix(
-            "%s][%s][%s" % (
-                self.scheduler.name,
-                self.name,
-                self.get_display_key()
-            )
+            "%s][%s][%s" % (self.scheduler.name, self.name, self.get_display_key())
         )
         return True
 
@@ -279,9 +279,17 @@ class Job(object):
         self.remove_job()
 
     @classmethod
-    def submit(cls, scheduler, name=None,
-               key=None, data=None, pool=None,
-               ts=None, delta=None, keep_ts=False):
+    def submit(
+        cls,
+        scheduler,
+        name=None,
+        key=None,
+        data=None,
+        pool=None,
+        ts=None,
+        delta=None,
+        keep_ts=False,
+    ):
         """
         Submit new job or change schedule for existing one
         :param scheduler: scheduler name
@@ -295,45 +303,29 @@ class Job(object):
             set timestamp only for created jobs
         """
         from .scheduler import Scheduler
-        scheduler = Scheduler(
-            name=scheduler,
-            pool=pool
-        )
-        scheduler.submit(
-            name,
-            key=key,
-            data=data,
-            ts=ts,
-            delta=delta,
-            keep_ts=keep_ts
-        )
+
+        scheduler = Scheduler(name=scheduler, pool=pool)
+        scheduler.submit(name, key=key, data=data, ts=ts, delta=delta, keep_ts=keep_ts)
 
     @classmethod
     def remove(cls, scheduler, name=None, key=None, pool=None):
         from .scheduler import Scheduler
-        scheduler = Scheduler(
-            name=scheduler,
-            pool=pool
-        )
+
+        scheduler = Scheduler(name=scheduler, pool=pool)
         scheduler.remove_job(name, key=key)
 
     @classmethod
     def get_job_data(cls, scheduler, jcls, key=None, pool=None):
         from .scheduler import Scheduler
-        scheduler = Scheduler(
-            name=scheduler,
-            pool=pool
-        )
-        return scheduler.get_collection().find_one({
-            Job.ATTR_CLASS: jcls,
-            Job.ATTR_KEY: key
-        })
+
+        scheduler = Scheduler(name=scheduler, pool=pool)
+        return scheduler.get_collection().find_one({Job.ATTR_CLASS: jcls, Job.ATTR_KEY: key})
 
     def get_context_cache_key(self):
         ctx = {
             "name": self.scheduler.name,
             "pool": self.scheduler.pool or "global",
-            "job_id": self.attrs[self.ATTR_ID]
+            "job_id": self.attrs[self.ATTR_ID],
         }
         return self.context_cache_key % ctx
 

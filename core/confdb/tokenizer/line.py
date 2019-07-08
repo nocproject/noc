@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import re
+
 # NOC modules
 from .base import BaseTokenizer
 
@@ -17,11 +18,21 @@ class LineTokenizer(BaseTokenizer):
     """
     Line tokenizer. Splits line to tokens
     """
+
     name = "line"
     rx_indent = re.compile(r"^\s+")
 
-    def __init__(self, data, eol="\n", tab_width=0, line_comment=None, inline_comment=None,
-                 keep_indent=False, string_quote=None, rewrite=None):
+    def __init__(
+        self,
+        data,
+        eol="\n",
+        tab_width=0,
+        line_comment=None,
+        inline_comment=None,
+        keep_indent=False,
+        string_quote=None,
+        rewrite=None,
+    ):
         super(LineTokenizer, self).__init__(data)
         self.eol = eol
         self.tab_width = tab_width
@@ -88,7 +99,7 @@ class LineTokenizer(BaseTokenizer):
             match = self.rx_indent.match(line)
             if match:
                 yield match.group(0)
-                line = line[match.end():]
+                line = line[match.end() :]
         for li in line.split():
             yield li
 
@@ -102,7 +113,7 @@ class LineTokenizer(BaseTokenizer):
             match = self.rx_indent.match(line)
             if match:
                 yield match.group(0)
-                line = line[match.end():]
+                line = line[match.end() :]
         if self.string_quote in line:
             # Quoted strings
             start = 0
@@ -116,7 +127,7 @@ class LineTokenizer(BaseTokenizer):
                     yield line[start:qi]
                     in_string = False
                 else:
-                    for li in line[start:qi - 1].split():
+                    for li in line[start : qi - 1].split():
                         yield li
                     in_string = True
                 start = qi + 1

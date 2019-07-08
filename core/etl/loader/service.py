@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.sa.models.service import Service
@@ -17,6 +18,7 @@ class ServiceLoader(BaseLoader):
     """
     Service loader
     """
+
     name = "service"
     model = Service
     fields = [
@@ -40,14 +42,14 @@ class ServiceLoader(BaseLoader):
         "cpe_mac",
         "cpe_model",
         "cpe_group",
-        "description"
+        "description",
     ]
 
     mapped_fields = {
         "parent": "service",
         "subscriber": "subscriber",
         "profile": "serviceprofile",
-        "managed_object": "managedobject"
+        "managed_object": "managedobject",
     }
 
     discard_deferred = True

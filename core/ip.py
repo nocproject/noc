@@ -9,19 +9,22 @@
 # Python modules
 import socket
 import struct
+
 # Third-party modules
 import six
+
 # NOC Modules
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
 
 # Bit masks
-B16 = 0xffff
-B32 = 0xffffffff
+B16 = 0xFFFF
+B32 = 0xFFFFFFFF
 
 
 @six.python_2_unicode_compatible
 class IP(object):
     """Base class for IP prefix"""
+
     afi = None
 
     def __init__(self, prefix):
@@ -204,9 +207,10 @@ class IP(object):
         # Left only addresses remaining in prefix and convert them to
         # IP instances
         addresses = set(
-            a for a in [
-                IP.prefix(a) if isinstance(a, six.string_types) else a for a in addresses
-            ] if self.contains(a))
+            a
+            for a in [IP.prefix(a) if isinstance(a, six.string_types) else a for a in addresses]
+            if self.contains(a)
+        )
         addresses = sorted(addresses)
         # Fill the spot
         spot = []
@@ -251,7 +255,7 @@ class IP(object):
         """
         if self == base:
             return new_base
-        pb = list(self.iter_bits())[base.mask:]
+        pb = list(self.iter_bits())[base.mask :]
         nb = list(new_base.iter_bits()) + [0] * (base.mask - new_base.mask) + pb
         return self.from_bits(nb)
 
@@ -281,6 +285,7 @@ class IPv4(IP):
     """
     IPv4 Prefix. Internally stored as unsigned 32-bit integer and mask
     """
+
     afi = "4"
 
     def __init__(self, prefix, netmask=None):
@@ -339,9 +344,9 @@ class IPv4(IP):
         :param mask: mask length (0 .. 32)
         :type mask: integer
         """
-        return IPv4("%d.%d.%d.%d/%d" % (
-            (s >> 24) & 0xff, (s >> 16) & 0xff, (s >> 8) & 0xff, s & 0xff, mask
-        ))
+        return IPv4(
+            "%d.%d.%d.%d/%d" % ((s >> 24) & 0xFF, (s >> 16) & 0xFF, (s >> 8) & 0xFF, s & 0xFF, mask)
+        )
 
     def __hash__(self):
         """Hashing"""
@@ -420,7 +425,7 @@ class IPv4(IP):
             d = (d << 1) | b
             n += 1
         if n < 32:
-            d <<= (32 - n)
+            d <<= 32 - n
         return cls._to_prefix(d, n)
 
     @property
@@ -448,7 +453,9 @@ class IPv4(IP):
         Returns new IPv4 instance with last address of the block (broadcast)
         :return:
         """
-        return self._to_prefix(self.d | (B32 ^ (((1 << self.mask) - 1) << (32 - self.mask))), self.mask)
+        return self._to_prefix(
+            self.d | (B32 ^ (((1 << self.mask) - 1) << (32 - self.mask))), self.mask
+        )
 
     @property
     def netmask(self):
@@ -559,6 +566,7 @@ class IPv6(IP):
     IPv6 prefix
     Internally stored as four 32-bit integers
     """
+
     afi = "6"
 
     def __init__(self, prefix, netmask=None):
@@ -587,8 +595,7 @@ class IPv6(IP):
         parts = address.split(":")
         if "." in parts[-1]:
             p = [int(x) for x in parts[-1].split(".")]
-            parts = parts[:-1] + ["%02x%02x" % (p[0], p[1]),
-                                  "%02x%02x" % (p[2], p[3])]
+            parts = parts[:-1] + ["%02x%02x" % (p[0], p[1]), "%02x%02x" % (p[2], p[3])]
         if len(parts) == 8:
             parts = [pp if pp else "0" for pp in parts]
         else:
@@ -599,7 +606,7 @@ class IPv6(IP):
                 h = parts[:i]
             if i + 1 < len(parts) and not parts[i + 1]:
                 i += 1
-            t = parts[i + 1:]
+            t = parts[i + 1 :]
             parts = h + ["0"] * (8 - len(h) - len(t)) + t
         return [int(pp, 16) for pp in parts]
 
@@ -626,7 +633,7 @@ class IPv6(IP):
         mask = self.mask
         while mask:
             if mask >= 32:
-                masks += [0xffffffff]
+                masks += [0xFFFFFFFF]
                 mask -= 32
             else:
                 masks += [((1 << mask) - 1) << (32 - mask)]
@@ -645,14 +652,21 @@ class IPv6(IP):
         :param mask:
         :return:
         """
-        r = [(d0 >> 16) & B16, d0 & B16, (d1 >> 16) & B16, d1 & B16,
-             (d2 >> 16) & B16, d2 & B16, (d3 >> 16) & B16, d3 & B16]
+        r = [
+            (d0 >> 16) & B16,
+            d0 & B16,
+            (d1 >> 16) & B16,
+            d1 & B16,
+            (d2 >> 16) & B16,
+            d2 & B16,
+            (d3 >> 16) & B16,
+            d3 & B16,
+        ]
         # Format groups
-        if r[:-3] == [0, 0, 0, 0, 0] and r[-3] == 0xffff:
-            return IPv6("::ffff:%d.%d.%d.%d/%d" % (
-                r[-2] >> 8, r[-2] & 0xff,
-                r[-1] >> 8, r[-1] & 0xff,
-                mask))
+        if r[:-3] == [0, 0, 0, 0, 0] and r[-3] == 0xFFFF:
+            return IPv6(
+                "::ffff:%d.%d.%d.%d/%d" % (r[-2] >> 8, r[-2] & 0xFF, r[-1] >> 8, r[-1] & 0xFF, mask)
+            )
         # Compact longest zeroes sequence
         lp = 0
         ll = 0
@@ -672,9 +686,11 @@ class IPv6(IP):
             cp = s + ln
         if ll:
             h = r[:lp]
-            t = r[lp + ll:]
-            return IPv6("%s::%s/%d" % (":".join(["%x" % p for p in h]),
-                                       ":".join(["%x" % p for p in t]), mask))
+            t = r[lp + ll :]
+            return IPv6(
+                "%s::%s/%d"
+                % (":".join(["%x" % p for p in h]), ":".join(["%x" % p for p in t]), mask)
+            )
         else:
             return IPv6(":".join(["%x" % p for p in r]) + "/%d" % mask)
 
@@ -691,9 +707,14 @@ class IPv6(IP):
         :param other:
         :return:
         """
-        return (self.afi == other.afi and self.d0 == other.d0 and
-                self.d1 == other.d1 and self.d2 == other.d2 and
-                self.d3 == other.d3 and self.mask == other.mask)
+        return (
+            self.afi == other.afi
+            and self.d0 == other.d0
+            and self.d1 == other.d1
+            and self.d2 == other.d2
+            and self.d3 == other.d3
+            and self.mask == other.mask
+        )
 
     def __ne__(self, other):
         """
@@ -701,9 +722,13 @@ class IPv6(IP):
         :param other:
         :return:
         """
-        return (self.d0 != other.d0 or self.d1 != other.d1 or
-                self.d2 != other.d2 or self.d3 != other.d3 or
-                self.mask != other.mask)
+        return (
+            self.d0 != other.d0
+            or self.d1 != other.d1
+            or self.d2 != other.d2
+            or self.d3 != other.d3
+            or self.mask != other.mask
+        )
 
     def __lt__(self, other):
         """
@@ -819,7 +844,7 @@ class IPv6(IP):
             d[n // 32] = (d[n // 32] << 1) | b
             n += 1
         if n % 32:
-            d[n // 32] <<= (32 - (n % 32))
+            d[n // 32] <<= 32 - (n % 32)
         return cls._to_prefix(d[0], d[1], d[2], d[3], n)
 
     def contains(self, other):
@@ -830,9 +855,11 @@ class IPv6(IP):
         """
         if self.mask > other.mask:
             return False
-        for a1, a2, m in zip([self.d0, self.d1, self.d2, self.d3],
-                             [other.d0, other.d1, other.d2, other.d3],
-                             self._get_masks()):
+        for a1, a2, m in zip(
+            [self.d0, self.d1, self.d2, self.d3],
+            [other.d0, other.d1, other.d2, other.d3],
+            self._get_masks(),
+        ):
             if not m:
                 return True
             if (a1 & m) != (a2 & m):
@@ -846,9 +873,13 @@ class IPv6(IP):
         :return:
         """
         masks = self._get_masks()
-        return self._to_prefix(self.d0 & masks[0], self.d1 & masks[1],
-                               self.d2 & masks[2], self.d3 & masks[3],
-                               self.mask)
+        return self._to_prefix(
+            self.d0 & masks[0],
+            self.d1 & masks[1],
+            self.d2 & masks[2],
+            self.d3 & masks[3],
+            self.mask,
+        )
 
     @property
     def last(self):
@@ -857,9 +888,13 @@ class IPv6(IP):
         :return:
         """
         masks = [B32 ^ m for m in self._get_masks()]
-        return self._to_prefix(self.d0 | masks[0], self.d1 | masks[1],
-                               self.d2 | masks[2], self.d3 | masks[3],
-                               self.mask)
+        return self._to_prefix(
+            self.d0 | masks[0],
+            self.d1 | masks[1],
+            self.d2 | masks[2],
+            self.d3 | masks[3],
+            self.mask,
+        )
 
     @property
     def normalized(self):
@@ -884,8 +919,9 @@ class IPv6(IP):
         Returns 32 hexadecimal digits
         :return:
         """
-        return list("".join(["%08x" % self.d0, "%08x" % self.d1,
-                             "%08x" % self.d2, "%08x" % self.d3]))
+        return list(
+            "".join(["%08x" % self.d0, "%08x" % self.d1, "%08x" % self.d2, "%08x" % self.d3])
+        )
 
     def ptr(self, origin_len):
         """
@@ -926,6 +962,7 @@ class PrefixDB(object):
     """
     Generalized binary-tree prefix lookup database
     """
+
     def __init__(self, key=None):
         self.children = [None, None]
         self.key = key
@@ -969,6 +1006,7 @@ class PrefixDB(object):
         :param root:
         :return:
         """
+
         def walk_tree(c, root_bits):
             for n, v in enumerate(c.children):
                 bits = root_bits + [n]
@@ -979,6 +1017,7 @@ class PrefixDB(object):
                     if nc.key is None:
                         for f in walk_tree(nc, bits):
                             yield f
+
         root_bits = list(root.iter_bits())
         afi = root.afi
         max_bits = 32 if afi == "4" else 128

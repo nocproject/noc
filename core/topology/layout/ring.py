@@ -9,9 +9,11 @@
 # Python modules
 from __future__ import absolute_import
 import math
+
 # Third-party modules
 import networkx as nx
 import numpy as np
+
 # NOC modules
 from noc.config import config
 from .tree import TreeLayout
@@ -25,7 +27,7 @@ class RingLayout(TreeLayout):
     # Spacing between parallel chains
     TREE_DX = config.layout.ring_chain_spacing
     # Position of first node
-    A0 = - math.pi / 2.0
+    A0 = -math.pi / 2.0
 
     def get_layout(self):
         T = self.topology
@@ -79,10 +81,7 @@ class RingLayout(TreeLayout):
             # Tree is growing downwards, so subtract pi/2 from angle
             ea = a - math.pi / 2.0
             # Rotation matrix
-            AA = np.array([
-                [math.cos(ea), -math.sin(ea)],
-                [math.sin(ea), math.cos(ea)]
-            ])
+            AA = np.array([[math.cos(ea), -math.sin(ea)], [math.sin(ea), math.cos(ea)]])
             for oo in st_pos:
                 if o == oo:
                     continue  # Already placed

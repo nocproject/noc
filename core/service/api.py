@@ -8,10 +8,12 @@
 
 # Python modules
 from collections import namedtuple
+
 # Third-party modules
 import tornado.web
 import tornado.gen
 import ujson
+
 # NOC modules
 from noc.core.error import NOCError
 from noc.core.debug import error_report
@@ -27,6 +29,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
     """
     HTTP JSON-RPC request handler
     """
+
     SUPPORTED_METHODS = ("POST",)
     CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
 
@@ -50,36 +53,30 @@ class APIRequestHandler(tornado.web.RequestHandler):
         params = req.get("params", [])
         method = req.get("method")
         if not method or not hasattr(self.api_class, method):
-            self.api_error(
-                "Invalid method: '%s'" % method,
-                id=id
-            )
+            self.api_error("Invalid method: '%s'" % method, id=id)
             raise tornado.gen.Return()
         api = self.api_class(self.service, self.request, self)
         h = getattr(api, method)
         if not getattr(h, "api", False):
-            self.api_error(
-                "Method is not callable: '%s'" % method,
-                id=id
-            )
+            self.api_error("Method is not callable: '%s'" % method, id=id)
             raise tornado.gen.Return()
-        calling_service = self.request.headers.get(
-            self.CALLING_SERVICE_HEADER,
-            "unknown"
-        )
+        calling_service = self.request.headers.get(self.CALLING_SERVICE_HEADER, "unknown")
         self.service.logger.debug(
-            "[RPC call from %s] %s.%s(%s)",
-            calling_service, api.name, method, params
+            "[RPC call from %s] %s.%s(%s)", calling_service, api.name, method, params
         )
         in_label = None
         if config.features.forensic:
             lh = getattr(api, "%s_get_label" % method, None)
             if lh:
                 in_label = lh(*params)
-        with Span(server=self.service.name,
-                  service="api.%s" % method, sample=sample,
-                  parent=span_id, context=span_ctx,
-                  in_label=in_label) as span:
+        with Span(
+            server=self.service.name,
+            service="api.%s" % method,
+            sample=sample,
+            parent=span_id,
+            context=span_ctx,
+            in_label=in_label,
+        ) as span:
             try:
                 if getattr(h, "executor", ""):
                     # Threadpool version
@@ -94,40 +91,25 @@ class APIRequestHandler(tornado.web.RequestHandler):
                     # Redirect protocol extension
                     self.set_status(307, "Redirect")
                     self.set_header("Location", result.location)
-                    self.write(ujson.dumps({
-                        "id": id,
-                        "method": result.method,
-                        "params": result.params
-                    }))
+                    self.write(
+                        ujson.dumps({"id": id, "method": result.method, "params": result.params})
+                    )
                 else:
                     # Dump output
-                    self.write(ujson.dumps({
-                        "id": id,
-                        "error": None,
-                        "result": result
-                    }))
+                    self.write(ujson.dumps({"id": id, "error": None, "result": result}))
             except NOCError as e:
                 span.error_code = e.code
                 span.error_text = str(e)
-                self.api_error(
-                    "Failed: %s" % e,
-                    id=id,
-                    code=e.code
-                )
+                self.api_error("Failed: %s" % e, id=id, code=e.code)
             except Exception as e:
                 error_report()
                 span.error_code = ERR_UNKNOWN
                 span.error_text = str(e)
-                self.api_error(
-                    "Failed: %s" % e,
-                    id=id
-                )
+                self.api_error("Failed: %s" % e, id=id)
 
     def api_error(self, msg, id=None, code=None):
         if id is not None:
-            rsp = {
-                "error": str(msg)
-            }
+            rsp = {"error": str(msg)}
             if id:
                 rsp["id"] = id
             if code:
@@ -146,6 +128,7 @@ class API(object):
     <name> for non-pooled
     <name>-<pool> for pooled
     """
+
     # API name
     name = None
 
@@ -160,14 +143,10 @@ class API(object):
         """
         Returns a list of available API methods
         """
-        return [
-            m for m in dir(cls)
-            if getattr(getattr(cls, m), "api", False)
-        ]
+        return [m for m in dir(cls) if getattr(getattr(cls, m), "api", False)]
 
     def redirect(self, location, method, params):
-        raise tornado.gen.Return(Redirect(location=location,
-                                          method=method, params=params))
+        raise tornado.gen.Return(Redirect(location=location, method=method, params=params))
 
 
 def api(method):
@@ -186,9 +165,11 @@ def executor(name):
     @api
     def script(....)
     """
+
     def wrap(f):
         f.executor = name
         return f
+
     return wrap
 
 
@@ -196,6 +177,7 @@ class lock(object):
     """
     Decorator to lock api method call with named lock
     """
+
     def __init__(self, name):
         self.name = name
 

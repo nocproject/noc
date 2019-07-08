@@ -9,10 +9,12 @@
 # Python modules
 from __future__ import absolute_import
 import socket
+
 # Third-party modules
 import tornado.gen
 import tornado.iostream
 from tornado.concurrent import TracebackFuture
+
 # NOC modules
 from .base import CLI
 from .telnet import TelnetIOStream
@@ -36,7 +38,7 @@ class BeefCLI(CLI):
         if self.state != "prompt":
             raise tornado.gen.Return()  # Will be replied via reply_state
         beef = self.script.request_beef()
-        gen = beef.iter_cli_reply(cmd[:-len(self.profile.command_submit)])
+        gen = beef.iter_cli_reply(cmd[: -len(self.profile.command_submit)])
         self.ioloop.add_callback(self.streamer, gen)
 
     @tornado.gen.coroutine

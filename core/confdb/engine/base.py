@@ -13,8 +13,10 @@ import itertools
 import types
 import re
 from collections import defaultdict
+
 # Third-party modules
 from six.moves import zip
+
 # NOC modules
 from noc.core.vlan import has_vlan, optimize_filter
 from .transformer import PredicateTransformer
@@ -50,6 +52,7 @@ class Engine(object):
         :return:
         """
         import astor
+
         tree = ast.parse(expr, mode="eval")
         tree = PredicateTransformer(self).visit(tree)
         ast.fix_missing_locations(tree)
@@ -189,6 +192,7 @@ class Engine(object):
         :param kwargs:
         :return:
         """
+
         def g():
             for ctx in _input:
                 for pctx in self.iter_product(ctx, **kwargs):
@@ -264,6 +268,7 @@ class Engine(object):
         :param args:
         :return:
         """
+
         def match_token(node, c, current, rest):
             f = node.find(current)
             if f is not None:
@@ -309,6 +314,7 @@ class Engine(object):
         :param args:
         :return:
         """
+
         def not_match_token(node, c, current, rest):
             f = node.find(current)
             if rest:
@@ -411,6 +417,7 @@ class Engine(object):
         :param args: String or variable
         :return:
         """
+
         def g():
             for ctx in _input:
                 nctx = ctx.copy()

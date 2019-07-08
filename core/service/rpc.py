@@ -13,16 +13,17 @@ import logging
 import random
 import threading
 import sys
+
 # Third-party modules
 import tornado.concurrent
 import tornado.gen
 import ujson
 import six
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.backport.time import perf_counter
-from .client import (RPCError, RPCNoService, RPCHTTPError,
-                     RPCException, RPCRemoteError)
+from .client import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
@@ -40,6 +41,7 @@ class RPCProxy(object):
     """
     API Proxy
     """
+
     RPCError = RPCError
 
     def __init__(self, service, service_name, sync=False, hints=None):
@@ -59,12 +61,16 @@ class RPCProxy(object):
             def make_call(url, body, limit=3):
                 req_headers = {
                     "X-NOC-Calling-Service": self._service.name,
-                    "Content-Type": "text/json"
+                    "Content-Type": "text/json",
                 }
                 sample = 1 if span_ctx and span_id else 0
-                with Span(server=self._service_name, service=method,
-                          sample=sample, context=span_ctx,
-                          parent=span_id) as span:
+                with Span(
+                    server=self._service_name,
+                    service=method,
+                    sample=sample,
+                    context=span_ctx,
+                    parent=span_id,
+                ) as span:
                     if sample:
                         req_headers["X-NOC-Span-Ctx"] = span.span_context
                         req_headers["X-NOC-Span"] = span.span_id
@@ -74,7 +80,7 @@ class RPCProxy(object):
                         headers=req_headers,
                         body=body,
                         connect_timeout=CONNECT_TIMEOUT,
-                        request_timeout=REQUEST_TIMEOUT
+                        request_timeout=REQUEST_TIMEOUT,
                     )
                     # Process response
                     if code == 200:
@@ -93,24 +99,20 @@ class RPCProxy(object):
                         raise tornado.gen.Return(None)
                     else:
                         span.error_code = code
-                        raise RPCHTTPError(
-                            "HTTP Error %s: %s" % (
-                                code, body
-                            ))
+                        raise RPCHTTPError("HTTP Error %s: %s" % (code, body))
 
             t0 = perf_counter()
             self._logger.debug(
                 "[%sCALL>] %s.%s(%s, %s)",
                 "SYNC " if self._sync else "",
                 self._service_name,
-                method, args, kwargs
+                method,
+                args,
+                kwargs,
             )
             metrics["rpc_call", ("called_service", self._service_name), ("method", method)] += 1
             tid = next(self._tid)
-            msg = {
-                "method": method,
-                "params": list(args)
-            }
+            msg = {"method": method, "params": list(args)}
             is_notify = "_notify" in kwargs
             if not is_notify:
                 msg["id"] = tid
@@ -123,21 +125,13 @@ class RPCProxy(object):
                     svc = random.choice(self._hints)
                 else:
                     svc = yield self._service.dcs.resolve(self._service_name)
-                response = yield make_call(
-                    "http://%s/api/%s/" % (svc, self._api),
-                    body
-                )
+                response = yield make_call("http://%s/api/%s/" % (svc, self._api), body)
                 if response:
                     break
                 else:
                     yield tornado.gen.sleep(t)
             t = perf_counter() - t0
-            self._logger.debug(
-                "[CALL<] %s.%s (%.2fms)",
-                self._service_name,
-                method,
-                t * 1000
-            )
+            self._logger.debug("[CALL<] %s.%s (%.2fms)", self._service_name, method, t * 1000)
             if response:
                 if not is_notify:
                     try:
@@ -145,11 +139,10 @@ class RPCProxy(object):
                     except ValueError as e:
                         raise RPCHTTPError("Cannot decode json: %s" % e)
                     if result.get("error"):
-                        self._logger.error("RPC call failed: %s",
-                                           result["error"])
+                        self._logger.error("RPC call failed: %s", result["error"])
                         raise RPCRemoteError(
                             "RPC call failed: %s" % result["error"],
-                            remote_code=result.get("code", None)
+                            remote_code=result.get("code", None),
                         )
                     else:
                         raise tornado.gen.Return(result["result"])
@@ -157,9 +150,7 @@ class RPCProxy(object):
                     # Notifications return None
                     raise tornado.gen.Return()
             else:
-                raise RPCNoService(
-                    "No active service %s found" % self._service_name
-                )
+                raise RPCNoService("No active service %s found" % self._service_name)
 
         @tornado.gen.coroutine
         def async_wrapper(*args, **kwargs):

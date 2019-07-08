@@ -9,6 +9,7 @@
 # Python modules
 import errno
 import socket
+
 # Third-party modules
 from tornado.ioloop import IOLoop
 from tornado.concurrent import TracebackFuture
@@ -32,6 +33,7 @@ class UDPSocket(object):
         # Close socket
         sock.close()
     """
+
     def __init__(self, ioloop=None, tos=None):
         self.ioloop = ioloop or IOLoop.current()
         self.send_buffer = None  # (data, address)
@@ -40,9 +42,7 @@ class UDPSocket(object):
         self.socket = None
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         if tos:
-            self.socket.setsockopt(
-                socket.IPPROTO_IP, socket.IP_TOS, tos
-            )
+            self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, tos)
         self.fd = self.socket.fileno()
         self.socket.setblocking(0)
         self.future = None
@@ -74,10 +74,7 @@ class UDPSocket(object):
     def start_timeout(self):
         self.stop_timeout()
         if self.timeout:
-            self.timeout_task = self.ioloop.call_later(
-                self.timeout,
-                self.on_timeout
-            )
+            self.timeout_task = self.ioloop.call_later(self.timeout, self.on_timeout)
 
     def stop_timeout(self):
         if self.timeout_task:

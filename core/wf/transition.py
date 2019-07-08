@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.core.handler import get_handler
 from noc.models import get_object

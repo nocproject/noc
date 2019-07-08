@@ -11,8 +11,10 @@ from __future__ import absolute_import
 import os
 import hashlib
 import logging
+
 # Third-party modules
 import tornado.web
+
 # NOC modules
 from .base import Service
 from noc.config import config
@@ -29,8 +31,7 @@ class UIHandler(tornado.web.RequestHandler):
         self.name = self.service.name
 
     def get(self):
-        index_path = os.path.join(self.PREFIX, "ui",
-                                  self.name, "index.html")
+        index_path = os.path.join(self.PREFIX, "ui", self.name, "index.html")
         self.set_header("Cache-Control", "no-cache; must-revalidate")
         self.set_header("Expires", "0")
         language = config.card.language
@@ -43,7 +44,7 @@ class UIHandler(tornado.web.RequestHandler):
             brand=config.brand,
             installation_name=config.installation_name,
             name=self.name,
-            service=self.service
+            service=self.service,
         )
 
     def hashed(self, url):
@@ -69,7 +70,5 @@ class UIService(Service):
         Initialize additional application handlers
         """
         return super(UIService, self).get_handlers() + [
-            (r"^/api/%s/index.html$" % self.name, UIHandler, {
-                "service": self
-            })
+            (r"^/api/%s/index.html$" % self.name, UIHandler, {"service": self})
         ]

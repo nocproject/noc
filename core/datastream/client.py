@@ -8,9 +8,11 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 import tornado.gen
 import ujson
+
 # NOC modules
 from noc.core.http.client import fetch, ERR_READ_TIMEOUT, ERR_TIMEOUT
 from noc.core.error import NOCError, ERR_DS_BAD_CODE, ERR_DS_PARSE_ERROR
@@ -53,9 +55,7 @@ class DataStreamClient(object):
             base_qs += ["block=1"]
         if limit:
             base_qs += ["limit=%d" % limit]
-        req_headers = {
-            "X-NOC-API-Access": "datastream:%s" % self.name
-        }
+        req_headers = {"X-NOC-API-Access": "datastream:%s" % self.name}
         # Continue until finish
         while True:
             # Build URL
@@ -69,8 +69,9 @@ class DataStreamClient(object):
                 url = base_url
             # Get data
             logger.debug("Request: %s", url)
-            code, headers, data = yield fetch(url, io_loop=io_loop,
-                                              resolver=self.resolve, headers=req_headers)
+            code, headers, data = yield fetch(
+                url, io_loop=io_loop, resolver=self.resolve, headers=req_headers
+            )
             logger.debug("Response: %s %s", code, headers)
             if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
                 continue  # Retry on timeout

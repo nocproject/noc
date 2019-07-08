@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -18,13 +19,10 @@ class ManagedObjectProfileLoader(BaseLoader):
     """
     Managed Object Profile loader
     """
+
     name = "managedobjectprofile"
     model = ManagedObjectProfile
-    fields = [
-        "id",
-        "name",
-        "level"
-    ]
+    fields = ["id", "name", "level"]
 
     def clean(self, row):
         """

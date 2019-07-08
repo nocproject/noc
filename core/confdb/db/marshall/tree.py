@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseMarshaller
 
@@ -37,9 +38,7 @@ class TreeMarshaller(BaseMarshaller):
                 mask = (new_mask | mask) & ((1 << (level + 1)) - 1)
                 r.insert(
                     0,
-                    "%s+- %s" % (
-                        "".join("| " if mask & (1 << i) else "  " for i in range(level)),
-                        token
-                    )
+                    "%s+- %s"
+                    % ("".join("| " if mask & (1 << i) else "  " for i in range(level)), token),
                 )
         return "\n".join(r)

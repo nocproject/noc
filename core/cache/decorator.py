@@ -14,8 +14,7 @@ from noc.core.perf import metrics
 from .base import cache as x_cache
 
 
-def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
-                 version=0):
+def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None, version=0):
     """
     Decorator to wrap class instance or method
     with memoizing callable
@@ -30,20 +29,18 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
 
     def decorator(method):
         if lock:
+
             def wrapper(self, *args, **kwargs):
                 perf_key = key.replace("-%s", "").replace("-", "_")
-                perf_key_requests = metrics["cache_requests",
-                                            ("cache_key", perf_key)]
-                perf_key_l1_hits = metrics["cache_hits",
-                                           ("cache_key", perf_key),
-                                           ("cache_level", "internal")]
-                perf_key_l2_hits = metrics["cache_hits",
-                                           ("cache_key", perf_key),
-                                           ("cache_level", "external")]
-                perf_key_misses = metrics["cache_misses",
-                                          ("cache_key", perf_key)]
-                perf_key_lock_acquires = metrics["cache_locks_acquires",
-                                                 ("cache_key", perf_key)]
+                perf_key_requests = metrics["cache_requests", ("cache_key", perf_key)]
+                perf_key_l1_hits = metrics[
+                    "cache_hits", ("cache_key", perf_key), ("cache_level", "internal")
+                ]
+                perf_key_l2_hits = metrics[
+                    "cache_hits", ("cache_key", perf_key), ("cache_level", "external")
+                ]
+                perf_key_misses = metrics["cache_misses", ("cache_key", perf_key)]
+                perf_key_lock_acquires = metrics["cache_locks_acquires", ("cache_key", perf_key)]
                 perf_key_requests += 1
                 k = key % args
                 with lock(self):
@@ -87,19 +84,19 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
                     x_cache.set(k, v, ttl=ttl, version=version)
                 # Done
                 return v
+
         else:
+
             def wrapper(self, *args, **kwargs):
                 perf_key = key.replace("-%s", "").replace("-", "_")
-                perf_key_requests = metrics["cache_requests",
-                                            ("cache_key", perf_key)]
-                perf_key_l1_hits = metrics["cache_hits",
-                                           ("cache_key", perf_key),
-                                           ("cache_level", "internal")]
-                perf_key_l2_hits = metrics["cache_hits",
-                                           ("cache_key", perf_key),
-                                           ("cache_level", "external")]
-                perf_key_misses = metrics["cache_misses",
-                                          ("cache_key", perf_key)]
+                perf_key_requests = metrics["cache_requests", ("cache_key", perf_key)]
+                perf_key_l1_hits = metrics[
+                    "cache_hits", ("cache_key", perf_key), ("cache_level", "internal")
+                ]
+                perf_key_l2_hits = metrics[
+                    "cache_hits", ("cache_key", perf_key), ("cache_level", "external")
+                ]
+                perf_key_misses = metrics["cache_misses", ("cache_key", perf_key)]
                 perf_key_requests += 1
                 k = key % args
                 if cache:
@@ -137,6 +134,7 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
                 x_cache.set(k, v, ttl=ttl, version=version)
                 # Done
                 return v
+
         return wrapper
 
     return decorator

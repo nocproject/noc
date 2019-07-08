@@ -14,8 +14,10 @@ import os
 import struct
 import logging
 import uuid
+
 # Third-party modules
 import tornado.gen
+
 # NOC modules
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
@@ -27,9 +29,11 @@ forensic_logger = logging.getLogger("noc.core.forensic")
 span_lock = threading.Lock()
 
 # Collected spans, protected by lock
-SPAN_FIELDS = "span.date.ts.ctx.id.parent.server.service.client" \
-              ".duration.error_code.error_text.sample" \
-              ".in_label.out_label"
+SPAN_FIELDS = (
+    "span.date.ts.ctx.id.parent.server.service.client"
+    ".duration.error_code.error_text.sample"
+    ".in_label.out_label"
+)
 tls = threading.local()
 spans = []
 
@@ -45,10 +49,18 @@ US = 1000000.0
 
 
 class Span(object):
-    def __init__(self, client=DEFAULT_CLIENT, server=DEFAULT_SERVER,
-                 service=DEFAULT_SERVICE, sample=PARENT_SAMPLE,
-                 in_label=DEFAULT_LABEL, parent=DEFAULT_ID,
-                 context=DEFAULT_ID, hist=None, quantile=None):
+    def __init__(
+        self,
+        client=DEFAULT_CLIENT,
+        server=DEFAULT_SERVER,
+        service=DEFAULT_SERVICE,
+        sample=PARENT_SAMPLE,
+        in_label=DEFAULT_LABEL,
+        parent=DEFAULT_ID,
+        context=DEFAULT_ID,
+        hist=None,
+        quantile=None,
+    ):
         self.client = client
         self.server = server
         self.service = service
@@ -80,16 +92,14 @@ class Span(object):
     def __enter__(self):
         if config.features.forensic:
             forensic_logger.info(
-                "[>%s|%s|%s] %s",
-                self.forensic_id, self.server,
-                self.service, self.in_label
+                "[>%s|%s|%s] %s", self.forensic_id, self.server, self.service, self.in_label
             )
         if self.is_sampled or self.hist or self.quantile:
             self.ts0 = perf_counter()
         if not self.is_sampled:
             return self
         # Generate span ID
-        self.span_id = struct.unpack("!Q", os.urandom(8))[0] & 0x7fffffffffffffff
+        self.span_id = struct.unpack("!Q", os.urandom(8))[0] & 0x7FFFFFFFFFFFFFFF
         # Get span context
         try:
             self.span_context = tls.span_context
@@ -130,22 +140,25 @@ class Span(object):
             self.error_code = ERR_UNKNOWN
             self.error_text = str(exc_val).strip("\t").replace("\t", " ").replace("\n", " ")
         lt = time.localtime(self.start)
-        row = "\t".join(str(x) for x in [
-            time.strftime("%Y-%m-%d", lt),
-            time.strftime("%Y-%m-%d %H:%M:%S", lt),
-            self.span_context,
-            self.span_id,
-            self.parent,
-            q_tsv(self.server),
-            q_tsv(self.service),
-            q_tsv(self.client),
-            self.duration,
-            self.error_code or 0,
-            q_tsv(self.error_text),
-            self.sample,
-            ch_escape(q_tsv(self.in_label)),
-            ch_escape(q_tsv(self.out_label))
-        ])
+        row = "\t".join(
+            str(x)
+            for x in [
+                time.strftime("%Y-%m-%d", lt),
+                time.strftime("%Y-%m-%d %H:%M:%S", lt),
+                self.span_context,
+                self.span_id,
+                self.parent,
+                q_tsv(self.server),
+                q_tsv(self.service),
+                q_tsv(self.client),
+                self.duration,
+                self.error_code or 0,
+                q_tsv(self.error_text),
+                self.sample,
+                ch_escape(q_tsv(self.in_label)),
+                ch_escape(q_tsv(self.out_label)),
+            ]
+        )
         with span_lock:
             spans += [row]
         if self.span_parent == DEFAULT_ID:

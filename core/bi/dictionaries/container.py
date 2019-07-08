@@ -18,5 +18,5 @@ class Container(Dictionary):
 
     id = StringField()
     name = StringField()
-    parent = ReferenceField("self"),
+    parent = (ReferenceField("self"),)
     address_text = StringField()

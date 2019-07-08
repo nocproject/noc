@@ -10,6 +10,7 @@
 import re
 from collections import Iterable
 import six
+
 # NOC modules
 from noc.lib.text import split_alnum
 
@@ -86,5 +87,5 @@ matchers = {
     "$gt": match_gt,
     "$gte": match_gte,
     "$lt": match_lt,
-    "$lte": match_lte
+    "$lte": match_lte,
 }

@@ -21,6 +21,7 @@ def window_function(name, description):
     :param f:
     :return:
     """
+
     def wrapper(f):
         functions[name] = f
         return f
@@ -168,11 +169,7 @@ def step_inc(window, *args, **kwargs):
     :return:
     """
     values = [x[1] for x in window]
-    return sum(
-        x1 - x0
-        for x0, x1 in zip(values, values[1:])
-        if x1 > x0
-    )
+    return sum(x1 - x0 for x0, x1 in zip(values, values[1:]) if x1 > x0)
 
 
 @window_function("step_dec", "Step Decrement")
@@ -185,11 +182,7 @@ def step_dec(window, *args, **kwargs):
     :return:
     """
     values = [x[1] for x in window]
-    return sum(
-        x0 - x1
-        for x0, x1 in zip(values, values[1:])
-        if x0 > x1
-    )
+    return sum(x0 - x1 for x0, x1 in zip(values, values[1:]) if x0 > x1)
 
 
 @window_function("step_abs", "Step Absolute")
@@ -202,10 +195,7 @@ def step_abs(window, *args, **kwargs):
     :return:
     """
     values = [x[1] for x in window]
-    return sum(
-        abs(x1 - x0)
-        for x0, x1 in zip(values, values[1:])
-    )
+    return sum(abs(x1 - x0) for x0, x1 in zip(values, values[1:]))
 
 
 @window_function("handler", "Handler")

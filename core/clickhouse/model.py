@@ -10,8 +10,10 @@
 from __future__ import absolute_import, print_function
 import hashlib
 from collections import OrderedDict
+
 # Third-party modules
 import six
+
 # NOC modules
 from .fields import BaseField, NestedField
 from .connect import connection
@@ -44,9 +46,7 @@ class ModelBase(type):
                 attrs[k].contribute_to_class(cls, k)
                 cls._model_field[k] = attrs[k]
                 cls._model_field[k].name = k
-        cls._fields_order = sorted(
-            cls._fields, key=lambda x: cls._fields[x].field_number
-        )
+        cls._fields_order = sorted(cls._fields, key=lambda x: cls._fields[x].field_number)
         for f in sorted(cls._model_field, key=lambda x: cls._model_field[x].field_number):
             cls._display_fields[f] = cls._model_field[f]
             cls._display_fields[f].name = f
@@ -55,8 +55,9 @@ class ModelBase(type):
 
 
 class ModelMeta(object):
-    def __init__(self, engine=None, db_table=None, description=None,
-                 sample=False, tags=None, managed=True):
+    def __init__(
+        self, engine=None, db_table=None, description=None, sample=False, tags=None, managed=True
+    ):
         self.engine = engine
         self.db_table = db_table
         self.description = description
@@ -109,14 +110,18 @@ class Model(six.with_metaclass(ModelBase)):
         Get CREATE TABLE for Distributed engine
         :return:
         """
-        return "CREATE TABLE IF NOT EXISTS %s " \
-               "AS %s " \
-               "ENGINE = Distributed('%s', '%s', '%s')" % (
-                   cls._meta.db_table,
-                   cls._get_raw_db_table(),
-                   config.clickhouse.cluster,
-                   config.clickhouse.db, cls._get_raw_db_table()
-               )
+        return (
+            "CREATE TABLE IF NOT EXISTS %s "
+            "AS %s "
+            "ENGINE = Distributed('%s', '%s', '%s')"
+            % (
+                cls._meta.db_table,
+                cls._get_raw_db_table(),
+                config.clickhouse.cluster,
+                config.clickhouse.db,
+                cls._get_raw_db_table(),
+            )
+        )
 
     @classmethod
     def to_tsv(cls, **kwargs):
@@ -138,8 +143,7 @@ class Model(six.with_metaclass(ModelBase)):
                 field_list += ["%s.%s" % (f, nf) for nf in cls._fields[f].field_type._fields_order]
             else:
                 field_list += [f]
-        return "%s|%s" % (cls._get_db_table(),
-                          "|".join(field_list))
+        return "%s|%s" % (cls._get_db_table(), "|".join(field_list))
 
     @classmethod
     def get_short_fingerprint(cls):
@@ -154,6 +158,7 @@ class Model(six.with_metaclass(ModelBase)):
         :param connect:
         :return: True, if table has been altered, False otherwise
         """
+
         def ensure_columns(table_name):
             c = False
             # Alter when necessary
@@ -166,17 +171,15 @@ class Model(six.with_metaclass(ModelBase)):
                   database=%s
                   AND table=%s
                 """,
-                [config.clickhouse.db, table_name]
+                [config.clickhouse.db, table_name],
             ):
                 existing[name] = type
             after = None
             for f in cls._fields_order:
                 if f not in existing:
                     ch.execute(
-                        post="ALTER TABLE %s ADD COLUMN %s AFTER %s" % (
-                            table_name,
-                            cls._fields[f].get_create_sql(),
-                            after)
+                        post="ALTER TABLE %s ADD COLUMN %s AFTER %s"
+                        % (table_name, cls._fields[f].get_create_sql(), after)
                     )
                     c = True
                 if "." in f:
@@ -185,8 +188,13 @@ class Model(six.with_metaclass(ModelBase)):
                 else:
                     c_type = cls._fields[f].get_db_type()
                 if f in existing and existing[f] != c_type:
-                    print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], c_type))
-                    print("Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s" % (table_name, f, c_type))
+                    print(
+                        "Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], c_type)
+                    )
+                    print(
+                        "Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s"
+                        % (table_name, f, c_type)
+                    )
                 after = f
             return c
 
@@ -227,30 +235,22 @@ class Model(six.with_metaclass(ModelBase)):
         # Get user domains
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
-        mos_bi = [int(bi_id) for bi_id in ManagedObject.objects.filter(
-            administrative_domain__in=domains).values_list("bi_id", flat=True)]
+        mos_bi = [
+            int(bi_id)
+            for bi_id in ManagedObject.objects.filter(
+                administrative_domain__in=domains
+            ).values_list("bi_id", flat=True)
+        ]
         filter = query.get("filter", {})
         dl = len(mos_bi)
         if not dl:
             return None
         elif dl == 1:
-            q = {
-                "$eq": [
-                    {"$field": "managed_object"},
-                    mos_bi
-                ]
-            }
+            q = {"$eq": [{"$field": "managed_object"}, mos_bi]}
         else:
-            q = {
-                "$in": [
-                    {"$field": "managed_object"},
-                    mos_bi
-                ]
-            }
+            q = {"$in": [{"$field": "managed_object"}, mos_bi]}
         if filter:
-            query["filter"] = {
-                "$and": [query["filter"], q]
-            }
+            query["filter"] = {"$and": [query["filter"], q]}
         else:
             query["filter"] = q
         return query
@@ -344,16 +344,10 @@ class Model(six.with_metaclass(ModelBase)):
                 return sql
             r = ch.execute(sql)
             dt = perf_counter() - t0
-        return {
-            "fields": aliases,
-            "result": r,
-            "duration": dt,
-            "sql": sql
-        }
+        return {"fields": aliases, "result": r, "duration": dt, "sql": sql}
 
 
 class NestedModel(Model):
-
     @classmethod
     def get_create_sql(cls):
         return ",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)

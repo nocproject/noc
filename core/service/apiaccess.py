@@ -8,6 +8,7 @@
 
 # Python modules
 import functools
+
 # Third-party modules
 import tornado.web
 import tornado.gen
@@ -19,6 +20,7 @@ def authenticated(method):
         if not self.current_user:
             raise tornado.web.HTTPError(403)
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -26,6 +28,7 @@ class APIAccessRequestHandler(tornado.web.RequestHandler):
     """
     Check X-NOC-API-Access header
     """
+
     # Set of allowed access tokens
     # Access tokens are <api>:<role> or <api>:* for wildcard
     access_tokens_set = set()

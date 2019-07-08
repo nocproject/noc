@@ -8,12 +8,12 @@
 
 # Python modules
 from collections import namedtuple
+
 # NOC modules
 from noc.core.http.client import fetch_sync
 
 
-GeoCoderResult = namedtuple(
-    "GeoCoderResult", ["exact", "query", "path", "lon", "lat"])
+GeoCoderResult = namedtuple("GeoCoderResult", ["exact", "query", "path", "lon", "lat"])
 
 
 class GeoCoderError(Exception):
@@ -44,10 +44,7 @@ class BaseGeocoder(object):
         :return:
         """
         code, headers, body = fetch_sync(
-            url,
-            follow_redirects=True,
-            validate_cert=False,
-            allow_proxy=True
+            url, follow_redirects=True, validate_cert=False, allow_proxy=True
         )
         if 200 <= code <= 299:
             return code, body

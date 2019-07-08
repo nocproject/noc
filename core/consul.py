@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -29,12 +30,10 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
     """
     Gentler version of tornado http client
     """
+
     @tornado.gen.coroutine
     def _request(self, callback, request):
-        client = tornado.httpclient.AsyncHTTPClient(
-            force_instance=True,
-            max_clients=1
-        )
+        client = tornado.httpclient.AsyncHTTPClient(force_instance=True, max_clients=1)
         try:
             response = yield client.fetch(request)
         except tornado.httpclient.HTTPError as e:
@@ -55,7 +54,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             method="GET",
             validate_cert=self.verify,
             connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
+            request_timeout=CONSUL_REQUEST_TIMEOUT,
         )
         return self._request(callback, request)
 
@@ -67,7 +66,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             body="" if data is None else data,
             validate_cert=self.verify,
             connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
+            request_timeout=CONSUL_REQUEST_TIMEOUT,
         )
         return self._request(callback, request)
 
@@ -78,11 +77,11 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             method="DELETE",
             validate_cert=self.verify,
             connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
+            request_timeout=CONSUL_REQUEST_TIMEOUT,
         )
         return self._request(callback, request)
 
-    def post(self, callback, path, params=None, data=''):
+    def post(self, callback, path, params=None, data=""):
         uri = self.uri(path, params)
         request = tornado.httpclient.HTTPRequest(
             uri,
@@ -90,7 +89,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             body=data,
             validate_cert=self.verify,
             connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
+            request_timeout=CONSUL_REQUEST_TIMEOUT,
         )
         return self._request(callback, request)
 

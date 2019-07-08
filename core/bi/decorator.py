@@ -8,9 +8,11 @@
 
 # Python modules
 import struct
+
 # Third-party modules
 from csiphash import siphash24
 import bson
+
 # NOC modules
 from noc.models import is_document
 
@@ -25,7 +27,7 @@ def bi_hash(v):
     :return:
     """
     bh = siphash24(SIPHASH_SEED, str(v))
-    return int(struct.unpack("!Q", bh)[0] & 0x7fffffffffffffff)
+    return int(struct.unpack("!Q", bh)[0] & 0x7FFFFFFFFFFFFFFF)
 
 
 def new_bi_id():

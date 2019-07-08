@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .query import QueryApplicator
 
@@ -16,6 +17,7 @@ class DefaultSTPStatusApplicator(QueryApplicator):
     """
     Apply STP on interfaces
     """
+
     CHECK_QUERY = "Match('hints', 'protocols', 'spanning-tree', 'status')"
     QUERY = [
         # STP is globally enabled

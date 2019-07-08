@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
@@ -19,6 +20,7 @@ class ManagedObjectLoader(BaseLoader):
     """
     Managed Object loader
     """
+
     name = "managedobject"
     model = ManagedObject
     fields = [
@@ -45,7 +47,7 @@ class ManagedObjectLoader(BaseLoader):
         "tags",
         "tt_system",
         "tt_queue",
-        "tt_system_id"
+        "tt_system_id",
     ]
 
     mapped_fields = {
@@ -56,7 +58,7 @@ class ManagedObjectLoader(BaseLoader):
         "auth_profile": "authprofile",
         "tt_system": "ttsystem",
         "static_client_groups": "resourcegroup",
-        "static_service_groups": "resourcegroup"
+        "static_service_groups": "resourcegroup",
     }
 
     def __init__(self, *args, **kwargs):
@@ -70,11 +72,16 @@ class ManagedObjectLoader(BaseLoader):
         v = super(ManagedObjectLoader, self).clean(row)
         v["pool"] = self.pools[v["pool"]]
         if "tags" in v:
-            v["tags"] = [x.strip().strip('"') for x in v["tags"].split(",")
-                         if x.strip()] if v["tags"] else []
+            v["tags"] = (
+                [x.strip().strip('"') for x in v["tags"].split(",") if x.strip()]
+                if v["tags"]
+                else []
+            )
         v["profile"] = Profile.get_by_name(v["profile"])
         v["static_client_groups"] = [v["static_client_groups"]] if v["static_client_groups"] else []
-        v["static_service_groups"] = [v["static_service_groups"]] if v["static_service_groups"] else []
+        v["static_service_groups"] = (
+            [v["static_service_groups"]] if v["static_service_groups"] else []
+        )
         return v
 
     def purge(self):

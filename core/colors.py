@@ -24,14 +24,7 @@ def hsv_to_rgb(h, s, v):
     p = v * (1.0 - s)
     q = v * (1.0 - (f * s))
     t = v * (1.0 - ((1.0 - f) * s))
-    return {
-        0: (v, t, p),
-        1: (q, v, p),
-        2: (p, v, t),
-        3: (p, q, v),
-        4: (t, p, v),
-        5: (v, p, q),
-    }[hi]
+    return {0: (v, t, p), 1: (q, v, p), 2: (p, v, t), 3: (p, q, v), 4: (t, p, v), 5: (v, p, q)}[hi]
 
 
 def get_colors(N):
