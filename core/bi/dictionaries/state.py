@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField, BooleanField
 
 
 class State(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "state"
         layout = "flat"
 

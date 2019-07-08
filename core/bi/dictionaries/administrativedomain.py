@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField, ReferenceField
 
 
 class AdministrativeDomain(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "administrativedomain"
         layout = "flat"
 

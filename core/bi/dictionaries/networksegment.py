@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField, ReferenceField
 
 
 class NetworkSegment(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "networksegment"
         layout = "hashed"
 

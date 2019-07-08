@@ -12,11 +12,11 @@ from noc.core.clickhouse.fields import StringField, ReferenceField
 
 
 class Container(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "container"
         layout = "hashed"
 
     id = StringField()
     name = StringField()
-    parent = (ReferenceField("self"),)
+    parent = ReferenceField("self")
     address_text = StringField()

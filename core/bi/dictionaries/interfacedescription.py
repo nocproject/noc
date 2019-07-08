@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField
 
 
 class InterfaceDescription(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "interfacedescription"
         layout = "flat"
 
