@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseMiddleware
 
@@ -18,6 +19,7 @@ class JSONRequestIdMiddleware(BaseMiddleware):
     Request id is automatically increased with each next request.
     `request_id` name may be changed via `request_id_param`
     """
+
     name = "jsonrequestid"
 
     def __init__(self, http, request_id_param="request_id"):

@@ -79,8 +79,7 @@ def get_ecma_re():
     # .replace("\\x09","") # \n,\r, ESC, \t, BS
     re_vt100 = "\\x1b[c()78]"  # VT100
     re_other = "\\x1b[^[]"  # Last resort. Skip all ESC+char
-    return "|".join(["(?:%s)" % r for r in
-                     (re_csi, re_c1, re_c0, re_vt100, re_other)])
+    return "|".join(["(?:%s)" % r for r in (re_csi, re_c1, re_c0, re_vt100, re_other)])
 
 
 #

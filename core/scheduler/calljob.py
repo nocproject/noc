@@ -18,6 +18,7 @@ class CallJob(Job):
     Key -- handler name
     args -- handler's kwargs
     """
+
     name = "call"
 
     def handler(self, **kwargs):

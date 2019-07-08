@@ -8,11 +8,12 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
 
-MAX_PATH_LENGTH = 0xffffffff
+MAX_PATH_LENGTH = 0xFFFFFFFF
 SEGMENT_COST = 1
 HORIZONTAL_COST = 3
 
@@ -28,6 +29,7 @@ def get_segment_path(start, goal):
     :param goal: Managed Object instance
     :return: List of NetworkSegments
     """
+
     def merge_path(l1, l2, cross):
         ci = list(cross)[0]
         i1 = l1.index(ci)
@@ -65,6 +67,7 @@ def get_shortest_path(start, goal):
     :param goal:
     :return:
     """
+
     def reconstruct_path(came_from, current):
         total_path = [current]
         while True:
@@ -127,8 +130,7 @@ def get_shortest_path(start, goal):
                 if mo != current.id:
                     seen_neighbors.add(mo)
                     dist[mo] = min(l.l2_cost, dist.get(mo, MAX_PATH_LENGTH))
-        neighbors = [ManagedObject.get_by_id(mo)
-                     for mo in seen_neighbors]
+        neighbors = [ManagedObject.get_by_id(mo) for mo in seen_neighbors]
         # Evaluate neighbors
         for neighbor in neighbors:
             if neighbor in closed_set:

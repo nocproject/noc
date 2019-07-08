@@ -8,11 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from six.moves.urllib.parse import quote as urllib_quote
 import ujson
+
 # NOC modules
-from .base import (BaseGeocoder, GeoCoderError, GeoCoderResult)
+from .base import BaseGeocoder, GeoCoderError, GeoCoderResult
 from noc.config import config
 
 
@@ -28,9 +30,7 @@ class GoogleGeocoder(BaseGeocoder):
         query = query.lower().strip()
         if not query:
             return None
-        url = [
-            "http://maps.googleapis.com/maps/api/geocode/json?"
-        ]
+        url = ["http://maps.googleapis.com/maps/api/geocode/json?"]
         if region:
             url += ["&region=%s" % region]
         if bounds:
@@ -60,11 +60,8 @@ class GoogleGeocoder(BaseGeocoder):
             if "postal_code" in rr["address_components"][-1]["types"]:
                 path = path[:-1]
             path.reverse()
-            is_exact = self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.precision") == "exact"
-            return GeoCoderResult(
-                exact=is_exact,
-                query=query,
-                path=path,
-                lon=lon,
-                lat=lat
+            is_exact = (
+                self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.precision")
+                == "exact"
             )
+            return GeoCoderResult(exact=is_exact, query=query, path=path, lon=lon, lat=lat)

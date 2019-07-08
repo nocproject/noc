@@ -8,8 +8,10 @@
 
 # Python modules
 from threading import local
+
 # Third-party modules
 import pymongo.monitoring
+
 # NOC modules
 from noc.core.hist.monitor import get_hist
 from noc.core.quantile.monitor import get_quantile
@@ -24,7 +26,7 @@ class MongoCommandSpan(pymongo.monitoring.CommandListener):
             service="mongo",
             hist=get_hist("mongo", ("command", event.command_name)),
             quantile=get_quantile("mongo", ("command", event.command_name)),
-            in_label=event.command_name
+            in_label=event.command_name,
         )
         setattr(tls, str(event.request_id), span)
         span.__enter__()

@@ -32,11 +32,9 @@ else:
     time_t = ctypes.c_long
 
     class timespec(ctypes.Structure):
-        _fields_ = [
-            ("tv_sec", time_t),  # seconds
-            ("tv_nsec", ctypes.c_long)  # nanoseconds
-        ]
-    _clock_gettime = ctypes.CDLL(find_library('rt'), use_errno=True).clock_gettime
+        _fields_ = [("tv_sec", time_t), ("tv_nsec", ctypes.c_long)]  # seconds  # nanoseconds
+
+    _clock_gettime = ctypes.CDLL(find_library("rt"), use_errno=True).clock_gettime
     _clock_gettime.argtypes = [clockid_t, ctypes.POINTER(timespec)]
 
     def perf_counter():

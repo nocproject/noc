@@ -8,15 +8,14 @@
 
 # Python modules
 from threading import Lock
+
 # NOC modules
 from noc.core.handler import get_handler
 from noc.config import config
 
 DEFAULT_DCS = "consul://%s:%s/%s" % (config.consul.host, config.consul.port, config.consul.base)
 
-DCS_HANDLERS = {
-    "consul": "noc.core.dcs.consuldcs.ConsulDCS"
-}
+DCS_HANDLERS = {"consul": "noc.core.dcs.consuldcs.ConsulDCS"}
 
 _lock = Lock()
 _instances = {}

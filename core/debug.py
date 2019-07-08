@@ -17,9 +17,11 @@ import hashlib
 import pprint
 import traceback
 import uuid
+
 # Third-party modules
 import six
 import ujson
+
 # NOC modules
 from noc.config import config
 from noc.core.version import version
@@ -45,15 +47,12 @@ if config.features.sentry:
 
     raven_client = RavenClient(
         config.sentry.url,
-        processors=(
-            'raven.processors.SanitizePasswordsProcessor',
-        ),
-        release=version.version
+        processors=("raven.processors.SanitizePasswordsProcessor",),
+        release=version.version,
     )
 
 
-def get_lines_from_file(filename, lineno, context_lines,
-                        loader=None, module_name=None):
+def get_lines_from_file(filename, lineno, context_lines, loader=None, module_name=None):
     """
     Returns context_lines before and after lineno from file.
     Returns (pre_context_lineno, pre_context, context_line, post_context).
@@ -88,8 +87,7 @@ def get_lines_from_file(filename, lineno, context_lines,
     upper_bound = lineno + context_lines
     pre_context = [line.strip("\n") for line in source[lower_bound:lineno]]
     context_line = source[lineno].strip("\n")
-    post_context = [line.strip("\n")
-                    for line in source[lineno + 1:upper_bound]]
+    post_context = [line.strip("\n") for line in source[lineno + 1 : upper_bound]]
     return lower_bound, pre_context, context_line, post_context
 
 
@@ -110,28 +108,26 @@ def get_traceback_frames(tb):
         loader = tb.tb_frame.f_globals.get("__loader__")
         module_name = tb.tb_frame.f_globals.get("__name__")
         pre_context_lineno, pre_context, context_line, post_context = get_lines_from_file(
-            filename, lineno, 7, loader, module_name)
+            filename, lineno, 7, loader, module_name
+        )
         if pre_context_lineno is not None:
-            frames += [{
-                "tb": tb,
-                "filename": filename,
-                "function": function,
-                "lineno": lineno + 1,
-                "vars": six.iteritems(tb.tb_frame.f_locals),
-                "id": id(tb),
-                "pre_context": pre_context,
-                "context_line": context_line,
-                "post_context": post_context,
-                "pre_context_lineno": pre_context_lineno + 1
-            }]
+            frames += [
+                {
+                    "tb": tb,
+                    "filename": filename,
+                    "function": function,
+                    "lineno": lineno + 1,
+                    "vars": six.iteritems(tb.tb_frame.f_locals),
+                    "id": id(tb),
+                    "pre_context": pre_context,
+                    "context_line": context_line,
+                    "post_context": post_context,
+                    "pre_context_lineno": pre_context_lineno + 1,
+                }
+            ]
         tb = tb.tb_next
     if not frames:
-        frames = [{
-            "filename": "unknown",
-            "function": "?",
-            "lineno": "?",
-            "context_line": "???"
-        }]
+        frames = [{"filename": "unknown", "function": "?", "lineno": "?", "context_line": "???"}]
     return frames
 
 
@@ -149,25 +145,23 @@ def get_execution_frames(frame):
         loader = frame.f_globals.get("__loader__")
         module_name = frame.f_globals.get("__name__")
         pre_context_lineno, pre_context, context_line, post_context = get_lines_from_file(
-            filename, lineno, 7, loader, module_name)
+            filename, lineno, 7, loader, module_name
+        )
         if pre_context_lineno is not None:
-            frames += [{
-                "filename": filename,
-                "function": function,
-                "lineno": lineno + 1,
-                "vars": six.iteritems(frame.f_locals),
-                "pre_context": pre_context,
-                "context_line": context_line,
-                "post_context": post_context,
-                "pre_context_lineno": pre_context_lineno + 1,
-            }]
+            frames += [
+                {
+                    "filename": filename,
+                    "function": function,
+                    "lineno": lineno + 1,
+                    "vars": six.iteritems(frame.f_locals),
+                    "pre_context": pre_context,
+                    "context_line": context_line,
+                    "post_context": post_context,
+                    "pre_context_lineno": pre_context_lineno + 1,
+                }
+            ]
     if not frames:
-        frames = [{
-            "filename": "unknown",
-            "function": "?",
-            "lineno": "?",
-            "context_line": "???"
-        }]
+        frames = [{"filename": "unknown", "function": "?", "lineno": "?", "context_line": "???"}]
     return frames
 
 
@@ -180,32 +174,32 @@ def format_frames(frames, reverse=config.traceback.reverse):
         return "\n".join(r)
 
     r = []
-    r += [u"START OF TRACEBACK"]
-    r += [u"-" * 72]
+    r += ["START OF TRACEBACK"]
+    r += ["-" * 72]
     fr = frames[:]
     if reverse:
         fr.reverse()
     for f in fr:
-        r += [u"File: %s (Line: %s)" % (os.path.relpath(f["filename"]), f["lineno"])]
-        r += [u"Function: %s" % (f["function"])]
+        r += ["File: %s (Line: %s)" % (os.path.relpath(f["filename"]), f["lineno"])]
+        r += ["Function: %s" % (f["function"])]
         if "pre_context_lineno" in f:
             r += [format_source(f["pre_context_lineno"], f["pre_context"])]
-            r += [u"%5d ==> %s" % (f["lineno"], f["context_line"])]
+            r += ["%5d ==> %s" % (f["lineno"], f["context_line"])]
             r += [format_source(f["lineno"] + 1, f["post_context"])]
-            r += [u"Variables:"]
+            r += ["Variables:"]
             for n, v in f["vars"]:
                 try:
                     pv = unicode(repr(v), "utf-8")
                     if len(pv) > 72:
-                        pv = u"\n" + pprint.pformat(v)
+                        pv = "\n" + pprint.pformat(v)
                 except:  # noqa
-                    pv = u"repr() failed"
-                r += [u"%20s = %s" % (n, pv)]
+                    pv = "repr() failed"
+                r += ["%20s = %s" % (n, pv)]
         else:
             r += ["???"]
-        r += [u"-" * 72]
-    r += [u"END OF TRACEBACK"]
-    return u"\n".join(r)
+        r += ["-" * 72]
+    r += ["END OF TRACEBACK"]
+    return "\n".join(r)
 
 
 def check_fatal_errors(t, v):
@@ -242,25 +236,19 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
     r = [
         "UNHANDLED EXCEPTION (%s)" % str(now),
         "PROCESS: %s" % version.process,
-        "VERSION: %s" % version.version
+        "VERSION: %s" % version.version,
     ]
     if version.branch:
-        r += [
-            "BRANCH: %s CHANGESET: %s" % (version.branch, version.changeset)
-        ]
+        r += ["BRANCH: %s CHANGESET: %s" % (version.branch, version.changeset)]
     if fp:
         r += ["ERROR FINGERPRINT: %s" % fp]
     r += [
         "WORKING DIRECTORY: %s" % os.getcwd(),
         "EXCEPTION: %s %s" % (t, v),
-        format_frames(get_traceback_frames(tb), reverse=reverse)
+        format_frames(get_traceback_frames(tb), reverse=reverse),
     ]
     if not reverse:
-        r += [
-            "UNHANDLED EXCEPTION (%s)" % str(now),
-            str(t),
-            str(v)
-        ]
+        r += ["UNHANDLED EXCEPTION (%s)" % str(now), str(t), str(v)]
     return "\n".join(r)
 
 
@@ -270,6 +258,7 @@ def excepthook(t, v, tb):
     """
     import datetime  # Required for pytest
     import sys
+
     now = datetime.datetime.now()
     r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
     r += ["Working directory: %s" % os.getcwd()]
@@ -286,12 +275,9 @@ def error_report(reverse=config.traceback.reverse, logger=logger):
     metrics["errors"] += 1
     if config.sentry.url:
         try:
-            raven_client.captureException(
-                fingerprint=[fp]
-            )
+            raven_client.captureException(fingerprint=[fp])
         except Exception as e:
-            logger.error("Failed to sent problem report to Sentry: %s",
-                         e)
+            logger.error("Failed to sent problem report to Sentry: %s", e)
     if ENABLE_CP:
         fp = error_fingerprint()
         path = os.path.join(CP_NEW, fp + ".json")
@@ -311,7 +297,7 @@ def error_report(reverse=config.traceback.reverse, logger=logger):
                 "branch": version.branch,
                 "tip": version.changeset,
                 "changeset": version.changeset,
-                "traceback": r
+                "traceback": r,
             }
             try:
                 safe_rewrite(path, ujson.dumps(c))
@@ -362,8 +348,12 @@ def error_fingerprint():
         version.branch,
         SERVICE_NAME,  # Process
         str(t),  # Exception class
-        noc_file, noc_function, str(noc_lineno),  # NOC code point
-        tb_file, tb_function, str(tb_lineno)  # Absolute code point
+        noc_file,
+        noc_function,
+        str(noc_lineno),  # NOC code point
+        tb_file,
+        tb_function,
+        str(tb_lineno),  # Absolute code point
     ]
     hash = hashlib.sha1("|".join(p if p else "" for p in parts)).digest()
     return str(uuid.UUID(bytes=hash[:16], version=5))
@@ -404,6 +394,7 @@ class ErrorReport(object):
     """
     error_report context wrapper
     """
+
     def __init__(self, reverse=config.traceback.reverse, logger=logger):
         self.reverse = reverse
         self.logger = logger

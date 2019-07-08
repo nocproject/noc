@@ -28,7 +28,7 @@ class Stream(object):
         now = datetime.datetime.now()
         self.fs = "%s-%s" % (
             self.model.get_short_fingerprint(),
-            now.strftime("%Y-%m-%d-%H-%M-%S-%f")
+            now.strftime("%Y-%m-%d-%H-%M-%S-%f"),
         )
         self.meta = self.model.get_fingerprint()
         self.chunk_size = 0
@@ -42,21 +42,17 @@ class Stream(object):
         if not date:
             if self.ts_field:
                 ts = kwargs[self.ts_field]
-                date = datetime.date(year=ts.year, month=ts.month,
-                                     day=ts.day)
+                date = datetime.date(year=ts.year, month=ts.month, day=ts.day)
         if not self.out:
             self.out_path = os.path.join(
-                self.prefix,
-                "%s-%06d.tsv.gz.tmp" % (self.fs, next(self.chunk_count))
+                self.prefix, "%s-%06d.tsv.gz.tmp" % (self.fs, next(self.chunk_count))
             )
             meta_path = self.out_path[:-11] + ".meta"
             with open(meta_path, "w") as f:
                 f.write(self.meta)
             self.out = gzip.open(self.out_path, "wb")
             self.chunk_size = 0
-        self.out.write(
-            self.model.to_tsv(date=date, **kwargs)
-        )
+        self.out.write(self.model.to_tsv(date=date, **kwargs))
         self.chunk_size += 1
         if self.chunk_size == self.CHUNK_SIZE:
             self.out.close()

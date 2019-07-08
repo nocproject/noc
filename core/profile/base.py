@@ -9,9 +9,11 @@
 # Python modules
 import re
 import functools
+
 # Third-party modules
 import tornado.gen
 import six
+
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -30,6 +32,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     """
     Equipment profile. Contains all equipment personality and specific
     """
+
     # Profile name in form <vendor>.<system>
     name = None
     #
@@ -239,7 +242,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
         "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator",
         "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",
-        "noc.core.confdb.applicator.stppriority.DefaultSTPPriorityApplicator"
+        "noc.core.confdb.applicator.stppriority.DefaultSTPPriorityApplicator",
     ]
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
@@ -281,8 +284,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         Convert 00:11:22:33:44:55 style MAC-address to 00-11-22-33-44-55
         """
         v = mac.replace(":", "").lower()
-        return "%s-%s-%s-%s-%s-%s" % (v[:2], v[2:4], v[4:6],
-                                      v[6:8], v[8:10], v[10:])
+        return "%s-%s-%s-%s-%s-%s" % (v[:2], v[2:4], v[4:6], v[6:8], v[8:10], v[10:])
 
     #
     # Convert 00:11:22:33:44:55 style MAC-address to local format
@@ -300,7 +302,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     rx_cisco_interface_name = re.compile(
         r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
         r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
 
     def convert_interface_name_cisco(self, s):
@@ -327,8 +329,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         match = self.rx_cisco_interface_name.match(s)
         if not match:
             raise InterfaceTypeError("Invalid interface '%s'" % s)
-        return "%s %s" % (match.group("type").capitalize(),
-                          match.group("number"))
+        return "%s %s" % (match.group("type").capitalize(), match.group("number"))
 
     def root_interface(self, name):
         """
@@ -370,8 +371,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
             return None
 
     # Cisco-like translation
-    rx_num1 = re.compile(
-        r"^[a-z]{2}[\- ](?P<number>\d+)/\d+/\d+([\:\.]\S+)?$", re.IGNORECASE)
+    rx_num1 = re.compile(r"^[a-z]{2}[\- ](?P<number>\d+)/\d+/\d+([\:\.]\S+)?$", re.IGNORECASE)
     # D-Link-like translation
     rx_num2 = re.compile(r"^(?P<number>\d+)[\:\/]\d+$")
 
@@ -408,6 +408,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         or should be more specific as well
         """
         raise NotImplementedError()
+
     #
     # Volatile strings:
     # A list of strings can be changed over time, which
@@ -494,6 +495,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         """
         Called once by profile loader
         """
+
         def compile(pattern):
             if isinstance(pattern, six.string_types):
                 return re.compile(pattern)
@@ -541,14 +543,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :param kwargs:
         :return:
         """
+
         def qi(s):
-            return "\"%s\"" % s
+            return '"%s"' % s
 
         def nqi(s):
             if isinstance(s, six.string_types):
-                return "\"%s\"" % s
+                return '"%s"' % s
             else:
                 return str(s)
+
         if ";" in cmd:
             return "%s\r\n" % cmd
         r = [cmd, ":"]
@@ -605,6 +609,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :param confdb: ConfDB Engine instance
         :return: Iterate active config applicators (BaseApplicator instances)
         """
+
         def get_applicator(cfg):
             if isinstance(cfg, six.string_types):
                 a_handler, a_cfg = cfg, {}
@@ -659,22 +664,17 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         Return dict of compiled regular expressions
         """
         patterns = {
-            "username": re.compile(cls.pattern_username,
-                                   re.DOTALL | re.MULTILINE),
-            "password": re.compile(cls.pattern_password,
-                                   re.DOTALL | re.MULTILINE),
-            "prompt": re.compile(cls.pattern_prompt,
-                                 re.DOTALL | re.MULTILINE)
+            "username": re.compile(cls.pattern_username, re.DOTALL | re.MULTILINE),
+            "password": re.compile(cls.pattern_password, re.DOTALL | re.MULTILINE),
+            "prompt": re.compile(cls.pattern_prompt, re.DOTALL | re.MULTILINE),
         }
         if cls.pattern_unprivileged_prompt:
             patterns["unprivileged_prompt"] = re.compile(
-                cls.pattern_unprivileged_prompt,
-                re.DOTALL | re.MULTILINE
+                cls.pattern_unprivileged_prompt, re.DOTALL | re.MULTILINE
             )
         if cls.pattern_super_password:
             patterns["super_password"] = re.compile(
-                cls.pattern_super_password,
-                re.DOTALL | re.MULTILINE
+                cls.pattern_super_password, re.DOTALL | re.MULTILINE
             )
         if isinstance(cls.pattern_more, six.string_types):
             more_patterns = [cls.pattern_more]
@@ -684,20 +684,13 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
             more_patterns = [x[0] for x in cls.pattern_more]
             patterns["more_commands"] = [x[1] for x in cls.pattern_more]
         if cls.pattern_start_setup:
-            patterns["setup"] = re.compile(
-                cls.pattern_start_setup,
-                re.DOTALL | re.MULTILINE
-            )
+            patterns["setup"] = re.compile(cls.pattern_start_setup, re.DOTALL | re.MULTILINE)
         # Merge pager patterns
         patterns["pager"] = re.compile(
-            "|".join([r"(%s)" % p for p in more_patterns]),
-            re.DOTALL | re.MULTILINE
+            "|".join([r"(%s)" % p for p in more_patterns]), re.DOTALL | re.MULTILINE
         )
-        patterns["more_patterns"] = [
-            re.compile(p, re.MULTILINE | re.DOTALL)
-            for p in more_patterns]
-        patterns["more_patterns_commands"] = list(zip(
-            patterns["more_patterns"],
-            patterns["more_commands"]
-        ))
+        patterns["more_patterns"] = [re.compile(p, re.MULTILINE | re.DOTALL) for p in more_patterns]
+        patterns["more_patterns_commands"] = list(
+            zip(patterns["more_patterns"], patterns["more_commands"])
+        )
         return patterns

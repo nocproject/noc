@@ -9,8 +9,10 @@
 # Python modules
 import itertools
 import logging
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.lib.validators import is_int, is_ipv4
 
@@ -139,7 +141,7 @@ class SecondsParameter(BaseParameter):
         (7 * 24 * 3600, "w"),
         (24 * 3600, "d"),
         (3600, "h"),
-        (60, "M")
+        (60, "M"),
     )
 
     SCALE = {
@@ -149,7 +151,7 @@ class SecondsParameter(BaseParameter):
         "d": 24 * 3600,
         "w": 7 * 24 * 3600,
         "m": 30 * 24 * 3600,
-        "y": 365 * 24 * 3600
+        "y": 365 * 24 * 3600,
     }
 
     def clean(self, v):
@@ -182,10 +184,7 @@ class ListParameter(BaseParameter):
         super(ListParameter, self).__init__(default=default, help=help)
 
     def clean(self, v):
-        return [
-            self.item.clean(x)
-            for x in v
-        ]
+        return [self.item.clean(x) for x in v]
 
 
 class ServiceItem(object):
@@ -217,10 +216,10 @@ class ServiceParameter(BaseParameter):
     :param wait: Block and wait until at least one instance of
        service will be available
     """
+
     DEFAULT_RESOLUTION_TIMEOUT = 1
 
-    def __init__(self, service, near=False, wait=True, help=None,
-                 full_result=True, critical=True):
+    def __init__(self, service, near=False, wait=True, help=None, full_result=True, critical=True):
         if isinstance(service, six.string_types):
             self.services = [service]
         else:
@@ -266,12 +265,11 @@ class ServiceParameter(BaseParameter):
                         timeout=self.DEFAULT_RESOLUTION_TIMEOUT,
                         full_result=self.full_result,
                         near=self.near,
-                        critical=self.critical
+                        critical=self.critical,
                     )
                     if not isinstance(items, list):
                         items = [items]
-                    self.value = [ServiceItem(*i.rsplit(":", 1))
-                                  for i in items]
+                    self.value = [ServiceItem(*i.rsplit(":", 1)) for i in items]
                     break
                 except ResolutionError:
                     pass

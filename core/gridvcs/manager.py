@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Third-party modules
 import six
+
 # NOC modules
 from .base import GridVCS
 
@@ -38,6 +40,7 @@ class GridVCSField(object):
     # Get diff between revision
     print o.data.diff(rev1, rev2)
     """
+
     def __init__(self, repo):
         self.repo = repo
         self.model = None
@@ -53,8 +56,7 @@ class GridVCSField(object):
         """
         Mongoengine shortcut
         """
-        return GridVCSObjectProxy(
-            self.repo, instance.id)
+        return GridVCSObjectProxy(self.repo, instance.id)
 
 
 class GridVCSObjectDescriptor(object):

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .query import QueryApplicator
 
@@ -16,6 +17,7 @@ class DefaultLLDPStatusApplicator(QueryApplicator):
     """
     Apply non-disabled LLDP interfaces
     """
+
     CHECK_QUERY = "Match('hints', 'protocols', 'lldp', 'status')"
     QUERY = [
         # LLDP is globally enabled

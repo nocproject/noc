@@ -17,6 +17,7 @@ import functools
 from collections import defaultdict
 import random
 import time
+
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -27,6 +28,7 @@ import setproctitle
 import nsq
 import ujson
 import threading
+
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from noc.core.debug import excepthook, error_report, ErrorReport
@@ -59,6 +61,7 @@ class Service(object):
 
     * on_change_<var> - subscribed to changes of config variable <var>
     """
+
     # Service name
     name = None
     # Leader lock name
@@ -113,14 +116,12 @@ class Service(object):
         "error": logging.ERROR,
         "warning": logging.WARNING,
         "info": logging.INFO,
-        "debug": logging.DEBUG
+        "debug": logging.DEBUG,
     }
 
     DEFAULT_SHARDING_KEY = "managed_object"
 
-    SHARDING_KEYS = {
-        "span": "ctx"
-    }
+    SHARDING_KEYS = {"span": "ctx"}
 
     # Timeout to wait NSQ writer is to close
     NSQ_WRITER_CLOSE_TRY_TIMEOUT = 0.25
@@ -179,11 +180,7 @@ class Service(object):
         Apply additional parser arguments
         """
         parser.add_argument(
-            "--node",
-            action="store",
-            dest="node",
-            default=config.node,
-            help="NOC node name"
+            "--node", action="store", dest="node", default=config.node, help="NOC node name"
         )
         parser.add_argument(
             "--loglevel",
@@ -191,7 +188,7 @@ class Service(object):
             choices=list(self.LOG_LEVELS),
             dest="loglevel",
             default=config.loglevel,
-            help="Logging level"
+            help="Logging level",
         )
         parser.add_argument(
             "--instance",
@@ -199,29 +196,25 @@ class Service(object):
             dest="instance",
             type=int,
             default=config.instance,
-            help="Instance number"
+            help="Instance number",
         )
         parser.add_argument(
             "--debug",
             action="store_true",
             dest="debug",
             default=False,
-            help="Dump additional debugging info"
+            help="Dump additional debugging info",
         )
         parser.add_argument(
             "--dcs",
             action="store",
             dest="dcs",
             default=DEFAULT_DCS,
-            help="Distributed Coordinated Storage URL"
+            help="Distributed Coordinated Storage URL",
         )
         if self.pooled:
             parser.add_argument(
-                "--pool",
-                action="store",
-                dest="pool",
-                default=config.pool,
-                help="NOC pool name"
+                "--pool", action="store", dest="pool", default=config.pool, help="NOC pool name"
             )
 
     @classmethod
@@ -251,11 +244,7 @@ class Service(object):
             logging.root.setLevel(loglevel)
         else:
             # Initialize logger
-            logging.basicConfig(
-                stream=sys.stdout,
-                format=self.LOG_FORMAT,
-                level=loglevel
-            )
+            logging.basicConfig(stream=sys.stdout, format=self.LOG_FORMAT, level=loglevel)
         self.logger = logging.getLogger(self.name)
         logging.captureWarnings(True)
 
@@ -268,6 +257,7 @@ class Service(object):
         set_translation(self.name, config.language)
         if self.use_jinja:
             from jinja2.defaults import DEFAULT_NAMESPACE
+
             if "_" not in DEFAULT_NAMESPACE:
                 DEFAULT_NAMESPACE["_"] = ugettext
 
@@ -297,11 +287,7 @@ class Service(object):
         """
         Set process title
         """
-        v = {
-            "name": self.name,
-            "instance": config.instance or "",
-            "pool": config.pool or ""
-        }
+        v = {"name": self.name, "instance": config.instance or "", "pool": config.pool or ""}
         title = self.process_name % v
         self.logger.debug("Setting process title to: %s", title)
         setproctitle.setproctitle(title)
@@ -333,17 +319,13 @@ class Service(object):
         # Starting IOLoop
         self.is_active = True
         if self.pooled:
-            self.logger.warn(
-                "Running service %s (pool: %s)",
-                self.name, config.pool
-            )
+            self.logger.warn("Running service %s (pool: %s)", self.name, config.pool)
         else:
-            self.logger.warn(
-                "Running service %s", self.name
-            )
+            self.logger.warn("Running service %s", self.name)
         try:
             if config.features.use_uvlib:
                 from tornaduv import UVLoop
+
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
@@ -429,7 +411,7 @@ class Service(object):
         return {
             "template_path": os.getcwd(),
             "cookie_secret": config.secret_key,
-            "log_function": self.log_request
+            "log_function": self.log_request,
         }
 
     def activate(self):
@@ -439,11 +421,12 @@ class Service(object):
         self.logger.warn("Activating service")
         if self.use_mongo:
             from noc.core.mongo.connection import connect
+
             connect()
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
             (r"^/metrics$", MetricsHandler, {"service": self}),
-            (r"^/health/$", HealthRequestHandler, {"service": self})
+            (r"^/health/$", HealthRequestHandler, {"service": self}),
         ]
         api = [CtlAPI]
         if self.api:
@@ -453,35 +436,25 @@ class Service(object):
         # Collect and register exposed API
         for a in api:
             url = "^/api/%s/$" % a.name
-            handlers += [(
-                url,
-                self.api_request_handler,
-                {"service": self, "api_class": a}
-            )]
+            handlers += [(url, self.api_request_handler, {"service": self, "api_class": a})]
             # Populate sdl
             sdl[a.name] = a.get_methods()
         if self.api:
             handlers += [
                 ("^/api/%s/doc/$" % self.name, DocRequestHandler, {"service": self}),
-                ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl})
+                ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl}),
             ]
         handlers += self.get_handlers()
         app = tornado.web.Application(handlers, **self.get_app_settings())
-        self.server = tornado.httpserver.HTTPServer(
-            app,
-            xheaders=True,
-            no_keep_alive=True
-        )
+        self.server = tornado.httpserver.HTTPServer(app, xheaders=True, no_keep_alive=True)
         self.server.listen(port, addr)
         # Get effective address and port
         self.update_service_address()
         #
-        self.logger.info("Running HTTP APIs at http://%s:%s/",
-                         self.address, self.port)
+        self.logger.info("Running HTTP APIs at http://%s:%s/", self.address, self.port)
         for a in api:
             self.logger.info(
-                "Supported API: %s at http://%s:%s/api/%s/",
-                a.name, self.address, self.port, a.name
+                "Supported API: %s at http://%s:%s/api/%s/", a.name, self.address, self.port, a.name
             )
         #
         if self.require_nsq_writer or self.use_telemetry:
@@ -511,8 +484,7 @@ class Service(object):
                 self.logger.info("Shutting down scheduler")
                 yield self.scheduler.shutdown()
             except tornado.gen.TimeoutError:
-                self.logger.info(
-                    "Timed out when shutting down scheduler")
+                self.logger.info("Timed out when shutting down scheduler")
         # Shutdown executors
         if self.executors:
             self.logger.info("Shutting down executors")
@@ -521,9 +493,7 @@ class Service(object):
                     self.logger.info("Shutting down %s", x)
                     yield self.executors[x].shutdown()
                 except tornado.gen.TimeoutError:
-                    self.logger.info(
-                        "Timed out when shutting down %s", x
-                    )
+                    self.logger.info("Timed out when shutting down %s", x)
         # Custom deactivation
         yield self.on_deactivate()
         # Flush pending NSQ messages
@@ -548,7 +518,9 @@ class Service(object):
                 if conns:
                     n -= 1
                     if n <= 0:
-                        self.logger.info("Failed to close NSQ writer properly. Giving up. Pending messages may be lost")
+                        self.logger.info(
+                            "Failed to close NSQ writer properly. Giving up. Pending messages may be lost"
+                        )
                         break
                     # Wait
                     yield tornado.gen.sleep(self.NSQ_WRITER_CLOSE_TRY_TIMEOUT)
@@ -574,7 +546,7 @@ class Service(object):
                     "traefik.tags=backend",
                     "traefik.backend=%s" % self.traefik_backend,
                     "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
-                    "traefik.backend.load-balancing=wrr"
+                    "traefik.backend.load-balancing=wrr",
                 ]
                 weight = self.get_backend_weight()
                 if weight:
@@ -588,10 +560,12 @@ class Service(object):
     def on_register(self):
         addr, port = self.get_service_address()
         r = yield self.dcs.register(
-            self.name, addr, port,
+            self.name,
+            addr,
+            port,
             pool=config.pool if self.pooled else None,
             lock=self.get_leader_lock_name(),
-            tags=self.get_register_tags()
+            tags=self.get_register_tags(),
         )
         if r:
             # Finally call on_activate
@@ -617,10 +591,7 @@ class Service(object):
             name = "%s-%s" % (self.name, config.pool)
         else:
             name = self.name
-        slot_number, total_slots = yield self.dcs.acquire_slot(
-            name,
-            config.global_n_instances
-        )
+        slot_number, total_slots = yield self.dcs.acquire_slot(name, config.global_n_instances)
         if total_slots <= 0:
             self.die("Service misconfiguration detected: Invalid total_slots")
         raise tornado.gen.Return((slot_number, total_slots))
@@ -653,7 +624,7 @@ class Service(object):
             "node": config.node,
             "pid": self.pid,
             # Current process uptime
-            "uptime": perf_counter() - self.start_time
+            "uptime": perf_counter() - self.start_time,
         }
         if self.pooled:
             r["pool"] = config.pool
@@ -676,6 +647,7 @@ class Service(object):
         """
         Subscribe message to channel
         """
+
         def call_json_handler(message):
             metrics[metric_in] += 1
             try:
@@ -719,8 +691,7 @@ class Service(object):
         metric_processed = "nsq_msg_processed_%s" % t
         metric_deferred = "nsq_msg_deferred_%s" % t
         lookupd = [str(a) for a in config.nsqlookupd.http_addresses]
-        self.logger.info("Subscribing to %s/%s (lookupd: %s)",
-                         topic, channel, ", ".join(lookupd))
+        self.logger.info("Subscribing to %s/%s (lookupd: %s)", topic, channel, ", ".join(lookupd))
         self.nsq_readers[handler] = NSQReader(
             message_handler=call_raw_handler if raw else call_json_handler,
             topic=topic,
@@ -728,7 +699,9 @@ class Service(object):
             lookupd_http_addresses=lookupd,
             snappy=config.nsqd.compression == "snappy",
             deflate=config.nsqd.compression == "deflate",
-            deflate_level=config.nsqd.compression_level if config.nsqd.compression == "deflate" else 6,
+            deflate_level=config.nsqd.compression_level
+            if config.nsqd.compression == "deflate"
+            else 6,
             **kwargs
         )
 
@@ -758,8 +731,10 @@ class Service(object):
                 reconnect_interval=config.nsqd.reconnect_interval,
                 snappy=config.nsqd.compression == "snappy",
                 deflate=config.nsqd.compression == "deflate",
-                deflate_level=config.nsqd.compression_level if config.nsqd.compression == "deflate" else 6,
-                io_loop=self.ioloop
+                deflate_level=config.nsqd.compression_level
+                if config.nsqd.compression == "deflate"
+                else 6,
+                io_loop=self.ioloop,
             )
         return self.nsq_writer
 
@@ -772,17 +747,13 @@ class Service(object):
           otherwise
         :param raw: True - pass message as-is, False - convert to JSON
         """
+
         def finish_pub(conn, msg):
             if isinstance(msg, nsq.Error):
-                self.logger.info(
-                    "Failed to pub to topic '%s': %s. Retry",
-                    topic, msg
-                )
+                self.logger.info("Failed to pub to topic '%s': %s. Retry", topic, msg)
                 w.io_loop.call_later(
                     config.nsqd.pub_retry_delay,
-                    functools.partial(
-                        w.pub, topic, data, callback=finish_pub
-                    )
+                    functools.partial(w.pub, topic, data, callback=finish_pub),
                 )
 
         w = self.get_nsq_writer()
@@ -794,17 +765,13 @@ class Service(object):
         """
         Publish multiple messages to topic
         """
+
         def finish_pub(conn, data):
             if isinstance(data, nsq.Error):
-                self.logger.info(
-                    "Failed to mpub to topic '%s': %s. Retry",
-                    topic, data
-                )
+                self.logger.info("Failed to mpub to topic '%s': %s. Retry", topic, data)
                 w.io_loop.call_later(
                     config.nsqd.pub_retry_delay,
-                    functools.partial(
-                        w.mpub, topic, msg, callback=finish_pub
-                    )
+                    functools.partial(w.mpub, topic, msg, callback=finish_pub),
                 )
 
         w = self.get_nsq_writer()
@@ -820,8 +787,7 @@ class Service(object):
             xt = "%s.%s_threads" % (self.name, name)
             max_threads = config.get_parameter(xt)
             self.logger.info(
-                "Starting threadpool executor %s (up to %d threads)",
-                name, max_threads
+                "Starting threadpool executor %s (up to %d threads)", name, max_threads
             )
             executor = ThreadPoolExecutor(max_threads, name=name)
             self.executors[name] = executor
@@ -917,8 +883,7 @@ class Service(object):
         f = ""
         tl = len(topo) - 1
         for sn, shard in enumerate(topo):
-            channels = ["chwriter-%s-%s" % (sn + 1, r + 1)
-                        for r in range(shard.replicas)]
+            channels = ["chwriter-%s-%s" % (sn + 1, r + 1) for r in range(shard.replicas)]
             self.total_weight += shard.weight
             w += shard.weight
             if not f:
@@ -945,11 +910,11 @@ class Service(object):
         for channel, fields in data:
             to_send = data[channel, fields]
             while to_send:
-                chunk, to_send = to_send[:config.nsqd.ch_chunk_size], to_send[config.nsqd.ch_chunk_size:]
-                w.pub(
-                    channel,
-                    "%s\n%s\n" % (fields, "\n".join(chunk))
+                chunk, to_send = (
+                    to_send[: config.nsqd.ch_chunk_size],
+                    to_send[config.nsqd.ch_chunk_size :],
                 )
+                w.pub(channel, "%s\n%s\n" % (fields, "\n".join(chunk)))
 
     def log_request(self, handler):
         """
@@ -970,9 +935,7 @@ class Service(object):
             pass
         else:
             self.logger.info(
-                "%s %s (%s) %.2fms",
-                method, uri, remote_ip,
-                1000.0 * handler.request.request_time()
+                "%s %s (%s) %.2fms", method, uri, remote_ip, 1000.0 * handler.request.request_time()
             )
             metrics["http_requests", ("method", method.lower())] += 1
             metrics["http_response", ("status", status)] += 1
@@ -1010,8 +973,11 @@ class Service(object):
         :param service_id:
         :return:
         """
-        if (self.dcs and self.dcs.health_check_service_id and
-                self.dcs.health_check_service_id != service_id):
+        if (
+            self.dcs
+            and self.dcs.health_check_service_id
+            and self.dcs.health_check_service_id != service_id
+        ):
             return False
         else:
             return True

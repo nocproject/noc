@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField
 
 
 class AlarmClass(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "alarmclass"
         layout = "flat"
 

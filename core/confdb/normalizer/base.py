@@ -11,8 +11,10 @@ from __future__ import absolute_import
 import itertools
 from collections import defaultdict
 from functools import partial
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.ip import IPv4
 from ..patterns import ANY, REST
@@ -116,9 +118,7 @@ class BaseNormalizerMetaclass(type):
                 mcs.process_token(ncls, c, path)
         if sdef.gen:
             mcs.contribute_gen(
-                ncls,
-                path,
-                replace=not sdef.children and sdef.required and not sdef.multi
+                ncls, path, replace=not sdef.children and sdef.required and not sdef.multi
             )
 
     @classmethod
@@ -269,6 +269,7 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
         :param dst: Destination path
         :return:
         """
+
         def wrap():
             r_id = str(next(self.rebase_id))
             yield ("hints", "rebase", r_id, "from") + src

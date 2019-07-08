@@ -12,12 +12,14 @@ import random
 import time
 import ujson
 import uuid
+
 # Third-party modules
 import consul.base
 import consul.tornado
 import tornado.gen
 import tornado.ioloop
 from six.moves.urllib.parse import unquote
+
 # NOC modules
 from noc.config import config
 from noc.core.http.client import fetch
@@ -45,14 +47,12 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             body=body,
             connect_timeout=CONSUL_CONNECT_TIMEOUT,
             request_timeout=CONSUL_REQUEST_TIMEOUT,
-            validate_cert=self.verify
+            validate_cert=self.verify,
         )
         if code in ConsulRepearableCodes:
             raise consul.base.Timeout
         raise tornado.gen.Return(
-            callback(
-                consul.base.Response(code=code, headers=headers, body=body)
-            )
+            callback(consul.base.Response(code=code, headers=headers, body=body))
         )
 
     def get(self, callback, path, params=None):
@@ -61,17 +61,15 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
 
     def put(self, callback, path, params=None, data=""):
         url = self.uri(path, params)
-        return self._request(callback, url, method="PUT",
-                             body="" if data is None else data)
+        return self._request(callback, url, method="PUT", body="" if data is None else data)
 
     def delete(self, callback, path, params=None):
         url = self.uri(path, params)
         return self._request(callback, url, method="DELETE")
 
-    def post(self, callback, path, params=None, data=''):
+    def post(self, callback, path, params=None, data=""):
         url = self.uri(path, params)
-        return self._request(callback, url, method="POST",
-                             body=data)
+        return self._request(callback, url, method="POST", body=data)
 
 
 class ConsulClient(consul.base.Consul):
@@ -89,10 +87,7 @@ class ConsulResolver(ResolverBase):
             try:
                 old_index = index
                 index, services = yield self.dcs.consul.health.service(
-                    service=self.name,
-                    index=index,
-                    token=self.dcs.consul_token,
-                    passing=True
+                    service=self.name, index=index, token=self.dcs.consul_token, passing=True
                 )
             except ConsulRepeatableErrors as e:
                 if self.critical:
@@ -101,17 +96,24 @@ class ConsulResolver(ResolverBase):
             try:
                 index = int(index)
             except ValueError:
-                self.logger.error("[%s] Invalid index format (%r), trying to recover",
-                                  self.name, index)
+                self.logger.error(
+                    "[%s] Invalid index format (%r), trying to recover", self.name, index
+                )
                 index = 0
                 continue
             if index > old_index:
-                self.logger.debug("[%s] Index changed %d -> %d. Applying changes",
-                                  self.name, old_index, index)
+                self.logger.debug(
+                    "[%s] Index changed %d -> %d. Applying changes", self.name, old_index, index
+                )
                 r = dict(
-                    (str(svc["Service"]["ID"]), "%s:%s" % (
-                        str(svc["Service"]["Address"] or svc["Node"]["Address"]),
-                        str(svc["Service"]["Port"])))
+                    (
+                        str(svc["Service"]["ID"]),
+                        "%s:%s"
+                        % (
+                            str(svc["Service"]["Address"] or svc["Node"]["Address"]),
+                            str(svc["Service"]["Port"]),
+                        ),
+                    )
                     for svc in services
                 )
                 self.set_services(r)
@@ -125,6 +127,7 @@ class ConsulDCS(DCSBase):
     URL format:
     consul://<address>[:<port>]/<kv root>?token=<token>&check_interval=<...>&check_timeout=<...>&release_after=<...>
     """
+
     DEFAULT_CONSUL_HOST = config.consul.host
     DEFAULT_CONSUL_PORT = config.consul.port
     DEFAULT_CONSUL_CHECK_INTERVAL = config.consul.check_interval
@@ -158,9 +161,7 @@ class ConsulDCS(DCSBase):
         self.total_slots = None
         super(ConsulDCS, self).__init__(url, ioloop)
         self.consul = ConsulClient(
-            host=self.consul_host,
-            port=self.consul_port,
-            token=self.consul_token
+            host=self.consul_host, port=self.consul_port, token=self.consul_token
         )
         self.session = None
         self.keep_alive_task = None
@@ -205,7 +206,7 @@ class ConsulDCS(DCSBase):
                     checks=checks,
                     behavior="delete",
                     lock_delay=self.DEFAULT_CONSUL_LOCK_DELAY,
-                    ttl=self.DEFAULT_CONSUL_SESSION_TTL
+                    ttl=self.DEFAULT_CONSUL_SESSION_TTL,
                 )
                 break
             except ConsulRepeatableErrors:
@@ -213,9 +214,7 @@ class ConsulDCS(DCSBase):
                 continue
         self.logger.info("Session id: %s", self.session)
         self.keep_alive_task = tornado.ioloop.PeriodicCallback(
-            self.keep_alive,
-            self.DEFAULT_CONSUL_SESSION_TTL * 1000 / 2,
-            self.ioloop
+            self.keep_alive, self.DEFAULT_CONSUL_SESSION_TTL * 1000 / 2, self.ioloop
         )
         self.keep_alive_task.start()
 
@@ -242,22 +241,20 @@ class ConsulDCS(DCSBase):
         svc_id = self.session or str(uuid.uuid4())
         tags = tags[:] if tags else []
         tags += [svc_id]
-        self.svc_check_url = "http://%s:%s/health/?service=%s" % (
-            address, port, svc_id)
+        self.svc_check_url = "http://%s:%s/health/?service=%s" % (address, port, svc_id)
         self.health_check_service_id = svc_id
         if config.features.consul_healthchecks:
             checks = consul.Check.http(
-                self.svc_check_url,
-                self.check_interval,
-                "%ds" % self.check_timeout
+                self.svc_check_url, self.check_interval, "%ds" % self.check_timeout
             )
             checks["DeregisterCriticalServiceAfter"] = self.release_after
         else:
             checks = []
         if config.features.service_registration:
             while True:
-                self.logger.info("Registering service %s: %s:%s (id=%s)",
-                                 name, address, port, svc_id)
+                self.logger.info(
+                    "Registering service %s: %s:%s (id=%s)", name, address, port, svc_id
+                )
                 try:
                     r = yield self.consul.agent.service.register(
                         name=name,
@@ -265,12 +262,11 @@ class ConsulDCS(DCSBase):
                         address=address,
                         port=port,
                         tags=tags,
-                        check=checks
+                        check=checks,
                     )
                 except ConsulRepeatableErrors as e:
                     metrics["error", ("type", "cant_register_consul")] += 1
-                    self.logger.info("Cannot register service %s: %s",
-                                     name, e)
+                    self.logger.info("Cannot register service %s: %s", name, e)
                     yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                     continue
                 if r:
@@ -348,10 +344,7 @@ class ConsulDCS(DCSBase):
             self.logger.info("Acquiring lock: %s", key)
             try:
                 status = yield self.consul.kv.put(
-                    key=key,
-                    value=self.session,
-                    acquire=self.session,
-                    token=self.consul_token
+                    key=key, value=self.session, acquire=self.session, token=self.consul_token
                 )
                 if status:
                     break
@@ -366,9 +359,7 @@ class ConsulDCS(DCSBase):
             while True:
                 try:
                     index, data = yield self.consul.kv.get(
-                        key=key,
-                        index=index,
-                        token=self.consul_token
+                        key=key, index=index, token=self.consul_token
                     )
                     if not data:
                         index = None  # Key has been deleted
@@ -391,9 +382,7 @@ class ConsulDCS(DCSBase):
         if not self.session:
             yield self.create_session()
         if self.total_slots is not None:
-            raise tornado.gen.Return(
-                (self.slot_number, self.total_slots)
-            )
+            raise tornado.gen.Return((self.slot_number, self.total_slots))
         prefix = "%s/slots/%s" % (self.consul_prefix, name)
         contender_path = "%s/%s" % (prefix, self.session)
         contender_info = self.session
@@ -405,7 +394,7 @@ class ConsulDCS(DCSBase):
                     key=contender_path,
                     value=contender_info,
                     acquire=self.session,
-                    token=self.consul_token
+                    token=self.consul_token,
                 )
                 if status:
                     break
@@ -425,9 +414,7 @@ class ConsulDCS(DCSBase):
             # Non-blocking for a first time
             # Block until change every next try
             try:
-                index, cv = yield self.consul.kv.get(
-                    key=prefix, index=index, recurse=True
-                )
+                index, cv = yield self.consul.kv.get(key=prefix, index=index, recurse=True)
             except ConsulRepeatableErrors:
                 yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
@@ -465,31 +452,27 @@ class ConsulDCS(DCSBase):
                     self.logger.info("All slots a busy, waiting")
                     continue
             # Update manifest
-            self.logger.info("Attempting to acquire slot %s/%s",
-                             slot_number, total_slots)
+            self.logger.info("Attempting to acquire slot %s/%s", slot_number, total_slots)
             try:
                 r = yield self.consul.kv.put(
                     key=manifest_path,
-                    value=ujson.dumps({
-                        "Limit": total_slots,
-                        "Holders": holders
-                    }, indent=2),
-                    cas=cas
+                    value=ujson.dumps({"Limit": total_slots, "Holders": holders}, indent=2),
+                    cas=cas,
                 )
             except ConsulRepeatableErrors as e:
                 self.logger.info("Cannot acquire slot: %s", e)
                 continue
             if r:
-                self.logger.info("Acquired slot %s/%s",
-                                 slot_number, total_slots)
+                self.logger.info("Acquired slot %s/%s", slot_number, total_slots)
                 self.slot_number = slot_number
                 self.total_slots = total_slots
                 raise tornado.gen.Return((slot_number, total_slots))
             self.logger.info("Cannot acquire slot: CAS changed, retry")
 
     @tornado.gen.coroutine
-    def resolve_near(self, name, hint=None, wait=True, timeout=None,
-                     full_result=False, critical=False):
+    def resolve_near(
+        self, name, hint=None, wait=True, timeout=None, full_result=False, critical=False
+    ):
         """
         Synchronous call to resolve nearby service
         Commonly used for external services like databases
@@ -506,11 +489,7 @@ class ConsulDCS(DCSBase):
         while True:
             try:
                 index, services = yield self.consul.health.service(
-                    service=name,
-                    index=index,
-                    near="_agent",
-                    token=self.consul_token,
-                    passing=True
+                    service=name, index=index, near="_agent", token=self.consul_token, passing=True
                 )
             except ConsulRepeatableErrors as e:
                 metrics["error", ("type", "dcs_consul_failed_resolve_near")] += 1
@@ -524,14 +503,21 @@ class ConsulDCS(DCSBase):
                 metrics["error", ("type", "dcs_consul_no_active_service %s" % name)] += 1
                 self.logger.info("No active service %s. Waiting", name)
                 if critical:
-                    metrics["error", ("type", "dcs_consul_no_active_critical_service %s" % name)] += 1
+                    metrics[
+                        "error", ("type", "dcs_consul_no_active_critical_service %s" % name)
+                    ] += 1
                     self.set_faulty_status("No active service %s. Waiting" % name)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
             r = []
             for svc in services:
-                r += ["%s:%s" % (str(svc["Service"]["Address"] or svc["Node"]["Address"]),
-                                 str(svc["Service"]["Port"]))]
+                r += [
+                    "%s:%s"
+                    % (
+                        str(svc["Service"]["Address"] or svc["Node"]["Address"]),
+                        str(svc["Service"]["Port"]),
+                    )
+                ]
                 if not full_result:
                     break
             self.logger.info("Resolved near service %s to %s", name, r)

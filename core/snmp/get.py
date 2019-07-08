@@ -10,10 +10,10 @@
 from __future__ import absolute_import
 import random
 from collections import namedtuple
+
 # NOC modules
 from .ber import parse_p_oid, decoder, encoder
-from .consts import (PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
-                     PDU_RESPONSE, PDU_GETBULK_REQUEST)
+from .consts import PDU_GET_REQUEST, PDU_GETNEXT_REQUEST, PDU_RESPONSE, PDU_GETBULK_REQUEST
 from .version import SNMP_v1, SNMP_v2c
 
 
@@ -30,25 +30,26 @@ def _build_pdu(community, pdu_type, oids, request_id, version=SNMP_v2c):
     if not request_id:
         request_id = random.randint(0, 0x7FFFFFFF)
     # Encode variable bindings
-    varbinds = encoder.encode_sequence([
-        encoder.encode_sequence([
-            encoder.encode_oid(str(oid)),
-            encoder.encode_null()
-        ]) for oid in oids
-    ])
+    varbinds = encoder.encode_sequence(
+        [
+            encoder.encode_sequence([encoder.encode_oid(str(oid)), encoder.encode_null()])
+            for oid in oids
+        ]
+    )
     # Encode RFC-1905 SNMP GET PDU
-    pdu = encoder.encode_choice(pdu_type, [
-        encoder.encode_int(request_id),
-        encoder.encode_int(0),  # Error status
-        encoder.encode_int(0),  # Error index
-        varbinds
-    ])
+    pdu = encoder.encode_choice(
+        pdu_type,
+        [
+            encoder.encode_int(request_id),
+            encoder.encode_int(0),  # Error status
+            encoder.encode_int(0),  # Error index
+            varbinds,
+        ],
+    )
     # SNMP v2c PDU
-    return encoder.encode_sequence([
-        encoder.encode_int(version),
-        encoder.encode_octet_string(str(community)),
-        pdu
-    ])
+    return encoder.encode_sequence(
+        [encoder.encode_int(version), encoder.encode_octet_string(str(community)), pdu]
+    )
 
 
 def get_pdu(community, oids, request_id=None, version=SNMP_v2c):
@@ -73,8 +74,9 @@ def getnext_pdu(community, oid, request_id=None, version=SNMP_v2c):
     return _build_pdu(community, PDU_GETNEXT_REQUEST, [oid], request_id, version)
 
 
-def getbulk_pdu(community, oid, request_id=None,
-                non_repeaters=0, max_repetitions=10, version=SNMP_v2c):
+def getbulk_pdu(
+    community, oid, request_id=None, non_repeaters=0, max_repetitions=10, version=SNMP_v2c
+):
     """
     Generate SNMP v2c GETBULK PDU
     """
@@ -84,30 +86,28 @@ def getbulk_pdu(community, oid, request_id=None,
         request_id = random.randint(0, 0x7FFFFFFF)
     oids = [oid]
     # Encode variable bindings
-    varbinds = encoder.encode_sequence([
-        encoder.encode_sequence([
-            encoder.encode_oid(o),
-            encoder.encode_null()
-        ]) for o in oids
-    ])
+    varbinds = encoder.encode_sequence(
+        [encoder.encode_sequence([encoder.encode_oid(o), encoder.encode_null()]) for o in oids]
+    )
     # Encode RFC-1905 SNMP GET PDU
-    pdu = encoder.encode_choice(PDU_GETBULK_REQUEST, [
-        encoder.encode_int(request_id),
-        encoder.encode_int(non_repeaters),
-        encoder.encode_int(max_repetitions),
-        varbinds
-    ])
+    pdu = encoder.encode_choice(
+        PDU_GETBULK_REQUEST,
+        [
+            encoder.encode_int(request_id),
+            encoder.encode_int(non_repeaters),
+            encoder.encode_int(max_repetitions),
+            varbinds,
+        ],
+    )
     # SNMP v2c PDU
-    return encoder.encode_sequence([
-        encoder.encode_int(SNMP_v2c),
-        encoder.encode_octet_string(community),
-        pdu
-    ])
+    return encoder.encode_sequence(
+        [encoder.encode_int(SNMP_v2c), encoder.encode_octet_string(community), pdu]
+    )
 
 
-GetResponse = namedtuple("GetResponse", ["community", "request_id",
-                                         "error_status", "error_index",
-                                         "varbinds"])
+GetResponse = namedtuple(
+    "GetResponse", ["community", "request_id", "error_status", "error_index", "varbinds"]
+)
 
 
 def parse_get_response(pdu):
@@ -120,7 +120,7 @@ def parse_get_response(pdu):
         request_id=pdu[1],
         error_status=pdu[2],
         error_index=pdu[3],
-        varbinds=pdu[4]
+        varbinds=pdu[4],
     )
 
 
@@ -156,5 +156,5 @@ def parse_get_response_raw(pdu):
         request_id=pdu[1],
         error_status=pdu[2],
         error_index=pdu[3],
-        varbinds=varbinds
+        varbinds=varbinds,
     )

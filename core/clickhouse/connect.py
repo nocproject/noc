@@ -9,9 +9,11 @@
 # Python modules
 from __future__ import absolute_import
 import random
+
 # Third-party modules
 import six
 from six.moves.urllib.parse import quote as urllib_quote
+
 # NOC modules
 from noc.core.http.client import fetch_sync
 from noc.config import config
@@ -51,9 +53,9 @@ class ClickhouseClient(object):
             if args:
                 sql = sql % tuple(q(v) for v in args)
             if post:
-                qs += ["query=%s" % urllib_quote(sql.encode('utf8'))]
+                qs += ["query=%s" % urllib_quote(sql.encode("utf8"))]
             else:
-                post = sql.encode('utf8')
+                post = sql.encode("utf8")
         url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))
         code, headers, body = fetch_sync(
             url,
@@ -62,28 +64,26 @@ class ClickhouseClient(object):
             user=self.user,
             password=self.password,
             connect_timeout=config.clickhouse.connect_timeout,
-            request_timeout=config.clickhouse.request_timeout
+            request_timeout=config.clickhouse.request_timeout,
         )
         if code != 200:
             raise ClickhouseError("%s: %s" % (code, body))
-        return [
-            row.split("\t") for row in body.splitlines()
-        ]
+        return [row.split("\t") for row in body.splitlines()]
 
     def ensure_db(self):
-        self.execute(
-            post="CREATE DATABASE IF NOT EXISTS %s;" % config.clickhouse.db,
-            nodb=True
-        )
+        self.execute(post="CREATE DATABASE IF NOT EXISTS %s;" % config.clickhouse.db, nodb=True)
 
     def has_table(self, name):
-        r = self.execute("""
+        r = self.execute(
+            """
             SELECT COUNT(*)
             FROM system.tables
             WHERE
               database=%s
               AND name = %s
-        """, [config.clickhouse.db, name])
+        """,
+            [config.clickhouse.db, name],
+        )
         return r and r[0][0] == "1"
 
 

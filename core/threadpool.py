@@ -14,10 +14,12 @@ import time
 import datetime
 from collections import deque
 import sys
+
 # Third-party modules
 from six.moves import _thread
 from concurrent.futures import Future
 from tornado.gen import with_timeout
+
 # NOC modules
 from noc.config import config
 from noc.core.span import Span, get_current_span
@@ -31,9 +33,13 @@ DEFAULT_SHUTDOWN_TIMEOUT = config.threadpool.shutdown_timeout
 
 
 class ThreadPoolExecutor(object):
-    def __init__(self, max_workers, idle_timeout=DEFAULT_IDLE_TIMEOUT,
-                 shutdown_timeout=DEFAULT_SHUTDOWN_TIMEOUT,
-                 name=None):
+    def __init__(
+        self,
+        max_workers,
+        idle_timeout=DEFAULT_IDLE_TIMEOUT,
+        shutdown_timeout=DEFAULT_SHUTDOWN_TIMEOUT,
+        name=None,
+    ):
         self.max_workers = max_workers
         self.threads = set()
         self.mutex = threading.Lock()
@@ -117,8 +123,7 @@ class ThreadPoolExecutor(object):
 
     def submit(self, fn, *args, **kwargs):
         if self.to_shutdown:
-            raise RuntimeError(
-                "Cannot schedule new task after shutdown")
+            raise RuntimeError("Cannot schedule new task after shutdown")
         future = Future()
         span_ctx, span = get_current_span()
         # Fetch span label
@@ -145,9 +150,7 @@ class ThreadPoolExecutor(object):
             return self.done_future
         else:
             return with_timeout(
-                timeout=datetime.timedelta(
-                    seconds=self.shutdown_timeout),
-                future=self.done_future
+                timeout=datetime.timedelta(seconds=self.shutdown_timeout), future=self.done_future
             )
 
     def worker(self):
@@ -156,13 +159,14 @@ class ThreadPoolExecutor(object):
         try:
             while not self.to_shutdown:
                 try:
-                    future, fn, args, kwargs, span_ctx, span, in_label = self._get(self.idle_timeout)
+                    future, fn, args, kwargs, span_ctx, span, in_label = self._get(
+                        self.idle_timeout
+                    )
                 except IdleTimeout:
                     logger.debug("Closing idle thread")
                     break
                 if not future:
-                    logging.debug("Worker %s has no future. Stopping",
-                                  t.name)
+                    logging.debug("Worker %s has no future. Stopping", t.name)
                     break
                 if not future.set_running_or_notify_cancel():
                     continue
@@ -173,9 +177,13 @@ class ThreadPoolExecutor(object):
                     in_label = in_label or str(fn)
                 else:
                     in_label = None
-                with Span(service="threadpool", sample=sample,
-                          context=span_ctx, parent=span,
-                          in_label=in_label) as span:
+                with Span(
+                    service="threadpool",
+                    sample=sample,
+                    context=span_ctx,
+                    parent=span,
+                    in_label=in_label,
+                ) as span:
                     try:
                         result = fn(*args, **kwargs)
                         future.set_result(result)
@@ -209,8 +217,7 @@ class ThreadPoolExecutor(object):
         """
         with self.mutex:
             return not self.to_shutdown and (
-                (self._qsize() < len(self.waiters)) or
-                (self.max_workers > len(self.threads))
+                (self._qsize() < len(self.waiters)) or (self.max_workers > len(self.threads))
             )
 
     def get_free_workers(self):
@@ -222,9 +229,7 @@ class ThreadPoolExecutor(object):
             if self.to_shutdown:
                 return 0
             return max(
-                (self.max_workers - len(self.threads) -
-                 self._qsize() + len(self.waiters)),
-                0
+                (self.max_workers - len(self.threads) - self._qsize() + len(self.waiters)), 0
             )
 
     def apply_metrics(self, d):
@@ -236,15 +241,17 @@ class ThreadPoolExecutor(object):
         with self.mutex:
             workers = len(self.threads)
             idle = len(self.waiters)
-            d.update({
-                "%s_max_workers" % self.name: self.max_workers,
-                "%s_workers" % self.name: workers,
-                "%s_idle_workers" % self.name: idle,
-                "%s_running_workers" % self.name: workers - idle,
-                "%s_submitted_tasks" % self.name: self.submitted_tasks,
-                "%s_queued_jobs" % self.name: len(self.queue),
-                "%s_uptime" % self.name: perf_counter() - self.started
-            })
+            d.update(
+                {
+                    "%s_max_workers" % self.name: self.max_workers,
+                    "%s_workers" % self.name: workers,
+                    "%s_idle_workers" % self.name: idle,
+                    "%s_running_workers" % self.name: workers - idle,
+                    "%s_submitted_tasks" % self.name: self.submitted_tasks,
+                    "%s_queued_jobs" % self.name: len(self.queue),
+                    "%s_uptime" % self.name: perf_counter() - self.started,
+                }
+            )
 
 
 class IdleTimeout(Exception):

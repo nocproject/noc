@@ -6,14 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-import six
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.syntaxalias import SyntaxAlias
-from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.service.client import open_sync_rpc
+from noc.core.service.error import RPCError
 from noc.core.translation import ugettext as _
 
 
@@ -21,12 +20,12 @@ class MIBApplication(ExtDocApplication):
     """
     MIB application
     """
+
     title = _("MIB")
     menu = _("MIB")
     model = MIB
 
-    @view(url="^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
-          access="launch", api=True)
+    @view(url="^(?P<id>[0-9a-f]{24})/data/$", method=["GET"], access="launch", api=True)
     def api_data(self, request, id):
         def insert_tree(data, ds):
             if len(data["path"]) + 1 == len(ds["path"]) and data["path"] == ds["path"][:-1]:
@@ -37,15 +36,11 @@ class MIBApplication(ExtDocApplication):
                     data["children"] = []
                 # Descendant
                 for c in data["children"]:
-                    if c["path"] == ds["path"][:len(c["path"])]:
+                    if c["path"] == ds["path"][: len(c["path"])]:
                         insert_tree(c, ds)
                         return
-                cp = ds["path"][:-(len(data["path"]) + 1)]
-                c = {
-                    "oid": ".".join(str(x) for x in cp),
-                    "path": cp,
-                    "children": []
-                }
+                cp = ds["path"][: -(len(data["path"]) + 1)]
+                c = {"oid": ".".join(str(x) for x in cp), "path": cp, "children": []}
                 data["children"] += [c]
                 insert_tree(c, ds)
 
@@ -55,18 +50,13 @@ class MIBApplication(ExtDocApplication):
             if "children" in data:
                 if "leaf" in data:
                     del data["leaf"]
-                data["children"] = sorted(data["children"],
-                                          key=lambda x: x["path"])
+                data["children"] = sorted(data["children"], key=lambda x: x["path"])
                 data["expanded"] = True
                 for c in data["children"]:
                     fix_tree(c)
 
         mib = self.get_object_or_404(MIB, id=id)
-        data = {
-            "oid": "",
-            "leaf": True,
-            "path": []
-        }
+        data = {"oid": "", "leaf": True, "path": []}
         for d in MIBData.objects.filter(mib=mib.id).order_by("oid"):
             ds = {
                 "oid": d.oid,
@@ -74,7 +64,7 @@ class MIBApplication(ExtDocApplication):
                 "path": [int(x) for x in d.oid.split(".")],
                 "leaf": True,
                 "description": d.description,
-                "syntax": self.get_syntax(d)
+                "syntax": self.get_syntax(d),
             }
             insert_tree(data, ds)
         fix_tree(data)
@@ -126,14 +116,10 @@ class MIBApplication(ExtDocApplication):
             if len(left) == n:
                 # Failed to upload anything, stopping
                 break
-        r = {
-            "success": len(left) == 0,
-            "errors": errors
-        }
+        r = {"success": len(left) == 0, "errors": errors}
         return r
 
-    @view(url="^(?P<id>[0-9a-f]{24})/text/$", method=["GET"],
-          access="launch", api=True)
+    @view(url="^(?P<id>[0-9a-f]{24})/text/$", method=["GET"], access="launch", api=True)
     def api_text(self, request, id):
         mib = self.get_object_or_404(MIB, id=id)
         try:

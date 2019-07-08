@@ -9,6 +9,7 @@
 # Python modules
 import threading
 import uuid
+
 # NOC modules
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.loader import get_dcs
@@ -36,14 +37,8 @@ class ScriptCaller(object):
                 # Session call
                 return session(self.name, kwargs)
         # Direct call
-        return open_sync_rpc(
-            "sae",
-            calling_service=config.script.calling_service
-        ).script(
-            self.object_id,
-            self.name,
-            kwargs,  # params
-            None  # timeout
+        return open_sync_rpc("sae", calling_service=config.script.calling_service).script(
+            self.object_id, self.name, kwargs, None  # params  # timeout
         )
 
 
@@ -62,29 +57,22 @@ class Session(object):
         :return:
         """
         try:
-            svc = get_dcs().resolve_sync(
-                "activator-%s" % self._pool,
-                hint=self._hints[0]
-            )
+            svc = get_dcs().resolve_sync("activator-%s" % self._pool, hint=self._hints[0])
             self._hints[0] = svc
         except ResolutionError:
             raise RPCNoService("activator-%s" % self._pool)
 
     def __call__(self, name, args, timeout=None):
         # Call SAE for credentials
-        data = open_sync_rpc(
-            "sae",
-            calling_service=CALLING_SERVICE
-        ).get_credentials(self._object_id)
+        data = open_sync_rpc("sae", calling_service=CALLING_SERVICE).get_credentials(
+            self._object_id
+        )
         self._pool = data["pool"]
         # Get activator hints
         self._get_hints()
         # Call activator
         return open_sync_rpc(
-            "activator",
-            pool=data["pool"],
-            calling_service=CALLING_SERVICE,
-            hints=self._hints
+            "activator", pool=data["pool"], calling_service=CALLING_SERVICE, hints=self._hints
         ).script(
             "%s.%s" % (data["profile"], name),
             data["credentials"],
@@ -93,17 +81,14 @@ class Session(object):
             args,
             timeout,
             self._id,
-            self._idle_timeout
+            self._idle_timeout,
         )
 
     def close(self):
         if not self._hints[0]:
             return  # Not open
         open_sync_rpc(
-            "activator",
-            pool=self._pool,
-            calling_service=CALLING_SERVICE,
-            hints=self._hints
+            "activator", pool=self._pool, calling_service=CALLING_SERVICE, hints=self._hints
         ).close_session(self._id)
 
 

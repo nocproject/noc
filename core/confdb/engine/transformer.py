@@ -9,6 +9,7 @@
 # Python modules
 import ast
 import itertools
+
 # Third-party modules
 from six.moves import zip_longest
 
@@ -24,12 +25,9 @@ class PredicateTransformer(ast.NodeTransformer):
     def wrap_callable(self, node):
         return ast.Lambda(
             args=ast.arguments(
-                args=[ast.Name(id=CVAR_NAME, ctx=ast.Param())],
-                vararg=None,
-                kwarg=None,
-                defaults=[]
+                args=[ast.Name(id=CVAR_NAME, ctx=ast.Param())], vararg=None, kwarg=None, defaults=[]
             ),
-            body=node
+            body=node,
         )
 
     def wrap_visitor(self, node):
@@ -44,10 +42,7 @@ class PredicateTransformer(ast.NodeTransformer):
         vx = getattr(fn, "visitor", None)
         if not vx:
             return [self.wrap_visitor(x) for x in args]
-        wrap = {
-            "x": self.wrap_expr,
-            "v": self.wrap_visitor
-        }
+        wrap = {"x": self.wrap_expr, "v": self.wrap_visitor}
         return [wrap[v](a) for v, a in zip_longest(vx, args, fillvalue=vx[-1])]
 
     def visit_Call(self, node, _input=None):
@@ -60,12 +55,12 @@ class PredicateTransformer(ast.NodeTransformer):
             func=ast.Attribute(
                 value=ast.Name(id="self", ctx=ast.Load()),
                 attr="fn_%s" % node.func.id,
-                ctx=ast.Load()
+                ctx=ast.Load(),
             ),
             args=[_input] + self.visit_args(fn, node.args),
             keywords=[ast.keyword(arg=k.arg, value=self.wrap_expr(k.value)) for k in node.keywords],
             starargs=node.starargs,
-            kwargs=node.kwargs
+            kwargs=node.kwargs,
         )
 
     def visit_BoolOp(self, node, _input=None):
@@ -83,21 +78,19 @@ class PredicateTransformer(ast.NodeTransformer):
                         args=[ast.Name(id="self", ctx=ast.Param()), l_input],
                         vararg=None,
                         kwarg=None,
-                        defaults=[]
+                        defaults=[],
                     ),
-                    body=self.visit_Call(cn, _input=l_input)
+                    body=self.visit_Call(cn, _input=l_input),
                 )
 
             return ast.Call(
                 func=ast.Attribute(
-                    value=ast.Name(id="self", ctx=ast.Load()),
-                    attr="op_Or",
-                    ctx=ast.Load()
+                    value=ast.Name(id="self", ctx=ast.Load()), attr="op_Or", ctx=ast.Load()
                 ),
                 args=[_input] + [make_or_call(n) for n in chain],
                 keywords=[],
                 starargs=None,
-                kwargs=None
+                kwargs=None,
             )
 
         if not _input:
@@ -116,28 +109,24 @@ class PredicateTransformer(ast.NodeTransformer):
         """
         return ast.Call(
             func=ast.Attribute(
-                value=ast.Name(id="self", ctx=ast.Load()),
-                attr="fn_Var",
-                ctx=ast.Load()
+                value=ast.Name(id="self", ctx=ast.Load()), attr="fn_Var", ctx=ast.Load()
             ),
             args=[ast.Str(s=node.id)],
             keywords=[],
             starargs=None,
-            kwargs=None
+            kwargs=None,
         )
 
     def visit_UnaryOp(self, node):
         if isinstance(node.op, ast.Not):
             return ast.Call(
                 func=ast.Attribute(
-                    value=ast.Name(id="self", ctx=ast.Load()),
-                    attr="op_Not",
-                    ctx=ast.Load()
+                    value=ast.Name(id="self", ctx=ast.Load()), attr="op_Not", ctx=ast.Load()
                 ),
                 args=[self.visit(node.operand)],
                 keywords=[],
                 starargs=None,
-                kwargs=None
+                kwargs=None,
             )
 
         return node
@@ -152,5 +141,5 @@ class ExpressionTransformer(ast.NodeTransformer):
         return ast.Subscript(
             value=ast.Name(id=CVAR_NAME, ctx=ast.Load()),
             slice=ast.Index(value=ast.Str(s=node.id)),
-            ctx=ast.Load()
+            ctx=ast.Load(),
         )

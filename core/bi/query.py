@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # Python modules
 from noc.core.clickhouse.dictionary import Dictionary
 from noc.models import get_model
@@ -19,8 +20,8 @@ class OP(object):
     :param max: Maximal count element in query
     :param convert: Convert function name
     """
-    def __init__(self, min=None, max=None, join=None,
-                 prefix=None, convert=None, function=None):
+
+    def __init__(self, min=None, max=None, join=None, prefix=None, convert=None, function=None):
         self.min = min
         self.max = max
         self.join = join
@@ -93,8 +94,7 @@ def f_ternary_if(seq, model=None):
     :param model:
     :return:
     """
-    return "((%s) ? (%s) : (%s))" % (to_sql(seq[0]),
-                                     to_sql(seq[1]), to_sql(seq[2]))
+    return "((%s) ? (%s) : (%s))" % (to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
 
 
 def f_between(seq, model=None):
@@ -104,8 +104,7 @@ def f_between(seq, model=None):
     :param model:
     :return:
     """
-    return "((%s) BETWEEN (%s) AND (%s))" % (
-        to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
+    return "((%s) BETWEEN (%s) AND (%s))" % (to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
 
 
 def f_names(seq, model=None):
@@ -115,8 +114,11 @@ def f_names(seq, model=None):
     :param model:
     :return:
     """
-    return "arrayMap(k->dictGetString('%s', 'name', toUInt64(k)), dictGetHierarchy('%s', %s))" \
-           % (seq[0], seq[0], seq[1])
+    return "arrayMap(k->dictGetString('%s', 'name', toUInt64(k)), dictGetHierarchy('%s', %s))" % (
+        seq[0],
+        seq[0],
+        seq[1],
+    )
 
 
 def f_duration(seq, model=None):
@@ -126,9 +128,10 @@ def f_duration(seq, model=None):
     :param model:
     :return:
     """
-    return "SUM(arraySum(i -> ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1]) < 0) ? 0 :" \
-           " ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1])), [%s]))" \
-           % ",".join(seq)
+    return (
+        "SUM(arraySum(i -> ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1]) < 0) ? 0 :"
+        " ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1])), [%s]))" % ",".join(seq)
+    )
 
 
 def f_selector(seq, model=None):
@@ -146,10 +149,7 @@ def f_selector(seq, model=None):
         raise ValueError("Non-selectable model")
     ids = model.get_bi_selector(query)
     if ids:
-        return "(%s IN (%s))" % (
-            to_sql(expr),
-            ",".join(str(i) for i in ids)
-        )
+        return "(%s IN (%s))" % (to_sql(expr), ",".join(str(i) for i in ids))
     else:
         return "(0 = 1)"
 
@@ -240,7 +240,7 @@ OP_MAP = {
     "$hierarchy": OP(min=2, max=2, function="dictGetHierarchy"),
     "$names": OP(min=2, max=2, convert=f_names),
     "$duration": OP(min=1, convert=f_duration),
-    "$selector": OP(min=3, max=3, convert=f_selector)
+    "$selector": OP(min=3, max=3, convert=f_selector),
 }
 
 

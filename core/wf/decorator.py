@@ -9,8 +9,10 @@
 # Python modules
 import logging
 import datetime
+
 # Third-party modules
 from pymongo import UpdateOne
+
 # NOC modules
 from noc.models import is_document
 
@@ -24,9 +26,7 @@ def fire_event(self, event):
     :return:
     """
     if not self.state:
-        logger.info(
-            "[%s] Cannot fire event '%s'. No default state. Skipping",
-            self, event)
+        logger.info("[%s] Cannot fire event '%s'. No default state. Skipping", self, event)
         return
     self.state.fire_event(event, self)
 
@@ -53,9 +53,7 @@ def document_set_state(self, state):
     :return:
     """
     # Direct update arguments
-    set_op = {
-        "state": state.id
-    }
+    set_op = {"state": state.id}
     # Set state field
     self.state = state
     # Fill expired field
@@ -67,11 +65,7 @@ def document_set_state(self, state):
         set_op["expired"] = self.expired
     # Update database directly
     # to avoid full save
-    self._get_collection().update_one({
-        "_id": self.id
-    }, {
-        "$set": set_op
-    })
+    self._get_collection().update_one({"_id": self.id}, {"$set": set_op})
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
     if ic_handler:
@@ -144,10 +138,11 @@ def _on_document_post_save(sender, document, *args, **kwargs):
         if not new_state:
             logger.info(
                 "[%s] Cannot set default state: No default state for workflow %s",
-                document, profile.workflow.name)
+                document,
+                profile.workflow.name,
+            )
             return
-        logger.debug("[%s] Set initial state to '%s'",
-                     document, new_state.name)
+        logger.debug("[%s] Set initial state to '%s'", document, new_state.name)
         document.set_state(new_state)
 
 
@@ -163,10 +158,11 @@ def _on_model_post_save(sender, instance, *args, **kwargs):
         if not new_state:
             logger.info(
                 "[%s] Cannot set default state: No default state for workflow %s",
-                instance, profile.workflow.name)
+                instance,
+                profile.workflow.name,
+            )
             return
-        logger.debug("[%s] Set initial state to '%s'",
-                     instance, new_state.name)
+        logger.debug("[%s] Set initial state to '%s'", instance, new_state.name)
         instance.set_state(new_state)
 
 
@@ -188,22 +184,22 @@ def workflow(cls):
     if is_document(cls):
         # MongoEngine model
         from mongoengine import signals as mongo_signals
+
         cls.set_state = document_set_state
-        mongo_signals.post_save.connect(
-            _on_document_post_save,
-            sender=cls
-        )
-        if "last_seen" in cls._fields and "expired" in cls._fields and "first_discovered" in cls._fields:
+        mongo_signals.post_save.connect(_on_document_post_save, sender=cls)
+        if (
+            "last_seen" in cls._fields
+            and "expired" in cls._fields
+            and "first_discovered" in cls._fields
+        ):
             cls.touch = document_touch
             cls._has_expired = True
     else:
         # Django model
         from django.db.models import signals as django_signals
+
         cls.set_state = model_set_state
-        django_signals.post_save.connect(
-            _on_model_post_save,
-            sender=cls
-        )
+        django_signals.post_save.connect(_on_model_post_save, sender=cls)
     cls.fire_transition = fire_transition
     cls.fire_event = fire_event
     return cls

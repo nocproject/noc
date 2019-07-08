@@ -8,12 +8,13 @@
 
 # Python modules
 from __future__ import print_function, absolute_import
-import itertools
 import os
 import six
+
 # Third-party modules
 from six.moves import zip_longest
 import yaml
+
 # NOC modules
 from .base import BaseProtocol
 
@@ -24,6 +25,7 @@ class YAMLProtocol(BaseProtocol):
     URL:
         yaml:///<path>
     """
+
     INDENT = "  "
     ESCAPE_START = ("@", "%", "&")
 
@@ -56,7 +58,7 @@ class YAMLProtocol(BaseProtocol):
             if prefix != current:
                 # Common part
                 current = [x for x, y in zip_longest(current, prefix) if x == y]
-                for pp in prefix[len(current):]:
+                for pp in prefix[len(current) :]:
                     r += ["%s%s:" % (self.INDENT * len(current), pp)]
                     current += [pp]
             if isinstance(v, six.string_types) and v.startswith(self.ESCAPE_START):

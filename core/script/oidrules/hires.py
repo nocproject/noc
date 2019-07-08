@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .loader import load_rule
 
@@ -17,6 +18,7 @@ class HiresRule(object):
     Select *hires* chain if SNMP | IF-MIB HC capability set,
     Select *normal* capability otherwise
     """
+
     name = "hires"
 
     def __init__(self, hires, normal):
@@ -36,7 +38,4 @@ class HiresRule(object):
         for v in ("hires", "normal"):
             if v not in data:
                 raise ValueError("%s is required" % v)
-        return HiresRule(
-            hires=load_rule(data["hires"]),
-            normal=load_rule(data["normal"])
-        )
+        return HiresRule(hires=load_rule(data["hires"]), normal=load_rule(data["normal"]))

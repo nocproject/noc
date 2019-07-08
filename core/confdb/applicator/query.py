@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseApplicator
 
@@ -30,10 +31,7 @@ class QueryApplicator(BaseApplicator):
     def apply(self):
         if not self.QUERY:
             return
-        cfg = {
-            "object": self.object,
-            "profile": self.object.profile.get_profile()
-        }
+        cfg = {"object": self.object, "profile": self.object.profile.get_profile()}
         cfg.update(self.config)
         for q in self.QUERY:
             list(self.confdb.query(q, **cfg))
@@ -43,9 +41,6 @@ class QueryApplicator(BaseApplicator):
             return False
         if not self.CHECK_QUERY:
             return True
-        cfg = {
-            "object": self.object,
-            "profile": self.object.profile.get_profile()
-        }
+        cfg = {"object": self.object, "profile": self.object.profile.get_profile()}
         cfg.update(self.config)
         return any(self.confdb.query(self.CHECK_QUERY, **cfg))

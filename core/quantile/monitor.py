@@ -8,12 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.config import config
 from .base import Summary, TargetedStream
 
-DEFAULT_TARGETS = [(q, config.metrics.default_quantiles_epsilon)
-                   for q in config.metrics.default_quantiles]
+DEFAULT_TARGETS = [
+    (q, config.metrics.default_quantiles_epsilon) for q in config.metrics.default_quantiles
+]
 DEFAULT_QUANTILE_SCALE = 1000000
 Q_SUFFIX = "_@q"
 Q_SUFFIX_LEN = len(Q_SUFFIX)
@@ -22,8 +24,12 @@ Q_SUFFIX_LEN = len(Q_SUFFIX)
 class Quantile(Summary):
     def __init__(self, scale=DEFAULT_QUANTILE_SCALE):
         super(Quantile, self).__init__(
-            config.metrics.default_quantiles_window, 1,
-            TargetedStream, config.metrics.default_quantiles_buffer, DEFAULT_TARGETS)
+            config.metrics.default_quantiles_window,
+            1,
+            TargetedStream,
+            config.metrics.default_quantiles_buffer,
+            DEFAULT_TARGETS,
+        )
         self.scale = scale
 
     def iter_prom_metrics(self, name, labels):
@@ -35,8 +41,8 @@ class Quantile(Summary):
         for quantile in config.metrics.default_quantiles:
             value, = self.query(quantile, 0)
             all_labels = ext_labels + [
-                "quantile=\"%s\"" % quantile,
-                "window=\"%s\"" % config.metrics.default_quantiles_window
+                'quantile="%s"' % quantile,
+                'window="%s"' % config.metrics.default_quantiles_window,
             ]
             yield "# TYPE %s untyped" % name
             yield "%s{%s} %s" % (name, ",".join(all_labels), float(value) / self.scale)

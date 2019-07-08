@@ -14,8 +14,8 @@ import math
 from collections import namedtuple, deque
 import sys
 import threading
+
 # NOC modules
-from noc.config import config
 from noc.core.backport.time import perf_counter
 
 # Each sample contains
@@ -34,6 +34,7 @@ class Stream(object):
 
     :param n:
     """
+
     def __init__(self, buff_size):
         self.buff_size = buff_size
         self.sorted = False
@@ -89,6 +90,7 @@ class Stream(object):
         Merge unmerged and merged samples, maintaining merged samples in sorted order
         :return:
         """
+
         def get_next(iter):
             try:
                 return next(iter)
@@ -226,6 +228,7 @@ class BiasedStream(Stream):
     :param n:
     :param epsilon:
     """
+
     def __init__(self, n, epsilon):
         super(BiasedStream, self).__init__(n)
         self.epsilon = epsilon
@@ -240,6 +243,7 @@ class LowBiasedStream(BiasedStream):
     The provided epsilon is a relative error, i.e. the true quantile of a value
     returned by a query is guaranteed to be within (1±Epsilon)*Quantile
     """
+
     def f(self, r, n):
         return 2 * self.epsilon * r
 
@@ -253,6 +257,7 @@ class HighBiasedStream(BiasedStream):
     The provided epsilon is a relative error, i.e. the true quantile of a value
     returned by a query is guaranteed to be within 1-(1±Epsilon)*(1-Quantile)
     """
+
     def f(self, r, n):
         return 2 * self.epsilon * (n - r)
 
@@ -268,6 +273,7 @@ class TargetedStream(Stream):
     :param n:
     :param targets: List of (quantile, epsilon)
     """
+
     def __init__(self, n, targets):
         super(TargetedStream, self).__init__(n)
         self.targets = targets
@@ -296,6 +302,7 @@ class Summary(object):
     :param kls: `Stream` subclass
     :param *args: `Stream` constructor parameters
     """
+
     def __init__(self, ttl, n, kls, *args):
         self.ttl = ttl
         self.slots = deque()

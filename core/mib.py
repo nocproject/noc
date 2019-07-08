@@ -9,6 +9,7 @@
 # Python modules
 import os
 import logging
+
 # Third-party modules
 import six
 from noc.config import config
@@ -46,10 +47,7 @@ class MIBRegistry(object):
                         # Common script
                         base_name = "noc"
                     # mn = "%s.%s" % (base_name, fp[:-3].replace(os.path.sep, "."))
-                    mn = "%s.cmibs.%s" % (
-                        base_name,
-                        f[:-3]
-                    )
+                    mn = "%s.cmibs.%s" % (base_name, f[:-3])
                     m = __import__(mn, {}, {}, "*")
                     if hasattr(m, "NAME") and hasattr(m, "MIB"):
                         name = m.NAME

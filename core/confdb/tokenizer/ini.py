@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from six.moves.configparser import RawConfigParser
 from six import StringIO
+
 # NOC modules
 from .base import BaseTokenizer
 
@@ -19,6 +21,7 @@ class INITokenizer(BaseTokenizer):
     """
     .ini file parser. Yields (section, key, value)
     """
+
     name = "ini"
 
     def __init__(self, data):

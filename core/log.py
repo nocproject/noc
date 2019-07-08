@@ -9,6 +9,7 @@
 # Python modules
 import logging
 import datetime
+
 # NOC modules
 from noc.core.debug import get_traceback, error_fingerprint
 
@@ -17,6 +18,7 @@ class PrefixLoggerAdapter(object):
     """
     Add [prefix] to log message
     """
+
     def __init__(self, logger, prefix, target=None):
         """
         :param logger: Parent logger
@@ -35,19 +37,14 @@ class PrefixLoggerAdapter(object):
             self.prefix = ""
 
     def _log(self, level, msg, args, **kwargs):
-        self.logger._log(
-            level,
-            self.prefix + msg,
-            args,
-            **kwargs
-        )
+        self.logger._log(level, self.prefix + msg, args, **kwargs)
         if self.target:
             if args:
                 msg = msg % args
             msg = "%s %s %s\n" % (
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
                 self.prefix,
-                msg
+                msg,
             )
             self.target.write(msg)
 
@@ -86,17 +83,14 @@ class PrefixLoggerAdapter(object):
         """
         Returns new logger adapter with additional prefix
         """
-        return PrefixLoggerAdapter(
-            self.logger,
-            self.prefix[1:] + prefix,
-            self.target
-        )
+        return PrefixLoggerAdapter(self.logger, self.prefix[1:] + prefix, self.target)
 
 
 class ColorFormatter(logging.Formatter):
     """
     Colored terminal formatter
     """
+
     DEFAULT_LOG_COLORS = {
         logging.DEBUG: 4,  # Blue
         logging.INFO: 2,  # Green
@@ -136,14 +130,12 @@ class ColorFormatter(logging.Formatter):
         Set up terminal colors
         """
         import curses
+
         self._colors = {}
-        fg_color = (curses.tigetstr("setaf") or
-                    curses.tigetstr("setf") or
-                    "")
+        fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or ""
         for level in self.DEFAULT_LOG_COLORS:
             self._colors[level] = unicode(
-                curses.tparm(fg_color, self.DEFAULT_LOG_COLORS[level]),
-                "ascii"
+                curses.tparm(fg_color, self.DEFAULT_LOG_COLORS[level]), "ascii"
             )
         self._end_color = unicode(curses.tigetstr("sgr0"), "ascii")
 

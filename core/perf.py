@@ -17,6 +17,7 @@ Usage:
 """
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 from atomiclong import AtomicLong
 import six

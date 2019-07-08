@@ -23,6 +23,7 @@ def get_service():
 
     if not _service:
         from .stub import ServiceStub
+
         _service = ServiceStub()
         _service.start()
     return _service

@@ -11,6 +11,7 @@ import os
 import sys
 import subprocess
 import platform
+
 # NOC modules
 from noc.config import config
 
@@ -53,9 +54,7 @@ class Version(object):
         :return:
         """
         if self.has_git:
-            return subprocess.check_output([
-                "git", "rev-parse", "--abbrev-ref", "HEAD"
-            ]).strip()
+            return subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
         else:
             return ""
 
@@ -66,26 +65,23 @@ class Version(object):
         :return:
         """
         if self.has_git:
-            return subprocess.check_output([
-                "git", "rev-parse", "HEAD"
-            ])[:CHANGESET_LEN]
+            return subprocess.check_output(["git", "rev-parse", "HEAD"])[:CHANGESET_LEN]
         else:
             return ""
 
     @cachedproperty
     def version(self):
         if self.has_git:
-            v = subprocess.check_output([
-                "git", "describe", "--tags",
-                "--abbrev=%d" % CHANGESET_LEN
-            ])
+            v = subprocess.check_output(
+                ["git", "describe", "--tags", "--abbrev=%d" % CHANGESET_LEN]
+            )
             if "-" not in v:
                 return v
             r = v.rsplit("-", 2)
             if len(r) < 3:
                 return v
             v, n, cs = r
-            return "%s+%s.%s.%s" % (v, self.branch, n, cs[1:CHANGESET_LEN + 1])
+            return "%s+%s.%s.%s" % (v, self.branch, n, cs[1 : CHANGESET_LEN + 1])
         else:
             # Productive, get version from VERSION file
             with open("VERSION") as f:
@@ -117,7 +113,7 @@ class Version(object):
                             continue
                         line = line.strip()
                         k, v = line.split("=", 1)
-                        if v.startswith("\"") and v.endswith("\""):
+                        if v.startswith('"') and v.endswith('"'):
                             v = v[1:-1]
                         vdata[k] = v
                 return "%s %s" % (vdata["NAME"], vdata["VERSION_ID"])
@@ -156,9 +152,7 @@ class Version(object):
 
     @cachedproperty
     def package_versions(self):
-        return {
-            "Python": self.python_version
-        }
+        return {"Python": self.python_version}
 
 
 # Singleton instance

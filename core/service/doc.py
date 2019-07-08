@@ -15,9 +15,7 @@ class DocRequestHandler(tornado.web.RequestHandler):
         self.service = service
 
     def get(self):
-        r = [
-            "%s documentation" % self.service.name
-        ]
+        r = ["%s documentation" % self.service.name]
         for s in self.service.api:
             r += [s.__doc__]
             for m in dir(s):

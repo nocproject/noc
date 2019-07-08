@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # NOC modules
 from noc.config import config
 from .loader import loader
@@ -31,6 +32,7 @@ def ensure_bi_models(connect=None):
 
 def ensure_pm_scopes(connect=None):
     from noc.pm.models.metricscope import MetricScope
+
     logger.info("Ensuring PM scopes")
     changed = False
     for s in MetricScope.objects.all():
@@ -48,7 +50,9 @@ def ensure_all_pm_scopes():
         return
     # Replicated configuration
     ch = connection(read_only=False)
-    for host, port in ch.execute("SELECT host_address, port FROM system.clusters WHERE cluster = %s",
-                                 args=[config.clickhouse.cluster]):
+    for host, port in ch.execute(
+        "SELECT host_address, port FROM system.clusters WHERE cluster = %s",
+        args=[config.clickhouse.cluster],
+    ):
         c = connection(host=host, port=port, read_only=False)
         ensure_pm_scopes(c)

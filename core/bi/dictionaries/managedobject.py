@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField
 
 
 class ManagedObject(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "managedobject"
         layout = "hashed"
 
