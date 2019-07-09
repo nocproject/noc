@@ -57,15 +57,9 @@ class Command(BaseCommand):
         # mirror command
         sp_mirr = subparsers.add_parser("mirror", help="Mirror repo")
         sp_mirr.add_argument(
-            "--split",
-            action="store_true",
-            default=False,
-            help="Add pool name to path"
+            "--split", action="store_true", default=False, help="Add pool name to path"
         )
-        sp_mirr.add_argument(
-            "--path",
-            help="Path to folder",
-            default="/tmp/cfg_mirror")
+        sp_mirr.add_argument("--path", help="Path to folder", default="/tmp/cfg_mirror")
 
     def out(self, msg):
         if not self.verbose_level:
@@ -132,17 +126,16 @@ class Command(BaseCommand):
         mirror = os.path.realpath(path)
         self.print("Mirroring to %s" % path)
         if self.repo == "config":
-            for o_id, address, pool in self.progress(ManagedObject.objects.filter().values_list(
-                    "id", "address", "pool")):
+            for o_id, address, pool in self.progress(
+                ManagedObject.objects.filter().values_list("id", "address", "pool")
+            ):
                 pool = Pool.get_by_id(pool)
                 data = self.vcs.get(self.clean_id(o_id))
                 if data:
                     if split:
-                        mpath = os.path.realpath(
-                            os.path.join(mirror, str(pool), str(address)))
+                        mpath = os.path.realpath(os.path.join(mirror, str(pool), str(address)))
                     else:
-                        mpath = os.path.realpath(
-                            os.path.join(mirror, str(address)))
+                        mpath = os.path.realpath(os.path.join(mirror, str(address)))
                     if mpath.startswith(mirror):
                         safe_rewrite(mpath, data)
                     else:
