@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Latest Change Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from pymongo import ReadPreference
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain

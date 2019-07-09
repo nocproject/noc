@@ -52,7 +52,7 @@ from noc.cm.engine import Engine
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.core.defer import call_later
 from noc.core.translation import ugettext as _
 

@@ -18,7 +18,7 @@ from pymongo import ReadPreference
 import xlsxwriter
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject

@@ -21,7 +21,7 @@ import bsdiff4
 from bson import ObjectId
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from .revision import Revision
 
 

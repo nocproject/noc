@@ -12,7 +12,7 @@ import logging
 import datetime
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from .loader import MigrationLoader
 
 

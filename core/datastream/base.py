@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # DataStream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ import re
 
 # NOC modules
 from noc.core.perf import metrics
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 
 
 class DataStream(object):

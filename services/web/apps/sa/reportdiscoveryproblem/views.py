@@ -9,11 +9,11 @@
 # Third-party modules
 import six
 from django import forms
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from noc.lib.nosql import get_db
-from pymongo import ReadPreference
+from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile

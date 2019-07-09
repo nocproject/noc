@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Fix platform.full_name
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 from pymongo import UpdateOne
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 
 
 def fix():

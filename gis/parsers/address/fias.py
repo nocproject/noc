@@ -21,7 +21,7 @@ from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.street import Street
 from noc.gis.models.address import Address
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.gis.utils.addr.ru import normalize_division
 from .base import AddressParser
 

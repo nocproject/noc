@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BI extract/load commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from pymongo.errors import OperationFailure
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor

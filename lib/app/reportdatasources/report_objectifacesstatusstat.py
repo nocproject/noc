@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportObjectIfacesTypeStat datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from pymongo import ReadPreference
 
 # NOC modules
 from .base import BaseReportColumn
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 
 
 class ReportObjectIfacesStatusStat(BaseReportColumn):

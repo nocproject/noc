@@ -9,6 +9,7 @@
 # NOC modules
 from noc.core.migration.runner import MigrationRunner
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
@@ -19,6 +20,7 @@ class Command(BaseCommand):
     help = "migrate database"
 
     def handle(self, *args, **options):
+        connect()
         runner = MigrationRunner()
         runner.migrate()
 
