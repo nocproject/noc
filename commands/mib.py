@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # MIB command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ class Command(BaseCommand):
             "# %s" % mib,
             "#     Compiled MIB",
             "#     Do not modify this file directly",
-            "#     Run ./noc make-cmib instead",
+            "#     Run ./noc mib make-cmib instead",
             "# ----------------------------------------------------------------------",
             "# Copyright (C) 2007-%s The NOC Project" % year,
             "# See LICENSE for details",
@@ -113,9 +113,11 @@ class Command(BaseCommand):
             "",
             "# MIB Name",
             'NAME = "%s"' % mib,
+            "",
             "# Metadata",
             'LAST_UPDATED = "%s"' % m.last_updated.isoformat().split("T")[0],
             'COMPILED = "%s"' % datetime.date.today().isoformat(),
+            "",
             "# MIB Data: name -> oid",
             "MIB = {",
         ]
@@ -124,7 +126,7 @@ class Command(BaseCommand):
             MIBData.objects.filter(mib=m.id), key=lambda x: [int(y) for y in x.oid.split(".")]
         ):
             rr += ['    "%s": "%s"' % (md.name, md.oid)]
-        r += [",\n".join(rr)]
+        r += [",\n".join(rr) + ","]
         r += ["}", ""]
         data = "\n".join(r)
         f(data)
