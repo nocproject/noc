@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # mongo profiling tool
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,8 +10,9 @@
 import time
 import sys
 import csv
+
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 
 COLLECT_TIME = 10
 
@@ -28,21 +29,22 @@ def iter_profile(collect_time=COLLECT_TIME):
 
 def dump_profile(gen):
     writer = csv.writer(sys.stdout, delimiter="\t")
-    writer.writerow([
-        "ts", "op", "ns", "millis", "nreturned", "nscanned",
-        "response_length", "query"
-    ])
+    writer.writerow(
+        ["ts", "op", "ns", "millis", "nreturned", "nscanned", "response_length", "query"]
+    )
     for r in gen:
-        writer.writerow([
-            r["ts"].isoformat(),
-            r.get("op", ""),
-            r["ns"],
-            r["millis"],
-            r.get("nreturned", ""),
-            r.get("nscanned", ""),
-            r.get("responseLength", ""),
-            r.get("query", "")
-        ])
+        writer.writerow(
+            [
+                r["ts"].isoformat(),
+                r.get("op", ""),
+                r["ns"],
+                r["millis"],
+                r.get("nreturned", ""),
+                r.get("nscanned", ""),
+                r.get("responseLength", ""),
+                r.get("query", ""),
+            ]
+        )
 
 
 if __name__ == "__main__":

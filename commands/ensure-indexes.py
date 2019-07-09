@@ -15,13 +15,13 @@ from noc.models import get_model, iter_model_id, is_document
 from noc.core.datastream.loader import loader as ds_loader
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
+from noc.core.mongo.connection import connect, get_db
 from noc.config import config
 
 
 class Command(BaseCommand):
     def handle(self, host=None, port=None, *args, **options):
-        from noc.lib.nosql import get_db
-
+        connect()
         db = get_db()
         collections = set(db.list_collection_names())
         for model_id in iter_model_id():

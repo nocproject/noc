@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # FM Collector
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import time
 
 # NOC modules
 from .base import BaseCollector
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.alarmclass import AlarmClass

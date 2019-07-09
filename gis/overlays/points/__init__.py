@@ -3,13 +3,13 @@
 # Points overlay -
 # Displays points on map
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.gis.overlays.base import *
-from noc.lib.nosql import get_db
+from noc.gis.overlays.base import OverlayHandler
+from noc.core.mongo.connection import get_db
 
 
 class PointsOverlay(OverlayHandler):

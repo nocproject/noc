@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Scheduler Job Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ from pymongo import DeleteOne, UpdateOne
 
 # NOC modules
 from .job import Job
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.core.handler import get_handler
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.perf import metrics

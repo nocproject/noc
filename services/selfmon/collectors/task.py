@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Task Collector
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from collections import OrderedDict
 
 # NOC modules
 from .base import BaseCollector
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
 

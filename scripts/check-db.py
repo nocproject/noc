@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import sys
 
 
@@ -22,7 +23,7 @@ def check_pg():
 
 
 def check_mongo():
-    from noc.lib.nosql import get_db
+    from noc.core.mongo.connection import get_db
     import pymongo
 
     try:

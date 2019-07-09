@@ -16,7 +16,7 @@ from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 
 # NOC modules
 from .base import BaseCache
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.config import config
 
 

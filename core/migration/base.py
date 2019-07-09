@@ -13,7 +13,7 @@ from __future__ import absolute_import
 import six
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from .db import db
 
 

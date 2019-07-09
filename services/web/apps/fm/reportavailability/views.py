@@ -19,7 +19,7 @@ from mongoengine.queryset.visitor import Q
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
