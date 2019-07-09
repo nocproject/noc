@@ -24,7 +24,7 @@ from mongoengine.fields import (
 )
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from .profile import Profile
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json

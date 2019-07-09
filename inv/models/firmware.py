@@ -23,7 +23,7 @@ import cachetools
 # NOC modules
 from .vendor import Vendor
 from noc.sa.models.profile import Profile
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check

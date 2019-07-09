@@ -30,7 +30,7 @@ from mongoengine.fields import (
 import cachetools
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler

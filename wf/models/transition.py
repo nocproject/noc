@@ -30,7 +30,7 @@ import cachetools
 # NOC modules
 from .workflow import Workflow
 from .state import State
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler

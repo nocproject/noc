@@ -21,7 +21,7 @@ import cachetools
 # NOC Modules
 from .metricscope import MetricScope
 from noc.inv.models.capability import Capability
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json

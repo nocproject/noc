@@ -15,7 +15,7 @@ from mongoengine.fields import StringField, IntField, DictField, BooleanField
 from mongoengine.signals import post_save
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from .street import Street
 from .building import Building
 

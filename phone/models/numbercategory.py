@@ -19,7 +19,7 @@ from mongoengine.fields import StringField, BooleanField, IntField, ListField, E
 import cachetools
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from .dialplan import DialPlan
 

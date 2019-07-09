@@ -27,7 +27,7 @@ import cachetools
 
 # NOC modules
 from .workflow import Workflow
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
@@ -148,7 +148,7 @@ class State(Document):
                     logger.debug("[%s|%s] Invalid handler %s, skipping", obj, self.name, hn)
         # Run Job handler when necessary
         if self.job_handler:
-            logger.debug("[%s|%s] Running job handler %s", obj.self.name, self.job_handler)
+            logger.debug("[%s|%s] Running job handler %s", obj, self.name, self.job_handler)
             try:
                 h = get_handler(self.job_handler)
             except ImportError as e:
