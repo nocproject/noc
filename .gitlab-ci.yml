@@ -252,6 +252,8 @@ Test python 3:
   stage: test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - mv .dockerignore .dockerignore.prod
+    - cp .dockerignore.tests .dockerignore
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     # see docker/docker-compose.yml for complete list of migrations
@@ -269,6 +271,7 @@ Test python 3:
       python3
   after_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - mv .dockerignore.prod .dockerignore
     - >
       docker-compose
       -f .docker/docker-compose.yml
@@ -286,10 +289,19 @@ Build docs:
   before_script:
     - NOC_SRC_PATH=${CI_PROJECT_DIR}
   script:
-    - cd docs/
-    - python ./scripts/build-auto-include.py
-    - sphinx-build -a -E -b html src/en ../build/docs/en
-    - python ./scripts/build-go.py ../build/docs/en/objects.inv
+    - set -x
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep "^docs/" || true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        cd docs/
+        python ./scripts/build-auto-include.py
+        sphinx-build -a -E -b html src/en ../build/docs/en
+        python ./scripts/build-go.py ../build/docs/en/objects.inv
+      else
+        echo "No doc changes to build"
+        true;
+      fi
   tags:
     - docker
   artifacts:
@@ -297,14 +309,14 @@ Build docs:
       - build/docs/en
     expire_in: 2 hours
   only:
-    changes:
-      - docs/**
+    - merge_requests
 
 Build Master Docs:
   stage: Build docs
   environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
   script:
+    - set -x
     - cd docs/
     - python ./scripts/build-auto-include.py
     - sphinx-build -a -E -b html src/en ../build/docs/en
