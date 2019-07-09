@@ -63,6 +63,7 @@ class UnicodeParameter(StringParameter):
     """
     Check value is unicode
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -192,6 +193,7 @@ class ListParameter(Parameter):
     """
     Check value is list
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -603,6 +605,7 @@ class IPParameter(StringParameter):
     """
     Check value is IPv4 or IPv6 address
     """
+
     def clean(self, value):
         if ":" in value:
             return IPv6Parameter().clean(value)
@@ -640,6 +643,7 @@ class VLANStackParameter(ListOfParameter):
     """
     Check value is a stack of of VLAN ID
     """
+
     def __init__(self, required=True, default=None):
         super(VLANStackParameter, self).__init__(
             element=IntParameter(), required=required, default=default, convert=True
@@ -669,6 +673,7 @@ class VLANIDMapParameter(StringParameter):
     """
     Check value is vlan map/vc filter
     """
+
     def clean(self, value):
         if isinstance(value, six.string_types) and not value.strip():
             return ""

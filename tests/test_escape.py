@@ -8,20 +8,16 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
-from noc.lib.escape import fm_escape, fm_unescape, json_escape
+from noc.lib.escape import fm_escape, fm_unescape
 
 
-@pytest.mark.parametrize("value,expected", [
-    ("ab\xffcd", "ab=FFcd")
-])
+@pytest.mark.parametrize("value,expected", [("ab\xffcd", "ab=FFcd")])
 def test_fm_escape(value, expected):
     assert fm_escape(value) == expected
 
 
-@pytest.mark.parametrize("value,expected", [
-    ("ab=FFcd", "ab\xffcd")
-])
+@pytest.mark.parametrize("value,expected", [("ab=FFcd", "ab\xffcd")])
 def test_fm_unescape(value, expected):
     assert fm_unescape(value) == expected
-
