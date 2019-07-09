@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.confdb.tokenizer.context import ContextTokenizer
 from noc.core.confdb.patterns import ANY
@@ -68,7 +69,7 @@ TOKENS1 = [
     ("interface", "port", "2", "switchport", "port-security", "maximum", "2"),
     ("interface", "ip", "0"),
     ("interface", "ip", "0", "ip", "vlan", "126"),
-    ("interface", "ip", "0", "ip", "address", "172.16.0.1", "255.255.254.0", "126")
+    ("interface", "ip", "0", "ip", "address", "172.16.0.1", "255.255.254.0", "126"),
 ]
 
 # Alstec-like
@@ -112,29 +113,31 @@ TOKENS2 = [
     ("interface", "0/3"),
     ("interface", "0/3", "vlan", "pvid", "2362"),
     ("interface", "0/3", "vlan", "participation", "include", "2362,4001"),
-    ("interface", "0/3", "set", "igmp")
+    ("interface", "0/3", "set", "igmp"),
 ]
 
 
-@pytest.mark.parametrize("input,config,expected", [
-    # Raisecom
-    (CFG1, {
-        "contexts": [
-            ["interface", ANY, ANY]
-        ],
-        "end_of_context": "!"
-    }, TOKENS1),
-    # Asltec
-    (CFG2, {
-        "contexts": [
-            ["vlan", "database"],
-            ["policy-map", ANY, ANY],
-            ["policy-map", ANY, ANY, "class", ANY],
-            ["interface", ANY]
-        ],
-        "end_of_context": "exit"
-    }, TOKENS2)
-])
+@pytest.mark.parametrize(
+    "input,config,expected",
+    [
+        # Raisecom
+        (CFG1, {"contexts": [["interface", ANY, ANY]], "end_of_context": "!"}, TOKENS1),
+        # Asltec
+        (
+            CFG2,
+            {
+                "contexts": [
+                    ["vlan", "database"],
+                    ["policy-map", ANY, ANY],
+                    ["policy-map", ANY, ANY, "class", ANY],
+                    ["interface", ANY],
+                ],
+                "end_of_context": "exit",
+            },
+            TOKENS2,
+        ),
+    ],
+)
 def test_tokenizer(input, config, expected):
     tokenizer = ContextTokenizer(input, **config)
     assert list(tokenizer) == expected

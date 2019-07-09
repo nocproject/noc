@@ -16,12 +16,13 @@ class DNSZoneProfileApplication(ExtModelApplication):
     """
     DNSZoneProfiles application
     """
+
     title = _("Zone Profiles")
     menu = [_("Setup"), _("Zone Profiles")]
     model = DNSZoneProfile
 
     def field_masterslabel(self, o):
-        return u", ".join([s.name for s in o.masters.all()])
+        return ", ".join([s.name for s in o.masters.all()])
 
     def field_slaveslabel(self, o):
-        return u", ".join([s.name for s in o.slaves.all()])
+        return ", ".join([s.name for s in o.slaves.all()])

@@ -13,9 +13,11 @@ import datetime
 import re
 from collections import defaultdict
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.queryset import Q
+
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -71,14 +73,14 @@ class CorrelatorService(Service):
             ioloop=self.ioloop,
             # @fixme have to be configured ?
             submit_threshold=100,
-            max_chunk=100
+            max_chunk=100,
         )
         self.scheduler.correlator = self
         self.subscribe(
             "correlator.dispose.%s" % config.pool,
             "dispose",
             self.on_dispose_event,
-            max_in_flight=config.correlator.max_threads
+            max_in_flight=config.correlator.max_threads,
         )
         self.scheduler.run()
 
@@ -185,8 +187,7 @@ class CorrelatorService(Service):
             root = ActiveAlarm.objects.filter(**q).first()
             if root:
                 # Root cause found
-                self.logger.info("%s is root cause for %s (Rule: %s)",
-                                 root.id, a.id, rc.name)
+                self.logger.info("%s is root cause for %s (Rule: %s)", root.id, a.id, rc.name)
                 metrics["alarm_correlated_rule"] += 1
                 a.set_root(root)
                 return True
@@ -212,8 +213,7 @@ class CorrelatorService(Service):
                 if rr:
                     # Reverse root cause found
                     self.logger.info(
-                        "%s is root cause for %s (Reverse rule: %s)",
-                        a.id, ca.id, rc.name
+                        "%s is root cause for %s (Reverse rule: %s)", a.id, ca.id, rc.name
                     )
                     metrics["alarm_correlated_rule"] += 1
                     ca.set_root(a)
@@ -231,30 +231,30 @@ class CorrelatorService(Service):
             return
         if e.managed_object.id != managed_object.id:
             metrics["alarm_change_mo"] += 1
-            self.logger.info(
-                "Changing managed object to %s",
-                managed_object.name
-            )
+            self.logger.info("Changing managed object to %s", managed_object.name)
         discriminator, vars = r.get_vars(e)
         if r.unique:
             assert discriminator is not None
             a = ActiveAlarm.objects.filter(
-                managed_object=managed_object.id,
-                discriminator=discriminator).first()
+                managed_object=managed_object.id, discriminator=discriminator
+            ).first()
             if not a:
                 # Try to reopen alarm
                 a = ArchivedAlarm.objects.filter(
                     managed_object=managed_object.id,
                     discriminator=discriminator,
-                    control_time__gte=e.timestamp
+                    control_time__gte=e.timestamp,
                 ).first()
                 if a:
                     # Reopen alarm
                     self.logger.info(
                         "[%s|%s|%s] %s reopens alarm %s(%s)",
-                        e.id, managed_object.name, managed_object.address,
+                        e.id,
+                        managed_object.name,
+                        managed_object.address,
                         e.event_class.name,
-                        a.alarm_class.name, a.id
+                        a.alarm_class.name,
+                        a.id,
                     )
                     a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
                     metrics["alarm_reopen"] += 1
@@ -262,9 +262,12 @@ class CorrelatorService(Service):
                 # Active alarm found, refresh
                 self.logger.info(
                     "[%s|%s|%s] Contributing event %s to active alarm %s(%s)",
-                    e.id, managed_object.name, managed_object.address,
+                    e.id,
+                    managed_object.name,
+                    managed_object.address,
                     e.event_class.name,
-                    a.alarm_class.name, a.id
+                    a.alarm_class.name,
+                    a.id,
                 )
                 # Contribute event to alarm
                 e.contribute_to_alarm(a)
@@ -280,15 +283,16 @@ class CorrelatorService(Service):
                 return
         # Calculate alarm coverage
         summary = ServiceSummary.get_object_summary(managed_object)
-        summary["object"] = {
-            managed_object.object_profile.id: 1
-        }
+        summary["object"] = {managed_object.object_profile.id: 1}
         #
         severity = max(ServiceSummary.get_severity(summary), 1)
         self.logger.info(
             "[%s|%s|%s] %s: Calculated alarm severity is: %s",
-            e.id, managed_object.name, managed_object.address,
-            r.u_name, severity
+            e.id,
+            managed_object.name,
+            managed_object.address,
+            r.u_name,
+            severity,
         )
         # Create new alarm
         direct_services = SummaryItem.dict_to_items(summary["service"])
@@ -311,32 +315,40 @@ class CorrelatorService(Service):
                     timestamp=datetime.datetime.now(),
                     from_status="A",
                     to_status="A",
-                    message="Alarm risen from event %s(%s) by rule '%s'" % (
-                        str(e.id), str(e.event_class.name), r.u_name)
+                    message="Alarm risen from event %s(%s) by rule '%s'"
+                    % (str(e.id), str(e.event_class.name), r.u_name),
                 )
             ],
-            opening_event=e.id
+            opening_event=e.id,
         )
         a.save()
         e.contribute_to_alarm(a)
         self.logger.info(
             "[%s|%s|%s] %s raises alarm %s(%s): %r",
-            e.id, managed_object.name, managed_object.address,
+            e.id,
+            managed_object.name,
+            managed_object.address,
             e.event_class.name,
-            a.alarm_class.name, a.id, a.vars
+            a.alarm_class.name,
+            a.id,
+            a.vars,
         )
         metrics["alarm_raise"] += 1
         self.correlate(r, a)
         # Notify about new alarm
         if not a.root:
-            a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
-                "alarm": a,
-                "subject": a.subject,
-                "body": a.body,
-                "symptoms": a.alarm_class.symptoms,
-                "recommended_actions": a.alarm_class.recommended_actions,
-                "probable_causes": a.alarm_class.probable_causes
-            }, delay=a.alarm_class.get_notification_delay())
+            a.managed_object.event(
+                a.managed_object.EV_ALARM_RISEN,
+                {
+                    "alarm": a,
+                    "subject": a.subject,
+                    "body": a.body,
+                    "symptoms": a.alarm_class.symptoms,
+                    "recommended_actions": a.alarm_class.recommended_actions,
+                    "probable_causes": a.alarm_class.probable_causes,
+                },
+                delay=a.alarm_class.get_notification_delay(),
+            )
         # Gather diagnostics when necessary
         AlarmDiagnosticConfig.on_raise(a)
         # Watch for escalations, when necessary
@@ -364,8 +376,11 @@ class CorrelatorService(Service):
                 if not has_root and a.root:
                     self.logger.info(
                         "[%s|%s|%s] Set root to %s (handler %s)",
-                        a.id, a.managed_object.name, a.managed_object.address,
-                        a.root, h
+                        a.id,
+                        a.managed_object.name,
+                        a.managed_object.address,
+                        a.root,
+                        h,
                     )
             except:  # noqa. Can probable happens anything from handler
                 error_report()
@@ -375,7 +390,7 @@ class CorrelatorService(Service):
             for t in self.triggers[r.alarm_class.id]:
                 try:
                     t.call(a)
-                except: # noqa. Can probable happens anything from trigger
+                except:  # noqa. Can probable happens anything from trigger
                     error_report()
         #
         if not a.severity:
@@ -390,8 +405,7 @@ class CorrelatorService(Service):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
             self.logger.info(
-                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring",
-                e.id
+                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", e.id
             )
             metrics["unknown_object"] += 1
             return
@@ -399,22 +413,22 @@ class CorrelatorService(Service):
             discriminator, vars = r.get_vars(e)
             assert discriminator is not None
             a = ActiveAlarm.objects.filter(
-                managed_object=managed_object.id,
-                discriminator=discriminator).first()
+                managed_object=managed_object.id, discriminator=discriminator
+            ).first()
             if a:
                 self.logger.info(
                     "[%s|%s|%s] %s clears alarm %s(%s)",
-                    e.id, managed_object.name, managed_object.address,
+                    e.id,
+                    managed_object.name,
+                    managed_object.address,
                     e.event_class.name,
-                    a.alarm_class.name, a.id
+                    a.alarm_class.name,
+                    a.id,
                 )
                 e.contribute_to_alarm(a)
                 a.closing_event = e.id
                 a.last_update = max(a.last_update, e.timestamp)
-                a.clear_alarm(
-                    "Cleared by disposition rule '%s'" % r.u_name,
-                    ts=e.timestamp
-                )
+                a.clear_alarm("Cleared by disposition rule '%s'" % r.u_name, ts=e.timestamp)
                 metrics["alarm_clear"] += 1
 
     def get_delayed_event(self, r, e):
@@ -431,7 +445,7 @@ class CorrelatorService(Service):
             managed_object=e.managed_object_id,
             event_class=r.event_class,
             discriminator=discriminator,
-            timestamp__gte=ws
+            timestamp__gte=ws,
         ).first()
         if not de:
             # No starting event
@@ -444,7 +458,7 @@ class CorrelatorService(Service):
                 managed_object=e.managed_object_id,
                 event_class__in=r.combo_event_classes,
                 discriminator=discriminator,
-                timestamp__gte=ws
+                timestamp__gte=ws,
             ).order_by("timestamp")
         ]
         if r.combo_condition == "sequence":
@@ -465,10 +479,7 @@ class CorrelatorService(Service):
         """
         Evaluate expression in given context
         """
-        env = {
-            "re": re,
-            "utils": utils
-        }
+        env = {"re": re, "utils": utils}
         env.update(kwargs)
         return eval(expression, {}, env)
 
@@ -530,8 +541,9 @@ class CorrelatorService(Service):
         self.logger.info("[%s] Disposing", event_id)
         drc = self.rules.get(e.event_class.id)
         if not drc:
-            self.logger.info("[%s] No disposition rules for class %s, skipping",
-                             event_id, e.event_class.name)
+            self.logger.info(
+                "[%s] No disposition rules for class %s, skipping", event_id, e.event_class.name
+            )
             return
         # Apply disposition rules
         for r in drc:
@@ -574,6 +586,7 @@ class CorrelatorService(Service):
         :param alarm:
         :return:
         """
+
         def can_correlate(a1, a2):
             """
             Check if alarms can be correlated together (within corellation window)
@@ -582,8 +595,9 @@ class CorrelatorService(Service):
             :return:
             """
             return (
-                not config.correlator.topology_rca_window or
-                (a1.timestamp - a2.timestamp).total_seconds() <= config.correlator.topology_rca_window
+                not config.correlator.topology_rca_window
+                or (a1.timestamp - a2.timestamp).total_seconds()
+                <= config.correlator.topology_rca_window
             )
 
         def all_uplinks_failed(a1):
@@ -643,8 +657,7 @@ class CorrelatorService(Service):
         neighbor_alarms = dict(
             (a.managed_object.id, a)
             for a in ActiveAlarm.objects.filter(
-                alarm_class=alarm.alarm_class.id,
-                rca_neighbors__in=[alarm.managed_object.id]
+                alarm_class=alarm.alarm_class.id, rca_neighbors__in=[alarm.managed_object.id]
             )
         )
         # Add current alarm to corellate downlink alarms properly
@@ -664,10 +677,12 @@ class CorrelatorService(Service):
         :param seen:
         :return:
         """
+
         def can_correlate(a1, a2):
             return (
-                not config.correlator.topology_rca_window or
-                (a1.timestamp - a2.timestamp).total_seconds() <= config.correlator.topology_rca_window
+                not config.correlator.topology_rca_window
+                or (a1.timestamp - a2.timestamp).total_seconds()
+                <= config.correlator.topology_rca_window
             )
 
         self.logger.debug("[%s] Topology RCA", alarm.id)
@@ -679,15 +694,11 @@ class CorrelatorService(Service):
         # Get neighboring alarms
         na = {}
         # Downlinks
-        q = Q(
-            alarm_class=alarm.alarm_class.id,
-            uplinks=alarm.managed_object.id
-        )
+        q = Q(alarm_class=alarm.alarm_class.id, uplinks=alarm.managed_object.id)
         # Uplinks
         # @todo: Try to use $graphLookup to find affinity alarms
         if alarm.uplinks:
-            q |= Q(alarm_class=alarm.alarm_class.id,
-                   managed_object__in=list(alarm.uplinks))
+            q |= Q(alarm_class=alarm.alarm_class.id, managed_object__in=list(alarm.uplinks))
         for a in ActiveAlarm.objects.filter(q):
             na[a.managed_object.id] = a
         # Correlate with uplinks

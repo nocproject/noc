@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.core.profile.loader import loader as profile_loader
@@ -45,18 +47,14 @@ class Reportreportrulesbyprofile(SimpleReport):
         # Build data
         data = [(p, v[0], v[1], v[2], v[0] + v[1] + v[2]) for p, v in six.iteritems(r)]
         data = sorted(data, key=lambda x: -x[4])
-        return self.from_dataset(title=self.title,
-                                 columns=["Profile",
-                                          TableColumn("Syslog", align="right",
-                                                      format="integer",
-                                                      total="sum"),
-                                          TableColumn("SNMP Traps", align="right",
-                                                      format="integer",
-                                                      total="sum"),
-                                          TableColumn("Other", align="right",
-                                                      format="integer",
-                                                      total="sum"),
-                                          TableColumn("Total", align="right",
-                                                      format="integer",
-                                                      total="sum")],
-                                 data=data)
+        return self.from_dataset(
+            title=self.title,
+            columns=[
+                "Profile",
+                TableColumn("Syslog", align="right", format="integer", total="sum"),
+                TableColumn("SNMP Traps", align="right", format="integer", total="sum"),
+                TableColumn("Other", align="right", format="integer", total="sum"),
+                TableColumn("Total", align="right", format="integer", total="sum"),
+            ],
+            data=data,
+        )

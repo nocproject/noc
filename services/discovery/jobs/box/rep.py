@@ -14,6 +14,7 @@ class REPCheck(TopologyDiscoveryCheck):
     """
     REP Topology discovery
     """
+
     name = "rep"
     required_script = "get_rep_neighbors"
     required_capabilities = ["Network | REP"]
@@ -24,8 +25,7 @@ class REPCheck(TopologyDiscoveryCheck):
         for segment in result:
             topology = segment["topology"]
             # Find own ports
-            o = [i for i, p in enumerate(topology)
-                 if self.is_own_mac(p["mac"])]
+            o = [i for i, p in enumerate(topology) if self.is_own_mac(p["mac"])]
             if not o:
                 continue  # Not found
             elif len(o) != 2:
@@ -49,8 +49,4 @@ class REPCheck(TopologyDiscoveryCheck):
                     remote_object = self.get_neighbor_by_mac(remote_info["mac"])
                     if not remote_object:
                         continue
-                    yield (
-                        local_info,
-                        remote_object,
-                        remote_info
-                    )
+                    yield (local_info, remote_object, remote_info)

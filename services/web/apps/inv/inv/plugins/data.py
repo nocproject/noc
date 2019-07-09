@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
@@ -23,9 +24,13 @@ class DataPlugin(InvPlugin):
 
     RGROUPS = [
         [
-            "Building", "PoP | International", "PoP | National",
-            "PoP | Regional", "PoP | Core", "PoP | Aggregation",
-            "PoP | Access"
+            "Building",
+            "PoP | International",
+            "PoP | National",
+            "PoP | Regional",
+            "PoP | Core",
+            "PoP | Aggregation",
+            "PoP | Access",
         ]
     ]
 
@@ -39,8 +44,8 @@ class DataPlugin(InvPlugin):
             validate={
                 "interface": StringParameter(),
                 "key": StringParameter(),
-                "value": UnicodeParameter()
-            }
+                "value": UnicodeParameter(),
+            },
         )
 
     def get_data(self, request, o):
@@ -49,7 +54,7 @@ class DataPlugin(InvPlugin):
             ("Name", " | ".join(o.get_name_path()), "Inventory name", False),
             ("Vendor", o.model.vendor.name, "Hardware vendor", True),
             ("Model", o.model.name, "Inventory model", True),
-            ("ID", str(o.id), "Internal ID", True)
+            ("ID", str(o.id), "Internal ID", True),
         ]:
             r = {
                 "interface": "Common",
@@ -59,7 +64,7 @@ class DataPlugin(InvPlugin):
                 "description": d,
                 "required": True,
                 "is_const": is_const,
-                "choices": None
+                "choices": None,
             }
             if k == "Model":
                 for rg in self.RGROUPS:
@@ -79,24 +84,20 @@ class DataPlugin(InvPlugin):
                 v = d[i].get(a.name)
                 if v is None and a.is_const:
                     continue
-                data += [{
-                    "interface": i,
-                    "name": a.name,
-                    "value": v,
-                    "type": a.type,
-                    "description": a.description,
-                    "required": a.required,
-                    "is_const": a.is_const
-                }]
-        return {
-            "id": str(o.id),
-            "name": o.name,
-            "model": o.model.name,
-            "data": data
-        }
+                data += [
+                    {
+                        "interface": i,
+                        "name": a.name,
+                        "value": v,
+                        "type": a.type,
+                        "description": a.description,
+                        "required": a.required,
+                        "is_const": a.is_const,
+                    }
+                ]
+        return {"id": str(o.id), "name": o.name, "model": o.model.name, "data": data}
 
-    def api_save_data(self, request, id,
-                      interface=None, key=None, value=None):
+    def api_save_data(self, request, id, interface=None, key=None, value=None):
         o = self.app.get_object_or_404(Object, id=id)
         if interface == "Common":
             # Fake interface
@@ -105,8 +106,7 @@ class DataPlugin(InvPlugin):
             elif key == "Model":
                 m = self.app.get_object_or_404(ObjectModel, id=value)
                 o.model = m
-                o.log(message="Changing model to %s" % m.name,
-                      user=request.user, system="WEB")
+                o.log(message="Changing model to %s" % m.name, user=request.user, system="WEB")
                 o.save()
         else:
             if value is None or value == "":

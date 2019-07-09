@@ -27,7 +27,7 @@ class VRF(BaseFact):
         self.rd = rd
 
     def __str__(self):
-        return u"VRF %s" % self.name
+        return "VRF %s" % self.name
 
     @property
     def name(self):

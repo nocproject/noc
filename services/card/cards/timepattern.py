@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseCard
 from noc.main.models.timepattern import TimePattern
@@ -22,5 +23,5 @@ class TimePatternCard(BaseCard):
     def get_data(self):
         return {
             "object": self.object,
-            "terms": [t.term for t in self.object.timepatternterm_set.all()]
+            "terms": [t.term for t in self.object.timepatternterm_set.all()],
         }

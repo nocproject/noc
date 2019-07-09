@@ -9,10 +9,12 @@
 # Python modules
 import time
 import threading
+
 # Third-party modules
 import pytest
 import ujson
 import bson
+
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.core.perf import metrics
@@ -25,10 +27,7 @@ class ExampleDataStream(DataStream):
 
     @classmethod
     def get_object(cls, id):
-        return {
-            "id": id,
-            "name": "Item #%s" % id
-        }
+        return {"id": id, "name": "Item #%s" % id}
 
 
 class NoEvenDatastream(DataStream):
@@ -38,16 +37,11 @@ class NoEvenDatastream(DataStream):
     def get_object(cls, id):
         if id % 2 == 0:
             raise KeyError
-        return {
-            "id": id,
-            "name": "Item #%s" % id
-        }
+        return {"id": id, "name": "Item #%s" % id}
 
     @classmethod
     def get_meta(cls, data):
-        return {
-            "n": data["id"] / 2
-        }
+        return {"n": data["id"] / 2}
 
 
 def test_datastream_base():
@@ -60,10 +54,7 @@ def test_datastream_collection_name():
     assert ExampleDataStream.get_collection_name() == "ds_example"
 
 
-@pytest.mark.dependency(
-    name="datastream_collection",
-    depends=["datastream_collection_name"]
-)
+@pytest.mark.dependency(name="datastream_collection", depends=["datastream_collection_name"])
 def test_datastream_collection():
     ExampleDataStream.ensure_collection()
     # Test collection exists
@@ -77,10 +68,7 @@ def test_datastream_collection():
 
 @pytest.mark.dependency(name="datastream_hash")
 def test_datastream_hash():
-    data = {
-        "id": 1,
-        "name": "test"
-    }
+    data = {"id": 1, "name": "test"}
     assert ExampleDataStream.get_hash(data) == "5757d197ae2f024e"
 
 
@@ -90,11 +78,7 @@ def ds_index(request):
 
 
 @pytest.mark.dependency(
-    name="datastream_update",
-    depends=[
-        "datastream_hash",
-        "datastream_collection"
-    ]
+    name="datastream_update", depends=["datastream_hash", "datastream_collection"]
 )
 def test_datastream_update(ds_index):
     coll = ExampleDataStream.get_collection()
@@ -298,9 +282,7 @@ def test_wait():
 
         @classmethod
         def get_object(cls, id):
-            return {
-                "id": id
-            }
+            return {"id": id}
 
     TIMEOUT = 0.1
 

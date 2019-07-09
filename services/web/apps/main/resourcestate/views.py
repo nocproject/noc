@@ -16,6 +16,7 @@ class ResourceStateApplication(ExtModelApplication):
     """
     ResourceState application
     """
+
     title = _("Resource States")
     menu = [_("Setup"), _("Resource States")]
     model = ResourceState

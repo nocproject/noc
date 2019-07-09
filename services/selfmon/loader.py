@@ -9,6 +9,7 @@
 from __future__ import absolute_import
 import os
 import inspect
+
 # NOC modules
 from .collectors.base import BaseCollector
 from noc.config import config
@@ -31,15 +32,17 @@ def iter_collectors():
                 base_name = os.path.basename(os.path.dirname(b))
             else:
                 base_name = "noc"
-            mn = "%s.%s.%s" % (base_name,
-                               BASE_PREFIX.replace(os.path.sep, "."),
-                               f.rsplit(".", 1)[0].replace(os.path.sep, "."))
+            mn = "%s.%s.%s" % (
+                base_name,
+                BASE_PREFIX.replace(os.path.sep, "."),
+                f.rsplit(".", 1)[0].replace(os.path.sep, "."),
+            )
             m = __import__(mn, {}, {}, "*")
             for n in dir(m):
                 o = getattr(m, n)
                 if (
-                    inspect.isclass(o) and
-                    issubclass(o, BaseCollector) and
-                    o.__module__ == m.__name__
+                    inspect.isclass(o)
+                    and issubclass(o, BaseCollector)
+                    and o.__module__ == m.__name__
                 ):
                     yield o

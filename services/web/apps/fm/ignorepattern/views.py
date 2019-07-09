@@ -17,12 +17,12 @@ class IgnorePatternApplication(ExtDocApplication):
     """
     IgnorePattern application
     """
+
     title = _("Ignore Patterns")
     menu = [_("Setup"), _("Ignore Patterns")]
     model = IgnorePattern
 
-    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$",
-          method=["GET"], access="create", api=True)
+    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["GET"], access="create", api=True)
     def api_from_event(self, request, event_id):
         """
         Create ignore pattern rule from event
@@ -37,8 +37,7 @@ class IgnorePatternApplication(ExtDocApplication):
         if event.source == "syslog":
             data["description"] = event.raw_vars["message"]
             data["source"] = "syslog"
-        elif (event.source == "SNMP Trap" and
-              "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
+        elif event.source == "SNMP Trap" and "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars:
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
             data["source"] = "SNMP Trap"
         if "message" in event.raw_vars:

@@ -16,6 +16,7 @@ class UDLDCheck(TopologyDiscoveryCheck):
     """
     UDLD Topology discovery
     """
+
     name = "udld"
     required_script = "get_udld_neighbors"
     required_capabilities = ["Network | UDLD"]
@@ -28,11 +29,7 @@ class UDLDCheck(TopologyDiscoveryCheck):
             if local_id != n["local_device"]:
                 DiscoveryID.update_udld_id(self.object, n["local_device"])
                 local_id = n["local_device"]
-            yield (
-                n["local_interface"],
-                n["remote_device"],
-                n["remote_interface"]
-            )
+            yield (n["local_interface"], n["remote_device"], n["remote_interface"])
 
     def get_neighbor(self, device_id):
         r = DiscoveryID.get_by_udld_id(device_id)

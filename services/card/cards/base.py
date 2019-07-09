@@ -10,9 +10,11 @@
 import os
 import datetime
 import operator
+
 # Third-party modules
 import six
 from jinja2 import Template, Environment
+
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
@@ -24,11 +26,14 @@ class BaseCard(object):
     name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
-    TEMPLATE_PATH = config.get_customized_paths(os.path.join("services", "card", "templates"),
-                                                prefer_custom=True)
+    TEMPLATE_PATH = config.get_customized_paths(
+        os.path.join("services", "card", "templates"), prefer_custom=True
+    )
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
-    DEFAULT_SERVICE_TITLE_TEMPLATE = "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> "
+    DEFAULT_SERVICE_TITLE_TEMPLATE = (
+        "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> "
+    )
     DEFAULT_SERVICE_TITLE_TEMPLATE += "{%endif %}{{ object.profile.name }}: {{ object.order_id }}"
     # Card javascript
     card_js = []
@@ -111,15 +116,17 @@ class BaseCard(object):
                 tp = os.path.join(p, name + ".html.j2")
                 if os.path.exists(tp):
                     env = Environment()
-                    env.filters.update({
-                        "managed_object_title": self.f_managed_object_title,
-                        "service_title": self.f_service_title,
-                        "logical_status": self.f_logical_status,
-                        "timestamp": self.f_timestamp,
-                        "glyph_summary": self.f_glyph_summary,
-                        "object_location": self.f_object_location,
-                        "object_console": self.f_object_console
-                    })
+                    env.filters.update(
+                        {
+                            "managed_object_title": self.f_managed_object_title,
+                            "service_title": self.f_service_title,
+                            "logical_status": self.f_logical_status,
+                            "timestamp": self.f_timestamp,
+                            "glyph_summary": self.f_glyph_summary,
+                            "object_location": self.f_object_location,
+                            "object_console": self.f_object_console,
+                        }
+                    )
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
 
@@ -171,7 +178,7 @@ class BaseCard(object):
             "S": "Suspended",
             "r": "Removing",
             "C": "Closed",
-            "U": "Unknown"
+            "U": "Unknown",
         }.get(s, "Unknown")
 
     @classmethod
@@ -179,27 +186,29 @@ class BaseCard(object):
         def get_summary(d, profile):
             v = []
             if hasattr(profile, "show_in_summary"):
+
                 def show_in_summary(p):
                     return p.show_in_summary
+
             else:
+
                 def show_in_summary(p):
                     return True
+
             for p, c in sorted(six.iteritems(d), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if collapse and c < 2:
                         badge = ""
                     else:
-                        badge = " <span class=\"badge\">%s</span>" % c
+                        badge = ' <span class="badge">%s</span>' % c
                     order = getattr(pv, "display_order", 100)
-                    v += [(
-                        (order, -c),
-                        "<i class=\"%s\" title=\"%s\"></i>%s" % (
-                            pv.glyph,
-                            pv.name,
-                            badge
+                    v += [
+                        (
+                            (order, -c),
+                            '<i class="%s" title="%s"></i>%s' % (pv.glyph, pv.name, badge),
                         )
-                    )]
+                    ]
             return " ".join(i[1] for i in sorted(v, key=operator.itemgetter(0)))
 
         if not isinstance(s, dict):
@@ -207,13 +216,17 @@ class BaseCard(object):
         r = []
         if "subscriber" in s:
             from noc.crm.models.subscriberprofile import SubscriberProfile
+
             r += [get_summary(s["subscriber"], SubscriberProfile)]
         if "service" in s:
             from noc.sa.models.serviceprofile import ServiceProfile
+
             r += [get_summary(s["service"], ServiceProfile)]
         if "fresh_alarms" in s and s["fresh_alarms"]:
-            r += ["<i class=\"fa fa-exclamation-triangle\"></i><span class=\"badge\">%s</span>"
-                  % s["fresh_alarms"]["FreshAlarm"]]
+            r += [
+                '<i class="fa fa-exclamation-triangle"></i><span class="badge">%s</span>'
+                % s["fresh_alarms"]["FreshAlarm"]
+            ]
         r = [x for x in r if x]
         return "&nbsp;".join(r)
 
@@ -223,6 +236,7 @@ class BaseCard(object):
         Returns managed object location
         """
         from noc.inv.models.object import Object
+
         if not object.container:
             metrics["error", ("type", "no_such_container")] += 1
             return _("N/A")
@@ -245,14 +259,11 @@ class BaseCard(object):
 
     @classmethod
     def f_object_console(cls, object):
-        s = {
-            1: "telnet",
-            2: "ssh",
-            3: "http",
-            4: "https"
-        }[object.scheme]
+        s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
         return "<a href='%s://%s/'><i class='fa fa-terminal'></i> %s</a>" % (
-            s, object.address, s.upper()
+            s,
+            object.address,
+            s.upper(),
         )
 
     @staticmethod

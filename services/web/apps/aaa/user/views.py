@@ -9,9 +9,11 @@
 # Python modules
 from __future__ import absolute_import
 import re
+
 # Third-party modules
 from django.conf import settings
 from django.http import HttpResponse
+
 # NOC modules
 from noc.lib.app.site import site
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
@@ -28,7 +30,9 @@ class UsernameParameter(StringParameter):
         r = super(UsernameParameter, self).clean(value)
         match = self.user_validate.match(value)
         if not match:
-            raise self.raise_error(value, msg="This value must contain only letters, digits and @/./+/-/_.")
+            raise self.raise_error(
+                value, msg="This value must contain only letters, digits and @/./+/-/_."
+            )
         return r
 
 
@@ -47,7 +51,8 @@ class UserApplication(ExtModelApplication):
         "username": UsernameParameter(),
         "first_name": StringParameter(default=""),
         "last_name": StringParameter(default=""),
-        "email": StringParameter(default="")}
+        "email": StringParameter(default=""),
+    }
     custom_m2m_fields = {"permissions": Permission}
 
     @classmethod
@@ -63,9 +68,14 @@ class UserApplication(ExtModelApplication):
                 a = site.apps[app]
                 if app_perms:
                     for p in app_perms:
-                        r += [{
-                            "module": m.MODULE_NAME, "title": str(a.title),
-                            "name": p, "status": False}]
+                        r += [
+                            {
+                                "module": m.MODULE_NAME,
+                                "title": str(a.title),
+                                "name": p,
+                                "status": False,
+                            }
+                        ]
         return r
 
     @view(method=["GET"], url=r"^(?P<id>\d+)/?$", access="read", api=True)
@@ -119,11 +129,16 @@ class UserApplication(ExtModelApplication):
         """
         Returns dict available permissions
         """
-        return self.response({"data": {"user_permissions": self.apps_permissions_list()}},
-                             status=self.OK)
+        return self.response(
+            {"data": {"user_permissions": self.apps_permissions_list()}}, status=self.OK
+        )
 
-    @view(url=r"^(\d+)/password/$", method=["POST"], access="change",
-          validate={"password": StringParameter(required=True)})
+    @view(
+        url=r"^(\d+)/password/$",
+        method=["POST"],
+        access="change",
+        validate={"password": StringParameter(required=True)},
+    )
     def view_change_password(self, request, object_id, password):
         """
         Change user's password

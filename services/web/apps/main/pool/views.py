@@ -16,6 +16,7 @@ class PoolApplication(ExtDocApplication):
     """
     Pool application
     """
+
     title = _("Pool")
     menu = [_("Setup"), _("Pools")]
     model = Pool

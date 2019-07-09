@@ -13,8 +13,10 @@ import subprocess
 import time
 import argparse
 import sys
+
 # Third-party modules
 from pytest import main as pytest_main
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -24,38 +26,17 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # Run
         run_parser = subparsers.add_parser("run")
+        run_parser.add_argument("-v", "--verbose", action="count", help="Verbose output")
         run_parser.add_argument(
-            "-v", "--verbose",
-            action="count",
-            help="Verbose output"
+            "--test-db", help="Test database name", default=os.environ.get("NOC_TEST_DB")
         )
         run_parser.add_argument(
-            "--test-db",
-            help="Test database name",
-            default=os.environ.get("NOC_TEST_DB")
+            "--coverage-report", help="Write coverage report to specified directory"
         )
-        run_parser.add_argument(
-            "--coverage-report",
-            help="Write coverage report to specified directory"
-        )
-        run_parser.add_argument(
-            "--test-report",
-            help="Write HTML error report to specified path"
-        )
-        run_parser.add_argument(
-            "--idea-bookmarks",
-            help="Dump warnings as IDEA bookmarks XML"
-        )
-        run_parser.add_argument(
-            "--statistics",
-            action="store_true",
-            help="Dump statistics"
-        )
-        run_parser.add_argument(
-            "tests",
-            nargs=argparse.REMAINDER,
-            help="Paths to tests"
-        )
+        run_parser.add_argument("--test-report", help="Write HTML error report to specified path")
+        run_parser.add_argument("--idea-bookmarks", help="Dump warnings as IDEA bookmarks XML")
+        run_parser.add_argument("--statistics", action="store_true", help="Dump statistics")
+        run_parser.add_argument("tests", nargs=argparse.REMAINDER, help="Paths to tests")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -63,13 +44,23 @@ class Command(BaseCommand):
     def handle_check(self, check_cmd, *args, **options):
         return getattr(self, "handle_check_%s" % check_cmd)(*args, **options)
 
-    def handle_run(self, tests=None, verbose=False, test_db=None, statistics=False,
-                   coverage_report=False, test_report=None, idea_bookmarks=None,
-                   *args, **options):
+    def handle_run(
+        self,
+        tests=None,
+        verbose=False,
+        test_db=None,
+        statistics=False,
+        coverage_report=False,
+        test_report=None,
+        idea_bookmarks=None,
+        *args,
+        **options
+    ):
         def run_tests(args):
             self.print("Running test")
             # Must be imported within coverage
             from noc.config import config
+
             if test_db:
                 db_name = test_db
             else:
@@ -88,10 +79,7 @@ class Command(BaseCommand):
         if verbose:
             args += ["-" + ("v" * verbose)]
         if test_report:
-            args += [
-                "--html=%s" % test_report,
-                "--self-contained-html"
-            ]
+            args += ["--html=%s" % test_report, "--self-contained-html"]
         if tests:
             args += tests
         else:
@@ -103,6 +91,7 @@ class Command(BaseCommand):
             for m in already_loaded:
                 del sys.modules[m]
             import coverage
+
             cov = coverage.Coverage()
             cov.start()
             try:
@@ -172,6 +161,7 @@ class Command(BaseCommand):
         :return:
         """
         from noc.tests.conftest import _stats as stats
+
         failed = sorted(tr.nodeid for tr in stats.get("failed", []))
         if not failed:
             return
@@ -215,8 +205,7 @@ class Command(BaseCommand):
             wp, line = w.fslocation
             if is_project_path(wp):
                 r += [
-                    "<bookmark url=\"file://$PROJECT_DIR$/%s\" line=\"%d\" />" % (
-                        wp[lcwd:], line - 1)
+                    '<bookmark url="file://$PROJECT_DIR$/%s" line="%d" />' % (wp[lcwd:], line - 1)
                 ]
         if not r:
             self.print("No warnings to dump as bookmarks")

@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.alarmescalation import AlarmEscalation
@@ -28,8 +29,7 @@ def check_close_consequence(alarm_id):
     # Detach root
     logger.info("[%s] Alarm is active. Detaching root", alarm_id)
     alarm.root = None
-    alarm.log_message("Detached from root for not recovered",
-                      to_save=True)
+    alarm.log_message("Detached from root for not recovered", to_save=True)
     metrics["detached_root"] += 1
     # Trigger escalations
     AlarmEscalation.watch_escalations(alarm)

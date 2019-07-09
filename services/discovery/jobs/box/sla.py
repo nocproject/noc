@@ -16,29 +16,27 @@ class SLACheck(DiscoveryCheck):
     """
     SLA discovery
     """
+
     name = "sla"
     required_script = "get_sla_probes"
 
     PROFILE_CAPS = {
         #
-        "Cisco.IOS": {
-            "Cisco | IP | SLA | Probes"
-        },
-        "Juniper.JUNOS": {
-            "Juniper | RPM | Probes"
-        },
-        "OneAccess.TDRE": {
-            "OneAccess | IP | SLA | Probes"
-        },
+        "Cisco.IOS": {"Cisco | IP | SLA | Probes"},
+        "Juniper.JUNOS": {"Juniper | RPM | Probes"},
+        "OneAccess.TDRE": {"OneAccess | IP | SLA | Probes"},
         # Fallback
-        GENERIC_PROFILE: set()
+        GENERIC_PROFILE: set(),
     }
 
     def has_required_capabilities(self):
         if not super(SLACheck, self).has_required_capabilities():
             return False
         object_caps = self.object.get_caps()
-        check_caps = self.PROFILE_CAPS.get(self.object.profile.name, set()) | self.PROFILE_CAPS[GENERIC_PROFILE]
+        check_caps = (
+            self.PROFILE_CAPS.get(self.object.profile.name, set())
+            | self.PROFILE_CAPS[GENERIC_PROFILE]
+        )
         for c in object_caps:
             if c in check_caps and object_caps[c]:
                 self.logger.info("Activated by '%s' capability", c)
@@ -61,13 +59,16 @@ class SLACheck(DiscoveryCheck):
                 self.logger.info("[%s|%s] Removing probe", group, p.name)
                 p.delete()
                 continue
-            self.update_if_changed(p, {
-                "description": new_data.get("description"),
-                "type": new_data["type"],
-                "target": new_data["target"],
-                "hw_timestamp": new_data.get("hw_timestamp", False),
-                "tags": new_data.get("tags", [])
-            })
+            self.update_if_changed(
+                p,
+                {
+                    "description": new_data.get("description"),
+                    "type": new_data["type"],
+                    "target": new_data["target"],
+                    "hw_timestamp": new_data.get("hw_timestamp", False),
+                    "tags": new_data.get("tags", []),
+                },
+            )
             del new_probes[group, p.name]
         # Add remaining probes
         for group, name in new_probes:
@@ -81,6 +82,6 @@ class SLACheck(DiscoveryCheck):
                 type=new_data["type"],
                 target=new_data["target"],
                 hw_timestamp=new_data.get("hw_timestamp", False),
-                tags=new_data.get("tags", [])
+                tags=new_data.get("tags", []),
             )
             probe.save()

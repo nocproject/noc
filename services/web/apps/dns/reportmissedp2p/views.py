@@ -31,5 +31,5 @@ class Reportreportmissedp2p(SimpleReport):
             ORDER BY prefix
             """,
             params=[vrf_id, vrf_id],
-            enumerate=True
+            enumerate=True,
         )

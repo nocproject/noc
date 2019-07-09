@@ -15,6 +15,7 @@ class IDCheck(DiscoveryCheck):
     """
     Version discovery
     """
+
     name = "id"
     required_script = "get_discovery_id"
 
@@ -25,7 +26,8 @@ class IDCheck(DiscoveryCheck):
         if cm:
             cm = ", ".join(
                 "%s - %s" % (m["first_chassis_mac"], m["last_chassis_mac"])
-                for m in cm if "first_chassis_mac" in m and "last_chassis_mac" in m
+                for m in cm
+                if "first_chassis_mac" in m and "last_chassis_mac" in m
             )
         interface_macs = self.get_artefact("interface_macs")
         self.logger.info(
@@ -35,12 +37,12 @@ class IDCheck(DiscoveryCheck):
             cm,
             result.get("hostname"),
             result.get("router_id"),
-            ", ".join(interface_macs or [])
+            ", ".join(interface_macs or []),
         )
         DiscoveryID.submit(
             object=self.object,
             chassis_mac=result.get("chassis_mac"),
             hostname=result.get("hostname"),
             router_id=result.get("router_id"),
-            additional_macs=interface_macs
+            additional_macs=interface_macs,
         )

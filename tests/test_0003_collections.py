@@ -9,8 +9,10 @@
 # NOC modules
 import operator
 import os
+
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.collection.base import Collection
 

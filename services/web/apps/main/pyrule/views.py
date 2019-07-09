@@ -16,6 +16,7 @@ class PyRuleApplication(ExtDocApplication):
     """
     PyRule application
     """
+
     title = _("PyRule")
     icon = "icon_py"
     menu = [_("Setup"), _("PyRule")]

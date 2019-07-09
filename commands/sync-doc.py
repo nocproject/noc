@@ -14,8 +14,10 @@ import glob
 import subprocess
 import csv
 import sys
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.fileutils import rewrite_when_differ
@@ -27,11 +29,7 @@ class Command(BaseCommand):
     help = "Synchronize online documentation"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of Docset"
-        )
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of Docset")
 
     #
     # Rebuild supported equipment database.
@@ -63,8 +61,9 @@ class Command(BaseCommand):
     def get_manifest(self):
         if os.path.exists(".hg"):
             # Repo found
-            proc = subprocess.Popen(["hg", "locate"], stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
+            proc = subprocess.Popen(
+                ["hg", "locate"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
             stdout, stderr = proc.communicate()
             mf = stdout.splitlines()
         elif os.path.exists("MANIFEST"):
@@ -133,6 +132,7 @@ class Command(BaseCommand):
 
         def package_files(f):
             """ Return a list of package files"""
+
             def is_child(ff):
                 pp = ff.split(os.sep)
                 if pp[-1] == INIT and len(pp) == lp + 2 and pp[:-2] == p:
@@ -153,8 +153,7 @@ class Command(BaseCommand):
             p = path_to_doc(f)
             rewrite_when_differ(os.path.join(root, p), d)
 
-        dist = sorted([f for f in self.get_manifest()
-                       if f.endswith(".py") and not to_ignore(f)])
+        dist = sorted([f for f in self.get_manifest() if f.endswith(".py") and not to_ignore(f)])
         for f in dist:
             create_doc(f)
 
@@ -181,8 +180,9 @@ class Command(BaseCommand):
                 continue
             if dn[-1] == "code":
                 self.update_code_toc(d)
-            target = os.path.abspath(os.path.join(d, "..", "..", "..", "..",
-                                                  "static", "doc", dn[-2], dn[-1]))
+            target = os.path.abspath(
+                os.path.join(d, "..", "..", "..", "..", "static", "doc", dn[-2], dn[-1])
+            )
             doctrees = os.path.join(target, "doctrees")
             html = os.path.join(target, "html")
             for p in [doctrees, html]:
@@ -193,8 +193,7 @@ class Command(BaseCommand):
                         raise CommandError("Unable to create directory: %s" % p)
             cmd = ["sphinx-build"]
             cmd += opts
-            cmd += ["-b", "html", "-d", doctrees, "-D",
-                    "latex_paper_size=a4", ".", html]
+            cmd += ["-b", "html", "-d", doctrees, "-D", "latex_paper_size=a4", ".", html]
             try:
                 subprocess.call(cmd, cwd=d, env=env)
             except OSError:

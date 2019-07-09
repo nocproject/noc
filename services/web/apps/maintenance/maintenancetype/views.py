@@ -16,6 +16,7 @@ class MaintenanceTypeApplication(ExtDocApplication):
     """
     MaintenanceType application
     """
+
     title = _("Maintenance Type")
     menu = [_("Setup"), _("Maintenance Types")]
     model = MaintenanceType

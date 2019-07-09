@@ -9,8 +9,10 @@
 # NOC modules
 from collections import defaultdict
 from itertools import chain
+
 # Third-party modules
 from django.db.models import Q
+
 # NOC modules
 from noc.core.ip import IPv6
 from noc.core.datastream.base import DataStream
@@ -39,7 +41,7 @@ class DNSZoneDataStream(DataStream):
             "serial": str(zone.serial),
             "masters": [str(x[:-1]) for x in zone.masters],
             "slaves": [str(x[:-1]) for x in zone.slaves],
-            "records": cls.get_records(zone)
+            "records": cls.get_records(zone),
         }
 
     @classmethod
@@ -75,15 +77,16 @@ class DNSZoneDataStream(DataStream):
             name=dotted(zone.to_idna(zone.name)),
             ttl=zone.profile.zone_ttl,
             type="SOA",
-            rdata="%s %s %d %d %d %d %d" % (
+            rdata="%s %s %d %d %d %d %d"
+            % (
                 dotted(zone.profile.zone_soa),
                 dotted(zone.profile.zone_contact),
                 zone.serial,
                 zone.profile.zone_refresh,
                 zone.profile.zone_retry,
                 zone.profile.zone_expire,
-                zone.profile.zone_ttl
-            )
+                zone.profile.zone_ttl,
+            ),
         )
 
     @classmethod
@@ -94,13 +97,7 @@ class DNSZoneDataStream(DataStream):
         :return:
         """
         for ns in zone.ns_list:
-            yield RR(
-                zone=zone.name,
-                name="",
-                ttl=zone.profile.zone_ttl,
-                type="NS",
-                rdata=ns
-            )
+            yield RR(zone=zone.name, name="", ttl=zone.profile.zone_ttl, type="NS", rdata=ns)
 
     @classmethod
     def iter_forward(cls, zone):
@@ -114,7 +111,7 @@ class DNSZoneDataStream(DataStream):
             cls.iter_rr(zone),
             cls.iter_ipam_a(zone),
             cls.iter_missed_ns_a(zone),
-            cls.iter_nested_ns(zone)
+            cls.iter_nested_ns(zone),
         )
 
     @classmethod
@@ -128,7 +125,7 @@ class DNSZoneDataStream(DataStream):
             cls.iter_ns(zone),
             cls.iter_rr(zone),
             cls.iter_ipam_ptr4(zone),
-            cls.iter_classless_delegation(zone)
+            cls.iter_classless_delegation(zone),
         )
 
     @classmethod
@@ -138,11 +135,7 @@ class DNSZoneDataStream(DataStream):
         :param zone:
         :return:
         """
-        return chain(
-            cls.iter_ns(zone),
-            cls.iter_rr(zone),
-            cls.iter_ipam_ptr6(zone)
-        )
+        return chain(cls.iter_ns(zone), cls.iter_rr(zone), cls.iter_ipam_ptr6(zone))
 
     @classmethod
     def iter_nested_ns(cls, zone):
@@ -160,23 +153,17 @@ class DNSZoneDataStream(DataStream):
                 ns_name = zone.get_ns_name(ns)
                 yield RR(
                     zone=zone.name,
-                    name=z.name[:-length - 1],
+                    name=z.name[: -length - 1],
                     ttl=zone.profile.zone_ttl,
                     type="NS",
-                    rdata=ns_name
+                    rdata=ns_name,
                 )
                 # Zone delegated to NS from the child zone
-                if ns_name.endswith(suffix) and "." in ns_name[:-len(suffix)]:
-                    nested_nses.add((ns_name[:-len(suffix)], ns.ip))
+                if ns_name.endswith(suffix) and "." in ns_name[: -len(suffix)]:
+                    nested_nses.add((ns_name[: -len(suffix)], ns.ip))
             # Yield glue A records for nested NSs
             for name, ip in nested_nses:
-                yield RR(
-                    zone=zone.name,
-                    name=name,
-                    ttl=z.profile.zone_ttl,
-                    type="A",
-                    rdata=ip
-                )
+                yield RR(zone=zone.name, name=name, ttl=z.profile.zone_ttl, type="A", rdata=ip)
 
     @classmethod
     def iter_rr(cls, zone):
@@ -195,7 +182,7 @@ class DNSZoneDataStream(DataStream):
                 type=zr.type,
                 ttl=zr.ttl if zr.ttl else zone.profile.zone_ttl,
                 priority=zr.priority,
-                rdata=zr.content
+                rdata=zr.content,
             )
 
     @classmethod
@@ -209,10 +196,10 @@ class DNSZoneDataStream(DataStream):
         # @todo: Get ttl from profile
         # Build query
         length = len(zone.name) + 1
-        q = (Q(fqdn__iexact=zone.name) | Q(fqdn__iendswith=".%s" % zone.name))
-        for z in DNSZone.objects.filter(
-                name__iendswith=".%s" % zone.name
-        ).values_list("name", flat=True):
+        q = Q(fqdn__iexact=zone.name) | Q(fqdn__iendswith=".%s" % zone.name)
+        for z in DNSZone.objects.filter(name__iendswith=".%s" % zone.name).values_list(
+            "name", flat=True
+        ):
             q &= ~(Q(fqdn__iexact=z) | Q(fqdn__iendswith=".%s" % z))
         for afi, fqdn, address in Address.objects.filter(q).values_list("afi", "fqdn", "address"):
             yield RR(
@@ -220,7 +207,7 @@ class DNSZoneDataStream(DataStream):
                 name=fqdn[:-length],
                 type="A" if afi == "4" else "AAAA",
                 ttl=zone.profile.zone_ttl,
-                rdata=address
+                rdata=address,
             )
 
     @classmethod
@@ -241,8 +228,7 @@ class DNSZoneDataStream(DataStream):
 
         length = len(zone.name) + 1
         for a in Address.objects.filter(afi="4").extra(
-                where=["address << %s"],
-                params=[zone.reverse_prefix]
+            where=["address << %s"], params=[zone.reverse_prefix]
         ):
             if not a.fqdn:
                 continue
@@ -251,7 +237,7 @@ class DNSZoneDataStream(DataStream):
                 name=ptr(a.address)[:-length],
                 ttl=zone.profile.zone_ttl,
                 type="PTR",
-                rdata=a.fqdn + "."
+                rdata=a.fqdn + ".",
             )
 
     @classmethod
@@ -263,14 +249,14 @@ class DNSZoneDataStream(DataStream):
         """
         origin_length = (len(zone.name) - 8 + 1) // 2
         for a in Address.objects.filter(afi="6").extra(
-                where=["address << %s"], params=[zone.reverse_prefix]
+            where=["address << %s"], params=[zone.reverse_prefix]
         ):
             yield RR(
                 zone=zone.name,
                 name=IPv6(a.address).ptr(origin_length),
                 ttl=zone.profile.zone_ttl,
                 type="PTR",
-                rdata=a.fqdn + "."
+                rdata=a.fqdn + ".",
             )
 
     @classmethod
@@ -289,8 +275,8 @@ class DNSZoneDataStream(DataStream):
                 continue
             ns_name = zone.get_ns_name(ns)
             # NS server from zone
-            if ns_name.endswith(suffix) and "." not in ns_name[:-len(suffix)]:
-                in_zone_nses[ns_name[:-len(suffix)]] = ns.ip
+            if ns_name.endswith(suffix) and "." not in ns_name[: -len(suffix)]:
+                in_zone_nses[ns_name[: -len(suffix)]] = ns.ip
         # Find missed in-zone NSes
         for name in in_zone_nses:
             yield RR(
@@ -298,7 +284,7 @@ class DNSZoneDataStream(DataStream):
                 name=name,
                 type="A",
                 ttl=zone.profile.zone_ttl,
-                rdata=in_zone_nses[name]
+                rdata=in_zone_nses[name],
             )
 
     @classmethod
@@ -309,8 +295,8 @@ class DNSZoneDataStream(DataStream):
         """
         # Range delegations
         for r in AddressRange.objects.filter(action="D").extra(
-                where=["from_address << %s", "to_address << %s"],
-                params=[zone.reverse_prefix, zone.reverse_prefix]
+            where=["from_address << %s", "to_address << %s"],
+            params=[zone.reverse_prefix, zone.reverse_prefix],
         ):
             nses = [ns.strip() for ns in r.reverse_nses.split(",")]
             for a in r.addresses:
@@ -320,7 +306,7 @@ class DNSZoneDataStream(DataStream):
                     name=n,
                     ttl=zone.profile.zone_ttl,
                     type="CNAME",
-                    rdata="%s.%s/32" % (n, n)
+                    rdata="%s.%s/32" % (n, n),
                 )
                 for ns in nses:
                     if not ns.endswith("."):
@@ -330,7 +316,7 @@ class DNSZoneDataStream(DataStream):
                         name="%s/32" % n,
                         ttl=zone.profile.zone_ttl,
                         type="NS",
-                        rdata=ns
+                        rdata=ns,
                     )
         # Subnet delegation macro
         delegations = defaultdict(list)
@@ -346,13 +332,7 @@ class DNSZoneDataStream(DataStream):
                 ns = str(ns)
                 if not ns.endswith("."):
                     ns += "."
-                yield RR(
-                    zone=zone.name,
-                    name=d,
-                    ttl=zone.profile.zone_ttl,
-                    type="NS",
-                    rdata=ns
-                )
+                yield RR(zone=zone.name, name=d, ttl=zone.profile.zone_ttl, type="NS", rdata=ns)
             m = mask - 24
             bitmask = ((1 << m) - 1) << (8 - m)
             if net & bitmask != net:
@@ -363,7 +343,7 @@ class DNSZoneDataStream(DataStream):
                     name=str(i),
                     ttl=zone.profile.zone_ttl,
                     type="CNAME",
-                    rdata="%d.%s" % (i, d)
+                    rdata="%d.%s" % (i, d),
                 )
 
     @classmethod
@@ -414,12 +394,8 @@ class DNSZoneDataStream(DataStream):
 
     @classmethod
     def get_meta(cls, data):
-        return {
-            "servers": data.get("masters", []) + data.get("slaves", [])
-        }
+        return {"servers": data.get("masters", []) + data.get("slaves", [])}
 
     @classmethod
     def filter_server(cls, name):
-        return {
-            "%s.servers" % cls.F_META: name
-        }
+        return {"%s.servers" % cls.F_META: name}

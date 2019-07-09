@@ -34,4 +34,5 @@ class Reportreportnszonesummary(SimpleReport):
                         WHERE ps.dnsserver_id=ns.id AND z.is_auto_generated
                     ) AS slaves
                 FROM dns_dnsserver ns
-                ORDER BY 2 DESC, 1 ASC""")
+                ORDER BY 2 DESC, 1 ASC""",
+        )

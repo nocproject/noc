@@ -221,5 +221,5 @@ MIB = {
     "IP-MIB::ipMIB": "1.3.6.1.2.1.48",
     "IP-MIB::ipMIBConformance": "1.3.6.1.2.1.48.2",
     "IP-MIB::ipMIBCompliances": "1.3.6.1.2.1.48.2.1",
-    "IP-MIB::ipMIBGroups": "1.3.6.1.2.1.48.2.2"
+    "IP-MIB::ipMIBGroups": "1.3.6.1.2.1.48.2.2",
 }

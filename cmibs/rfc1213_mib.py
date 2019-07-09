@@ -151,5 +151,5 @@ MIB = {
     "RFC1213-MIB::egpNeighIntervalPoll": "1.3.6.1.2.1.8.5.1.13",
     "RFC1213-MIB::egpNeighMode": "1.3.6.1.2.1.8.5.1.14",
     "RFC1213-MIB::egpNeighEventTrigger": "1.3.6.1.2.1.8.5.1.15",
-    "RFC1213-MIB::egpAs": "1.3.6.1.2.1.8.6"
+    "RFC1213-MIB::egpAs": "1.3.6.1.2.1.8.6",
 }

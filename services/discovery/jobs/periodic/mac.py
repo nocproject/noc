@@ -10,8 +10,10 @@
 import time
 from functools import reduce
 from collections import defaultdict
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.perf import metrics
@@ -23,11 +25,13 @@ class MACCheck(DiscoveryCheck):
     """
     MAC discovery
     """
+
     name = "mac"
     required_script = "get_mac_address_table"
 
-    METRIC_FIELDS = "mac.date.ts.managed_object.mac" \
-                    ".interface.interface_profile.segment.vlan.is_uni"
+    METRIC_FIELDS = (
+        "mac.date.ts.managed_object.mac" ".interface.interface_profile.segment.vlan.is_uni"
+    )
 
     def handler(self):
         # Build filter policy
@@ -86,35 +90,35 @@ class MACCheck(DiscoveryCheck):
             if collect_if_objects:
                 if_mac[iface].add(v["mac"])
             if not mf(iface, v["vlan_id"], v["mac"]):
-                self.logger.debug("Filtered: Iface: %s, Vlan: %s, MAC: %s" % (iface, v["vlan_id"], v["mac"]))
+                self.logger.debug(
+                    "Filtered: Iface: %s, Vlan: %s, MAC: %s" % (iface, v["vlan_id"], v["mac"])
+                )
                 continue
             ifprofile = iface.get_profile()
-            data += ["\t".join((
-                date,  # date
-                ts,  # ts
-                mo_bi_id,  # managed_object
-                str(int(MAC(v["mac"]))),  # mac
-                ifname,  # interface
-                str(ifprofile.bi_id),  # interface_profile
-                seg_bi_id,  # segment
-                str(v.get("vlan_id", 0)),  # vlan
-                "1" if ifprofile.is_uni else "0"  # is_uni
-            ))]
+            data += [
+                "\t".join(
+                    (
+                        date,  # date
+                        ts,  # ts
+                        mo_bi_id,  # managed_object
+                        str(int(MAC(v["mac"]))),  # mac
+                        ifname,  # interface
+                        str(ifprofile.bi_id),  # interface_profile
+                        seg_bi_id,  # segment
+                        str(v.get("vlan_id", 0)),  # vlan
+                        "1" if ifprofile.is_uni else "0",  # is_uni
+                    )
+                )
+            ]
             processed_macs += 1
         if unknown_interfaces:
-            self.logger.info(
-                "Ignoring unknown interfaces: %s",
-                ", ".join(unknown_interfaces))
+            self.logger.info("Ignoring unknown interfaces: %s", ", ".join(unknown_interfaces))
         metrics["discovery_mac_total_macs"] += total_macs
         metrics["discovery_mac_processed_macs"] += processed_macs
         metrics["discovery_mac_ignored_macs"] += total_macs - processed_macs
         if data:
-            self.logger.info("%d MAC addresses are collected. Sending",
-                             processed_macs)
-            self.service.register_metrics(
-                self.METRIC_FIELDS,
-                data
-            )
+            self.logger.info("%d MAC addresses are collected. Sending", processed_macs)
+            self.service.register_metrics(self.METRIC_FIELDS, data)
             if collect_if_objects:
                 self.build_seen_objects(if_mac)
         else:
@@ -136,8 +140,7 @@ class MACCheck(DiscoveryCheck):
         :return: interface -> [managed objects]
         """
         # Resolve MACs
-        all_macs = reduce(lambda x, y: x | y,
-                          six.itervalues(if_mac))
+        all_macs = reduce(lambda x, y: x | y, six.itervalues(if_mac))
         mmap = DiscoveryID.find_objects(all_macs)
         if not mmap:
             self.logger.info("Cannot build seen_objects artefact: Cannot resolve any MACs")

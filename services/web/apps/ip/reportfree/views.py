@@ -9,6 +9,7 @@
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.ip.models.vrf import VRF
@@ -18,12 +19,8 @@ from noc.core.ip import IP
 
 
 class ReportForm(forms.Form):
-    vrf = forms.ModelChoiceField(
-        label=_("VRF"),
-        queryset=VRF.objects.all().order_by("name")
-    )
-    afi = forms.ChoiceField(label=_("Address Family"),
-                            choices=[("4", _("IPv4")), ("6", _("IPv6"))])
+    vrf = forms.ModelChoiceField(label=_("VRF"), queryset=VRF.objects.all().order_by("name"))
+    afi = forms.ChoiceField(label=_("Address Family"), choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = forms.CharField(label=_("Prefix"))
 
     def clean_prefix(self):
@@ -50,17 +47,12 @@ class FreeBlocksReport(SimpleReport):
         p = IP.prefix(prefix.prefix)
         return self.from_dataset(
             title=_(
-                "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
-                    "vrf": vrf.name,
-                    "afi": afi,
-                    "prefix": prefix.prefix
-                }
+                "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"
+                % {"vrf": vrf.name, "afi": afi, "prefix": prefix.prefix}
             ),
             columns=["Free Blocks"],
             data=[
-                [unicode(f)] for f in p.iter_free([
-                    IP.prefix(c.prefix)
-                    for c in prefix.children_set.all()
-                ])
-            ]
+                [unicode(f)]
+                for f in p.iter_free([IP.prefix(c.prefix) for c in prefix.children_set.all()])
+            ],
         )

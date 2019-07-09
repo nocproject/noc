@@ -89,5 +89,5 @@ MIB = {
     "IF-MIB::ifGroups": "1.3.6.1.2.1.31.2.1",
     "IF-MIB::ifCompliances": "1.3.6.1.2.1.31.2.2",
     "IF-MIB::linkDown": "1.3.6.1.6.3.1.1.5.3",
-    "IF-MIB::linkUp": "1.3.6.1.6.3.1.1.5.4"
+    "IF-MIB::linkUp": "1.3.6.1.6.3.1.1.5.4",
 }

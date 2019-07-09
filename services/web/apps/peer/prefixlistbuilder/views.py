@@ -20,16 +20,20 @@ class PrefixListBuilderApplication(ExtApplication):
     """
     Interactive prefix list builder
     """
+
     title = _("Prefix List Builder")
     menu = _("Prefix List Builder")
 
     @view(
-        method=["GET"], url=r"^$", access="read", api=True,
+        method=["GET"],
+        url=r"^$",
+        access="read",
+        api=True,
         validate={
             "peering_point": ModelParameter(PeeringPoint),
             "name": UnicodeParameter(required=False),
-            "as_set": UnicodeParameter()
-        }
+            "as_set": UnicodeParameter(),
+        },
     )
     def api_list(self, request, peering_point, name, as_set):
         if not WhoisCache.has_asset_members():
@@ -37,21 +41,21 @@ class PrefixListBuilderApplication(ExtApplication):
                 "name": name,
                 "prefix_list": "",
                 "success": False,
-                "message": _("AS-SET members cache is empty. Please update Whois Cache")
+                "message": _("AS-SET members cache is empty. Please update Whois Cache"),
             }
         if not WhoisCache.has_origin_routes():
             return {
                 "name": name,
                 "prefix_list": "",
                 "success": False,
-                "message": _("Origin routes cache is empty. Please update Whois Cache")
+                "message": _("Origin routes cache is empty. Please update Whois Cache"),
             }
         if not WhoisCache.has_asset(as_set):
             return {
                 "name": name,
                 "prefix_list": "",
                 "success": False,
-                "message": _("Unknown AS-SET")
+                "message": _("Unknown AS-SET"),
             }
         prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(as_set)
         if not prefixes:
@@ -59,7 +63,7 @@ class PrefixListBuilderApplication(ExtApplication):
                 "name": name,
                 "prefix_list": "",
                 "success": False,
-                "message": _("Cannot resolve AS-SET prefixes")
+                "message": _("Cannot resolve AS-SET prefixes"),
             }
         try:
             pl = peering_point.profile.get_profile().generate_prefix_list(name, prefixes)
@@ -68,11 +72,6 @@ class PrefixListBuilderApplication(ExtApplication):
                 "name": name,
                 "prefix_list": "",
                 "success": False,
-                "message": _("Prefix-list generator is not implemented for this profile")
+                "message": _("Prefix-list generator is not implemented for this profile"),
             }
-        return {
-            "name": name,
-            "prefix_list": pl,
-            "success": True,
-            "message": _("Prefix List built")
-        }
+        return {"name": name, "prefix_list": pl, "success": True, "message": _("Prefix List built")}

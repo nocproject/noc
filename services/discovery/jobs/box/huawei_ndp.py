@@ -14,6 +14,7 @@ class HuaweiNDPCheck(TopologyDiscoveryCheck):
     """
     CDP Topology discovery
     """
+
     name = "huawei_ndp"
     required_script = "get_huawei_ndp_neighbors"
     required_capabilities = ["Huawei | NDP"]
@@ -22,11 +23,7 @@ class HuaweiNDPCheck(TopologyDiscoveryCheck):
         for n in mo.scripts.get_huawei_ndp_neighbors():
             if len(n["neighbors"]) == 1:
                 nn = n["neighbors"][0]
-                yield (
-                    n["local_interface"],
-                    nn["chassis_mac"],
-                    nn["interface"]
-                )
+                yield (n["local_interface"], nn["chassis_mac"], nn["interface"])
 
     def get_neighbor(self, n):
         return self.get_neighbor_by_mac(n)

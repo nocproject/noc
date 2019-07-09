@@ -17,34 +17,26 @@ class PhoneNumberApplication(ExtDocApplication):
     """
     PhoneNumber application
     """
+
     title = "Phone Number"
     menu = [_("Phone Number")]
     model = PhoneNumber
-    query_fields = [
-        "number__contains",
-        "description__icontains"
-    ]
+    query_fields = ["number__contains", "description__icontains"]
     resource_group_fields = [
         "static_service_groups",
         "effective_service_groups",
         "static_client_groups",
-        "effective_client_groups"
+        "effective_client_groups",
     ]
 
     def instance_to_lookup(self, o, fields=None):
-        return {
-            "id": str(o.id),
-            "label": unicode(o),
-            "dialplan": o.dialplan.name
-        }
+        return {"id": str(o.id), "label": unicode(o), "dialplan": o.dialplan.name}
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         def sg_to_list(items):
             return [
-                {
-                    "group": str(x),
-                    "group__label": unicode(ResourceGroup.get_by_id(x))
-                } for x in items
+                {"group": str(x), "group__label": unicode(ResourceGroup.get_by_id(x))}
+                for x in items
             ]
 
         data = super(PhoneNumberApplication, self).instance_to_dict(o, fields, nocustom)

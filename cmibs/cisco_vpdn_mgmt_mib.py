@@ -171,5 +171,5 @@ MIB = {
     "CISCO-VPDN-MGMT-MIB::cvpdnBundleChildSessionId": "1.3.6.1.4.1.9.10.24.1.6.6.1.3",
     "CISCO-VPDN-MGMT-MIB::ciscoVpdnMgmtMIBConformance": "1.3.6.1.4.1.9.10.24.3",
     "CISCO-VPDN-MGMT-MIB::ciscoVpdnMgmtMIBCompliances": "1.3.6.1.4.1.9.10.24.3.1",
-    "CISCO-VPDN-MGMT-MIB::ciscoVpdnMgmtMIBGroups": "1.3.6.1.4.1.9.10.24.3.2"
+    "CISCO-VPDN-MGMT-MIB::ciscoVpdnMgmtMIBGroups": "1.3.6.1.4.1.9.10.24.3.2",
 }

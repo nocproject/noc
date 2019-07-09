@@ -9,6 +9,7 @@
 # Third-party modules
 import six
 from django import forms
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.sa.models.managedobject import ManagedObject
@@ -23,7 +24,7 @@ report_types = [
     ("class", _("By Event Class")),
     ("object", _("By Managed Object")),
     ("profile", _("By Profile")),
-    ("status", _("By Status"))
+    ("status", _("By Status")),
 ]
 
 
@@ -82,7 +83,7 @@ class EventSummaryReport(SimpleReport):
         return [
             ("Failed", FailedEvent.objects.count()),
             ("Active", ActiveEvent.objects.count()),
-            ("Archived", ArchivedEvent.objects.count())
+            ("Archived", ArchivedEvent.objects.count()),
         ]
 
     def get_data(self, request, report_type=None, **kwargs):
@@ -109,7 +110,5 @@ class EventSummaryReport(SimpleReport):
             if r == report_type:
                 title += ": " + t
                 break
-        columns += [TableColumn("Quantity", align="right",
-                                total="sum", format="integer")]
-        return self.from_dataset(title=title, columns=columns,
-                                 data=data, enumerate=True)
+        columns += [TableColumn("Quantity", align="right", total="sum", format="integer")]
+        return self.from_dataset(title=title, columns=columns, data=data, enumerate=True)

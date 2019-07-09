@@ -9,11 +9,13 @@
 # Python modules
 import threading
 import operator
+
 # Third-party modules
 import six
 import cachetools
 from pymongo import ReadPreference
 from pymongo.errors import BulkWriteError
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
@@ -26,6 +28,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
     """
     Interface status discovery
     """
+
     name = "interfacestatus"
     required_script = "get_interface_status_ex"
 
@@ -49,28 +52,26 @@ class InterfaceStatusCheck(DiscoveryCheck):
 
         has_interfaces = "DB | Interfaces" in self.object.get_caps()
         if not has_interfaces:
-            self.logger.info(
-                "No interfaces discovered. "
-                "Skipping interface status check"
-            )
+            self.logger.info("No interfaces discovered. " "Skipping interface status check")
             return
-        self.logger.info(
-            "Checking interface statuses"
-        )
+        self.logger.info("Checking interface statuses")
         interfaces = dict(
             (i.name, i)
             for i in Interface.objects.filter(
                 managed_object=self.object.id,
                 type="physical",
                 profile__in=self.get_profiles(None),
-                read_preference=ReadPreference.SECONDARY_PREFERRED
+                read_preference=ReadPreference.SECONDARY_PREFERRED,
             )
         )
         if not interfaces:
             self.logger.info("No interfaces with status discovery enabled. Skipping")
             return
-        hints = [{"interface": key, "ifindex": v.ifindex}
-                 for key, v in six.iteritems(interfaces) if getattr(v, "ifindex", None) is not None] or None
+        hints = [
+            {"interface": key, "ifindex": v.ifindex}
+            for key, v in six.iteritems(interfaces)
+            if getattr(v, "ifindex", None) is not None
+        ] or None
         result = self.object.scripts.get_interface_status_ex(interfaces=hints)
         collection = Interface._get_collection()
         bulk = []
@@ -83,21 +84,15 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "full_duplex": i.get("full_duplex"),
                 "in_speed": i.get("in_speed"),
                 "out_speed": i.get("out_speed"),
-                "bandwidth": i.get("bandwidth")
+                "bandwidth": i.get("bandwidth"),
             }
             changes = self.update_if_changed(
-                iface, kwargs,
-                ignore_empty=list(six.iterkeys(kwargs)),
-                bulk=bulk
+                iface, kwargs, ignore_empty=list(six.iterkeys(kwargs)), bulk=bulk
             )
-            self.log_changes(
-                "Interface %s status has been changed" % i["interface"],
-                changes
-            )
+            self.log_changes("Interface %s status has been changed" % i["interface"], changes)
             ostatus = i.get("oper_status")
             if iface.oper_status != ostatus and ostatus is not None:
-                self.logger.info("[%s] set oper status to %s",
-                                 i["interface"], ostatus)
+                self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
                 iface.set_oper_status(ostatus)
         if bulk:
             self.logger.info("Commiting changes to database")

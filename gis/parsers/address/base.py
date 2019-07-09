@@ -28,10 +28,10 @@ class AddressParser(object):
         self.opts = opts
 
     def info(self, msg):
-        print ("[%s] %s" % (self.name, msg))
+        print("[%s] %s" % (self.name, msg))
 
     def error(self, msg):
-        print ("[%s: ERROR] %s" % (self.name, msg))
+        print("[%s: ERROR] %s" % (self.name, msg))
 
     def get_top(self):
         rf = Division.objects.filter(type="A", name=self.TOP_NAME).first()

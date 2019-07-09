@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import logging
 from functools import reduce
 import threading
+
 # Third-party modules
 import six
 from django.db import models, connection
@@ -19,6 +20,7 @@ from django.apps import apps
 from mongoengine.base.common import _document_registry
 from mongoengine import fields
 import mongoengine.signals
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.lib.validators import is_int
@@ -33,6 +35,7 @@ class CustomField(NOCModel):
     """
     Custom field description
     """
+
     class Meta(object):
         verbose_name = "Custom Field"
         verbose_name_plural = "Custom Fields"
@@ -52,8 +55,9 @@ class CustomField(NOCModel):
             ("int", "Integer"),
             ("bool", "Boolean"),
             ("date", "Date"),
-            ("datetime", "Date&Time")
-        ])
+            ("datetime", "Date&Time"),
+        ],
+    )
     description = models.TextField("Description", null=True, blank=True)
     # Applicable only for "str" type
     max_length = models.IntegerField("Max. Length", default=0)
@@ -69,14 +73,18 @@ class CustomField(NOCModel):
     is_hidden = models.BooleanField("Is Hidden", default=False)
     # Is enumeration?
     enum_group = models.ForeignKey(
-        CustomFieldEnumGroup, verbose_name="Enum Group", null=True, blank=True, on_delete=models.CASCADE
+        CustomFieldEnumGroup,
+        verbose_name="Enum Group",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
     )
     _cfields = {}
     _installed = set()
     _table_fields = None
 
     def __str__(self):
-        return u"%s.%s" % (self.table, self.name)
+        return "%s.%s" % (self.table, self.name)
 
     @property
     def is_table(self):
@@ -96,9 +104,7 @@ class CustomField(NOCModel):
         :return:
         """
         if self.enum_group:
-            qs = self.enum_group.enumvalue_set\
-                                .filter(is_active=True)\
-                                .order_by("value")
+            qs = self.enum_group.enumvalue_set.filter(is_active=True).order_by("value")
             if self.type == "int":
                 return [(int(e.key), e.value) for e in qs]
             else:
@@ -117,51 +123,34 @@ class CustomField(NOCModel):
                 return models.CharField(
                     name=name,
                     db_column=self.db_column,
-                    null=True, blank=True,
-                    max_length=max_length, choices=self.get_enums())
+                    null=True,
+                    blank=True,
+                    max_length=max_length,
+                    choices=self.get_enums(),
+                )
             elif self.type == "int":
                 return models.IntegerField(
-                    name=name,
-                    db_column=self.db_column,
-                    null=True, blank=True)
+                    name=name, db_column=self.db_column, null=True, blank=True
+                )
             elif self.type == "bool":
-                return models.BooleanField(
-                    name=name,
-                    db_column=self.db_column,
-                    default=False)
+                return models.BooleanField(name=name, db_column=self.db_column, default=False)
             elif self.type == "date":
-                return models.DateField(
-                    name=name,
-                    db_column=self.db_column,
-                    null=True, blank=True)
+                return models.DateField(name=name, db_column=self.db_column, null=True, blank=True)
             elif self.type == "datetime":
                 return models.DateTimeField(
-                    name=name,
-                    db_column=self.db_column,
-                    null=True, blank=True)
+                    name=name, db_column=self.db_column, null=True, blank=True
+                )
             else:
                 raise NotImplementedError
         else:
             if self.type == "str":
-                return fields.StringField(
-                    db_field=self.db_column,
-                    required=False
-                )
+                return fields.StringField(db_field=self.db_column, required=False)
             elif self.type == "int":
-                return fields.IntField(
-                    db_field=self.db_column,
-                    required=False
-                )
+                return fields.IntField(db_field=self.db_column, required=False)
             elif self.type == "bool":
-                return fields.BooleanField(
-                    db_field=self.db_column,
-                    required=False
-                )
+                return fields.BooleanField(db_field=self.db_column, required=False)
             elif self.type in ("date", "datetime"):
-                return fields.DateTimeField(
-                    db_field=self.db_column,
-                    required=False
-                )
+                return fields.DateTimeField(db_field=self.db_column, required=False)
             else:
                 raise NotImplementedError
 
@@ -182,14 +171,11 @@ class CustomField(NOCModel):
             r = "TIMESTAMP"
         else:
             raise ValueError("Invalid field type '%s'" % self.type)
-        return "ALTER TABLE %s ADD COLUMN \"%s\" %s NULL" % (
-            self.table, self.db_column, r
-        )
+        return 'ALTER TABLE %s ADD COLUMN "%s" %s NULL' % (self.table, self.db_column, r)
 
     @property
     def db_drop_statement(self):
-        return "ALTER TABLE %s DROP COLUMN \"%s\"" % (
-            self.table, self.db_column)
+        return 'ALTER TABLE %s DROP COLUMN "%s"' % (self.table, self.db_column)
 
     def execute(self, sql):
         logger.debug("Execute: %s", sql)
@@ -209,8 +195,9 @@ class CustomField(NOCModel):
     def create_index(self):
         logger.info("Creating index %s", self.index_name)
         if self.is_table:
-            self.execute("CREATE INDEX %s ON %s(%s)" % (
-                self.index_name, self.table, self.db_column))
+            self.execute(
+                "CREATE INDEX %s ON %s(%s)" % (self.index_name, self.table, self.db_column)
+            )
 
     def drop_index(self):
         logger.info("Dropping index %s", self.index_name)
@@ -218,12 +205,17 @@ class CustomField(NOCModel):
             self.execute("DROP INDEX %s" % self.index_name)
 
     def rename(self, old_name):
-        logger.info("Renaming custom field %s.%s to %s.%s",
-                    old_name.table, old_name.name, self.table, self.name)
+        logger.info(
+            "Renaming custom field %s.%s to %s.%s",
+            old_name.table,
+            old_name.name,
+            self.table,
+            self.name,
+        )
         if self.is_table:
-            self.execute("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
-                self.table, old_name, self.db_column
-            ))
+            self.execute(
+                'ALTER TABLE %s RENAME "%s" TO "%s"' % (self.table, old_name, self.db_column)
+            )
 
     def save(self, *args, **kwargs):
         """
@@ -298,13 +290,9 @@ class CustomField(NOCModel):
         for f in cls.objects.filter(is_active=True).order_by("table"):
             if f.table not in cls._cfields:
                 if f.is_table:
-                    django_signals.class_prepared.connect(
-                        cls.on_new_model
-                    )
+                    django_signals.class_prepared.connect(cls.on_new_model)
                 else:
-                    mongoengine.signals.class_prepared.connect(
-                        cls.on_new_document
-                    )
+                    mongoengine.signals.class_prepared.connect(cls.on_new_document)
                 cls._cfields[f.table] = [f]
             else:
                 cls._cfields[f.table] += [f]
@@ -332,8 +320,7 @@ class CustomField(NOCModel):
             return
         self._installed.add(un)
         fn = str(self.name)
-        logger.info("Installing custom field %s.%s",
-                    self.table, self.name)
+        logger.info("Installing custom field %s.%s", self.table, self.name)
         mf = self.get_field()
         if self.is_table:
             # Install model field
@@ -361,8 +348,8 @@ class CustomField(NOCModel):
                 "int": "int",
                 "bool": "boolean",
                 "date": "date",
-                "datetime": "date"
-            }[self.type]
+                "datetime": "date",
+            }[self.type],
         }
         return f
 
@@ -371,11 +358,7 @@ class CustomField(NOCModel):
         """
         Dict containing ExtJS grid column description
         """
-        f = {
-            "text": self.label,
-            "dataIndex": self.name,
-            "hidden": True
-        }
+        f = {"text": self.label, "dataIndex": self.name, "hidden": True}
         if self.type == "bool":
             f["renderer"] = "NOC.render.Bool"
         return f
@@ -390,7 +373,7 @@ class CustomField(NOCModel):
                 "name": self.name,
                 "xtype": "checkboxfield",
                 "boxLabel": self.label,
-                "allowBlank": True
+                "allowBlank": True,
             }
         elif self.type == "str" and self.enum_group:
             f = {
@@ -403,11 +386,8 @@ class CustomField(NOCModel):
                 "valueField": "id",
                 "store": {
                     "fields": ["id", "label"],
-                    "data": [
-                        {"id": k, "label": v}
-                        for k, v in self.get_enums()
-                    ]
-                }
+                    "data": [{"id": k, "label": v} for k, v in self.get_enums()],
+                },
             }
         elif self.type in ("str", "int", "date", "datetime"):
             f = {
@@ -416,10 +396,10 @@ class CustomField(NOCModel):
                     "str": "textfield",
                     "int": "numberfield",
                     "date": "datefield",
-                    "datetime": "datefield"
+                    "datetime": "datefield",
                 }[self.type],
                 "fieldLabel": self.label,
-                "allowBlank": True
+                "allowBlank": True,
             }
             if self.type == "str" and self.regexp:
                 f["regex"] = self.regexp
@@ -437,32 +417,22 @@ class CustomField(NOCModel):
             SELECT DISTINCT \"%(col)s\"
             FROM %(table)s
             WHERE \"%(col)s\" IS NOT NULL AND \"%(col)s\" != ''
-            ORDER BY \"%(col)s\"""" % {
-                "col": self.db_column,
-                "table": self.table
-            }
+            ORDER BY \"%(col)s\""""
+            % {"col": self.db_column, "table": self.table}
         )
         return [(x, x) for x, in c.fetchall()]
 
     @classmethod
     def table_search_Q(cls, table, query):
         q = []
-        for f in CustomField.objects.filter(
-            is_active=True,
-            table=table,
-            is_searchable=True
-        ):
+        for f in CustomField.objects.filter(is_active=True, table=table, is_searchable=True):
             if f.type == "str":
                 q += [{"%s__icontains" % f.name: query}]
             elif f.type == "int":
                 if is_int(query):
                     q += [{f.name: int(query)}]
         if q:
-            return reduce(
-                lambda x, y: x | models.Q(**y),
-                q,
-                models.Q(**q[0])
-            )
+            return reduce(lambda x, y: x | models.Q(**y), q, models.Q(**q[0]))
         else:
             return None
 

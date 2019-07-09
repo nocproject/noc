@@ -24,7 +24,7 @@ class GeocodingParser(object):
         pass
 
     def feed_building(self, b_id, addr, coords):
-        print ("BUILDING(%s=%s)" % (self.ID_ADDR, b_id), addr, coords)
+        print("BUILDING(%s=%s)" % (self.ID_ADDR, b_id), addr, coords)
 
     def get_centroid(self, points):
         """

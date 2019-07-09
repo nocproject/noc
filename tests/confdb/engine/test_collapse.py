@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.confdb.engine.base import Engine
 
@@ -17,7 +18,7 @@ CONF1 = [
     ["interfaces", "Fa0/2", "description", "test"],
     ["interfaces", "Fa0/3", "tagged-vlans", "5-10,19"],
     ["interfaces", "Fa0/3", "tagged-vlans", "20-30,35"],
-    ["interfaces", "Fa0/4", "tagged-vlans", "11"]
+    ["interfaces", "Fa0/4", "tagged-vlans", "11"],
 ]
 
 RESULT_JOIN = """interfaces
@@ -50,10 +51,13 @@ RESULT_JOINRANGE = """interfaces
             11"""
 
 
-@pytest.mark.parametrize("conf,query,result", [
-    (CONF1, "Collapse('interfaces', X, 'tagged-vlans', join=',')", RESULT_JOIN),
-    (CONF1, "Collapse('interfaces', X, 'tagged-vlans', joinrange=',')", RESULT_JOINRANGE)
-])
+@pytest.mark.parametrize(
+    "conf,query,result",
+    [
+        (CONF1, "Collapse('interfaces', X, 'tagged-vlans', join=',')", RESULT_JOIN),
+        (CONF1, "Collapse('interfaces', X, 'tagged-vlans', joinrange=',')", RESULT_JOINRANGE),
+    ],
+)
 def test_collapse_join(conf, query, result):
     e = Engine()
     e.insert_bulk(CONF1)

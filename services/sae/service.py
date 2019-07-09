@@ -10,6 +10,7 @@
 # Python modules
 import contextlib
 import threading
+
 # NOC modules
 from noc.core.service.base import Service
 from noc.main.models.pool import Pool
@@ -45,11 +46,7 @@ class SAEService(Service):
 
     def on_activate(self):
         self.load_pools()
-        self.pg_pool = ThreadedConnectionPool(
-            1,
-            config.sae.db_threads,
-            **config.pg_connection_args
-        )
+        self.pg_pool = ThreadedConnectionPool(1, config.sae.db_threads, **config.pg_connection_args)
         self.pg_pool_ready.set()
 
     def get_pool_name(self, pool_id):

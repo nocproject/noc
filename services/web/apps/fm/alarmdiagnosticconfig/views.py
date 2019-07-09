@@ -16,6 +16,7 @@ class AlarmDiagnosticConfigApplication(ExtDocApplication):
     """
     AlarmDiagnosticConfig application
     """
+
     title = "Alarm Diagnostic Config"
     menu = [_("Setup"), _("Alarm Diagnostic")]
     model = AlarmDiagnosticConfig

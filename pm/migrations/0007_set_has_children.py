@@ -32,10 +32,10 @@ class Migration(BaseMigration):
             for name in has_children:
                 bulk += [UpdateOne({"name": name}, {"$set": {"has_children": has_children[name]}})]
             if bulk:
-                print ("Commiting changes to database")
+                print("Commiting changes to database")
                 try:
                     metrics.bulk_write(bulk)
-                    print ("Database has been synced")
+                    print("Database has been synced")
                 except BulkWriteError as e:
-                    print (("Bulk write error: '%s'", e.details))
-                    print ("Stopping check")
+                    print(("Bulk write error: '%s'", e.details))
+                    print("Stopping check")

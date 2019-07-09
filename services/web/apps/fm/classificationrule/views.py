@@ -8,11 +8,16 @@
 
 # Python modules
 import re
-# Django modules
+
+# Third-party modules
 from django.template import Template, Context
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.fm.models.eventclassificationrule import EventClassificationRule, EventClassificationRuleCategory
+from noc.fm.models.eventclassificationrule import (
+    EventClassificationRule,
+    EventClassificationRuleCategory,
+)
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.lib.validators import is_objectid, is_oid
@@ -24,6 +29,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
     """
     EventClassificationRule application
     """
+
     title = _("Classification Rule")
     menu = [_("Setup"), _("Classification Rules")]
     model = EventClassificationRule
@@ -76,8 +82,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 data.update(MIB.resolve_vars(data))
         # Check event class
         if "event_class" in q:
-            event_class = self.get_object_or_404(EventClass,
-                                                 id=q["event_class"])
+            event_class = self.get_object_or_404(EventClass, id=q["event_class"])
             for v in event_class.vars:
                 if v.required:
                     required_vars.add(v.name)
@@ -92,14 +97,14 @@ class EventClassificationRuleApplication(ExtDocApplication):
                         k = re.compile(p["key_re"])
                     except re.error as why:
                         errors += [
-                            "Invalid key regular expression <<<%s>>>: %s" % (
-                                p["key_re"], why)]
+                            "Invalid key regular expression <<<%s>>>: %s" % (p["key_re"], why)
+                        ]
                     try:
                         v = re.compile(p["value_re"])
                     except re.error as why:
                         errors += [
-                            "Invalid value regular expression <<<%s>>>: %s" % (
-                                p["value_re"], why)]
+                            "Invalid value regular expression <<<%s>>>: %s" % (p["value_re"], why)
+                        ]
                     if k and v:
                         patterns += [(k, v)]
         # Try to match rule
@@ -120,15 +125,16 @@ class EventClassificationRuleApplication(ExtDocApplication):
                             v.update(v_match.groupdict())
                             vars.update(v)
                             # Save patterns
-                            s_patterns += [{
-                                "status": True,
-                                "key": k,
-                                "value": data[k],
-                                "key_re": pkey.pattern,
-                                "value_re": pvalue.pattern,
-                                "vars": [{"key": k, "value": v[k]}
-                                         for k in v]
-                            }]
+                            s_patterns += [
+                                {
+                                    "status": True,
+                                    "key": k,
+                                    "value": data[k],
+                                    "key_re": pkey.pattern,
+                                    "value_re": pvalue.pattern,
+                                    "vars": [{"key": k, "value": v[k]} for k in v],
+                                }
+                            ]
                         else:
                             i_patterns += [
                                 {
@@ -137,7 +143,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                                     "value": data[k],
                                     "key_re": pkey.pattern,
                                     "value_re": pvalue.pattern,
-                                    "vars": {}
+                                    "vars": {},
                                 }
                             ]
                         matched = True
@@ -150,7 +156,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                             "value": None,
                             "key_re": pkey.pattern,
                             "value_re": pvalue.pattern,
-                            "vars": {}
+                            "vars": {},
                         }
                     ]
             if s_patterns and not i_patterns:
@@ -164,9 +170,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     try:
                         vars[v["name"]] = eval(v["value"][1:], {}, vars)
                     except Exception as why:
-                        errors += [
-                            "Error when evaluating '%s': %s" % (v["name"], why)
-                        ]
+                        errors += ["Error when evaluating '%s': %s" % (v["name"], why)]
                 else:
                     vars[v["name"]] = v["value"]
         # Check required variables
@@ -180,9 +184,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
             subject = Template(event_class.subject_template).render(ctx)
             body = Template(event_class.body_template).render(ctx)
         # Check expression
-        r = {
-            "result": result
-        }
+        r = {"result": result}
         if errors:
             r["errors"] = errors
         if vars:
@@ -195,13 +197,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
             r["body"] = body
         return r
 
-    IGNORED_OIDS = {
-        "RFC1213-MIB::sysUpTime.0",
-        "SNMPv2-MIB::sysUpTime.0"
-    }
+    IGNORED_OIDS = {"RFC1213-MIB::sysUpTime.0", "SNMPv2-MIB::sysUpTime.0"}
 
-    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$",
-          method=["GET"], access="create", api=True)
+    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$", method=["GET"], access="create", api=True)
     def api_from_event(self, request, event_id):
         """
         Create classification rule from event
@@ -217,18 +215,12 @@ class EventClassificationRuleApplication(ExtDocApplication):
             event_name += "(SYSLOG)"
         elif event.source == "SNMP Trap":
             event_name += "(SNMP)"
-        data = {
-            "name": event_name,
-            "preference": 1000
-        }
+        data = {"name": event_name, "preference": 1000}
         if event.source == "syslog":
             data["description"] = event.raw_vars["message"]
-        elif (event.source == "SNMP Trap" and
-              "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
+        elif event.source == "SNMP Trap" and "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars:
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
-        patterns = {
-            "source": event.source
-        }
+        patterns = {"source": event.source}
         for k in event.raw_vars:
             if k not in ("collector", "facility", "severity"):
                 patterns[k] = event.raw_vars[k]
@@ -237,9 +229,6 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 if k not in self.IGNORED_OIDS and not is_oid(k):
                     patterns[k] = event.resolved_vars[k]
         data["patterns"] = [
-            {
-                "key_re": "^%s$" % k,
-                "value_re": "^%s$" % patterns[k]
-            } for k in patterns
+            {"key_re": "^%s$" % k, "value_re": "^%s$" % patterns[k]} for k in patterns
         ]
         return data

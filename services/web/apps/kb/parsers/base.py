@@ -17,6 +17,7 @@ class BaseParser(object):
     """
     Abstract parser class
     """
+
     name = None
     # A list of additional CSSs
     css = []
@@ -52,29 +53,25 @@ class BaseParser(object):
         if text is None:
             text = link
         if link.startswith("KB") and is_int(link[2:]):
-            return u"<a href='%s/%s/'>%s</a>" % (BASE_PATH, link[2:], text)
+            return "<a href='%s/%s/'>%s</a>" % (BASE_PATH, link[2:], text)
         elif link.startswith("TT"):
             return link[2:]
         elif link.startswith("attach:"):
             if text == link:
                 text = link[7:]
             link = link[7:]
-            return u"<a href='%s/%d/attachment/%s/'>%s</a>" % (
-                BASE_PATH, kb_entry.id, link, text
-            )
+            return "<a href='%s/%d/attachment/%s/'>%s</a>" % (BASE_PATH, kb_entry.id, link, text)
         elif link.startswith("attachment:"):
             if text == link:
                 text = link[11:]
             link = link[11:]
-            return u"<a href='/kb/kbentry/%d/attachment/%s/'>%s</a>" % (
-                kb_entry.id, link, text
-            )
+            return "<a href='/kb/kbentry/%d/attachment/%s/'>%s</a>" % (kb_entry.id, link, text)
         else:
             try:
                 le = kb_entry.__class__.objects.get(subject=link)
-                return u"<a href='%s/%s/'>%s</a>" % (BASE_PATH, le.id, text)
+                return "<a href='%s/%s/'>%s</a>" % (BASE_PATH, le.id, text)
             except kb_entry.__class__.DoesNotExist:
-                return u"<a href='%s'>%s</a>" % (link, text)
+                return "<a href='%s'>%s</a>" % (link, text)
 
     @classmethod
     def convert_attach(cls, kb_entry, href):

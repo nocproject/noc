@@ -83,4 +83,5 @@ def format(input, output):
 
 if __name__ == "__main__":
     import sys
+
     format(sys.stdin, sys.stdout)

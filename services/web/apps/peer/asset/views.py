@@ -17,9 +17,9 @@ class ASSetApplication(ExtModelApplication):
     """
     ASSet application
     """
+
     title = _("AS Sets")
     menu = _("AS Sets")
     model = ASSet
-    query_fields = ["name__icontains", "description__icontains",
-                    "members__icontains"]
+    query_fields = ["name__icontains", "description__icontains", "members__icontains"]
     rpsl = RepoInline("rpsl")

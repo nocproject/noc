@@ -9,28 +9,34 @@
 # Python modules
 import re
 from copy import deepcopy
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.wf.models.workflow import Workflow
 from noc.wf.models.state import State
 from noc.wf.models.transition import Transition, TransitionVertex
 from noc.core.translation import ugettext as _
-from noc.sa.interfaces.base import (StringParameter, IntParameter, DictListParameter,
-                                    BooleanParameter, StringListParameter)
+from noc.sa.interfaces.base import (
+    StringParameter,
+    IntParameter,
+    DictListParameter,
+    BooleanParameter,
+    StringListParameter,
+)
 
 
 class WorkflowApplication(ExtDocApplication):
     """
     Workflow application
     """
+
     title = _("Workflows")
     menu = [_("Setup"), _("Workflow")]
     model = Workflow
 
     NEW_ID = "000000000000000000000000"
 
-    @view("^(?P<id>[0-9a-f]{24})/config/",
-          method=["GET"], access="write", api=True)
+    @view("^(?P<id>[0-9a-f]{24})/config/", method=["GET"], access="write", api=True)
     def api_get_config(self, request, id):
         wf = self.get_object_or_404(Workflow, id=id)
         r = {
@@ -39,7 +45,7 @@ class WorkflowApplication(ExtDocApplication):
             "is_active": wf.is_active,
             "description": wf.description,
             "states": [],
-            "transitions": []
+            "transitions": [],
         }
         for state in State.objects.filter(workflow=wf.id):
             sr = {
@@ -56,7 +62,7 @@ class WorkflowApplication(ExtDocApplication):
                 "on_leave_handlers": state.on_leave_handlers,
                 "bi_id": str(state.bi_id) if state.bi_id else None,
                 "x": state.x,
-                "y": state.y
+                "y": state.y,
             }
             r["states"] += [sr]
         for t in Transition.objects.filter(workflow=wf.id):
@@ -76,45 +82,48 @@ class WorkflowApplication(ExtDocApplication):
             r["transitions"] += [tr]
         return r
 
-    @view("^(?P<id>[0-9a-f]{24})/config/",
-          method=["POST"], access="write", api=True,
-          validate={
-              "name": StringParameter(),
-              "description": StringParameter(default=""),
-              "is_active": BooleanParameter(default=False),
-              "states": DictListParameter(attrs={
-                  "id": StringParameter(default=""),
-                  "name": StringParameter(),
-                  "description": StringParameter(default=""),
-                  "is_default": BooleanParameter(default=False),
-                  "is_productive": BooleanParameter(default=False),
-                  "update_last_seen": BooleanParameter(default=False),
-                  "ttl": IntParameter(default=0),
-                  "update_expired": BooleanParameter(default=False),
-                  "on_enter_handlers": StringListParameter(),
-                  "job_handler": StringParameter(required=False),
-                  "on_leave_handlers": StringListParameter(),
-                  "x": IntParameter(),
-                  "y": IntParameter()
-
-              }),
-              "transitions": DictListParameter(attrs={
-                  "id": StringParameter(default=""),
-                  "from_state": StringParameter(),
-                  "to_state": StringParameter(),
-                  "is_active": BooleanParameter(default=False),
-                  "event": StringParameter(),
-                  "label": StringParameter(),
-                  "description": StringParameter(default=""),
-                  "enable_manual": BooleanParameter(),
-                  "handlers": StringListParameter(),
-                  "vertices": DictListParameter(attrs={
-                      "x": IntParameter(),
-                      "y": IntParameter()
-                  })
-              })
-          }
-          )
+    @view(
+        "^(?P<id>[0-9a-f]{24})/config/",
+        method=["POST"],
+        access="write",
+        api=True,
+        validate={
+            "name": StringParameter(),
+            "description": StringParameter(default=""),
+            "is_active": BooleanParameter(default=False),
+            "states": DictListParameter(
+                attrs={
+                    "id": StringParameter(default=""),
+                    "name": StringParameter(),
+                    "description": StringParameter(default=""),
+                    "is_default": BooleanParameter(default=False),
+                    "is_productive": BooleanParameter(default=False),
+                    "update_last_seen": BooleanParameter(default=False),
+                    "ttl": IntParameter(default=0),
+                    "update_expired": BooleanParameter(default=False),
+                    "on_enter_handlers": StringListParameter(),
+                    "job_handler": StringParameter(required=False),
+                    "on_leave_handlers": StringListParameter(),
+                    "x": IntParameter(),
+                    "y": IntParameter(),
+                }
+            ),
+            "transitions": DictListParameter(
+                attrs={
+                    "id": StringParameter(default=""),
+                    "from_state": StringParameter(),
+                    "to_state": StringParameter(),
+                    "is_active": BooleanParameter(default=False),
+                    "event": StringParameter(),
+                    "label": StringParameter(),
+                    "description": StringParameter(default=""),
+                    "enable_manual": BooleanParameter(),
+                    "handlers": StringListParameter(),
+                    "vertices": DictListParameter(attrs={"x": IntParameter(), "y": IntParameter()}),
+                }
+            ),
+        },
+    )
     def api_save_config(self, request, id, name, description, states, transitions, **kwargs):
         if id == self.NEW_ID:
             wf = Workflow()
@@ -194,20 +203,15 @@ class WorkflowApplication(ExtDocApplication):
 
     rx_clone_name = re.compile(r"\(Copy #(\d+)\)$")
 
-    @view("^(?P<id>[0-9a-f]{24})/clone/",
-          method=["POST"], access="write", api=True)
+    @view("^(?P<id>[0-9a-f]{24})/clone/", method=["POST"], access="write", api=True)
     def api_clone(self, request, id):
         wf = self.get_object_or_404(Workflow, id=id)
         # Get all clone names
         m = 0
-        for d in Workflow._get_collection().find({
-            "name": {
-                "$regex": re.compile("^%s\(Copy #\d+\)$" % re.escape(wf.name))
-            }
-        }, {
-            "_id": 0,
-            "name": 1
-        }):
+        for d in Workflow._get_collection().find(
+            {"name": {"$regex": re.compile("^%s\(Copy #\d+\)$" % re.escape(wf.name))}},
+            {"_id": 0, "name": 1},
+        ):
             match = self.rx_clone_name.search(d["name"])
             if match:
                 n = int(match.group(1))
@@ -240,6 +244,4 @@ class WorkflowApplication(ExtDocApplication):
             new_transition.bi_id = None
             new_transition.save()
         #
-        return {
-            "id": str(new_wf.id)
-        }
+        return {"id": str(new_wf.id)}

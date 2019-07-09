@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.aaa.models.user import User
 from noc.core.translation import ugettext as _
@@ -24,8 +25,7 @@ class LocalBackend(BaseAuthBackend):
             raise self.LoginError(_("Invalid password"))
         return user.username
 
-    def change_credentials(self, user=None, old_password=None,
-                           new_password=None, **kwargs):
+    def change_credentials(self, user=None, old_password=None, new_password=None, **kwargs):
         try:
             user = User.objects.get(username=user)
         except User.DoesNotExist:

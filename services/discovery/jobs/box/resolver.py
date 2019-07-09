@@ -14,6 +14,7 @@ class ResolverCheck(DiscoveryCheck):
     """
     Version discovery
     """
+
     name = "resolver"
 
     def handler(self):
@@ -25,7 +26,7 @@ class ResolverCheck(DiscoveryCheck):
             self.set_problem(
                 alarm_class="Discovery | Error | Unhandled Exception",
                 message="Failed to resolve fqdn %s" % fqdn,
-                fatal=True
+                fatal=True,
             )
             return
         if address == self.object.address:

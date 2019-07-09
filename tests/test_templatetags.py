@@ -70,11 +70,14 @@ v1=7
 """
 
 
-@pytest.mark.parametrize("template,context,expected", [
-    (PYTHON1_TPL, {"x": 1}, PYTHON1_OUT),
-    (PYTHON2_TPL, {"n": 3}, PYTHON2_OUT),
-    (PYTHON3_TPL, {"v": 2}, PYTHON3_OUT)
-])
+@pytest.mark.parametrize(
+    "template,context,expected",
+    [
+        (PYTHON1_TPL, {"x": 1}, PYTHON1_OUT),
+        (PYTHON2_TPL, {"n": 3}, PYTHON2_OUT),
+        (PYTHON3_TPL, {"v": 2}, PYTHON3_OUT),
+    ],
+)
 def test_templatetags(template, context, expected):
     ctx = django.template.Context(context)
     result = django.template.Template(template).render(ctx)

@@ -83,9 +83,9 @@ class Link(Document):
 
     def __str__(self):
         if self.interfaces:
-            return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+            return "(%s)" % ", ".join(unicode(i) for i in self.interfaces)
         else:
-            return u"Stale link (%s)" % self.id
+            return "Stale link (%s)" % self.id
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

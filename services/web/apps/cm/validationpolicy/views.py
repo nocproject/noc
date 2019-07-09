@@ -16,6 +16,7 @@ class ValidationPolicyApplication(ExtDocApplication):
     """
     ValidationPolicy application
     """
+
     title = _("Validation Policy")
     menu = [_("Setup"), _("Validation Policy")]
     model = ValidationPolicy

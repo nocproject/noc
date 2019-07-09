@@ -39,7 +39,7 @@ class MACRange(EmbeddedDocument):
     last_mac = StringField()
 
     def __str__(self):
-        return u"%s - %s" % (self.first_mac, self.last_mac)
+        return "%s - %s" % (self.first_mac, self.last_mac)
 
 
 @on_delete

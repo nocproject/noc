@@ -8,6 +8,7 @@
 
 # Python modules
 import base64
+
 # Third-party modules
 import tornado.web
 from noc.config import config
@@ -24,6 +25,7 @@ class AuthRequestHandler(tornado.web.RequestHandler):
         """
         Checks Basic auth or noc_user secure cookie
         """
+
         def success(user):
             self.set_status(200, "OK")
             self.set_header("Remote-User", user)
@@ -42,8 +44,7 @@ class AuthRequestHandler(tornado.web.RequestHandler):
             return success(user)
         elif self.request.headers.get("Private-Token"):
             name, access = self.service.get_api_access(
-                self.request.headers.get("Private-Token"),
-                self.request.remote_ip
+                self.request.headers.get("Private-Token"), self.request.remote_ip
             )
             if name and access:
                 return api_success(access, name)
@@ -54,11 +55,7 @@ class AuthRequestHandler(tornado.web.RequestHandler):
                 c = base64.decodestring(ah[6:])
                 if ":":
                     user, password = c.split(":", 1)
-                    credentials = {
-                        "user": user,
-                        "password": password,
-                        "ip": self.request.remote_ip
-                    }
+                    credentials = {"user": user, "password": password, "ip": self.request.remote_ip}
                     if self.service.authenticate(self, credentials):
                         return success(user)
         return fail()

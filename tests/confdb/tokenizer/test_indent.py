@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.confdb.tokenizer.indent import IndentTokenizer
 
@@ -41,7 +42,7 @@ TOKENS1 = [
     ("interface", "Gi", "0/2", "ip", "address", "10.0.1.1/24"),
     ("interface", "Gi", "0/2", "qos"),
     ("interface", "Gi", "0/2", "qos", "input", "input-map"),
-    ("interface", "Gi", "0/2", "qos", "output", "output-map")
+    ("interface", "Gi", "0/2", "qos", "output", "output-map"),
 ]
 
 CFG2 = """# Comment
@@ -76,7 +77,7 @@ TOKENS2 = [
     ("interface", "Gi", "0/2", "ip", "address", "10.0.1.1/24"),
     ("interface", "Gi", "0/2", "qos"),
     ("interface", "Gi", "0/2", "qos", "input", "input-map"),
-    ("interface", "Gi", "0/2", "qos", "output", "output-map")
+    ("interface", "Gi", "0/2", "qos", "output", "output-map"),
 ]
 
 CFG3 = """#
@@ -123,11 +124,14 @@ TOKENS3 = [
 ]
 
 
-@pytest.mark.parametrize("input,config,expected", [
-    (CFG1, {"line_comment": "#"}, TOKENS1),
-    (CFG2, {"line_comment": "#", "end_of_context": "end"}, TOKENS2),
-    (CFG3, {"line_comment": "#"}, TOKENS3),
-])
+@pytest.mark.parametrize(
+    "input,config,expected",
+    [
+        (CFG1, {"line_comment": "#"}, TOKENS1),
+        (CFG2, {"line_comment": "#", "end_of_context": "end"}, TOKENS2),
+        (CFG3, {"line_comment": "#"}, TOKENS3),
+    ],
+)
 def test_tokenizer(input, config, expected):
     tokenizer = IndentTokenizer(input, **config)
     assert list(tokenizer) == expected

@@ -18,6 +18,7 @@ class WhoisCache(object):
     """
     Whois cache interface
     """
+
     @classmethod
     def has_asset_members(cls):
         """
@@ -88,9 +89,9 @@ class WhoisCache(object):
     def resolve_as_set_prefixes(cls, as_set, optimize=None):
         prefixes = cls._resolve_as_set_prefixes(as_set)
         if optimize or (
-                optimize is None and
-                config.peer.prefix_list_optimization and
-                len(prefixes) >= config.peer.prefix_list_optimization_threshold
+            optimize is None
+            and config.peer.prefix_list_optimization
+            and len(prefixes) >= config.peer.prefix_list_optimization_threshold
         ):
             return set(optimize_prefix_list(prefixes))
         return prefixes
@@ -104,9 +105,9 @@ class WhoisCache(object):
         prefixes = cls._resolve_as_set_prefixes(as_set)
         max_len = config.peer.max_prefix_length
         if optimize or (
-                optimize is None and
-                config.peer.prefix_list_optimization and
-                len(prefixes) >= config.peer.prefix_list_optimization_threshold
+            optimize is None
+            and config.peer.prefix_list_optimization
+            and len(prefixes) >= config.peer.prefix_list_optimization_threshold
         ):
             # Optimization is enabled
             return [

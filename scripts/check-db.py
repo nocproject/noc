@@ -13,8 +13,9 @@ import sys
 def check_pg():
     import psycopg2
     from django.db import connection
+
     try:
-        c = connection.cursor()
+        connection.cursor()
     except psycopg2.OperationalError as why:
         sys.stderr.write("ERROR: %s\n" % why)
         sys.exit(1)
@@ -23,6 +24,7 @@ def check_pg():
 def check_mongo():
     from noc.lib.nosql import get_db
     import pymongo
+
     try:
         db = get_db()
     except pymongo.errors.OperationFailure as why:

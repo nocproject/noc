@@ -12,11 +12,13 @@ import zlib
 import threading
 import operator
 from collections import defaultdict
+
 # Third-party modules
 import bson
 import ujson
 from mongoengine.queryset import Q
 import cachetools
+
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
@@ -32,17 +34,19 @@ from noc.core.perf import metrics
 from noc.core.translation import ugettext as _
 
 # Access items validations
-I_VALID = DictListParameter(attrs={
-    "group": DictParameter(attrs={
-        "id": IntParameter(required=True),
-        "name": StringParameter(required=False)
-    }, required=False),
-    "user": DictParameter(attrs={
-        "id": IntParameter(required=True),
-        "name": StringParameter(required=False)
-    }, required=False),
-    "level": IntParameter(min_value=-1, max_value=3, default=-1)
-})
+I_VALID = DictListParameter(
+    attrs={
+        "group": DictParameter(
+            attrs={"id": IntParameter(required=True), "name": StringParameter(required=False)},
+            required=False,
+        ),
+        "user": DictParameter(
+            attrs={"id": IntParameter(required=True), "name": StringParameter(required=False)},
+            required=False,
+        ),
+        "level": IntParameter(min_value=-1, max_value=3, default=-1),
+    }
+)
 
 ds_lock = threading.Lock()
 model_lock = threading.Lock()
@@ -52,14 +56,13 @@ class BIAPI(API):
     """
     Monitoring API
     """
+
     name = "bi"
 
     _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
     _model_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
 
-    ref_dict = {
-        "sa.ManagedObject": "managedobject"
-    }
+    ref_dict = {"sa.ManagedObject": "managedobject"}
 
     @classmethod
     def get_pm_datasources(cls):
@@ -67,12 +70,14 @@ class BIAPI(API):
         # Collect fields
         scope_fields = defaultdict(list)
         for mt in MetricType.objects.all().order_by("field_name"):
-            scope_fields[mt.scope.table_name] += [{
-                "name": mt.field_name,
-                "description": mt.description,
-                "type": mt.field_type,
-                "dict": None
-            }]
+            scope_fields[mt.scope.table_name] += [
+                {
+                    "name": mt.field_name,
+                    "description": mt.description,
+                    "type": mt.field_type,
+                    "dict": None,
+                }
+            ]
         # Attach scopes as datasources
         for ms in MetricScope.objects.all().order_by("table_name"):
             r = {
@@ -81,46 +86,44 @@ class BIAPI(API):
                 "tags": [],
                 "sample": False,
                 "fields": [
-                    {
-                        "name": "date",
-                        "description": "Date",
-                        "type": "Date",
-                        "dict": None
-                    },
-                    {
-                        "name": "ts",
-                        "description": "Timestamp",
-                        "type": "DateTime",
-                        "dict": None
-                    }
-                ]
+                    {"name": "date", "description": "Date", "type": "Date", "dict": None},
+                    {"name": "ts", "description": "Timestamp", "type": "DateTime", "dict": None},
+                ],
             }
             for k in ms.key_fields:
-                r["fields"] += [{
-                    "name": k.field_name,
-                    "description": k.field_name,
-                    "type": "UInt64",
-                    "dict": cls.ref_dict.get(k.model, None),
-                    "model": k.model
-                }]
+                r["fields"] += [
+                    {
+                        "name": k.field_name,
+                        "description": k.field_name,
+                        "type": "UInt64",
+                        "dict": cls.ref_dict.get(k.model, None),
+                        "model": k.model,
+                    }
+                ]
                 if cls.ref_dict.get(k.model, None):
-                    for f in Dictionary.get_dictionary_class(cls.ref_dict.get(k.model, None))._fields_order:
-                        r["fields"] += [{
-                            "name": f,
-                            "description": f,
-                            "type": "UInt64",
-                            "ro": True,
-                            "dict": cls.ref_dict.get(k.model, None),
-                            "dict_id": k.field_name,
-                            "model": k.model
-                        }]
+                    for f in Dictionary.get_dictionary_class(
+                        cls.ref_dict.get(k.model, None)
+                    )._fields_order:
+                        r["fields"] += [
+                            {
+                                "name": f,
+                                "description": f,
+                                "type": "UInt64",
+                                "ro": True,
+                                "dict": cls.ref_dict.get(k.model, None),
+                                "dict_id": k.field_name,
+                                "model": k.model,
+                            }
+                        ]
             if ms.path:
-                r["fields"] += [{
-                    "name": "path",
-                    "description": "Metric path",
-                    "type": "Array(String)",
-                    "dict": None
-                }]
+                r["fields"] += [
+                    {
+                        "name": "path",
+                        "description": "Metric path",
+                        "type": "Array(String)",
+                        "dict": None,
+                    }
+                ]
             r["fields"] += scope_fields[ms.table_name]
             result += [r]
         return result
@@ -137,34 +140,34 @@ class BIAPI(API):
                 "description": model._meta.description,
                 "tags": model._meta.tags,
                 "sample": False,
-                "fields": []
+                "fields": [],
             }
             for fn in model._display_fields:
                 f = model._display_fields[fn]
                 d = getattr(f, "dict_type", None)
                 if d:
                     d = d._meta.name
-                r["fields"] += [{
-                    "name": f.name,
-                    "description": _(f.description),
-                    "type": f.get_displayed_type(),
-                    "is_agg": f.is_agg,
-                    "dict": d
-                }]
+                r["fields"] += [
+                    {
+                        "name": f.name,
+                        "description": _(f.description),
+                        "type": f.get_displayed_type(),
+                        "is_agg": f.is_agg,
+                        "dict": d,
+                    }
+                ]
                 if hasattr(f, "model"):
                     r["fields"][-1]["model"] = f.model
             result += [r]
         return result
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_ds_cache"),
-                             lock=lambda _: ds_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_ds_cache"), lock=lambda _: ds_lock)
     def get_datasources(cls):
         return cls.get_bi_datasources() + cls.get_pm_datasources()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_model_cache"),
-                             lock=lambda _: model_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_model_cache"), lock=lambda _: model_lock)
     def get_model(cls, name):
         # Static datasource
         model = loader[name]
@@ -184,11 +187,8 @@ class BIAPI(API):
         :return: List of datasource items
         """
         return [
-            {
-                "name": ds["name"],
-                "description": ds.get("description", ""),
-                "tags": ds["tags"]
-            } for ds in self.get_datasources()
+            {"name": ds["name"], "description": ds.get("description", ""), "tags": ds["tags"]}
+            for ds in self.get_datasources()
         ]
 
     @api
@@ -254,16 +254,19 @@ class BIAPI(API):
             aq &= Q(title__icontains=query["query"])
         if query and "version" in query:
             aq &= Q(format=str(query["version"]))
-        return [{
-            "id": str(d.id),
-            "format": int(d.format),
-            "title": str(d.title),
-            "description": str(d.description),
-            "tags": str(d.tags),
-            "owner": d.owner.username,
-            "created": d.created.isoformat(),
-            "changed": d.changed.isoformat()
-        } for d in Dashboard.objects.filter(aq).exclude("config")]
+        return [
+            {
+                "id": str(d.id),
+                "format": int(d.format),
+                "title": str(d.title),
+                "description": str(d.description),
+                "tags": str(d.tags),
+                "owner": d.owner.username,
+                "created": d.created.isoformat(),
+                "changed": d.changed.isoformat(),
+            }
+            for d in Dashboard.objects.filter(aq).exclude("config")
+        ]
 
     def _get_dashboard(self, id, access_level=DAL_RO):
         """
@@ -356,6 +359,7 @@ class BIAPI(API):
         :param params:
         :return:
         """
+
         def search_parent(node, p_id):
             if p_id is None:
                 return node
@@ -374,8 +378,7 @@ class BIAPI(API):
             if "children" not in set(node):
                 return
             else:
-                node["children"] = sorted(node["children"],
-                                          key=lambda x: x["text"])
+                node["children"] = sorted(node["children"], key=lambda x: x["text"])
                 for n in node["children"]:
                     sort_children(n)
 
@@ -394,46 +397,22 @@ class BIAPI(API):
             raise APIError("Invalid datasource")
         query = {
             "fields": [
+                {"expr": {"$names": [params["dic_name"], params["field_name"]]}, "alias": "names"},
                 {
-                    "expr": {
-                        "$names": [
-                            params["dic_name"],
-                            params["field_name"]
-                        ]
-                    },
-                    "alias": "names"
+                    "expr": {"$hierarchy": [params["dic_name"], {"$field": params["field_name"]}]},
+                    "alias": "ids",
                 },
-                {
-                    "expr": {
-                        "$hierarchy": [
-                            params["dic_name"],
-                            {
-                                "$field": params["field_name"]
-                            }
-                        ]
-                    },
-                    "alias": "ids"
-                },
-                {
-                    "expr": params["field_name"],
-                    "group": 0
-                }
+                {"expr": params["field_name"], "group": 0},
             ],
-            "datasource": params["datasource"]
+            "datasource": params["datasource"],
         }
         if "limit" in params:
             query["limit"] = params["limit"]
         if "filter" in params:
             query["filter"] = {
                 "$like": [
-                    {
-                        "$lower": {
-                            "$field": "arrayElement(names,1)"
-                        }
-                    },
-                    {
-                        "$lower": "%" + params["filter"] + "%"
-                    }
+                    {"$lower": {"$field": "arrayElement(names,1)"}},
+                    {"$lower": "%" + params["filter"] + "%"},
                 ]
             }
 
@@ -451,17 +430,10 @@ class BIAPI(API):
                         if "children" not in searched:
                             searched["children"] = []
                         if id not in [x["id"] for x in searched["children"]]:
-                            searched["children"] += [{
-                                "id": id,
-                                "text": text
-                            }]
+                            searched["children"] += [{"id": id, "text": text}]
                 else:
                     # starting point
-                    tree = {
-                        "id": id,
-                        "text": text,
-                        "children": []
-                    }
+                    tree = {"id": id, "text": text, "children": []}
 
         sort_children(tree)
         return tree
@@ -472,12 +444,17 @@ class BIAPI(API):
         qs = User.objects.all()
         if query and "query" in query:
             qs = qs.filter(username__icontains=query["query"])
-        return sorted(({
-            "id": u.id,
-            "username": u.username,
-            "full_name": "%s %s" % (u.last_name, u.first_name)
-        } for u in qs),
-            key=lambda u: u["username"])
+        return sorted(
+            (
+                {
+                    "id": u.id,
+                    "username": u.username,
+                    "full_name": "%s %s" % (u.last_name, u.first_name),
+                }
+                for u in qs
+            ),
+            key=lambda u: u["username"],
+        )
 
     @executor("query")
     @api
@@ -487,10 +464,7 @@ class BIAPI(API):
         if query and "query" in query:
             qs = qs.filter(name__icontains=query["query"])
         qs = qs.order_by("name")
-        return [{
-            "id": g.id,
-            "name": g.name
-        } for g in qs]
+        return [{"id": g.id, "name": g.name} for g in qs]
 
     @executor("query")
     @api
@@ -504,13 +478,10 @@ class BIAPI(API):
             if ar.user:
                 i["user"] = {
                     "id": ar.user.id,
-                    "name": "%s %s" % (ar.user.last_name, ar.user.first_name)
+                    "name": "%s %s" % (ar.user.last_name, ar.user.first_name),
                 }
             if ar.group:
-                i["group"] = {
-                    "id": ar.group.id,
-                    "name": ar.group.name
-                }
+                i["group"] = {"id": ar.group.id, "name": ar.group.name}
             r += [i]
         return r
 

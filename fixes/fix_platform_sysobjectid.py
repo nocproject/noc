@@ -20,7 +20,7 @@ def fix():
     for p in Platform.objects.filter():
         if p.snmp_sysobjectid:
             continue  # Already filled
-        print ("Checked platform: %s" % p.name)
+        print("Checked platform: %s" % p.name)
         # Get sample devices
         for mo in ManagedObject.objects.filter(is_managed=True, platform=p.id).order_by("?"):
             caps = mo.get_caps()
@@ -31,11 +31,11 @@ def fix():
             except NOCError:
                 continue
             except AttributeError as e:
-                print ("Invalid script on platform: %s, %s", p.name, e)
+                print("Invalid script on platform: %s, %s", p.name, e)
                 continue
             if not v:
                 continue
-            print ("%s sysObjectID.0 %s" % (p.full_name, v))
+            print("%s sysObjectID.0 %s" % (p.full_name, v))
             p.snmp_sysobjectid = v
             p.save()
             break

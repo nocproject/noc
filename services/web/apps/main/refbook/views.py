@@ -10,6 +10,7 @@
 import six
 from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
+
 # NOC modules
 from noc.lib.app.application import Application, view
 from noc.aaa.models.permission import Permission
@@ -59,7 +60,9 @@ class RefBookAppplication(Application):
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
-        can_edit = (not rb.is_builtin and Permission.has_perm(request.user, "main.change_refbookdata"))
+        can_edit = not rb.is_builtin and Permission.has_perm(
+            request.user, "main.change_refbookdata"
+        )
         queryset = rb.refbookdata_set.all()
         # Search
         if request.GET and "query" in request.GET and request.GET["query"]:
@@ -79,12 +82,7 @@ class RefBookAppplication(Application):
             query = ""
         # Use generic view for final result
         request._gv_queryset = queryset
-        request._gv_ctx = {
-            "rb": rb,
-            "can_edit": can_edit,
-            "query": query,
-            "app": self
-        }
+        request._gv_ctx = {"rb": rb, "can_edit": can_edit, "query": query, "app": self}
         return RefBookList().get(request)
 
     @view(url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/$", url_name="item", access="view")
@@ -98,7 +96,9 @@ class RefBookAppplication(Application):
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
         rbr = get_object_or_404(RefBookData, id=int(record_id), ref_book=rb)
-        can_edit = (not rb.is_builtin and Permission.has_perm(request.user, "main.change_refbookdata"))
+        can_edit = not rb.is_builtin and Permission.has_perm(
+            request.user, "main.change_refbookdata"
+        )
         return self.render(request, "item.html", {"rb": rb, "record": rbr, "can_edit": can_edit})
 
     @view(url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/edit/$", url_name="edit", access="change")
@@ -112,7 +112,9 @@ class RefBookAppplication(Application):
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
         rbr = get_object_or_404(RefBookData, id=int(record_id), ref_book=rb)
-        can_edit = (not rb.is_builtin and Permission.has_perm(request.user, "main.change_refbookdata"))
+        can_edit = not rb.is_builtin and Permission.has_perm(
+            request.user, "main.change_refbookdata"
+        )
         if not can_edit:
             return self.response_forbidden("Read-only refbook")
         if request.POST:  # Edit refbook
@@ -129,7 +131,9 @@ class RefBookAppplication(Application):
             return self.response_redirect("main:refbook:item", rb.id, rbr.id)
         return self.render(request, "edit.html", {"rb": rb, "record": rbr})
 
-    @view(url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/delete/$", url_name="delete", access="delete")
+    @view(
+        url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/delete/$", url_name="delete", access="delete"
+    )
     def view_delete(self, request, refbook_id, record_id):
         """
         Delete refbook record
@@ -139,7 +143,9 @@ class RefBookAppplication(Application):
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
-        can_edit = (not rb.is_builtin and Permission.has_perm(request.user, "main.change_refbookdata"))
+        can_edit = not rb.is_builtin and Permission.has_perm(
+            request.user, "main.change_refbookdata"
+        )
         if not can_edit:
             return self.response_forbidden()
         rbd = get_object_or_404(RefBookData, ref_book=rb, id=int(record_id))
@@ -156,7 +162,9 @@ class RefBookAppplication(Application):
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
-        can_edit = (not rb.is_builtin and Permission.has_perm(request.user, "main.change_refbookdata"))
+        can_edit = not rb.is_builtin and Permission.has_perm(
+            request.user, "main.change_refbookdata"
+        )
         if not can_edit:
             return self.response_forbidden("Read-only refbook")
         if request.POST:  # Edit refbook

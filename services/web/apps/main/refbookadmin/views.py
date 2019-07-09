@@ -18,6 +18,7 @@ class RefBookAdminApplication(ExtModelApplication):
     """
     RefBook application
     """
+
     model = RefBook
 
     title = _("Reference Books")

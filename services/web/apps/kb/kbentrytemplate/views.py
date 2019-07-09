@@ -16,6 +16,7 @@ class KBEntryApplication(ExtModelApplication):
     """
     AdministrativeDomain application
     """
+
     title = _("Templates")
     menu = [_("Setup"), _("Templates")]
     model = KBEntryTemplate

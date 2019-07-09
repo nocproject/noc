@@ -16,6 +16,7 @@ class PhoneRangeProfileApplication(ExtDocApplication):
     """
     PhoneRangeProfile application
     """
+
     title = "Phone Range Profile"
     menu = [_("Setup"), _("Range Profile")]
     model = PhoneRangeProfile

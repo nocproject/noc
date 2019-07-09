@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.gridvcs.manager import GridVCSField
@@ -31,11 +33,7 @@ class Person(NOCModel):
     nic_hdl = models.CharField("nic-hdl", max_length=64, unique=True)
     person = models.CharField("person", max_length=128)
     type = models.CharField(
-        "type", max_length=1, default="P",
-        choices=[
-            ("P", "Person"),
-            ("R", "Role")
-        ]
+        "type", max_length=1, default="P", choices=[("P", "Person"), ("R", "Role")]
     )
     address = models.TextField("address")
     phone = models.TextField("phone")
@@ -46,7 +44,7 @@ class Person(NOCModel):
     rpsl = GridVCSField("rpsl_person")
 
     def __str__(self):
-        return u" %s (%s)" % (self.nic_hdl, self.person)
+        return " %s (%s)" % (self.nic_hdl, self.person)
 
     def get_rpsl(self):
         s = []

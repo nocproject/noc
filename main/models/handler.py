@@ -9,11 +9,13 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
@@ -21,16 +23,10 @@ from noc.core.handler import get_handler
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("sa.ManagedObjectProfile", "resolver_handler")
-])
+@on_delete_check(check=[("sa.ManagedObjectProfile", "resolver_handler")])
 @six.python_2_unicode_compatible
 class Handler(Document):
-    meta = {
-        "collection": "handlers",
-        "strict": False,
-        "auto_create_index": False,
-    }
+    meta = {"collection": "handlers", "strict": False, "auto_create_index": False}
 
     handler = StringField(primary_key=True)
     name = StringField()

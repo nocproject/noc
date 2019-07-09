@@ -14,11 +14,7 @@ from mongoengine.fields import StringField, BooleanField, IntField
 
 @six.python_2_unicode_compatible
 class CHPolicy(Document):
-    meta = {
-        "collection": "chpolicies",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "chpolicies", "strict": False, "auto_create_index": False}
 
     table = StringField(unique=True)
     is_active = BooleanField(default=True)

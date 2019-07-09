@@ -8,6 +8,7 @@
 
 # Third-party models
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import BinaryField
@@ -18,6 +19,7 @@ class DatabaseStorage(NOCModel):
     """
     Database Storage
     """
+
     class Meta(object):
         app_label = "main"
         db_table = "main_databasestorage"

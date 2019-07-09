@@ -43,9 +43,14 @@ def datastream(cls):
 
 
 def _on_model_change(sender, instance, *args, **kwargs):
-    _on_change(instance, changed_fields=set(
-        f_name for f_name in instance.initial_data if
-        instance.initial_data[f_name] != getattr(instance, f_name)))
+    _on_change(
+        instance,
+        changed_fields=set(
+            f_name
+            for f_name in instance.initial_data
+            if instance.initial_data[f_name] != getattr(instance, f_name)
+        ),
+    )
 
 
 def _on_document_change(sender, document, *args, **kwargs):

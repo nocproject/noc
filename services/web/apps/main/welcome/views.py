@@ -8,8 +8,10 @@
 
 # Python modules
 import os
+
 # Third-party modules
 from jinja2 import Template
+
 # NOC modules
 from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
@@ -20,17 +22,16 @@ class WelcomeApplication(ExtApplication):
     """
     main.welcome application
     """
+
     title = _("Welcome")
-    WELCOME_PATH = config.get_customized_paths(os.path.join("services", "web", "apps",
-                                                            "main", "welcome", "templates",
-                                                            "Welcome.html.j2"),
-                                               prefer_custom=True)
+    WELCOME_PATH = config.get_customized_paths(
+        os.path.join("services", "web", "apps", "main", "welcome", "templates", "Welcome.html.j2"),
+        prefer_custom=True,
+    )
 
     @view(url="^welcome/$", access=True, api=True)
     def api_welcome(self, request):
-        setup = {
-            "installation_name": config.installation_name
-        }
+        setup = {"installation_name": config.installation_name}
         for p in self.WELCOME_PATH:
             if not os.path.exists(p):
                 continue

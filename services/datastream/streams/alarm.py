@@ -28,7 +28,7 @@ class AlarmDataStream(DataStream):
             "id": str(alarm.id),
             "timestamp": cls.qs(alarm.timestamp),
             "severity": alarm.severity,
-            "reopens": alarm.reopens
+            "reopens": alarm.reopens,
         }
         if alarm.root:
             r["root"] = str(alarm.root)
@@ -49,22 +49,19 @@ class AlarmDataStream(DataStream):
             "name": cls.qs(mo.name),
             "object_profile": {
                 "id": str(mo.object_profile.id),
-                "name": str(mo.object_profile.name)
-            }
+                "name": str(mo.object_profile.name),
+            },
         }
         if mo.remote_system:
             r["managed_object"]["remote_system"] = {
                 "id": str(mo.remote_system.id),
-                "name": cls.qs(mo.remote_system.name)
+                "name": cls.qs(mo.remote_system.name),
             }
             r["managed_object"]["remote_id"] = mo.remote_id
 
     @classmethod
     def _apply_alarm_class(cls, alarm, r):
-        r["alarm_class"] = {
-            "id": str(alarm.alarm_class.id),
-            "name": cls.qs(alarm.alarm_class.name)
-        }
+        r["alarm_class"] = {"id": str(alarm.alarm_class.id), "name": cls.qs(alarm.alarm_class.name)}
 
     @classmethod
     def _apply_vars(cls, alarm, r):
@@ -80,10 +77,7 @@ class AlarmDataStream(DataStream):
         r["escalation"] = {
             "timestamp": cls.qs(alarm.escalation_ts),
             "tt_id": cls.qs(alarm.escalation_tt),
-            "tt_system": {
-                "id": str(mo.tt_system.id),
-                "name": cls.qs(mo.tt_system.name)
-            }
+            "tt_system": {"id": str(mo.tt_system.id), "name": cls.qs(mo.tt_system.name)},
         }
         if alarm.escalation_error:
             r["escalation"]["error"] = cls.qs(alarm.escalation_error)
@@ -105,13 +99,9 @@ class AlarmDataStream(DataStream):
         for si in alarm.direct_services:
             p = ServiceProfile.get_by_id(si.profile)
             if p:
-                r["direct_services"] += [{
-                    "profile": {
-                        "id": str(p.id),
-                        "name": cls.qs(p.name)
-                    },
-                    "summary": si.summary
-                }]
+                r["direct_services"] += [
+                    {"profile": {"id": str(p.id), "name": cls.qs(p.name)}, "summary": si.summary}
+                ]
 
     @classmethod
     def _apply_total_services(cls, alarm, r):
@@ -119,13 +109,9 @@ class AlarmDataStream(DataStream):
         for si in alarm.total_services:
             p = ServiceProfile.get_by_id(si.profile)
             if p:
-                r["total_services"] += [{
-                    "profile": {
-                        "id": str(p.id),
-                        "name": cls.qs(p.name)
-                    },
-                    "summary": si.summary
-                }]
+                r["total_services"] += [
+                    {"profile": {"id": str(p.id), "name": cls.qs(p.name)}, "summary": si.summary}
+                ]
 
     @classmethod
     def _apply_direct_subscribers(cls, alarm, r):
@@ -133,13 +119,9 @@ class AlarmDataStream(DataStream):
         for si in alarm.direct_subscribers:
             p = SubscriberProfile.get_by_id(si.profile)
             if p:
-                r["direct_subscribers"] += [{
-                    "profile": {
-                        "id": str(p.id),
-                        "name": cls.qs(p.name)
-                    },
-                    "summary": si.summary
-                }]
+                r["direct_subscribers"] += [
+                    {"profile": {"id": str(p.id), "name": cls.qs(p.name)}, "summary": si.summary}
+                ]
 
     @classmethod
     def _apply_total_subscribers(cls, alarm, r):
@@ -147,30 +129,18 @@ class AlarmDataStream(DataStream):
         for si in alarm.total_subscribers:
             p = SubscriberProfile.get_by_id(si.profile)
             if p:
-                r["total_subscribers"] += [{
-                    "profile": {
-                        "id": str(p.id),
-                        "name": cls.qs(p.name)
-                    },
-                    "summary": si.summary
-                }]
+                r["total_subscribers"] += [
+                    {"profile": {"id": str(p.id), "name": cls.qs(p.name)}, "summary": si.summary}
+                ]
 
     @classmethod
     def get_meta(cls, data):
-        return {
-            "alarmclass": data["alarm_class"]["id"] if "alarm_class" in data else None
-        }
+        return {"alarmclass": data["alarm_class"]["id"] if "alarm_class" in data else None}
 
     @classmethod
     def filter_alarmclass(cls, *args):
         ids = [str(AlarmClass.get_by_name(a).id) for a in args if AlarmClass.get_by_name(a)]
         if len(ids) == 1:
-            return {
-                "%s.alarmclass" % cls.F_META: ids[0]
-            }
+            return {"%s.alarmclass" % cls.F_META: ids[0]}
         else:
-            return {
-                "%s.alarmclass" % cls.F_META: {
-                    "$in": ids
-                }
-            }
+            return {"%s.alarmclass" % cls.F_META: {"$in": ids}}

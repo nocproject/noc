@@ -59,7 +59,7 @@ class ObjectConnection(Document):
     line = LineStringField(auto_index=True)
 
     def __str__(self):
-        return u"<%s>" % ", ".join(unicode(c) for c in self.connection)
+        return "<%s>" % ", ".join(unicode(c) for c in self.connection)
 
     def clean(self):
         self.set_line()

@@ -17,6 +17,7 @@ class PersonApplication(ExtModelApplication):
     """
     Person application
     """
+
     title = _("Persons/Roles")
     menu = [_("Setup"), _("Persons")]
     model = Person

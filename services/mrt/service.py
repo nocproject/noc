@@ -25,9 +25,7 @@ class MRTService(Service):
         self.sae = self.open_rpc("sae")
 
     def get_handlers(self):
-        return [
-            ("/api/mrt/", MRTRequestHandler, {"service": self})
-        ]
+        return [("/api/mrt/", MRTRequestHandler, {"service": self})]
 
 
 if __name__ == "__main__":

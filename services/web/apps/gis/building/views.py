@@ -24,6 +24,7 @@ class BuildingApplication(ExtDocApplication):
     """
     Building application
     """
+
     title = _("Building")
     menu = [_("Setup"), _("Buildings")]
     glyph = "building"

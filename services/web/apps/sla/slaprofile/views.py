@@ -16,6 +16,7 @@ class SLAProfileApplication(ExtDocApplication):
     """
     SLAProfile application
     """
+
     title = "SLA Profile"
     menu = [_("Setup"), _("SLA Profiles")]
     model = SLAProfile

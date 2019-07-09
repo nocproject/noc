@@ -41,7 +41,7 @@ class FailedEvent(Document):
     log = ListField(EmbeddedDocumentField(EventLog))
 
     def __str__(self):
-        return u"%s" % self.id
+        return "%s" % self.id
 
     def mark_as_new(self, message=None):
         """

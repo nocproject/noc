@@ -45,7 +45,7 @@ class DNSZoneRecord(NOCModel):
     tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __str__(self):
-        return u"%s %s" % (
+        return "%s %s" % (
             self.zone.name,
             " ".join([x for x in (self.name, self.type, self.content) if x]),
         )

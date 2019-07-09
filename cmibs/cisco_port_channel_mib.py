@@ -48,5 +48,5 @@ MIB = {
     "CISCO-PORT-CHANNEL-MIB::portChannelNotifications": "1.3.6.1.4.1.9.9.285.1.3.0",
     "CISCO-PORT-CHANNEL-MIB::portChannelMIBConformance": "1.3.6.1.4.1.9.9.285.2",
     "CISCO-PORT-CHANNEL-MIB::portChannelMIBCompliances": "1.3.6.1.4.1.9.9.285.2.1",
-    "CISCO-PORT-CHANNEL-MIB::portChannelMIBGroups": "1.3.6.1.4.1.9.9.285.2.2"
+    "CISCO-PORT-CHANNEL-MIB::portChannelMIBGroups": "1.3.6.1.4.1.9.9.285.2.2",
 }

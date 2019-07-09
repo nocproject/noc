@@ -16,6 +16,7 @@ class TransitionApplication(ExtDocApplication):
     """
     Transition application
     """
+
     title = "Transitions"
     menu = [_("Setup"), _("Transitions")]
     model = Transition

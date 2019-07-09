@@ -16,6 +16,7 @@ class StateApplication(ExtDocApplication):
     """
     State application
     """
+
     title = _("States")
     menu = [_("Setup"), _("States")]
     model = State

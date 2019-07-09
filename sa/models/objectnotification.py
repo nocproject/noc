@@ -48,7 +48,7 @@ class ObjectNotification(NOCModel):
     config_policy_violation = models.BooleanField(_("Config policy violation"), default=False)
 
     def __str__(self):
-        return u"%s, %s" % (self.selector, self.notification_group)
+        return "%s, %s" % (self.selector, self.notification_group)
 
     @classmethod
     def render_message(cls, event_id, context):

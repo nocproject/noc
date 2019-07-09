@@ -332,5 +332,5 @@ MIB = {
     "AIRESPACE-SWITCHING-MIB::stpInstanceTopologyChangeTrap": "1.3.6.1.4.1.14179.1.50.11",
     "AIRESPACE-SWITCHING-MIB::powerSupplyStatusChangeTrap": "1.3.6.1.4.1.14179.1.50.12",
     "AIRESPACE-SWITCHING-MIB::bsnSwitchingGroups": "1.3.6.1.4.1.14179.1.51",
-    "AIRESPACE-SWITCHING-MIB::bsnSwitchingCompliances": "1.3.6.1.4.1.14179.1.52"
+    "AIRESPACE-SWITCHING-MIB::bsnSwitchingCompliances": "1.3.6.1.4.1.14179.1.52",
 }

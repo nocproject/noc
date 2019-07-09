@@ -53,7 +53,7 @@ class PrefixListCache(Document):
     pushed = DateTimeField()
 
     def __str__(self):
-        return u" %s/%s" % (self.peering_point.hostname, self.name)
+        return " %s/%s" % (self.peering_point.hostname, self.name)
 
     def cmp_prefixes(self, prefixes):
         """

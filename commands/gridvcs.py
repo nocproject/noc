@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.gridvcs.base import GridVCS
@@ -19,30 +20,34 @@ class Command(BaseCommand):
     """
     Manage Jobs
     """
+
     help = "Manage GridVCS config repo"
 
     clean_int = {
-        "rpsl_as", "rpsl_asset", "rpsl_peer", "rpsl_person",
-        "rpsl_maintainer", "dnszone", "config", "object_comment"
+        "rpsl_as",
+        "rpsl_asset",
+        "rpsl_peer",
+        "rpsl_person",
+        "rpsl_maintainer",
+        "dnszone",
+        "config",
+        "object_comment",
     }
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         parser.add_argument(
-            "--repo", "-r",
+            "--repo",
+            "-r",
             dest="repo",
             action="store",
             choices=REPOS,
             default="config",
-            help="Apply to repo"
+            help="Apply to repo",
         )
         # get command
         show_parser = subparsers.add_parser("show", help="Show current value")
-        show_parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
-        )
+        show_parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
         # compress command
         subparsers.add_parser("compress", help="Apply compression")
         # stats command
@@ -72,20 +77,9 @@ class Command(BaseCommand):
     def handle_compress(self, *args, **options):
         to_compress = [
             d["_id"]
-            for d in self.vcs.fs._GridFS__files.aggregate([
-                {
-                    "$match": {
-                        "c": {
-                            "$exists": False
-                        }
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": "$object"
-                    }
-                }
-            ])
+            for d in self.vcs.fs._GridFS__files.aggregate(
+                [{"$match": {"c": {"$exists": False}}}, {"$group": {"_id": "$object"}}]
+            )
         ]
         if not to_compress:
             self.print("Nothing to compress")

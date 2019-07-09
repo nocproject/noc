@@ -8,6 +8,7 @@
 
 # Third-party modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.inv.models.platform import Platform
 from .base import BaseCard
@@ -19,6 +20,4 @@ class PlatformCard(BaseCard):
     model = Platform
 
     def get_data(self):
-        return {
-            "object": self.object
-        }
+        return {"object": self.object}

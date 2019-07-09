@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.peer.models.whoiscache import WhoisCache
@@ -18,25 +19,21 @@ class Command(BaseCommand):
     help = "CLI Prefix-list builder"
 
     def add_arguments(self, parser):
-        parser.add_argument("--output", "-o",
-                            dest="output",
-                            action="store",
-                            default="/dev/stdout",
-                            help="Write output to file"
-                            ),
-        parser.add_argument("--profile", "-p",
-                            dest="profile",
-                            action="store",
-                            help="Device profile"
-                            ),
-        parser.add_argument("--name", "-n",
-                            dest="name",
-                            action="store",
-                            default="pl",
-                            help="prefix-list name"
-                            )
-        parser.add_argument("args",
-                            nargs=1)
+        parser.add_argument(
+            "--output",
+            "-o",
+            dest="output",
+            action="store",
+            default="/dev/stdout",
+            help="Write output to file",
+        ),
+        parser.add_argument(
+            "--profile", "-p", dest="profile", action="store", help="Device profile"
+        ),
+        parser.add_argument(
+            "--name", "-n", dest="name", action="store", default="pl", help="prefix-list name"
+        )
+        parser.add_argument("args", nargs=1)
 
     def handle(self, *args, **options):
         # Check expression
@@ -55,8 +52,7 @@ class Command(BaseCommand):
         except IOError as e:
             raise CommandError(str(e))
         # Build
-        self.build_prefix_list(out, expression, options["name"],
-                               profile)
+        self.build_prefix_list(out, expression, options["name"], profile)
         # Finalize
         out.close()
 

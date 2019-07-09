@@ -12,6 +12,7 @@ import logging
 from threading import Lock
 import operator
 import inspect
+
 # Third-party modules
 import cachetools
 from noc.config import config
@@ -43,9 +44,9 @@ class BaseAuthBackend(object):
         """
         raise NotImplementedError
 
-    def ensure_user(self, username, is_active=True,
-                    first_name=None, last_name=None, email=None,
-                    **kwargs):
+    def ensure_user(
+        self, username, is_active=True, first_name=None, last_name=None, email=None, **kwargs
+    ):
         from noc.aaa.models.user import User
 
         changed = False
@@ -53,24 +54,18 @@ class BaseAuthBackend(object):
             u = User.objects.get(username=username)
         except User.DoesNotExist:
             self.logger.info("Creating local user %s", username)
-            u = User(
-                username=username,
-                is_active=is_active
-            )
+            u = User(username=username, is_active=is_active)
             u.set_unusable_password()
             changed = True
         for k, v in [
             ("is_active", is_active),
             ("first_name", first_name),
             ("last_name", last_name),
-            ("email", email)
+            ("email", email),
         ]:
             cv = getattr(u, k)
             if cv != v and v is not None:
-                self.logger.info(
-                    "Changing user %s %s: %s -> %s",
-                    username, k, cv, v
-                )
+                self.logger.info("Changing user %s %s: %s -> %s", username, k, cv, v)
                 setattr(u, k, v)
                 changed = True
         # Check changes
@@ -83,14 +78,12 @@ class BaseAuthBackend(object):
 
     def ensure_group(self, user, group):
         if not self._user_in_group(user, group):
-            self.logger.info("Adding user %s to group %s",
-                             user.username, group.name)
+            self.logger.info("Adding user %s to group %s", user.username, group.name)
             user.groups.add(group)
 
     def deny_group(self, user, group):
         if self._user_in_group(user, group):
-            self.logger.info("Removing user %s from group %s",
-                             user.username, group.name)
+            self.logger.info("Removing user %s from group %s", user.username, group.name)
             user.groups.remove(group)
 
     @classmethod
@@ -104,6 +97,7 @@ class BaseAuthBackend(object):
         """
         m = None
         import logging
+
         logger = logging.getLogger(__name__)
         for p in config.get_customized_paths(""):
             if p:
@@ -119,10 +113,6 @@ class BaseAuthBackend(object):
             return None
         for a in dir(m):
             o = getattr(m, a)
-            if (
-                inspect.isclass(o) and
-                issubclass(o, BaseAuthBackend) and
-                o.__module__ == m.__name__
-            ):
+            if inspect.isclass(o) and issubclass(o, BaseAuthBackend) and o.__module__ == m.__name__:
                 return o
         return None

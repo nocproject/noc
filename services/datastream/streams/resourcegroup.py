@@ -28,10 +28,7 @@ class ResourceGroupDataStream(DataStream):
         r = {
             "id": str(rg.id),
             "name": qs(rg.name),
-            "technology": {
-                "id": str(rg.technology.id),
-                "name": qs(rg.technology.name)
-            }
+            "technology": {"id": str(rg.technology.id), "name": qs(rg.technology.name)},
         }
         if rg.parent:
             r["parent"] = str(rg.parent.id)
@@ -41,8 +38,5 @@ class ResourceGroupDataStream(DataStream):
     @staticmethod
     def _apply_remote_system(mo, r):
         if mo.remote_system:
-            r["remote_system"] = {
-                "id": str(mo.remote_system.id),
-                "name": qs(mo.remote_system.name)
-            }
+            r["remote_system"] = {"id": str(mo.remote_system.id), "name": qs(mo.remote_system.name)}
             r["remote_id"] = mo.remote_id

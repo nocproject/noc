@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseCard
 from noc.phone.models.dialplan import DialPlan
@@ -23,7 +24,6 @@ class DialPlanCard(BaseCard):
         return {
             "object": self.object,
             "ranges": PhoneRange.objects.filter(
-                dialplan=self.object.id,
-                parent__exists=False
-            ).order_by("from_number")
+                dialplan=self.object.id, parent__exists=False
+            ).order_by("from_number"),
         }

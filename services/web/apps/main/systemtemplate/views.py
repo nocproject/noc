@@ -16,6 +16,7 @@ class SystemTemplateApplication(ExtModelApplication):
     """
     SystemTemplate application
     """
+
     title = _("System Templates")
     menu = [_("Setup"), _("System Templates")]
     model = SystemTemplate

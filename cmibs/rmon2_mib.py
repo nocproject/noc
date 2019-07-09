@@ -294,5 +294,5 @@ MIB = {
     "RMON2-MIB::serialConnectOwner": "1.3.6.1.2.1.16.19.14.1.8",
     "RMON2-MIB::serialConnectStatus": "1.3.6.1.2.1.16.19.14.1.9",
     "RMON2-MIB::rmon2MIBCompliances": "1.3.6.1.2.1.16.20.1",
-    "RMON2-MIB::rmon2MIBGroups": "1.3.6.1.2.1.16.20.2"
+    "RMON2-MIB::rmon2MIBGroups": "1.3.6.1.2.1.16.20.2",
 }

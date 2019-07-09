@@ -9,8 +9,10 @@
 # Python modules
 import logging
 import time
+
 # Third-party modules
 from django.db import connection
+
 # NOC modules
 from noc.core.perf import metrics
 from noc.config import config

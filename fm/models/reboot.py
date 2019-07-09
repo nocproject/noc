@@ -32,7 +32,7 @@ class Reboot(Document):
     last = DateTimeField()  # Last up timestamp
 
     def __str__(self):
-        return u"%d" % self.object
+        return "%d" % self.object
 
     @classmethod
     def register(cls, managed_object, ts=None, last=None):

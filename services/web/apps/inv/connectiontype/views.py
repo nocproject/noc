@@ -17,6 +17,7 @@ class ConnectionTypeApplication(ExtDocApplication):
     """
     ConnectionType application
     """
+
     title = _("Connection Types")
     menu = [_("Setup"), _("Connection Types")]
     model = ConnectionType
@@ -24,8 +25,7 @@ class ConnectionTypeApplication(ExtDocApplication):
     parent_field = "parent"
     query_fields = ["name__icontains", "description__icontains"]
 
-    @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"],
-          access="read", api=True)
+    @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"], access="read", api=True)
     def api_compatible(self, request, id):
         def fn(t, gender, reason):
             return {
@@ -33,7 +33,7 @@ class ConnectionTypeApplication(ExtDocApplication):
                 "name": t.name,
                 "gender": gender,
                 "description": t.description,
-                "reason": reason
+                "reason": reason,
             }
 
         def cp(c1, c2):

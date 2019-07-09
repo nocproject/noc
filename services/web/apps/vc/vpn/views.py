@@ -18,6 +18,7 @@ class VPNApplication(ExtDocApplication):
     """
     VPN application
     """
+
     title = "VPN"
     menu = [_("VPN")]
     model = VPN

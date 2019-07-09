@@ -13,10 +13,12 @@ from collections import namedtuple
 import itertools
 import time
 from collections import defaultdict
+
 # Third-party modules
 import six
 import cachetools
 from pymongo import ReadPreference
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -51,30 +53,18 @@ SCOPE_SLA = "sla"
 
 metrics_lock = Lock()
 
-MetricConfig = namedtuple("MetricConfig", [
-    "metric_type",
-    "enable_box",
-    "enable_periodic",
-    "is_stored",
-    "threshold_profile"
-])
+MetricConfig = namedtuple(
+    "MetricConfig",
+    ["metric_type", "enable_box", "enable_periodic", "is_stored", "threshold_profile"],
+)
 
 
 class MData(object):
-    __slots__ = (
-        "id",
-        "ts",
-        "metric",
-        "path",
-        "value",
-        "scale",
-        "type",
-        "abs_value",
-        "label"
-    )
+    __slots__ = ("id", "ts", "metric", "path", "value", "scale", "type", "abs_value", "label")
 
-    def __init__(self, id, ts, metric, path=None, value=None,
-                 scale=None, type=None, abs_value=None):
+    def __init__(
+        self, id, ts, metric, path=None, value=None, scale=None, type=None, abs_value=None
+    ):
         self.id = id
         self.ts = ts
         self.metric = metric
@@ -84,10 +74,7 @@ class MData(object):
         self.type = type
         self.abs_value = abs_value
         if path:
-            self.label = "%s|%s" % (
-                metric,
-                "|".join(str(p) for p in path)
-            )
+            self.label = "%s|%s" % (metric, "|".join(str(p) for p in path))
         else:
             self.label = metric
 
@@ -99,6 +86,7 @@ class MetricsCheck(DiscoveryCheck):
     """
     MAC discovery
     """
+
     name = "metrics"
     required_script = "get_metrics"
 
@@ -110,20 +98,11 @@ class MetricsCheck(DiscoveryCheck):
     S_WARN = 1
     S_ERROR = 2
 
-    SMAP = {
-        0: "ok",
-        1: "warn",
-        2: "error"
-    }
+    SMAP = {0: "ok", 1: "warn", 2: "error"}
 
-    SEV_MAP = {
-        1: 2000,
-        2: 3000
-    }
+    SEV_MAP = {1: 2000, 2: 3000}
 
-    SLA_CAPS = [
-        "Cisco | IP | SLA | Probes"
-    ]
+    SLA_CAPS = ["Cisco | IP | SLA | Probes"]
 
     AC_PM_THRESHOLDS = AlarmClass.get_by_name("NOC | PM | Out of Thresholds")
 
@@ -134,8 +113,7 @@ class MetricsCheck(DiscoveryCheck):
 
     @classmethod
     @cachetools.cachedmethod(
-        operator.attrgetter("_object_profile_metrics"),
-        lock=lambda _: metrics_lock
+        operator.attrgetter("_object_profile_metrics"), lock=lambda _: metrics_lock
     )
     def get_object_profile_metrics(cls, p_id):
         r = {}
@@ -158,7 +136,7 @@ class MetricsCheck(DiscoveryCheck):
                 m.get("enable_box", True),
                 m.get("enable_periodic", True),
                 m.get("is_stored", True),
-                threshold_profile
+                threshold_profile,
             )
         return r
 
@@ -179,16 +157,12 @@ class MetricsCheck(DiscoveryCheck):
         :return:
         """
         return MetricConfig(
-            m.metric_type,
-            m.enable_box, m.enable_periodic,
-            m.is_stored,
-            m.threshold_profile
+            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
         )
 
     @classmethod
     @cachetools.cachedmethod(
-        operator.attrgetter("_interface_profile_metrics"),
-        lock=lambda _: metrics_lock
+        operator.attrgetter("_interface_profile_metrics"), lock=lambda _: metrics_lock
     )
     def get_interface_profile_metrics(cls, p_id):
         r = {}
@@ -201,8 +175,8 @@ class MetricsCheck(DiscoveryCheck):
 
     @classmethod
     @cachetools.cachedmethod(
-        operator.attrgetter("_slaprofile_metrics"),
-        lock=lambda _: metrics_lock)
+        operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock
+    )
     def get_slaprofile_metrics(cls, p_id):
         r = {}
         spr = SLAProfile.get_by_id(p_id)
@@ -221,14 +195,12 @@ class MetricsCheck(DiscoveryCheck):
         o_metrics = self.get_object_profile_metrics(self.object.object_profile.id)
         self.logger.debug("Object metrics: %s", o_metrics)
         for metric in o_metrics:
-            if ((self.is_box and not o_metrics[metric].enable_box) or
-                    (self.is_periodic and not o_metrics[metric].enable_periodic)):
+            if (self.is_box and not o_metrics[metric].enable_box) or (
+                self.is_periodic and not o_metrics[metric].enable_periodic
+            ):
                 continue
             m_id = next(self.id_count)
-            metrics += [{
-                "id": m_id,
-                "metric": metric
-            }]
+            metrics += [{"id": m_id, "metric": metric}]
             self.id_metrics[m_id] = o_metrics[metric]
         if not metrics:
             self.logger.info("Object metrics are not configured. Skipping")
@@ -236,19 +208,12 @@ class MetricsCheck(DiscoveryCheck):
 
     def get_subinterfaces(self):
         subs = defaultdict(list)  # interface id -> [{"name":, "ifindex":}]
-        for si in SubInterface._get_collection().with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED
-        ).find({
-            "managed_object": self.object.id
-        }, {
-            "name": 1,
-            "interface": 1,
-            "ifindex": 1
-        }):
-            subs[si["interface"]] += [{
-                "name": si["name"],
-                "ifindex": si.get("ifindex")
-            }]
+        for si in (
+            SubInterface._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find({"managed_object": self.object.id}, {"name": 1, "interface": 1, "ifindex": 1})
+        ):
+            subs[si["interface"]] += [{"name": si["name"], "ifindex": si.get("ifindex")}]
         return subs
 
     def get_interface_metrics(self):
@@ -258,17 +223,14 @@ class MetricsCheck(DiscoveryCheck):
         """
         subs = None
         metrics = []
-        for i in Interface._get_collection().with_options(
-                read_preference=ReadPreference.SECONDARY_PREFERRED
-        ).find({
-            "managed_object": self.object.id,
-            "type": "physical"
-        }, {
-            "_id": 1,
-            "name": 1,
-            "ifindex": 1,
-            "profile": 1
-        }):
+        for i in (
+            Interface._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find(
+                {"managed_object": self.object.id, "type": "physical"},
+                {"_id": 1, "name": 1, "ifindex": 1, "profile": 1},
+            )
+        ):
             ipr = self.get_interface_profile_metrics(i["profile"])
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
@@ -279,15 +241,12 @@ class MetricsCheck(DiscoveryCheck):
                 subs = self.get_subinterfaces()
             ifindex = i.get("ifindex")
             for metric in ipr:
-                if ((self.is_box and not ipr[metric].enable_box) or
-                        (self.is_periodic and not ipr[metric].enable_periodic)):
+                if (self.is_box and not ipr[metric].enable_box) or (
+                    self.is_periodic and not ipr[metric].enable_periodic
+                ):
                     continue
                 m_id = next(self.id_count)
-                m = {
-                    "id": m_id,
-                    "metric": metric,
-                    "path": ["", "", "", i["name"]]
-                }
+                m = {"id": m_id, "metric": metric, "path": ["", "", "", i["name"]]}
                 if ifindex is not None:
                     m["ifindex"] = ifindex
                 metrics += [m]
@@ -298,7 +257,7 @@ class MetricsCheck(DiscoveryCheck):
                         m = {
                             "id": m_id,
                             "metric": metric,
-                            "path": ["", "", "", i["name"], si["name"]]
+                            "path": ["", "", "", i["name"], si["name"]],
                         }
                         if si["ifindex"] is not None:
                             m["ifindex"] = si["ifindex"]
@@ -312,37 +271,38 @@ class MetricsCheck(DiscoveryCheck):
         if not self.has_any_capability(self.SLA_CAPS):
             self.logger.info("SLA not configured, skipping SLA metrics")
         metrics = []
-        for p in SLAProbe._get_collection().with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED
-        ).find({
-            "managed_object": self.object.id
-        }, {
-            "name": 1,
-            "group": 1,
-            "profile": 1,
-            "type": 1
-        }):
+        for p in (
+            SLAProbe._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find(
+                {"managed_object": self.object.id}, {"name": 1, "group": 1, "profile": 1, "type": 1}
+            )
+        ):
             if not p.get("profile"):
                 self.logger.debug("Probe %s has no profile. Skipping", p["name"])
                 continue
             pm = self.get_slaprofile_metrics(p["profile"])
             if not pm:
                 self.logger.debug(
-                    "Probe %s has profile '%s' with no configured metrics. "
-                    "Skipping", p["name"], p.profile.name
+                    "Probe %s has profile '%s' with no configured metrics. " "Skipping",
+                    p["name"],
+                    p.profile.name,
                 )
                 continue
             for metric in pm:
-                if ((self.is_box and not pm[metric].enable_box) or
-                        (self.is_periodic and not pm[metric].enable_periodic)):
+                if (self.is_box and not pm[metric].enable_box) or (
+                    self.is_periodic and not pm[metric].enable_periodic
+                ):
                     continue
                 m_id = next(self.id_count)
-                metrics += [{
-                    "id": m_id,
-                    "metric": metric,
-                    "path": [p.get("group", ""), p["name"]],
-                    "sla_type": p["type"]
-                }]
+                metrics += [
+                    {
+                        "id": m_id,
+                        "metric": metric,
+                        "path": [p.get("group", ""), p["name"]],
+                        "sla_type": p["type"],
+                    }
+                ]
                 self.id_metrics[m_id] = pm[metric]
         if not metrics:
             self.logger.info("SLA metrics are not configured. Skipping")
@@ -356,9 +316,7 @@ class MetricsCheck(DiscoveryCheck):
         """
         # Restore last counter state
         if self.has_artefact("reboot"):
-            self.logger.info(
-                "Resetting counter context due to detected reboot"
-            )
+            self.logger.info("Resetting counter context due to detected reboot")
             self.job.context["counters"] = {}
         counters = self.job.context["counters"]
         alarms = []
@@ -373,10 +331,7 @@ class MetricsCheck(DiscoveryCheck):
             if m.type in MT_COUNTER_DELTA:
                 # Counter type
                 if path:
-                    key = "%x|%s" % (
-                        cfg.metric_type.bi_id,
-                        "|".join(str(p) for p in path)
-                    )
+                    key = "%x|%s" % (cfg.metric_type.bi_id, "|".join(str(p) for p in path))
                 else:
                     key = "%x" % cfg.metric_type.bi_id
                 # Restore old value and save new
@@ -385,15 +340,13 @@ class MetricsCheck(DiscoveryCheck):
                 if r is None:
                     # No stored state
                     self.logger.debug(
-                        "[%s] COUNTER value is not found. "
-                        "Storing and waiting for a new result",
-                        m.label
+                        "[%s] COUNTER value is not found. " "Storing and waiting for a new result",
+                        m.label,
                     )
                     continue
                 # Calculate counter
                 self.logger.debug(
-                    "[%s] Old value: %s@%s, new value: %s@%s.",
-                    m.label, r[1], r[0], m.value, m.ts
+                    "[%s] Old value: %s@%s, new value: %s@%s.", m.label, r[1], r[0], m.value, m.ts
                 )
                 if m.type == MT_COUNTER:
                     cv = self.convert_counter(m, r)
@@ -404,7 +357,11 @@ class MetricsCheck(DiscoveryCheck):
                     # Remove broken value
                     self.logger.debug(
                         "[%s] Counter stepback from %s@%s to %s@%s: Skipping",
-                        m.label, r[1], r[0], m.value, m.ts
+                        m.label,
+                        r[1],
+                        r[0],
+                        m.value,
+                        m.ts,
                     )
                     del counters[key]
                     continue
@@ -419,23 +376,20 @@ class MetricsCheck(DiscoveryCheck):
 
             self.logger.debug(
                 "[%s] Measured value: %s. Scale: %s. Resulting value: %s",
-                m.label, m.value, m.scale, m.abs_value
+                m.label,
+                m.value,
+                m.scale,
+                m.abs_value,
             )
             # Schedule to store
             if cfg.is_stored:
                 tsc = ts_cache.get(m.ts)
                 if not tsc:
                     lt = time.localtime(m.ts // 1000000000)
-                    tsc = (
-                        time.strftime("%Y-%m-%d", lt),
-                        time.strftime("%Y-%m-%d %H:%M:%S", lt)
-                    )
+                    tsc = (time.strftime("%Y-%m-%d", lt), time.strftime("%Y-%m-%d %H:%M:%S", lt))
                     ts_cache[m.ts] = tsc
                 if path:
-                    pk = "%s\t%s\t%d\t%s" % (
-                        tsc[0], tsc[1], mo_id,
-                        self.quote_path(path)
-                    )
+                    pk = "%s\t%s\t%d\t%s" % (tsc[0], tsc[1], mo_id, self.quote_path(path))
                     table = "%s.date.ts.managed_object.path" % cfg.metric_type.scope.table_name
                 else:
                     pk = "%s\t%s\t%d" % (tsc[0], tsc[1], mo_id)
@@ -444,10 +398,7 @@ class MetricsCheck(DiscoveryCheck):
                 try:
                     data[table, pk][field] = cfg.metric_type.clean_value(m.abs_value)
                 except ValueError as e:
-                    self.logger.info(
-                        "[%s] Cannot clean value %s: %s",
-                        m.label, m.abs_value, e
-                    )
+                    self.logger.info("[%s] Cannot clean value %s: %s", m.label, m.abs_value, e)
                     continue
                 n_metrics += 1
             if cfg.threshold_profile and m.abs_value is not None:
@@ -466,10 +417,7 @@ class MetricsCheck(DiscoveryCheck):
         # Collect metrics
         self.logger.debug("Collecting metrics: %s", metrics)
 
-        result = [
-            MData(**r)
-            for r in self.object.scripts.get_metrics(metrics=metrics)
-        ]
+        result = [MData(**r) for r in self.object.scripts.get_metrics(metrics=metrics)]
         if not result:
             self.logger.info("No metrics found")
             return
@@ -481,10 +429,7 @@ class MetricsCheck(DiscoveryCheck):
             self.send_metrics(data)
         # Set up threshold alarms
         self.logger.info("%d alarms detected", len(alarms))
-        self.job.update_umbrella(
-            self.AC_PM_THRESHOLDS,
-            alarms
-        )
+        self.job.update_umbrella(self.AC_PM_THRESHOLDS, alarms)
 
     def convert_delta(self, m, r):
         """
@@ -507,17 +452,11 @@ class MetricsCheck(DiscoveryCheck):
             if d_direct < d_wrap:
                 # Possible counter stepback
                 # Skip value
-                self.logger.debug(
-                    "[%s] Counter stepback: %s -> %s",
-                    m.label, r[1], m.value
-                )
+                self.logger.debug("[%s] Counter stepback: %s -> %s", m.label, r[1], m.value)
                 return None
             else:
                 # Counter wrap
-                self.logger.debug(
-                    "[%s] Counter wrap: %s -> %s",
-                    m.label, r[1], m.value
-                )
+                self.logger.debug("[%s] Counter wrap: %s -> %s", m.label, r[1], m.value)
                 return d_wrap
         else:
             return m.value - r[1]
@@ -543,10 +482,7 @@ class MetricsCheck(DiscoveryCheck):
         """
         # Build window state key
         if m.path:
-            key = "%x|%s" % (
-                cfg.metric_type.bi_id,
-                "|".join(str(p) for p in m.path)
-            )
+            key = "%x|%s" % (cfg.metric_type.bi_id, "|".join(str(p) for p in m.path))
         else:
             key = "%x" % cfg.metric_type.bi_id
         #
@@ -579,15 +515,16 @@ class MetricsCheck(DiscoveryCheck):
             else:
                 self.logger.error(
                     "Cannot calculate thresholds for %s (%s): Invalid window type '%s'",
-                    m.metric, m.path, window_type
+                    m.metric,
+                    m.path,
+                    window_type,
                 )
                 return None
             # Store back to context
             states[key] = window
         if not window_full:
             self.logger.error(
-                "Cannot calculate thresholds for %s (%s): Window is not filled",
-                m.metric, m.path
+                "Cannot calculate thresholds for %s (%s): Window is not filled", m.metric, m.path
             )
             return None
         # Process window function
@@ -595,16 +532,15 @@ class MetricsCheck(DiscoveryCheck):
         if not wf:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): Invalid window function %s",
-                m.metric, m.path, cfg.threshold_profile.window_function
+                m.metric,
+                m.path,
+                cfg.threshold_profile.window_function,
             )
             return None
         try:
             return wf(window, cfg.threshold_profile.window_config)
         except ValueError as e:
-            self.logger.error(
-                "Cannot calculate thresholds for %s (%s): %s",
-                m.metric, m.path, e
-            )
+            self.logger.error("Cannot calculate thresholds for %s (%s): %s", m.metric, m.path, e)
             return None
 
     def process_thresholds(self, m, cfg):
@@ -695,9 +631,7 @@ class MetricsCheck(DiscoveryCheck):
             record = "%s\t%s" % (pk, "\t".join(str(values[fn]) for fn in f))
             if isinstance(record, unicode):
                 record = record.encode("utf-8")
-            chains[record_fields] += [
-                record
-            ]
+            chains[record_fields] += [record]
         # Spool data
         for f in chains:
             self.service.register_metrics(f, chains[f])
@@ -721,8 +655,8 @@ class MetricsCheck(DiscoveryCheck):
                 "value": value,
                 "window_type": metric_config.threshold_profile.window_type,
                 "window": metric_config.threshold_profile.window,
-                "window_function": metric_config.threshold_profile.window_function
-            }
+                "window_function": metric_config.threshold_profile.window_function,
+            },
         }
         if metric_config.threshold_profile.umbrella_filter_handler:
             try:

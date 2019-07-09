@@ -16,6 +16,7 @@ class ModelMappingApplication(ExtDocApplication):
     """
     ModelMapping application
     """
+
     title = _("Model Mapping")
     menu = [_("Setup"), _("Model Mapping")]
     model = ModelMapping

@@ -9,13 +9,14 @@
 # Python modules
 import logging
 import datetime
+
 # Third-party modules
 import six
 from django.db.models import signals as django_signals
 from django.utils.encoding import smart_unicode
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, DateTimeField,
-                                ListField, EmbeddedDocumentField)
+from mongoengine.fields import StringField, DateTimeField, ListField, EmbeddedDocumentField
+
 # NOC modules
 from noc.config import config
 from noc.core.middleware.tls import get_user
@@ -26,10 +27,7 @@ logger = logging.getLogger(__name__)
 
 @six.python_2_unicode_compatible
 class FieldChange(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     field = StringField()
     old = StringField(required=False)
     new = StringField(required=False)
@@ -46,24 +44,15 @@ class AuditTrail(Document):
         "indexes": [
             "timestamp",
             ("model_id", "object"),
-            {
-                "fields": ["expires"],
-                "expireAfterSeconds": 0
-            }
-        ]
+            {"fields": ["expires"], "expireAfterSeconds": 0},
+        ],
     }
 
     timestamp = DateTimeField()
     user = StringField()
     model_id = StringField()
     object = StringField()
-    op = StringField(
-        choices=[
-            ("C", "Create"),
-            ("M", "Modify"),
-            ("D", "Delete")
-        ]
-    )
+    op = StringField(choices=[("C", "Create"), ("M", "Modify"), ("D", "Delete")])
     changes = ListField(EmbeddedDocumentField(FieldChange))
     expires = DateTimeField()
 
@@ -92,15 +81,18 @@ class AuditTrail(Document):
             return
         now = datetime.datetime.now()
         model_id = get_model_id(sender)
-        cls._get_collection().insert({
-            "timestamp": now,
-            "user": user.username,
-            "model_id": model_id,
-            "object": str(instance.pk),
-            "op": op,
-            "changes": changes,
-            "expires": now + cls._model_ttls[model_id]
-        }, w=0)
+        cls._get_collection().insert(
+            {
+                "timestamp": now,
+                "user": user.username,
+                "model_id": model_id,
+                "object": str(instance.pk),
+                "op": op,
+                "changes": changes,
+                "expires": now + cls._model_ttls[model_id],
+            },
+            w=0,
+        )
 
     @classmethod
     def get_field(cls, instance, field):
@@ -117,14 +109,13 @@ class AuditTrail(Document):
         #
         logger.debug("Logging change for %s", instance)
         changes = []
-        if kwargs.get('created', True):
+        if kwargs.get("created", True):
             # Create
             op = "C"
-            changes = [{
-                "field": f.name,
-                "old": None,
-                "new": cls.get_field(instance, f)
-            } for f in sender._meta.fields]
+            changes = [
+                {"field": f.name, "old": None, "new": cls.get_field(instance, f)}
+                for f in sender._meta.fields
+            ]
         else:
             # Update
             op = "U"
@@ -134,11 +125,7 @@ class AuditTrail(Document):
                     od = smart_unicode(od)
                 nd = cls.get_field(instance, f)
                 if nd != od:
-                    changes += [{
-                        "field": f.name,
-                        "old": od,
-                        "new": nd
-                    }]
+                    changes += [{"field": f.name, "old": od, "new": nd}]
 
         cls.log(sender, instance, op, changes)
 
@@ -149,11 +136,10 @@ class AuditTrail(Document):
         """
         #
         logger.debug("Logging deletion of %s", instance)
-        changes = [{
-            "field": f.name,
-            "old": cls.get_field(instance, f),
-            "new": None
-        } for f in sender._meta.fields]
+        changes = [
+            {"field": f.name, "old": cls.get_field(instance, f), "new": None}
+            for f in sender._meta.fields
+        ]
         cls.log(sender, instance, "D", changes)
 
     @classmethod
@@ -176,12 +162,9 @@ class AuditTrail(Document):
         if not ttl:
             return  # Disabled
         cls._model_ttls[model_id] = ttl
-        django_signals.post_save.connect(cls.on_update_model,
-                                         sender=sender)
-        django_signals.post_delete.connect(cls.on_delete_model,
-                                           sender=sender)
-        django_signals.post_init.connect(cls.on_init_model,
-                                         sender=sender)
+        django_signals.post_save.connect(cls.on_update_model, sender=sender)
+        django_signals.post_delete.connect(cls.on_delete_model, sender=sender)
+        django_signals.post_init.connect(cls.on_init_model, sender=sender)
 
     @classmethod
     def install(cls):

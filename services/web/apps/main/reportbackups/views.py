@@ -10,6 +10,7 @@
 import os
 import datetime
 import stat
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.config import config
@@ -24,8 +25,11 @@ class ReportBackups(SimpleReport):
         bd = config.path.backup_dir
         if os.path.isdir(bd):
             r = []
-            for f in [f for f in os.listdir(bd)
-                      if f.startswith("noc-") and (f.endswith(".dump") or f.endswith(".tar.gz"))]:
+            for f in [
+                f
+                for f in os.listdir(bd)
+                if f.startswith("noc-") and (f.endswith(".dump") or f.endswith(".tar.gz"))
+            ]:
                 s = os.stat(os.path.join(bd, f))
                 r.append([f, datetime.datetime.fromtimestamp(s[stat.ST_MTIME]), s[stat.ST_SIZE]])
             data = sorted(r, lambda x, y: cmp(x[1], y[1]))

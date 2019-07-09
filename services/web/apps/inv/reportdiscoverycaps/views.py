@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django import forms
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.sa.models.managedobject import ManagedObject
@@ -22,16 +23,18 @@ class ReportDiscoveryCapsApplication(SimpleReport):
     title = _("Discovery Object Caps")
 
     def get_form(self):
-
         class ReportForm(forms.Form):
             pool = forms.ChoiceField(
                 label=_("Managed Objects Pool"),
                 required=True,
-                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+            )
             obj_profile = forms.ModelChoiceField(
                 label=_("Managed Objects Profile"),
                 required=False,
-                queryset=ManagedObjectProfile.objects.order_by("name"))
+                queryset=ManagedObjectProfile.objects.order_by("name"),
+            )
+
         return ReportForm
 
     def get_data(self, request, pool=None, obj_profile=None, **kwargs):
@@ -43,31 +46,20 @@ class ReportDiscoveryCapsApplication(SimpleReport):
         # Get all managed objects
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool)
         if not request.user.is_superuser:
-            mos = ManagedObject.objects.filter(is_managed=True, pool=pool,
-                                               administrative_domain__in=UserAccess.get_domains(request.user))
+            mos = ManagedObject.objects.filter(
+                is_managed=True,
+                pool=pool,
+                administrative_domain__in=UserAccess.get_domains(request.user),
+            )
         if obj_profile:
             mos = mos.filter(object_profile=obj_profile)
         columns = (_("Managed Object"), _("Address"), _("Object"), _("Capabilities"))
         for mo in mos:
             mo.get_caps()
-            data += [(
-                mo.name,
-                mo.address,
-                _("Main"),
-                ";".join(mo.get_caps())
-            )]
+            data += [(mo.name, mo.address, _("Main"), ";".join(mo.get_caps()))]
             for i in Interface.objects.filter(managed_object=mo):
                 if i.type == "SVI":
                     continue
-                data += [(
-                    mo.name,
-                    mo.address,
-                    i.name,
-                    ";".join(i.enabled_protocols)
-                )]
+                data += [(mo.name, mo.address, i.name, ";".join(i.enabled_protocols))]
 
-        return self.from_dataset(
-            title=self.title,
-            columns=columns,
-            data=data
-        )
+        return self.from_dataset(title=self.title, columns=columns, data=data)

@@ -16,6 +16,7 @@ class EventTriggerApplication(ExtModelApplication):
     """
     EventTrigger application
     """
+
     title = _("Event Triggers")
     menu = [_("Setup"), _("Event Triggers")]
     model = EventTrigger

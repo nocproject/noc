@@ -45,7 +45,7 @@ class VertexPosition(EmbeddedDocument):
     y = FloatField()
 
     def __str__(self):
-        return u"(%s, %s)" % (self.x, self.y)
+        return "(%s, %s)" % (self.x, self.y)
 
 
 @six.python_2_unicode_compatible

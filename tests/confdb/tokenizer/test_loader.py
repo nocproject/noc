@@ -8,19 +8,13 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.confdb.tokenizer.loader import loader
 from noc.core.confdb.tokenizer.base import BaseTokenizer
 
 
-@pytest.mark.parametrize("name", [
-    "ini",
-    "line",
-    "context",
-    "indent",
-    "curly",
-    "routeros"
-])
+@pytest.mark.parametrize("name", ["ini", "line", "context", "indent", "curly", "routeros"])
 def test_loader(name):
     t = loader.get_class(name)
     assert t is not None

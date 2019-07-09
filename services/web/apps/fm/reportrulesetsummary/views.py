@@ -29,7 +29,8 @@ class ReportRulesetSummary(SimpleReport):
         data = [
             ["Alarm Classes"] + get_count("fm.alarmclasses", AlarmClass),
             ["Event Classies"] + get_count("fm.eventclasses", EventClass),
-            ["Classification Rules"] + get_count("fm.eventclassificationrules", EventClassificationRule)
+            ["Classification Rules"]
+            + get_count("fm.eventclassificationrules", EventClassificationRule),
         ]
 
         return self.from_dataset(
@@ -38,6 +39,7 @@ class ReportRulesetSummary(SimpleReport):
                 "",
                 TableColumn("Builtin", align="right", format="integer"),
                 TableColumn("Local", align="right", format="integer"),
-                TableColumn("Total", align="right", format="integer")
+                TableColumn("Total", align="right", format="integer"),
             ],
-            data=data)
+            data=data,
+        )

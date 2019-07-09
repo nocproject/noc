@@ -115,7 +115,7 @@ class Interface(Document):
     PROFILE_LINK = "profile"
 
     def __str__(self):
-        return u"%s: %s" % (self.managed_object.name, self.name)
+        return "%s: %s" % (self.managed_object.name, self.name)
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

@@ -8,12 +8,20 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.config.base import BaseConfig
 from noc.core.config.params import (
-    StringParameter, SecretParameter, IntParameter, BooleanParameter,
-    FloatParameter, MapParameter, HandlerParameter, SecondsParameter,
-    ListParameter)
+    StringParameter,
+    SecretParameter,
+    IntParameter,
+    BooleanParameter,
+    FloatParameter,
+    MapParameter,
+    HandlerParameter,
+    SecondsParameter,
+    ListParameter,
+)
 
 
 def test_string_parameter():
@@ -127,8 +135,7 @@ def test_bool_parameter():
 def test_list_parameter():
     class Config(BaseConfig):
         str_list = ListParameter(item=StringParameter())
-        default_str_list = ListParameter(
-            item=StringParameter(), default=[1, "2"])
+        default_str_list = ListParameter(item=StringParameter(), default=[1, "2"])
         bool_list = ListParameter(item=BooleanParameter())
 
     config = Config()
@@ -226,7 +233,7 @@ def my_handler():
 
 
 def test_handler():
-    class Config():
+    class Config:
         handler = HandlerParameter()
         default_handler = HandlerParameter(default="noc.tests.test_config.my_handler")
 

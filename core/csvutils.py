@@ -13,7 +13,7 @@ import csv
 import six
 from six.moves import zip
 
-# Django modules
+# Third-party modules
 from django.db import models
 
 

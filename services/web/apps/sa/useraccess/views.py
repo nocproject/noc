@@ -16,6 +16,7 @@ class UserAccessApplication(ExtModelApplication):
     """
     UserAccess application
     """
+
     title = _("User Access")
     menu = [_("Setup"), _("User Access")]
     model = UserAccess

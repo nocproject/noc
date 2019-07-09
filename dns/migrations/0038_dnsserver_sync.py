@@ -33,6 +33,6 @@ class Migration(BaseMigration):
                     }
                 )
                 smap[ch] = str(n)
-            print (smap)
+            print(smap)
             self.db.execute("UPDATE dns_dnsserver SET sync=%s WHERE id=%s", [smap[ch], i])
         self.db.delete_column("dns_dnsserver", "sync_channel")

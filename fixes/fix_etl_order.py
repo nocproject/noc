@@ -24,7 +24,7 @@ PATTERNS = [
 def fix():
     for pattern in PATTERNS:
         for path in glob.glob(pattern):
-            print ("Fixing order in %s:" % path)
+            print("Fixing order in %s:" % path)
             tmp_path = path + "~"
             with gzip.open(path, "r") as f_in:
                 reader = csv.reader(f_in)
@@ -34,4 +34,4 @@ def fix():
                 writer.writerows(data)
             os.unlink(path)
             shutil.move(tmp_path, path)
-            print ("    ... done")
+            print("    ... done")

@@ -16,6 +16,7 @@ class EventClassApplication(ExtDocApplication):
     """
     EventClass application
     """
+
     title = _("Event Class")
     menu = [_("Setup"), _("Event Classes")]
     model = EventClass

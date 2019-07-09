@@ -9,14 +9,13 @@
 # Third-party modules
 import pytest
 from six.moves import zip_longest
+
 # NOC modules
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
 
 
 MODEL = AlarmClass
-FIELDS = [
-    ("name", "String")
-]
+FIELDS = [("name", "String")]
 
 
 def test_fields_test():
@@ -34,8 +33,7 @@ def test_field_db_type(name, db_type):
 
 
 @pytest.mark.parametrize("order,fields", list(zip_longest(MODEL._fields_order, FIELDS)))
-def test_field_db_type(order, fields):
+def test_field_order(order, fields):
     assert fields is not None
     name, db_type = fields
     assert order == name
-

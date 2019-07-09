@@ -120,5 +120,5 @@ MIB = {
     "MPLS-VPN-MIB::mplsVpnVrfRouteStorageType": "1.3.6.1.3.118.1.4.1.1.20",
     "MPLS-VPN-MIB::mplsVpnConformance": "1.3.6.1.3.118.3",
     "MPLS-VPN-MIB::mplsVpnGroups": "1.3.6.1.3.118.3.1",
-    "MPLS-VPN-MIB::mplsVpnCompliances": "1.3.6.1.3.118.3.2"
+    "MPLS-VPN-MIB::mplsVpnCompliances": "1.3.6.1.3.118.3.2",
 }

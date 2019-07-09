@@ -16,6 +16,7 @@ class QuizApplication(ExtDocApplication):
     """
     Quiz application
     """
+
     title = "Quiz"
     menu = [_("Setup"), _("Quiz")]
     model = Quiz

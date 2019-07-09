@@ -10,8 +10,10 @@
 import re
 import logging
 import new
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -41,10 +43,11 @@ class Rule(object):
             self.name += "(Clone %s)" % clone_rule.name
             if classifier.dump_clone:
                 # Dump cloned rule
-                logging.debug("Rule '%s' cloned by rule '%s'" % (
-                    rule.name, clone_rule.name))
+                logging.debug("Rule '%s' cloned by rule '%s'" % (rule.name, clone_rule.name))
                 p0 = [(x.key_re, x.value_re) for x in rule.patterns]
-                p1 = [(y.key_re, y.value_re) for y in [clone_rule.rewrite(x) for x in rule.patterns]]
+                p1 = [
+                    (y.key_re, y.value_re) for y in [clone_rule.rewrite(x) for x in rule.patterns]
+                ]
                 logging.debug("%s -> %s" % (p0, p1))
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
@@ -56,9 +59,13 @@ class Rule(object):
         # Parse datasources
         for ds in rule.datasources:
             self.datasources[ds.name] = eval(
-                "lambda vars: datasource_registry['%s'](%s)" %
-                (ds.datasource, ", ".join(["%s=vars['%s']" % (k, v) for k, v in six.iteritems(ds.search)])),
-                {"datasource_registry": datasource_registry}, {}
+                "lambda vars: datasource_registry['%s'](%s)"
+                % (
+                    ds.datasource,
+                    ", ".join(["%s=vars['%s']" % (k, v) for k, v in six.iteritems(ds.search)]),
+                ),
+                {"datasource_registry": datasource_registry},
+                {},
             )
         # Parse vars
         for v in rule.vars:
@@ -156,8 +163,9 @@ class Rule(object):
         Compile native python rule-matching function
         and install it as .match() instance method
         """
+
         def pyq(s):
-            return s.replace("\\", "\\\\").replace("\"", "\\\"")
+            return s.replace("\\", "\\\\").replace('"', '\\"')
 
         e_vars_used = c2 or c3 or c4
         c = []
@@ -209,17 +217,18 @@ class Rule(object):
                 c += ["    return None"]
         # Vars binding
         if self.vars:
-            has_expressions = any(v for v in six.itervalues(self.vars)
-                                  if not isinstance(v, six.string_types))
+            has_expressions = any(
+                v for v in six.itervalues(self.vars) if not isinstance(v, six.string_types)
+            )
             if has_expressions:
                 # Calculate vars context
                 c += ["var_context = {'event': event}"]
                 c += ["var_context.update(e_vars)"]
             for k, v in six.iteritems(self.vars):
                 if isinstance(v, six.string_types):
-                    c += ["e_vars[\"%s\"] = \"%s\"" % (k, pyq(v))]
+                    c += ['e_vars["%s"] = "%s"' % (k, pyq(v))]
                 else:
-                    c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, var_context)" % (k, k)]
+                    c += ['e_vars["%s"] = eval(self.vars["%s"], {}, var_context)' % (k, k)]
         if e_vars_used:
             # c += ["return self.fixup(e_vars)"]
             for name in self.fixups:
@@ -228,15 +237,21 @@ class Rule(object):
                     if r[1] in ("ifindex",):
                         # call fixup with managed object
                         c += [
-                            "e_vars[\"%s\"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars[\"%s\"]))" %
-                            (r[0], r[1], name)
+                            'e_vars["%s"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars["%s"]))'
+                            % (r[0], r[1], name)
                         ]
                     else:
-                        c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
+                        c += [
+                            'e_vars["%s"] = self.fixup_%s(fm_unescape(e_vars["%s"]))'
+                            % (r[0], r[1], name)
+                        ]
                 else:
-                    c += ["args = [%s, fm_unescape(e_vars[\"%s\"])]" % (", ".join(["\"%s\"" % x for x in r[2:]]), name)]
-                    c += ["e_vars[\"%s\"] = self.fixup_%s(*args)" % (r[0], r[1])]
-                c += ["del e_vars[\"%s\"]" % name]
+                    c += [
+                        'args = [%s, fm_unescape(e_vars["%s"])]'
+                        % (", ".join(['"%s"' % x for x in r[2:]]), name)
+                    ]
+                    c += ['e_vars["%s"] = self.fixup_%s(*args)' % (r[0], r[1])]
+                c += ['del e_vars["%s"]' % name]
             c += ["return e_vars"]
         else:
             c += ["return {}"]
@@ -262,7 +277,8 @@ class Rule(object):
             v & 0xFF000000 >> 24,
             v & 0x00FF0000 >> 16,
             v & 0x0000FF00 >> 8,
-            v & 0x000000FF)
+            v & 0x000000FF,
+        )
 
     def fixup_bin_to_ip(self, v):
         """
@@ -285,7 +301,7 @@ class Rule(object):
         Fix N.c1. .. .cN into "c1..cN" string
         """
         x = [int(c) for c in v.split(".")]
-        return "".join([chr(c) for c in x[1:x[0] + 1]])
+        return "".join([chr(c) for c in x[1 : x[0] + 1]])
 
     def fixup_enum(self, name, v):
         """
@@ -300,13 +316,11 @@ class Rule(object):
         """
         ifindex = int(v)
         # Try to resolve interface
-        i = Interface.objects.filter(
-            managed_object=managed_object.id, ifindex=ifindex).first()
+        i = Interface.objects.filter(managed_object=managed_object.id, ifindex=ifindex).first()
         if i:
             return i.name
         # Try to resolve subinterface
-        si = SubInterface.objects.filter(
-            managed_object=managed_object.id, ifindex=ifindex).first()
+        si = SubInterface.objects.filter(managed_object=managed_object.id, ifindex=ifindex).first()
         if si:
             return si.name
         return v

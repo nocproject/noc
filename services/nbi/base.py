@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 import pytz
+
 # NOC modules
 from noc.core.service.apiaccess import APIAccessRequestHandler
 from noc.core.log import PrefixLoggerAdapter
@@ -17,6 +18,7 @@ class NBIAPI(APIAccessRequestHandler):
     """
     Asynchronous NBI API handler
     """
+
     name = None
 
     def initialize(self, service):

@@ -14,33 +14,20 @@ from noc.models import FTS_MODELS, get_model
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(
-            dest="cmd",
-            help="sub-commands help"
-        )
+        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help")
         # Search parameters
-        search_parser = subparsers.add_parser(
-            "search",
-            help="Full-text search"
-        )
-        search_parser.add_argument(
-            "query",
-            nargs=1,
-            help="Query terms"
-        )
+        search_parser = subparsers.add_parser("search", help="Full-text search")
+        search_parser.add_argument("query", nargs=1, help="Query terms")
         search_parser.add_argument(
             "--format",
             action="store",
             dest="format",
             default="yaml",
             choices=["yaml", "json"],
-            help="Output format"
+            help="Output format",
         )
         # Rebuild parameters
-        rebuild_parser = subparsers.add_parser(  # noqa
-            "rebuild",
-            help="Rebuild index"
-        )
+        rebuild_parser = subparsers.add_parser("rebuild", help="Rebuild index")  # noqa
 
     def handle(self, cmd, *args, **options):
         getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -48,18 +35,22 @@ class Command(BaseCommand):
     def handle_search(self, query, format, *args, **options):
         r = []
         for qr in TextIndex.search(query[0]):
-            r += [{
-                "id": str("%s:%s" % (qr.model, qr.object)),
-                "title": str(qr.title),
-                "card": str(qr.card)
-            }]
+            r += [
+                {
+                    "id": str("%s:%s" % (qr.model, qr.object)),
+                    "title": str(qr.title),
+                    "card": str(qr.card),
+                }
+            ]
             if qr.tags:
                 r[-1]["tags"] = [str(x) for x in qr.tags]
         if format == "yaml":
             import yaml
+
             yaml.dump(r, stream=self.stdout)
         else:
             import json
+
             json.dump(r, self.stdout)
 
     def handle_rebuild(self, *args, **options):

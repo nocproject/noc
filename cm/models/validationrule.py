@@ -43,7 +43,7 @@ class SelectorItem(EmbeddedDocument):
     action = StringField(choices=ACTIONS)
 
     def __str__(self):
-        return u"%s: %s" % (self.action, self.selector.name)
+        return "%s: %s" % (self.action, self.selector.name)
 
 
 @six.python_2_unicode_compatible
@@ -52,7 +52,7 @@ class ObjectItem(EmbeddedDocument):
     action = StringField(choices=ACTIONS)
 
     def __str__(self):
-        return u"%s: %s" % (self.action, self.object.name)
+        return "%s: %s" % (self.action, self.object.name)
 
 
 @six.python_2_unicode_compatible

@@ -19,6 +19,7 @@ class CoverageApplication(ExtDocApplication):
     """
     Coverage application
     """
+
     title = _("Coverage")
     menu = [_("Setup"), _("Coverage")]
     model = Coverage

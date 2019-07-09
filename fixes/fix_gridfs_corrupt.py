@@ -39,14 +39,14 @@ def fix_repo(repo):
 
 
 def fix_object(vcs, object, corrupt):
-    print ("@@@ %s" % object)
+    print("@@@ %s" % object)
     revs = list(vcs.iter_revisions(object))
     show_revs(revs, corrupt)
     while True:
         cidx = find_corrupt(vcs, revs, corrupt)
         if cidx is None:
             break
-        print ("  -> CORRUPT %d" % cidx)
+        print("  -> CORRUPT %d" % cidx)
         cut_corrupt(vcs, revs, cidx)
         show_revs(revs, corrupt)
 
@@ -89,4 +89,4 @@ def cut_corrupt(vcs, revs, cidx):
 
 def show_revs(revs, corrupt):
     for r in revs:
-        print ("    %s %s %s" % (r.ts, r.ft, "*" if r.id in corrupt else " "))
+        print("    %s %s %s" % (r.ts, r.ft, "*" if r.id in corrupt else " "))

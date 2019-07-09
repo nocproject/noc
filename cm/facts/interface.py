@@ -67,7 +67,7 @@ class Interface(BaseFact):
         self.aggregated_interface = aggregated_interface
 
     def __str__(self):
-        return u"Interface %s" % self.name
+        return "Interface %s" % self.name
 
     @property
     def description(self):

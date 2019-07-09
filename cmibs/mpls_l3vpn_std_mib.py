@@ -101,5 +101,5 @@ MIB = {
     "MPLS-L3VPN-STD-MIB::mplsL3VpnVrfRteInetCidrStatus": "1.3.6.1.2.1.10.166.11.1.4.1.1.18",
     "MPLS-L3VPN-STD-MIB::mplsL3VpnConformance": "1.3.6.1.2.1.10.166.11.2",
     "MPLS-L3VPN-STD-MIB::mplsL3VpnGroups": "1.3.6.1.2.1.10.166.11.2.1",
-    "MPLS-L3VPN-STD-MIB::mplsL3VpnCompliances": "1.3.6.1.2.1.10.166.11.2.2"
+    "MPLS-L3VPN-STD-MIB::mplsL3VpnCompliances": "1.3.6.1.2.1.10.166.11.2.2",
 }

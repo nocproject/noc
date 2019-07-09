@@ -11,9 +11,11 @@
 import socket
 import datetime
 from collections import defaultdict, namedtuple
+
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
+
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
@@ -23,7 +25,9 @@ from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 from noc.lib.text import ch_escape
 
-SourceConfig = namedtuple("SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events"])
+SourceConfig = namedtuple(
+    "SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events"]
+)
 
 
 class SyslogCollectorService(Service):
@@ -52,31 +56,21 @@ class SyslogCollectorService(Service):
                 addr, port = l.split(":")
             else:
                 addr, port = "", l
-            self.logger.info("Starting syslog server at %s:%s",
-                             addr, port)
+            self.logger.info("Starting syslog server at %s:%s", addr, port)
             try:
                 server.listen(port, addr)
             except socket.error as e:
                 metrics["error", ("type", "socket_listen_error")] += 1
-                self.logger.error(
-                    "Failed to start syslog server at %s:%s: %s",
-                    addr, port, e
-                )
+                self.logger.error("Failed to start syslog server at %s:%s: %s", addr, port, e)
         server.start()
         # Send spooled messages every 250ms
         self.logger.debug("Stating message sender task")
-        self.send_callback = tornado.ioloop.PeriodicCallback(
-            self.send_messages,
-            250,
-            self.ioloop
-        )
+        self.send_callback = tornado.ioloop.PeriodicCallback(self.send_messages, 250, self.ioloop)
         self.send_callback.start()
         # Report invalid sources every 60 seconds
         self.logger.info("Stating invalid sources reporting task")
         self.report_invalid_callback = tornado.ioloop.PeriodicCallback(
-            self.report_invalid_sources,
-            60000,
-            self.ioloop
+            self.report_invalid_sources, 60000, self.ioloop
         )
         self.report_invalid_callback.start()
         # Start tracking changes
@@ -96,23 +90,20 @@ class SyslogCollectorService(Service):
             return None
         return cfg
 
-    def register_message(self, cfg, timestamp, message,
-                         facility, severity):
+    def register_message(self, cfg, timestamp, message, facility, severity):
         """
         Spool message to be sent
         """
         if cfg.process_events:
             # Send to classifier
             metrics["events_out"] += 1
-            self.messages += [{
-                "ts": timestamp,
-                "object": cfg.id,
-                "data": {
-                    "source": "syslog",
-                    "collector": config.pool,
-                    "message": message
+            self.messages += [
+                {
+                    "ts": timestamp,
+                    "object": cfg.id,
+                    "data": {"source": "syslog", "collector": config.pool, "message": message},
                 }
-            }]
+            ]
         if cfg.archive_events and cfg.bi_id:
             # Archive message
             metrics["events_archived"] += 1
@@ -122,7 +113,7 @@ class SyslogCollectorService(Service):
             msg = ch_escape(message)
             self.register_metrics(
                 "syslog.date.ts.managed_object.facility.severity.message",
-                [str("%s\t%s\t%s\t%d\t%d\t%s" % (date, ts, cfg.bi_id, facility, severity, msg))]
+                [str("%s\t%s\t%s\t%d\t%d\t%s" % (date, ts, cfg.bi_id, facility, severity, msg))],
             )
 
     @tornado.gen.coroutine
@@ -147,10 +138,8 @@ class SyslogCollectorService(Service):
             try:
                 yield client.query(
                     limit=config.syslogcollector.ds_limit,
-                    filters=[
-                        "pool(%s)" % config.pool
-                    ],
-                    block=1
+                    filters=["pool(%s)" % config.pool],
+                    block=1,
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
@@ -167,8 +156,7 @@ class SyslogCollectorService(Service):
         self.logger.info(
             "Dropping %d messages with invalid sources: %s",
             total,
-            ", ".join("%s: %s" % (s, self.invalid_sources[s])
-                      for s in self.invalid_sources)
+            ", ".join("%s: %s" % (s, self.invalid_sources[s]) for s in self.invalid_sources),
         )
         self.invalid_sources = defaultdict(int)
 
@@ -185,7 +173,7 @@ class SyslogCollectorService(Service):
             tuple(data["addresses"]),
             data.get("bi_id"),  # For backward compatibility
             data.get("process_events", True),  # For backward compatibility
-            data.get("archive_events", False)
+            data.get("archive_events", False),
         )
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining

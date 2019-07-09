@@ -27,10 +27,7 @@ class AdmDomainDataStream(DataStream):
         if not ad:
             raise KeyError()
         ad = ad[0]
-        r = {
-            "id": str(ad.id),
-            "name": qs(ad.name),
-        }
+        r = {"id": str(ad.id), "name": qs(ad.name)}
         if ad.parent:
             r["parent"] = str(ad.parent.id)
         if ad.tags:
@@ -41,8 +38,5 @@ class AdmDomainDataStream(DataStream):
     @staticmethod
     def _apply_remote_system(mo, r):
         if mo.remote_system:
-            r["remote_system"] = {
-                "id": str(mo.remote_system.id),
-                "name": qs(mo.remote_system.name)
-            }
+            r["remote_system"] = {"id": str(mo.remote_system.id), "name": qs(mo.remote_system.name)}
             r["remote_id"] = mo.remote_id

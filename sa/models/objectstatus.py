@@ -36,7 +36,7 @@ class ObjectStatus(Document):
     last = DateTimeField()
 
     def __str__(self):
-        return u"%s: %s" % (self.object, self.status)
+        return "%s: %s" % (self.object, self.status)
 
     @classmethod
     def get_status(cls, object):

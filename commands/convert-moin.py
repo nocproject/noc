@@ -17,6 +17,7 @@ import stat
 import datetime
 import sys
 import gc
+
 # NOC modules
 from noc.aaa.models.user import User
 from noc.core.management.base import BaseCommand
@@ -33,25 +34,12 @@ class Command(BaseCommand):
     help = "Import MoinMoin wiki into NOC KB"
 
     def add_arguments(self, parser):
-        parser.add_argument("-e", "--encoding",
-                            dest="encoding",
-                            default="utf-8",
-                            help="Encoding"
-                            ),
-        parser.add_argument("-l", "--language",
-                            dest="language",
-                            default="English",
-                            help="Wiki Language"
-                            ),
-        parser.add_argument("-t", "--tags",
-                            dest="tags",
-                            help="Tags"
-                            ),
+        parser.add_argument("-e", "--encoding", dest="encoding", default="utf-8", help="Encoding"),
         parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of convert pages"
-        )
+            "-l", "--language", dest="language", default="English", help="Wiki Language"
+        ),
+        parser.add_argument("-t", "--tags", dest="tags", help="Tags"),
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of convert pages")
 
     def handle(self, *args, **options):
         self.encoding = options["encoding"]
@@ -67,6 +55,7 @@ class Command(BaseCommand):
             new_oc = len(gc.get_objects())
             self.out("%d leaked objects\n" % (new_oc - oc))
             oc = new_oc
+
     #
     # Progress output
     #
@@ -77,6 +66,7 @@ class Command(BaseCommand):
         else:
             sys.stdout.write(unicode(s, self.encoding).encode("utf-8"))
         sys.stdout.flush()
+
     #
     # Convert single MoinMoin page
     #
@@ -92,6 +82,7 @@ class Command(BaseCommand):
                 r += chr(int(c, 16))
             r = "".join(r)
             return unicode(r, self.encoding)
+
         root = os.path.join(self.pages, page)
         name = rx_hexseq.sub(convert_hexseq, page)
         self.out("Converting %s (%s)..." % (page, name))
@@ -108,16 +99,24 @@ class Command(BaseCommand):
             rev_path = os.path.join(root, "revisions", rev)
             with open(rev_path) as f:
                 body = self.convert_body(unicode(f.read(), self.encoding))
-            mtime = datetime.datetime.fromtimestamp(os.stat(rev_path)[stat.ST_MTIME])  # Revision time
+            mtime = datetime.datetime.fromtimestamp(
+                os.stat(rev_path)[stat.ST_MTIME]
+            )  # Revision time
             if kbe is None:
-                kbe = KBEntry(subject=name, body=body, language=self.language, markup_language="Creole")
-                kbe.save(user=self.user, timestamp=mtime)  # Revision history will be populated automatically
+                kbe = KBEntry(
+                    subject=name, body=body, language=self.language, markup_language="Creole"
+                )
+                kbe.save(
+                    user=self.user, timestamp=mtime
+                )  # Revision history will be populated automatically
                 if self.tags:
                     kbe.tags = self.tags
                     kbe.save(user=self.user, timestamp=mtime)
             else:
                 kbe.body = body
-                kbe.save(user=self.user, timestamp=mtime)  # Revision history will be populated automatically
+                kbe.save(
+                    user=self.user, timestamp=mtime
+                )  # Revision history will be populated automatically
         self.out("... %d revisions\n" % len(revisions))
         if kbe is None:
             return  # Return when no revisions found
@@ -127,7 +126,9 @@ class Command(BaseCommand):
             for a in os.listdir(attachments_root):
                 self.out("     %s..." % a)
                 a_path = os.path.join(attachments_root, a)
-                mtime = datetime.datetime.fromtimestamp(os.stat(a_path)[stat.ST_MTIME])  # Attach modification time
+                mtime = datetime.datetime.fromtimestamp(
+                    os.stat(a_path)[stat.ST_MTIME]
+                )  # Attach modification time
                 with open(a_path) as f:
                     dbs_path = "/kb/%d/%s" % (kbe.id, a)
                     database_storage.save(dbs_path, f)
@@ -135,6 +136,7 @@ class Command(BaseCommand):
                     database_storage.set_mtime(dbs_path, mtime)
                 KBEntryAttachment(kb_entry=kbe, name=a, file=dbs_path).save()
                 self.out("...done\n")
+
     #
     # Convert MoinMoin syntax to Creole
     #

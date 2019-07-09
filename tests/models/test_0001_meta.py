@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.models import get_model_id, get_model, iter_model_id
 from .util import get_models, get_documents
@@ -61,7 +63,9 @@ def test_document_meta(model):
 
 @pytest.mark.parametrize("model", get_documents())
 def test_document_allow_inheritance(model):
-    assert model._meta.get("allow_inheritance") is None, "'allow_inheritance' is obsolete and must not be used"
+    assert (
+        model._meta.get("allow_inheritance") is None
+    ), "'allow_inheritance' is obsolete and must not be used"
 
 
 @pytest.mark.parametrize("model", get_documents())
@@ -71,4 +75,6 @@ def test_document_strict(model):
 
 @pytest.mark.parametrize("model", get_documents())
 def test_document_auto_create_index(model):
-    assert not model._meta.get("auto_create_index", True), "Index autocreation must not be used (Use auto_create_index: False)"
+    assert not model._meta.get(
+        "auto_create_index", True
+    ), "Index autocreation must not be used (Use auto_create_index: False)"

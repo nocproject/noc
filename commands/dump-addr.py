@@ -11,6 +11,7 @@ from __future__ import print_function
 import csv
 import sys
 import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.gis.models.division import Division
@@ -23,19 +24,11 @@ class Command(BaseCommand):
         # parser.add_argument("-c", "--country",
         #                     dest="countries",
         #                     action="append")
-        parser.add_argument(
-            "countries",
-            nargs=argparse.REMAINDER,
-            help="List of dumped countries"
-        )
+        parser.add_argument("countries", nargs=argparse.REMAINDER, help="List of dumped countries")
 
-    HEADERS = {
-        "ru": ["RU_OKATO", "RU_OKTMO", "RU_KLADR", "RU_FIAS_HOUSEGUID"]
-    }
+    HEADERS = {"ru": ["RU_OKATO", "RU_OKTMO", "RU_KLADR", "RU_FIAS_HOUSEGUID"]}
 
-    DATA = {
-        "ru": ["OKATO", "OKTMO", "KLADR", "FIAS_HOUSEGUID"]
-    }
+    DATA = {"ru": ["OKATO", "OKTMO", "KLADR", "FIAS_HOUSEGUID"]}
 
     LEVELS = 10
 
@@ -61,7 +54,7 @@ class Command(BaseCommand):
                 addr.struct,
                 addr.struct2,
                 addr.struct_letter,
-                bld.postal_code
+                bld.postal_code,
             ]
             for c in ctr:
                 for cc in self.DATA[c]:
@@ -82,11 +75,17 @@ class Command(BaseCommand):
         #
         header = ["LEVEL%d" % d for d in range(self.LEVELS)]
         header += [
-            "STREET", "HOUSE_ADDR",
-            "NUM", "NUM2", "NUM_LETTER",
-            "BUILD", "BUILD_LETTER",
-            "STRUCT", "STRUCT2", "STRUCT_LETTER",
-            "POSTAL_CODE"
+            "STREET",
+            "HOUSE_ADDR",
+            "NUM",
+            "NUM2",
+            "NUM_LETTER",
+            "BUILD",
+            "BUILD_LETTER",
+            "STRUCT",
+            "STRUCT2",
+            "STRUCT_LETTER",
+            "POSTAL_CODE",
         ]
         for c in ctr:
             header += self.HEADERS[c]

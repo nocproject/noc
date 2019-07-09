@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # NOC modules
 from noc.aaa.models.apikey import APIKey, APIAccess
 
@@ -23,8 +24,8 @@ def test_apikey_access_active():
         access=[
             APIAccess(api="api1", role="*"),
             APIAccess(api="api2", role="r1"),
-            APIAccess(api="api2", role="r2")
-        ]
+            APIAccess(api="api2", role="r2"),
+        ],
     )
     key.save()
     # Check
@@ -45,8 +46,8 @@ def test_apikey_access_inactive():
         access=[
             APIAccess(api="api1", role="*"),
             APIAccess(api="api2", role="r1"),
-            APIAccess(api="api2", role="r2")
-        ]
+            APIAccess(api="api2", role="r2"),
+        ],
     )
     key.save()
     # Check
@@ -68,8 +69,8 @@ def test_apikey_access_non_expired():
         access=[
             APIAccess(api="api1", role="*"),
             APIAccess(api="api2", role="r1"),
-            APIAccess(api="api2", role="r2")
-        ]
+            APIAccess(api="api2", role="r2"),
+        ],
     )
     key.save()
     # Check
@@ -91,8 +92,8 @@ def test_apikey_access_expired():
         access=[
             APIAccess(api="api1", role="*"),
             APIAccess(api="api2", role="r1"),
-            APIAccess(api="api2", role="r2")
-        ]
+            APIAccess(api="api2", role="r2"),
+        ],
     )
     key.save()
     # Check

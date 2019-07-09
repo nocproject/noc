@@ -50,7 +50,7 @@ def get_model_id(object):
     """
     if isinstance(object._meta, dict):
         # Document
-        return u"%s.%s" % (object.__module__.split(".")[1], object.__class__.__name__)
+        return "%s.%s" % (object.__module__.split(".")[1], object.__class__.__name__)
     else:
         # Model
-        return u"%s.%s" % (object._meta.app_label, object._meta.object_name)
+        return "%s.%s" % (object._meta.app_label, object._meta.object_name)

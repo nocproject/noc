@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
@@ -60,12 +61,9 @@ def build_links():
             if pop1 and pop2 and pop1 != pop2:
                 if pop1.id > pop2.id:
                     pop1, pop2 = pop2, pop1
-                level = min(pop1.get_data("pop", "level"),
-                            pop2.get_data("pop", "level")) // 10
+                level = min(pop1.get_data("pop", "level"), pop2.get_data("pop", "level")) // 10
                 if (pop1, pop2) not in links:
-                    links[pop1, pop2] = {
-                        "level": level
-                    }
+                    links[pop1, pop2] = {"level": level}
     return links
 
 
@@ -97,8 +95,7 @@ def update_links():
     for pop1, pop2 in links:
         level = links[pop1, pop2]["level"]
         print("Linking %s - %s (level %d)" % (pop1, pop2, level))
-        pop1.connect_genderless("links", pop2, "links",
-                                {"level": level}, type="pop_link")
+        pop1.connect_genderless("links", pop2, "links", {"level": level}, type="pop_link")
 
 
 if __name__ == "__main__":

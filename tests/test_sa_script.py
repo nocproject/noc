@@ -8,8 +8,10 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.script.loader import loader
 from noc.core.interface.base import BaseInterface
@@ -62,6 +64,5 @@ def test_script_name(sa_script):
 @pytest.mark.dependency(depends=["script_loading"])
 def test_script_interface(sa_script):
     script = loader.get_script(sa_script)
-    assert getattr(script, "interface",
-                   None) is not None, "Script should has 'interface' attribute"
+    assert getattr(script, "interface", None) is not None, "Script should has 'interface' attribute"
     assert issubclass(script.interface, BaseInterface)

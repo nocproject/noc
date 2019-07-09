@@ -9,9 +9,11 @@
 # Python Modules
 import csv
 import subprocess
+
 # Third-party modules
 import six
 from django import forms
+
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
 from noc.core.ip import IP, IPv4
@@ -29,9 +31,11 @@ from noc.core.translation import ugettext as _
 class ToolsAppplication(Application):
     title = _("Tools")
 
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+?/\d+)/$",
-          url_name="index",
-          access=HasPerm("view"))
+    @view(
+        url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+?/\d+)/$",
+        url_name="index",
+        access=HasPerm("view"),
+    )
     def view_index(self, request, vrf_id, afi, prefix):
         """
         An index of tools available for block
@@ -42,18 +46,23 @@ class ToolsAppplication(Application):
         :return:
         """
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi,
-                                        prefix=prefix)
+        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denied"))
-        return self.render(request, "index.html", vrf=vrf, afi=afi,
-                           prefix=prefix,
-                           upload_ips_axfr_form=self.AXFRForm())
+        return self.render(
+            request,
+            "index.html",
+            vrf=vrf,
+            afi=afi,
+            prefix=prefix,
+            upload_ips_axfr_form=self.AXFRForm(),
+        )
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/download_ip/$",
         url_name="download_ip",
-        access=HasPerm("view"))
+        access=HasPerm("view"),
+    )
     def view_download_ip(self, request, vrf_id, afi, prefix):
         """
         Download block's allocated IPs in CSV format
@@ -72,39 +81,38 @@ class ToolsAppplication(Application):
                 return ""
 
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi,
-                                        prefix=prefix)
+        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denied"))
         out = six.StringIO()
         writer = csv.writer(out)
-        writer.writerow(
-            ["address", "fqdn", "mac", "description", "tt", "tags"])
+        writer.writerow(["address", "fqdn", "mac", "description", "tt", "tags"])
         for a in prefix.nested_address_set.order_by("address"):
-            writer.writerow(
-                [a.address, a.fqdn, a.mac, to_utf8(a.description), a.tt,
-                 a.tags])
-        return self.render_response(out.getvalue(),
-                                    content_type="text/csv")
+            writer.writerow([a.address, a.fqdn, a.mac, to_utf8(a.description), a.tt, a.tags])
+        return self.render_response(out.getvalue(), content_type="text/csv")
 
     class AXFRForm(NOCForm):
         """
         Zone import form
         """
-        ns = forms.CharField(label=_("NS"), help_text=_(
-            "Name server IP address. NS must have zone transfer enabled for NOC host"))
-        zone = forms.CharField(label=_("Zone"),
-                               help_text=_("DNS Zone name to transfer"))
+
+        ns = forms.CharField(
+            label=_("NS"),
+            help_text=_("Name server IP address. NS must have zone transfer enabled for NOC host"),
+        )
+        zone = forms.CharField(label=_("Zone"), help_text=_("DNS Zone name to transfer"))
         source_address = forms.GenericIPAddressField(
             label=_("Source Address"),
             required=False,
             protocol="IPv4",
-            help_text=_("Source address to issue zone transfer"))
+            help_text=_("Source address to issue zone transfer"),
+        )
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/upload_axfr/$",
         url_name="upload_axfr",
-        access=HasPerm("view"))
+        access=HasPerm("view"),
+    )
     def view_upload_axfr(self, request, vrf_id, afi, prefix):
         """
         Import via zone transfer
@@ -136,9 +144,7 @@ class ToolsAppplication(Application):
                 # To prevent uploading to not-owned blocks
                 if not p.contains(IPv4(ip)):
                     continue
-                a, changed = Address.objects.get_or_create(vrf=vrf,
-                                                           afi=afi,
-                                                           address=ip)
+                a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=ip)
                 if a.fqdn != fqdn:
                     a.fqdn = fqdn
                     changed = True
@@ -148,8 +154,7 @@ class ToolsAppplication(Application):
             return count
 
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi,
-                                        prefix=prefix)
+        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denined"))
         if request.POST:
@@ -159,21 +164,22 @@ class ToolsAppplication(Application):
                 if form.cleaned_data["source_address"]:
                     opts += ["-b", form.cleaned_data["source_address"]]
                 pipe = subprocess.Popen(
-                    [config.path.dig] + opts + [
-                        "axfr", "@%s" % form.cleaned_data["ns"], form.cleaned_data["zone"]],
-                    shell=False, stdout=subprocess.PIPE).stdout
+                    [config.path.dig]
+                    + opts
+                    + ["axfr", "@%s" % form.cleaned_data["ns"], form.cleaned_data["zone"]],
+                    shell=False,
+                    stdout=subprocess.PIPE,
+                ).stdout
                 data = pipe.read()
                 pipe.close()
                 count = upload_axfr(data.split("\n"))
                 self.message_user(
                     request,
-                    _("%(count)s IP addresses uploaded via zone transfer") % {"count": count}
+                    _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
                 )
-                return self.response_redirect("ip:ipam:vrf_index",
-                                              vrf.id, afi,
-                                              prefix.prefix)
+                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
         else:
             form = self.AXFRForm()
-        return self.render(request, "index.html", vrf=vrf, afi=afi,
-                           prefix=prefix,
-                           upload_ips_axfr_form=form)
+        return self.render(
+            request, "index.html", vrf=vrf, afi=afi, prefix=prefix, upload_ips_axfr_form=form
+        )

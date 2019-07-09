@@ -17,6 +17,7 @@ class MetricTypeApplication(ExtDocApplication):
     """
     MetricType application
     """
+
     title = _("Metric Type")
     menu = [_("Setup"), _("Metric Types")]
     model = MetricType

@@ -18,14 +18,16 @@ class ReportreportDBSummary(SimpleReport):
         return self.from_query(
             title=self.title,
             columns=[
-                "Table", "Tablespace",
+                "Table",
+                "Tablespace",
                 TableColumn("Pages", align="right", format="integer", total="sum"),
                 TableColumn("Records", align="right", format="integer", total="sum"),
-                TableColumn("Size", align="right", format="size", total="sum")
+                TableColumn("Size", align="right", format="size", total="sum"),
             ],
             query="""
             SELECT c.relname,t.spcname,c.relpages,c.reltuples,c.relpages*8192
             FROM pg_class c LEFT JOIN pg_tablespace t ON (t.oid=c.reltablespace)
             WHERE c.relkind='r' AND c.relname NOT LIKE 'pg_%%' AND c.relname NOT LIKE 'sql_%%'
             ORDER BY c.relpages DESC,c.reltuples DESC
-            """)
+            """,
+        )

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
@@ -30,8 +31,4 @@ class VRFCard(BaseCard):
             ipv6_prefix = ipv6_prefix[0]
         else:
             ipv6_prefix = None
-        return {
-            "object": self.object,
-            "ipv4_prefix": ipv4_prefix,
-            "ipv6_prefix": ipv6_prefix
-        }
+        return {"object": self.object, "ipv4_prefix": ipv4_prefix, "ipv6_prefix": ipv6_prefix}

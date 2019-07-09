@@ -28,12 +28,13 @@ def get_model_id(object):
     """
     if is_document(object):
         # Document
-        return u"%s.%s" % (object.__module__.split(".")[1],
-                           object._class_name)
+        return "%s.%s" % (object.__module__.split(".")[1], object._class_name)
     else:
         # Model
-        return u"%s.%s" % (object._meta.app_label if object._meta.app_label != "auth" else "main",
-                           object._meta.object_name)
+        return "%s.%s" % (
+            object._meta.app_label if object._meta.app_label != "auth" else "main",
+            object._meta.object_name,
+        )
 
 
 def get_model(model_id):
@@ -319,16 +320,10 @@ _MODELS = {
     # wf models
     "wf.Workflow": "noc.wf.models.workflow.Workflow",
     "wf.State": "noc.wf.models.state.State",
-    "wf.Transition": "noc.wf.models.transition.Transition"
+    "wf.Transition": "noc.wf.models.transition.Transition",
 }
 
-FTS_MODELS = [
-    "ip.Address",
-    "ip.Prefix",
-    "ip.VRF",
-    "vc.VC",
-    "sa.ManagedObject"
-]
+FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "vc.VC", "sa.ManagedObject"]
 
 COLLECTIONS = [
     "fm.SyntaxAlias",
@@ -360,5 +355,5 @@ COLLECTIONS = [
     "fm.EventClassificationRule",
     "fm.CloneClassificationRule",
     "sa.ProfileCheckRule",
-    "bi.DashboardLayout"
+    "bi.DashboardLayout",
 ]

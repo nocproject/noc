@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # Third-party modules
 import jinja2
+
 # NOC modules
 from .base import BaseCard
 from noc.maintenance.models.maintenance import Maintenance
@@ -41,21 +43,20 @@ class MaintenanceCard(BaseCard):
             status = "progress"
         # Calculate affected objects
         affected = []
-        summary = {
-            "service": {},
-            "subscriber": {}
-        }
+        summary = {"service": {}, "subscriber": {}}
         for ao in self.object.affected_objects:
             mo = ao.object
             ss = ServiceSummary.get_object_summary(mo)
-            affected += [{
-                "id": mo.id,
-                "object": mo,
-                "name": mo.name,
-                "address": mo.address,
-                "platform": mo.platform,
-                "summary": ss
-            }]
+            affected += [
+                {
+                    "id": mo.id,
+                    "object": mo,
+                    "name": mo.name,
+                    "address": mo.address,
+                    "platform": mo.platform,
+                    "summary": ss,
+                }
+            ]
             update_dict(summary["service"], ss.get("service", {}))
             update_dict(summary["subscriber"], ss.get("subscriber", {}))
         #
@@ -69,5 +70,5 @@ class MaintenanceCard(BaseCard):
             "description": self.object.description,
             "status": status,
             "affected": affected,
-            "summary": summary
+            "summary": summary,
         }

@@ -28,7 +28,7 @@ class Context(EmbeddedDocument):
     reset_scopes = ListField(StringField())
 
     def __str__(self):
-        return u"%s, %s" % (self.type, self.scope)
+        return "%s, %s" % (self.type, self.scope)
 
     def __eq__(self, other):
         return (

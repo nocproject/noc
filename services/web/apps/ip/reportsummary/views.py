@@ -8,24 +8,22 @@
 
 # Python Modules
 import math
+
 # Django Modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
-from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
-                                ValidationError)
+from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP
 
 
 class ReportForm(forms.Form):
-    vrf = forms.ModelChoiceField(
-        label=_("VRF"),
-        queryset=VRF.objects.all().order_by("name"))
-    afi = forms.ChoiceField(label=_("Address Family"),
-                            choices=[("4", _("IPv4"))])
+    vrf = forms.ModelChoiceField(label=_("VRF"), queryset=VRF.objects.all().order_by("name"))
+    afi = forms.ChoiceField(label=_("Address Family"), choices=[("4", _("IPv4"))])
     prefix = forms.CharField(label=_("Prefix"))
 
     def clean_prefix(self):
@@ -58,32 +56,26 @@ class ReportSummary(SimpleReport):
             free_size = sum([a.size for a in free])
             total = p.size
             data = [
-                ("Allocated addresses", allocated_size,
-                 float(allocated_size) * 100 / float(total)),
-                (".... in /30", allocated_30_size,
-                 float(allocated_30_size) * 100 / float(total)),
-                ("Free addresses", free_size,
-                 float(free_size) * 100 / float(total)),
-                ("Total addresses", total, 1.0)
+                ("Allocated addresses", allocated_size, float(allocated_size) * 100 / float(total)),
+                (".... in /30", allocated_30_size, float(allocated_30_size) * 100 / float(total)),
+                ("Free addresses", free_size, float(free_size) * 100 / float(total)),
+                ("Total addresses", total, 1.0),
             ]
             a_s = len(allocated)
             if a_s:
                 avg_allocated_size = allocated_size / a_s
-                avg_allocated_mask = 32 - int(
-                    math.ceil(math.log(avg_allocated_size, 2)))
+                avg_allocated_mask = 32 - int(math.ceil(math.log(avg_allocated_size, 2)))
                 data += [
                     ("Average allocated block", avg_allocated_size, ""),
-                    ("Average allocated mask", avg_allocated_mask, "")
+                    ("Average allocated mask", avg_allocated_mask, ""),
                 ]
             return self.from_dataset(
-                title=_("Summary for VRF %(vrf)s (IPv%(afi)s): %(prefix)s") % {
-                    "vrf": vrf.name,
-                    "afi": afi,
-                    "prefix": p.prefix
-                },
-                columns=["",
-                         TableColumn(_("Size"),
-                                     format="numeric", align="right"),
-                         TableColumn(_("%"), format="percent", align="right")],
-                data=data
+                title=_("Summary for VRF %(vrf)s (IPv%(afi)s): %(prefix)s")
+                % {"vrf": vrf.name, "afi": afi, "prefix": p.prefix},
+                columns=[
+                    "",
+                    TableColumn(_("Size"), format="numeric", align="right"),
+                    TableColumn(_("%"), format="percent", align="right"),
+                ],
+                data=data,
             )

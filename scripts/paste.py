@@ -12,6 +12,7 @@ from __future__ import print_function
 import logging
 from optparse import OptionParser
 import sys
+
 # NOC modules
 from noc.support.cp import CPClient
 
@@ -63,12 +64,13 @@ def parse_ttl(ttl):
 
 def main():
     parser = OptionParser()
-    parser.add_option("--public", dest="public", action="store_true",
-                      default=False, help="Create public paste"),
-    parser.add_option("-s", "--subject", dest="subject", action="store",
-                      help="Create paste subject")
-    parser.add_option("-e", "--expire", dest="expire", action="store",
-                      help="Set expiration time")
+    parser.add_option(
+        "--public", dest="public", action="store_true", default=False, help="Create public paste"
+    ),
+    parser.add_option(
+        "-s", "--subject", dest="subject", action="store", help="Create paste subject"
+    )
+    parser.add_option("-e", "--expire", dest="expire", action="store", help="Set expiration time")
     parser.add_option("-q", "--quiet", dest="quiet", action="store_true")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true")
     options, args = parser.parse_args()
@@ -90,13 +92,15 @@ def main():
         data = "".join(data)
     else:
         data = sys.stdin.read()
-    print(cp.create_paste(
-        subject=options.subject,
-        data=data,
-        syntax=None,
-        ttl=parse_ttl(options.expire),
-        public=bool(options.public)
-    )["url"])
+    print(
+        cp.create_paste(
+            subject=options.subject,
+            data=data,
+            syntax=None,
+            ttl=parse_ttl(options.expire),
+            public=bool(options.public),
+        )["url"]
+    )
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import random
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.aaa.models.user import User
@@ -22,37 +23,19 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # extract command
         user_create = subparsers.add_parser("add")
-        user_create.add_argument("--username",
-                                 dest="username",
-                                 action="store",
-                                 help="User name"
-                                 ),
-        user_create.add_argument("--email",
-                                 dest="email",
-                                 action="store",
-                                 help="Email"
-                                 ),
-        user_create.add_argument("--template",
-                                 dest="template",
-                                 action="append",
-                                 help="Apply template"
-                                 ),
-        user_create.add_argument("--pwgen",
-                                 dest="pwgen",
-                                 action="store_true",
-                                 help="Generate random password"
-                                 ),
+        user_create.add_argument("--username", dest="username", action="store", help="User name"),
+        user_create.add_argument("--email", dest="email", action="store", help="Email"),
+        user_create.add_argument(
+            "--template", dest="template", action="append", help="Apply template"
+        ),
+        user_create.add_argument(
+            "--pwgen", dest="pwgen", action="store_true", help="Generate random password"
+        ),
 
-    pwset = "abcdefghijklmnopqrstuvwxyz" \
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-            "1234567890"
+    pwset = "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "1234567890"
     PWLEN = 12
 
-    TEMPLATES = {
-        "probe": [
-            "pm:probe:config"
-        ]
-    }
+    TEMPLATES = {"probe": ["pm:probe:config"]}
 
     def out(self, msg):
         if not self.verbose_level:
@@ -68,8 +51,7 @@ class Command(BaseCommand):
         if "email" not in options:
             raise CommandError("Email is not set")
         if "pwgen" in options:
-            passwd = "".join(random.choice(self.pwset)
-                             for _ in range(self.PWLEN))
+            passwd = "".join(random.choice(self.pwset) for _ in range(self.PWLEN))
         else:
             passwd = None
         if not passwd:
@@ -84,11 +66,7 @@ class Command(BaseCommand):
         if not permissions:
             raise CommandError("No permissions set")
         # Create user
-        u = User(
-            username=options["username"],
-            email=options["email"],
-            is_active=True
-        )
+        u = User(username=options["username"], email=options["email"], is_active=True)
         u.set_password(passwd)
         u.save()
         for p in permissions:

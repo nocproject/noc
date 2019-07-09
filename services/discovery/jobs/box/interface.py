@@ -8,8 +8,10 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.lib.text import ranges_to_list
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
@@ -27,6 +29,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     """
     Version discovery
     """
+
     name = "interface"
     required_script = "get_interfaces"
 
@@ -77,7 +80,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 type=fi["type"],
                 rd=fi.get("rd"),
                 vr=fi.get("vr"),
-                vpn_id=vpn_id
+                vpn_id=vpn_id,
             )
             # Move LAG members to the end
             # for effective caching
@@ -90,19 +93,21 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     agg = icache.get(i["aggregated_interface"])
                     if not agg:
                         self.logger.error(
-                            "Cannot find aggregated interface '%s'. "
-                            "Skipping %s",
-                            i["aggregated_interface"], i["name"]
+                            "Cannot find aggregated interface '%s'. " "Skipping %s",
+                            i["aggregated_interface"],
+                            i["name"],
                         )
                         continue
                 # Submit discovered interface
                 mac = i.get("mac")
                 iface = self.submit_interface(
-                    name=i["name"], type=i["type"], mac=mac,
+                    name=i["name"],
+                    type=i["type"],
+                    mac=mac,
                     description=i.get("description"),
                     aggregated_interface=agg,
                     enabled_protocols=i.get("enabled_protocols", []),
-                    ifindex=i.get("snmp_ifindex")
+                    ifindex=i.get("snmp_ifindex"),
                 )
                 icache[i["name"]] = iface
                 # Submit subinterfaces
@@ -124,25 +129,26 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                         untagged_vlan=si.get("untagged_vlan"),
                         tagged_vlans=si.get("tagged_vlans", []),
                         # ip_unnumbered_subinterface
-                        ifindex=si.get("snmp_ifindex")
+                        ifindex=si.get("snmp_ifindex"),
                     )
                     addresses = si.get("ipv4_addresses", []) + si.get("ipv6_addresses", [])
                     if addresses:
                         rd = forwarding_instance.rd if forwarding_instance else "0:0"
                         for a in addresses:
-                            self.interface_prefix_artefact += [{
-                                "vpn_id": vpn_id,
-                                "rd": rd,
-                                "address": a,
-                                "subinterface": si["name"],
-                                "description": si.get("description"),
-                                "mac": mac,
-                                "vlan_ids": si.get("vlan_ids", [])
-                            }]
+                            self.interface_prefix_artefact += [
+                                {
+                                    "vpn_id": vpn_id,
+                                    "rd": rd,
+                                    "address": a,
+                                    "subinterface": si["name"],
+                                    "description": si.get("description"),
+                                    "mac": mac,
+                                    "vlan_ids": si.get("vlan_ids", []),
+                                }
+                            ]
                 # Delete hanging subinterfaces
                 self.cleanup_subinterfaces(
-                    forwarding_instance, iface,
-                    [si["name"] for si in i["subinterfaces"]]
+                    forwarding_instance, iface, [si["name"] for si in i["subinterfaces"]]
                 )
                 # Perform interface classification
                 self.interface_classification(iface)
@@ -151,15 +157,12 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         # Delete hanging interfaces
         self.cleanup_interfaces(self.seen_interfaces)
         # Delete hanging forwarding instances
-        self.cleanup_forwarding_instances(
-            fi["forwarding_instance"] for fi in result
-        )
+        self.cleanup_forwarding_instances(fi["forwarding_instance"] for fi in result)
         self.resolve_ifindexes()
-        self.update_caps({
-            "DB | Interfaces": Interface.objects.filter(
-                managed_object=self.object.id
-            ).count()
-        }, source="interface")
+        self.update_caps(
+            {"DB | Interfaces": Interface.objects.filter(managed_object=self.object.id).count()},
+            source="interface",
+        )
         self.set_artefact("interface_macs", self.interface_macs)
         self.set_artefact("interface_vpn", self.vrf_artefact)
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
@@ -168,63 +171,49 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         if name == "default":
             return None
         forwarding_instance = ForwardingInstance.objects.filter(
-            managed_object=self.object.id,
-            name=name
+            managed_object=self.object.id, name=name
         ).first()
         if forwarding_instance:
             changes = self.update_if_changed(
-                forwarding_instance, {
-                    "type": type,
-                    "name": name,
-                    "rd": rd
-                }
+                forwarding_instance, {"type": type, "name": name, "rd": rd}
             )
-            self.log_changes(
-                "Forwarding instance '%s' has been changed" % name,
-                changes
-            )
+            self.log_changes("Forwarding instance '%s' has been changed" % name, changes)
         else:
-            self.logger.info(
-                "Create forwarding instance '%s' (%s)",
-                name,
-                type
-            )
+            self.logger.info("Create forwarding instance '%s' (%s)", name, type)
             forwarding_instance = ForwardingInstance(
-                managed_object=self.object.id,
-                name=name,
-                type=type,
-                rd=rd,
-                virtual_router=vr
+                managed_object=self.object.id, name=name, type=type, rd=rd, virtual_router=vr
             )
             forwarding_instance.save()
-        self.vrf_artefact[name] = {
-            "name": name,
-            "type": type,
-            "rd": rd,
-            "vpn_id": vpn_id
-        }
+        self.vrf_artefact[name] = {"name": name, "type": type, "rd": rd, "vpn_id": vpn_id}
         return forwarding_instance
 
-    def submit_interface(self, name, type,
-                         mac=None, description=None,
-                         aggregated_interface=None,
-                         enabled_protocols=None,
-                         ifindex=None
-                         ):
+    def submit_interface(
+        self,
+        name,
+        type,
+        mac=None,
+        description=None,
+        aggregated_interface=None,
+        enabled_protocols=None,
+        ifindex=None,
+    ):
         enabled_protocols = enabled_protocols or []
         iface = self.get_interface_by_name(name)
         if iface:
             # Interface exists
-            changes = self.update_if_changed(iface, {
-                "type": type,
-                "mac": mac,
-                "description": description,
-                "aggregated_interface": aggregated_interface,
-                "enabled_protocols": enabled_protocols,
-                "ifindex": ifindex
-            }, ignore_empty=["ifindex"])
-            self.log_changes("Interface '%s' has been changed" % name,
-                             changes)
+            changes = self.update_if_changed(
+                iface,
+                {
+                    "type": type,
+                    "mac": mac,
+                    "description": description,
+                    "aggregated_interface": aggregated_interface,
+                    "enabled_protocols": enabled_protocols,
+                    "ifindex": ifindex,
+                },
+                ignore_empty=["ifindex"],
+            )
+            self.log_changes("Interface '%s' has been changed" % name, changes)
         else:
             # Create interface
             self.logger.info("Creating interface '%s'", name)
@@ -236,7 +225,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 description=description,
                 aggregated_interface=aggregated_interface,
                 enabled_protocols=enabled_protocols,
-                ifindex=ifindex
+                ifindex=ifindex,
             )
             iface.save()
             self.set_interface(name, iface)
@@ -244,38 +233,50 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             self.interface_macs.add(mac)
         return iface
 
-    def submit_subinterface(self, forwarding_instance, interface,
-                            name, description=None, mac=None,
-                            vlan_ids=None,
-                            enabled_afi=[],
-                            ipv4_addresses=[], ipv6_addresses=[],
-                            iso_addresses=[], vpi=None, vci=None,
-                            enabled_protocols=[],
-                            untagged_vlan=None, tagged_vlans=[],
-                            ifindex=None):
+    def submit_subinterface(
+        self,
+        forwarding_instance,
+        interface,
+        name,
+        description=None,
+        mac=None,
+        vlan_ids=None,
+        enabled_afi=[],
+        ipv4_addresses=[],
+        ipv6_addresses=[],
+        iso_addresses=[],
+        vpi=None,
+        vci=None,
+        enabled_protocols=[],
+        untagged_vlan=None,
+        tagged_vlans=[],
+        ifindex=None,
+    ):
         mac = mac or interface.mac
         si = self.get_subinterface(interface, name)
         if si:
-            changes = self.update_if_changed(si, {
-                "forwarding_instance": forwarding_instance,
-                "description": description,
-                "mac": mac,
-                "vlan_ids": vlan_ids,
-                "enabled_afi": enabled_afi,
-                "ipv4_addresses": ipv4_addresses,
-                "ipv6_addresses": ipv6_addresses,
-                "iso_addresses": iso_addresses,
-                "vpi": vpi,
-                "vci": vci,
-                "enabled_protocols": enabled_protocols,
-                "untagged_vlan": untagged_vlan,
-                "tagged_vlans": tagged_vlans,
-                # ip_unnumbered_subinterface
-                "ifindex": ifindex
-            }, ignore_empty=["ifindex"])
-            self.log_changes(
-                "Subinterface '%s' has been changed" % name,
-                changes)
+            changes = self.update_if_changed(
+                si,
+                {
+                    "forwarding_instance": forwarding_instance,
+                    "description": description,
+                    "mac": mac,
+                    "vlan_ids": vlan_ids,
+                    "enabled_afi": enabled_afi,
+                    "ipv4_addresses": ipv4_addresses,
+                    "ipv6_addresses": ipv6_addresses,
+                    "iso_addresses": iso_addresses,
+                    "vpi": vpi,
+                    "vci": vci,
+                    "enabled_protocols": enabled_protocols,
+                    "untagged_vlan": untagged_vlan,
+                    "tagged_vlans": tagged_vlans,
+                    # ip_unnumbered_subinterface
+                    "ifindex": ifindex,
+                },
+                ignore_empty=["ifindex"],
+            )
+            self.log_changes("Subinterface '%s' has been changed" % name, changes)
         else:
             self.logger.info("Creating subinterface '%s'", name)
             si = SubInterface(
@@ -295,7 +296,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 enabled_protocols=enabled_protocols,
                 untagged_vlan=untagged_vlan,
                 tagged_vlans=tagged_vlans,
-                ifindex=ifindex
+                ifindex=ifindex,
             )
             si.save()
         if mac:
@@ -309,14 +310,12 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         :return:
         """
         db_fi = set(
-            i["name"] for i in
-            ForwardingInstance.objects.filter(
-                managed_object=self.object.id).only("name"))
+            i["name"]
+            for i in ForwardingInstance.objects.filter(managed_object=self.object.id).only("name")
+        )
         for i in db_fi - set(fi):
             self.logger.info("Removing forwarding instance %s", i)
-            for dfi in ForwardingInstance.objects.filter(
-                managed_object=self.object.id, name=i
-            ):
+            for dfi in ForwardingInstance.objects.filter(managed_object=self.object.id, name=i):
                 dfi.delete()
 
     def cleanup_interfaces(self, interfaces):
@@ -326,18 +325,15 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         :return:
         """
         db_iface = set(
-            i["name"] for i in
-            Interface.objects.filter(
-                managed_object=self.object.id).only("name"))
+            i["name"] for i in Interface.objects.filter(managed_object=self.object.id).only("name")
+        )
         for i in db_iface - set(interfaces):
             self.logger.info("Removing interface %s", i)
-            di = Interface.objects.filter(
-                managed_object=self.object.id, name=i).first()
+            di = Interface.objects.filter(managed_object=self.object.id, name=i).first()
             if di:
                 di.delete()
 
-    def cleanup_subinterfaces(self, forwarding_instance, interface,
-                              subinterfaces):
+    def cleanup_subinterfaces(self, forwarding_instance, interface, subinterfaces):
         """
         Delete hanging subinterfaces
         :return:
@@ -347,17 +343,14 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         else:
             fi = None
         qs = SubInterface.objects.filter(
-            managed_object=self.object.id,
-            interface=interface.id,
-            forwarding_instance=fi
+            managed_object=self.object.id, interface=interface.id, forwarding_instance=fi
         )
         db_siface = set(i["name"] for i in qs.only("name"))
         for i in db_siface - set(subinterfaces):
             self.logger.info("Removing subinterface %s" % i)
             dsi = SubInterface.objects.filter(
-                managed_object=self.object.id,
-                interface=interface.id,
-                name=i).first()
+                managed_object=self.object.id, interface=interface.id, name=i
+            ).first()
             if dsi:
                 dsi.delete()
 
@@ -372,24 +365,21 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         try:
             p_id = self.get_interface_profile(iface)
         except NotImplementedError:
-            self.logger.error(
-                "Uses not implemented rule"
-            )
+            self.logger.error("Uses not implemented rule")
             return
         if p_id and p_id != iface.profile.id:
             # Change profile
             profile = InterfaceProfile.get_by_id(p_id)
             if not profile:
                 self.logger.error(
-                    "Invalid interface profile '%s' for interface '%s'. "
-                    "Skipping",
-                    p_id, iface.name
+                    "Invalid interface profile '%s' for interface '%s'. " "Skipping",
+                    p_id,
+                    iface.name,
                 )
                 return
             elif profile != iface.profile:
                 self.logger.info(
-                    "Interface %s has been classified as '%s'",
-                    iface.name, profile.name
+                    "Interface %s has been classified as '%s'", iface.name, profile.name
                 )
                 iface.profile = profile
                 iface.save()
@@ -402,19 +392,18 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             self.logger.info("Cannot resolve ifindexes due to policy")
             return
         missed_ifindexes = [
-            n[1] for n in self.if_name_cache
-            if (n in self.if_name_cache and
-                self.if_name_cache[n] and
-                self.if_name_cache[n].ifindex is None and
-                self.if_name_cache[n].type in ("physical", "aggregated")
-                )
+            n[1]
+            for n in self.if_name_cache
+            if (
+                n in self.if_name_cache
+                and self.if_name_cache[n]
+                and self.if_name_cache[n].ifindex is None
+                and self.if_name_cache[n].type in ("physical", "aggregated")
+            )
         ]
         if not missed_ifindexes:
             return
-        self.logger.info(
-            "Missed ifindexes for: %s",
-            ", ".join(missed_ifindexes)
-        )
+        self.logger.info("Missed ifindexes for: %s", ", ".join(missed_ifindexes))
         try:
             r = self.object.scripts.get_ifindexes()
         except RPCError:
@@ -457,12 +446,16 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 if vrfs and (d["vr"], d["instance"]) in vrfs:
                     try:
                         vrf = vrfs[d["vr"], d["instance"]]
-                        r["vpn_id"] = get_vpn_id({
-                            "name": vrf["instance"],
-                            "rd": vrf.get("rd"),
-                            "rt_export": vrf.get("rt_export", []),
-                            "type": vrf["type"].upper() if vrf["type"] in ["vrf", "vpls"] else vrf["type"]
-                        })
+                        r["vpn_id"] = get_vpn_id(
+                            {
+                                "name": vrf["instance"],
+                                "rd": vrf.get("rd"),
+                                "rt_export": vrf.get("rt_export", []),
+                                "type": vrf["type"].upper()
+                                if vrf["type"] in ["vrf", "vpls"]
+                                else vrf["type"],
+                            }
+                        )
                     except ValueError:
                         pass
             if "interfaces" not in r:
@@ -475,7 +468,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "name": if_name,
                     "type": p_iface.get("type", "unknown") if p_iface else "unknown",
                     "admin_status": False,
-                    "subinterfaces": {}
+                    "subinterfaces": {},
                 }
                 r["interfaces"][if_name] = iface
                 if p_iface:
@@ -485,10 +478,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                         iface["admin_status"] = p_iface["admin_status"] == "on"
             unit = iface["subinterfaces"].get(d["unit"])
             if unit is None:
-                unit = {
-                    "name": d["unit"],
-                    "enabled_afi": []
-                }
+                unit = {"name": d["unit"], "enabled_afi": []}
                 iface["subinterfaces"][d["unit"]] = unit
             unit = iface["subinterfaces"][d["unit"]]
             description = d.get("description")

@@ -10,8 +10,10 @@
 from __future__ import print_function
 import os
 import inspect
+
 # Third-party modules
 from six.moves.configparser import SafeConfigParser
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.gis.parsers.address.base import AddressParser
@@ -22,21 +24,12 @@ class Command(BaseCommand):
     help = "Update address database"
 
     def add_arguments(self, parser):
-        parser.add_argument("--no-download",
-                            dest="download",
-                            action="store_false"),
-        parser.add_argument("--download",
-                            dest="download",
-                            action="store_true",
-                            default=True),
-        parser.add_argument("--no-reset-cache",
-                            dest="reset_cache",
-                            action="store_false",
-                            default=False),
-        parser.add_argument("--reset-cache",
-                            dest="reset_cache",
-                            action="store_true",
-                            default=True)
+        parser.add_argument("--no-download", dest="download", action="store_false"),
+        parser.add_argument("--download", dest="download", action="store_true", default=True),
+        parser.add_argument(
+            "--no-reset-cache", dest="reset_cache", action="store_false", default=False
+        ),
+        parser.add_argument("--reset-cache", dest="reset_cache", action="store_true", default=True)
 
     @staticmethod
     def get_parsers():

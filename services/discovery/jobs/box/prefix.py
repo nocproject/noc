@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import namedtuple, defaultdict
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.ip.models.vrf import VRF
@@ -17,16 +18,10 @@ from noc.core.handler import get_handler
 from noc.core.ip import IP
 
 
-DiscoveredPrefix = namedtuple("DiscoveredPrefix", [
-    "vpn_id",
-    "prefix",
-    "profile",
-    "description",
-    "source",
-    "subinterface",
-    "vlan",
-    "asn"
-])
+DiscoveredPrefix = namedtuple(
+    "DiscoveredPrefix",
+    ["vpn_id", "prefix", "profile", "description", "source", "subinterface", "vlan", "asn"],
+)
 
 GLOBAL_VRF = "0:0"
 SRC_INTERFACE = "i"
@@ -34,12 +29,7 @@ SRC_NEIGHBOR = "n"
 SRC_WHOIS_ROUTE = "w"
 SRC_MANUAL = "M"
 
-PREF_VALUE = {
-    SRC_NEIGHBOR: 0,
-    SRC_WHOIS_ROUTE: 1,
-    SRC_INTERFACE: 2,
-    SRC_MANUAL: 3
-}
+PREF_VALUE = {SRC_NEIGHBOR: 0, SRC_WHOIS_ROUTE: 1, SRC_INTERFACE: 2, SRC_MANUAL: 3}
 
 LOCAL_SRC = {SRC_INTERFACE}
 
@@ -61,10 +51,7 @@ class PrefixCheck(DiscoveryCheck):
         prefixes = {}
         # Apply interface prefixes
         if self.object.object_profile.enable_box_discovery_prefix_interface:
-            prefixes = self.apply_prefixes(
-                prefixes,
-                self.get_interface_prefixes()
-            )
+            prefixes = self.apply_prefixes(prefixes, self.get_interface_prefixes())
         return prefixes
 
     def sync_prefixes(self, prefixes):
@@ -86,7 +73,9 @@ class PrefixCheck(DiscoveryCheck):
                 vrfs[vpn_id] = vrf
         missed_vpn_id = set(vrf_prefixes) - set(vrfs)
         if missed_vpn_id:
-            self.logger.info("RD missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id))
+            self.logger.info(
+                "RD missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id)
+            )
         #
         self.logger.debug("Getting prefixes to synchronize")
         for vpn_id in vrfs:
@@ -133,6 +122,7 @@ class PrefixCheck(DiscoveryCheck):
         Get prefixes from interface discovery artifact
         :return:
         """
+
         def get_vlan(data):
             vlans = data.get("vlan_ids")
             if vlans and len(vlans) == 1:
@@ -141,7 +131,9 @@ class PrefixCheck(DiscoveryCheck):
 
         self.logger.debug("Getting interface prefixes")
         if not self.object.object_profile.prefix_profile_interface:
-            self.logger.info("Default interface prefix profile is not set. Skipping interface prefix discovery")
+            self.logger.info(
+                "Default interface prefix profile is not set. Skipping interface prefix discovery"
+            )
             return []
         prefixes = self.get_artefact("interface_prefix")
         if not prefixes:
@@ -156,8 +148,9 @@ class PrefixCheck(DiscoveryCheck):
                 description=p["description"],
                 subinterface=p["subinterface"],
                 vlan=get_vlan(p),
-                asn=None
-            ) for p in prefixes
+                asn=None,
+            )
+            for p in prefixes
         ]
 
     @staticmethod
@@ -187,7 +180,7 @@ class PrefixCheck(DiscoveryCheck):
                 "Do not creating vpn_id=%s asn=%s prefix=%s: Disabled by policy",
                 prefix.vpn_id,
                 prefix.asn.asn if prefix.asn else None,
-                prefix.prefix
+                prefix.prefix,
             )
             metrics["prefix_creation_denied"] += 1
             return
@@ -198,13 +191,15 @@ class PrefixCheck(DiscoveryCheck):
             profile=prefix.profile,
             asn=prefix.asn,
             description=prefix.description,
-            source=prefix.source
+            source=prefix.source,
         )
         self.logger.info(
             "Creating prefix %s (%s): name=%s profile=%s source=%s",
-            p.prefix, p.vrf.name,
-            p.name, p.profile.name,
-            p.source
+            p.prefix,
+            p.vrf.name,
+            p.name,
+            p.profile.name,
+            p.source,
         )
         p.save()
         self.fire_seen(p)
@@ -231,24 +226,28 @@ class PrefixCheck(DiscoveryCheck):
                     changes += ["name: %s -> %s" % (prefix.name, name)]
                     prefix.name = name
             if discovered_prefix.asn and prefix.asn != discovered_prefix.asn:
-                changes += ["asn: %s -> %s" % (
-                    prefix.asn.asn if prefix.asn else None,
-                    discovered_prefix.asn.asn if discovered_prefix.asn else None
-                )]
+                changes += [
+                    "asn: %s -> %s"
+                    % (
+                        prefix.asn.asn if prefix.asn else None,
+                        discovered_prefix.asn.asn if discovered_prefix.asn else None,
+                    )
+                ]
                 prefix.asn = prefix.asn
             if changes:
                 self.logger.info(
                     "Changing %s (%s): %s",
                     prefix.prefix,
                     discovered_prefix.vpn_id,
-                    ", ".join(changes)
+                    ", ".join(changes),
                 )
                 prefix.save()
                 metrics["prefix_updated"] += 1
         else:
             self.logger.debug(
                 "Do not updating vpn_id=%s prefix=%s. Source level too low",
-                discovered_prefix.prefix, discovered_prefix.vpn_id
+                discovered_prefix.prefix,
+                discovered_prefix.vpn_id,
             )
             metrics["prefix_update_denied"] += 1
         self.fire_seen(prefix)
@@ -260,11 +259,7 @@ class PrefixCheck(DiscoveryCheck):
         :param prefix: DiscoveredPrefix instance
         :return:
         """
-        parent = Prefix.get_parent(
-            vrf,
-            "6" if ":" in prefix.prefix else "4",
-            prefix.prefix
-        )
+        parent = Prefix.get_parent(vrf, "6" if ":" in prefix.prefix else "4", prefix.prefix)
         if parent:
             return parent.effective_prefix_discovery == "E"
         return False
@@ -276,9 +271,7 @@ class PrefixCheck(DiscoveryCheck):
         :return: Rendered name
         """
         if prefix.profile.name_template:
-            name = prefix.profile.name_template.render_subject(
-                **self.get_template_context(prefix)
-            )
+            name = prefix.profile.name_template.render_subject(**self.get_template_context(prefix))
             return self.strip(name)
         return prefix.prefix
 
@@ -287,11 +280,7 @@ class PrefixCheck(DiscoveryCheck):
         return s.replace("\n", "").strip()
 
     def get_template_context(self, prefix):
-        return {
-            "prefix": prefix,
-            "get_handler": get_handler,
-            "object": self.object
-        }
+        return {"prefix": prefix, "get_handler": get_handler, "object": self.object}
 
     @staticmethod
     def is_enabled_for_object(object):
@@ -324,9 +313,9 @@ class PrefixCheck(DiscoveryCheck):
         :return: Boolean
         """
         return (
-            prefix.prefix.startswith("127.") or
-            prefix.prefix.startswith("169.254.") or
-            prefix.prefix.startswith("fe80:")
+            prefix.prefix.startswith("127.")
+            or prefix.prefix.startswith("169.254.")
+            or prefix.prefix.startswith("fe80:")
         )
 
     def fire_seen(self, prefix):
@@ -339,6 +328,9 @@ class PrefixCheck(DiscoveryCheck):
             return  # Already processed
         prefix.fire_event("seen")
         self.propagated_prefixes.add(prefix.id)
-        if (prefix.profile.seen_propagation_policy == "P" and
-                prefix.parent and prefix.parent.profile.seen_propagation_policy != "D"):
+        if (
+            prefix.profile.seen_propagation_policy == "P"
+            and prefix.parent
+            and prefix.parent.profile.seen_propagation_policy != "D"
+        ):
             self.fire_seen(prefix.parent)

@@ -8,6 +8,7 @@
 
 # Third-party modules
 import tornado.gen
+
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
@@ -23,23 +24,27 @@ class ActivatorAPI(API):
     """
     Monitoring API
     """
+
     name = "activator"
 
     HTTP_CLIENT_DEFAULTS = dict(
         connect_timeout=config.activator.http_connect_timeout,
-        request_timeout=config.activator.http_request_timeout
+        request_timeout=config.activator.http_request_timeout,
     )
 
     @api
     @executor("script")
-    def script(self, name, credentials,
-               capabilities=None,
-               version=None,
-               args=None,
-               timeout=None,
-               session=None,
-               session_idle_timeout=None,
-               ):
+    def script(
+        self,
+        name,
+        credentials,
+        capabilities=None,
+        version=None,
+        args=None,
+        timeout=None,
+        session=None,
+        session_idle_timeout=None,
+    ):
         """
         Execute SA script
         :param name: Script name (with profile)
@@ -74,7 +79,7 @@ class ActivatorAPI(API):
             timeout=timeout,
             name=name,
             session=session,
-            session_idle_timeout=session_idle_timeout
+            session_idle_timeout=session_idle_timeout,
         )
         try:
             result = script.run()
@@ -105,15 +110,13 @@ class ActivatorAPI(API):
                 community=community,
                 version=SNMP_v1,
                 tos=config.activator.tos,
-                ioloop=self.service.ioloop
+                ioloop=self.service.ioloop,
             )
-            self.logger.debug("SNMP GET %s %s returns %s",
-                              address, oid, result)
+            self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
         except SNMPError as e:
             metrics["error", ("type", "snmp_v1_error")] += 1
             result = None
-            self.logger.debug("SNMP GET %s %s returns error %s",
-                              address, oid, e)
+            self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
         raise tornado.gen.Return(result)
 
     @staticmethod
@@ -138,15 +141,13 @@ class ActivatorAPI(API):
                 community=community,
                 version=SNMP_v2c,
                 tos=config.activator.tos,
-                ioloop=self.service.ioloop
+                ioloop=self.service.ioloop,
             )
-            self.logger.debug("SNMP GET %s %s returns %s",
-                              address, oid, result)
+            self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
         except SNMPError as e:
             metrics["error", ("type", "snmp_v2_error")] += 1
             result = None
-            self.logger.debug("SNMP GET %s %s returns error %s",
-                              address, oid, e)
+            self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
         raise tornado.gen.Return(result)
 
     @staticmethod
@@ -168,7 +169,7 @@ class ActivatorAPI(API):
             request_timeout=config.activator.http_request_timeout,
             follow_redirects=True,
             validate_cert=config.activator.http_validate_cert,
-            eof_mark="</html>"
+            eof_mark="</html>",
         )
         if 200 <= code <= 299:
             raise tornado.gen.Return(body)

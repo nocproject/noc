@@ -321,33 +321,33 @@ class ManagedObjectSelector(NOCModel):
                 return str(s)
             elif isinstance(s, (list, tuple)):
                 s = [q(x) for x in s]
-                return u"[%s]" % ", ".join(s)
+                return "[%s]" % ", ".join(s)
             else:
-                return u'"%s"' % unicode(s).replace("\\", "\\\\").replace("'", "\\'")
+                return '"%s"' % unicode(s).replace("\\", "\\\\").replace("'", "\\'")
 
         expr = []
         # Filter by is_managed
         if self.filter_managed is not None:
             if self.filter_managed:
-                expr += [u"IS MANAGED"]
+                expr += ["IS MANAGED"]
             else:
-                expr += [u"IS NOT MANAGED"]
+                expr += ["IS NOT MANAGED"]
         # Apply filters
         for f, n, op in self.EXPR_MAP:
             v = getattr(self, f)
             if v:
-                expr += [u"%s %s %s" % (n, op, q(v))]
+                expr += ["%s %s %s" % (n, op, q(v))]
         # Apply attributes filters
         for s in self.managedobjectselectorbyattribute_set.all():
-            expr += [u"attr(%s) ~ %s" % (q(s.key_re), q(s.value_re))]
+            expr += ["attr(%s) ~ %s" % (q(s.key_re), q(s.value_re))]
 
-        expr = [u" AND ".join(expr)]
+        expr = [" AND ".join(expr)]
         # Restrict to sources
         if self.sources.count():
             for s in self.sources.all():
                 expr += [s.expr]
-            op = u" AND " if self.source_combine_method == "A" else u" OR "
-            expr = [op.join(u"(%s)" % x for x in expr)]
+            op = " AND " if self.source_combine_method == "A" else " OR "
+            expr = [op.join("(%s)" % x for x in expr)]
         return expr[0]
 
     @property
@@ -437,7 +437,7 @@ class ManagedObjectSelectorByAttribute(NOCModel):
     )
 
     def __str__(self):
-        return u"%s: %s = %s" % (self.selector.name, self.key_re, self.value_re)
+        return "%s: %s = %s" % (self.selector.name, self.key_re, self.value_re)
 
 
 # Avoid circular references

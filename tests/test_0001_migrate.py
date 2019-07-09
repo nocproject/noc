@@ -8,9 +8,11 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 import pytest
 import cachetools
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.migration.loader import loader
@@ -116,4 +118,3 @@ def test_migration_history():
     applied = runner.get_history()
     all_migrations = get_migration_names_set()
     assert all_migrations == applied
-

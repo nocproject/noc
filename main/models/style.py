@@ -9,10 +9,12 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from django.db import models
 import cachetools
+
 # NOC models
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
@@ -41,7 +43,7 @@ id_lock = Lock()
         ("phone.PhoneNumberProfile", "style"),
         ("phone.PhoneRangeProfile", "style"),
         ("fm.ActiveAlarm", "custom_style"),
-        ("vc.VLANProfile", "style")
+        ("vc.VLANProfile", "style"),
     ]
 )
 @six.python_2_unicode_compatible
@@ -49,6 +51,7 @@ class Style(NOCModel):
     """
     CSS Style
     """
+
     class Meta(object):
         verbose_name = "Style"
         verbose_name_plural = "Styles"
@@ -58,7 +61,7 @@ class Style(NOCModel):
 
     name = models.CharField("Name", max_length=64, unique=True)
     font_color = models.IntegerField("Font Color", default=0)
-    background_color = models.IntegerField("Background Color", default=0xffffff)
+    background_color = models.IntegerField("Background Color", default=0xFFFFFF)
     bold = models.BooleanField("Bold", default=False)
     italic = models.BooleanField("Italic", default=False)
     underlined = models.BooleanField("Underlined", default=False)
@@ -71,8 +74,7 @@ class Style(NOCModel):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         try:
             return Style.objects.get(id=id)
@@ -84,21 +86,23 @@ class Style(NOCModel):
         """
         CSS Class Name
         """
-        return u"noc-color-%d" % self.id
+        return "noc-color-%d" % self.id
 
     @property
     def style(self):
         """
         CSS Style
         """
-        s = u"color: #%06X !important; background-color: #%06X !important;" % (
-            self.font_color, self.background_color)
+        s = "color: #%06X !important; background-color: #%06X !important;" % (
+            self.font_color,
+            self.background_color,
+        )
         if self.bold:
-            s += u" font-weight: bold !important;"
+            s += " font-weight: bold !important;"
         if self.italic:
-            s += u" font-style: italic !important;"
+            s += " font-style: italic !important;"
         if self.underlined:
-            s += u" text-decoration: underline !important;"
+            s += " text-decoration: underline !important;"
         return s
 
     @property
@@ -106,5 +110,4 @@ class Style(NOCModel):
         """
         CSS class style
         """
-        return u".%s, .%s td { %s }\n" % (
-            self.css_class_name, self.css_class_name, self.style)
+        return ".%s, .%s td { %s }\n" % (self.css_class_name, self.css_class_name, self.style)

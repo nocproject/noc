@@ -11,11 +11,13 @@ from __future__ import absolute_import
 import re
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from django.db import models
 from mongoengine.queryset import Q as MEQ
 import cachetools
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
@@ -36,15 +38,14 @@ rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("ip.Prefix", "vc")
-])
+@on_delete_check(check=[("ip.Prefix", "vc")])
 @full_text_search
 @six.python_2_unicode_compatible
 class VC(NOCModel):
     """
     Virtual circuit
     """
+
     class Meta(object):
         verbose_name = "VC"
         verbose_name_plural = "VCs"
@@ -56,35 +57,38 @@ class VC(NOCModel):
     vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)
     name = models.CharField("Name", max_length=64)
     state = models.ForeignKey(
-        ResourceState, verbose_name="State",
+        ResourceState,
+        verbose_name="State",
         default=ResourceState.get_default,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     project = models.ForeignKey(
-        Project, verbose_name="Project",
+        Project,
+        verbose_name="Project",
         on_delete=models.SET_NULL,
-        null=True, blank=True, related_name="vc_set")
+        null=True,
+        blank=True,
+        related_name="vc_set",
+    )
     l1 = models.IntegerField("Label 1")
     l2 = models.IntegerField("Label 2", default=0)
-    description = models.CharField("Description", max_length=256, null=True,
-                                   blank=True)
-    style = models.ForeignKey(Style, verbose_name="Style", blank=True,
-                              null=True, on_delete=models.CASCADE)
+    description = models.CharField("Description", max_length=256, null=True, blank=True)
+    style = models.ForeignKey(
+        Style, verbose_name="Style", blank=True, null=True, on_delete=models.CASCADE
+    )
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
-        s = u"%s %d" % (self.vc_domain, self.l1)
+        s = "%s %d" % (self.vc_domain, self.l1)
         if self.l2:
-            s += u"/%d" % self.l2
-        s += u": %s" % self.name
+            s += "/%d" % self.l2
+        s += ": %s" % self.name
         return s
 
     @classmethod
-    @cachedmethod(operator.attrgetter("_id_cache"),
-                  key="vc-id-%s",
-                  lock=lambda _: id_lock)
+    @cachedmethod(operator.attrgetter("_id_cache"), key="vc-id-%s", lock=lambda _: id_lock)
     def get_by_id(cls, id):
         mo = VC.objects.filter(id=id)[:1]
         if mo:
@@ -109,9 +113,8 @@ class VC(NOCModel):
             raise InvalidLabelException("Invalid value for L1")
         if self.vc_domain.type.min_labels > 1 and self.l2 is None:
             raise MissedLabelException("L2 required")
-        if (
-            self.vc_domain.type.min_labels > 1 and
-            not (self.vc_domain.type.label2_min <= self.l2 <= self.vc_domain.type.label2_max)
+        if self.vc_domain.type.min_labels > 1 and not (
+            self.vc_domain.type.label2_min <= self.l2 <= self.vc_domain.type.label2_max
         ):
             raise InvalidLabelException("Invalid value for L2")
         # Format name
@@ -136,7 +139,7 @@ class VC(NOCModel):
             "id": "vc.vc:%s" % self.id,
             "title": self.name,
             "content": "\n".join(content),
-            "card": card
+            "card": card,
         }
         if self.tags:
             r["tags"] = self.tags
@@ -156,18 +159,16 @@ class VC(NOCModel):
         r = []
         si_q = MEQ(untagged_vlan=self.l1) | MEQ(tagged_vlans=self.l1)
         # VC Domain's objects
-        objects = set(self.vc_domain.managedobject_set.values_list(
-            "id", flat=True))
+        objects = set(self.vc_domain.managedobject_set.values_list("id", flat=True))
         for si in SubInterface.objects.filter(
-                managed_object__in=objects,
-                enabled_afi="BRIDGE").filter(si_q):
-            if (si.interface.vc_domain is None or
-                    si.interface.vc_domain.id == self.vc_domain.id):
+            managed_object__in=objects, enabled_afi="BRIDGE"
+        ).filter(si_q):
+            if si.interface.vc_domain is None or si.interface.vc_domain.id == self.vc_domain.id:
                 r += [si]
         # Explicit interfaces
         for i in Interface.objects.filter(vc_domain=self.vc_domain.id):
-            for si in SubInterface.objects.filter(
-                    interface=i.id,
-                    enabled_afi="BRIDGE").filter(si_q):
+            for si in SubInterface.objects.filter(interface=i.id, enabled_afi="BRIDGE").filter(
+                si_q
+            ):
                 r += [si]
         return r
