@@ -12,8 +12,10 @@ import sys
 import time
 import json
 import argparse
+
 # Third-party modules
 import bson
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
@@ -25,8 +27,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("-s", "--syslog", dest="syslog"),
-        parser.add_argument("args",
-                            nargs=argparse.REMAINDER)
+        parser.add_argument("args", nargs=argparse.REMAINDER)
 
     def _usage(self):
         print("./noc inject-event <object name> [<file1> [ .. <fileN>]]")
@@ -60,38 +61,29 @@ class Command(BaseCommand):
             try:
                 data = json.load(f.read())
             except ValueError as e:
-                self.die("Failed to decode JSON file \"%s\": %s" % (
-                    path, str(e)))
+                self.die('Failed to decode JSON file "%s": %s' % (path, str(e)))
         # Load events
         topic = "events.%s" % obj.pool.name
         for e in data:
             if e["profile"] != obj.profile.name:
-                self.stdout.write("Profile mismatch in %s: %s != %s %s" % (
-                    path, obj.profile.name, e["profile"], e))
+                self.stdout.write(
+                    "Profile mismatch in %s: %s != %s %s"
+                    % (path, obj.profile.name, e["profile"], e)
+                )
                 continue
             msg = {
                 "id": str(bson.ObjectId()),
                 "ts": time.time(),
                 "object": obj.id,
-                "data": e["raw_vars"]
+                "data": e["raw_vars"],
             }
             nsq_pub(topic, msg)
             self.stdout.write(msg["id"])
 
     def syslog_message(self, obj, msg):
         topic = "events.%s" % obj.pool.name
-        raw_vars = {
-            "source": "syslog",
-            "facility": "23",
-            "severity": "6",
-            "message": msg
-        }
-        msg = {
-            "id": str(bson.ObjectId()),
-            "ts": time.time(),
-            "object": obj.id,
-            "data": raw_vars
-        }
+        raw_vars = {"source": "syslog", "facility": "23", "severity": "6", "message": msg}
+        msg = {"id": str(bson.ObjectId()), "ts": time.time(), "object": obj.id, "data": raw_vars}
         nsq_pub(topic, msg)
         self.stdout.write(msg["id"])
 

@@ -23,4 +23,4 @@ class IgnorePattern(Document):
     description = StringField(required=False)
 
     def __str__(self):
-        return u"%s: %s" % (self.source, self.pattern)
+        return "%s: %s" % (self.source, self.pattern)

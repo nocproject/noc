@@ -71,7 +71,7 @@ class ActiveEvent(Document):
     expires = DateTimeField(required=False)
 
     def __str__(self):
-        return u"%s" % self.id
+        return "%s" % self.id
 
     @classmethod
     @cachedmethod(key="activeevent-%s", lock=lambda _: id_lock, ttl=900)

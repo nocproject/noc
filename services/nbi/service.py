@@ -35,11 +35,7 @@ class NBIService(Service):
         return r
 
     def get_handlers(self):
-        return [
-            (
-                "/api/nbi/%s" % api.name, api, {"service": self}
-            ) for api in self.get_api()
-        ]
+        return [("/api/nbi/%s" % api.name, api, {"service": self}) for api in self.get_api()]
 
     def log_request(self, handler):
         if not isinstance(handler, NBIAPI):
@@ -55,10 +51,15 @@ class NBIService(Service):
         agent = request.headers.get("User-Agent", "-")
         referer = request.headers.get("Referer", "-")
         self.logger.info(
-            "%s %s - \"%s %s\" HTTP/1.1 %s \"%s\" %s %.2fms",
-            remote_ip, user, method, uri, status,
-            referer, agent,
-            1000.0 * request.request_time()
+            '%s %s - "%s %s" HTTP/1.1 %s "%s" %s %.2fms',
+            remote_ip,
+            user,
+            method,
+            uri,
+            status,
+            referer,
+            agent,
+            1000.0 * request.request_time(),
         )
         metrics["api_requests", ("api", handler.name)] += 1
 

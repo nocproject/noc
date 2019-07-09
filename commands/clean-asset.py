@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -27,12 +28,11 @@ class Command(BaseCommand):
                 clean.add(obj.id)
 
     def clean_managed_object(self, object):
-        for o in Object.objects.filter(
-                data__management__managed_object=object.id):
+        for o in Object.objects.filter(data__management__managed_object=object.id):
             self.clean_obj(o)
 
     def clean_obj(self, obj):
-        print ("Cleaning %s %s (%s)" % (obj.model.name, obj.name, obj.id))
+        print("Cleaning %s %s (%s)" % (obj.model.name, obj.name, obj.id))
         # Clean children
         for o in Object.objects.filter(container=obj.id):
             self.clean_obj(o)

@@ -17,14 +17,10 @@ class APIToken(Document):
         "collection": "apitokens",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            ("type", "user")
-        ]
+        "indexes": [("type", "user")],
     }
 
-    type = StringField(choices=[
-        ("noc-gitlab-api", "NOC Gitlab API")
-    ])
+    type = StringField(choices=[("noc-gitlab-api", "NOC Gitlab API")])
     user = IntField()
     token = StringField()
 

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -21,32 +22,24 @@ class Command(BaseCommand):
         #
         prefix_list_parser = subparsers.add_parser("prefix-list")
         prefix_list_parser.add_argument(
-            "--profile",
-            default="Cisco.IOS",
-            help="Profile to generate"
+            "--profile", default="Cisco.IOS", help="Profile to generate"
         )
-        prefix_list_parser.add_argument(
-            "--name",
-            default="my-prefix-list",
-            help="Prefix-list name"
-        )
-        prefix_list_parser.add_argument(
-            "as_set",
-            nargs=argparse.REMAINDER,
-            help="AS-set"
-        )
+        prefix_list_parser.add_argument("--name", default="my-prefix-list", help="Prefix-list name")
+        prefix_list_parser.add_argument("as_set", nargs=argparse.REMAINDER, help="AS-set")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_update_cache(self, *args, **options):
         from noc.core.whois import WhoisCacheLoader
+
         loader = WhoisCacheLoader()
         loader.update()
 
     def handle_prefix_list(self, as_set, name=None, profile=None, *args, **options):
         from noc.peer.models.whoiscache import WhoisCache
         from noc.sa.models.profile import Profile
+
         p = Profile.get_by_name(profile)
         if not p:
             self.die("Invalid profile %s" % profile)

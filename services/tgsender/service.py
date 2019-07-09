@@ -12,15 +12,17 @@ import re
 import datetime
 import json
 import time
+
 # Third-party modules
 from six.moves.urllib.parse import urlencode
+
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.http.client import fetch_sync
 from noc.core.perf import metrics
 from noc.config import config
 
-API = 'https://api.telegram.org/bot'
+API = "https://api.telegram.org/bot"
 
 
 class TgSenderService(Service):
@@ -32,40 +34,38 @@ class TgSenderService(Service):
             self.url = None
         else:
             self.url = API + config.tgsender.token
-            self.subscribe(
-                topic=self.name,
-                channel="sender",
-                handler=self.on_message
-            )
+            self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(
             "[%s] Receiving message: %s (%s) [%s, attempt %d]",
-            message.id, subject, address,
-            datetime.datetime.fromtimestamp(
-                message.timestamp / 1000000000.0
-            ),
-            message.attempts
+            message.id,
+            subject,
+            address,
+            datetime.datetime.fromtimestamp(message.timestamp / 1000000000.0),
+            message.attempts,
         )
         return self.send_tb(message.id, address, subject, body)
 
     @staticmethod
     def escape_markdown(text):
         """Helper function to escape telegram markup symbols"""
-        escape_chars = '\*_`'
-        return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
+        escape_chars = "\*_`"
+        return re.sub(r"([%s])" % escape_chars, r"\\\1", text)
 
     def send_tb(self, messages, address, subject, body):
         # proxy_addres = config.proxy.https_proxy  # not used.
         sendMessage = {
-            'chat_id': address,
-            'text': '*' + self.escape_markdown(subject.encode('utf8')) +
-                    '*\n' + self.escape_markdown(body.encode('utf8')),
-            'parse_mode': 'Markdown'
+            "chat_id": address,
+            "text": "*"
+            + self.escape_markdown(subject.encode("utf8"))
+            + "*\n"
+            + self.escape_markdown(body.encode("utf8")),
+            "parse_mode": "Markdown",
         }
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
-            get = self.url + '/sendMessage?' + urlencode(sendMessage)
+            get = self.url + "/sendMessage?" + urlencode(sendMessage)
             self.logger.info("HTTP GET %s", get)
             code, header, body = fetch_sync(
                 get,

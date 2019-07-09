@@ -73,5 +73,5 @@ MIB = {
     "CISCO-CDP-MIB::cdpGlobalDeviceIdFormat": "1.3.6.1.4.1.9.9.23.1.3.7",
     "CISCO-CDP-MIB::ciscoCdpMIBConformance": "1.3.6.1.4.1.9.9.23.2",
     "CISCO-CDP-MIB::ciscoCdpMIBCompliances": "1.3.6.1.4.1.9.9.23.2.1",
-    "CISCO-CDP-MIB::ciscoCdpMIBGroups": "1.3.6.1.4.1.9.9.23.2.2"
+    "CISCO-CDP-MIB::ciscoCdpMIBGroups": "1.3.6.1.4.1.9.9.23.2.2",
 }

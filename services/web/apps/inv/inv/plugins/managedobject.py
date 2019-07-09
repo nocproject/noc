@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import InvPlugin
 
@@ -17,7 +18,4 @@ class ManagedObjectPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.managedobject.ManagedObjectPanel"
 
     def get_data(self, request, o):
-        return {
-            "id": str(o.id),
-            "managed_object_id": o.get_data("management", "managed_object")
-        }
+        return {"id": str(o.id), "managed_object_id": o.get_data("management", "managed_object")}

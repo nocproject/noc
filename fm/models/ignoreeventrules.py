@@ -30,4 +30,4 @@ class IgnoreEventRules(NOCModel):
     description = models.TextField("Description", null=True, blank=True)
 
     def __str__(self):
-        return u"%s (%s, %s)" % (self.name, self.left_re, self.right_re)
+        return "%s (%s, %s)" % (self.name, self.left_re, self.right_re)

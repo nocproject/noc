@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import datetime
 import operator
+
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.service import Service
@@ -52,16 +53,18 @@ class ServiceCard(BaseCard):
             for m in Maintenance.objects.filter(
                 affected_objects__object=managed_object.id,
                 is_completed=False,
-                start__lte=now + datetime.timedelta(hours=1)
+                start__lte=now + datetime.timedelta(hours=1),
             ):
-                maintenance += [{
-                    "maintenance": m,
-                    "id": m.id,
-                    "subject": m.subject,
-                    "start": m.start,
-                    "stop": m.stop,
-                    "in_progress": m.start <= now
-                }]
+                maintenance += [
+                    {
+                        "maintenance": m,
+                        "id": m.id,
+                        "subject": m.subject,
+                        "start": m.start,
+                        "stop": m.stop,
+                        "in_progress": m.start <= now,
+                    }
+                ]
 
         # Build warnings
         # Build result
@@ -76,7 +79,7 @@ class ServiceCard(BaseCard):
             "alarms": alarms,
             "errors": errors,
             "warnings": warnings,
-            "maintenance": maintenance
+            "maintenance": maintenance,
         }
         return r
 

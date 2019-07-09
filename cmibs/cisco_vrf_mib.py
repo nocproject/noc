@@ -57,5 +57,5 @@ MIB = {
     "CISCO-VRF-MIB::cvVnetTrunkNotifEnable": "1.3.6.1.4.1.9.9.711.1.3.2",
     "CISCO-VRF-MIB::ciscoVrfMIBConform": "1.3.6.1.4.1.9.9.711.2",
     "CISCO-VRF-MIB::cvMIBGroups": "1.3.6.1.4.1.9.9.711.2.1",
-    "CISCO-VRF-MIB::cvMIBCompliances": "1.3.6.1.4.1.9.9.711.2.2"
+    "CISCO-VRF-MIB::cvMIBCompliances": "1.3.6.1.4.1.9.9.711.2.2",
 }

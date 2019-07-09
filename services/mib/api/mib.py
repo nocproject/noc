@@ -12,8 +12,10 @@ import subprocess
 import re
 import imp
 import datetime
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.config import config
 from noc.core.service.api import API, api
@@ -26,13 +28,12 @@ class MIBAPI(API):
     """
     MIB API
     """
+
     name = "mib"
     rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
     rx_oid = re.compile("^\d+(\.\d+)+")
 
-    SMI_ENV = {
-        "SMIPATH": config.path.mib_path
-    }
+    SMI_ENV = {"SMIPATH": config.path.mib_path}
 
     def get_path(self, name):
         """
@@ -52,15 +53,8 @@ class MIBAPI(API):
         path = self.get_path(name)
         if os.path.exists(path):
             with open(path) as f:
-                return {
-                    "status": True,
-                    "data": f.read()
-                }
-        return {
-            "status": False,
-            "msg": "Not found",
-            "code": ERR_MIB_NOT_FOUND
-        }
+                return {"status": True, "data": f.read()}
+        return {"status": False, "msg": "Not found", "code": ERR_MIB_NOT_FOUND}
 
     @api
     def compile(self, data):
@@ -70,24 +64,14 @@ class MIBAPI(API):
         :return:
         """
         if not config.path.smilint or not os.path.exists(config.path.smilint):
-            return {
-                "status": False,
-                "msg": "smilint is missed",
-                "error": ERR_MIB_TOOL_MISSED
-            }
+            return {"status": False, "msg": "smilint is missed", "error": ERR_MIB_TOOL_MISSED}
         if not config.path.smilint or not os.path.exists(config.path.smidump):
-            return {
-                "status": False,
-                "msg": "smidump is missed",
-                "error": ERR_MIB_TOOL_MISSED
-            }
+            return {"status": False, "msg": "smidump is missed", "error": ERR_MIB_TOOL_MISSED}
         # Put data to temporary file
         with temporary_file(data) as tmp_path:
             # Pass MIB through smilint to detect missed modules
             f = subprocess.Popen(
-                [config.path.smilint, "-m", tmp_path],
-                stderr=subprocess.PIPE,
-                env=self.SMI_ENV
+                [config.path.smilint, "-m", tmp_path], stderr=subprocess.PIPE, env=self.SMI_ENV
             ).stderr
             for l in f:
                 match = self.rx_module_not_found.search(l.strip())
@@ -95,14 +79,13 @@ class MIBAPI(API):
                     return {
                         "status": False,
                         "msg": "Required MIB missed: %s" % match.group(1),
-                        "code": ERR_MIB_MISSED
+                        "code": ERR_MIB_MISSED,
                     }
             # Convert MIB to python module and load
             with temporary_file() as py_path:
                 subprocess.check_call(
-                    [config.path.smidump, "-k", "-q",
-                     "-f", "python", "-o", py_path, tmp_path],
-                    env=self.SMI_ENV
+                    [config.path.smidump, "-k", "-q", "-f", "python", "-o", py_path, tmp_path],
+                    env=self.SMI_ENV,
                 )
                 with open(py_path) as f:
                     data = unicode(f.read(), "ascii", "ignore").encode("ascii")
@@ -125,14 +108,14 @@ class MIBAPI(API):
                         return {
                             "status": False,
                             "msg": "Required MIB missed: %s" % rm,
-                            "code": ERR_MIB_MISSED
+                            "code": ERR_MIB_MISSED,
                         }
                     depends_on[rm] = md
             # Get MIB latest revision date
             try:
                 last_updated = datetime.datetime.strptime(
-                    sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],
-                    "%Y-%m-%d %H:%M")
+                    sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1], "%Y-%m-%d %H:%M"
+                )
             except ValueError:
                 last_updated = datetime.datetime(year=1970, month=1, day=1)
             # Extract MIB typedefs
@@ -158,26 +141,26 @@ class MIBAPI(API):
                     description=mib_description,
                     last_updated=last_updated,
                     depends_on=sorted(depends_on),
-                    typedefs=typedefs
+                    typedefs=typedefs,
                 )
                 mib.save()
             # Upload MIB data
             cdata = []
             for i in ["nodes", "notifications"]:
                 if i in m.MIB:
-                    cdata += [{
-                        "name": "%s::%s" % (mib_name, node),
-                        "oid": v["oid"],
-                        "description": v.get("description"),
-                        "syntax": v["syntax"]["type"] if "syntax" in v else None
-                    } for node, v in six.iteritems(m.MIB[i])]
+                    cdata += [
+                        {
+                            "name": "%s::%s" % (mib_name, node),
+                            "oid": v["oid"],
+                            "description": v.get("description"),
+                            "syntax": v["syntax"]["type"] if "syntax" in v else None,
+                        }
+                        for node, v in six.iteritems(m.MIB[i])
+                    ]
             mib.load_data(cdata)
             # Move file to permanent place
             safe_rewrite(self.get_path(mib_name), data)
-        return {
-            "status": True,
-            "mib": mib_name
-        }
+        return {"status": True, "mib": mib_name}
 
     @api
     def lookup(self, oid):
@@ -194,11 +177,5 @@ class MIBAPI(API):
             name = oid
             oid = MIB.get_oid(name)
         if oid and name:
-            return {
-                "status": True,
-                "oid": oid,
-                "name": name
-            }
-        return {
-            "status": False
-        }
+            return {"status": True, "oid": oid, "name": name}
+        return {"status": False}

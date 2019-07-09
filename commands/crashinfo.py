@@ -13,8 +13,10 @@ import datetime
 import argparse
 import stat
 import re
+
 # Third-party modules
 import ujson
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.config import config
@@ -31,18 +33,10 @@ class Command(BaseCommand):
         subparsers.add_parser("list")
         # view command
         view_parser = subparsers.add_parser("view")
-        view_parser.add_argument(
-            "view_uuids",
-            nargs=argparse.REMAINDER,
-            help="Crashinfo UUIDs"
-        )
+        view_parser.add_argument("view_uuids", nargs=argparse.REMAINDER, help="Crashinfo UUIDs")
         # clear command
         clear_parser = subparsers.add_parser("clear")
-        clear_parser.add_argument(
-            "clear_uuids",
-            nargs=argparse.REMAINDER,
-            help="Crashinfo UUIDs"
-        )
+        clear_parser.add_argument("clear_uuids", nargs=argparse.REMAINDER, help="Crashinfo UUIDs")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -77,17 +71,21 @@ class Command(BaseCommand):
                         break
                 x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
                 x = unicode(x)[:100].encode("utf-8")
-                fl += [{
-                    "uuid": fn[:-5],
-                    "time": t,
-                    "status": "*" if uts and ts > uts else " ",
-                    "service": service,
-                    "exception": x
-                }]
+                fl += [
+                    {
+                        "uuid": fn[:-5],
+                        "time": t,
+                        "status": "*" if uts and ts > uts else " ",
+                        "service": service,
+                        "exception": x,
+                    }
+                ]
         fs = "%s %36s  %19s  %-29s %-s\n"
         self.stdout.write(fs % ("N", "UUID", "Time", "Service", "Exception"))
         for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):
-            self.stdout.write(fs % (l["status"], l["uuid"], l["time"].isoformat(), l["service"], l["exception"]))
+            self.stdout.write(
+                fs % (l["status"], l["uuid"], l["time"].isoformat(), l["service"], l["exception"])
+            )
 
     def handle_view(self, view_uuids, *args, **options):
         for u in view_uuids:
@@ -105,14 +103,12 @@ class Command(BaseCommand):
 
     def handle_clear(self, clear_uuids, *args, **options):
         if not clear_uuids:
-            self.stdout.write("Use './noc crashninfo clear all' for clear all crashinfo or"
-                              " './noc crashinfo clear UUID1 UUID2 ...'\n")
+            self.stdout.write(
+                "Use './noc crashninfo clear all' for clear all crashinfo or"
+                " './noc crashinfo clear UUID1 UUID2 ...'\n"
+            )
         if clear_uuids and clear_uuids[0] == "all":
-            clear_uuids = [
-                fn[:-5]
-                for fn in os.listdir(self.PREFIX)
-                if fn.endswith(".json")
-            ]
+            clear_uuids = [fn[:-5] for fn in os.listdir(self.PREFIX) if fn.endswith(".json")]
         for u in clear_uuids:
             path = os.path.join(self.PREFIX, "%s.json" % u)
             if not os.path.exists(path):

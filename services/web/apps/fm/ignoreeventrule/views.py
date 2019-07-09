@@ -17,11 +17,9 @@ class IgnoreEventRuleApplication(ExtModelApplication):
     """
     IgnoreEventRule application
     """
+
     title = _("Ignore Event Rules")
     menu = [_("Setup"), _("Ignore Event Rules")]
     model = IgnoreEventRules
 
-    clean_fields = {
-        "left_re": REParameter(),
-        "right_re": REParameter()
-    }
+    clean_fields = {"left_re": REParameter(), "right_re": REParameter()}

@@ -8,12 +8,14 @@
 
 # Python modules
 import time
+
 # Third-party modules
 import six
 from six.moves.urllib.parse import urlencode
 from six.moves.urllib.request import urlopen
 from six.moves.urllib.error import URLError
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
@@ -23,25 +25,16 @@ class RIRDBUpdateError(Exception):
     pass
 
 
-# Check ssl library is available
-try:
-    import ssl
-    # Use SSL-enabled version when possible
-    RIPE_SYNCUPDATES_URL = "https://syncupdates.db.ripe.net"
-except ImportError:
-    RIPE_SYNCUPDATES_URL = "http://syncupdates.db.ripe.net"
+RIPE_SYNCUPDATES_URL = "https://syncupdates.db.ripe.net"
 
 
-@on_delete_check(check=[
-    ("peer.Person", "rir"),
-    ("peer.AS", "rir"),
-    ("peer.Maintainer", "rir")
-])
+@on_delete_check(check=[("peer.Person", "rir"), ("peer.AS", "rir"), ("peer.Maintainer", "rir")])
 @six.python_2_unicode_compatible
 class RIR(NOCModel):
     """
     Regional internet registries
     """
+
     class Meta(object):
         verbose_name = "RIR"
         verbose_name_plural = "RIRs"
@@ -82,10 +75,7 @@ class RIR(NOCModel):
         data += ["source: RIPE"]
         data = "\n".join(data)
         try:
-            f = urlopen(
-                url=RIPE_SYNCUPDATES_URL,
-                data=urlencode({"DATA": data})
-            )
+            f = urlopen(url=RIPE_SYNCUPDATES_URL, data=urlencode({"DATA": data}))
             data = f.read()
         except URLError as why:
             data = "Update failed: %s" % why

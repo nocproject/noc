@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.kb.models.kbentry import KBEntry
 from noc.config import config
@@ -32,5 +33,5 @@ class KBCard(BaseCard):
     def get_data(self):
         return {
             "object": self.object if self.object != "Knowlegde DB" else KBEntry,
-            "config": config
+            "config": config,
         }

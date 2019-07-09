@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 from threading import Lock
+
 # Third-party modules
 import creole
+
 # NOC modules
 from ..macros.loader import loader as macro_loader
 from .base import BaseParser
@@ -38,8 +40,10 @@ class CreoleParser(BaseParser):
         def custom_image_emit(node):
             target = cls.convert_attach(kb_entry, node.content)
             text = html_emitter.get_text(node)
-            return u'<img src="%s" alt="%s" />' % (
-                html_emitter.attr_escape(target), html_emitter.attr_escape(text))
+            return '<img src="%s" alt="%s" />' % (
+                html_emitter.attr_escape(target),
+                html_emitter.attr_escape(text),
+            )
 
         parser = creole.Parser(unicode(kb_entry.body))
         html_emitter = creole.HtmlEmitter(parser.parse(), macros=cls.get_macro_wrapper())

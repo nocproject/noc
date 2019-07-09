@@ -14,8 +14,10 @@ import re
 import datetime
 import time
 import argparse
+
 # Third-party modules
 import ujson
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
@@ -26,15 +28,12 @@ class Command(BaseCommand):
     help = "Upload bundled MIBs"
 
     def add_arguments(self, parser):
-        parser.add_argument("-f", "--force", dest="force", action="store_true",
-                            default=False, help="Force reload"),
         parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
-        )
-    rx_last_updated = re.compile(r"\"last_updated\":\s*\"([^\"]+)\"",
-                                 re.MULTILINE)
+            "-f", "--force", dest="force", action="store_true", default=False, help="Force reload"
+        ),
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
+
+    rx_last_updated = re.compile(r"\"last_updated\":\s*\"([^\"]+)\"", re.MULTILINE)
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
     PREFIX = config.path.collection_fm_mibs
 
@@ -49,8 +48,7 @@ class Command(BaseCommand):
         """
         for root, dirs, files in os.walk(self.PREFIX):
             for f in files:
-                if (not f.startswith(".") and
-                        (f.endswith(".json.gz") or f.endswith(".json"))):
+                if not f.startswith(".") and (f.endswith(".json.gz") or f.endswith(".json")):
                     mib_name = f.split(".", 1)[0]
                     yield mib_name, os.path.join(root, f)
 
@@ -101,8 +99,7 @@ class Command(BaseCommand):
         Convert YYYY-MM-DD date to DateTime
         """
         ts = time.strptime(s, "%Y-%m-%d")
-        return datetime.datetime(year=ts.tm_year, month=ts.tm_mon,
-                                 day=ts.tm_mday)
+        return datetime.datetime(year=ts.tm_year, month=ts.tm_mon, day=ts.tm_mday)
 
     def update_mib(self, mib, data, version=None):
         # Deserealize
@@ -122,10 +119,13 @@ class Command(BaseCommand):
         # Deserialze
         d = ujson.loads(data)
         # Create MIB
-        mib = MIB(name=d["name"], description=d["description"],
-                  last_updated=self.decode_date(d["last_updated"]),
-                  version=d.get("version", 0),
-                  depends_on=d["depends_on"])
+        mib = MIB(
+            name=d["name"],
+            description=d["description"],
+            last_updated=self.decode_date(d["last_updated"]),
+            version=d.get("version", 0),
+            depends_on=d["depends_on"],
+        )
         mib.save()
         # Upload
         if d["data"]:

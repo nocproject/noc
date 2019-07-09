@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import namedtuple, defaultdict
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.ip.models.vrf import VRF
@@ -19,16 +20,10 @@ from noc.lib.validators import is_fqdn
 from noc.core.ip import IP, IPv4, PrefixDB
 
 
-DiscoveredAddress = namedtuple("DiscoveredAddress", [
-    "vpn_id",
-    "address",
-    "profile",
-    "description",
-    "source",
-    "subinterface",
-    "mac",
-    "fqdn"
-])
+DiscoveredAddress = namedtuple(
+    "DiscoveredAddress",
+    ["vpn_id", "address", "profile", "description", "source", "subinterface", "mac", "fqdn"],
+)
 
 GLOBAL_VRF = "0:0"
 SRC_MANAGEMENT = "m"
@@ -37,13 +32,7 @@ SRC_DHCP = "d"
 SRC_NEIGHBOR = "n"
 SRC_MANUAL = "M"
 
-PREF_VALUE = {
-    SRC_NEIGHBOR: 0,
-    SRC_DHCP: 1,
-    SRC_MANAGEMENT: 2,
-    SRC_INTERFACE: 3,
-    SRC_MANUAL: 4
-}
+PREF_VALUE = {SRC_NEIGHBOR: 0, SRC_DHCP: 1, SRC_MANAGEMENT: 2, SRC_INTERFACE: 3, SRC_MANUAL: 4}
 
 LOCAL_SRC = {SRC_MANAGEMENT, SRC_INTERFACE}
 
@@ -65,28 +54,16 @@ class AddressCheck(DiscoveryCheck):
         addresses = {}
         # Apply interface addresses
         if self.object.object_profile.enable_box_discovery_address_interface:
-            addresses = self.apply_addresses(
-                addresses,
-                self.get_interface_addresses()
-            )
+            addresses = self.apply_addresses(addresses, self.get_interface_addresses())
         # Apply management addresses
         if self.object.object_profile.enable_box_discovery_address_management:
-            addresses = self.apply_addresses(
-                addresses,
-                self.get_management_addresses()
-            )
+            addresses = self.apply_addresses(addresses, self.get_management_addresses())
         # Apply DHCP leases
         if self.object.object_profile.enable_box_discovery_address_dhcp:
-            addresses = self.apply_addresses(
-                addresses,
-                self.get_dhcp_addresses()
-            )
+            addresses = self.apply_addresses(addresses, self.get_dhcp_addresses())
         # Apply neighbor addresses
         if self.object.object_profile.enable_box_discovery_address_neighbor:
-            addresses = self.apply_addresses(
-                addresses,
-                self.get_neighbor_addresses()
-            )
+            addresses = self.apply_addresses(addresses, self.get_neighbor_addresses())
         return addresses
 
     def sync_addresses(self, addresses):
@@ -108,7 +85,9 @@ class AddressCheck(DiscoveryCheck):
                 vrfs[vpn_id] = vrf
         missed_vpn_id = set(vrf_addresses) - set(vrfs)
         if missed_vpn_id:
-            self.logger.info("VPN ID are missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id))
+            self.logger.info(
+                "VPN ID are missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id)
+            )
         #
         self.logger.debug("Getting addresses to synchronize")
         for vpn_id in vrfs:
@@ -166,7 +145,9 @@ class AddressCheck(DiscoveryCheck):
         """
         self.logger.debug("Getting interface addresses")
         if not self.object.object_profile.address_profile_interface:
-            self.logger.info("Default interface address profile is not set. Skipping interface address discovery")
+            self.logger.info(
+                "Default interface address profile is not set. Skipping interface address discovery"
+            )
             return []
         addresses = self.get_artefact("interface_prefix")
         if not addresses:
@@ -181,8 +162,9 @@ class AddressCheck(DiscoveryCheck):
                 description=a["description"],
                 subinterface=a["subinterface"],
                 mac=a["mac"],
-                fqdn=None
-            ) for a in addresses
+                fqdn=None,
+            )
+            for a in addresses
         ]
 
     def get_management_addresses(self):
@@ -191,7 +173,9 @@ class AddressCheck(DiscoveryCheck):
         :return:
         """
         if not self.object.object_profile.address_profile_management:
-            self.logger.info("Default management address profile is not set. Skipping interface address discovery")
+            self.logger.info(
+                "Default management address profile is not set. Skipping interface address discovery"
+            )
             return []
         self.logger.debug("Getting management addresses")
         addresses = []
@@ -205,7 +189,7 @@ class AddressCheck(DiscoveryCheck):
                     description="Management address",
                     subinterface=None,
                     mac=None,
-                    fqdn=self.object.get_full_fqdn()
+                    fqdn=self.object.get_full_fqdn(),
                 )
             ]
         return addresses
@@ -215,6 +199,7 @@ class AddressCheck(DiscoveryCheck):
         Return addresses from DHCP leases
         :return:
         """
+
         def get_vpn_id(ip):
             try:
                 return vpn_db[IPv4(ip)]
@@ -225,7 +210,9 @@ class AddressCheck(DiscoveryCheck):
             return GLOBAL_VRF
 
         if not self.object.object_profile.address_profile_dhcp:
-            self.logger.info("Default DHCP address profile is not set. Skipping DHCP address discovery")
+            self.logger.info(
+                "Default DHCP address profile is not set. Skipping DHCP address discovery"
+            )
             return []
         # @todo: Check DHCP server capability
         if "get_dhcp_binding" not in self.object.scripts:
@@ -251,8 +238,9 @@ class AddressCheck(DiscoveryCheck):
                 description=None,
                 subinterface=None,
                 mac=a.get("mac"),
-                fqdn=None
-            ) for a in leases
+                fqdn=None,
+            )
+            for a in leases
         ]
         return r
 
@@ -262,7 +250,9 @@ class AddressCheck(DiscoveryCheck):
         :return:
         """
         if not self.object.object_profile.address_profile_neighbor:
-            self.logger.info("Default neighbor address profile is not set. Skipping neighbor address discovery")
+            self.logger.info(
+                "Default neighbor address profile is not set. Skipping neighbor address discovery"
+            )
             return []
         if "get_ip_discovery" not in self.object.scripts:
             self.logger.info("No get_ip_discovery script, skipping neighbor discovery")
@@ -281,7 +271,7 @@ class AddressCheck(DiscoveryCheck):
                         description=None,
                         subinterface=None,
                         mac=a.get("mac"),
-                        fqdn=None
+                        fqdn=None,
                     )
                 ]
         return r
@@ -311,7 +301,8 @@ class AddressCheck(DiscoveryCheck):
         if not self.has_address_permission(vrf, address):
             self.logger.debug(
                 "Do not creating vpn_id=%s address=%s: Disabled by policy",
-                address.vpn_id, address.address
+                address.vpn_id,
+                address.address,
             )
             metrics["address_creation_denied"] += 1
             return
@@ -323,15 +314,20 @@ class AddressCheck(DiscoveryCheck):
             profile=address.profile,
             description=address.description,
             source=address.source,
-            mac=address.mac
+            mac=address.mac,
         )
         if address.source in LOCAL_SRC:
             a.managed_object = self.object
             a.subinterface = address.subinterface
         self.logger.info(
             "Creating address %s (%s): name=%s fqdn=%s mac=%s profile=%s source=%s",
-            a.address, a.vrf.name,
-            a.name, a.fqdn, a.mac, a.profile.name, a.source
+            a.address,
+            a.vrf.name,
+            a.name,
+            a.fqdn,
+            a.mac,
+            a.profile.name,
+            a.source,
         )
         a.save()
         self.fire_seen(a)
@@ -363,25 +359,20 @@ class AddressCheck(DiscoveryCheck):
                     address.fqdn = discovered_address.fqdn
                 # @todo: Change profile
                 # Change managed object
-                if (
-                    discovered_address.source in LOCAL_SRC and
-                    (
-                        not address.managed_object or
-                        address.managed_object.id != self.object.id
-                    )
+                if discovered_address.source in LOCAL_SRC and (
+                    not address.managed_object or address.managed_object.id != self.object.id
                 ):
-                    changes += ["object: %s -> %s" % (
-                        address.managed_object, self.object
-                    )]
+                    changes += ["object: %s -> %s" % (address.managed_object, self.object)]
                     address.managed_object = self.object
                 # Change subinterface
                 if (
-                    discovered_address.source == SRC_INTERFACE and
-                    address.subinterface != discovered_address.subinterface
+                    discovered_address.source == SRC_INTERFACE
+                    and address.subinterface != discovered_address.subinterface
                 ):
-                    changes += ["subinterface: %s -> %s" % (
-                        address.subinterface, discovered_address.subinterface
-                    )]
+                    changes += [
+                        "subinterface: %s -> %s"
+                        % (address.subinterface, discovered_address.subinterface)
+                    ]
                     address.subinterface = discovered_address.subinterface
             if discovered_address.mac and address.mac != discovered_address.mac:
                 address.mac = discovered_address.mac
@@ -391,7 +382,7 @@ class AddressCheck(DiscoveryCheck):
                     "Changing %s (%s): %s",
                     address.address,
                     discovered_address.vpn_id,
-                    ", ".join(changes)
+                    ", ".join(changes),
                 )
                 address.save()
                 metrics["address_updated"] += 1
@@ -399,7 +390,7 @@ class AddressCheck(DiscoveryCheck):
             self.logger.debug(
                 "Do not updating vpn_id=%s address=%s. Source level too low",
                 discovered_address.vpn_id,
-                discovered_address.address
+                discovered_address.address,
             )
             metrics["address_update_denied"] += 1
         self.fire_seen(address)
@@ -411,11 +402,7 @@ class AddressCheck(DiscoveryCheck):
         :param address: DiscoveredAddress instance
         :return:
         """
-        parent = Prefix.get_parent(
-            vrf,
-            "6" if ":" in address.address else "4",
-            address.address
-        )
+        parent = Prefix.get_parent(vrf, "6" if ":" in address.address else "4", address.address)
         if parent:
             return parent.effective_address_discovery == "E"
         return False
@@ -447,9 +434,7 @@ class AddressCheck(DiscoveryCheck):
             if is_fqdn(fqdn):
                 return fqdn
             self.logger.error(
-                "Address %s renders to invalid FQDN '%s'. "
-                "Ignoring FQDN",
-                address.address, fqdn
+                "Address %s renders to invalid FQDN '%s'. " "Ignoring FQDN", address.address, fqdn
             )
         return None
 
@@ -458,19 +443,15 @@ class AddressCheck(DiscoveryCheck):
         return s.replace("\n", "").strip()
 
     def get_template_context(self, address):
-        return {
-            "address": address,
-            "get_handler": get_handler,
-            "object": self.object
-        }
+        return {"address": address, "get_handler": get_handler, "object": self.object}
 
     @staticmethod
     def is_enabled_for_object(object):
         return (
-            object.object_profile.enable_box_discovery_address_interface or
-            object.object_profile.enable_box_discovery_address_management or
-            object.object_profile.enable_box_discovery_address_dhcp or
-            object.object_profile.enable_box_discovery_address_neighbor
+            object.object_profile.enable_box_discovery_address_interface
+            or object.object_profile.enable_box_discovery_address_management
+            or object.object_profile.enable_box_discovery_address_dhcp
+            or object.object_profile.enable_box_discovery_address_neighbor
         )
 
     def ensure_afi(self, vrf, address):
@@ -500,11 +481,11 @@ class AddressCheck(DiscoveryCheck):
         :return: boolean
         """
         return (
-            address.mac == "FF:FF:FF:FF:FF:FF" or
-            address.address.startswith("127.") or
-            address.address.startswith("169.254.") or
-            address.address == "::1" or
-            address.address.startswith("fe80:")
+            address.mac == "FF:FF:FF:FF:FF:FF"
+            or address.address.startswith("127.")
+            or address.address.startswith("169.254.")
+            or address.address == "::1"
+            or address.address.startswith("fe80:")
         )
 
     def fire_seen(self, address):

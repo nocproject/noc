@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Create application skeleton
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,12 +12,13 @@ import argparse
 import os
 import datetime
 import re
+
 # Third-party modules
 import six
 from django.template import Template, Context
 from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
-import six
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.settings import INSTALLED_APPS
@@ -27,23 +28,15 @@ class Command(BaseCommand):
     """
     Create and initialize appliation skeleton
     """
+
     help = "Create application skeleton"
 
     def add_arguments(self, parser):
-        parser.add_argument("--model", "-m",
-                            dest="model",
-                            help="List configs"
-                            ),
-        parser.add_argument("--report", "-r",
-                            dest="report",
-                            choices=["simple"],
-                            help="Create Report"
-                            ),
+        parser.add_argument("--model", "-m", dest="model", help="List configs"),
         parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of generate App"
-        )
+            "--report", "-r", dest="report", choices=["simple"], help="Create Report"
+        ),
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of generate App")
 
     rx_empty = re.compile("^ +\n", re.MULTILINE)
 
@@ -61,7 +54,7 @@ class Command(BaseCommand):
         "INETField": ("string", "textfield", None),
         "MACField": ("string", "textfield", None),
         "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags"),
-        "TagsField": ("auto", "textfield", None)
+        "TagsField": ("auto", "textfield", None),
     }
 
     # Document -> Ext type maps
@@ -81,7 +74,7 @@ class Command(BaseCommand):
         "ListField": "auto",
         "ObjectIdField": "string",
         "UUIDField": "string",
-        "BinaryField": "string"
+        "BinaryField": "string",
     }
     # Document -> Ext type widgets
     document_ext_widget = {
@@ -98,7 +91,7 @@ class Command(BaseCommand):
         "RawDictField": "textfield",
         "ListField": "textfield",
         "ObjectIdField": "textfield",
-        "UUIDField": "displayfield"
+        "UUIDField": "displayfield",
     }
 
     def compact(self, s):
@@ -116,7 +109,7 @@ class Command(BaseCommand):
             raise CommandError("Failed to create directory")
 
     def create_file(self, path, data):
-        self.print("    Writing file %s ..." % path,)
+        self.print("    Writing file %s ..." % path)
         try:
             with open(path, "w") as f:
                 f.write(data)
@@ -132,6 +125,7 @@ class Command(BaseCommand):
         :param indent:
         :return:
         """
+
         def js_f(data):
             """
             Convert list of pairs to JS dict
@@ -139,6 +133,7 @@ class Command(BaseCommand):
             :type data: list
             :return:
             """
+
             def js_v(s):
                 """
                 Convert python value to js
@@ -146,7 +141,7 @@ class Command(BaseCommand):
                 :return:
                 """
                 if isinstance(s, six.string_types):
-                    return "\"%s\"" % s
+                    return '"%s"' % s
                 elif isinstance(s, bool):
                     return "true" if s else "false"
                 else:
@@ -173,19 +168,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Template variables
-        vars = {
-            "year": str(datetime.datetime.now().year),
-            "model": None
-        }
+        vars = {"year": str(datetime.datetime.now().year), "model": None}
         # Detect templateset
         templateset = "application"
         if options["model"]:
             templateset = "modelapplication"
             vars["model"] = options["model"]
         if options["report"]:
-            templateset = {
-                "simple": "simplereport"
-            }[options["report"]]
+            templateset = {"simple": "simplereport"}[options["report"]]
         # Check templateset
         ts_root = os.path.join("templates", "newapp", templateset)
         if not os.path.isdir(ts_root):
@@ -216,10 +206,7 @@ class Command(BaseCommand):
                     model = getattr(models, tv["model"])
                 if issubclass(model, Model):
                     # Model
-                    fields = [{
-                        "type": "int",
-                        "name": "id"
-                    }]
+                    fields = [{"type": "int", "name": "id"}]
                     for f in model._meta.fields:
                         if f.name == "id":
                             continue
@@ -227,21 +214,16 @@ class Command(BaseCommand):
                         if fc in ("ForeignKey", "OneToOneField"):
                             # Foreign key
                             fr = f.remote_field.model
-                            rc = "%s.%s" % (fr.__module__.split(".")[1],
-                                            fr.__name__.lower())
+                            rc = "%s.%s" % (fr.__module__.split(".")[1], fr.__name__.lower())
                             fd = {
                                 "type": "int",
                                 "name": f.name,
                                 "label": unicode(f.verbose_name),
                                 "blank": f.null,
-                                "widget": "%s.LookupField" % rc
+                                "widget": "%s.LookupField" % rc,
                             }
                             fields += [fd]
-                            fd = {
-                                "type": "string",
-                                "name": "%s__label" % f.name,
-                                "persist": False
-                            }
+                            fd = {"type": "string", "name": "%s__label" % f.name, "persist": False}
                             fields += [fd]
                             tv["requires"] += ["NOC.%s.LookupField" % rc]
                         else:
@@ -250,7 +232,7 @@ class Command(BaseCommand):
                                 "name": f.name,
                                 "label": unicode(f.verbose_name),
                                 "blank": f.null,
-                                "widget": self.model_map[fc][1]
+                                "widget": self.model_map[fc][1],
                             }
                             if f.default != NOT_PROVIDED and not callable(f.default):
                                 fd["default"] = f.default
@@ -258,10 +240,7 @@ class Command(BaseCommand):
                     tv["base_class"] = "ExtModelApplication"
                 else:
                     # Document
-                    fields = [{
-                        "type": "string",
-                        "name": "id"
-                    }]
+                    fields = [{"type": "string", "name": "id"}]
                     for n, f in six.iteritems(model._fields):
                         if n == "id":
                             continue
@@ -270,12 +249,7 @@ class Command(BaseCommand):
                             ft = "int"
                         else:
                             ft = self.document_ext_type[fc]
-                        fd = {
-                            "type": ft,
-                            "name": n,
-                            "label": unicode(n),
-                            "blank": not f.required
-                        }
+                        fd = {"type": ft, "name": n, "label": unicode(n), "blank": not f.required}
                         if f.default:
                             fd["default"] = f.default
                         fields += [fd]

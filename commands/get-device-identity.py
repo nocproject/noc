@@ -8,6 +8,7 @@
 
 # Python modules
 import argparse
+
 # Third-party modules
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -21,7 +22,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "devices",
             nargs=argparse.REMAINDER,
-            help="Device or selector list. Selectors starts with @"
+            help="Device or selector list. Selectors starts with @",
         )
 
     def handle(self, devices, *args, **options):
@@ -41,9 +42,7 @@ class Command(BaseCommand):
                 try:
                     v = o.scripts.get_version()
                 except AttributeError:
-                    v = {
-                        "platform": "Unknown"
-                    }
+                    v = {"platform": "Unknown"}
                 platform = v["platform"]
             # sysObjectID
             try:
@@ -51,12 +50,7 @@ class Command(BaseCommand):
             except NOCError:
                 continue
             self.stdout.write(
-                "%s,%s,%s,%s\n" % (
-                    o.profile.name,
-                    platform,
-                    "SNMPv2-MIB::sysObjectID.0",
-                    v
-                )
+                "%s,%s,%s,%s\n" % (o.profile.name, platform, "SNMPv2-MIB::sysObjectID.0", v)
             )
 
 

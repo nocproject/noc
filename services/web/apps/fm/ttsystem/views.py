@@ -16,6 +16,7 @@ class TTSystemApplication(ExtDocApplication):
     """
     TTSystem application
     """
+
     title = _("TT System")
     menu = [_("Setup"), _("TT System")]
     model = TTSystem

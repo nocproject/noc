@@ -8,6 +8,7 @@
 
 # Python modules
 import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.interface import Interface
@@ -24,29 +25,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # extract command
-        show_parser = subparsers.add_parser("show",
-                                            help="Show interface profiles")
-        show_parser.add_argument(
-            "mos",
-            nargs=argparse.REMAINDER,
-            help="List of object to showing"
-        )
+        show_parser = subparsers.add_parser("show", help="Show interface profiles")
+        show_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
         # clean command
-        reset_parser = subparsers.add_parser("reset",
-                                             help="Reset interface profile")
-        reset_parser.add_argument(
-            "mos",
-            nargs=argparse.REMAINDER,
-            help="List of object to showing"
-        )
+        reset_parser = subparsers.add_parser("reset", help="Reset interface profile")
+        reset_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
         # load command
-        apply_parser = subparsers.add_parser("apply",
-                                             help="Apply classification rules")
-        apply_parser.add_argument(
-            "mos",
-            nargs=argparse.REMAINDER,
-            help="List of object to showing"
-        )
+        apply_parser = subparsers.add_parser("apply", help="Apply classification rules")
+        apply_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
 
     def handle(self, cmd, *args, **options):
         if "mos" in options:
@@ -67,11 +53,7 @@ class Command(BaseCommand):
     @staticmethod
     def get_interfaces(mo):
         return sorted(
-            Interface.objects.filter(
-                managed_object=mo.id,
-                type="physical"
-            ),
-            key=split_alnum
+            Interface.objects.filter(managed_object=mo.id, type="physical"), key=split_alnum
         )
 
     @staticmethod
@@ -90,19 +72,22 @@ class Command(BaseCommand):
 
     def handle_show(self, moo, *args, **options):
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name))
+            self.stdout.write(
+                "%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name)
+            )
             ifaces = self.get_interfaces(o)
             if not ifaces:
                 self.stdout.write("No ifaces on object\n")
                 continue
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
-                self.show_interface(
-                    tps, i, i.profile.name if i.profile else "-")
+                self.show_interface(tps, i, i.profile.name if i.profile else "-")
 
     def handle_reset(self, moo, *args, **kwargs):
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name))
+            self.stdout.write(
+                "%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name)
+            )
             for i in Interface.objects.filter(managed_object=o.id):
                 if i.profile:
                     self.stdout.write("    resetting profile on %s to default\n" % i.name)
@@ -119,7 +104,9 @@ class Command(BaseCommand):
             # raise CommandError("No classification solution")
         pcache = {}
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, o.platform.name if o.platform else o.profile.name))
+            self.stdout.write(
+                "%s (%s):\n" % (o.name, o.platform.name if o.platform else o.profile.name)
+            )
             ifaces = self.get_interfaces(o)
             if not ifaces:
                 self.stdout.write("No ifaces on object\n")

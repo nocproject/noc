@@ -11,6 +11,7 @@ from __future__ import print_function
 import argparse
 import operator
 import time
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.alarmescalation import AlarmEscalation
@@ -30,29 +31,20 @@ class Command(BaseCommand):
         #
         check_parser = subparsers.add_parser("check")
         check_parser.add_argument(
-            "check_alarms",
-            nargs=argparse.REMAINDER,
-            help="Checks alarms escalation"
+            "check_alarms", nargs=argparse.REMAINDER, help="Checks alarms escalation"
         )
         #
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
-            "--limit",
-            type=int,
-            default=0,
-            help="Limit escalations (per minute)"
+            "--limit", type=int, default=0, help="Limit escalations (per minute)"
         )
         run_parser.add_argument(
-            "run_alarms",
-            nargs=argparse.REMAINDER,
-            help="Run alarm escalations"
+            "run_alarms", nargs=argparse.REMAINDER, help="Run alarm escalations"
         )
         #
         close_parser = subparsers.add_parser("close")
         close_parser.add_argument(
-            "close_alarms",
-            nargs=argparse.REMAINDER,
-            help="Close escalated TT"
+            "close_alarms", nargs=argparse.REMAINDER, help="Close escalated TT"
         )
 
     def handle(self, cmd, *args, **options):
@@ -65,9 +57,7 @@ class Command(BaseCommand):
             if alarm:
                 self.check_alarm(alarm)
             else:
-                self.print(
-                    "ERROR: Alarm %s is not found. Skipping" % alarm
-                )
+                self.print("ERROR: Alarm %s is not found. Skipping" % alarm)
 
     def handle_run(self, run_alarms=None, limit=0, *args, **kwargs):
         run_alarms = run_alarms or []
@@ -76,29 +66,21 @@ class Command(BaseCommand):
         for a_id in run_alarms:
             alarm = get_alarm(a_id)
             if alarm and alarm.status == "A":
-                self.print(
-                    "Sending alarm %s to escalator" % alarm.id
-                )
+                self.print("Sending alarm %s to escalator" % alarm.id)
                 self.run_alarm(alarm)
                 if limit:
                     time.sleep(delay)
             elif alarm:
-                self.print(
-                    "ERROR: Alarm %s is cleared. Skipping" % alarm
-                )
+                self.print("ERROR: Alarm %s is cleared. Skipping" % alarm)
             else:
-                self.print(
-                    "ERROR: Alarm %s is not found. Skipping" % alarm
-                )
+                self.print("ERROR: Alarm %s is not found. Skipping" % alarm)
 
     def handle_close(self, close_alarms=None, *args, **kwargs):
         close_alarms = close_alarms or []
         for a_id in close_alarms:
             alarm = get_alarm(a_id)
             if alarm and alarm.status == "A" and alarm.escalation_tt:
-                self.print(
-                    "Sending TT close for alarm %s to escalator" % alarm.id
-                )
+                self.print("Sending TT close for alarm %s to escalator" % alarm.id)
                 call_later(
                     "noc.services.escalator.escalation.notify_close",
                     scheduler="escalator",
@@ -108,16 +90,12 @@ class Command(BaseCommand):
                     subject="Closed",
                     body="Closed",
                     notification_group_id=None,
-                    close_tt=False
+                    close_tt=False,
                 )
             elif alarm:
-                self.print(
-                    "ERROR: Alarm %s is not escalated. Skipping" % alarm
-                )
+                self.print("ERROR: Alarm %s is not escalated. Skipping" % alarm)
             else:
-                self.print(
-                    "ERROR: Alarm %s is not found. Skipping" % alarm
-                )
+                self.print("ERROR: Alarm %s is not found. Skipping" % alarm)
 
     def check_alarm(self, alarm):
         def summary_to_list(summary, model):
@@ -126,10 +104,7 @@ class Command(BaseCommand):
                 p = model.get_by_id(k.profile)
                 if not p or getattr(p, "show_in_summary", True) is False:
                     continue
-                r += [{
-                    "profile": p.name,
-                    "summary": k.summary
-                }]
+                r += [{"profile": p.name, "summary": k.summary}]
             return sorted(r, key=lambda x: -x["summary"])
 
         def iter_consequences(alarm):
@@ -163,27 +138,21 @@ class Command(BaseCommand):
 
         mo = alarm.managed_object
         self.print("-" * 72)
-        self.print("Alarm Id : %s  Time: %s" % (
-            alarm.id, alarm.timestamp
-        ))
+        self.print("Alarm Id : %s  Time: %s" % (alarm.id, alarm.timestamp))
         self.print("Class    : %s" % alarm.alarm_class.name)
-        self.print("Object   : %s  Platform: %s  IP: %s" % (
-            mo.name, mo.platform, mo.address
-        ))
+        self.print("Object   : %s  Platform: %s  IP: %s" % (mo.name, mo.platform, mo.address))
         c = mo.administrative_domain
         adm_domains = [c]
         while c.parent:
             c = c.parent
             adm_domains.insert(0, c)
         self.print(
-            "Adm. Dom.: %s (%s)" % (
-                " | ".join(c.name for c in adm_domains),
-                " | ".join(str(c.id) for c in adm_domains)
-            )
+            "Adm. Dom.: %s (%s)"
+            % (" | ".join(c.name for c in adm_domains), " | ".join(str(c.id) for c in adm_domains))
         )
-        escalations = list(AlarmEscalation.objects.filter(
-            alarm_classes__alarm_class=alarm.alarm_class.id
-        ))
+        escalations = list(
+            AlarmEscalation.objects.filter(alarm_classes__alarm_class=alarm.alarm_class.id)
+        )
         if not escalations:
             self.print("@ No matched escalations")
             return
@@ -195,45 +164,44 @@ class Command(BaseCommand):
             for e in esc.escalations:
                 self.print("    [After %ss]" % e.delay)
                 # Check administrative domain
-                if (e.administrative_domain and
-                        e.administrative_domain.id not in alarm.adm_path):
-                    self.print("    @ Administrative domain mismatch (%s not in %s)" % (
-                        e.administrative_domain.id, alarm.adm_path
-                    ))
+                if e.administrative_domain and e.administrative_domain.id not in alarm.adm_path:
+                    self.print(
+                        "    @ Administrative domain mismatch (%s not in %s)"
+                        % (e.administrative_domain.id, alarm.adm_path)
+                    )
                     continue
                 # Check severity
                 if e.min_severity and alarm.severity < e.min_severity:
-                    self.print("    @ Severity mismatch: %s < %s" % (
-                        alarm.severity, e.min_severity))
+                    self.print(
+                        "    @ Severity mismatch: %s < %s" % (alarm.severity, e.min_severity)
+                    )
                     continue
                 # Check selector
                 if e.selector and not SelectorCache.is_in_selector(mo, e.selector):
-                    self.print("    @ Selector mismatch (%s required)" % (
-                        e.selector.name))
+                    self.print("    @ Selector mismatch (%s required)" % (e.selector.name))
                     continue
                 # Check time pattern
                 if e.time_pattern and not e.time_pattern.match(alarm.timestamp):
-                    self.print("    @ Time pattern mismatch (%s required)" % (
-                        e.time_pattern.name))
+                    self.print("    @ Time pattern mismatch (%s required)" % (e.time_pattern.name))
                     continue
                 # Render escalation message
                 if not e.template:
                     self.print("    @ No escalation template")
                     continue
                 # Check whether consequences has escalations
-                cons_escalated = sorted(iter_escalated(alarm),
-                                        key=operator.attrgetter("timestamp"))
-                affected_objects = sorted(iter_affected(alarm),
-                                          key=operator.attrgetter("name"))
+                cons_escalated = sorted(iter_escalated(alarm), key=operator.attrgetter("timestamp"))
+                affected_objects = sorted(iter_affected(alarm), key=operator.attrgetter("name"))
                 #
                 ctx = {
                     "alarm": alarm,
                     "affected_objects": affected_objects,
                     "cons_escalated": cons_escalated,
                     "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
-                    "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
+                    "total_subscribers": summary_to_list(
+                        alarm.total_subscribers, SubscriberProfile
+                    ),
                     "total_services": summary_to_list(alarm.total_services, ServiceProfile),
-                    "tt": None
+                    "tt": None,
                 }
                 if e.create_tt:
                     self.print("    Creating TT")
@@ -244,9 +212,9 @@ class Command(BaseCommand):
                         self.print("    @ Escalation disabled by policy")
                     else:
                         tts = tt_system.get_system()
-                        self.print("    TT System: %s  Mapped Id: %s" % (
-                            tt_system.name, mo.tt_system_id
-                        ))
+                        self.print(
+                            "    TT System: %s  Mapped Id: %s" % (tt_system.name, mo.tt_system_id)
+                        )
                         subject = e.template.render_subject(**ctx)
                         body = e.template.render_body(**ctx)
                         self.print("    @ Create network TT")
@@ -263,19 +231,27 @@ class Command(BaseCommand):
                             for o in alarm.iter_affected():
                                 if o.can_escalate(depended=True):
                                     if o.tt_system == mo.tt_system:
-                                        self.print("    @ Add to group TT %s. Remote Id: %s" % (
-                                            o.name, o.tt_system_id))
+                                        self.print(
+                                            "    @ Add to group TT %s. Remote Id: %s"
+                                            % (o.name, o.tt_system_id)
+                                        )
                                     else:
-                                        self.print("    @ Cannot add to group TT. Belongs to other TT system" % o.name)
+                                        self.print(
+                                            "    @ Cannot add to group TT. Belongs to other TT system"
+                                            % o.name
+                                        )
                                 else:
-                                    self.print("    @ Cannot add to group TT %s. Escalations are disabled" % (
-                                        o.name
-                                    ))
+                                    self.print(
+                                        "    @ Cannot add to group TT %s. Escalations are disabled"
+                                        % (o.name)
+                                    )
                 if e.notification_group:
                     if mo.can_notify():
                         subject = e.template.render_subject(**ctx)
                         body = e.template.render_body(**ctx)
-                        self.print("    @ Sending notification to group '%s'" % e.notification_group.name)
+                        self.print(
+                            "    @ Sending notification to group '%s'" % e.notification_group.name
+                        )
                         self.print("    | Subject: %s" % subject)
                         self.print("    |")
                         self.print("    | %s" % body.replace("\n", "\n    | "))

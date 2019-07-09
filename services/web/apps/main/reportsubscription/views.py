@@ -17,6 +17,7 @@ class ReportSubscriptionApplication(ExtDocApplication):
     """
     ReportSubscription application
     """
+
     title = _("Report Subscription")
     menu = [_("Setup"), _("Report Subscription")]
     model = ReportSubscription

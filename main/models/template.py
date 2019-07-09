@@ -9,12 +9,14 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from django.db import models
 from django.core.exceptions import ValidationError
 import jinja2
 import cachetools
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
@@ -31,19 +33,21 @@ def template_validator(value):
         raise ValidationError(str(e))
 
 
-@on_delete_check(check=[
-    ("fm.AlarmTrigger", "template"),
-    ("fm.ActiveAlarm", "clear_template"),
-    ("fm.EventTrigger", "template"),
-    ("ip.AddressProfile", "name_template"),
-    ("ip.AddressProfile", "fqdn_template"),
-    ("ip.PrefixProfile", "name_template"),
-    ("main.SystemTemplate", "template"),
-    ("sa.ManagedObjectProfile", "beef_path_template"),
-    ("sa.ManagedObjectProfile", "config_mirror_template"),
-    ("sa.ManagedObjectProfile", "config_download_template"),
-    ("vc.VPNProfile", "name_template")
-])
+@on_delete_check(
+    check=[
+        ("fm.AlarmTrigger", "template"),
+        ("fm.ActiveAlarm", "clear_template"),
+        ("fm.EventTrigger", "template"),
+        ("ip.AddressProfile", "name_template"),
+        ("ip.AddressProfile", "fqdn_template"),
+        ("ip.PrefixProfile", "name_template"),
+        ("main.SystemTemplate", "template"),
+        ("sa.ManagedObjectProfile", "beef_path_template"),
+        ("sa.ManagedObjectProfile", "config_mirror_template"),
+        ("sa.ManagedObjectProfile", "config_download_template"),
+        ("vc.VPNProfile", "name_template"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Template(NOCModel):
     class Meta(object):

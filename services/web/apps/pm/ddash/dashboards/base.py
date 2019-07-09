@@ -7,12 +7,13 @@
 # ---------------------------------------------------------------------
 
 import logging
+
 # Python modules
 import os
 
 import ujson
 
-BAD_CHARS = u'!"%\'()+,:;<>?@\^`{|}~\\\n\r'
+BAD_CHARS = "!\"%'()+,:;<>?@\^`{|}~\\\n\r"
 
 
 class BaseDashboard(object):
@@ -54,7 +55,9 @@ class BaseDashboard(object):
         if self.templates_path:
             t_path = self.templates_path
         else:
-            t_path = os.path.join("services", "web", "apps", "pm", "ddash", "dashboards", "templates")
+            t_path = os.path.join(
+                "services", "web", "apps", "pm", "ddash", "dashboards", "templates"
+            )
         t = {}
         if not os.path.exists(t_path):
             self.logger.warn("Templates path %s is not exist" % t_path)

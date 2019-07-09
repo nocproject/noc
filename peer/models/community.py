@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from .communitytype import CommunityType

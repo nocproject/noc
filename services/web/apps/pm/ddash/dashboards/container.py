@@ -9,10 +9,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-Party modules
 import demjson
 from jinja2 import Environment, FileSystemLoader
 from mongoengine.errors import DoesNotExist
+
 # NOC modules
 from .base import BaseDashboard
 from noc.config import config
@@ -39,16 +41,11 @@ class ContainerDashboard(BaseDashboard):
                     o = Object.objects.get(id=c)
                     # @todo: Address data
                     if o.container:
-                        cp.insert(0, {
-                            "id": str(o.id),
-                            "name": o.name
-                        })
+                        cp.insert(0, {"id": str(o.id), "name": o.name})
                     c = o.container.id if o.container else None
                 except DoesNotExist:
                     break
-        self.object_data = {
-            "container_path": cp
-        }
+        self.object_data = {"container_path": cp}
 
         if not self.object:
             return self.object_data
@@ -57,14 +54,11 @@ class ContainerDashboard(BaseDashboard):
     def render(self):
         bi_ids = []
         for o in self.object:
-            bi_ids.append({
-                "id": o.bi_id,
-                "name": o.name
-            })
+            bi_ids.append({"id": o.bi_id, "name": o.name})
         context = {
             "bi_ids": bi_ids,
             "container_path": self.object_data["container_path"],
-            "container_id": self.container
+            "container_id": self.container,
         }
 
         self.logger.info("Context with data: %s" % context)

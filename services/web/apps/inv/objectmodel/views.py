@@ -20,6 +20,7 @@ class ObjectModelApplication(ExtDocApplication):
     """
     ObjectModel application
     """
+
     title = _("Object Models")
     menu = [_("Setup"), _("Object Models")]
     model = ObjectModel
@@ -30,7 +31,7 @@ class ObjectModelApplication(ExtDocApplication):
         "description__icontains",
         "data__asset__part_no",
         "data__asset__order_part_no",
-        "uuid"
+        "uuid",
     ]
 
     def clean(self, data):
@@ -49,8 +50,7 @@ class ObjectModelApplication(ExtDocApplication):
             del q["is_container"]
         return super(ObjectModelApplication, self).cleaned_query(q)
 
-    @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"],
-          access="read", api=True)
+    @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"], access="read", api=True)
     def api_compatible(self, request, id):
         o = self.get_object_or_404(ObjectModel, id=id)
         # Connections
@@ -61,52 +61,47 @@ class ObjectModelApplication(ExtDocApplication):
             for t, n in o.get_connection_proposals(c.name):
                 m = ObjectModel.objects.filter(id=t).first()
                 mc = m.get_model_connection(n)
-                proposals += [{
-                    "model": m.name,
-                    "model_description": m.description,
-                    "name": n,
-                    "description": mc.description,
-                    "gender": mc.gender
-                }]
+                proposals += [
+                    {
+                        "model": m.name,
+                        "model_description": m.description,
+                        "name": n,
+                        "description": mc.description,
+                        "gender": mc.gender,
+                    }
+                ]
             #
-            if (r and r[-1]["direction"] == c.direction and
-                        r[-1]["gender"] == c.gender and
-                        r[-1]["connections"] == proposals):
-                r[-1]["names"] += [{
-                    "name": c.name,
-                    "description": c.description
-                }]
+            if (
+                r
+                and r[-1]["direction"] == c.direction
+                and r[-1]["gender"] == c.gender
+                and r[-1]["connections"] == proposals
+            ):
+                r[-1]["names"] += [{"name": c.name, "description": c.description}]
             else:
-                r += [{
-                    "names": [{
-                        "name": c.name,
-                        "description": c.description
-                    }],
-                    "direction": c.direction,
-                    "gender": c.gender,
-                    "connections": proposals
-                }]
+                r += [
+                    {
+                        "names": [{"name": c.name, "description": c.description}],
+                        "direction": c.direction,
+                        "gender": c.gender,
+                        "connections": proposals,
+                    }
+                ]
         # Crossing
         # @todo: Count splitter interface
         rc = []
         for c in o.connections:
             if c.cross:
-                rc += [{
-                    "y": c.name,
-                    "x": c.cross,
-                    "v": "1"
-                }]
-        return {
-            "connections": r,
-            "crossing": rc
-        }
+                rc += [{"y": c.name, "x": c.cross, "v": "1"}]
+        return {"connections": r, "crossing": rc}
 
-    @view(url="^actions/json/$", method=["POST"],
-          access="read",
-          validate={
-            "ids": ListOfParameter(element=DocumentParameter(ObjectModel), convert=True)
-          },
-          api=True)
+    @view(
+        url="^actions/json/$",
+        method=["POST"],
+        access="read",
+        validate={"ids": ListOfParameter(element=DocumentParameter(ObjectModel), convert=True)},
+        api=True,
+    )
     def api_action_json(self, request, ids):
         r = [o.json_data for o in ids]
         s = to_json(r, order=["name", "vendor__code", "description"])

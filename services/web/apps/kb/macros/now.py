@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # Third-party modules
 from django.utils.dateformat import DateFormat
+
 # NOC modules
 from .base import BaseMacro
 
@@ -22,6 +24,7 @@ class Macro(BaseMacro):
     Optional arguments
         format - PHP date()-like format string
     """
+
     name = "now"
 
     @classmethod

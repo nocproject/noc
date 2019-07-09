@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.inv.models.firmware import Firmware
 from .base import BaseCard
@@ -19,6 +20,4 @@ class FirmwarePlanCard(BaseCard):
     model = Firmware
 
     def get_data(self):
-        return {
-            "object": self.object
-        }
+        return {"object": self.object}

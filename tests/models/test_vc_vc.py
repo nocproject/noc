@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.vc.models.vctype import VCType
 from noc.vc.models.vcdomain import VCDomain
@@ -15,13 +16,16 @@ from noc.vc.models.vc import VC
 from noc.vc.models.error import InvalidLabelException
 
 
-@pytest.mark.parametrize("data", [
-    {"vc_type": "802.1Q VLAN", "l1": 0, "$except": InvalidLabelException},
-    {"vc_type": "802.1Q VLAN", "l1": 1},
-    {"vc_type": "802.1Q VLAN", "l1": 100},
-    {"vc_type": "802.1Q VLAN", "l1": 4095},
-    {"vc_type": "802.1Q VLAN", "l1": 4096, "$except": InvalidLabelException}
-])
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"vc_type": "802.1Q VLAN", "l1": 0, "$except": InvalidLabelException},
+        {"vc_type": "802.1Q VLAN", "l1": 1},
+        {"vc_type": "802.1Q VLAN", "l1": 100},
+        {"vc_type": "802.1Q VLAN", "l1": 4095},
+        {"vc_type": "802.1Q VLAN", "l1": 4096, "$except": InvalidLabelException},
+    ],
+)
 def test_vc_labels(data):
     # Get type
     vc_type = VCType.objects.get(name=data["vc_type"])

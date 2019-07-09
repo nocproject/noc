@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.ip.models.address import Address
 from .base import BaseCard
@@ -18,13 +19,7 @@ class AddressCard(BaseCard):
     default_template_name = "address"
     model = Address
 
-    SOURCES = {
-        "M": "Manual",
-        "i": "Interface",
-        "m": "Management",
-        "d": "DHCP",
-        "n": "Neighbor"
-    }
+    SOURCES = {"M": "Manual", "i": "Interface", "m": "Management", "d": "DHCP", "n": "Neighbor"}
 
     def get_data(self):
         # Build upwards path
@@ -37,5 +32,5 @@ class AddressCard(BaseCard):
         return {
             "object": self.object,
             "path": reversed(path),
-            "source": self.SOURCES.get(self.object.source, "Unknown")
+            "source": self.SOURCES.get(self.object.source, "Unknown"),
         }

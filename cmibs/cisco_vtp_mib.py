@@ -196,5 +196,5 @@ MIB = {
     "CISCO-VTP-MIB::vtpVlanPortLocalSegment": "1.3.6.1.4.1.9.9.46.2.1.1",
     "CISCO-VTP-MIB::vtpMIBConformance": "1.3.6.1.4.1.9.9.46.3",
     "CISCO-VTP-MIB::vtpMIBCompliances": "1.3.6.1.4.1.9.9.46.3.1",
-    "CISCO-VTP-MIB::vtpMIBGroups": "1.3.6.1.4.1.9.9.46.3.2"
+    "CISCO-VTP-MIB::vtpMIBGroups": "1.3.6.1.4.1.9.9.46.3.2",
 }

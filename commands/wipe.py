@@ -11,6 +11,7 @@ from __future__ import print_function
 import argparse
 import sys
 from contextlib import contextmanager
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.lib.validators import is_int
@@ -24,11 +25,7 @@ class Command(BaseCommand):
     models = ["managed_object", "user"]
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
-        )
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
 
     def handle(self, *args, **options):
         if len(args) < 1:
@@ -36,8 +33,9 @@ class Command(BaseCommand):
             sys.exit(1)
         m = args[0].replace("-", "_")
         if m not in self.models:
-            raise CommandError("Invalid model '%s'. Valid models are: %s" % (
-                m, ", ".join(self.models)))
+            raise CommandError(
+                "Invalid model '%s'. Valid models are: %s" % (m, ", ".join(self.models))
+            )
         objects = []
         getter = getattr(self, "get_%s" % m)
         wiper = getattr(self, "wipe_%s" % m)
@@ -49,6 +47,7 @@ class Command(BaseCommand):
             objects += [o]
         # Wipe objects
         from noc.core.debug import error_report
+
         with bulk_datastream_changes():
             for o in objects:
                 with self.log("Wiping '%s':" % unicode(o), True):
@@ -109,28 +108,29 @@ class Command(BaseCommand):
         :return: None
         """
         from noc.sa.wipe.managedobject import wipe
+
         wipe(o)
 
     def get_user(self, u_id):
-            """
+        """
             Get User by id or name
             :param u_id: Object's id or name
             :return: ManagedObject
             :rtype: ManagedObject
             """
-            from noc.aaa.models.user import User
+        from noc.aaa.models.user import User
 
-            # Try to get object by id
-            if is_int(u_id):
-                try:
-                    return User.objects.get(id=int(u_id))
-                except User.DoesNotExist:
-                    pass
-            # Try to get object by name
+        # Try to get object by id
+        if is_int(u_id):
             try:
-                return User.objects.get(username=u_id)
+                return User.objects.get(id=int(u_id))
             except User.DoesNotExist:
-                return None
+                pass
+        # Try to get object by name
+        try:
+            return User.objects.get(username=u_id)
+        except User.DoesNotExist:
+            return None
 
     def wipe_user(self, o):
         """
@@ -149,6 +149,7 @@ class Command(BaseCommand):
         from noc.ip.models.prefixbookmark import PrefixBookmark
         from noc.kb.models.kbentrypreviewlog import KBEntryPreviewLog
         from noc.kb.models.kbuserbookmark import KBUserBookmark
+
         # Clean UserState
         with self.log("Cleaning user preferences"):
             UserState.objects.filter(user_id=o.id).delete()

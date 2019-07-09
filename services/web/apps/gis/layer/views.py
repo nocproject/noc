@@ -17,14 +17,12 @@ class LayerApplication(ExtDocApplication):
     """
     Layer application
     """
+
     title = _("Layers")
     menu = [_("Setup"), _("Layers")]
     model = Layer
 
-    clean_fields = {
-        "stroke_color": ColorParameter(),
-        "fill_color": ColorParameter()
-    }
+    clean_fields = {"stroke_color": ColorParameter(), "fill_color": ColorParameter()}
 
     query_fields = ["name__icontains", "description__icontains"]
 

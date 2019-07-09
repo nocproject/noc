@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import ldap3
 import six
+
 # NOC modules
 from noc.main.models.authldapdomain import AuthLDAPDomain
 from .base import BaseAuthBackend
@@ -27,65 +29,41 @@ class LdapBackend(BaseAuthBackend):
         if domain:
             ldap_domain = AuthLDAPDomain.get_by_name(domain)
             if not ldap_domain:
-                self.logger.error(
-                    "LDAP Auth domain '%s' is not configured",
-                    domain
-                )
-                raise self.LoginError(
-                    "Invalid LDAP domain '%s'" % domain
-                )
+                self.logger.error("LDAP Auth domain '%s' is not configured", domain)
+                raise self.LoginError("Invalid LDAP domain '%s'" % domain)
         else:
             ldap_domain = AuthLDAPDomain.get_default_domain()
             if not ldap_domain:
-                self.logger.error(
-                    "Default LDAP Auth domain is not configured"
-                )
+                self.logger.error("Default LDAP Auth domain is not configured")
                 raise self.LoginError("Default LDAP domain is not configured")
         if not ldap_domain.is_active:
-            self.logger.error(
-                "LDAP Auth domain '%s' is disabled",
-                domain
-            )
-            raise self.LoginError(
-                "LDAP Auth domain '%s' is disabled" % domain
-            )
+            self.logger.error("LDAP Auth domain '%s' is disabled", domain)
+            raise self.LoginError("LDAP Auth domain '%s' is disabled" % domain)
         # Get servers
         server_pool = self.get_server_pool(ldap_domain)
         if not server_pool:
-            self.logger.error(
-                "No active servers configured for domain '%s'", domain
-            )
-            raise self.LoginError(
-                "No active servers configured for domain '%s'" % domain
-            )
+            self.logger.error("No active servers configured for domain '%s'", domain)
+            raise self.LoginError("No active servers configured for domain '%s'" % domain)
         # Connect and bind
         connect_kwargs = self.get_connection_kwargs(ldap_domain, user, password)
         dkw = connect_kwargs.copy()
         if "password" in dkw:
             dkw["password"] = "******"
-        self.logger.debug("Connect to ldap: %s", ", ".join(
-            "%s='%s'" % (kk, dkw[kk]) for kk in dkw)
-        )
+        self.logger.debug("Connect to ldap: %s", ", ".join("%s='%s'" % (kk, dkw[kk]) for kk in dkw))
         connect = ldap3.Connection(server_pool, **connect_kwargs)
         if not connect.bind():
-            raise self.LoginError(
-                "Failed to bind to LDAP: %s" % connect.result
-            )
+            raise self.LoginError("Failed to bind to LDAP: %s" % connect.result)
         # Rebind as privileged user
         if ldap_domain.bind_user:
             # Rebind as privileged user
             connect = ldap3.Connection(
                 server_pool,
                 **self.get_connection_kwargs(
-                    ldap_domain,
-                    ldap_domain.bind_user, ldap_domain.bind_password
+                    ldap_domain, ldap_domain.bind_user, ldap_domain.bind_password
                 )
             )
             if not connect.bind():
-                self.logger.error(
-                    "Cannot bind as %s to search groups",
-                    ldap_domain.bind_user
-                )
+                self.logger.error("Cannot bind as %s to search groups", ldap_domain.bind_user)
                 connect = None
         # Get user information
         user_info = self.get_user_info(connect, ldap_domain, user)
@@ -95,22 +73,18 @@ class LdapBackend(BaseAuthBackend):
         # Get user groups
         user_groups = set(g.lower() for g in self.get_user_groups(connect, ldap_domain, user_info))
         if ldap_domain.require_any_group and not user_groups:
-            self.logger.error(
-                "User %s in not a member of any mapped groups. Deny access",
-                user
-            )
+            self.logger.error("User %s in not a member of any mapped groups. Deny access", user)
             raise self.LoginError("No groups")
         if ldap_domain.require_group and ldap_domain.require_group.lower() not in user_groups:
             self.logger.error(
                 "User %s is not a member of required group %s but member of %s",
-                user, ldap_domain.require_group, user_groups
+                user,
+                ldap_domain.require_group,
+                user_groups,
             )
             raise self.LoginError("Login is not permitted")
         if ldap_domain.deny_group and ldap_domain.deny_group.lower() in user_groups:
-            self.logger.error(
-                "User %s is a member of deny group %s",
-                user, ldap_domain.deny_group
-            )
+            self.logger.error("User %s is a member of deny group %s", user, ldap_domain.deny_group)
             user_info["is_active"] = False
         # Synchronize user
         user = ldap_domain.clean_username(user)
@@ -121,25 +95,16 @@ class LdapBackend(BaseAuthBackend):
         ug = []
         for group in group_mappings:
             if group_mappings[group] & user_groups:
-                self.logger.debug(
-                    "%s: Ensure group %s",
-                    u.username, group.name
-                )
+                self.logger.debug("%s: Ensure group %s", u.username, group.name)
                 self.ensure_group(u, group)
                 ug += [group.name]
             else:
-                self.logger.debug(
-                    "%s: Deny group %s",
-                    u.username, group.name
-                )
+                self.logger.debug("%s: Deny group %s", u.username, group.name)
                 self.deny_group(u, group)
         # Final check
         if not user_info["is_active"]:
             raise self.LoginError("Access denied")
-        self.logger.info(
-            "Authenticated as %s. Groups: %s",
-            u.username, ", ".join(ug)
-        )
+        self.logger.info("Authenticated as %s. Groups: %s", u.username, ", ".join(ug))
         return u.username
 
     @classmethod
@@ -171,24 +136,16 @@ class LdapBackend(BaseAuthBackend):
         for s in ldap_domain.servers:
             if not s.is_active:
                 continue
-            kwargs = {
-                "host": s.address
-            }
+            kwargs = {"host": s.address}
             if s.port:
                 kwargs["port"] = s.port
             if s.use_tls:
                 kwargs["use_ssl"] = True
             servers += [ldap3.Server(**kwargs)]
         if not servers:
-            self.logger.error(
-                "No active servers configured for domain '%s'",
-                ldap_domain.name
-            )
+            self.logger.error("No active servers configured for domain '%s'", ldap_domain.name)
             return None
-        pool = ldap3.ServerPool(
-            servers,
-            ldap3.POOLING_STRATEGY_ROUND_ROBIN
-        )
+        pool = ldap3.ServerPool(servers, ldap3.POOLING_STRATEGY_ROUND_ROBIN)
         return pool
 
     def get_connection_kwargs(self, ldap_domain, user, password):
@@ -202,32 +159,24 @@ class LdapBackend(BaseAuthBackend):
         if ldap_domain.type == "ad":
             if "\\" not in user and "@" not in user:
                 user = "%s\%s" % (ldap_domain.name, user)
-            kwargs = {
-                "user": user,
-                "authentication": ldap3.NTLM
-            }
+            kwargs = {"user": user, "authentication": ldap3.NTLM}
         else:
-            kwargs = {
-                "user": "uid=%s,%s" % (user, ldap_domain.get_user_search_dn())
-            }
+            kwargs = {"user": "uid=%s,%s" % (user, ldap_domain.get_user_search_dn())}
         kwargs["password"] = password
         return kwargs
 
     def get_user_info(self, connection, ldap_domain, user):
-        user_info = {
-            "user_dn": user
-        }
+        user_info = {"user_dn": user}
         if not connection:
             return user_info
         usf = ldap_domain.get_user_search_filter() % {"user": user}
         user_search_dn = ldap_domain.get_user_search_dn()
-        self.logger.debug("User search from %s: %s",
-                          user_search_dn, usf)
+        self.logger.debug("User search from %s: %s", user_search_dn, usf)
         connection.search(
             user_search_dn,
             ldap_domain.get_user_search_filter() % {"user": user},
             ldap3.SUBTREE,
-            attributes=ldap_domain.get_user_search_attributes()
+            attributes=ldap_domain.get_user_search_attributes(),
         )
         if not connection.entries:
             self.logger.info("Cannot find user %s", user)
@@ -256,14 +205,7 @@ class LdapBackend(BaseAuthBackend):
             return []
         group_search_dn = ldap_domain.get_group_search_dn()
         gsf = ldap_domain.get_group_search_filter() % user_info
-        self.logger.debug("Group search from %s: %s",
-                          group_search_dn, gsf)
-        connection.search(
-            group_search_dn,
-            gsf,
-            ldap3.SUBTREE,
-            attributes=["cn"]
-        )
-        self.logger.debug("Groups found: %s",
-                          [e.entry_get_dn() for e in connection.entries])
+        self.logger.debug("Group search from %s: %s", group_search_dn, gsf)
+        connection.search(group_search_dn, gsf, ldap3.SUBTREE, attributes=["cn"])
+        self.logger.debug("Groups found: %s", [e.entry_get_dn() for e in connection.entries])
         return [e.entry_get_dn() for e in connection.entries]

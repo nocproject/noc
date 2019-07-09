@@ -27,18 +27,14 @@ class ReportUnknownModelsSummary(SimpleReport):
                 data[k][1] += 1
             else:
                 data[k] = [c["description"], 1]
-        data = sorted(
-            ((k[0], k[1], data[k][0], data[k][1]) for k in data),
-            key=lambda x: -x[3]
-        )
+        data = sorted(((k[0], k[1], data[k][0], data[k][1]) for k in data), key=lambda x: -x[3])
         return self.from_dataset(
             title=self.title,
             columns=[
-                "Vendor", "Part No", "Description",
-                TableColumn(
-                    "Count",
-                    format="numeric", align="right", total="sum"
-                )
+                "Vendor",
+                "Part No",
+                "Description",
+                TableColumn("Count", format="numeric", align="right", total="sum"),
             ],
-            data=data
+            data=data,
         )

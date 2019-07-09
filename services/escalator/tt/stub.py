@@ -9,6 +9,7 @@
 # Python modules
 import uuid
 import logging
+
 # NOC modules
 from noc.core.tt.base import BaseTTSystem
 
@@ -18,24 +19,31 @@ class StubTTSystem(BaseTTSystem):
     Stub TT system responds as a valid one, generating unique TT ids.
     For debugging purposes only
     """
+
     promote_group_tt = True
 
     def __init__(self, name, connection):
         self.logger = logging.getLogger("StubTTSystem.%s" % name)
         pass
 
-    def create_tt(self, queue, obj, reason=None,
-                  subject=None, body=None, login=None, timestamp=None):
+    def create_tt(
+        self, queue, obj, reason=None, subject=None, body=None, login=None, timestamp=None
+    ):
         self.logger.info(
             "create_tt(queue=%s, obj=%s, reason=%s, subject=%s, body=%s, login=%s, timestamp=%s)",
-            queue, obj, reason, subject, body, login, timestamp
+            queue,
+            obj,
+            reason,
+            subject,
+            body,
+            login,
+            timestamp,
         )
         return str(uuid.uuid4())
 
     def add_comment(self, tt_id, subject=None, body=None, login=None):
         self.logger.info(
-            "add_comment(tt_id=%s, subject=%s, body=%s, login=%s)",
-            tt_id, subject, body, login
+            "add_comment(tt_id=%s, subject=%s, body=%s, login=%s)", tt_id, subject, body, login
         )
         return True
 
@@ -55,8 +63,7 @@ class StubTTSystem(BaseTTSystem):
         """
         self.logger.info("Object %s appended to group TT %s", obj, gtt_id)
 
-    def close_tt(self, tt_id, subject=None, body=None,
-                 reason=None, login=None):
+    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None):
         """
         Close TT
         :param tt_id: TT id, as returned by create_tt

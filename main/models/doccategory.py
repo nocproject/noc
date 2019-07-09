@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
@@ -23,9 +24,7 @@ class DocCategory(Document):
         "collection": "noc.doccategories",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            ("type", "name")
-        ]
+        "indexes": [("type", "name")],
     }
 
     name = StringField()
@@ -55,8 +54,7 @@ class DocCategory(Document):
     def update_parent(cls, sender, document):
         if "|" in document.name:
             p_name = " | ".join(document.name.split(" | ")[:-1])
-            p = DocCategory.objects.filter(
-                type=document.type, name=p_name).first()
+            p = DocCategory.objects.filter(type=document.type, name=p_name).first()
             if not p:
                 # Create parent
                 logger.debug("Creating category %s (%s)", p_name, document.type)

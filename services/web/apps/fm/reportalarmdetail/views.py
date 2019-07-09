@@ -11,11 +11,13 @@ import datetime
 import csv
 import xlsxwriter
 import bson
+
 # Third-party modules
 from six import StringIO
 from django.http import HttpResponse
 from django.db import connection
 from pymongo import ReadPreference
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, IntParameter
@@ -40,8 +42,16 @@ from noc.core.translation import ugettext as _
 
 
 def get_column_width(name):
-    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
-                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    excel_column_format = {
+        "ID": 6,
+        "OBJECT_NAME": 38,
+        "OBJECT_STATUS": 10,
+        "OBJECT_PROFILE": 17,
+        "OBJECT_PLATFORM": 25,
+        "AVAIL": 6,
+        "ADMIN_DOMAIN": 25,
+        "PHYS_INTERFACE_COUNT": 5,
+    }
     if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
         return 8
     elif name.startswith("ADM_PATH"):
@@ -53,6 +63,7 @@ def get_column_width(name):
 
 class ReportAlarmObjects(object):
     """MO fields report"""
+
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
         self.out = self.load(self.mo_ids)
@@ -66,11 +77,15 @@ class ReportAlarmObjects(object):
         query += "platform, version "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         if mos_id:
-            query += "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id " \
-                     "and ad.id = sa.administrative_domain_id " % (", ".join(str(m) for m in mos_id))
+            query += (
+                "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id "
+                "and ad.id = sa.administrative_domain_id " % (", ".join(str(m) for m in mos_id))
+            )
         else:
-            query += "WHERE sa.is_managed = True and op.id = sa.object_profile_id " \
-                     "and ad.id = sa.administrative_domain_id "
+            query += (
+                "WHERE sa.is_managed = True and op.id = sa.object_profile_id "
+                "and ad.id = sa.administrative_domain_id "
+            )
         # query += "LIMIT 20"
         cursor = connection.cursor()
         cursor.execute(query)
@@ -98,31 +113,53 @@ class ReportAlarmDetailApplication(ExtApplication):
     CONTAINER_PATH_DEPTH = 7
 
     # Exclude ports profile
-    default_subscribers_profile = set(SubscriberProfile.objects.filter(display_order__gte=90).scalar("id"))
+    default_subscribers_profile = set(
+        SubscriberProfile.objects.filter(display_order__gte=90).scalar("id")
+    )
 
-    @view("^download/$", method=["GET"], access="launch", api=True,
-          validate={
-              "from_date": StringParameter(required=True),
-              "to_date": StringParameter(required=True),
-              "min_duration": IntParameter(required=False),
-              "max_duration": IntParameter(required=False),
-              "min_objects": IntParameter(required=False),
-              "min_subscribers": IntParameter(required=False),
-              "source": StringParameter(required=True),
-              "segment": StringParameter(required=False),
-              "administrative_domain": StringParameter(required=False),
-              "selector": StringParameter(required=False),
-              "ex_selector": StringParameter(required=False),
-              "alarm_class": StringParameter(required=False),
-              "subscribers": StringParameter(required=False),
-              "columns": StringParameter(required=False),
-              "o_format": StringParameter(choices=["csv", "xlsx"])}
-          )
-    def api_report(self, request, from_date, to_date, o_format,
-                   min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
-                   segment=None, administrative_domain=None, selector=None,
-                   ex_selector=None, columns=None, source="both",
-                   alarm_class=None, subscribers=None, enable_autowidth=False):
+    @view(
+        "^download/$",
+        method=["GET"],
+        access="launch",
+        api=True,
+        validate={
+            "from_date": StringParameter(required=True),
+            "to_date": StringParameter(required=True),
+            "min_duration": IntParameter(required=False),
+            "max_duration": IntParameter(required=False),
+            "min_objects": IntParameter(required=False),
+            "min_subscribers": IntParameter(required=False),
+            "source": StringParameter(required=True),
+            "segment": StringParameter(required=False),
+            "administrative_domain": StringParameter(required=False),
+            "selector": StringParameter(required=False),
+            "ex_selector": StringParameter(required=False),
+            "alarm_class": StringParameter(required=False),
+            "subscribers": StringParameter(required=False),
+            "columns": StringParameter(required=False),
+            "o_format": StringParameter(choices=["csv", "xlsx"]),
+        },
+    )
+    def api_report(
+        self,
+        request,
+        from_date,
+        to_date,
+        o_format,
+        min_duration=0,
+        max_duration=0,
+        min_objects=0,
+        min_subscribers=0,
+        segment=None,
+        administrative_domain=None,
+        selector=None,
+        ex_selector=None,
+        columns=None,
+        source="both",
+        alarm_class=None,
+        subscribers=None,
+        enable_autowidth=False,
+    ):
         def row(row, container_path, segment_path):
             def qe(v):
                 if v is None:
@@ -140,17 +177,19 @@ class ReportAlarmDetailApplication(ExtApplication):
             if len(container_path) < self.CONTAINER_PATH_DEPTH:
                 container_path += [""] * (self.CONTAINER_PATH_DEPTH - len(container_path))
             else:
-                container_path = container_path[:self.CONTAINER_PATH_DEPTH]
+                container_path = container_path[: self.CONTAINER_PATH_DEPTH]
             if len(segment_path) < self.SEGMENT_PATH_DEPTH:
                 segment_path += [""] * (self.SEGMENT_PATH_DEPTH - len(segment_path))
             else:
-                segment_path = segment_path[:self.SEGMENT_PATH_DEPTH]
+                segment_path = segment_path[: self.SEGMENT_PATH_DEPTH]
             return r + container_path + segment_path
 
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
 
-        cols = ["id",
+        cols = (
+            [
+                "id",
                 "root_id",
                 "from_ts",
                 "to_ts",
@@ -170,34 +209,39 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "tt",
                 "escalation_ts",
                 "location",
-                "container_address"] + \
-               ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + \
-               ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+                "container_address",
+            ]
+            + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)]
+            + ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+        )
 
-        header_row = [
-            "ID",
-            _("ROOT_ID"),
-            _("FROM_TS"),
-            _("TO_TS"),
-            _("DURATION_SEC"),
-            _("OBJECT_NAME"),
-            _("OBJECT_ADDRESS"),
-            _("OBJECT_HOSTNAME"),
-            _("OBJECT_PROFILE"),
-            _("OBJECT_ADMDOMAIN"),
-            _("OBJECT_PLATFORM"),
-            _("OBJECT_VERSION"),
-            _("ALARM_CLASS"),
-            _("ALARM_SUBJECT"),
-            _("MAINTENANCE"),
-            _("OBJECTS"),
-            _("SUBSCRIBERS"),
-            _("TT"),
-            _("ESCALATION_TS"),
-            _("LOCATION"),
-            _("CONTAINER_ADDRESS")] + \
-            ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + \
-            ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+        header_row = (
+            [
+                "ID",
+                _("ROOT_ID"),
+                _("FROM_TS"),
+                _("TO_TS"),
+                _("DURATION_SEC"),
+                _("OBJECT_NAME"),
+                _("OBJECT_ADDRESS"),
+                _("OBJECT_HOSTNAME"),
+                _("OBJECT_PROFILE"),
+                _("OBJECT_ADMDOMAIN"),
+                _("OBJECT_PLATFORM"),
+                _("OBJECT_VERSION"),
+                _("ALARM_CLASS"),
+                _("ALARM_SUBJECT"),
+                _("MAINTENANCE"),
+                _("OBJECTS"),
+                _("SUBSCRIBERS"),
+                _("TT"),
+                _("ESCALATION_TS"),
+                _("LOCATION"),
+                _("CONTAINER_ADDRESS"),
+            ]
+            + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)]
+            + ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+        )
 
         if columns:
             cmap = []
@@ -210,11 +254,14 @@ class ReportAlarmDetailApplication(ExtApplication):
             cmap = list(range(len(cols)))
         subscribers_profile = self.default_subscribers_profile
         if subscribers:
-            subscribers_profile = set(SubscriberProfile.objects.filter(id__in=subscribers.split(",")).scalar("id"))
+            subscribers_profile = set(
+                SubscriberProfile.objects.filter(id__in=subscribers.split(",")).scalar("id")
+            )
         r = [translate_row(header_row, cmap)]
         fd = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
-        match = {"timestamp": {"$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"),
-                               "$lte": fd}}
+        match = {
+            "timestamp": {"$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"), "$lte": fd}
+        }
 
         match_duration = {"duration": {"$gte": min_duration}}
         if max_duration:
@@ -276,128 +323,210 @@ class ReportAlarmDetailApplication(ExtApplication):
         loc = AlarmApplication([])
         if source in ["archive", "both"]:
             # Archived Alarms
-            for a in ArchivedAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-                    {"$match": match},
-                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]},
-                                                             1000]}}},
-                    {"$match": match_duration},
-                    # {"$sort": {"timestamp": 1}}
-                    ]):
+            for a in (
+                ArchivedAlarm._get_collection()
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(
+                    [
+                        {"$match": match},
+                        {
+                            "$addFields": {
+                                "duration": {
+                                    "$divide": [
+                                        {"$subtract": ["$clear_timestamp", "$timestamp"]},
+                                        1000,
+                                    ]
+                                }
+                            }
+                        },
+                        {"$match": match_duration},
+                        # {"$sort": {"timestamp": 1}}
+                    ]
+                )
+            ):
                 if int(a["managed_object"]) not in moss:
                     continue
                 dt = a["clear_timestamp"] - a["timestamp"]
                 duration = int(dt.total_seconds())
-                total_objects = sum(
-                    ss["summary"] for ss in a["total_objects"])
+                total_objects = sum(ss["summary"] for ss in a["total_objects"])
                 if min_objects and total_objects < min_objects:
                     continue
                 total_subscribers = sum(
-                    ss["summary"] for ss in a["total_subscribers"]
-                    if subscribers_profile and ss["profile"] in subscribers_profile)
+                    ss["summary"]
+                    for ss in a["total_subscribers"]
+                    if subscribers_profile and ss["profile"] in subscribers_profile
+                )
                 if min_subscribers and total_subscribers < min_subscribers:
                     continue
                 if "segment_" in columns.split(",") or "container_" in columns.split(","):
                     path = ObjectPath.get_path(a["managed_object"])
                     if path:
-                        segment_path = [NetworkSegment.get_by_id(s).name
-                                        for s in path.segment_path if NetworkSegment.get_by_id(s)]
-                        container_path = [Object.get_by_id(s).name for s in
-                                          path.container_path if Object.get_by_id(s)]
+                        segment_path = [
+                            NetworkSegment.get_by_id(s).name
+                            for s in path.segment_path
+                            if NetworkSegment.get_by_id(s)
+                        ]
+                        container_path = [
+                            Object.get_by_id(s).name
+                            for s in path.container_path
+                            if Object.get_by_id(s)
+                        ]
                     else:
                         segment_path = []
                         container_path = []
                 else:
                     segment_path = []
                     container_path = []
-                r += [translate_row(row([
-                    str(a["_id"]),
-                    str(a["root"]) if a.get("root") else "",
-                    a["timestamp"],
-                    a["clear_timestamp"],
-                    str(duration),
-                    moss[a["managed_object"]][0],
-                    moss[a["managed_object"]][1],
-                    mo_hostname.get(a["managed_object"], ""),
-                    Profile.get_by_id(moss[a["managed_object"]][3]).name if moss[a["managed_object"]][5] else "",
-                    moss[a["managed_object"]][6],
-                    Platform.get_by_id(moss[a["managed_object"]][9]) if moss[a["managed_object"]][9] else "",
-                    Firmware.get_by_id(moss[a["managed_object"]][10]) if moss[a["managed_object"]][10] else "",
-                    AlarmClass.get_by_id(a["alarm_class"]).name,
-                    ArchivedAlarm.objects.get(id=a["_id"]).subject if subject else "",
-                    "",
-                    total_objects,
-                    total_subscribers,
-                    a.get("escalation_tt"),
-                    a.get("escalation_ts"),
-                    ", ".join(l for l in (loc.location(moss[a["managed_object"]][5]) if
-                                          moss[a["managed_object"]][5] is not None else "")if l),
-                    container_lookup[a["managed_object"]].get("text", "") if container_lookup else ""
-                ], container_path, segment_path), cmap)]
+                r += [
+                    translate_row(
+                        row(
+                            [
+                                str(a["_id"]),
+                                str(a["root"]) if a.get("root") else "",
+                                a["timestamp"],
+                                a["clear_timestamp"],
+                                str(duration),
+                                moss[a["managed_object"]][0],
+                                moss[a["managed_object"]][1],
+                                mo_hostname.get(a["managed_object"], ""),
+                                Profile.get_by_id(moss[a["managed_object"]][3]).name
+                                if moss[a["managed_object"]][5]
+                                else "",
+                                moss[a["managed_object"]][6],
+                                Platform.get_by_id(moss[a["managed_object"]][9])
+                                if moss[a["managed_object"]][9]
+                                else "",
+                                Firmware.get_by_id(moss[a["managed_object"]][10])
+                                if moss[a["managed_object"]][10]
+                                else "",
+                                AlarmClass.get_by_id(a["alarm_class"]).name,
+                                ArchivedAlarm.objects.get(id=a["_id"]).subject if subject else "",
+                                "",
+                                total_objects,
+                                total_subscribers,
+                                a.get("escalation_tt"),
+                                a.get("escalation_ts"),
+                                ", ".join(
+                                    l
+                                    for l in (
+                                        loc.location(moss[a["managed_object"]][5])
+                                        if moss[a["managed_object"]][5] is not None
+                                        else ""
+                                    )
+                                    if l
+                                ),
+                                container_lookup[a["managed_object"]].get("text", "")
+                                if container_lookup
+                                else "",
+                            ],
+                            container_path,
+                            segment_path,
+                        ),
+                        cmap,
+                    )
+                ]
         # Active Alarms
         if source in ["active", "both"]:
-            for a in ActiveAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-                    {"$match": match},
-                    {"$addFields": {"duration": {"$divide": [{"$subtract": [fd, "$timestamp"]},
-                                                             1000]}}},
-                    {"$match": match_duration},
-                    # {"$sort": {"timestamp": 1}}
-                    ]):
+            for a in (
+                ActiveAlarm._get_collection()
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(
+                    [
+                        {"$match": match},
+                        {
+                            "$addFields": {
+                                "duration": {"$divide": [{"$subtract": [fd, "$timestamp"]}, 1000]}
+                            }
+                        },
+                        {"$match": match_duration},
+                        # {"$sort": {"timestamp": 1}}
+                    ]
+                )
+            ):
                 dt = fd - a["timestamp"]
                 duration = int(dt.total_seconds())
-                total_objects = sum(
-                    ss["summary"] for ss in a["total_objects"])
+                total_objects = sum(ss["summary"] for ss in a["total_objects"])
                 if min_objects and total_objects < min_objects:
                     continue
                 total_subscribers = sum(
-                    ss["summary"] for ss in a["total_subscribers"]
-                    if subscribers_profile and ss["profile"] in subscribers_profile)
+                    ss["summary"]
+                    for ss in a["total_subscribers"]
+                    if subscribers_profile and ss["profile"] in subscribers_profile
+                )
                 if min_subscribers and total_subscribers < min_subscribers:
                     continue
                 if "segment_" in columns.split(",") or "container_" in columns.split(","):
                     path = ObjectPath.get_path(a["managed_object"])
                     if path:
-                        segment_path = [NetworkSegment.get_by_id(s).name
-                                        for s in path.segment_path if NetworkSegment.get_by_id(s)]
-                        container_path = [Object.get_by_id(s).name for s in
-                                          path.container_path if Object.get_by_id(s)]
+                        segment_path = [
+                            NetworkSegment.get_by_id(s).name
+                            for s in path.segment_path
+                            if NetworkSegment.get_by_id(s)
+                        ]
+                        container_path = [
+                            Object.get_by_id(s).name
+                            for s in path.container_path
+                            if Object.get_by_id(s)
+                        ]
                     else:
                         segment_path = []
                         container_path = []
                 else:
                     segment_path = []
                     container_path = []
-                r += [translate_row(row([
-                    str(a["_id"]),
-                    str(a["root"]) if a.get("root") else "",
-                    a["timestamp"],
-                    # a["clear_timestamp"],
-                    "",
-                    str(duration),
-                    moss[a["managed_object"]][0],
-                    moss[a["managed_object"]][1],
-                    mo_hostname.get(a["managed_object"], ""),
-                    Profile.get_by_id(moss[a["managed_object"]][3]) if moss[a["managed_object"]][5] else "",
-                    moss[a["managed_object"]][6],
-                    Platform.get_by_id(moss[a["managed_object"]][9]) if moss[a["managed_object"]][9] else "",
-                    Firmware.get_by_id(moss[a["managed_object"]][10]) if moss[a["managed_object"]][10] else "",
-                    AlarmClass.get_by_id(a["alarm_class"]).name,
-                    ActiveAlarm.objects.get(id=a["_id"]).subject if subject else None,
-                    "Yes" if a["managed_object"] in maintenance else "No",
-                    total_objects,
-                    total_subscribers,
-                    a.get("escalation_tt"),
-                    a.get("escalation_ts"),
-                    ", ".join(l for l in (loc.location(moss[a["managed_object"]][5]) if
-                                          moss[a["managed_object"]][5] is not None else "") if l),
-                    container_lookup[a["managed_object"]].get("text", "") if container_lookup else ""
-                ], container_path, segment_path), cmap)]
+                r += [
+                    translate_row(
+                        row(
+                            [
+                                str(a["_id"]),
+                                str(a["root"]) if a.get("root") else "",
+                                a["timestamp"],
+                                # a["clear_timestamp"],
+                                "",
+                                str(duration),
+                                moss[a["managed_object"]][0],
+                                moss[a["managed_object"]][1],
+                                mo_hostname.get(a["managed_object"], ""),
+                                Profile.get_by_id(moss[a["managed_object"]][3])
+                                if moss[a["managed_object"]][5]
+                                else "",
+                                moss[a["managed_object"]][6],
+                                Platform.get_by_id(moss[a["managed_object"]][9])
+                                if moss[a["managed_object"]][9]
+                                else "",
+                                Firmware.get_by_id(moss[a["managed_object"]][10])
+                                if moss[a["managed_object"]][10]
+                                else "",
+                                AlarmClass.get_by_id(a["alarm_class"]).name,
+                                ActiveAlarm.objects.get(id=a["_id"]).subject if subject else None,
+                                "Yes" if a["managed_object"] in maintenance else "No",
+                                total_objects,
+                                total_subscribers,
+                                a.get("escalation_tt"),
+                                a.get("escalation_ts"),
+                                ", ".join(
+                                    l
+                                    for l in (
+                                        loc.location(moss[a["managed_object"]][5])
+                                        if moss[a["managed_object"]][5] is not None
+                                        else ""
+                                    )
+                                    if l
+                                ),
+                                container_lookup[a["managed_object"]].get("text", "")
+                                if container_lookup
+                                else "",
+                            ],
+                            container_path,
+                            segment_path,
+                        ),
+                        cmap,
+                    )
+                ]
 
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"alarms.csv\""
+            response["Content-Disposition"] = 'attachment; filename="alarms.csv"'
             writer = csv.writer(response)
             writer.writerows(r)
             return response
@@ -409,8 +538,10 @@ class ReportAlarmDetailApplication(ExtApplication):
             max_column_data_length = {}
             for rn, x in enumerate(r):
                 for cn, c in enumerate(x):
-                    if rn and (r[0][cn] not in max_column_data_length
-                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                    if rn and (
+                        r[0][cn] not in max_column_data_length
+                        or len(str(c)) > max_column_data_length[r[0][cn]]
+                    ):
                         max_column_data_length[r[0][cn]] = len(str(c))
                     ws.write(rn, cn, c, cf1)
             ws.autofilter(0, 0, rn, cn)
@@ -424,6 +555,6 @@ class ReportAlarmDetailApplication(ExtApplication):
             wb.close()
             response.seek(0)
             response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
-            response["Content-Disposition"] = "attachment; filename=\"alarms.xlsx\""
+            response["Content-Disposition"] = 'attachment; filename="alarms.xlsx"'
             response.close()
             return response

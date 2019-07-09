@@ -62,7 +62,7 @@ class Migration(BaseMigration):
                 continue
             rt += [(rtype, is_visible)]
         if rt:
-            print ("Creating DNS Zone record types: %s" % ", ".join(sorted([x[0] for x in rt])))
+            print("Creating DNS Zone record types: %s" % ", ".join(sorted([x[0] for x in rt])))
             for rtype, is_visible in rt:
                 self.db.execute(
                     "INSERT INTO dns_dnszonerecordtype(type, is_visible) VALUES(%s, %s)",

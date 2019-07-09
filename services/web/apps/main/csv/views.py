@@ -8,6 +8,7 @@
 
 # Python modules
 import csv
+
 # Third-party modules
 import six
 from six import StringIO
@@ -16,6 +17,7 @@ from django.contrib import admin
 from django.apps import apps as d_apps
 from django.http import HttpResponse
 from noc.core.translation import ugettext as _
+
 # NOC modules
 from noc.lib.app.application import Application, view
 from noc.core.csvutils import csv_export, csv_import, get_model_fields, IR_FAIL, IR_SKIP, IR_UPDATE
@@ -61,6 +63,7 @@ class CSVApplication(Application):
         """
         CSV import form
         """
+
         file = forms.FileField()
         resolve = forms.ChoiceField(
             choices=[(IR_FAIL, "Fail"), (IR_SKIP, "Skip"), (IR_UPDATE, "Update")]
@@ -69,10 +72,10 @@ class CSVApplication(Application):
 
     def address_in_network(self, ip, net):
         """Is an address in a network"""
-        ipaddr = int(''.join(['%02x' % int(x) for x in ip.split('.')]), 16)
-        netstr, bits = net.split('/')
-        netaddr = int(''.join(['%02x' % int(x) for x in netstr.split('.')]), 16)
-        mask = (0xffffffff << (32 - int(bits))) & 0xffffffff
+        ipaddr = int("".join(["%02x" % int(x) for x in ip.split(".")]), 16)
+        netstr, bits = net.split("/")
+        netaddr = int("".join(["%02x" % int(x) for x in netstr.split(".")]), 16)
+        mask = (0xFFFFFFFF << (32 - int(bits))) & 0xFFFFFFFF
         return (ipaddr & mask) == (netaddr & mask)
 
     @view(
@@ -95,23 +98,27 @@ class CSVApplication(Application):
             def import_check_perms():
                 accepted_row = []
                 forbidden_row = []
-                if get_model_id(m) == 'ip.Address':
-                    accepted_prefixes = get_model('ip.PrefixAccess').objects.filter(
-                        user=request.user, can_change=True
-                    ).values_list('prefix', 'vrf_id')
-                    csv_reader = csv.DictReader(request.FILES['file'])
+                if get_model_id(m) == "ip.Address":
+                    accepted_prefixes = (
+                        get_model("ip.PrefixAccess")
+                        .objects.filter(user=request.user, can_change=True)
+                        .values_list("prefix", "vrf_id")
+                    )
+                    csv_reader = csv.DictReader(request.FILES["file"])
                     keys = None
                     for row in csv_reader:
                         if not keys:
                             keys = list(six.iterkeys(row))
                         for prefix in accepted_prefixes:
-                            if self.address_in_network(row['address'], prefix[0])\
-                                    and get_model('ip.VRF').objects.get(id=prefix[1]).name == row['vrf']:
+                            if (
+                                self.address_in_network(row["address"], prefix[0])
+                                and get_model("ip.VRF").objects.get(id=prefix[1]).name == row["vrf"]
+                            ):
                                 accepted_row.append(row)
-                                if row['address'] in forbidden_row:
-                                    forbidden_row.remove(row['address'])
+                                if row["address"] in forbidden_row:
+                                    forbidden_row.remove(row["address"])
                             else:
-                                forbidden_row.append(row['address'])
+                                forbidden_row.append(row["address"])
                     forbidden_ip = list(set(forbidden_row))
 
                     new_csv_file = StringIO()
@@ -119,7 +126,8 @@ class CSVApplication(Application):
                     dict_writer.writeheader()
                     dict_writer.writerows(accepted_row)
                     check_msg = ", \n\nskipped because of PrefixAccess - %d IP: \n%s" % (
-                        len(forbidden_ip), "\n".join(forbidden_ip)
+                        len(forbidden_ip),
+                        "\n".join(forbidden_ip),
                     )
                 else:
                     new_csv_file = request.FILES["file"]
@@ -138,7 +146,7 @@ class CSVApplication(Application):
                 else:
                     return HttpResponse(
                         "%d records are imported/updated" % count + resp_msg,
-                        content_type="text/plain"
+                        content_type="text/plain",
                     )
                 return self.response_redirect(form.cleaned_data["referer"])
         else:
@@ -151,9 +159,9 @@ class CSVApplication(Application):
                     r = ["%s.%s" % (rel._meta["collection"], rname)]
                 else:
                     db_table = rel._meta.db_table
-                    r = ["%s.\"id\"" % db_table]
+                    r = ['%s."id"' % db_table]
                     if rname != "id":
-                        r = ["%s.\"%s\"" % (db_table, rname)] + r
+                        r = ['%s."%s"' % (db_table, rname)] + r
             else:
                 r = []
             fields += [(name, required, " or ".join(r))]
@@ -166,7 +174,9 @@ class CSVApplication(Application):
 # Admin actions to export selected objects as CSV
 #
 def admin_csv_export(modeladmin, request, queryset):
-    return HttpResponse(csv_export(modeladmin.model, queryset), content_type="text/csv; encoding=utf-8")
+    return HttpResponse(
+        csv_export(modeladmin.model, queryset), content_type="text/csv; encoding=utf-8"
+    )
 
 
 admin_csv_export.short_description = "Export selected %(verbose_name_plural)s to CSV"

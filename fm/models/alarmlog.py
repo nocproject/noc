@@ -22,7 +22,7 @@ class AlarmLog(nosql.EmbeddedDocument):
     message = nosql.StringField()
 
     def __str__(self):
-        return u"%s [%s -> %s]: %s" % (
+        return "%s [%s -> %s]: %s" % (
             self.timestamp,
             self.from_status,
             self.to_status,

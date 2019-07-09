@@ -8,6 +8,7 @@
 
 # Third-party modules
 import tornado.gen
+
 # NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
@@ -30,6 +31,7 @@ class SAEAPI(API):
     """
     SAE API
     """
+
     name = "sae"
 
     ACTIVATOR_RESOLUTION_RETRIES = config.sae.activator_resolution_retries
@@ -60,10 +62,7 @@ class SAEAPI(API):
         sn = "activator-%s" % pool
         for i in range(self.ACTIVATOR_RESOLUTION_RETRIES):
             try:
-                svc = yield self.service.dcs.resolve(
-                    sn,
-                    timeout=self.ACTIVATOR_RESOLUTION_TIMEOUT
-                )
+                svc = yield self.service.dcs.resolve(sn, timeout=self.ACTIVATOR_RESOLUTION_TIMEOUT)
                 raise tornado.gen.Return(svc)
             except ResolutionError as e:
                 self.logger.info("Cannot resolve %s: %s", sn, e)
@@ -90,9 +89,7 @@ class SAEAPI(API):
         :param timeout: Script timeout in seconds
         """
         # Resolve object data
-        data = yield self.service.get_executor("db").submit(
-            self.get_object_data, object_id
-        )
+        data = yield self.service.get_executor("db").submit(self.get_object_data, object_id)
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
@@ -110,17 +107,21 @@ class SAEAPI(API):
         self.redirect(
             url,
             "script",
-            [script_name, data["credentials"], data["capabilities"],
-             data["version"], args, timeout]
+            [
+                script_name,
+                data["credentials"],
+                data["capabilities"],
+                data["version"],
+                args,
+                timeout,
+            ],
         )
 
     @api
     @tornado.gen.coroutine
     def get_credentials(self, object_id):
         # Resolve object data
-        data = yield self.service.get_executor("db").submit(
-            self.get_object_data, object_id
-        )
+        data = yield self.service.get_executor("db").submit(self.get_object_data, object_id)
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
@@ -146,17 +147,36 @@ class SAEAPI(API):
         # Build capabilities
         capabilities = ObjectCapabilities.get_capabilities(object_id)
         # Get object credentials
-        (name, is_managed, profile,
-         vendor, platform, version,
-         scheme, address, port, user, password,
-         super_password, remote_path,
-         snmp_ro, pool_id, sw_image,
-         auth_profile_id,
-         ap_user, ap_password, ap_super_password,
-         ap_snmp_ro, ap_snmp_rw,
-         privilege_policy, p_privilege_policy,
-         access_preference, p_access_preference,
-         beef_storage_id, beef_path_template_id) = data[0]
+        (
+            name,
+            is_managed,
+            profile,
+            vendor,
+            platform,
+            version,
+            scheme,
+            address,
+            port,
+            user,
+            password,
+            super_password,
+            remote_path,
+            snmp_ro,
+            pool_id,
+            sw_image,
+            auth_profile_id,
+            ap_user,
+            ap_password,
+            ap_super_password,
+            ap_snmp_ro,
+            ap_snmp_rw,
+            privilege_policy,
+            p_privilege_policy,
+            access_preference,
+            p_access_preference,
+            beef_storage_id,
+            beef_path_template_id,
+        ) = data[0]
         # Check object is managed
         if not is_managed:
             metrics["error", ("type", "object_not_managed")] += 1
@@ -185,7 +205,7 @@ class SAEAPI(API):
             "super_password": super_password,
             "path": remote_path,
             "raise_privileges": raise_privileges,
-            "access_preference": access_preference
+            "access_preference": access_preference,
         }
         if snmp_ro:
             credentials["snmp_ro"] = snmp_ro
@@ -207,7 +227,7 @@ class SAEAPI(API):
             version = {
                 "vendor": vendor.code[0] if vendor.code else vendor.name,
                 "platform": Platform.get_by_id(platform).name,
-                "version": Firmware.get_by_id(version).version
+                "version": Firmware.get_by_id(version).version,
             }
             if sw_image:
                 version["image"] = sw_image
@@ -227,5 +247,5 @@ class SAEAPI(API):
             pool_id=pool_id,
             credentials=credentials,
             capabilities=capabilities,
-            version=version
+            version=version,
         )

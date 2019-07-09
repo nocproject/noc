@@ -16,6 +16,7 @@ class VCTypeApplication(ExtModelApplication):
     """
     VCType application
     """
+
     title = _("VC Type")
     menu = [_("Setup"), _("VC Types")]
     model = VCType

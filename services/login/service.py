@@ -9,8 +9,10 @@
 
 # Python modules
 import operator
+
 # Third-party modules
 import cachetools
+
 # NOC modules
 from noc.core.service.ui import UIService
 from noc.services.login.auth import AuthRequestHandler
@@ -25,9 +27,7 @@ from noc.config import config
 class LoginService(UIService):
     name = "login"
     process_name = "noc-%(name).10s-%(instance).2s"
-    api = [
-        LoginAPI
-    ]
+    api = [LoginAPI]
     use_mongo = True
     use_translation = True
     if config.features.traefik:
@@ -39,16 +39,11 @@ class LoginService(UIService):
     def get_handlers(self):
         return super(LoginService, self).get_handlers() + [
             ("^/api/auth/auth/$", AuthRequestHandler, {"service": self}),
-            ("^/api/login/logout/$", LogoutRequestHandler)
+            ("^/api/login/logout/$", LogoutRequestHandler),
         ]
 
     # Fields excluded from logging
-    HIDDEN_FIELDS = [
-        "password",
-        "new_password",
-        "old_password",
-        "retype_password"
-    ]
+    HIDDEN_FIELDS = ["password", "new_password", "old_password", "retype_password"]
 
     def iter_methods(self):
         for m in config.login.methods.split(","):
@@ -69,26 +64,19 @@ class LoginService(UIService):
                 self.logger.error("Cannot initialize backend '%s'", method)
                 continue
             backend = bc(self)
-            self.logger.info(
-                "Authenticating credentials %s using method %s",
-                c, method
-            )
+            self.logger.info("Authenticating credentials %s using method %s", c, method)
             try:
                 user = backend.authenticate(**credentials)
-                metrics['auth_try', ('method', method)] += 1
+                metrics["auth_try", ("method", method)] += 1
             except backend.LoginError as e:
                 self.logger.info("[%s] Login Error: %s", method, e)
-                metrics['auth_fail', ('method', method)] += 1
+                metrics["auth_fail", ("method", method)] += 1
                 le = str(e)
                 continue
             self.logger.info("Authorized credentials %s as user %s", c, user)
-            metrics['auth_success', ('method', method)] += 1
+            metrics["auth_success", ("method", method)] += 1
             # Set cookie
-            handler.set_secure_cookie(
-                "noc_user",
-                user,
-                expires_days=config.login.session_ttl
-            )
+            handler.set_secure_cookie("noc_user", user, expires_days=config.login.session_ttl)
             return True
         self.logger.error("Login failed for %s: %s", c, le)
         return False
@@ -108,17 +96,14 @@ class LoginService(UIService):
                 self.logger.error("Cannot initialize backend '%s'", method)
                 continue
             backend = bc(self)
-            self.logger.info("Changing credentials %s using method %s",
-                             c, method)
+            self.logger.info("Changing credentials %s using method %s", c, method)
             try:
                 backend.change_credentials(**credentials)
                 r = True
             except NotImplementedError:
                 continue
             except backend.LoginError as e:
-                self.logger.error(
-                    "Failed to change credentials for %s: %s", c, e
-                )
+                self.logger.error("Failed to change credentials for %s: %s", c, e)
             self.logger.info("Changed user credentials: %s", c)
         return r
 

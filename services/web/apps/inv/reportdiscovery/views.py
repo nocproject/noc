@@ -50,15 +50,12 @@ class ReportDiscoveryApplication(SimpleReport):
         data += sorted(d, key=lambda x: -x[1])
         # Links summary
         data += [SectionRow("Links")]
-        r = Link._get_collection().aggregate([
-            {
-                "$group": {
-                    "_id": "$discovery_method",
-                    "count": {"$sum": 1}
-                }
-            },
-            {"$sort": {"count": -1}}
-        ])
+        r = Link._get_collection().aggregate(
+            [
+                {"$group": {"_id": "$discovery_method", "count": {"$sum": 1}}},
+                {"$sort": {"count": -1}},
+            ]
+        )
         d = [(x["_id"], x["count"]) for x in r]
         data += sorted(d, key=lambda x: -x[1])
         # Discovery jobs
@@ -73,9 +70,8 @@ class ReportDiscoveryApplication(SimpleReport):
             columns=[
                 "",
                 TableColumn(
-                    "Count", align="right", format="integer",
-                    total="sum", total_label="Total"
-                )
+                    "Count", align="right", format="integer", total="sum", total_label="Total"
+                ),
             ],
-            data=data
+            data=data,
         )

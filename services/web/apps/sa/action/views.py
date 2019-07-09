@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sa.models.action import Action
 from noc.core.translation import ugettext as _
 
@@ -16,6 +16,7 @@ class ActionApplication(ExtDocApplication):
     """
     Action application
     """
+
     title = _("Action")
     menu = [_("Setup"), _("Actions")]
     model = Action

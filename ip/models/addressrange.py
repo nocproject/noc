@@ -84,7 +84,7 @@ class AddressRange(NOCModel):
     )
 
     def __str__(self):
-        return u"%s (IPv%s): %s -- %s" % (
+        return "%s (IPv%s): %s -- %s" % (
             self.vrf.name,
             self.afi,
             self.from_address,

@@ -119,7 +119,7 @@ class VRF(NOCModel):
 
     def __str__(self):
         if self.rd == self.GLOBAL_RD:
-            return u"global"
+            return "global"
         else:
             return self.name
 

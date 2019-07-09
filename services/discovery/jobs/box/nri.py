@@ -18,6 +18,7 @@ class NRICheck(TopologyDiscoveryCheck):
     Network Resource Inventory Topology Discovery
     Maps NRI port name to local interface
     """
+
     name = "nri"
     aliased_names_only = True
 
@@ -33,12 +34,7 @@ class NRICheck(TopologyDiscoveryCheck):
 
     def iter_neighbors(self, mo):
         self.set_nri_aliases(mo)
-        for d in ExtNRILink._get_collection().find({
-            "$or": [
-                {"src_mo": mo.id},
-                {"dst_mo": mo.id}
-            ]
-        }):
+        for d in ExtNRILink._get_collection().find({"$or": [{"src_mo": mo.id}, {"dst_mo": mo.id}]}):
             if d.get("ignored"):
                 continue
             if d["src_mo"] == mo.id:
@@ -67,18 +63,14 @@ class NRICheck(TopologyDiscoveryCheck):
         if mo in self.seen_neighbors:
             return
         seen = False
-        for d in Interface._get_collection().find({
-            "managed_object": mo.id,
-            "nri_name": {
-                "$exists": True
-            }
-        }, {
-            "_id": 0,
-            "name": 1,
-            "nri_name": 1
-        }):
+        for d in Interface._get_collection().find(
+            {"managed_object": mo.id, "nri_name": {"$exists": True}},
+            {"_id": 0, "name": 1, "nri_name": 1},
+        ):
             self.set_interface_alias(mo, d["name"], d["nri_name"])
             seen = True
         self.seen_neighbors.add(mo)
         if not seen:
-            self.logger.info("[%s] Object has no nri interface name. Topology may be incomplete", mo.name)
+            self.logger.info(
+                "[%s] Object has no nri interface name. Topology may be incomplete", mo.name
+            )

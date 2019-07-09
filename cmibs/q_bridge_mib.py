@@ -113,5 +113,5 @@ MIB = {
     "Q-BRIDGE-MIB::dot1qConstraintTypeDefault": "1.3.6.1.2.1.17.7.1.4.10",
     "Q-BRIDGE-MIB::qBridgeConformance": "1.3.6.1.2.1.17.7.2",
     "Q-BRIDGE-MIB::qBridgeGroups": "1.3.6.1.2.1.17.7.2.1",
-    "Q-BRIDGE-MIB::qBridgeCompliances": "1.3.6.1.2.1.17.7.2.2"
+    "Q-BRIDGE-MIB::qBridgeCompliances": "1.3.6.1.2.1.17.7.2.2",
 }

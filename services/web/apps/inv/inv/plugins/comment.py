@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import UnicodeParameter
@@ -25,16 +26,11 @@ class CommentPlugin(InvPlugin):
             self.api_set_comment,
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/$" % self.name,
             method=["POST"],
-            validate={
-                "comment": UnicodeParameter()
-            }
+            validate={"comment": UnicodeParameter()},
         )
 
     def get_data(self, request, o):
-        return {
-            "id": str(o.id),
-            "comment": o.comment.read() or ""
-        }
+        return {"id": str(o.id), "comment": o.comment.read() or ""}
 
     def api_set_comment(self, request, id, comment):
         o = self.app.get_object_or_404(Object, id=id)

@@ -18,7 +18,7 @@ class Tag(Document):
         "collection": "noc.tags",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["models"]
+        "indexes": ["models"],
     }
 
     tag = StringField(unique=True)
@@ -37,16 +37,7 @@ class Tag(Document):
         :return:
         """
         cls._get_collection().update_one(
-            {"tag": tag},
-            {
-                "$addToSet": {
-                    "models": model
-                },
-                "$inc": {
-                    "count": 1
-                }
-            },
-            upsert=True
+            {"tag": tag}, {"$addToSet": {"models": model}, "$inc": {"count": 1}}, upsert=True
         )
 
     @classmethod
@@ -58,15 +49,6 @@ class Tag(Document):
         :return:
         """
         cls._get_collection().update_one(
-            {"tag": tag},
-            {
-                "$addToSet": {
-                    "models": model
-                },
-                "$inc": {
-                    "count": -1
-                }
-            },
-            upsert=True
+            {"tag": tag}, {"$addToSet": {"models": model}, "$inc": {"count": -1}}, upsert=True
         )
         # @todo Remove Tag if count <= 0

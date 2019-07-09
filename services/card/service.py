@@ -28,7 +28,7 @@ class CardService(UIService):
         CardRequestHandler.load_cards()
         return super(CardService, self).get_handlers() + [
             ("^/api/card/search/$", SearchRequestHandler),
-            ("^/api/card/view/(\S+)/(\S+)/$", CardRequestHandler)
+            ("^/api/card/view/(\S+)/(\S+)/$", CardRequestHandler),
         ]
 
 

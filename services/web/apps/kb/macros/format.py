@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
+
 # NOC modules
 from noc.lib.highlight import NOCHtmlFormatter
 from noc.core.profile.loader import loader as profile_loader
@@ -24,6 +26,7 @@ class FormatMacro(BaseMacro):
     Args:
         syntax - name of the syntax.
     """
+
     name = "format"
 
     @classmethod

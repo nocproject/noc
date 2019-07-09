@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
 from noc.inv.models.vendor import Vendor
@@ -18,9 +19,9 @@ class CHVendorDataSource(BaseDataSource):
     name = "ch_vendor"
 
     def extract(self):
-        for a in Vendor.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
-            yield (
-                a.bi_id,
-                a.id,
-                a.name
-            )
+        for a in (
+            Vendor.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .all()
+            .order_by("id")
+        ):
+            yield (a.bi_id, a.id, a.name)

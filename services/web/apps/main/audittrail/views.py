@@ -10,6 +10,7 @@
 # Python modules
 import logging
 from pymongo import ReadPreference
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.main.models.audittrail import AuditTrail
@@ -23,6 +24,7 @@ class AuditTrailApplication(ExtDocApplication):
     """
     AuditTrails application
     """
+
     title = _("Audit Trail")
     menu = _("Audit Trail")
     model = AuditTrail
@@ -42,11 +44,18 @@ class AuditTrailApplication(ExtDocApplication):
         Filter records for lookup
         """
         if query and self.query_fields:
-            for model_id in [list(set(a["models"])) for a in self.model._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-                    {"$unwind": "$model_id"},
-                    {"$group": {"_id": "null", "models": {"$push": "$model_id"}}},
-                    {"$project": {"models": True, "_id": False}}])][0]:
+            for model_id in [
+                list(set(a["models"]))
+                for a in self.model._get_collection()
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(
+                    [
+                        {"$unwind": "$model_id"},
+                        {"$group": {"_id": "null", "models": {"$push": "$model_id"}}},
+                        {"$project": {"models": True, "_id": False}},
+                    ]
+                )
+            ][0]:
                 model = self.g_model(model_id)
                 if model is None:
                     continue

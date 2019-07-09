@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document
@@ -17,11 +18,7 @@ from mongoengine.errors import ValidationError
 
 @six.python_2_unicode_compatible
 class PyRule(Document):
-    meta = {
-        "collection": "pyrules",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "pyrules", "strict": False, "auto_create_index": False}
     # Relative modules name
     # i.e. test.mod1 for noc.pyrules.test.mod1
     name = StringField(unique=True, regex="^([a-zA-Z_][a-zA-Z0-9_]*)(\.[a-zA-Z_][a-zA-Z0-9_]*)*$")

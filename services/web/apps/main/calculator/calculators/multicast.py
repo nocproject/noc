@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django import forms
+
 # NOC modules
 from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from noc.sa.interfaces.base import IPv4Parameter, MACAddressParameter
@@ -15,6 +16,7 @@ from noc.sa.interfaces.base import IPv4Parameter, MACAddressParameter
 
 class CalculatorForm(forms.Form):
     """Calculator form"""
+
     ip = forms.CharField(required=False)
     mac = forms.CharField(required=False)
 
@@ -40,7 +42,8 @@ class Calculator(CalculatorBase):
                 m = [int(x, 16) for x in mac.split(":")]
                 for i in range(32):
                     yield ".".join(
-                        [str(x) for x in [224 + (i >> 1), m[3] | ((i & 0x1) << 7), m[4], m[5]]])
+                        [str(x) for x in [224 + (i >> 1), m[3] | ((i & 0x1) << 7), m[4], m[5]]]
+                    )
 
             r = []
             for m in g(mac):
@@ -55,12 +58,7 @@ class Calculator(CalculatorBase):
             p = [int(x) for x in ip.split(".")]
             mac = [0x1, 0x0, 0x5E, p[1] & 0x7F, p[2], p[3]]
             mac = ":".join(["%02X" % x for x in mac])
-            r = [
-                ("IP", ip),
-                ("MAC", mac)
-            ] + mac_ips(mac)
+            r = [("IP", ip), ("MAC", mac)] + mac_ips(mac)
         elif mac:
-            r = [
-                ("MAC", mac)
-            ] + mac_ips(mac)
+            r = [("MAC", mac)] + mac_ips(mac)
         return r

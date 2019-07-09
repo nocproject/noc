@@ -8,8 +8,10 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.clickhouse.model import Model, NestedModel
 from noc.core.clickhouse.fields import StringField, Int8Field, NestedField, DateField
@@ -40,16 +42,7 @@ def test_mymodel_to_tsv():
     tsv = MyModel.to_tsv(
         date=today,
         text="Test",
-        pairs=[
-            {
-                "index": 1,
-                "text": "First"
-            },
-            {
-                "index": 2,
-                "text": "Second"
-            }
-        ]
+        pairs=[{"index": 1, "text": "First"}, {"index": 2, "text": "Second"}],
     )
     valid_tsv = "%s\tTest\t[1,2]\t['First','Second']\n" % today.isoformat()
     assert tsv == valid_tsv
@@ -63,14 +56,6 @@ def test_mymodel_to_python():
     valid_data = {
         "date": today,
         "text": "Test",
-        "pairs": [
-            {
-                "index": 1,
-                "text": "First"
-            },
-            {
-                "index": 2,
-                "text": "Second"
-            }
-        ]}
+        "pairs": [{"index": 1, "text": "First"}, {"index": 2, "text": "Second"}],
+    }
     assert ch_data == valid_data

@@ -16,6 +16,7 @@ class WFMigrationApplication(ExtDocApplication):
     """
     WFMigration application
     """
+
     title = "WF Migration"
     menu = [_("Setup"), _("Migrations")]
     model = WFMigration

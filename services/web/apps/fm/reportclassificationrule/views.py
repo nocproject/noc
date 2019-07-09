@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from django import forms
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.fm.models.eventclassificationrule import EventClassificationRule
@@ -18,8 +20,7 @@ from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
-    profile = forms.ChoiceField(label=_("Profile"),
-                                choices=profile_loader.choices())
+    profile = forms.ChoiceField(label=_("Profile"), choices=profile_loader.choices())
 
 
 class ReportClassificationRules(SimpleReport):
@@ -43,6 +44,4 @@ class ReportClassificationRules(SimpleReport):
             data += [["Event Class", r.event_class.name]]
             for p in r.patterns:
                 data += [[p.key_re, p.value_re]]
-        return self.from_dataset(title=self.title,
-                                 columns=["Key RE", "Value RE"],
-                                 data=data)
+        return self.from_dataset(title=self.title, columns=["Key RE", "Value RE"], data=data)

@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
@@ -21,10 +23,7 @@ from noc.core.model.decorator import on_delete_check
 from .asn import AS
 
 
-@on_delete_check(check=[
-    ("peer.Peer", "peering_point"),
-    ("peer.PrefixListCache", "peering_point")
-])
+@on_delete_check(check=[("peer.Peer", "peering_point"), ("peer.PrefixListCache", "peering_point")])
 @six.python_2_unicode_compatible
 class PeeringPoint(NOCModel):
     class Meta(object):
@@ -41,15 +40,20 @@ class PeeringPoint(NOCModel):
     # @todo: Replace with managed object
     profile = DocumentReferenceField(Profile, null=False, blank=False)
     communities = models.CharField("Import Communities", max_length=128, blank=True, null=True)
-    enable_prefix_list_provisioning = models.BooleanField("Enable Prefix-List Provisioning", default=False)
+    enable_prefix_list_provisioning = models.BooleanField(
+        "Enable Prefix-List Provisioning", default=False
+    )
     prefix_list_notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Prefix List Notification Group",
-        null=True, blank=True, on_delete=models.CASCADE
+        NotificationGroup,
+        verbose_name="Prefix List Notification Group",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):
         if self.location:
-            return u" %s (%s)" % (self.hostname, self.location)
+            return " %s (%s)" % (self.hostname, self.location)
         else:
             return self.hostname
 

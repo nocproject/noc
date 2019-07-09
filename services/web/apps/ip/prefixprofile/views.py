@@ -16,6 +16,7 @@ class PrefixProfileApplication(ExtDocApplication):
     """
     PrefixProfile application
     """
+
     title = _("Prefix Profile")
     menu = [_("Setup"), _("Prefix Profiles")]
     model = PrefixProfile

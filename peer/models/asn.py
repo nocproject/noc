@@ -10,10 +10,12 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from django.db import models
 import cachetools
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
@@ -32,11 +34,9 @@ from .asprofile import ASProfile
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("peer.Peer", "local_asn"),
-    ("peer.PeeringPoint", "local_as"),
-    ("ip.Prefix", "asn")
-])
+@on_delete_check(
+    check=[("peer.Peer", "local_asn"), ("peer.PeeringPoint", "local_as"), ("ip.Prefix", "asn")]
+)
 @on_save
 @six.python_2_unicode_compatible
 class AS(NOCModel):
@@ -49,40 +49,39 @@ class AS(NOCModel):
     asn = models.IntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
-    profile = DocumentReferenceField(
-        ASProfile,
-        null=False, blank=False
-    )
+    profile = DocumentReferenceField(ASProfile, null=False, blank=False)
     project = models.ForeignKey(
-        Project, verbose_name="Project",
-        null=True, blank=True, related_name="as_set", on_delete=models.CASCADE)
+        Project,
+        verbose_name="Project",
+        null=True,
+        blank=True,
+        related_name="as_set",
+        on_delete=models.CASCADE,
+    )
     # RPSL descr field
     description = models.CharField("Description", max_length=64)
     organisation = models.ForeignKey(
-        Organisation, verbose_name="Organisation", on_delete=models.CASCADE)
+        Organisation, verbose_name="Organisation", on_delete=models.CASCADE
+    )
     administrative_contacts = models.ManyToManyField(
         Person,
         verbose_name="admin-c",
         related_name="as_administrative_contacts",
-        null=True, blank=True
+        null=True,
+        blank=True,
     )
     tech_contacts = models.ManyToManyField(
-        Person,
-        verbose_name="tech-c",
-        related_name="as_tech_contacts",
-        null=True, blank=True
+        Person, verbose_name="tech-c", related_name="as_tech_contacts", null=True, blank=True
     )
     maintainers = models.ManyToManyField(
-        Maintainer,
-        verbose_name="Maintainers",
-        related_name="as_maintainers",
-        null=True, blank=True
+        Maintainer, verbose_name="Maintainers", related_name="as_maintainers", null=True, blank=True
     )
     routes_maintainers = models.ManyToManyField(
         Maintainer,
         verbose_name="Routes Maintainers",
         related_name="as_route_maintainers",
-        null=True, blank=True
+        null=True,
+        blank=True,
     )
     # remarks: will be prepended automatically
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
@@ -96,7 +95,7 @@ class AS(NOCModel):
     _asn_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return u"AS%d (%s)" % (self.asn, self.description)
+        return "AS%d (%s)" % (self.asn, self.description)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -127,7 +126,9 @@ class AS(NOCModel):
         if self.header_remarks:
             s += ["remarks: %s" % x for x in self.header_remarks.split("\n")]
         # Find AS peers
-        pg = {}  # Peer Group -> AS -> peering_point -> [(import, export, localpref, import_med, export_med, remark)]
+        pg = (
+            {}
+        )  # Peer Group -> AS -> peering_point -> [(import, export, localpref, import_med, export_med, remark)]
         for peer in self.peer_set.filter(status="A"):
             if peer.peer_group not in pg:
                 pg[peer.peer_group] = {}
@@ -141,24 +142,29 @@ class AS(NOCModel):
             for R in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
                 p_import, p_export, localpref, import_med, export_med, remark = R
                 if (
-                    peer.import_filter == p_import and
-                    peer.export_filter == p_export and
-                    e_import_med == import_med and
-                    e_export_med == export_med
+                    peer.import_filter == p_import
+                    and peer.export_filter == p_export
+                    and e_import_med == import_med
+                    and e_export_med == export_med
                 ):
                     to_skip = True
                     break
             if not to_skip:
-                pg[peer.peer_group][peer.remote_asn][peer.peering_point] +=\
-                    [(peer.import_filter, peer.export_filter,
-                      peer.effective_local_pref, e_import_med, e_export_med,
-                      peer.rpsl_remark)]
+                pg[peer.peer_group][peer.remote_asn][peer.peering_point] += [
+                    (
+                        peer.import_filter,
+                        peer.export_filter,
+                        peer.effective_local_pref,
+                        e_import_med,
+                        e_export_med,
+                        peer.rpsl_remark,
+                    )
+                ]
         # Build RPSL
         inverse_pref = config.peer.rpsl_inverse_pref_style
         for peer_group in pg:
             s += [sep]
-            s += ["remarks: -- %s" % x
-                  for x in peer_group.description.split("\n")]
+            s += ["remarks: -- %s" % x for x in peer_group.description.split("\n")]
             s += [sep]
             for asn in sorted(pg[peer_group]):
                 add_at = len(pg[peer_group][asn]) != 1
@@ -202,8 +208,7 @@ class AS(NOCModel):
             s += ["mnt-routes: %s" % m.maintainer]
         # Add footer remarks
         if self.footer_remarks:
-            s += ["remarks: %s" % x
-                  for x in self.footer_remarks.split("\n")]
+            s += ["remarks: %s" % x for x in self.footer_remarks.split("\n")]
         return rpsl_format("\n".join(s))
 
     def touch_rpsl(self):
@@ -236,18 +241,16 @@ class AS(NOCModel):
         for subgraph, peers in [
             ("uplinks", list(six.itervalues(uplinks))),
             ("peers", list(six.itervalues(peers))),
-            ("downlinks", list(six.itervalues(downlinks)))
+            ("downlinks", list(six.itervalues(downlinks))),
         ]:
             s += ["subgraph %s {" % subgraph]
             for p in peers:
-                attrs = ["taillabel=\" %s\"" % p.import_filter,
-                         "headlabel=\" %s\"" % p.export_filter]
+                attrs = ['taillabel=" %s"' % p.import_filter, 'headlabel=" %s"' % p.export_filter]
                 if p.import_filter == "ANY":
                     attrs += ["arrowtail=open"]
                 if p.export_filter == "ANY":
                     attrs += ["arrothead=open"]
-                s += ["    %s -- AS%d [%s];" % (asn, p.remote_asn,
-                                                ",".join(attrs))]
+                s += ["    %s -- AS%d [%s];" % (asn, p.remote_asn, ",".join(attrs))]
             s += ["}"]
         s += ["}"]
         return "\n".join(s)

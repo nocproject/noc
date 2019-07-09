@@ -17,6 +17,7 @@ class ASApplication(ExtModelApplication):
     """
     AS application
     """
+
     title = _("AS")
     menu = [_("ASes")]
     model = AS

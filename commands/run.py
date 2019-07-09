@@ -8,8 +8,10 @@
 
 # Python modules
 import argparse
+
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -22,20 +24,10 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         #
         cli_parser = subparsers.add_parser("cli")
+        cli_parser.add_argument("--limit", default=self.DEFAULT_LIMIT, help="Concurrency limit")
+        cli_parser.add_argument("--command", "-c", action="append", help="Command to execute")
         cli_parser.add_argument(
-            "--limit",
-            default=self.DEFAULT_LIMIT,
-            help="Concurrency limit"
-        )
-        cli_parser.add_argument(
-            "--command", "-c",
-            action="append",
-            help="Command to execute"
-        )
-        cli_parser.add_argument(
-            "objects",
-            nargs=argparse.REMAINDER,
-            help="Managed objects or expressions"
+            "objects", nargs=argparse.REMAINDER, help="Managed objects or expressions"
         )
         #
         # snippet_parser = subparsers.add_parser("snippet")
@@ -62,10 +54,7 @@ class Command(BaseCommand):
         with ThreadPoolExecutor(max_workers=limit) as executor:
             futures = []
             for o in self.iter_objects(objects):
-                futures += [
-                    executor.submit(self.run_script, o,
-                                    "commands", commands=command)
-                ]
+                futures += [executor.submit(self.run_script, o, "commands", commands=command)]
             for future in as_completed(futures):
                 try:
                     o, result = future.result()

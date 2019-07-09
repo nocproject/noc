@@ -9,12 +9,14 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 from mongoengine.errors import ValidationError
 import crontab
+
 # NOC modules
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.handler import get_handler
@@ -25,11 +27,7 @@ from noc.core.scheduler.scheduler import Scheduler
 @on_delete
 @six.python_2_unicode_compatible
 class CronTab(Document):
-    meta = {
-        "collections": "crontabs",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collections": "crontabs", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     is_active = BooleanField(default=True)
@@ -67,15 +65,17 @@ class CronTab(Document):
         Returns crontab expression
         :return:
         """
-        return " ".join([
-            self.seconds_expr or "0",
-            self.minutes_expr or "*",
-            self.hours_expr or "*",
-            self.days_expr or "*",
-            self.months_expr or "*",
-            self.weekdays_expr or "*",
-            self.years_expr or "*"
-        ])
+        return " ".join(
+            [
+                self.seconds_expr or "0",
+                self.minutes_expr or "*",
+                self.hours_expr or "*",
+                self.days_expr or "*",
+                self.months_expr or "*",
+                self.weekdays_expr or "*",
+                self.years_expr or "*",
+            ]
+        )
 
     def get_entry(self):
         """
@@ -133,13 +133,6 @@ class CronTab(Document):
         if self.is_active:
             ts = self.get_next()
             if ts:
-                scheduler.submit(
-                    jcls=self.JCLS,
-                    key=self.id,
-                    ts=ts
-                )
+                scheduler.submit(jcls=self.JCLS, key=self.id, ts=ts)
                 return
-        scheduler.remove_job(
-            jcls=self.JCLS,
-            key=self.id
-        )
+        scheduler.remove_job(jcls=self.JCLS, key=self.id)

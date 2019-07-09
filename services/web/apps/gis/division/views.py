@@ -16,6 +16,7 @@ class DivisionApplication(ExtDocApplication):
     """
     Division application
     """
+
     title = _("Division")
     menu = [_("Setup"), _("Divisions")]
     model = Division
@@ -33,7 +34,4 @@ class DivisionApplication(ExtDocApplication):
         return o.full_path
 
     def instance_to_lookup(self, o, fields=None):
-        return {
-            "id": str(o.id),
-            "label": o.full_path
-        }
+        return {"id": str(o.id), "label": o.full_path}

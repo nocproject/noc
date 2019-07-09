@@ -50,7 +50,7 @@ class PrefixAccess(NOCModel):
             perms += ["View"]
         if self.can_change:
             perms += ["Change"]
-        return u"%s: %s(%s): %s: %s" % (
+        return "%s: %s(%s): %s: %s" % (
             self.user.username,
             self.vrf.name,
             self.afi,

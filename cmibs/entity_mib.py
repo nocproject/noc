@@ -68,5 +68,5 @@ MIB = {
     "ENTITY-MIB::entConfigChange": "1.3.6.1.2.1.47.2.0.1",
     "ENTITY-MIB::entityConformance": "1.3.6.1.2.1.47.3",
     "ENTITY-MIB::entityCompliances": "1.3.6.1.2.1.47.3.1",
-    "ENTITY-MIB::entityGroups": "1.3.6.1.2.1.47.3.2"
+    "ENTITY-MIB::entityGroups": "1.3.6.1.2.1.47.3.2",
 }

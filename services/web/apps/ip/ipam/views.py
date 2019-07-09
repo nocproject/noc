@@ -8,6 +8,7 @@
 
 # Python modules
 from operator import itemgetter
+
 # Third-party modules modules
 import six
 import ujson
@@ -15,6 +16,7 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from noc.core.ip import IP
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.validators import is_ipv4, is_ipv4_prefix, is_ipv6, is_ipv6_prefix
@@ -33,9 +35,7 @@ from noc.core.colors import get_colors
 class IPAMApplication(ExtApplication):
     title = _("Assigned Addresses")
     extra_permissions = ["bind_vc", "rebase"]
-    implied_permissions = {
-        "rebase": ["ip:prefix:rebase"]
-    }
+    implied_permissions = {"rebase": ["ip:prefix:rebase"]}
 
     ADDRESS_SPOT_DIST = 8  # Area around used address to show in free spot
     MAX_IPv4_NET_SIZE = 256  # Cover whole IPv4 prefix with spot if size below
@@ -50,11 +50,14 @@ class IPAMApplication(ExtApplication):
             dist = self.MAX_IPv4_NET_SIZE
         else:
             dist = self.ADDRESS_SPOT_DIST
-        return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
-                           dist=dist, sep=sep, exclude_special=False)
+        return p.area_spot(
+            [a.address for a in prefix.address_set.all()] + extra,
+            dist=dist,
+            sep=sep,
+            exclude_special=False,
+        )
 
-    @view(url=r"^$", url_name="index", menu="Assigned Addresses",
-          access="view")
+    @view(url=r"^$", url_name="index", menu="Assigned Addresses", access="view")
     def view_index(self, request):
         """
         Display VRF list
@@ -72,16 +75,12 @@ class IPAMApplication(ExtApplication):
                 else:
                     afi = "6"
                     root = "::/0"
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
-                                              root)
+                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, root)
         # Get search query
         query = ""
         if "q" in request.GET:
             query = request.GET["q"]
-            q = (
-                Q(name__icontains=query) |
-                Q(rd=query) | Q(description__icontains=query)
-            )
+            q = Q(name__icontains=query) | Q(rd=query) | Q(description__icontains=query)
         else:
             q = Q()
         # Display grouped VRFs
@@ -93,34 +92,31 @@ class IPAMApplication(ExtApplication):
             ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).filter(q).order_by("name"))
         if ungroupped:
             # Add Ungroupped virtual group
-            groups += [(
-                VRFGroup(name="Ungroupped"),
-                ungroupped
-            )]
+            groups += [(VRFGroup(name="Ungroupped"), ungroupped)]
         for vg in VRFGroup.objects.all().order_by("name"):
             vrfs = list(vg.vrf_set.filter(q_afi).filter(q).order_by("name"))
             if len(vrfs):
                 # Set up bookmarks
                 for v in vrfs:
-                    v.bookmarks = PrefixBookmark.user_bookmarks(
-                        request.user,
-                        vrf=v
-                    )
+                    v.bookmarks = PrefixBookmark.user_bookmarks(request.user, vrf=v)
                     # Add to groups
                 groups += [(vg, vrfs)]
         return self.render(request, "index.html.j2", groups=groups, query=query)
 
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>[0-9a-f.:/]+)/$",
-          url_name="vrf_index", access="view")
+    @view(
+        url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>[0-9a-f.:/]+)/$",
+        url_name="vrf_index",
+        access="view",
+    )
     def view_vrf_index(self, request, vrf_id, afi, prefix):
         """
         Display VRF Index
         """
         # Validate
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if ((afi == "4" and
-             (not is_ipv4_prefix(prefix)) or not vrf.afi_ipv4) or
-                (afi == "6" and (not is_ipv6_prefix(prefix) or not vrf.afi_ipv6))):
+        if (afi == "4" and (not is_ipv4_prefix(prefix)) or not vrf.afi_ipv4) or (
+            afi == "6" and (not is_ipv6_prefix(prefix) or not vrf.afi_ipv6)
+        ):
             return self.response_forbidden("Invalid prefix")
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         # Get prefix path
@@ -138,8 +134,7 @@ class IPAMApplication(ExtApplication):
         user = request.user
         can_view = prefix.can_view(user)
         can_change = prefix.can_change(user)
-        can_bind_vc = can_change and Permission.has_perm(
-            user, "ip:ipam:bind_vc")
+        can_bind_vc = can_change and Permission.has_perm(user, "ip:ipam:bind_vc")
         can_change_maintainers = user.is_superuser
         can_add_prefix = can_change
         can_add_address = can_change and len(prefixes) == 0
@@ -149,18 +144,19 @@ class IPAMApplication(ExtApplication):
         bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
         s_bookmarks = set(b.prefix for b in bookmarks)
         # Add free prefixes
-        free_prefixes = list(
-            IP.prefix(prefix.prefix).iter_free([pp.prefix for pp in prefixes]))
+        free_prefixes = list(IP.prefix(prefix.prefix).iter_free([pp.prefix for pp in prefixes]))
         l_prefixes = sorted(
-            ([(True, IP.prefix(pp.prefix), pp, pp.prefix in s_bookmarks) for pp in prefixes] +
-             [(False, pp, None, None) for pp in free_prefixes]), key=lambda x: x[1])
+            (
+                [(True, IP.prefix(pp.prefix), pp, pp.prefix in s_bookmarks) for pp in prefixes]
+                + [(False, pp, None, None) for pp in free_prefixes]
+            ),
+            key=lambda x: x[1],
+        )
         # List of nested addresses
         # @todo: prefetch_related
         addresses = list(prefix.address_set.select_related().order_by("address"))
         # Prepare block info
-        prefix_info = [
-            ("Network", prefix.prefix)
-        ]
+        prefix_info = [("Network", prefix.prefix)]
         if afi == "4":
             prefix_info += [
                 ("Broadcast", prefix.broadcast),
@@ -174,14 +170,9 @@ class IPAMApplication(ExtApplication):
             prefix_info += [("Used addresses", len(addresses))]
             if afi == "4":
                 free = prefix.size - len(addresses)
-                prefix_info += [
-                    ("Free addresses", free - 2 if free >= 2 else free)
-                ]
+                prefix_info += [("Free addresses", free - 2 if free >= 2 else free)]
         # Prefix discovery
-        dmap = {
-            "E": "Enabled",
-            "D": "Disabled"
-        }
+        dmap = {"E": "Enabled", "D": "Disabled"}
         if prefix.prefix_discovery_policy == "P":
             t = "Profile (%s)" % dmap[prefix.profile.prefix_discovery_policy]
         else:
@@ -194,12 +185,14 @@ class IPAMApplication(ExtApplication):
             t = dmap[prefix.address_discovery_policy]
         prefix_info += [("Address Discovery", t)]
         # Source
-        prefix_info += [("Source", {
-            "M": "Manual",
-            "i": "Interface",
-            "w": "Whois Route",
-            "n": "Neighbor"
-        }.get(prefix.source, "-"))]
+        prefix_info += [
+            (
+                "Source",
+                {"M": "Manual", "i": "Interface", "w": "Whois Route", "n": "Neighbor"}.get(
+                    prefix.source, "-"
+                ),
+            )
+        ]
         #
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
@@ -234,7 +227,9 @@ class IPAMApplication(ExtApplication):
             free_slots = set()
             r_slots = {}  # Range -> slot
             max_slots = 0
-            rs = sorted(([IP.prefix(i), d, []] for i, d in six.iteritems(r_changes)), key=itemgetter(0))
+            rs = sorted(
+                ([IP.prefix(i), d, []] for i, d in six.iteritems(r_changes)), key=itemgetter(0)
+            )
             for address, d, x in rs:
                 entering, leaving = d
                 for r in entering:
@@ -289,8 +284,7 @@ class IPAMApplication(ExtApplication):
             spot = ujson.dumps(spot)
         else:
             spot = None
-        can_ping = spot is not None and len(
-            [a for a in addresses if a.managed_object]) > 0
+        can_ping = spot is not None and len([a for a in addresses if a.managed_object]) > 0
         # Build custom styles
         styles = {}
         if prefix.profile.style:
@@ -304,7 +298,8 @@ class IPAMApplication(ExtApplication):
         styles = "\n".join(six.itervalues(styles))
         # Render
         return self.render(
-            request, "vrf_index.html.j2",
+            request,
+            "vrf_index.html.j2",
             user=request.user,
             vrf=vrf,
             prefix=prefix,
@@ -327,14 +322,13 @@ class IPAMApplication(ExtApplication):
             styles=styles,
             ranges=ranges,
             max_slots=max_slots,
-            l_prefixes=l_prefixes
+            l_prefixes=l_prefixes,
         )
 
     class QuickJumpForm(forms.Form):
         jump = forms.CharField()
 
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/quickjump/$",
-          url_name="quickjump", access="view")
+    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/quickjump/$", url_name="quickjump", access="view")
     def view_quickjump(self, request, vrf_id, afi):
         """
         Quickjump to closest suitable block
@@ -376,37 +370,38 @@ class IPAMApplication(ExtApplication):
                 # Find prefix
                 prefix = Prefix.get_parent(vrf, afi, prefix).prefix
                 # Redirect
-                self.message_user(request, _("Redirected to %(prefix)s") % {
-                    "prefix": prefix})
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
-                                              prefix)
+                self.message_user(request, _("Redirected to %(prefix)s") % {"prefix": prefix})
+                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix)
         return self.response_redirect_to_referrer(request)
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/toggle_bookmark/$",
-        url_name="toggle_bookmark", access="view")
+        url_name="toggle_bookmark",
+        access="view",
+    )
     def view_toggle_bookmark(self, request, vrf_id, afi, prefix):
         """
         Toggle block bookmark status
         """
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if ((afi == "4" and not vrf.afi_ipv4) or
-                (afi == "6" and not vrf.afi_ipv6)):
+        if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
             return self.response_forbidden("Invalid AFI")
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         user = request.user
         status = prefix.toggle_bookmark(user)
         if status:
-            self.message_user(request, _("Bookmark set to %(prefix)s") % {
-                "prefix": prefix.prefix})
+            self.message_user(request, _("Bookmark set to %(prefix)s") % {"prefix": prefix.prefix})
         else:
-            self.message_user(request, _("Bookmark removed from %(prefix)s") % {
-                "prefix": prefix.prefix})
+            self.message_user(
+                request, _("Bookmark removed from %(prefix)s") % {"prefix": prefix.prefix}
+            )
         return self.response_redirect_to_referrer(request)
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/delete_address/$",
-        url_name="delete_address", access="change")
+        url_name="delete_address",
+        access="change",
+    )
     def view_delete_address(self, request, vrf_id, afi, address):
         """
         Delete address
@@ -415,30 +410,28 @@ class IPAMApplication(ExtApplication):
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
             return self.response_forbidden("Invalid AFI")
-        address = self.get_object_or_404(Address, vrf=vrf, afi=afi,
-                                         address=address)
-        if not PrefixAccess.user_can_change(request.user, vrf, afi,
-                                            address.address):
+        address = self.get_object_or_404(Address, vrf=vrf, afi=afi, address=address)
+        if not PrefixAccess.user_can_change(request.user, vrf, afi, address.address):
             return self.response_forbidden()
             # Check not in locked range
         if AddressRange.address_is_locked(vrf, afi, address.address):
-            self.message_user(request, _(
-                "Address %(address)s is in the locked range") % {
-                "address": address.address})
-            return self.response_redirect(
-                "ip:ipam:vrf_index", vrf.id, afi,
-                address.prefix.prefix)
+            self.message_user(
+                request,
+                _("Address %(address)s is in the locked range") % {"address": address.address},
+            )
+            return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, address.prefix.prefix)
         # Delete
         prefix = address.prefix
         address.delete()
         # Redirect
-        self.message_user(request, _("Address %(address)s deleted") % {
-            "address": address.address})
-        return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
-                                      prefix.prefix)
+        self.message_user(request, _("Address %(address)s deleted") % {"address": address.address})
+        return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
 
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/ping_check/$",
-          url_name="ping_check", access="change")
+    @view(
+        url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/ping_check/$",
+        url_name="ping_check",
+        access="change",
+    )
     def view_ping_check(self, request, vrf_id, afi, prefix):
         """
         AJAX handler to run ping_task
@@ -457,6 +450,7 @@ class IPAMApplication(ExtApplication):
         """
         Row-based access
         """
+
         def p(a):
             r = []
             if a.can_view:
@@ -465,10 +459,10 @@ class IPAMApplication(ExtApplication):
                 r += ["C"]
             return ", ".join(r)
 
-        return ["%s: %s (%s)" % (a.vrf.name, a.prefix, p(a)) for a in
-                PrefixAccess.objects.filter(user=user).order_by("vrf__name",
-                                                                "prefix")]
+        return [
+            "%s: %s (%s)" % (a.vrf.name, a.prefix, p(a))
+            for a in PrefixAccess.objects.filter(user=user).order_by("vrf__name", "prefix")
+        ]
 
     def user_access_change_url(self, user):
-        return self.site.reverse("ip:prefixaccess:changelist",
-                                 QUERY={"user__id__exact": user.id})
+        return self.site.reverse("ip:prefixaccess:changelist", QUERY={"user__id__exact": user.id})

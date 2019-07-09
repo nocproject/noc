@@ -9,11 +9,13 @@
 # Python modules
 import logging
 import os
+
 # Third-party modules
 import six
 from six.moves.configparser import RawConfigParser
 import requests
 import ujson
+
 # Python modules
 from noc.core.version import version
 
@@ -86,7 +88,7 @@ class CPClient(object):
             "# Received through system registration",
             "# Support > Account",
             "# Do not change manually",
-            "#"
+            "#",
         ]
         if self.cp_url or self.account_uuid:
             cfg += ["[account]"]
@@ -96,14 +98,14 @@ class CPClient(object):
                 cfg += [
                     "uuid = %s" % self.account_uuid,
                     "name = %s" % self.account_name,
-                    "password = %s" % self.account_password
+                    "password = %s" % self.account_password,
                 ]
         if self.system_uuid:
             cfg += [
                 "[system]",
                 "uuid = %s" % self.system_uuid,
                 "name = %s" % self.system_name,
-                "type = %s" % self.system_type
+                "type = %s" % self.system_type,
             ]
         cfg += [""]
         logger.info("Saving %s", self.CONFIG)
@@ -115,23 +117,14 @@ class CPClient(object):
         JSON-RPC client
         """
         self.t_id += 1
-        r = {
-            "id": self.t_id,
-            "method": method,
-            "params": args
-        }
+        r = {"id": self.t_id, "method": method, "params": args}
         auth = None
         if self.account_name and self.account_password:
             auth = (self.account_name, self.account_password)
         r = ujson.dumps(r)
         logger.debug("JSON-RPC REQUEST: %s", r)
         try:
-            req = requests.post(
-                self.cp_url + service,
-                data=r,
-                auth=auth,
-                verify=True
-            )
+            req = requests.post(self.cp_url + service, data=r, auth=auth, verify=True)
         except Exception as e:
             logger.error("JSON-RPC Error: %s", e)
             raise self.Error(str(e))
@@ -146,9 +139,9 @@ class CPClient(object):
             raise self.Error(response["error"])
         return response.get("result")
 
-    def create_account(self, name, email, password,
-                       country=None, org=None, industries=None,
-                       language=None):
+    def create_account(
+        self, name, email, password, country=None, org=None, industries=None, language=None
+    ):
         if self.has_account():
             raise self.Error("Account is already exists")
         info = {}
@@ -158,21 +151,18 @@ class CPClient(object):
             info["org"] = org.strip()
         if industries:
             if isinstance(industries, six.string_types):
-                industries = [x.strip() for x in industries.split(",")
-                              if x.strip()]
+                industries = [x.strip() for x in industries.split(",") if x.strip()]
             info["industries"] = industries
         if language:
             info["language"] = language
-        self.account_uuid = self.call(
-            self.ACCOUNT_SERVICE, "create",
-            name, email, password, info)["uuid"]
+        self.account_uuid = self.call(self.ACCOUNT_SERVICE, "create", name, email, password, info)[
+            "uuid"
+        ]
         self.account_name = name
         self.account_password = password
         self.write_config()
 
-    def update_account(self, name, email,
-                       country=None, org=None, industries=None,
-                       language=None):
+    def update_account(self, name, email, country=None, org=None, industries=None, language=None):
         if not self.has_account():
             raise self.Error("Account is not registred")
         info = {}
@@ -182,8 +172,7 @@ class CPClient(object):
             info["org"] = org.strip()
         if industries:
             if isinstance(industries, six.string_types):
-                industries = [x.strip() for x in industries.split(",")
-                              if x.strip()]
+                industries = [x.strip() for x in industries.split(",") if x.strip()]
             info["industries"] = industries
         if language:
             info["language"] = language
@@ -226,9 +215,9 @@ class CPClient(object):
         info = {}
         if description:
             info["description"] = description
-        self.system_uuid = self.call(self.SYSTEM_SERVICE,
-                                     "create", self.PRODUCT,
-                                     name, type, info)["uuid"]
+        self.system_uuid = self.call(self.SYSTEM_SERVICE, "create", self.PRODUCT, name, type, info)[
+            "uuid"
+        ]
         self.system_name = name
         self.system_type = type
         self.write_config()
@@ -242,9 +231,7 @@ class CPClient(object):
         info = {}
         if description:
             info["description"] = description
-        self.call(self.SYSTEM_SERVICE,
-                  "update", self.system_uuid,
-                  name, is_active, type, info)
+        self.call(self.SYSTEM_SERVICE, "update", self.system_uuid, name, is_active, type, info)
 
     def system_info(self):
         if not self.has_system():
@@ -254,21 +241,26 @@ class CPClient(object):
     def upgrade(self, status, log=""):
         if not self.has_system():
             raise self.Error("System is not registred")
-        return self.call(self.UPGRADE_SERVICE, "upgrade",
-                         self.system_uuid,
-                         version.os_brand, version.os_version,
-                         version.branch, version.changeset,
-                         version.package_versions, [], status, log)
+        return self.call(
+            self.UPGRADE_SERVICE,
+            "upgrade",
+            self.system_uuid,
+            version.os_brand,
+            version.os_version,
+            version.branch,
+            version.changeset,
+            version.package_versions,
+            [],
+            status,
+            log,
+        )
 
     def report_crashinfo(self, crashinfo):
         if not self.has_system():
             raise self.Error("System is not registred")
-        return self.call(
-            self.CRASHINFO_SERVICE, "report",
-            self.system_uuid, crashinfo)
+        return self.call(self.CRASHINFO_SERVICE, "report", self.system_uuid, crashinfo)
 
     def create_paste(self, subject=None, data=None, syntax=None, ttl=None, public=False):
         if not self.has_system():
             raise self.Error("System is not registred")
-        return self.call(self.PASTE_SERVICE, "create",
-                         subject, data, syntax, ttl, public)
+        return self.call(self.PASTE_SERVICE, "create", subject, data, syntax, ttl, public)

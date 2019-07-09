@@ -16,9 +16,7 @@ from noc.config import config
 
 class BIService(UIService):
     name = "bi"
-    api = [
-        BIAPI
-    ]
+    api = [BIAPI]
     api_request_handler = AuthAPIRequestHandler
     use_translation = True
     use_mongo = True

@@ -16,6 +16,7 @@ class VPNProfileApplication(ExtDocApplication):
     """
     VPNProfile application
     """
+
     title = "VPN Profiles"
     menu = [_("Setup"), _("VPN Profiles")]
     model = VPNProfile

@@ -18,13 +18,12 @@ class SupplierApplication(ExtDocApplication):
     """
     Supplier application
     """
+
     title = _("Supplier")
     menu = [_("Setup"), _("Supplier")]
     model = Supplier
     query_fields = ["name__icontains"]
-    implied_permissions = {
-        "read": ["project:project:lookup"]
-    }
+    implied_permissions = {"read": ["project:project:lookup"]}
 
     def field_row_class(self, o):
         if o.profile and o.profile.style:

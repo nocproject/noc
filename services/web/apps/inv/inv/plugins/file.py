@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectfile import ObjectFile
@@ -26,36 +27,35 @@ class FilePlugin(InvPlugin):
             "api_plugin_%s_upload" % self.name,
             self.api_upload,
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/upload/$" % self.name,
-            method=["POST"]
+            method=["POST"],
         )
         self.add_view(
             "api_plugin_%s_download" % self.name,
             self.api_download,
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/(?P<file_id>[0-9a-f]{24})/$" % self.name,
-            method=["GET"]
+            method=["GET"],
         )
         self.add_view(
             "api_plugin_%s_delete" % self.name,
             self.api_delete,
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/(?P<file_id>[0-9a-f]{24})/$" % self.name,
-            method=["DELETE"]
+            method=["DELETE"],
         )
 
     def get_data(self, request, o):
         files = []
         for f in ObjectFile.objects.filter(object=o.id).order_by("name"):
-            files += [{
-                "id": str(f.id),
-                "name": f.name,
-                "mime_type": f.mime_type,
-                "size": f.size,
-                "ts": f.ts.isoformat(),
-                "description": f.description
-            }]
-        return {
-            "id": str(o.id),
-            "files": files
-        }
+            files += [
+                {
+                    "id": str(f.id),
+                    "name": f.name,
+                    "mime_type": f.mime_type,
+                    "size": f.size,
+                    "ts": f.ts.isoformat(),
+                    "description": f.description,
+                }
+            ]
+        return {"id": str(o.id), "files": files}
 
     def api_upload(self, request, id):
         o = self.app.get_object_or_404(Object, id=id)
@@ -74,24 +74,18 @@ class FilePlugin(InvPlugin):
                 size=f.size,
                 mime_type=MIMEType.get_mime_type(f.name),
                 ts=datetime.datetime.now(),
-                description=request.POST.get(dn)
+                description=request.POST.get(dn),
             )
             of.file.put(f.read())
             of.save()
-        return {
-            "success": not failed,
-            "errors": errors
-        }
+        return {"success": not failed, "errors": errors}
 
     def api_download(self, request, id, file_id):
         o = self.app.get_object_or_404(Object, id=id)
         of = self.app.get_object_or_404(ObjectFile, id=file_id)
         if of.object != o.id:
             return self.app.response_not_found()
-        return self.app.render_response(
-            of.file.read(),
-            content_type=of.mime_type
-        )
+        return self.app.render_response(of.file.read(), content_type=of.mime_type)
 
     def api_delete(self, request, id, file_id):
         o = self.app.get_object_or_404(Object, id=id)

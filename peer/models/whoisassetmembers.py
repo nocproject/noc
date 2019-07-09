@@ -17,11 +17,8 @@ class WhoisASSetMembers(Document):
     """
     as-set -> members lookup
     """
-    meta = {
-        "collection": "noc.whois.asset.members",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "noc.whois.asset.members", "strict": False, "auto_create_index": False}
 
     as_set = StringField(primary_key=True)
     members = ListField(StringField())
@@ -47,7 +44,10 @@ class WhoisASSetMembers(Document):
         """
         c = cls._get_collection()
         c.drop()
-        c.insert([{"_id": k.upper(), "members": data[k]} for k in data],
-                 manipulate=False, check_keys=False)
+        c.insert(
+            [{"_id": k.upper(), "members": data[k]} for k in data],
+            manipulate=False,
+            check_keys=False,
+        )
         # Implicit reindex
         return cls.objects.count()

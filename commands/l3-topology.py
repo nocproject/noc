@@ -12,6 +12,7 @@ import os
 import tempfile
 import subprocess
 from collections import namedtuple, defaultdict
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.ip.models.vrf import VRF
@@ -28,34 +29,32 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
 
-        parser.add_argument("--afi",
-                            dest="afi",
-                            action="store", default="4",
-                            help="AFI (ipv4/ipv6)"),
-        parser.add_argument("--vrf",
-                            dest="vrf", action="store",
-                            help="VRF Name/RD"),
-        parser.add_argument("-o", "--out",
-                            dest="output", action="store",
-                            help="Save output to file"),
-        parser.add_argument("--core",
-                            dest="core", action="store_true",
-                            help="Reduce to network core"),
-        parser.add_argument("--layout",
-                            dest="layout", action="store",
-                            default="sfdp",
-                            help="Use layout engine: %s" % ", ".join(self.LAYOUT)),
-        parser.add_argument("--exclude",
-                            dest="exclude", action="append",
-                            help="Exclude prefix from map"),
+        parser.add_argument(
+            "--afi", dest="afi", action="store", default="4", help="AFI (ipv4/ipv6)"
+        ),
+        parser.add_argument("--vrf", dest="vrf", action="store", help="VRF Name/RD"),
+        parser.add_argument(
+            "-o", "--out", dest="output", action="store", help="Save output to file"
+        ),
+        parser.add_argument(
+            "--core", dest="core", action="store_true", help="Reduce to network core"
+        ),
+        parser.add_argument(
+            "--layout",
+            dest="layout",
+            action="store",
+            default="sfdp",
+            help="Use layout engine: %s" % ", ".join(self.LAYOUT),
+        ),
+        parser.add_argument(
+            "--exclude", dest="exclude", action="append", help="Exclude prefix from map"
+        ),
 
     SI = namedtuple("SI", ["object", "interface", "fi", "ip", "prefix"])
     IPv4 = "4"
     IPv6 = "6"
 
-    GV_FORMAT = {
-        ".pdf": "pdf"
-    }
+    GV_FORMAT = {".pdf": "pdf"}
 
     def handle(self, *args, **options):
         # Check AFI
@@ -111,11 +110,11 @@ class Command(BaseCommand):
                 o = self.get_object(si.object)
                 if not o:
                     continue
-                out += ["    %s [shape=box;style=filled;label=\"%s\"];" % (o_id, o.name)]
+                out += ['    %s [shape=box;style=filled;label="%s"];' % (o_id, o.name)]
             if si.prefix not in prefixes:
                 prefixes.add(si.prefix)
-                out += ["    %s [shape=ellipse;label=\"%s\"];" % (p_id, si.prefix)]
-            out += ["    %s -- %s [label=\"%s\"];" % (o_id, p_id, si.interface)]
+                out += ['    %s [shape=ellipse;label="%s"];' % (p_id, si.prefix)]
+            out += ['    %s -- %s [label="%s"];' % (o_id, p_id, si.interface)]
         out += ["}"]
         data = "\n".join(out)
         if ext is None:
@@ -128,20 +127,27 @@ class Command(BaseCommand):
             with tempfile.NamedTemporaryFile(suffix=".dot") as f:
                 f.write(data)
                 f.flush()
-                subprocess.check_call([
-                    options["layout"],
-                    "-T%s" % self.GV_FORMAT[ext],
-                    "-o%s" % options["output"],
-                    f.name
-                ])
+                subprocess.check_call(
+                    [
+                        options["layout"],
+                        "-T%s" % self.GV_FORMAT[ext],
+                        "-o%s" % options["output"],
+                        f.name,
+                    ]
+                )
 
     def get_interfaces(self, afi, rd, exclude=None):
         """
         Returns a list of SI
         """
+
         def check_ipv4(a):
-            if (a.startswith("127.") or a.startswith("169.254") or
-                    a.endswith("/32") or a.startswith("0.0.0.0")):
+            if (
+                a.startswith("127.")
+                or a.startswith("169.254")
+                or a.endswith("/32")
+                or a.startswith("0.0.0.0")
+            ):
                 return False
             else:
                 return True
@@ -153,13 +159,13 @@ class Command(BaseCommand):
                 return True
 
         exclude = exclude or []
-        si_fields = {"_id": 0, "name": 1, "forwarding_instance": 1,
-                     "managed_object": 1}
+        si_fields = {"_id": 0, "name": 1, "forwarding_instance": 1, "managed_object": 1}
         if afi == self.IPv4:
             check = check_ipv4
 
             def get_addresses(x):
                 return x.get("ipv4_addresses", [])
+
             AFI = "IPv4"
             si_fields["ipv4_addresses"] = 1
         elif afi == self.IPv6:
@@ -167,6 +173,7 @@ class Command(BaseCommand):
 
             def get_addresses(x):
                 return x.get("ipv6_addresses", [])
+
             AFI = "IPv6"
             si_fields["ipv6_addresses"] = 1
         else:
@@ -181,9 +188,9 @@ class Command(BaseCommand):
                     continue
                 seen.add(prefix)
                 self.p_power[prefix] += 1
-                yield self.SI(si["managed_object"], si["name"],
-                              si.get("forwarding_instance"), a,
-                              prefix)
+                yield self.SI(
+                    si["managed_object"], si["name"], si.get("forwarding_instance"), a, prefix
+                )
 
     def get_object(self, o):
         """

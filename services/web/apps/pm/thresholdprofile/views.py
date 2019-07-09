@@ -16,6 +16,7 @@ class ThresholdProfileApplication(ExtDocApplication):
     """
     ThresholdProfile application
     """
+
     title = "ThresholdProfile"
     menu = [_("Setup"), _("Threshold Profiles")]
     model = ThresholdProfile

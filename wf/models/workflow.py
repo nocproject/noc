@@ -11,12 +11,13 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField,
-                                ReferenceField, LongField)
+from mongoengine.fields import StringField, BooleanField, ReferenceField, LongField
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
@@ -28,25 +29,23 @@ _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("wf.State", "workflow"),
-    ("wf.Transition", "workflow"),
-    ("ip.AddressProfile", "workflow"),
-    ("ip.PrefixProfile", "workflow"),
-    ("crm.SubscriberProfile", "workflow"),
-    ("crm.SupplierProfile", "workflow"),
-    ("phone.PhoneNumberProfile", "workflow"),
-    ("phone.PhoneRangeProfile", "workflow"),
-    ("vc.VPNProfile", "workflow"),
-    ("vc.VLANProfile", "workflow")
-])
+@on_delete_check(
+    check=[
+        ("wf.State", "workflow"),
+        ("wf.Transition", "workflow"),
+        ("ip.AddressProfile", "workflow"),
+        ("ip.PrefixProfile", "workflow"),
+        ("crm.SubscriberProfile", "workflow"),
+        ("crm.SupplierProfile", "workflow"),
+        ("phone.PhoneNumberProfile", "workflow"),
+        ("phone.PhoneRangeProfile", "workflow"),
+        ("vc.VPNProfile", "workflow"),
+        ("vc.VLANProfile", "workflow"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Workflow(Document):
-    meta = {
-        "collection": "workflows",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "workflows", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
     is_active = BooleanField()
     description = StringField()
@@ -77,16 +76,16 @@ class Workflow(Document):
     @cachetools.cached(_default_state_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_default_state(self):
         from .state import State
+
         return State.objects.filter(workflow=self.id, is_default=True).first()
 
     def set_default_state(self, state):
         from .state import State
-        logger.info("[%s] Set default state to: %s",
-                    self.name, state.name)
+
+        logger.info("[%s] Set default state to: %s", self.name, state.name)
         for s in State.objects.filter(workflow=self.id):
             if s.is_default and s.id != state.id:
-                logger.info("[%s] Removing default status from: %s",
-                            self.name, s.name)
+                logger.info("[%s] Removing default status from: %s", self.name, s.name)
                 s.is_default = False
                 s.save()
         # Invalidate caches

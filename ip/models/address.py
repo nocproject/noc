@@ -121,7 +121,7 @@ class Address(NOCModel):
     csv_ignored_fields = ["prefix"]
 
     def __str__(self):
-        return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
+        return "%s(%s): %s" % (self.vrf.name, self.afi, self.address)
 
     def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:

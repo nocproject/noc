@@ -10,6 +10,7 @@
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+
 # NOC Modules
 from noc.core.model.base import NOCModel
 from noc.core.ip import IP
@@ -17,10 +18,12 @@ from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
 
 
-@on_delete_check(check=[
-    # ("inv.InterfaceClassificationMatch", "prefix_table"),
-    ("sa.ManagedObjectSelector", "filter_prefix")
-])
+@on_delete_check(
+    check=[
+        # ("inv.InterfaceClassificationMatch", "prefix_table"),
+        ("sa.ManagedObjectSelector", "filter_prefix")
+    ]
+)
 @six.python_2_unicode_compatible
 class PrefixTable(NOCModel):
     class Meta(object):
@@ -45,9 +48,11 @@ class PrefixTable(NOCModel):
         :rtype: bool
         """
         p = IP.prefix(prefix)
-        return PrefixTablePrefix.objects.filter(
-            table=self, afi=p.afi).extra(
-            where=["%s <<= prefix"], params=[prefix]).exists()
+        return (
+            PrefixTablePrefix.objects.filter(table=self, afi=p.afi)
+            .extra(where=["%s <<= prefix"], params=[prefix])
+            .exists()
+        )
 
     def __contains__(self, other):
         """
@@ -68,11 +73,13 @@ class PrefixTablePrefix(NOCModel):
         ordering = ["table", "afi", "prefix"]
 
     table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"), on_delete=models.CASCADE)
-    afi = models.CharField(_("Address Family"), max_length=1, choices=[("4", _("IPv4")), ("6", _("IPv6"))])
+    afi = models.CharField(
+        _("Address Family"), max_length=1, choices=[("4", _("IPv4")), ("6", _("IPv6"))]
+    )
     prefix = CIDRField(_("Prefix"))
 
     def __str__(self):
-        return u"%s %s" % (self.table.name, self.prefix)
+        return "%s %s" % (self.table.name, self.prefix)
 
     def save(self, *args, **kwargs):
         # Set AFI

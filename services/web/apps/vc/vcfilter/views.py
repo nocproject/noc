@@ -17,6 +17,7 @@ class VCFilterApplication(ExtModelApplication):
     """
     VCFilter application
     """
+
     title = _("VC Filter")
     menu = [_("Setup"), _("VC Filters")]
     model = VCFilter

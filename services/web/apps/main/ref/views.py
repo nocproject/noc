@@ -10,10 +10,12 @@
 import os
 import re
 import operator
+
 # Third-party modules
 import six
 from django.apps import apps
 from mongoengine.base.common import _document_registry
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.site import site
@@ -33,6 +35,7 @@ class RefAppplication(ExtApplication):
     """
     main.ref application
     """
+
     ignored_params = ["_dc"]
     page_param = "__page"
     start_param = "__start"
@@ -57,20 +60,14 @@ class RefAppplication(ExtApplication):
         Interface names
         :return: (interface name, interface name)
         """
-        return [{
-            "id": n,
-            "label": n
-        } for n in interface_loader.iter_interfaces()]
+        return [{"id": n, "label": n} for n in interface_loader.iter_interfaces()]
 
     def build_profile(self):
         """
         Profile names
         :return: (profile name, profile name)
         """
-        return [{
-            "id": n,
-            "label": n
-        } for n in profile_loader.iter_profiles()]
+        return [{"id": n, "label": n} for n in profile_loader.iter_profiles()]
 
     def build_script(self):
         """
@@ -78,18 +75,17 @@ class RefAppplication(ExtApplication):
         :return: (script name, script name)
         """
         s = set(x.split(".")[-1] for x in script_loader.iter_scripts())
-        return [{
-            "id": n,
-            "label": n
-        } for n in sorted(s)]
+        return [{"id": n, "label": n} for n in sorted(s)]
 
     def build_stencil(self):
         """
         Stencils
         :return:
         """
-        return sorted(({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
-                      key=lambda x: x["label"])
+        return sorted(
+            ({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
+            key=lambda x: x["label"],
+        )
 
     def build_model(self):
         """
@@ -97,9 +93,9 @@ class RefAppplication(ExtApplication):
         :return:
         """
         return sorted(
-            ({"id": m._meta.db_table, "label": m._meta.db_table}
-             for m in apps.get_models()),
-            key=lambda x: x["label"])
+            ({"id": m._meta.db_table, "label": m._meta.db_table} for m in apps.get_models()),
+            key=lambda x: x["label"],
+        )
 
     def build_modcol(self):
         """
@@ -107,19 +103,24 @@ class RefAppplication(ExtApplication):
         """
         r = []
         # Models
-        r += [{
-            "id": m._meta.db_table,
-            "label": "%s.%s" % (m._meta.app_label, m.__name__),
-            "table": m._meta.db_table
-        } for m in apps.get_models()]
+        r += [
+            {
+                "id": m._meta.db_table,
+                "label": "%s.%s" % (m._meta.app_label, m.__name__),
+                "table": m._meta.db_table,
+            }
+            for m in apps.get_models()
+        ]
         # Collections
         r += [
             {
                 "id": c._get_collection_name(),
                 "label": "%s.%s" % (c.__module__.split(".")[1], n),
-                "collection": c._get_collection_name()
-            } for n, c in six.iteritems(_document_registry)
-            if c._get_collection_name()]
+                "collection": c._get_collection_name(),
+            }
+            for n, c in six.iteritems(_document_registry)
+            if c._get_collection_name()
+        ]
         return sorted(r, key=lambda x: x["label"])
 
     def build_ulanguage(self):
@@ -127,49 +128,32 @@ class RefAppplication(ExtApplication):
         User languages
         :return:
         """
-        return sorted(
-            {"id": l[0], "label": l[1]}
-            for l in settings.LANGUAGES
-        )
+        return sorted({"id": l[0], "label": l[1]} for l in settings.LANGUAGES)
 
-    rx_fa_glyph = re.compile(
-        r"\.fa-([^:]+):before\{content:",
-        re.MULTILINE | re.DOTALL
-    )
+    rx_fa_glyph = re.compile(r"\.fa-([^:]+):before\{content:", re.MULTILINE | re.DOTALL)
 
     def build_glyph(self):
-        r = [{
-            "id": "",
-            "label": "---"
-        }]
+        r = [{"id": "", "label": "---"}]
         if os.path.exists(self.FA_CSS_PATH):
             with open(self.FA_CSS_PATH) as f:
                 for match in self.rx_fa_glyph.finditer(f.read()):
                     glyph = match.group(1)
-                    r += [{
-                        "id": "fa fa-%s" % glyph,
-                        "label": glyph
-                    }]
+                    r += [{"id": "fa fa-%s" % glyph, "label": glyph}]
         return r
 
     def build_sound(self):
-        r = [{
-            "id": "",
-            "label": "---"
-        }]
+        r = [{"id": "", "label": "---"}]
         if os.path.isdir(self.NOC_SOUND_PATH):
             for f in sorted(os.listdir(self.NOC_SOUND_PATH)):
                 if f.endswith(".mp3"):
-                    r += [{
-                        "id": f[:-4],
-                        "label": f[:-4]
-                    }]
+                    r += [{"id": f[:-4], "label": f[:-4]}]
         return r
 
     def build_unotificationmethod(self):
-        return sorted(({"id": s[0], "label": s[1]}
-                       for s in USER_NOTIFICATION_METHOD_CHOICES),
-                      key=lambda x: x["label"])
+        return sorted(
+            ({"id": s[0], "label": s[1]} for s in USER_NOTIFICATION_METHOD_CHOICES),
+            key=lambda x: x["label"],
+        )
 
     def build_validator(self):
         def f(k, v):
@@ -188,31 +172,22 @@ class RefAppplication(ExtApplication):
                 "description": v.DESCRIPTION if v.DESCRIPTION else None,
                 "form": v.CONFIG_FORM if v.CONFIG_FORM else None,
                 "solution": None,
-                "tags": tags
+                "tags": tags,
             }
             return r
 
         return sorted(
-            (
-                f(k, v)
-                for k, v in six.iteritems(validator_registry.validators)
-                if v.TITLE
-            ),
-            key=lambda x: x["label"]
+            (f(k, v) for k, v in six.iteritems(validator_registry.validators) if v.TITLE),
+            key=lambda x: x["label"],
         )
 
     def build_windowfunction(self):
-        return sorted(
-            ({"id": x[0], "label": x[1]} for x in wf_choices)
-        )
+        return sorted(({"id": x[0], "label": x[1]} for x in wf_choices))
 
     def _build_report(self):
-        return sorted((
-            {
-                "id": r_id,
-                "label": r.title
-            } for r_id, r in site.iter_predefined_reports()),
-            key=operator.itemgetter("label")
+        return sorted(
+            ({"id": r_id, "label": r.title} for r_id, r in site.iter_predefined_reports()),
+            key=operator.itemgetter("label"),
         )
 
     def build_modelid(self):
@@ -229,30 +204,23 @@ class RefAppplication(ExtApplication):
             else:
                 return self.response_not_found()
         # return self.refs[ref]
-        q = dict((str(k), v[0] if len(v) == 1 else v)
-                 for k, v in request.GET.lists())
+        q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
         format = q.get(self.format_param)
         query = q.get(self.query_param)
         if "id" in q:
-            data = [x for x in self.refs[ref]
-                    if str(x["id"]) == q["id"]]
+            data = [x for x in self.refs[ref] if str(x["id"]) == q["id"]]
         elif query:
             ql = query.lower()
-            data = [x for x in self.refs[ref]
-                    if ql in x["label"].lower()]
+            data = [x for x in self.refs[ref] if ql in x["label"].lower()]
         else:
             data = [x for x in self.refs[ref]]
         total = len(data)
         if start is not None and limit is not None:
-            data = data[int(start):int(start) + int(limit)]
+            data = data[int(start) : int(start) + int(limit)]
         if format == "ext":
-            return {
-                "total": total,
-                "success": True,
-                "data": data
-            }
+            return {"total": total, "success": True, "data": data}
         else:
             return data

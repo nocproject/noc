@@ -18,9 +18,7 @@ class DataSourceService(Service):
     use_mongo = True
 
     def get_handlers(self):
-        return [
-            (r"/api/datasource/(\S+\.\S+)", DataSourceRequestHandler, {"service": self})
-        ]
+        return [(r"/api/datasource/(\S+\.\S+)", DataSourceRequestHandler, {"service": self})]
 
 
 if __name__ == "__main__":

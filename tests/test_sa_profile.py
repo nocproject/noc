@@ -8,8 +8,10 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.profile.loader import loader
 from noc.core.profile.base import BaseProfile

@@ -32,7 +32,7 @@ class UnknownModel(Document):
     description = StringField()
 
     def __str__(self):
-        return u"%s, %s, %s" % (self.vendor, self.managed_object, self.part_no)
+        return "%s, %s, %s" % (self.vendor, self.managed_object, self.part_no)
 
     @classmethod
     def mark_unknown(cls, vendor, managed_object, part_no, description=""):

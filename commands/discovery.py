@@ -11,6 +11,7 @@ from __future__ import print_function
 import argparse
 import time
 from collections import defaultdict
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
@@ -24,21 +25,42 @@ from noc.core.span import Span, get_spans
 class Command(BaseCommand):
     jcls = {
         "box": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
-        "periodic": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
+        "periodic": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
     }
 
     checks = {
         "box": [
-            "profile", "version", "caps", "interface",
-            "id", "config", "asset", "vlan", "nri", "udld",
-            "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe", "cpestatus",
-            "lacp", "hk", "mac", "bfd", "fdp", "vpn", "prefix", "address",
-            "nri_portmap", "nri_service", "metrics"
+            "profile",
+            "version",
+            "caps",
+            "interface",
+            "id",
+            "config",
+            "asset",
+            "vlan",
+            "nri",
+            "udld",
+            "oam",
+            "lldp",
+            "cdp",
+            "huawei_ndp",
+            "stp",
+            "sla",
+            "cpe",
+            "cpestatus",
+            "lacp",
+            "hk",
+            "mac",
+            "bfd",
+            "fdp",
+            "vpn",
+            "prefix",
+            "address",
+            "nri_portmap",
+            "nri_service",
+            "metrics",
         ],
-        "periodic": [
-            "uptime", "interfacestatus",
-            "mac", "metrics", "cpestatus"
-        ]
+        "periodic": ["uptime", "interfacestatus", "mac", "metrics", "cpestatus"],
     }
 
     def add_arguments(self, parser):
@@ -46,28 +68,11 @@ class Command(BaseCommand):
         #
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
-            "-c", "--check",
-            action="append",
-            default=[],
-            help="Execute selected checks only"
+            "-c", "--check", action="append", default=[], help="Execute selected checks only"
         )
-        run_parser.add_argument(
-            "--trace",
-            action="store_true",
-            default=False,
-            help="Trace process"
-        )
-        run_parser.add_argument(
-            "job",
-            nargs=1,
-            choices=list(self.jcls),
-            help="Job name"
-        )
-        run_parser.add_argument(
-            "managed_objects",
-            nargs=argparse.REMAINDER,
-            help="Managed objects"
-        )
+        run_parser.add_argument("--trace", action="store_true", default=False, help="Trace process")
+        run_parser.add_argument("job", nargs=1, choices=list(self.jcls), help="Job name")
+        run_parser.add_argument("managed_objects", nargs=argparse.REMAINDER, help="Managed objects")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -86,29 +91,21 @@ class Command(BaseCommand):
         for c in checks:
             if c not in self.checks[job]:
                 self.die(
-                    "Unknown check '%s' for job '%s'. Available checks are: %s\n" % (
-                        c, job, ", ".join(self.checks[job])
-                    )
+                    "Unknown check '%s' for job '%s'. Available checks are: %s\n"
+                    % (c, job, ", ".join(self.checks[job]))
                 )
         for mo in mos:
             self.run_job(job, mo, checks)
 
     def run_job(self, job, mo, checks):
-        scheduler = Scheduler("discovery", pool=mo.pool.name,
-                              service=ServiceStub())
+        scheduler = Scheduler("discovery", pool=mo.pool.name, service=ServiceStub())
         jcls = self.jcls[job]
         # Try to dereference job
-        job_args = scheduler.get_collection().find_one({
-            Job.ATTR_CLASS: jcls,
-            Job.ATTR_KEY: mo.id
-        })
+        job_args = scheduler.get_collection().find_one({Job.ATTR_CLASS: jcls, Job.ATTR_KEY: mo.id})
         if job_args:
             self.print("Job ID: %s" % job_args["_id"])
         else:
-            job_args = {
-                Job.ATTR_ID: "fakeid",
-                Job.ATTR_KEY: mo.id
-            }
+            job_args = {Job.ATTR_ID: "fakeid", Job.ATTR_KEY: mo.id}
         job_args["_checks"] = checks
         job = get_handler(jcls)(scheduler, job_args)
         if job.context_version:
@@ -133,11 +130,7 @@ class Command(BaseCommand):
                 self.print("\n".join(scheduler.service.metrics[f]))
         if job.context_version and job.context:
             self.print("Saving job context to %s" % ctx_key)
-            scheduler.cache_set(
-                key=ctx_key,
-                value=job.context,
-                version=job.context_version
-            )
+            scheduler.cache_set(key=ctx_key, value=job.context, version=job.context_version)
             scheduler.apply_cache_ops()
             time.sleep(3)
 

@@ -20,13 +20,9 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
 
         data = []
         # Find object with equal ID
-        find = DiscoveryID._get_collection().aggregate([
-            {"$group": {
-                "_id": "$macs",
-                "count": {"$sum": 1}
-            }},
-            {"$match": {"count": {"$gt": 1}}}
-        ])
+        find = DiscoveryID._get_collection().aggregate(
+            [{"$group": {"_id": "$macs", "count": {"$sum": 1}}}, {"$match": {"count": {"$gt": 1}}}]
+        )
 
         for f in find:
             # DiscoveryID.objects.filter(chassis_mac=f["_id"])
@@ -36,9 +32,9 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             data_c = []
             reason = "Other"
 
-            for r in DiscoveryID._get_collection().find({
-                "macs": f["_id"][0]
-            }, {"_id": 0, "object": 1}):
+            for r in DiscoveryID._get_collection().find(
+                {"macs": f["_id"][0]}, {"_id": 0, "object": 1}
+            ):
                 # ManagedObject.get_by_id(o)
                 mo = ManagedObject.get_by_id(r["object"])
                 if len(data_c) > 0:
@@ -47,20 +43,13 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
                     elif not mo.is_managed == data_c[-1][3]:
                         reason = _("MO is move")
 
-                data_c += [(
-                    mo.name,
-                    mo.address,
-                    mo.profile.name,
-                    mo.is_managed
-                )]
+                data_c += [(mo.name, mo.address, mo.profile.name, mo.is_managed)]
 
             data += [SectionRow(name="%s %s" % (f["_id"][0], reason))]
             data += data_c
 
         return self.from_dataset(
             title=self.title,
-            columns=[
-                _("Managed Object"), _("Address"),
-                _("Profile"), _("is managed")
-            ],
-            data=data)
+            columns=[_("Managed Object"), _("Address"), _("Profile"), _("is managed")],
+            data=data,
+        )

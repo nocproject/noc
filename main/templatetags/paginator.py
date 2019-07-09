@@ -21,7 +21,8 @@ def paginator(context, adjacent_pages=2):
     view.
     """
     page_numbers = [
-        n for n in range(context["page"] - adjacent_pages, context["page"] + adjacent_pages + 1)
+        n
+        for n in range(context["page"] - adjacent_pages, context["page"] + adjacent_pages + 1)
         if n > 0 and n <= context["pages"]
     ]
     return {

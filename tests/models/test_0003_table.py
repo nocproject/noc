@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from django.db import connection
 import pytest
+
 # NOC modules
 from .util import get_models, get_documents
 

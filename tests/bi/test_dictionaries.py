@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.clickhouse.dictionary import Dictionary
 

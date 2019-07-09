@@ -12,9 +12,11 @@ import functools
 import time
 import datetime
 import os
+
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
+
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
@@ -34,10 +36,7 @@ class PingService(Service):
     require_nsq_writer = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
-    PING_CLS = {
-        True: "NOC | Managed Object | Ping OK",
-        False: "NOC | Managed Object | Ping Failed"
-    }
+    PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
 
     def __init__(self):
         super(PingService, self).__init__()
@@ -57,8 +56,7 @@ class PingService(Service):
         self.slot_number, self.total_slots = yield self.acquire_slot()
         if self.total_slots > 1:
             self.logger.info(
-                "Enabling distributed mode: Slot %d/%d",
-                self.slot_number, self.total_slots
+                "Enabling distributed mode: Slot %d/%d", self.slot_number, self.total_slots
             )
         else:
             self.logger.info("Enabling standalone mode")
@@ -78,7 +76,7 @@ class PingService(Service):
             self.send_messages,
             # @fixme have to be configured
             250,
-            self.ioloop
+            self.ioloop,
         )
         self.send_callback.start()
         # Start tracking changes
@@ -93,11 +91,7 @@ class PingService(Service):
         """
         Spool message to be sent
         """
-        self.messages += [{
-            "ts": timestamp,
-            "object": object,
-            "data": data
-        }]
+        self.messages += [{"ts": timestamp, "object": object, "data": data}]
 
     @tornado.gen.coroutine
     def send_messages(self):
@@ -123,9 +117,9 @@ class PingService(Service):
                     limit=config.ping.ds_limit,
                     filters=[
                         "pool(%s)" % config.pool,
-                        "shard(%d,%d)" % (self.slot_number, self.total_slots)
+                        "shard(%d,%d)" % (self.slot_number, self.total_slots),
                     ],
-                    block=1
+                    block=1,
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
@@ -158,10 +152,7 @@ class PingService(Service):
         self.logger.info("Create probe: %s (%ds)", data["address"], data["interval"])
         ps = ProbeSetting(**data)
         self.probes[data["id"]] = ps
-        pt = PeriodicOffsetCallback(
-            functools.partial(self.ping_check, ps),
-            ps.interval * 1000
-        )
+        pt = PeriodicOffsetCallback(functools.partial(self.ping_check, ps), ps.interval * 1000)
         ps.task = pt
         pt.start()
         metrics["ping_probe_create"] += 1
@@ -195,11 +186,7 @@ class PingService(Service):
                 metrics["ping_check_skips"] += 1
                 return
         rtt, attempts = yield self.ping.ping_check_rtt(
-            ps.address,
-            policy=ps.policy,
-            size=ps.size,
-            count=ps.count,
-            timeout=ps.timeout
+            ps.address, policy=ps.policy, size=ps.size, count=ps.count, timeout=ps.timeout
         )
         s = rtt is not None
         if s:
@@ -213,43 +200,29 @@ class PingService(Service):
                 metrics["down_objects"] += 1
             if config.ping.throttle_threshold:
                 # Process throttling
-                down_ratio = (
-                    float(metrics["down_objects"]) * 100.0 /
-                    float(metrics["ping_objects"])
-                )
+                down_ratio = float(metrics["down_objects"]) * 100.0 / float(metrics["ping_objects"])
                 if self.is_throttled:
                     restore_ratio = config.ping.restore_threshold or config.ping.throttle_threshold
                     if down_ratio <= restore_ratio:
                         self.logger.info(
-                            "Leaving throttling mode (%s%% <= %s%%)",
-                            down_ratio, restore_ratio
+                            "Leaving throttling mode (%s%% <= %s%%)", down_ratio, restore_ratio
                         )
                         self.is_throttled = False
                         # @todo: Send unthrottling message
                 elif down_ratio > config.ping.throttle_threshold:
                     self.logger.info(
                         "Entering throttling mode (%s%% > %s%%)",
-                        down_ratio, config.ping.throttle_threshold
+                        down_ratio,
+                        config.ping.throttle_threshold,
                     )
                     self.is_throttled = True
                     # @todo: Send throttling message
             ts = " (Throttled)" if self.is_throttled else ""
-            self.logger.info(
-                "[%s] Changing status to %s%s",
-                address, s, ts
-            )
+            self.logger.info("[%s] Changing status to %s%s", address, s, ts)
             ps.status = s
         if ps and not self.is_throttled and s != ps.sent_status:
             self.register_message(
-                ps.id,
-                t0,
-                {
-                    "source": "system",
-                    "$event": {
-                        "class": self.PING_CLS[s],
-                        "vars": {}
-                    }
-                }
+                ps.id, t0, {"source": "system", "$event": {"class": self.PING_CLS[s], "vars": {}}}
             )
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
@@ -261,7 +234,7 @@ class PingService(Service):
             values = [
                 time.strftime("%Y-%m-%d", lt),
                 time.strftime("%Y-%m-%d %H:%M:%S", lt),
-                str(ps.bi_id)
+                str(ps.bi_id),
             ]
             if to_report_rtt:
                 fields += ["rtt"]
@@ -269,10 +242,7 @@ class PingService(Service):
             if ps.report_attempts:
                 fields += ["attempts"]
                 values += [str(attempts)]
-            self.register_metrics(
-                ".".join(fields),
-                ["\t".join(values)]
-            )
+            self.register_metrics(".".join(fields), ["\t".join(values)])
 
 
 if __name__ == "__main__":

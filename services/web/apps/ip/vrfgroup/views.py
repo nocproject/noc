@@ -16,6 +16,7 @@ class VRFGroupApplication(ExtModelApplication):
     """
     VRFGroup application
     """
+
     title = _("VRF Groups")
     menu = [_("Setup"), _("VRF Groups")]
     model = VRFGroup

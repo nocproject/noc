@@ -18,4 +18,4 @@ def fix():
         try:
             l.save()
         except AssertionError:
-            print ("Assertion Error, check link with id: %s" % l.id)
+            print("Assertion Error, check link with id: %s" % l.id)

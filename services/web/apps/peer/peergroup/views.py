@@ -16,6 +16,7 @@ class PeerGroupApplication(ExtModelApplication):
     """
     PeerGroup application
     """
+
     title = _("Peer Groups")
     menu = [_("Setup"), _("Peer Groups")]
     model = PeerGroup

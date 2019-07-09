@@ -8,50 +8,50 @@
 
 # Thirt-party modules
 import pytest
+
 # NOC modules
 from noc.lib.text import parse_table
 
 
-@pytest.mark.parametrize("value,kwargs,expected", [
-    (
-        "First Second Third\n"
-        "----- ------ -----\n"
-        "a     b       c\n"
-        "ddd   eee     fff\n",
-        {},
-        [["a", "b", "c"], ["ddd", "eee", "fff"]]
-    ),
-    (
-        "First Second Third\n"
-        "----- ------ -----\n"
-        "a             c\n"
-        "ddd   eee     fff\n",
-        {},
-        [["a", "", "c"], ["ddd", "eee", "fff"]]
-    ),
-    (
-        "VLAN Status  Name                             Ports\n"
-        "---- ------- -------------------------------- ---------------------------------\n"
-        "4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\n"
-        "                                              g0/10\n",
-        {"allow_wrap": True, "n_row_delim": ", "},
-        [["4090", "Static", "VLAN4090", "f0/5, f0/6, f0/7, f0/8, g0/9, g0/10"]]
-    ),
-    (
-        " MSTI ID     Vid list\n"
-        " -------     -------------------------------------------------------------\n"
-        "    CIST     1-11,15-122,124-250,253,257-300,302-445,447-709\n"
-        "             ,720-759,770-879,901-3859,3861-4094\n"
-        "       1     12-14,123,251-252,254-256,301,446,710-719,760-769,\n"
-        "             880-900,3860\n",
-        {"allow_wrap": True, "n_row_delim": ","},
-        [
-            ["CIST", "1-11,15-122,124-250,253,257-300,302-445,447-709,720-759,770-879,901-3859,3861-4094"],
-            ["1", "12-14,123,251-252,254-256,301,446,710-719,760-769,880-900,3860"]
-        ]
-    ),
-    (
-        """Flags:  D - down        P - bundled in port-channel
+@pytest.mark.parametrize(
+    "value,kwargs,expected",
+    [
+        (
+            "First Second Third\n" "----- ------ -----\n" "a     b       c\n" "ddd   eee     fff\n",
+            {},
+            [["a", "b", "c"], ["ddd", "eee", "fff"]],
+        ),
+        (
+            "First Second Third\n" "----- ------ -----\n" "a             c\n" "ddd   eee     fff\n",
+            {},
+            [["a", "", "c"], ["ddd", "eee", "fff"]],
+        ),
+        (
+            "VLAN Status  Name                             Ports\n"
+            "---- ------- -------------------------------- ---------------------------------\n"
+            "4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\n"
+            "                                              g0/10\n",
+            {"allow_wrap": True, "n_row_delim": ", "},
+            [["4090", "Static", "VLAN4090", "f0/5, f0/6, f0/7, f0/8, g0/9, g0/10"]],
+        ),
+        (
+            " MSTI ID     Vid list\n"
+            " -------     -------------------------------------------------------------\n"
+            "    CIST     1-11,15-122,124-250,253,257-300,302-445,447-709\n"
+            "             ,720-759,770-879,901-3859,3861-4094\n"
+            "       1     12-14,123,251-252,254-256,301,446,710-719,760-769,\n"
+            "             880-900,3860\n",
+            {"allow_wrap": True, "n_row_delim": ","},
+            [
+                [
+                    "CIST",
+                    "1-11,15-122,124-250,253,257-300,302-445,447-709,720-759,770-879,901-3859,3861-4094",
+                ],
+                ["1", "12-14,123,251-252,254-256,301,446,710-719,760-769,880-900,3860"],
+            ],
+        ),
+        (
+            """Flags:  D - down        P - bundled in port-channel
         I - stand-alone s - suspended
         H - Hot-standby (LACP only)
         R - Layer3      S - Layer2
@@ -77,63 +77,66 @@ Group  Port-channel  Protocol    Ports
 17     Po17(SU)        LACP      Gi2/3(P)    Gi2/19(P)   Gi2/20(P)
                                  Gi2/22(P)
 """,
-        {"allow_wrap": True, "max_width": 120},
-        [['11', 'Po11(SD)', 'LACP', 'Gi1/20(D)   Gi1/21(D)'],
-         ['12', 'Po12(SD)', 'LACP', 'Gi2/16(D)'],
-         ['13', 'Po13(SU)', 'LACP', 'Te3/2(P)'],
-         ['14', 'Po14(SU)', 'LACP', 'Te3/4(P)    Te4/4(P)'],
-         ['15', 'Po15(SU)', 'LACP', 'Gi2/6(P)    Gi2/14(P)'],
-         ['16', 'Po16(SU)', 'LACP', 'Te3/3(P)    Te4/3(P)'],
-         ['17', 'Po17(SU)', 'LACP', 'Gi2/3(P)    Gi2/19(P)   Gi2/20(P)Gi2/22(P)']]
-    ),
-    (
-        'Vlan    Mac Address       Type       Ports\n'
-        '----    -----------       ----       -----\n'
-        'All\t1111.2222.3333\t  STATIC     CPU\n'
-        '611\t1111.2223.3efc\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.3cdc\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.4010\t  DYNAMIC    g0/2\n'
-        '1\t1111.2224.1fd8\t  DYNAMIC    g0/1\n'
-        '1\t1111.2225.0bb1\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.6bfc\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.42d8\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.6bf8\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.42dc\t  DYNAMIC    g0/2\n'
-        '611\t1111.2226.0001\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.3cd8\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.3ef8\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.4014\t  DYNAMIC    g0/2\n'
-        '611\t1111.2227.3480\t  DYNAMIC    g0/2\n'
-        '1\t1111.2228.a16d\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.38e0\t  DYNAMIC    g0/2\n'
-        '1\t1111.2229.a16c\t  DYNAMIC    g0/2\n'
-        '611\t1111.2223.38e4\t  DYNAMIC    g0/2\n'
-        '611\t1111.222a.2e1e\t  DYNAMIC    g0/2\n',
-        {"expand_columns": True},
-        [
-            ["All", "1111.2222.3333", "STATIC", "CPU"],
-            ["611", "1111.2223.3efc", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.3cdc", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.4010", "DYNAMIC", "g0/2"],
-            ["1", "1111.2224.1fd8", "DYNAMIC", "g0/1"],
-            ["1", "1111.2225.0bb1", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.6bfc", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.42d8", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.6bf8", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.42dc", "DYNAMIC", "g0/2"],
-            ["611", "1111.2226.0001", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.3cd8", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.3ef8", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.4014", "DYNAMIC", "g0/2"],
-            ["611", "1111.2227.3480", "DYNAMIC", "g0/2"],
-            ["1", "1111.2228.a16d", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.38e0", "DYNAMIC", "g0/2"],
-            ["1", "1111.2229.a16c", "DYNAMIC", "g0/2"],
-            ["611", "1111.2223.38e4", "DYNAMIC", "g0/2"],
-            ["611", "1111.222a.2e1e", "DYNAMIC", "g0/2"]
-        ]
-    ),
-    ("""ifIndex     ifDescr                                Interface
+            {"allow_wrap": True, "max_width": 120},
+            [
+                ["11", "Po11(SD)", "LACP", "Gi1/20(D)   Gi1/21(D)"],
+                ["12", "Po12(SD)", "LACP", "Gi2/16(D)"],
+                ["13", "Po13(SU)", "LACP", "Te3/2(P)"],
+                ["14", "Po14(SU)", "LACP", "Te3/4(P)    Te4/4(P)"],
+                ["15", "Po15(SU)", "LACP", "Gi2/6(P)    Gi2/14(P)"],
+                ["16", "Po16(SU)", "LACP", "Te3/3(P)    Te4/3(P)"],
+                ["17", "Po17(SU)", "LACP", "Gi2/3(P)    Gi2/19(P)   Gi2/20(P)Gi2/22(P)"],
+            ],
+        ),
+        (
+            "Vlan    Mac Address       Type       Ports\n"
+            "----    -----------       ----       -----\n"
+            "All\t1111.2222.3333\t  STATIC     CPU\n"
+            "611\t1111.2223.3efc\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.3cdc\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.4010\t  DYNAMIC    g0/2\n"
+            "1\t1111.2224.1fd8\t  DYNAMIC    g0/1\n"
+            "1\t1111.2225.0bb1\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.6bfc\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.42d8\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.6bf8\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.42dc\t  DYNAMIC    g0/2\n"
+            "611\t1111.2226.0001\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.3cd8\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.3ef8\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.4014\t  DYNAMIC    g0/2\n"
+            "611\t1111.2227.3480\t  DYNAMIC    g0/2\n"
+            "1\t1111.2228.a16d\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.38e0\t  DYNAMIC    g0/2\n"
+            "1\t1111.2229.a16c\t  DYNAMIC    g0/2\n"
+            "611\t1111.2223.38e4\t  DYNAMIC    g0/2\n"
+            "611\t1111.222a.2e1e\t  DYNAMIC    g0/2\n",
+            {"expand_columns": True},
+            [
+                ["All", "1111.2222.3333", "STATIC", "CPU"],
+                ["611", "1111.2223.3efc", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.3cdc", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.4010", "DYNAMIC", "g0/2"],
+                ["1", "1111.2224.1fd8", "DYNAMIC", "g0/1"],
+                ["1", "1111.2225.0bb1", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.6bfc", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.42d8", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.6bf8", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.42dc", "DYNAMIC", "g0/2"],
+                ["611", "1111.2226.0001", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.3cd8", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.3ef8", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.4014", "DYNAMIC", "g0/2"],
+                ["611", "1111.2227.3480", "DYNAMIC", "g0/2"],
+                ["1", "1111.2228.a16d", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.38e0", "DYNAMIC", "g0/2"],
+                ["1", "1111.2229.a16c", "DYNAMIC", "g0/2"],
+                ["611", "1111.2223.38e4", "DYNAMIC", "g0/2"],
+                ["611", "1111.222a.2e1e", "DYNAMIC", "g0/2"],
+            ],
+        ),
+        (
+            """ifIndex     ifDescr                                Interface
 ----------  -------------------------------------  ---------
          1  Switch  1 - Port  0                    GigabitEthernet 1/1
          2  Switch  1 - Port  1                    GigabitEthernet 1/2
@@ -149,22 +152,25 @@ Group  Port-channel  Protocol    Ports
         12  Switch  1 - Port 11                    GigabitEthernet 1/12
         13  Switch  1 - Port 12                    2.5GigabitEthernet 1/1
 """,
-     {"allow_wrap": True, "max_width": 80},
-     [['1', 'Switch  1 - Port  0', 'GigabitEthernet 1/1'],
-      ['2', 'Switch  1 - Port  1', 'GigabitEthernet 1/2'],
-      ['3', 'Switch  1 - Port  2', 'GigabitEthernet 1/3'],
-      ['4', 'Switch  1 - Port  3', 'GigabitEthernet 1/4'],
-      ['5', 'Switch  1 - Port  4', 'GigabitEthernet 1/5'],
-      ['6', 'Switch  1 - Port  5', 'GigabitEthernet 1/6'],
-      ['7', 'Switch  1 - Port  6', 'GigabitEthernet 1/7'],
-      ['8', 'Switch  1 - Port  7', 'GigabitEthernet 1/8'],
-      ['9', 'Switch  1 - Port  8', 'GigabitEthernet 1/9'],
-      ['10', 'Switch  1 - Port  9', 'GigabitEthernet 1/10'],
-      ['11', 'Switch  1 - Port 10', 'GigabitEthernet 1/11'],
-      ['12', 'Switch  1 - Port 11', 'GigabitEthernet 1/12'],
-      ['13', 'Switch  1 - Port 12', '2.5GigabitEthernet 1/1']]
-     ),
-    ("""
+            {"allow_wrap": True, "max_width": 80},
+            [
+                ["1", "Switch  1 - Port  0", "GigabitEthernet 1/1"],
+                ["2", "Switch  1 - Port  1", "GigabitEthernet 1/2"],
+                ["3", "Switch  1 - Port  2", "GigabitEthernet 1/3"],
+                ["4", "Switch  1 - Port  3", "GigabitEthernet 1/4"],
+                ["5", "Switch  1 - Port  4", "GigabitEthernet 1/5"],
+                ["6", "Switch  1 - Port  5", "GigabitEthernet 1/6"],
+                ["7", "Switch  1 - Port  6", "GigabitEthernet 1/7"],
+                ["8", "Switch  1 - Port  7", "GigabitEthernet 1/8"],
+                ["9", "Switch  1 - Port  8", "GigabitEthernet 1/9"],
+                ["10", "Switch  1 - Port  9", "GigabitEthernet 1/10"],
+                ["11", "Switch  1 - Port 10", "GigabitEthernet 1/11"],
+                ["12", "Switch  1 - Port 11", "GigabitEthernet 1/12"],
+                ["13", "Switch  1 - Port 12", "2.5GigabitEthernet 1/1"],
+            ],
+        ),
+        (
+            """
 LLDP Remote Device Summary
 
 Local
@@ -174,11 +180,14 @@ Interface  RemID    Chassis ID            Port ID             System Name
 0/10
 
 """,
-     {"allow_extend": True},
-     [['0/9', '1', '11:22:33:44:55:66', 'GigabitEthernet2/0/9', 'SS-MS-1'],
-      ['0/10', '', '', '', '']]
-     ),
-    ("""
+            {"allow_extend": True},
+            [
+                ["0/9", "1", "11:22:33:44:55:66", "GigabitEthernet2/0/9", "SS-MS-1"],
+                ["0/10", "", "", "", ""],
+            ],
+        ),
+        (
+            """
 LLDP Remote Device Summary
 
 Local
@@ -188,12 +197,14 @@ Interface  RemID    Chassis ID            Port ID             System Name
 0/10       1        11:22:33:44:55:67     gi1/1/1             e22-a777-b774-1
 
 """,
-     {"allow_extend": True},
-     [['0/9', '3', '11:22:33:44:55:66', 'GigabitEthernet0/0/8', 'qqq0-sasasasa-rr11'],
-      ['0/10', '1', '11:22:33:44:55:67', 'gi1/1/1', 'e22-a77']]
-     ),
-    (
-        """
+            {"allow_extend": True},
+            [
+                ["0/9", "3", "11:22:33:44:55:66", "GigabitEthernet0/0/8", "qqq0-sasasasa-rr11"],
+                ["0/10", "1", "11:22:33:44:55:67", "gi1/1/1", "e22-a77"],
+            ],
+        ),
+        (
+            """
 
  Port       Device ID         Port ID        System Name    Capabilities  TTL
 ------- ----------------- --------------- ----------------- ------------ -----
@@ -203,20 +214,37 @@ g2      00:11:22:33:44:55 GigabitEthernet SS555_XXXX_Skeeee     B, R      109
                           1/0/3           x_333_Stack
 
 """,
-        {"allow_extend": True, "allow_wrap": True},
-        [['g1', '00:11:22:33:44:55', 'GigabitEthernet0/0/3', 'SS555_XXXX_Skeeeex_333_Stack', 'B, R', '109'],
-         ['g2', '00:11:22:33:44:55', 'GigabitEthernet1/0/3', 'SS555_XXXX_Skeeeex_333_Stack', 'B, R', '109']]
-    ),
-    (
-        """
+            {"allow_extend": True, "allow_wrap": True},
+            [
+                [
+                    "g1",
+                    "00:11:22:33:44:55",
+                    "GigabitEthernet0/0/3",
+                    "SS555_XXXX_Skeeeex_333_Stack",
+                    "B, R",
+                    "109",
+                ],
+                [
+                    "g2",
+                    "00:11:22:33:44:55",
+                    "GigabitEthernet1/0/3",
+                    "SS555_XXXX_Skeeeex_333_Stack",
+                    "B, R",
+                    "109",
+                ],
+            ],
+        ),
+        (
+            """
   Port        Device ID          Port ID         System Name    Capabilities  TTL
 --------- ----------------- ----------------- ----------------- ------------ -----
 te1/0/3        (1RY\t#       GigabitEthernet1/  MBH_75_00020_1       B, R      106
                             3/0
 """,
-        {"allow_extend": True, "allow_wrap": True, "expand_tabs": False},
-        [['te1/0/3', '(1RY\t#', 'GigabitEthernet1/3/0', 'MBH_75_00020_1', 'B, R', '106']]
-    ),
-])
+            {"allow_extend": True, "allow_wrap": True, "expand_tabs": False},
+            [["te1/0/3", "(1RY\t#", "GigabitEthernet1/3/0", "MBH_75_00020_1", "B, R", "106"]],
+        ),
+    ],
+)
 def test_parse_table(value, kwargs, expected):
     assert parse_table(value, **kwargs) == expected

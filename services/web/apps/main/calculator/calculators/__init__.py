@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.lib.registry import Registry
 
@@ -47,9 +48,14 @@ class Calculator(six.with_metaclass(CalculatorBase, object)):
                 result = self.calculate(**form.cleaned_data)
         else:
             form = self.form_class()
-        return self.app.render(request, self.template, form=form,
-                               title=self.title, result=result,
-                               description=self.description)
+        return self.app.render(
+            request,
+            self.template,
+            form=form,
+            title=self.title,
+            result=result,
+            description=self.description,
+        )
 
     def calculate(**kwargs):
         """

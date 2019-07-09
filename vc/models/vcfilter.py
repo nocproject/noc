@@ -10,10 +10,12 @@
 import re
 from threading import Lock
 import operator
+
 # Third-party modules
 from django.db import models
 import cachetools
 import six
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
@@ -22,15 +24,15 @@ rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("vc.VCBindFilter", "vc_filter"),
-    ("vc.VCDomainProvisioningConfig", "vc_filter"),
-])
+@on_delete_check(
+    check=[("vc.VCBindFilter", "vc_filter"), ("vc.VCDomainProvisioningConfig", "vc_filter")]
+)
 @six.python_2_unicode_compatible
 class VCFilter(NOCModel):
     """
     VC Filter
     """
+
     class Meta(object):
         verbose_name = "VC Filter"
         verbose_name_plural = "VC Filters"
@@ -105,7 +107,7 @@ class VCFilter(NOCModel):
         """
         s = []
         if isinstance(name, six.string_types):
-            name = "\"%s\"" % name.replace("\"", "\"\"")
+            name = '"%s"' % name.replace('"', '""')
         elif isinstance(name, six.integer_types):
             name = "%d" % name
         else:

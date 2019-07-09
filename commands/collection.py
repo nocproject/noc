@@ -10,8 +10,10 @@
 from __future__ import print_function
 import os
 import argparse
+
 # Third-party modules
 import ujson
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.collection.base import Collection
@@ -21,77 +23,60 @@ from noc.models import COLLECTIONS, get_model
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(
-            dest="cmd",
-            help="sub-commands help"
-        )
+        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help")
         # sync
-        sync_parser = subparsers.add_parser(
-            "sync",
-            help="Synchronize collections"
-        )
+        subparsers.add_parser("sync", help="Synchronize collections")
         # install
-        install_parser = subparsers.add_parser(
-            "install",
-            help="Add collections to repository"
+        install_parser = subparsers.add_parser("install", help="Add collections to repository")
+        install_parser.add_argument(
+            "-r", "--remove", dest="remove", action="store_true", help="Remove installed files"
         )
         install_parser.add_argument(
-            "-r", "--remove",
-            dest="remove",
-            action="store_true",
-            help="Remove installed files"
+            "-l", "--load", dest="load", action="store_true", help="Load to database"
         )
-        install_parser.add_argument(
-            "-l", "--load",
-            dest="load",
-            action="store_true",
-            help="Load to database"
-        )
-        install_parser.add_argument(
-            "install_files",
-            nargs=argparse.REMAINDER,
-            help="List of files"
-        )
-        export_parser = subparsers.add_parser(
-            "export",
-            help="Export collections"
-        )
+        install_parser.add_argument("install_files", nargs=argparse.REMAINDER, help="List of files")
+        export_parser = subparsers.add_parser("export", help="Export collections")
         export_group_list = export_parser.add_argument_group("List arguments")
         export_group_list.add_argument(
-            "-l", "--list-collections",
+            "-l",
+            "--list-collections",
             dest="list_collection",
             metavar="collection_name",
             const=True,
             nargs="?",
-            help="Show collection names /or list model in [collection_name]"
+            help="Show collection names /or list model in [collection_name]",
         )
         export_group_exp = export_parser.add_argument_group("Export arguments")
         export_group_exp.add_argument(
-            "-p", "--path",
+            "-p",
+            "--path",
             dest="export_path",
             metavar="export_directory",
-            help="Path for save exported collections"
+            help="Path for save exported collections",
         )
         export_group_exp.add_argument(
-            "-c", "--collections",
+            "-c",
+            "--collections",
             dest="export_collections",
-            nargs='+',
+            nargs="+",
             metavar="collection-name",
-            help="List of collection for export"
+            help="List of collection for export",
         )
         export_group_exp.add_argument(
-            "-n", "--object-name",
+            "-n",
+            "--object-name",
             dest="export_model_names",
             metavar="object-name",
-            nargs='+',
-            help="Export model names"
+            nargs="+",
+            help="Export model names",
         )
         export_group_exp.add_argument(
-            "-u", "--object-uuid",
+            "-u",
+            "--object-uuid",
             dest="export_model_uuids",
             metavar="uuid",
-            nargs='+',
-            help="Export model uuids"
+            nargs="+",
+            help="Export model uuids",
         )
 
     def handle(self, cmd, *args, **options):
@@ -121,9 +106,14 @@ class Command(BaseCommand):
             if remove:
                 os.unlink(fp)
 
-    def handle_export(self, list_collection=False,
-                      export_path=None, export_collections=None,
-                      export_model_names=None, export_model_uuids=None):
+    def handle_export(
+        self,
+        list_collection=False,
+        export_path=None,
+        export_collections=None,
+        export_model_names=None,
+        export_model_uuids=None,
+    ):
         MODELS = {}
         for c in COLLECTIONS:
             cm = get_model(c)
@@ -137,10 +127,9 @@ class Command(BaseCommand):
                 if list_collection not in MODELS:
                     print("Collection not found", file=self.stdout)
                     return
-                objs = MODELS[list_collection].objects.all().order_by('name')
+                objs = MODELS[list_collection].objects.all().order_by("name")
                 for o in objs:
-                    print("uuid:%s name:\"%s\"" % (o.uuid, o.name),
-                          file=self.stdout)
+                    print('uuid:%s name:"%s"' % (o.uuid, o.name), file=self.stdout)
         else:
             if not export_path or not export_collections:
                 return
@@ -153,23 +142,14 @@ class Command(BaseCommand):
                     continue
                 kwargs = {}
                 if export_model_names:
-                    kwargs['name__in'] = export_model_names
+                    kwargs["name__in"] = export_model_names
                 elif export_model_uuids:
-                    kwargs['uuid__in'] = export_model_uuids
-                objs = MODELS[ecname].objects.filter(**kwargs).order_by('name')
+                    kwargs["uuid__in"] = export_model_uuids
+                objs = MODELS[ecname].objects.filter(**kwargs).order_by("name")
                 for o in objs:
-                    path = os.path.join(
-                        export_path,
-                        ecname,
-                        o.get_json_path()
-                    )
-                    print("export \"%s\" to %s" % (o.name, path),
-                          file=self.stdout)
-                    safe_rewrite(
-                        path,
-                        o.to_json(),
-                        mode=0o644
-                    )
+                    path = os.path.join(export_path, ecname, o.get_json_path())
+                    print('export "%s" to %s' % (o.name, path), file=self.stdout)
+                    safe_rewrite(path, o.to_json(), mode=0o644)
 
 
 if __name__ == "__main__":

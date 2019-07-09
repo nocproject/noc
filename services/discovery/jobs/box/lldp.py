@@ -13,10 +13,14 @@ from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_CHASSIS_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_ALIAS,
-    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME,
-    LLDP_PORT_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_UNSPECIFIED
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_UNSPECIFIED,
 )
 
 
@@ -24,6 +28,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
     """
     OAM Topology discovery
     """
+
     name = "lldp"
     required_script = "get_lldp_neighbors"
     required_capabilities = ["Network | LLDP"]
@@ -50,8 +55,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
             return self.get_neighbor_by_local(chassis_id)
         else:
             self.logger.debug(
-                "Cannot find neighbor '%s'. Unsupported subtype %s",
-                chassis_id, chassis_subtype
+                "Cannot find neighbor '%s'. Unsupported subtype %s", chassis_id, chassis_subtype
             )
             return None
 
@@ -98,16 +102,16 @@ class LLDPCheck(TopologyDiscoveryCheck):
             rp = None  # Process below
         else:
             self.logger.debug(
-                "Cannot find remote port %r. "
-                "Unsupported remote port subtype %s",
-                port, port_subtype
+                "Cannot find remote port %r. " "Unsupported remote port subtype %s",
+                port,
+                port_subtype,
             )
             return None
         if not rp:
             self.logger.debug(
-                "Trying to guess remote port %s:%r "
-                "using unspecified subtype",
-                remote_object.name, port
+                "Trying to guess remote port %s:%r " "using unspecified subtype",
+                remote_object.name,
+                port,
             )
             rp = self.get_interface_by_unspecified(port_id, remote_object)
         if rp:
@@ -123,8 +127,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         """
         self.logger.debug("Searching port by description: %s:%s", object.name, port)
         try:
-            i = Interface.objects.filter(
-                managed_object=object.id, description=port)[:2]
+            i = Interface.objects.filter(managed_object=object.id, description=port)[:2]
             if len(i) == 1:
                 return i[0]
             else:
@@ -135,17 +138,11 @@ class LLDPCheck(TopologyDiscoveryCheck):
     def get_interface_by_ifindex(self, ifindex, object):
         ifindex = int(ifindex)
         # Try physical ifindexes
-        i = Interface.objects.filter(
-            managed_object=object.id,
-            ifindex=ifindex
-        ).first()
+        i = Interface.objects.filter(managed_object=object.id, ifindex=ifindex).first()
         if i:
             return i
         # Try subinterface ifindex
-        si = SubInterface.objects.filter(
-            managed_object=object.id,
-            ifindex=ifindex
-        ).first()
+        si = SubInterface.objects.filter(managed_object=object.id, ifindex=ifindex).first()
         if si:
             return si.interface
         else:
@@ -167,24 +164,17 @@ class LLDPCheck(TopologyDiscoveryCheck):
         # Try interface name
         try:
             n_port = object.get_profile().convert_interface_name(port)
-            i = Interface.objects.filter(
-                managed_object=object.id,
-                name=n_port
-            ).first()
+            i = Interface.objects.filter(managed_object=object.id, name=n_port).first()
             if i:
                 return i
             for p in object.get_profile().get_interface_names(n_port):
-                i = Interface.objects.filter(
-                    managed_object=object.id, name=p).first()
+                i = Interface.objects.filter(managed_object=object.id, name=p).first()
                 if i:
                     return i
         except InterfaceTypeError:
             pass
         # Unable to decode
-        self.logger.info(
-            "Unable to decode local subtype port id %s at %s",
-            port, object
-        )
+        self.logger.info("Unable to decode local subtype port id %s at %s", port, object)
         return None
 
     def get_interface_by_unspecified(self, port_id, object):
@@ -208,7 +198,9 @@ class LLDPCheck(TopologyDiscoveryCheck):
         if iface:
             return iface
         # Try to find interface with given description.
-        iface = self.get_interface_by_description(port_id.get("remote_port_description", port), object)
+        iface = self.get_interface_by_description(
+            port_id.get("remote_port_description", port), object
+        )
         if iface:
             return iface
         # Use algorithms from get_remote_port_by_local as last resort.

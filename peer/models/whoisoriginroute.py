@@ -17,11 +17,8 @@ class WhoisOriginRoute(Document):
     """
     origin -> route
     """
-    meta = {
-        "collection": "noc.whois.origin.route",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "noc.whois.origin.route", "strict": False, "auto_create_index": False}
 
     origin = StringField(primary_key=True)
     routes = ListField(StringField())
@@ -47,7 +44,10 @@ class WhoisOriginRoute(Document):
         """
         c = cls._get_collection()
         c.drop()
-        c.insert([{"_id": k.upper(), "routes": data[k]} for k in data],
-                 manipulate=False, check_keys=False)
+        c.insert(
+            [{"_id": k.upper(), "routes": data[k]} for k in data],
+            manipulate=False,
+            check_keys=False,
+        )
         # Implicit reindex
         return cls.objects.count()

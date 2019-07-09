@@ -18,17 +18,19 @@ class ConnectionRuleApplication(ExtDocApplication):
     """
     ConnectionRule application
     """
+
     title = _("Connection Rules")
     menu = [_("Setup"), _("Connection Rules")]
     model = ConnectionRule
     query_fields = ["name__icontains", "description__icontains"]
 
-    @view(url="^actions/json/$", method=["POST"],
-          access="read",
-          validate={
-            "ids": ListOfParameter(element=DocumentParameter(ConnectionRule), convert=True)
-          },
-          api=True)
+    @view(
+        url="^actions/json/$",
+        method=["POST"],
+        access="read",
+        validate={"ids": ListOfParameter(element=DocumentParameter(ConnectionRule), convert=True)},
+        api=True,
+    )
     def api_action_json(self, request, ids):
         r = [o.json_data for o in ids]
         s = to_json(r, order=["name", "description"])

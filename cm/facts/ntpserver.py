@@ -26,7 +26,7 @@ class NTPServer(BaseFact):
         self.ip = ip
 
     def __str__(self):
-        return u"NTPServer %s" % self.ip
+        return "NTPServer %s" % self.ip
 
     @property
     def ip(self):

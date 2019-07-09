@@ -9,10 +9,12 @@
 # Python modules
 import datetime
 from collections import defaultdict
+
 # Third-party modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 from mongoengine.queryset.visitor import Q
+
 # NOC modules
 from noc.fm.models.outage import Outage
 from noc.sa.models.managedobject import ManagedObject
@@ -22,43 +24,26 @@ from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
-    duration = forms.ChoiceField(choices=[
-        (0, _("Range")),
-        (86400, _("1 day")),
-        (7 * 86400, _("1 week")),
-        (30 * 86400, _("1 month"))
-    ], label=_("Duration"))
-    from_date = forms.CharField(
-        widget=AdminDateWidget,
-        label=_("From Date"),
-        required=False
+    duration = forms.ChoiceField(
+        choices=[
+            (0, _("Range")),
+            (86400, _("1 day")),
+            (7 * 86400, _("1 week")),
+            (30 * 86400, _("1 month")),
+        ],
+        label=_("Duration"),
     )
-    to_date = forms.CharField(
-        widget=AdminDateWidget,
-        label=_("To Date"),
-        required=False
-    )
+    from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=False)
+    to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
 
 
 class ReportOutagesApplication(SimpleReport):
     title = _("Outages")
     form = ReportForm
     predefined_reports = {
-        "1d": PredefinedReport(
-            _("Outages (1 day)"), {
-                "duration": 86400
-            }
-        ),
-        "7d": PredefinedReport(
-            _("Outages (7 days)"), {
-                "duration": 7 * 86400
-            }
-        ),
-        "30d": PredefinedReport(
-            _("Outages (30 day)"), {
-                "duration": 30 * 86400
-            }
-        )
+        "1d": PredefinedReport(_("Outages (1 day)"), {"duration": 86400}),
+        "7d": PredefinedReport(_("Outages (7 days)"), {"duration": 7 * 86400}),
+        "30d": PredefinedReport(_("Outages (30 day)"), {"duration": 30 * 86400}),
     }
 
     def get_data(self, request, duration, from_date=None, to_date=None, **kwargs):
@@ -91,7 +76,9 @@ class ReportOutagesApplication(SimpleReport):
             otime[o.object] += (stop - start).total_seconds()
         td = d.total_seconds()
         if not request.user.is_superuser:
-            for mo in ManagedObject.objects.exclude(administrative_domain__in=UserAccess.get_domains(request.user)):
+            for mo in ManagedObject.objects.exclude(
+                administrative_domain__in=UserAccess.get_domains(request.user)
+            ):
                 if mo.id in otime:
                     otime.pop(mo.id)
         # Load managed objects
@@ -108,39 +95,40 @@ class ReportOutagesApplication(SimpleReport):
             if not m:
                 continue  # Hanging Outage
             dt = min(td, otime[o])
-            downtime = "%02d:%02d:%02d" % (
-                (dt // 3600) % 24,
-                (dt // 60) % 60,
-                dt % 60
-            )
+            downtime = "%02d:%02d:%02d" % ((dt // 3600) % 24, (dt // 60) % 60, dt % 60)
             if dt >= 86400:
                 downtime = "%dd %s" % (dt // 86400, downtime)
             if td:
                 avail = float(td - dt) * 100 / td
             else:
                 avail = 0
-            r += [(
-                m.name,
-                m.address,
-                m.profile.name,
-                m.platform.name if m.platform else "",
-                _("Yes") if m.is_managed else _("No"),
-                _("Yes") if m.get_status() else _("No"),
-                downtime,
-                avail,
-                len(outages[o])
-            )]
+            r += [
+                (
+                    m.name,
+                    m.address,
+                    m.profile.name,
+                    m.platform.name if m.platform else "",
+                    _("Yes") if m.is_managed else _("No"),
+                    _("Yes") if m.get_status() else _("No"),
+                    downtime,
+                    avail,
+                    len(outages[o]),
+                )
+            ]
 
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Profile"), _("Platform"),
+                _("Managed Object"),
+                _("Address"),
+                _("Profile"),
+                _("Platform"),
                 TableColumn(_("Managed"), align="right"),
                 TableColumn(_("Status"), align="right"),
                 TableColumn(_("Downtime"), align="right"),
                 TableColumn(_("Availability"), align="right", format="percent"),
-                TableColumn(_("Downs"), align="right", format="integer")
+                TableColumn(_("Downs"), align="right", format="integer"),
             ],
             data=r,
-            enumerate=True
+            enumerate=True,
         )

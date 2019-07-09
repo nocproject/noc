@@ -10,8 +10,10 @@
 from __future__ import print_function
 import argparse
 import time
+
 # Third-party modules
 from six.moves.cPickle import load
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -20,11 +22,7 @@ class Command(BaseCommand):
     help = "Dump crashinfo file"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List traceback files"
-        )
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List traceback files")
 
     def handle(self, *args, **options):
         for path in args:

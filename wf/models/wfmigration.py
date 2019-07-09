@@ -8,12 +8,18 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField,
-                                ReferenceField, ListField,
-                                EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ReferenceField,
+    ListField,
+    EmbeddedDocumentField,
+)
+
 # NOC modules
 from .state import State
 
@@ -27,11 +33,7 @@ class MigrationItem(EmbeddedDocument):
 
 @six.python_2_unicode_compatible
 class WFMigration(Document):
-    meta = {
-        "collection": "wfmigrations",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "wfmigrations", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
     description = StringField()
     migrations = ListField(EmbeddedDocumentField(MigrationItem))
@@ -45,6 +47,8 @@ class WFMigration(Document):
         :param target_wf: Target workflow
         :return:
         """
-        return dict((m.from_state, m.to_state)
-                    for m in self.migrations
-                    if m.is_active and m.to_state.workflow == target_wf)
+        return dict(
+            (m.from_state, m.to_state)
+            for m in self.migrations
+            if m.is_active and m.to_state.workflow == target_wf
+        )

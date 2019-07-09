@@ -111,5 +111,5 @@ MIB = {
     "LLDP-MIB::lldpExtensions": "1.0.8802.1.1.2.1.5",
     "LLDP-MIB::lldpConformance": "1.0.8802.1.1.2.2",
     "LLDP-MIB::lldpCompliances": "1.0.8802.1.1.2.2.1",
-    "LLDP-MIB::lldpGroups": "1.0.8802.1.1.2.2.2"
+    "LLDP-MIB::lldpGroups": "1.0.8802.1.1.2.2.2",
 }

@@ -12,17 +12,23 @@ import datetime
 import time
 from collections import namedtuple
 import csv
+
 # Third-party modules
 import xlsxwriter
 from six import StringIO
 from django.http import HttpResponse
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
-from noc.lib.app.reportdatasources.report_metrics import ReportInterfaceMetrics, ReportCPUMetrics,\
-    ReportMemoryMetrics, ReportPingMetrics
+from noc.lib.app.reportdatasources.report_metrics import (
+    ReportInterfaceMetrics,
+    ReportCPUMetrics,
+    ReportMemoryMetrics,
+    ReportPingMetrics,
+)
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
@@ -32,8 +38,16 @@ from noc.core.translation import ugettext as _
 
 
 def get_column_width(name):
-    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
-                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "OBJECT_ADM_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    excel_column_format = {
+        "ID": 6,
+        "OBJECT_NAME": 38,
+        "OBJECT_STATUS": 10,
+        "OBJECT_PROFILE": 17,
+        "OBJECT_PLATFORM": 25,
+        "AVAIL": 6,
+        "OBJECT_ADM_DOMAIN": 25,
+        "PHYS_INTERFACE_COUNT": 5,
+    }
     if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
         return 8
     elif name.startswith("ADM_PATH"):
@@ -50,35 +64,57 @@ class ReportMetricsDetailApplication(ExtApplication):
         "load_interfaces": ReportInterfaceMetrics,
         "load_cpu": ReportCPUMetrics,
         "load_memory": ReportMemoryMetrics,
-        "ping": ReportPingMetrics
+        "ping": ReportPingMetrics,
     }
 
-    @view("^download/$", method=["GET"], access="launch", api=True,
-          validate={
-              "from_date": StringParameter(required=True),
-              "to_date": StringParameter(required=True),
-              "reporttype": StringParameter(required=True, choices=["load_interfaces", "load_cpu", "ping"]),
-              "administrative_domain": StringParameter(required=False),
-              # "pool": StringParameter(required=False),
-              "segment": StringParameter(required=False),
-              "selector": StringParameter(required=False),
-              "interface_profile": StringParameter(required=False),
-              "exclude_zero": BooleanParameter(required=False),
-              "filter_default": BooleanParameter(required=False),
-              "columns": StringParameter(required=False),
-              "o_format": StringParameter(choices=["csv", "xlsx"])})
-    def api_report(self, request, reporttype=None, from_date=None, to_date=None, object_profile=None,
-                   filter_default=None, exclude_zero=None, interface_profile=None, selector=None,
-                   administrative_domain=None, columns=None, o_format=None, enable_autowidth=False,
-                   **kwargs):
-
+    @view(
+        "^download/$",
+        method=["GET"],
+        access="launch",
+        api=True,
+        validate={
+            "from_date": StringParameter(required=True),
+            "to_date": StringParameter(required=True),
+            "reporttype": StringParameter(
+                required=True, choices=["load_interfaces", "load_cpu", "ping"]
+            ),
+            "administrative_domain": StringParameter(required=False),
+            # "pool": StringParameter(required=False),
+            "segment": StringParameter(required=False),
+            "selector": StringParameter(required=False),
+            "interface_profile": StringParameter(required=False),
+            "exclude_zero": BooleanParameter(required=False),
+            "filter_default": BooleanParameter(required=False),
+            "columns": StringParameter(required=False),
+            "o_format": StringParameter(choices=["csv", "xlsx"]),
+        },
+    )
+    def api_report(
+        self,
+        request,
+        reporttype=None,
+        from_date=None,
+        to_date=None,
+        object_profile=None,
+        filter_default=None,
+        exclude_zero=None,
+        interface_profile=None,
+        selector=None,
+        administrative_domain=None,
+        columns=None,
+        o_format=None,
+        enable_autowidth=False,
+        **kwargs
+    ):
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
 
-        map_table = {"load_interfaces": "/Interface\s\|\sLoad\s\|\s[In|Out]/",
-                     "load_cpu": "/[CPU|Memory]\s\|\sUsage/",
-                     "errors": "/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
-                     "ping": "/Ping\s\|\sRTT/"}
+        map_table = {
+            "load_interfaces": "/Interface\s\|\sLoad\s\|\s[In|Out]/",
+            "load_cpu": "/[CPU|Memory]\s\|\sUsage/",
+            "errors": "/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
+            "ping": "/Ping\s\|\sRTT/",
+        }
         cols = [
             "id",
             "object_name",
@@ -104,9 +140,8 @@ class ReportMetricsDetailApplication(ExtApplication):
             "cpu_usage",
             "memory_usage",
             "ping_rtt",
-            "ping_attempts"
-            "interface_flap",
-            "interface_load_url"
+            "ping_attempts" "interface_flap",
+            "interface_load_url",
         ]
 
         header_row = [
@@ -130,7 +165,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             "PING_RTT",
             "PING_ATTEMPTS",
             "INTERFACE_FLAP",
-            "INTERFACE_LOAD_URL"
+            "INTERFACE_LOAD_URL",
         ]
 
         if columns:
@@ -165,12 +200,15 @@ class ReportMetricsDetailApplication(ExtApplication):
         # Load managed objects
         mos = ManagedObject.objects.filter(is_managed=True)
         if not request.user.is_superuser:
-            mos = mos.filter(
-                administrative_domain__in=UserAccess.get_domains(request.user))
+            mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if selector:
             mos = mos.filter(ManagedObjectSelector.objects.get(id=int(selector)).Q)
         if administrative_domain:
-            mos = mos.filter(administrative_domain__in=AdministrativeDomain.get_nested_ids(int(administrative_domain)))
+            mos = mos.filter(
+                administrative_domain__in=AdministrativeDomain.get_nested_ids(
+                    int(administrative_domain)
+                )
+            )
         if object_profile:
             mos = mos.filter(object_profile=object_profile)
         # iface_dict = {}
@@ -183,54 +221,70 @@ class ReportMetricsDetailApplication(ExtApplication):
             # o.name.replace("#", "%23")
             "biid": "",
             "oname": "",
-            "iname": ""}
+            "iname": "",
+        }
 
         report_map = {
             "load_interfaces": {
-                "url": '%(path)s?title=interface&biid=%(biid)s'
-                       '&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s',
+                "url": "%(path)s?title=interface&biid=%(biid)s"
+                "&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s",
                 "q_group": ["interface"],
-                "q_select": {(0, 'managed_object', "id"): "managed_object",
-                             (1, 'path', 'iface_name'): "arrayStringConcat(path)"}
+                "q_select": {
+                    (0, "managed_object", "id"): "managed_object",
+                    (1, "path", "iface_name"): "arrayStringConcat(path)",
+                },
             },
             "errors": {
                 "url": """%(path)s?title=errors&biid=%(biid)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
-                "q_group": ["interface"]
+                "q_group": ["interface"],
             },
             "load_cpu": {
                 "url": """%(path)s?title=cpu&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "q_select": {(0, 'managed_object', "id"): "managed_object",
-                             (1, 'path', 'slot'): "arrayStringConcat(path)"}
+                "q_select": {
+                    (0, "managed_object", "id"): "managed_object",
+                    (1, "path", "slot"): "arrayStringConcat(path)",
+                },
             },
             "ping": {
                 "url": """%(path)s?title=ping&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "q_select": {(0, 'managed_object', "id"): "managed_object"}
-            }
+                "q_select": {(0, "managed_object", "id"): "managed_object"},
+            },
         }
 
         query_map = {
             # "iface_description": ('', 'iface_description', "''"),
             "iface_description": (
-                '', 'iface_description',
-                "dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path)))"),
-            "iface_speed": ('speed', 'iface_speed',
-                            "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
-                            "(managed_object, arrayStringConcat(path))), max(speed))"),
-            "load_in": ('load_in', 'l_in', "round(quantile(0.90)(load_in), 0)"),
-            "load_in_p": ('load_in', 'l_in_p',
-                          "replaceOne(toString(round(quantile(0.90)(load_in) / "
-                          "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
-                          "(managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')"),
-            "load_out": ('load_out', 'l_out', "round(quantile(0.90)(load_out), 0)"),
-            "load_out_p": ('load_out', 'l_out_p',
-                           "replaceOne(toString(round(quantile(0.90)(load_out) / "
-                           "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
-                           "(managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')"),
-            "errors_in": ('errors_in', 'err_in', "quantile(0.90)(errors_in)"),
-            "errors_out": ('errors_out', 'err_out', "quantile(0.90)(errors_out)"),
-            "cpu_usage": ('usage', 'cpu_usage', "quantile(0.90)(usage)"),
-            "ping_rtt": ('rtt', 'ping_rtt', "round(quantile(0.90)(rtt) / 1000, 2)"),
-            "ping_attempts": ('attempts', 'ping_attempts', "avg(attempts)")
+                "",
+                "iface_description",
+                "dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path)))",
+            ),
+            "iface_speed": (
+                "speed",
+                "iface_speed",
+                "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
+                "(managed_object, arrayStringConcat(path))), max(speed))",
+            ),
+            "load_in": ("load_in", "l_in", "round(quantile(0.90)(load_in), 0)"),
+            "load_in_p": (
+                "load_in",
+                "l_in_p",
+                "replaceOne(toString(round(quantile(0.90)(load_in) / "
+                "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
+                "(managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')",
+            ),
+            "load_out": ("load_out", "l_out", "round(quantile(0.90)(load_out), 0)"),
+            "load_out_p": (
+                "load_out",
+                "l_out_p",
+                "replaceOne(toString(round(quantile(0.90)(load_out) / "
+                "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
+                "(managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')",
+            ),
+            "errors_in": ("errors_in", "err_in", "quantile(0.90)(errors_in)"),
+            "errors_out": ("errors_out", "err_out", "quantile(0.90)(errors_out)"),
+            "cpu_usage": ("usage", "cpu_usage", "quantile(0.90)(usage)"),
+            "ping_rtt": ("rtt", "ping_rtt", "round(quantile(0.90)(rtt) / 1000, 2)"),
+            "ping_attempts": ("attempts", "ping_attempts", "avg(attempts)"),
         }
         query_fields = []
         for c in report_map[reporttype]["q_select"]:
@@ -241,18 +295,30 @@ class ReportMetricsDetailApplication(ExtApplication):
                 continue
             field, alias, func = query_map[c]
             report_map[reporttype]["q_select"][
-                (columns_order.index(c) + field_shift, field, alias)] = func
+                (columns_order.index(c) + field_shift, field, alias)
+            ] = func
             query_fields += [c]
         metrics_attrs = namedtuple("METRICSATTRs", query_fields)
 
         mo_attrs = namedtuple("MOATTRs", [c for c in cols if c.startswith("object")])
         moss = {}
-        for row in mos.values_list("bi_id", "name", "address", "platform", "administrative_domain__name", "segment"):
-            moss[row[0]] = mo_attrs(*[row[1], row[2], str(Platform.get_by_id(row[3]) if row[3] else ""),
-                                      row[4], str(NetworkSegment.get_by_id(row[5])) if row[5] else ""])
+        for row in mos.values_list(
+            "bi_id", "name", "address", "platform", "administrative_domain__name", "segment"
+        ):
+            moss[row[0]] = mo_attrs(
+                *[
+                    row[1],
+                    row[2],
+                    str(Platform.get_by_id(row[3]) if row[3] else ""),
+                    row[4],
+                    str(NetworkSegment.get_by_id(row[5])) if row[5] else "",
+                ]
+            )
 
         url = report_map[reporttype].get("url", "")
-        report_metric = self.metric_source[reporttype](tuple(sorted(moss)), from_date, to_date, columns=None)
+        report_metric = self.metric_source[reporttype](
+            tuple(sorted(moss)), from_date, to_date, columns=None
+        )
         report_metric.SELECT_QUERY_MAP = report_map[reporttype]["q_select"]
         if exclude_zero and reporttype == "load_interfaces":
             report_metric.CUSTOM_FILTER["having"] += ["max(load_in) != 0 AND max(load_out) != 0"]
@@ -260,7 +326,8 @@ class ReportMetricsDetailApplication(ExtApplication):
             interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
             report_metric.CUSTOM_FILTER["having"] += [
                 "dictGetString('interfaceattributes', 'profile', "
-                "(managed_object, arrayStringConcat(path))) = '%s'" % interface_profile.name]
+                "(managed_object, arrayStringConcat(path))) = '%s'" % interface_profile.name
+            ]
         # OBJECT_PLATFORM, ADMIN_DOMAIN, SEGMENT, OBJECT_HOSTNAME
         for row in report_metric.do_query():
             mm = metrics_attrs(*row)
@@ -280,8 +347,7 @@ class ReportMetricsDetailApplication(ExtApplication):
 
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"metrics.csv\""
+            response["Content-Disposition"] = 'attachment; filename="metrics.csv"'
             writer = csv.writer(response)
             writer.writerows(r)
             return response
@@ -293,8 +359,10 @@ class ReportMetricsDetailApplication(ExtApplication):
             max_column_data_length = {}
             for rn, x in enumerate(r):
                 for cn, c in enumerate(x):
-                    if rn and (r[0][cn] not in max_column_data_length or
-                               len(str(c)) > max_column_data_length[r[0][cn]]):
+                    if rn and (
+                        r[0][cn] not in max_column_data_length
+                        or len(str(c)) > max_column_data_length[r[0][cn]]
+                    ):
                         max_column_data_length[r[0][cn]] = len(str(c))
                     ws.write(rn, cn, c, cf1)
             ws.autofilter(0, 0, rn, cn)
@@ -308,6 +376,6 @@ class ReportMetricsDetailApplication(ExtApplication):
             wb.close()
             response.seek(0)
             response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
-            response["Content-Disposition"] = "attachment; filename=\"metrics.xlsx\""
+            response["Content-Disposition"] = 'attachment; filename="metrics.xlsx"'
             response.close()
             return response

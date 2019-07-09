@@ -18,13 +18,12 @@ class ManagedObjectProfileApplication(ExtModelApplication):
     """
     ManagedObjectProfile application
     """
+
     title = _("Managed Object Profile")
     menu = [_("Setup"), _("Managed Object Profiles")]
     model = ManagedObjectProfile
 
-    implied_permissions = {
-        "launch": ["ip:addressprofile:lookup"]
-    }
+    implied_permissions = {"launch": ["ip:addressprofile:lookup"]}
 
     def field_row_class(self, o):
         return o.style.css_class_name if o.style else ""

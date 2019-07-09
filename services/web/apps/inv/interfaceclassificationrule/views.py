@@ -16,6 +16,7 @@ class InterfaceClassificationRuleApplication(ExtDocApplication):
     """
     InterfaceClassificationRule application
     """
+
     title = _("Interface Classification Rule")
     menu = [_("Setup"), _("Interface Classification Rules")]
     model = InterfaceClassificationRule

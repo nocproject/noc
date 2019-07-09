@@ -17,6 +17,7 @@ class StreetApplication(ExtDocApplication):
     """
     Street application
     """
+
     title = _("Street")
     menu = [_("Setup"), _("Streets")]
     model = Street
@@ -35,7 +36,4 @@ class StreetApplication(ExtDocApplication):
         return o.full_path
 
     def instance_to_lookup(self, o, fields=None):
-        return {
-            "id": str(o.id),
-            "label": o.full_path
-        }
+        return {"id": str(o.id), "label": o.full_path}

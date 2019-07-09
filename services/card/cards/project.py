@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.project.models.project import Project
 from noc.ip.models.vrf import VRF
@@ -80,5 +81,5 @@ class ProjectCard(BaseCard):
             "subscribers": subscribers,
             "suppliers": suppliers,
             "vpns": vpns,
-            "vlans": vlans
+            "vlans": vlans,
         }

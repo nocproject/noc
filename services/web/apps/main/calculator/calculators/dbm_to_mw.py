@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django import forms
+
 # NOC modules
 from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from noc.lib.convert import dbm2mw, mw2dbm

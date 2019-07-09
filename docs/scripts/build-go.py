@@ -9,6 +9,7 @@
 # Python modules
 import sys
 import os
+
 # Third-party modules
 from sphinx.util.inventory import InventoryFile
 
@@ -24,8 +25,14 @@ window.location = base + rmap[label];
 
 def process(path):
     r = [
-        "<html>", "<head>", "<title>NOC go</title>", "</head>", "<body>",
-        "<script>", JS, "redirect({"
+        "<html>",
+        "<head>",
+        "<title>NOC go</title>",
+        "</head>",
+        "<body>",
+        "<script>",
+        JS,
+        "redirect({",
     ]
     with open(path) as f:
         data = InventoryFile.load(f, "", os.path.join) or {}
@@ -41,4 +48,3 @@ def process(path):
 
 if __name__ == "__main__":
     process(sys.argv[1])
-

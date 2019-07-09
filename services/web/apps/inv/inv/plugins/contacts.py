@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import UnicodeParameter
@@ -28,8 +29,8 @@ class ContactsPlugin(InvPlugin):
             validate={
                 "administrative": UnicodeParameter(),
                 "billing": UnicodeParameter(),
-                "technical": UnicodeParameter()
-            }
+                "technical": UnicodeParameter(),
+            },
         )
 
     def get_data(self, request, o):
@@ -37,7 +38,7 @@ class ContactsPlugin(InvPlugin):
             "id": str(o.id),
             "contacts_administrative": o.get_data("contacts", "administrative") or "",
             "contacts_billing": o.get_data("contacts", "billing") or "",
-            "contacts_technical": o.get_data("contacts", "technical") or ""
+            "contacts_technical": o.get_data("contacts", "technical") or "",
         }
 
     def api_set_contacts(self, request, id, administrative, billing, technical):

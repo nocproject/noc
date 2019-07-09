@@ -75,5 +75,5 @@ MIB = {
     "SNMPv2-MIB::snmpSetSerialNo": "1.3.6.1.6.3.1.1.6.1",
     "SNMPv2-MIB::snmpMIBConformance": "1.3.6.1.6.3.1.2",
     "SNMPv2-MIB::snmpMIBCompliances": "1.3.6.1.6.3.1.2.1",
-    "SNMPv2-MIB::snmpMIBGroups": "1.3.6.1.6.3.1.2.2"
+    "SNMPv2-MIB::snmpMIBGroups": "1.3.6.1.6.3.1.2.2",
 }

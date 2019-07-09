@@ -18,15 +18,13 @@ class SearchApplication(ExtApplication):
     """
     main.search application
     """
+
     title = _("Search")
     menu = _("Search")
     glyph = "search noc-preview"
 
     @view(
-        url="^$", method=["POST"], access="launch", api=True,
-        validate={
-            "query": UnicodeParameter()
-        }
+        url="^$", method=["POST"], access="launch", api=True, validate={"query": UnicodeParameter()}
     )
     def api_search(self, request, query):
         r = []
@@ -35,11 +33,13 @@ class SearchApplication(ExtApplication):
             if not model:
                 continue  # Invalid model
             url = model.get_search_result_url(qr["object"])
-            r += [{
-                "title": str(qr["title"]),
-                "card": str(qr["card"]),
-                "tags:": [str(x) for x in (qr.get("tags", []) or [])],
-                "url": url,
-                "score": qr["score"]
-            }]
+            r += [
+                {
+                    "title": str(qr["title"]),
+                    "card": str(qr["card"]),
+                    "tags:": [str(x) for x in (qr.get("tags", []) or [])],
+                    "url": url,
+                    "score": qr["score"],
+                }
+            ]
         return r

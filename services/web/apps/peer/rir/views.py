@@ -16,6 +16,7 @@ class RIRApplication(ExtModelApplication):
     """
     RIR application
     """
+
     title = _("RIR")
     menu = [_("Setup"), _("RIRs")]
     model = RIR

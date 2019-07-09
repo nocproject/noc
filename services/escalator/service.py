@@ -9,9 +9,11 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
+
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -53,8 +55,7 @@ class EscalatorService(Service):
             shard_threads[s.shard_name] += s.max_threads
         # Run shard schedulers
         for sn in shard_threads:
-            self.logger.info("Running shard %s (%d threads)",
-                             sn, shard_threads[sn])
+            self.logger.info("Running shard %s (%d threads)", sn, shard_threads[sn])
             self.shards[sn] = Scheduler(
                 "escalator",
                 pool=sn,
@@ -62,7 +63,7 @@ class EscalatorService(Service):
                 max_threads=shard_threads[sn],
                 ioloop=self.ioloop,
                 service=self,
-                sample=config.escalator.sample
+                sample=config.escalator.sample,
             )
             self.shards[sn].run()
 

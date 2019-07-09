@@ -15,6 +15,7 @@ class ConfigCheck(DiscoveryCheck):
     """
     Version discovery
     """
+
     name = "config"
     required_script = "get_config"
 
@@ -55,7 +56,10 @@ class ConfigCheck(DiscoveryCheck):
 
     def get_config_script(self):
         if self.required_script not in self.object.scripts:
-            self.logger.info("%s script is not supported. Cannot request config from device", self.required_script)
+            self.logger.info(
+                "%s script is not supported. Cannot request config from device",
+                self.required_script,
+            )
             return None
         self.logger.info("Requesting config from device")
         try:
@@ -92,4 +96,6 @@ class ConfigCheck(DiscoveryCheck):
             return None
 
     def has_required_script(self):
-        return super(ConfigCheck, self).has_required_script() or self.object.get_config_policy() != "s"
+        return (
+            super(ConfigCheck, self).has_required_script() or self.object.get_config_policy() != "s"
+        )

@@ -257,5 +257,5 @@ MIB = {
     "HUAWEI-SYS-MAN-MIB::hwSysImageErrorNotification": "1.3.6.1.4.1.2011.5.25.19.2.15",
     "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIBConformance": "1.3.6.1.4.1.2011.5.25.19.3",
     "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIBCompliances": "1.3.6.1.4.1.2011.5.25.19.3.1",
-    "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIBGroups": "1.3.6.1.4.1.2011.5.25.19.3.2"
+    "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIBGroups": "1.3.6.1.4.1.2011.5.25.19.3.2",
 }

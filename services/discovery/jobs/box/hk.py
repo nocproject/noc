@@ -15,6 +15,7 @@ class HouseKeepingCheck(DiscoveryCheck):
     """
     Housekeeping
     """
+
     name = "hk"
 
     def handler(self):

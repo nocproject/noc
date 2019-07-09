@@ -11,8 +11,10 @@ from __future__ import absolute_import
 from collections import defaultdict
 import logging
 import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from .rule import Rule
 from .exception import InvalidPatternException, EventProcessingFailed
@@ -25,9 +27,15 @@ from noc.core.handler import get_handler
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.perf import metrics
 from noc.sa.interfaces.base import (
-    IPv4Parameter, IPv6Parameter, IPParameter, IPv4PrefixParameter,
-    IPv6PrefixParameter, PrefixParameter, MACAddressParameter,
-    InterfaceTypeError)
+    IPv4Parameter,
+    IPv6Parameter,
+    IPParameter,
+    IPv4PrefixParameter,
+    IPv6PrefixParameter,
+    PrefixParameter,
+    MACAddressParameter,
+    InterfaceTypeError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -97,14 +105,11 @@ class RuleSet(object):
             logger.info("%d rules are cloned", cn)
         self.default_rule = Rule(
             self,
-            EventClassificationRule.objects.filter(
-                name=config.classifier.default_rule
-            ).first()
+            EventClassificationRule.objects.filter(name=config.classifier.default_rule).first(),
         )
         # Apply lookup solution
         self.rules = dict((k, self.lookup_cls(rules[k])) for k in rules)
-        logger.info("%d rules are loaded in the %d chains",
-                    n, len(self.rules))
+        logger.info("%d rules are loaded in the %d chains", n, len(self.rules))
         #
         self.load_enumerations()
 
@@ -152,7 +157,10 @@ class RuleSet(object):
                 if v is not None:
                     logger.debug(
                         "[%s] Matching class for event %s found: %s (Rule: %s)",
-                        event.managed_object.name, event.id, r.event_class_name, r.name
+                        event.managed_object.name,
+                        event.id,
+                        r.event_class_name,
+                        r.name,
                     )
                     return r, v
         if self.default_rule:
@@ -178,7 +186,10 @@ class RuleSet(object):
                 try:
                     v = decoder(event, v)
                 except InterfaceTypeError:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
+                    raise EventProcessingFailed(
+                        "Cannot decode variable '%s'. Invalid %s: %s"
+                        % (ecv.name, ecv.type, repr(v))
+                    )
             r[ecv.name] = v
         return r
 

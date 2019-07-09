@@ -16,6 +16,7 @@ class SubscriberProfileApplication(ExtDocApplication):
     """
     SubscriberProfile application
     """
+
     title = _("Subscriber Profile")
     menu = [_("Setup"), _("Subscriber Profiles")]
     model = SubscriberProfile

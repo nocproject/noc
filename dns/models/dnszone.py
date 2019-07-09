@@ -190,7 +190,7 @@ class DNSZone(NOCModel):
             p.reverse()
             length = len(p)
             if length % 4:
-                p += [u"0"] * (4 - length % 4)
+                p += ["0"] * (4 - length % 4)
             r = ""
             for i, c in enumerate(p):
                 if i and i % 4 == 0:

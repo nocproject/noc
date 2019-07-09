@@ -8,6 +8,7 @@
 
 # Third-party modules
 import bson
+
 # NOC modules
 from noc.sa.models.profile import Profile
 

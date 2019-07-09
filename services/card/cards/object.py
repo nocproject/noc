@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from mongoengine.errors import DoesNotExist
+
 # NOC modules
 import datetime
 import operator
@@ -41,10 +43,7 @@ class ObjectCard(BaseCard):
             return None
 
         # Get path
-        path = [{
-            "id": self.object.id,
-            "name": self.object.name
-        }]
+        path = [{"id": self.object.id, "name": self.object.name}]
         c = self.object.container.id
         while c:
             try:
@@ -52,10 +51,7 @@ class ObjectCard(BaseCard):
                 if not c:
                     break
                 if c.container:
-                    path.insert(0, {
-                        "id": c.id,
-                        "name": c.name
-                    })
+                    path.insert(0, {"id": c.id, "name": c.name})
                 c = c.container.id if c.container else None
             except DoesNotExist:
                 metrics["error", ("type", "no_such_object")] += 1
@@ -89,37 +85,41 @@ class ObjectCard(BaseCard):
             # Alarms detailed information
             alarm_list = []
             for alarm in alarms:
-                alarm_list += [{
-                    "id": alarm.id,
-                    "timestamp": alarm.timestamp,
-                    "duration": now - alarm.timestamp,
-                    "subject": alarm.subject
-                }]
+                alarm_list += [
+                    {
+                        "id": alarm.id,
+                        "timestamp": alarm.timestamp,
+                        "duration": now - alarm.timestamp,
+                        "subject": alarm.subject,
+                    }
+                ]
             alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
 
             # Metrics
             metric_map = self.get_metrics([o])
             metric_map = metric_map[o]
 
-            children += [{
-                "id": o.id,
-                "name": o.name,
-                "address": o.address,
-                "platform": o.platform.name if o.platform else "Unknown",
-                "version": o.version.version if o.version else "",
-                "description": o.description,
-                "object_profile": o.object_profile.id,
-                "object_profile_name": o.object_profile.name,
-                "segment": o.segment,
-                #
-                "current_state": current_state,
-                # Start of uptime/downtime
-                "current_start": current_start,
-                # Current uptime/downtime
-                "current_duration": duration,
-                "alarms": alarm_list,
-                "metrics": metric_map["object"]
-            }]
+            children += [
+                {
+                    "id": o.id,
+                    "name": o.name,
+                    "address": o.address,
+                    "platform": o.platform.name if o.platform else "Unknown",
+                    "version": o.version.version if o.version else "",
+                    "description": o.description,
+                    "object_profile": o.object_profile.id,
+                    "object_profile_name": o.object_profile.name,
+                    "segment": o.segment,
+                    #
+                    "current_state": current_state,
+                    # Start of uptime/downtime
+                    "current_start": current_start,
+                    # Current uptime/downtime
+                    "current_duration": duration,
+                    "alarms": alarm_list,
+                    "metrics": metric_map["object"],
+                }
+            ]
 
         contacts_list = []
 
@@ -128,10 +128,17 @@ class ObjectCard(BaseCard):
         elif self.object.get_data("contacts", "technical") is not None:
             contacts_list.append({"Technical": self.object.get_data("contacts", "technical")})
 
-        if self.object.get_data("contacts", "administrative") is not None and len(contacts_list) > 0:
-            contacts_list.insert(0, {"Administrative": self.object.get_data("contacts", "administrative")})
+        if (
+            self.object.get_data("contacts", "administrative") is not None
+            and len(contacts_list) > 0
+        ):
+            contacts_list.insert(
+                0, {"Administrative": self.object.get_data("contacts", "administrative")}
+            )
         elif self.object.get_data("contacts", "administrative") is not None:
-            contacts_list.append({"Administrative": self.object.get_data("contacts", "administrative")})
+            contacts_list.append(
+                {"Administrative": self.object.get_data("contacts", "administrative")}
+            )
 
         if self.object.get_data("contacts", "billing") is not None and len(contacts_list) > 0:
             contacts_list.insert(1, {"Billing": self.object.get_data("contacts", "billing")})
@@ -145,7 +152,7 @@ class ObjectCard(BaseCard):
             "contacts": contacts_list,
             "id": self.object.id,
             "name": self.object.name,
-            "children": children
+            "children": children,
         }
 
     @staticmethod
@@ -161,23 +168,33 @@ class ObjectCard(BaseCard):
                   AND ts >= toDateTime('%s')
                   AND managed_object IN (%s)
                 GROUP BY managed_object, iface
-                """ % (from_date.date().isoformat(), from_date.isoformat(sep=" "),
-                       ", ".join(bi_map))
+                """ % (
+            from_date.date().isoformat(),
+            from_date.isoformat(sep=" "),
+            ", ".join(bi_map),
+        )
         ch = connection()
         mtable = []  # mo_id, mac, iface, ts
         last_ts = {}  # mo -> ts
-        metric_map = {mo: {"interface": defaultdict(dict), "object": defaultdict(dict)} for mo in mos}
+        metric_map = {
+            mo: {"interface": defaultdict(dict), "object": defaultdict(dict)} for mo in mos
+        }
         msd = {ms.id: ms.table_name for ms in MetricScope.objects.filter()}
-        mts = {str(mt.id): (msd[mt.scope.id], mt.field_name, mt.name) for mt in MetricType.objects.all()}
+        mts = {
+            str(mt.id): (msd[mt.scope.id], mt.field_name, mt.name)
+            for mt in MetricType.objects.all()
+        }
         # Interface Metrics
         for mo_bi_id, iface, ts, load_in, load_out, errors_in, errors_out in ch.execute(post=SQL):
             mo = bi_map.get(mo_bi_id)
             if mo:
                 mtable += [[mo, iface, ts, load_in, load_out]]
-                metric_map[mo]["interface"][iface] = {"load_in": int(load_in),
-                                                      "load_out": int(load_out),
-                                                      "errors_in": int(errors_in),
-                                                      "errors_out": int(errors_out)}
+                metric_map[mo]["interface"][iface] = {
+                    "load_in": int(load_in),
+                    "load_out": int(load_out),
+                    "errors_in": int(errors_in),
+                    "errors_out": int(errors_out),
+                }
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
 
         # Object Metrics
@@ -201,10 +218,13 @@ class ObjectCard(BaseCard):
                     AND ts >= toDateTime('%s')
                     AND managed_object IN (%s)
                   GROUP BY managed_object
-                  """ % (", ".join(["argMax(%s, ts) as %s" % (f[1], f[1]) for f in fields]),
-                         table,
-                         from_date.date().isoformat(), from_date.isoformat(sep=" "),
-                         ", ".join(bi_map))
+                  """ % (
+                ", ".join(["argMax(%s, ts) as %s" % (f[1], f[1]) for f in fields]),
+                table,
+                from_date.date().isoformat(),
+                from_date.isoformat(sep=" "),
+                ", ".join(bi_map),
+            )
             # print SQL
             for result in ch.execute(post=SQL):
                 mo_bi_id, ts = result[:2]

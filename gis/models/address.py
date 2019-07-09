@@ -162,7 +162,7 @@ class Address(Document):
 
 
 #
-RU_SHORT_AFTER = {u"б-р", u"проезд", u"пер", u"ш"}
+RU_SHORT_AFTER = {"б-р", "проезд", "пер", "ш"}
 
 # Signals
 post_save.connect(Address.update_primary, sender=Address)

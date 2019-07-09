@@ -42,4 +42,4 @@ class ObjectNotify(NOCModel):
     )
 
     def __str__(self):
-        return u"(%s, %s, %s)" % (self.type, self.administrative_domain, self.notification_group)
+        return "(%s, %s, %s)" % (self.type, self.administrative_domain, self.notification_group)

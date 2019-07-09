@@ -27,9 +27,11 @@ class Trigger(object):
         """
         Check event matches trigger condition
         """
-        return (eval(self.condition, {}, {"alarm": alarm, "re": re}) and
-                (self.time_pattern.match(alarm.timestamp) if self.time_pattern else True) and
-                (self.selector.match(alarm.managed_object) if self.selector else True))
+        return (
+            eval(self.condition, {}, {"alarm": alarm, "re": re})
+            and (self.time_pattern.match(alarm.timestamp) if self.time_pattern else True)
+            and (self.selector.match(alarm.managed_object) if self.selector else True)
+        )
 
     def call(self, alarm):
         if not self.match(alarm):
@@ -39,7 +41,8 @@ class Trigger(object):
         if self.notification_group and self.template:
             self.notification_group.notify(
                 subject=self.template.render_subject(alarm=alarm),
-                body=self.template.render_body(alarm=alarm))
+                body=self.template.render_body(alarm=alarm),
+            )
         # Call pyRule
         if self.pyrule:
             self.pyrule(alarm=alarm)

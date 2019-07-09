@@ -21,7 +21,8 @@ class ReportCompareApplication(SimpleReport):
         for v in Vendor.objects.order_by("name"):
             vd = []
             for m in ObjectModel.objects.filter(
-                    vendor=v.id, data__management__managed=True).order_by("name"):
+                vendor=v.id, data__management__managed=True
+            ).order_by("name"):
                 ru = m.get_data("rackmount", "units")
                 if ru:
                     ru = "%sU" % ru
@@ -34,22 +35,23 @@ class ReportCompareApplication(SimpleReport):
                         weight += "+"
                 else:
                     weight = ""
-                vd += [(
-                    m.name,
-                    m.get_data("dimensions", "width") or "",
-                    m.get_data("dimensions", "height") or "",
-                    m.get_data("dimensions", "depth") or "",
-                    ru,
-                    weight
-                )]
+                vd += [
+                    (
+                        m.name,
+                        m.get_data("dimensions", "width") or "",
+                        m.get_data("dimensions", "height") or "",
+                        m.get_data("dimensions", "depth") or "",
+                        ru,
+                        weight,
+                    )
+                ]
             if vd:
                 data += [SectionRow(name=v.name)]
                 data += vd
 
         return self.from_dataset(
             title=self.title,
-            columns=[
-                "Model", "W", "H", "D", "RU", "Weight (kg)"
-            ],
-            data=data, enumerate=True
+            columns=["Model", "W", "H", "D", "RU", "Weight (kg)"],
+            data=data,
+            enumerate=True,
         )

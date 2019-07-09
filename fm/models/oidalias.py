@@ -34,7 +34,7 @@ class OIDAlias(Document):
     cache = None
 
     def __str__(self):
-        return u"%s -> %s" % (self.rewrite_oid, self.to_oid)
+        return "%s -> %s" % (self.rewrite_oid, self.to_oid)
 
     @classmethod
     def rewrite(cls, oid):

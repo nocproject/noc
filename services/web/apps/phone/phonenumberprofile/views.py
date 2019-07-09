@@ -16,6 +16,7 @@ class PhoneNumberProfileApplication(ExtDocApplication):
     """
     PhoneNumberProfile application
     """
+
     title = "Number Profile"
     menu = [_("Setup"), _("Number Profiles")]
     model = PhoneNumberProfile

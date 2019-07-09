@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from .customfieldenumgroup import CustomFieldEnumGroup
@@ -21,6 +23,7 @@ class CustomFieldEnumValue(NOCModel):
     """
     Enumeration groups values
     """
+
     class Meta(object):
         verbose_name = "Enum Group Value"
         verbose_name_plural = "Enum Group Values"
@@ -32,12 +35,11 @@ class CustomFieldEnumValue(NOCModel):
         CustomFieldEnumGroup,
         verbose_name="Enum Group",
         related_name="enumvalue_set",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     is_active = models.BooleanField("Is Active", default=True)
     key = models.CharField("Key", max_length=256)
     value = models.CharField("Value", max_length=256)
 
     def __str__(self):
-        return u"%s@%s:%s" % (
-            self.enum_group.name, self.key, self.value)
+        return "%s@%s:%s" % (self.enum_group.name, self.key, self.value)

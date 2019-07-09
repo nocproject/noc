@@ -34,8 +34,7 @@ class ReportLOC(SimpleReport):
         for p in Peer.objects.filter(status="A").exclude(import_filter="ANY"):
             peers[p.id] = p
             cone_powers[p.id] = 0
-            for cp in WhoisCache.resolve_as_set_prefixes(p.import_filter,
-                                                         optimize=True):
+            for cp in WhoisCache.resolve_as_set_prefixes(p.import_filter, optimize=True):
                 # Get powers
                 cone_powers[p.id] += ppower(cp)
                 # Assign to prefixes
@@ -58,15 +57,24 @@ class ReportLOC(SimpleReport):
         # Build result
         for peer_id in peers:
             p = peers[peer_id]
-            r += [(p.description, "AS%d" % p.remote_asn, p.import_filter,
-                   cone_powers.get(peer_id, 0), uniq_powers.get(peer_id, 0))]
+            r += [
+                (
+                    p.description,
+                    "AS%d" % p.remote_asn,
+                    p.import_filter,
+                    cone_powers.get(peer_id, 0),
+                    uniq_powers.get(peer_id, 0),
+                )
+            ]
         r = sorted(r, key=lambda x: -x[4])
         return self.from_dataset(
             title=self.title,
             columns=[
-                "Peer", "ASN", "Import Filter",
+                "Peer",
+                "ASN",
+                "Import Filter",
                 TableColumn("Cone Power", format="numeric", align="right"),
                 TableColumn("Uniq. Cone Power", format="numeric", align="right"),
             ],
-            data=r
+            data=r,
         )

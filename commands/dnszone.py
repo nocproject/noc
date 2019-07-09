@@ -10,8 +10,10 @@
 from __future__ import print_function
 import argparse
 import re
+
 # Third-party modules
 from six.moves import zip_longest
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.dns.models.dnszone import DNSZone
@@ -28,53 +30,32 @@ from noc.lib.text import split_alnum
 class Command(BaseCommand):
     help = "DNS zone manipulation tool"
     # Time multipliers
-    TIMES = {
-        "s": 1,
-        "m": 60,
-        "h": 3600,
-        "d": 86400,
-        "w": 604800
-    }
+    TIMES = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         #
         import_parser = subparsers.add_parser("import")
         import_parser.add_argument(
-            "--dry-run",
-            dest="dry_run",
-            action="store_true",
-            help="Test only. Do not save records"
+            "--dry-run", dest="dry_run", action="store_true", help="Test only. Do not save records"
         ),
         import_parser.add_argument(
-            "-c", "--clean",
-            dest="clean",
-            action="store_true",
-            help="Clean up zone before store"
+            "-c", "--clean", dest="clean", action="store_true", help="Clean up zone before store"
         ),
         import_parser.add_argument(
-            "--zone-profile",
-            dest="zone_profile",
-            action="store",
-            help="Set Zone Profile"
+            "--zone-profile", dest="zone_profile", action="store", help="Set Zone Profile"
         ),
         import_parser.add_argument(
-            "--address-profile",
-            dest="address_profile",
-            action="store",
-            help="Set Address Profile"
+            "--address-profile", dest="address_profile", action="store", help="Set Address Profile"
         ),
         import_parser.add_argument(
-            "-f", "--force",
+            "-f",
+            "--force",
             dest="force",
             action="store_true",
-            help="Forcefully update FQDN for A records"
+            help="Forcefully update FQDN for A records",
         ),
-        import_parser.add_argument(
-            "paths",
-            nargs=argparse.REMAINDER,
-            help="Path to zone files"
-        )
+        import_parser.add_argument("paths", nargs=argparse.REMAINDER, help="Path to zone files")
 
     RR_TYPES = [
         "A",
@@ -109,14 +90,21 @@ class Command(BaseCommand):
         "TA",
         "TKEY",
         "TSIG",
-        "TXT"
+        "TXT",
     ]
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_import(self, paths, force=False, clean=False, dry_run=False,
-                      zone_profile=None, address_profile=None):
+    def handle_import(
+        self,
+        paths,
+        force=False,
+        clean=False,
+        dry_run=False,
+        zone_profile=None,
+        address_profile=None,
+    ):
         if not zone_profile:
             self.die("--zone-profile is not set")
         if not address_profile:
@@ -128,11 +116,13 @@ class Command(BaseCommand):
         if not ap:
             self.die("Invalid address profile '%s'" % address_profile)
         for path in paths:
-            self.import_zone(path, force=force, clean=clean, dry_run=dry_run,
-                             zone_profile=zp, address_profile=ap)
+            self.import_zone(
+                path, force=force, clean=clean, dry_run=dry_run, zone_profile=zp, address_profile=ap
+            )
 
-    def import_zone(self, path, zone_profile, address_profile,
-                    dry_run=False, force=False, clean=False):
+    def import_zone(
+        self, path, zone_profile, address_profile, dry_run=False, force=False, clean=False
+    ):
         self.print("Loading zone file '%s'" % path)
         self.print("Parsing zone file using BIND parser")
         with open(path) as f:
@@ -147,10 +137,7 @@ class Command(BaseCommand):
                 self.print("Using existing zone '%s'" % zone)
             else:
                 self.print("Creating zone '%s'" % zone)
-                z = DNSZone(
-                    name=zone,
-                    profile=zone_profile
-                )
+                z = DNSZone(name=zone, profile=zone_profile)
                 clean = False  # Nothing to clean
             if z.profile.id != zone_profile.id:
                 self.print("Setting profile to '%s'" % zone_profile.name)
@@ -192,11 +179,13 @@ class Command(BaseCommand):
                     continue
                 if rr.type in ("A", "AAAA"):
                     self.create_address(
-                        zone, vrf, rr.rdata,
+                        zone,
+                        vrf,
+                        rr.rdata,
                         "%s.%s" % (name, zone) if name else zone,
                         address_profile,
                         dry_run=dry_run,
-                        force=force
+                        force=force,
                     )
                 elif rr.type == "PTR":
                     if "." in name:
@@ -204,31 +193,27 @@ class Command(BaseCommand):
                     else:
                         address = zp + name
                     self.create_address(
-                        zone, vrf, address,
-                        rr.rdata,
-                        address_profile,
-                        dry_run=dry_run, force=force)
+                        zone, vrf, address, rr.rdata, address_profile, dry_run=dry_run, force=force
+                    )
                 else:
                     zrr = DNSZoneRecord(
-                        zone=z, name=name, type=rr.type,
-                        ttl=rr.ttl, priority=rr.priority,
-                        content=rr.rdata
+                        zone=z,
+                        name=name,
+                        type=rr.type,
+                        ttl=rr.ttl,
+                        priority=rr.priority,
+                        content=rr.rdata,
                     )
                     self.print("Creating %s %s" % (rr.type, rr.name))
                     if not dry_run:
                         zrr.save()
 
-    def create_address(self, zone, vrf, address, fqdn, address_profile,
-                       dry_run=False, force=False):
+    def create_address(self, zone, vrf, address, fqdn, address_profile, dry_run=False, force=False):
         """
         Create IPAM record
         """
         afi = "6" if ":" in address else "4"
-        a = Address.objects.filter(
-            vrf=vrf,
-            afi=afi,
-            address=address
-        )[:1]
+        a = Address.objects.filter(vrf=vrf, afi=afi, address=address)[:1]
         if a:
             a = a[0]
             if force:
@@ -238,7 +223,9 @@ class Command(BaseCommand):
                     if not dry_run:
                         a.save()
             else:
-                self.print("Address %s (%s) is already exists in IPAM, ignoring" % (a.address, a.fqdn))
+                self.print(
+                    "Address %s (%s) is already exists in IPAM, ignoring" % (a.address, a.fqdn)
+                )
         else:
             # Not found
             a = Address(
@@ -247,20 +234,20 @@ class Command(BaseCommand):
                 address=address,
                 profile=address_profile,
                 fqdn=fqdn,
-                description="Imported from %s zone" % zone
+                description="Imported from %s zone" % zone,
             )
             self.print("Creating address %s (%s)" % (a.address, a.fqdn))
             if not dry_run:
                 a.save()
 
-    rx_q = re.compile("(\"[^\"]*\")")
+    rx_q = re.compile('("[^"]*")')
 
     @classmethod
     def iter_tokenize(cls, s):
         start = 0
         for match in cls.rx_q.finditer(s):
             if start < match.start():
-                yield s[start:match.start()]
+                yield s[start : match.start()]
             yield match.group(0)
             start = match.end()
         if start < len(s) - 1:
@@ -297,13 +284,13 @@ class Command(BaseCommand):
 
     @staticmethod
     def is_quoted(item):
-        return item.startswith("\"")
+        return item.startswith('"')
 
     @staticmethod
     def has_unquoted(item, v):
-        return not item.startswith("\"") and v in item
+        return not item.startswith('"') and v in item
 
-    rx_mq = re.compile("\"\s+\"")
+    rx_mq = re.compile('"\s+"')
 
     @classmethod
     def merge_mq(cls, value):
@@ -350,7 +337,7 @@ class Command(BaseCommand):
     rx_soa = re.compile(
         r"^(?P<zone>\S+)\s+(?:IN\s+)?SOA\s+(\S+)\s+(\S+)\s+"
         r"(\d+)\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
 
     def iter_bind_zone_rr(self, data):
@@ -384,7 +371,7 @@ class Command(BaseCommand):
                         name="",
                         type="SOA",
                         rdata=" ".join(match.groups()[-7:]),
-                        ttl=ttl
+                        ttl=ttl,
                     )
                     seen_soa = True
             else:
@@ -426,7 +413,7 @@ class Command(BaseCommand):
                     type=t,
                     rdata=value,
                     ttl=rttl,
-                    priority=rprio
+                    priority=rprio,
                 )
 
     @staticmethod
