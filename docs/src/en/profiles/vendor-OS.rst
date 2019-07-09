@@ -11,8 +11,8 @@ OS
     /profiles/OS.*
 
 `OS.*` family of profiles support various 
-`Operating System <https://en.wikipedia.org/wiki/Operating_system>`_
-network equipment.
+`Operating System`
+network profiles.
 
 Supported Platforms
 -------------------
