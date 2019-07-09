@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -19,8 +20,8 @@ class Script(BaseScript):
     cache = True
 
     rx_line = re.compile(
-        r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)\s+\d+\s+\S$",
-        re.MULTILINE)
+        r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)\s+\d+\s+\S$", re.MULTILINE
+    )
 
     def execute(self):
         r = []
@@ -50,18 +51,10 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(self.cli("display arp", cached=True)):
             mac = match.group("mac")
             if mac.lower() == "incomplete":
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": None,
-                    "interface": None
-                    })
+                r.append({"ip": match.group("ip"), "mac": None, "interface": None})
             else:
                 iface = match.group("interface")
-                iface = iface.replace('GE', 'Gi ')
-                iface = iface.replace('BAGG', 'Po ')
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": match.group("mac"),
-                    "interface": iface
-                    })
+                iface = iface.replace("GE", "Gi ")
+                iface = iface.replace("BAGG", "Po ")
+                r.append({"ip": match.group("ip"), "mac": match.group("mac"), "interface": iface})
         return r

@@ -8,18 +8,15 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.script.http.middleware.loader import loader
 from noc.core.script.http.middleware.base import BaseMiddleware
 
 
-@pytest.mark.parametrize("name", [
-    "urlsession",
-    "urlrequestid",
-    "jsonsession",
-    "jsonrequestid",
-    "basicauth"
-])
+@pytest.mark.parametrize(
+    "name", ["urlsession", "urlrequestid", "jsonsession", "jsonrequestid", "basicauth"]
+)
 def test_loader(name):
     t = loader.get_class(name)
     assert t is not None

@@ -28,7 +28,7 @@ class MIBPreference(Document):
     uuid = UUIDField(binary=True)
 
     def __str__(self):
-        return u"%s(%d)" % (self.mib, self.preference)
+        return "%s(%d)" % (self.mib, self.preference)
 
     def get_json_path(self):
         return "%s.json" % self.mib

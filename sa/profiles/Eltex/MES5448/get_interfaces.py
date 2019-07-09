@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -35,14 +36,14 @@ class Script(BaseScript):
         r"^Trunking Mode Native VLAN tagging: .+\n"
         r"^Trunking Mode VLANs Enabled:(?P<tagged_vlans>.*)\n"
         r"^Protected Port:.*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ifdescr = re.compile(
         r"^Interface....... (?P<ifname>\S+)\s*\n"
         r"^ifIndex\.+ (?P<snmp_ifindex>\d+)\s*\n"
         r"^Description\.+.*\s*\n"
         r"^MAC address\.+(?P<mac>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_mac = re.compile(r"MAC Address used by Routing VLANs:\s+(?P<mac>\S+)")
 
@@ -56,9 +57,7 @@ class Script(BaseScript):
                 portchannel_members[m] = (i, t)
         # Get list of aggreged  interfaces
         aggregated = []
-        for i in parse_table(
-            self.cli("show port-channel all"), allow_wrap=True
-        ):
+        for i in parse_table(self.cli("show port-channel all"), allow_wrap=True):
             aggregated += [i[0]]
 
         # Get LLDP interfaces
@@ -87,19 +86,15 @@ class Script(BaseScript):
 
         interfaces = []
         # Get ifname and description
-        for i in parse_table(
-            self.cli("show interfaces status all"), allow_wrap=True
-        ):
+        for i in parse_table(self.cli("show interfaces status all"), allow_wrap=True):
             ifname = i[0]
             iface = {
                 "name": ifname,
                 "type": "physical",
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": ifname,
-                    "enabled_afi": ["BRIDGE"],
-                    "enabled_protocols": []
-                }]
+                "subinterfaces": [
+                    {"name": ifname, "enabled_afi": ["BRIDGE"], "enabled_protocols": []}
+                ],
             }
             if i[1]:
                 iface["description"] = i[1]

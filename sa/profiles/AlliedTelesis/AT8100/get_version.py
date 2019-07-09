@@ -18,17 +18,10 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_plat = re.compile(
-        r"^Base\s+(?P<platform>AT-81\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n",
-        re.MULTILINE
+        r"^Base\s+(?P<platform>AT-81\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n", re.MULTILINE
     )
-    rx_boot = re.compile(
-        r"^Bootloader version\s+:\s+(?P<bootprom>\S+)\s*\n",
-        re.MULTILINE
-    )
-    rx_version = re.compile(
-        r"^Software version\s+:\s+(?P<version>\S+)\s*\n",
-        re.MULTILINE
-    )
+    rx_boot = re.compile(r"^Bootloader version\s+:\s+(?P<bootprom>\S+)\s*\n", re.MULTILINE)
+    rx_version = re.compile(r"^Software version\s+:\s+(?P<version>\S+)\s*\n", re.MULTILINE)
 
     def execute_cli(self):
         v = self.cli("show system")
@@ -43,6 +36,6 @@ class Script(BaseScript):
             "attributes": {
                 "Boot PROM": match2.group("bootprom"),
                 "HW version": match1.group("hardware"),
-                "Serial Number": match1.group("serial")
-            }
+                "Serial Number": match1.group("serial"),
+            },
         }

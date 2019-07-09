@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -23,7 +24,6 @@ class Profile(BaseProfile):
     username_submit = "\r"
     password_submit = "\r"
     rogue_chars = [
-        re.compile(
-            r"Login successful -- CLI active -- connecting with device\r\n>"
-        ), "\r"
+        re.compile(r"Login successful -- CLI active -- connecting with device\r\n>"),
+        "\r",
     ]

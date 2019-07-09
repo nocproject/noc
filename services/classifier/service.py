@@ -14,12 +14,14 @@ import os
 from collections import defaultdict
 import operator
 import re
+
 # Third-party modules
 import six
 import cachetools
 import tornado.gen
 import tornado.ioloop
 from bson import ObjectId
+
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -68,7 +70,7 @@ CR = [
     CR_DISPOSED,
     CR_DUPLICATED,
     CR_UDUPLICATED,
-    CR_UOBJECT
+    CR_UOBJECT,
 ]
 
 E_SRC_SYSLOG = "syslog"
@@ -80,7 +82,7 @@ E_SRC_METRICS = {
     E_SRC_SYSLOG: "events_syslog",
     E_SRC_SNMP_TRAP: "events_snmp_trap",
     E_SRC_SYSTEM: "events_system",
-    E_SRC_OTHER: "events_other"
+    E_SRC_OTHER: "events_other",
 }
 
 
@@ -88,6 +90,7 @@ class ClassifierService(Service):
     """
     Events-classification service
     """
+
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
     pooled = True
@@ -121,21 +124,14 @@ class ClassifierService(Service):
         """
         Load rules from database after loading config
         """
-        self.logger.info("Using rule lookup solution: %s",
-                         config.classifier.lookup_handler)
+        self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load()
         self.load_triggers()
         self.load_suppression()
         self.load_link_action()
         self.load_handlers()
-        self.subscribe(
-            "events.%s" % config.pool,
-            "fmwriter",
-            self.on_event
-        )
-        report_callback = tornado.ioloop.PeriodicCallback(
-            self.report, 1000, self.ioloop
-        )
+        self.subscribe("events.%s" % config.pool, "fmwriter", self.on_event)
+        report_callback = tornado.ioloop.PeriodicCallback(self.report, 1000, self.ioloop)
         report_callback.start()
 
     def load_triggers(self):
@@ -150,17 +146,15 @@ class ClassifierService(Service):
             for c_name, c_id in ec:
                 if re.search(t.event_class_re, c_name, re.IGNORECASE):
                     if (
-                        t.handler and
-                        t.condition == "True" and
-                        t.selector is None and
-                        t.time_pattern is None and
-                        t.template is None and
-                        t.notification_group is None
+                        t.handler
+                        and t.condition == "True"
+                        and t.selector is None
+                        and t.time_pattern is None
+                        and t.template is None
+                        and t.notification_group is None
                     ):
                         # Alter handlers
-                        self.alter_handlers += [
-                            (c_id, t.is_enabled, t.handler)
-                        ]
+                        self.alter_handlers += [(c_id, t.is_enabled, t.handler)]
                     elif t.is_enabled:
                         # Register trigger
                         h = t.handler
@@ -179,18 +173,22 @@ class ClassifierService(Service):
         """
         Load suppression rules
         """
+
         def compile_rule(s):
             """
             Compile suppression rule
             """
             x = [
                 "'timestamp__gte': event.timestamp - datetime.timedelta(seconds=%d)" % s["window"],
-                "'timestamp__lte': event.timestamp + datetime.timedelta(seconds=%d)" % s["window"]
+                "'timestamp__lte': event.timestamp + datetime.timedelta(seconds=%d)" % s["window"],
             ]
             if len(s["event_class"]) == 1:
                 x += ["'event_class': ObjectId('%s')" % s["event_class"][0]]
             else:
-                x += ["'event_class__in: [%s]" % ", ".join(["ObjectId('%s')" % c for c in s["event_class"]])]
+                x += [
+                    "'event_class__in: [%s]"
+                    % ", ".join(["ObjectId('%s')" % c for c in s["event_class"]])
+                ]
             for k, v in six.iteritems(s["match_condition"]):
                 x += ["'%s': %s" % (k, v)]
             return compile("{%s}" % ", ".join(x), "<string>", "eval")
@@ -204,11 +202,11 @@ class ClassifierService(Service):
                 to_skip = False
                 for s in suppression:
                     if (
-                        s["condition"] == r.condition and
-                        s["window"] == r.window and
-                        s["suppress"] == r.suppress and
-                        s["match_condition"] == r.match_condition and
-                        r.event_class.id not in s["event_class"]
+                        s["condition"] == r.condition
+                        and s["window"] == r.window
+                        and s["suppress"] == r.suppress
+                        and s["match_condition"] == r.match_condition
+                        and r.event_class.id not in s["event_class"]
                     ):
                         s["event_class"] += [r.event_class.id]
                         s["name"] += ", " + r.name
@@ -216,26 +214,29 @@ class ClassifierService(Service):
                         break
                 if to_skip:
                     continue
-                suppression += [{
-                    "name": r.name,
-                    "condition": r.condition,
-                    "window": r.window,
-                    "suppress": r.suppress,
-                    "match_condition": r.match_condition,
-                    "event_class": [r.event_class.id]
-                }]
+                suppression += [
+                    {
+                        "name": r.name,
+                        "condition": r.condition,
+                        "window": r.window,
+                        "suppress": r.suppress,
+                        "match_condition": r.match_condition,
+                        "event_class": [r.event_class.id],
+                    }
+                ]
             # Compile suppression rules
             self.suppression[c.id] = [
-                (compile_rule(s), "%s::%s" % (c.name, s["name"]),
-                 s["suppress"])
-                for s in suppression]
+                (compile_rule(s), "%s::%s" % (c.name, s["name"]), s["suppress"])
+                for s in suppression
+            ]
         self.logger.info("Suppression rules are loaded")
 
     def load_link_action(self):
         self.default_link_action = None
         if config.classifier.default_interface_profile:
             p = InterfaceProfile.objects.filter(
-                name=config.classifier.default_interface_profile).first()
+                name=config.classifier.default_interface_profile
+            ).first()
             if p:
                 self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events
@@ -337,7 +338,10 @@ class ClassifierService(Service):
                 if v is not None:
                     self.logger.debug(
                         "[%s] Matching class for event %s found: %s (Rule: %s)",
-                        event.managed_object.name, event.id, r.event_class_name, r.name
+                        event.managed_object.name,
+                        event.id,
+                        r.event_class_name,
+                        r.name,
                     )
                     return r, v
         if self.default_rule:
@@ -364,7 +368,8 @@ class ClassifierService(Service):
                     v = decoder(event, v)
                 except InterfaceTypeError:
                     raise EventProcessingFailed(
-                        "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
+                        "Cannot decode variable '%s'. Invalid %s: %s"
+                        % (ecv.name, ecv.type, repr(v))
                     )
             r[ecv.name] = v
         return r
@@ -381,12 +386,9 @@ class ClassifierService(Service):
         n_name = None
         n_suppress = False
         for r, name, suppress in self.suppression[event.event_class.id]:
-            q = eval(r, {}, {
-                "event": event,
-                "ObjectId": ObjectId,
-                "datetime": datetime,
-                "vars": vars
-            })
+            q = eval(
+                r, {}, {"event": event, "ObjectId": ObjectId, "datetime": datetime, "vars": vars}
+            )
             e = ActiveEvent.objects.filter(**q).order_by("-timestamp").first()
             if e:
                 d = ts - e.timestamp
@@ -404,8 +406,7 @@ class ClassifierService(Service):
         Get interface instance
         """
         return noc.inv.models.interface.Interface.objects.filter(
-            managed_object=managed_object_id,
-            name=name
+            managed_object=managed_object_id, name=name
         ).first()
 
     def classify_event(self, event, data):
@@ -426,9 +427,7 @@ class ClassifierService(Service):
         #
         pre_event = data.pop("$event", None)
         # Resolve MIB variables for SNMP Traps
-        resolved_vars = {
-            "profile": event.managed_object.profile.name
-        }
+        resolved_vars = {"profile": event.managed_object.profile.name}
         # Store event variables
         event.raw_vars = data
         if event.source == E_SRC_SNMP_TRAP:
@@ -442,9 +441,10 @@ class ClassifierService(Service):
             if not event_class:
                 self.logger.error(
                     "[%s|%s|%s] Failed to process event: Invalid event class '%s'",
-                    event.id, event.managed_object.name,
+                    event.id,
+                    event.managed_object.name,
                     event.managed_object,
-                    event_class_name
+                    event_class_name,
                 )
                 metrics[CR_FAILED] += 1
                 return  # Drop malformed message
@@ -467,8 +467,9 @@ class ClassifierService(Service):
                 # Silently drop event if declared by action
                 self.logger.info(
                     "[%s|%s|%s] Dropped by action",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address
+                    event.id,
+                    event.managed_object.name,
+                    event.managed_object.address,
                 )
                 metrics[CR_DELETED] += 1
                 return
@@ -480,26 +481,36 @@ class ClassifierService(Service):
                 if o_id not in self.unclassified_codebook:
                     self.unclassified_codebook[o_id] = []
                 cbs = [cb] + self.unclassified_codebook[o_id]
-                cbs = cbs[:self.unclassified_codebook_depth]
+                cbs = cbs[: self.unclassified_codebook_depth]
                 self.unclassified_codebook[o_id] = cbs
             self.logger.debug(
                 "[%s|%s|%s] Matching rule: %s",
-                event.id, event.managed_object.name,
-                event.managed_object.address, rule.name
+                event.id,
+                event.managed_object.name,
+                event.managed_object.address,
+                rule.name,
             )
             event.event_class = rule.event_class
             # Calculate rule variables
             event.vars = self.ruleset.eval_vars(event, event.event_class, vars)
             message = "Classified as '%s' by rule '%s'" % (event.event_class.name, rule.name)
-            event.log += [EventLog(timestamp=datetime.datetime.now(),
-                                   from_status="N", to_status="A",
-                                   message=message)]
+            event.log += [
+                EventLog(
+                    timestamp=datetime.datetime.now(),
+                    from_status="N",
+                    to_status="A",
+                    message=message,
+                )
+            ]
             is_unknown = rule.is_unknown
         # Event class found, process according to rules
         self.logger.info(
             "[%s|%s|%s] Event class: %s (%s)",
-            event.id, event.managed_object.name,
-            event.managed_object.address, event.event_class.name, event.vars
+            event.id,
+            event.managed_object.name,
+            event.managed_object.address,
+            event.event_class.name,
+            event.vars,
         )
         # Additionally check link events
         if self.check_link_event(event):
@@ -532,22 +543,16 @@ class ClassifierService(Service):
     def dispose_event(self, event):
         self.logger.info(
             "[%s|%s|%s] Disposing",
-            event.id, event.managed_object.name,
-            event.managed_object.address
+            event.id,
+            event.managed_object.name,
+            event.managed_object.address,
         )
         # Heat up cache
-        cache.set(
-            "activeent-%s" % event.id,
-            event,
-            ttl=900
-        )
+        cache.set("activeent-%s" % event.id, event, ttl=900)
         # @todo: Use config.pool instead
         self.pub(
             "correlator.dispose.%s" % event.managed_object.pool.name,
-            {
-                "event_id": str(event.id),
-                "event": event.to_json()
-            }
+            {"event_id": str(event.id), "event": event.to_json()},
         )
         metrics[CR_DISPOSED] += 1
 
@@ -567,7 +572,7 @@ class ClassifierService(Service):
             "timestamp__gte": t0,
             "timestamp__lte": event.timestamp,
             "event_class": event.event_class.id,
-            "id__ne": event.id
+            "id__ne": event.id,
         }
         for v in event.vars:
             q["vars__%s" % v] = event.vars[v]
@@ -575,11 +580,12 @@ class ClassifierService(Service):
         if de:
             self.logger.info(
                 "[%s|%s|%s] Duplicates event %s. Discarding",
-                event.id, event.managed_object.name,
-                event.managed_object.address, de.id)
-            de.log_message(
-                "Duplicated event %s has been discarded" % event.id
+                event.id,
+                event.managed_object.name,
+                event.managed_object.address,
+                de.id,
             )
+            de.log_message("Duplicated event %s has been discarded" % event.id)
             metrics[CR_DUPLICATED] += 1
             return True
         else:
@@ -598,8 +604,11 @@ class ClassifierService(Service):
         if suppress:
             self.logger.info(
                 "[%s|%s|%s] Suppressed by rule %s",
-                event.id, event.managed_object.name,
-                event.managed_object.address, name)
+                event.id,
+                event.managed_object.name,
+                event.managed_object.address,
+                name,
+            )
             # Update suppressing event
             nearest.log_suppression(event.timestamp)
             # Delete suppressed event
@@ -625,8 +634,9 @@ class ClassifierService(Service):
             if event.to_drop:
                 self.logger.info(
                     "[%s|%s|%s] Dropped by handler",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address
+                    event.id,
+                    event.managed_object.name,
+                    event.managed_object.address,
                 )
                 event.id = event_id  # Restore event id
                 event.delete()
@@ -652,8 +662,10 @@ class ClassifierService(Service):
                 # Delete event and stop processing
                 self.logger.info(
                     "[%s|%s|%s] Dropped by trigger %s",
-                    event_id, event.managed_object.name,
-                    event.managed_object.address, t.name
+                    event_id,
+                    event.managed_object.name,
+                    event.managed_object.address,
+                    t.name,
                 )
                 event.id = event_id  # Restore event id
                 event.delete()
@@ -695,16 +707,19 @@ class ClassifierService(Service):
         if iface:
             self.logger.info(
                 "[%s|%s|%s] Found interface %s",
-                event.id, event.managed_object.name,
+                event.id,
+                event.managed_object.name,
                 event.managed_object.address,
-                iface.name
+                iface.name,
             )
             action = iface.profile.link_events
         else:
             self.logger.info(
                 "[%s|%s|%s] Interface not found:%s",
-                event.id, event.managed_object.name,
-                event.managed_object.address, if_name
+                event.id,
+                event.managed_object.name,
+                event.managed_object.address,
+                if_name,
             )
             action = self.default_link_action
         if action == "I":
@@ -712,14 +727,18 @@ class ClassifierService(Service):
             if iface:
                 self.logger.info(
                     "[%s|%s|%s] Marked as ignored by interface profile '%s' (%s)",
-                    event.id, event.managed_object.name,
+                    event.id,
+                    event.managed_object.name,
                     event.managed_object.address,
-                    iface.profile.name, iface.name)
+                    iface.profile.name,
+                    iface.name,
+                )
             else:
                 self.logger.info(
                     "[%s|%s|%s] Marked as ignored by default interface profile",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address
+                    event.id,
+                    event.managed_object.name,
+                    event.managed_object.address,
                 )
             metrics[CR_DELETED] += 1
             return True
@@ -728,39 +747,38 @@ class ClassifierService(Service):
             if iface:
                 self.logger.info(
                     "[%s|%s|%s] Marked as not disposable by interface profile '%s' (%s)",
-                    event.id, event.managed_object.name,
+                    event.id,
+                    event.managed_object.name,
                     event.managed_object.address,
-                    iface.profile.name, iface.name
+                    iface.profile.name,
+                    iface.name,
                 )
             else:
                 self.logger.info(
                     "[%s|%s|%s] Marked as not disposable by default interface",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address
+                    event.id,
+                    event.managed_object.name,
+                    event.managed_object.address,
                 )
             event.do_not_dispose()
         return False
 
-    def on_event(self, message, ts=None, object=None, data=None,
-                 id=None, *args, **kwargs):
+    def on_event(self, message, ts=None, object=None, data=None, id=None, *args, **kwargs):
         event_ts = datetime.datetime.fromtimestamp(ts)
         # Generate or reuse existing object id
         event_id = ObjectId(id)
         # Calculate messate processing delay
         lag = (time.time() - ts) * 1000
         metrics["lag_us"] = int(lag * 1000)
-        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)",
-                          event_id, data, lag)
+        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event_id, data, lag)
         metrics[CR_PROCESSED] += 1
         # Resolve managed object
         mo = ManagedObject.get_by_id(object)
         if not mo:
-            self.logger.info("[%s] Unknown managed object id %s. Skipping",
-                             event_id, object)
+            self.logger.info("[%s] Unknown managed object id %s. Skipping", event_id, object)
             metrics[CR_UOBJECT] += 1
             return True
-        self.logger.info("[%s|%s|%s] Managed object found",
-                         event_id, mo.name, mo.address)
+        self.logger.info("[%s|%s|%s] Managed object found", event_id, mo.name, mo.address)
         # Process event
         source = data.pop("source", "other")
         event = ActiveEvent(
@@ -769,21 +787,18 @@ class ClassifierService(Service):
             start_timestamp=event_ts,
             managed_object=mo,
             source=source,
-            repeats=1
+            repeats=1,
         )  # raw_vars will be filled by classify_event()
         # Classify event
         try:
             self.classify_event(event, data)
         except Exception as e:
             self.logger.error(
-                "[%s|%s|%s] Failed to process event: %s",
-                event.id, mo.name, mo.address, e)
+                "[%s|%s|%s] Failed to process event: %s", event.id, mo.name, mo.address, e
+            )
             metrics[CR_FAILED] += 1
             return False
-        self.logger.info(
-            "[%s|%s|%s] Event processed successfully",
-            event.id, mo.name, mo.address
-        )
+        self.logger.info("[%s|%s|%s] Event processed successfully", event.id, mo.name, mo.address)
         return True
 
     @tornado.gen.coroutine
@@ -800,16 +815,12 @@ class ClassifierService(Service):
             ot = self.stats.get(CR_PROCESSED, 0)
             total = nt - ot
             self.stats[CR_PROCESSED] = nt
-            dt = (t - self.last_ts)
+            dt = t - self.last_ts
             if total:
                 speed = total / dt
                 self.logger.info(
-                    "REPORT: %d events in %.2fms. %.2fev/s (%s)" % (
-                        total,
-                        dt * 1000,
-                        speed,
-                        ", ".join(r)
-                    )
+                    "REPORT: %d events in %.2fms. %.2fev/s (%s)"
+                    % (total, dt * 1000, speed, ", ".join(r))
                 )
         self.last_ts = t
 

@@ -46,7 +46,7 @@ class ArchivedEvent(document.Document):
     alarms = fields.ListField(nosql.ObjectIdField())
 
     def __str__(self):
-        return u"%s" % self.id
+        return "%s" % self.id
 
     @property
     def duration(self):

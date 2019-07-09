@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -27,14 +28,11 @@ class Script(BaseScript):
             match = self.rx_mac1.search(cmd)
             fmac = match.group("mac")
             lmac = match.group("mac")
-            return [{
-                "first_chassis_mac": fmac,
-                "last_chassis_mac": lmac
-            }]
+            return [{"first_chassis_mac": fmac, "last_chassis_mac": lmac}]
         else:
             cmd = self.cli("show interface")
             macs = sorted(self.rx_mac2.findall(cmd))
-            return [{
-                "first_chassis_mac": f,
-                "last_chassis_mac": t
-            } for f, t in self.macs_to_ranges(macs)]
+            return [
+                {"first_chassis_mac": f, "last_chassis_mac": t}
+                for f, t in self.macs_to_ranges(macs)
+            ]

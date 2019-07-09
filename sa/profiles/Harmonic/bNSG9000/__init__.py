@@ -1,4 +1,4 @@
-__author__ = 'fedoseev.ns'
+__author__ = "fedoseev.ns"
 
 from noc.core.profile.base import BaseProfile
 

@@ -23,7 +23,4 @@ class Script(BaseScript):
             v = self.cli_detail(cmd)
         except self.CLISyntaxError:
             return []
-        return [{
-            "mac": r["mac-address"],
-            "ip": r["last-ip"].split()[0]
-        } for n, f, r in v]
+        return [{"mac": r["mac-address"], "ip": r["last-ip"].split()[0]} for n, f, r in v]

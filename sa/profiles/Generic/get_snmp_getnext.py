@@ -17,12 +17,8 @@ class Script(BaseScript):
     interface = IGetSNMPGetNext
     requires = []
 
-    def execute(self, oid, community_suffix=None, bulk=True,
-                min_index=None, max_index=None):
+    def execute(self, oid, community_suffix=None, bulk=True, min_index=None, max_index=None):
         try:
-            return list(self.snmp.getnext(
-                oid=oid,
-                community_suffix=community_suffix
-            ))
+            return list(self.snmp.getnext(oid=oid, community_suffix=community_suffix))
         except self.snmp.TimeOutError:
             return None

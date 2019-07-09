@@ -17,6 +17,7 @@ class MaintenanceApplication(ExtDocApplication):
     """
     Maintenance application
     """
+
     title = _("Maintenance")
     menu = _("Maintenance")
     model = Maintenance
@@ -56,8 +57,12 @@ class MaintenanceApplication(ExtDocApplication):
             "stop": o.stop.strftime("%Y-%m-%d %H:%M:%S") if o.stop else "",
             "start": o.start.strftime("%Y-%m-%d %H:%M:%S") if o.start else "",
             "suppress_alarms": o.suppress_alarms,
-            "escalate_managed_object": o.escalate_managed_object.id if o.escalate_managed_object else None,
-            "escalate_managed_object__label": o.escalate_managed_object.name if o.escalate_managed_object else "",
+            "escalate_managed_object": o.escalate_managed_object.id
+            if o.escalate_managed_object
+            else None,
+            "escalate_managed_object__label": o.escalate_managed_object.name
+            if o.escalate_managed_object
+            else "",
             "escalation_tt": None,
             "is_completed": o.is_completed,
             "direct_objects": [],
@@ -69,8 +74,7 @@ class MaintenanceApplication(ExtDocApplication):
             # "row_class": ""
         }
 
-    @view(url="(?P<id>[0-9a-f]{24})/objects/", method=["GET"],
-          access="read", api=True)
+    @view(url="(?P<id>[0-9a-f]{24})/objects/", method=["GET"], access="read", api=True)
     def api_test(self, request, id):
         o = self.get_object_or_404(Maintenance, id=id)
         r = []
@@ -86,7 +90,7 @@ class MaintenanceApplication(ExtDocApplication):
                     # "administrative_domain": unicode(mo.administrative_domain),
                     "address": mo.address,
                     "description": mo.description,
-                    "tags": mo.tags
+                    "tags": mo.tags,
                 }
             ]
         return r

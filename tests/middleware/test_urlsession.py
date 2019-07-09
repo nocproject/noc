@@ -8,21 +8,25 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.script.http.base import HTTP
 from noc.core.script.http.middleware.loader import loader
 
 
-@pytest.mark.parametrize("url,config,expected", [
-    # Default session parameter
-    ("http://127.0.0.1", {}, "http://127.0.0.1?session_id={0}"),
-    ("http://127.0.0.1?q", {}, "http://127.0.0.1?q&session_id={0}"),
-    ("http://127.0.0.1?x=y", {}, "http://127.0.0.1?x=y&session_id={0}"),
-    # 'sid' session parameter
-    ("http://127.0.0.1", {"session_param": "sid"}, "http://127.0.0.1?sid={0}"),
-    ("http://127.0.0.1?q", {"session_param": "sid"}, "http://127.0.0.1?q&sid={0}"),
-    ("http://127.0.0.1?x=y", {"session_param": "sid"}, "http://127.0.0.1?x=y&sid={0}"),
-])
+@pytest.mark.parametrize(
+    "url,config,expected",
+    [
+        # Default session parameter
+        ("http://127.0.0.1", {}, "http://127.0.0.1?session_id={0}"),
+        ("http://127.0.0.1?q", {}, "http://127.0.0.1?q&session_id={0}"),
+        ("http://127.0.0.1?x=y", {}, "http://127.0.0.1?x=y&session_id={0}"),
+        # 'sid' session parameter
+        ("http://127.0.0.1", {"session_param": "sid"}, "http://127.0.0.1?sid={0}"),
+        ("http://127.0.0.1?q", {"session_param": "sid"}, "http://127.0.0.1?q&sid={0}"),
+        ("http://127.0.0.1?x=y", {"session_param": "sid"}, "http://127.0.0.1?x=y&sid={0}"),
+    ],
+)
 def test_(url, config, expected):
     http = HTTP(None)
     mw_cls = loader.get_class("urlsession")

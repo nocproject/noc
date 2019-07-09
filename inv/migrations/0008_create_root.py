@@ -24,7 +24,7 @@ class Migration(BaseMigration):
         om = db.noc.objectmodels
         root = om.find_one({"name": "Root"})
         if not root:
-            print ("    Create Root model stub")
+            print("    Create Root model stub")
             root = om.insert_one(
                 {"name": "Root", "uuid": self.ROOT_UUID, "data": {"container": {"container": True}}}
             )
@@ -33,7 +33,7 @@ class Migration(BaseMigration):
             root = root["_id"]
         lost_and_found = om.find_one({"name": "Lost&Found"})
         if not lost_and_found:
-            print ("    Create Lost&Found model stub")
+            print("    Create Lost&Found model stub")
             lost_and_found = om.insert_one(
                 {
                     "name": "Lost&Found",

@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+0x1\s+0x\d+\s+"
         r"(?P<mac>\S+)\s+\S+\s+(?P<interfaces>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self, interface=None):

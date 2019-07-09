@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseMiddleware
 
@@ -17,6 +18,7 @@ class URLSessionMiddleware(BaseMiddleware):
     Append &session_id=XXXXX to requests.
     `session_id` name may be changed via `session_param`
     """
+
     name = "urlsession"
 
     def __init__(self, http, session_param="session_id"):

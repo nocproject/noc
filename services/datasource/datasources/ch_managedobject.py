@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseDataSource
 from noc.main.models.remotesystem import RemoteSystem
@@ -22,16 +23,47 @@ class CHManagedObjectDataSource(BaseDataSource):
     name = "ch_managedobject"
 
     def extract(self):
-        containers = ReportContainerData(sorted(set(ManagedObject.objects.all().order_by(
-            "container").values_list("container", flat=True))))
+        containers = ReportContainerData(
+            sorted(
+                set(
+                    ManagedObject.objects.all()
+                    .order_by("container")
+                    .values_list("container", flat=True)
+                )
+            )
+        )
         containers = containers.get_dictionary()
-        for (mo_id, bi_id, name, address, profile,
-             platform, version, remote_id, remote_system,
-             adm_id, adm_name, container) in \
-                ManagedObject.objects.all().order_by("id").values_list(
-                    "id", "bi_id", "name", "address", "profile",
-                    "platform", "version", "remote_id", "remote_system",
-                    "administrative_domain", "administrative_domain__name", "container"):
+        for (
+            mo_id,
+            bi_id,
+            name,
+            address,
+            profile,
+            platform,
+            version,
+            remote_id,
+            remote_system,
+            adm_id,
+            adm_name,
+            container,
+        ) in (
+            ManagedObject.objects.all()
+            .order_by("id")
+            .values_list(
+                "id",
+                "bi_id",
+                "name",
+                "address",
+                "profile",
+                "platform",
+                "version",
+                "remote_id",
+                "remote_system",
+                "administrative_domain",
+                "administrative_domain__name",
+                "container",
+            )
+        ):
             yield (
                 bi_id,
                 mo_id,
@@ -44,5 +76,5 @@ class CHManagedObjectDataSource(BaseDataSource):
                 RemoteSystem.get_by_id(remote_system).name if remote_system else "",
                 adm_id,
                 adm_name,
-                containers.get(container, ("",))[0] if container else ""
+                containers.get(container, ("",))[0] if container else "",
             )

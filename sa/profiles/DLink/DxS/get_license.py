@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modiles
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlicense import IGetLicense
@@ -18,8 +19,7 @@ class Script(BaseScript):
     name = "DLink.DxS.get_license"
     cache = True
     interface = IGetLicense
-    rx_lic = re.compile(r"Device Default License : (?P<license>\S+)",
-        re.MULTILINE)
+    rx_lic = re.compile(r"Device Default License : (?P<license>\S+)", re.MULTILINE)
 
     def execute(self):
         try:

@@ -9,6 +9,7 @@
 # Python modules
 import logging
 import datetime
+
 # NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
@@ -46,7 +47,7 @@ def wait_tt(alarm_id):
         alarm.clear_alarm(
             "Closed by TT %s" % alarm.escalation_tt,
             ts=ti.get("close_ts", datetime.datetime.now()),
-            force=True
+            force=True,
         )
     else:
         Job.retry_after(CHECK_INTERVAL, msg="Next check")

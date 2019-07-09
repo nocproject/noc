@@ -39,4 +39,4 @@ class UserContact(NOCModel):
     params = models.CharField("Params", max_length=256)
 
     def __str__(self):
-        return u"%s %s %s" % (self.user.username, self.time_pattern.name, self.notification_method)
+        return "%s %s %s" % (self.user.username, self.time_pattern.name, self.notification_method)

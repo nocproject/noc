@@ -2,27 +2,26 @@
 # ---------------------------------------------------------------------
 # Alstec.ALS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
     name = "Alstec.ALS.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_mode = re.compile(
-        r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
+    rx_mode = re.compile(r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
     rx_mstp = re.compile(
-        r"^\s*Name: (?P<region>\S+)\s*\n"
-        r"^\s*Revision: (?P<revision>\d+)", re.MULTILINE)
+        r"^\s*Name: (?P<region>\S+)\s*\n" r"^\s*Revision: (?P<revision>\d+)", re.MULTILINE
+    )
     rx_inst1 = re.compile(
         "MST (?P<id>\d+) Vlans Mapped: (?P<vlans>.+?)\n"
         "^\s*CST Root ID\s+Priority\s+(?P<root_priority>\d+)\s*\n"
@@ -32,7 +31,9 @@ class Script(BaseScript):
         "^\s*.+\n"
         "(^\s*.+\n)?"
         "^\s*Bridge ID\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+        "^\s*Address\s+(?P<bridge_id>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_inst2 = re.compile(
         "^\s*Root ID\s+Priority\s+(?P<root_priority>\d+)\s*\n"
         "^\s*Address\s+(?P<root_id>\S+)\s*\n"
@@ -40,13 +41,16 @@ class Script(BaseScript):
         "^\s*Port\s+(?:\S+)\s*\n"
         "^\s*Hello Time\s+.+\n"
         "^\s*Bridge ID\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+        "^\s*Address\s+(?P<bridge_id>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_inst3 = re.compile(
         "^\s*Root ID\s+Priority\s+(?P<root_priority>\d+)\s*\n"
         "^\s*Address\s+(?P<root_id>\S+)\s*\n"
-        "^\s*This switch is the root\s*\n", re.MULTILINE)
-    rx_vlans = re.compile(
-        "^(?P<id>\d+)\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
+        "^\s*This switch is the root\s*\n",
+        re.MULTILINE,
+    )
+    rx_vlans = re.compile("^(?P<id>\d+)\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port = re.compile(
         "^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
         "^\s*State: (?P<state>\S+)\s+Role: (?P<role>\S+)\s*\n"
@@ -57,7 +61,8 @@ class Script(BaseScript):
         "(?P<designated_bridge_id>\S+)\s*\n"
         "^\s*Designated port id: (?P<designated_port_id>\S+)\s+"
         "Designated path cost: \d+\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         try:
@@ -85,8 +90,7 @@ class Script(BaseScript):
                         if match:
                             iface = match.groupdict()
                             iface["point_to_point"] = "Type: P2P" in port
-                            iface["priority"] = \
-                                match.group("port_id").split(".")[0]
+                            iface["priority"] = match.group("port_id").split(".")[0]
                             iface["edge"] = False
                             inst["interfaces"] += [iface]
                     stp["instances"] += [inst]
@@ -112,8 +116,7 @@ class Script(BaseScript):
                 if match:
                     iface = match.groupdict()
                     iface["point_to_point"] = "Type: P2P" in port
-                    iface["priority"] = \
-                        match.group("port_id").split(".")[0]
+                    iface["priority"] = match.group("port_id").split(".")[0]
                     iface["edge"] = False
                     inst["interfaces"] += [iface]
             stp["instances"] = [inst]

@@ -93,7 +93,7 @@ class Transition(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return u"%s: %s -> %s [%s]" % (
+        return "%s: %s -> %s [%s]" % (
             self.workflow.name,
             self.from_state.name,
             self.to_state.name,

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -23,28 +24,24 @@ class Script(BaseScript):
         r"(?P<speed>\S+)\s+(?P<neg>\S+)\s+(?P<flow>\S+)\s+"
         r"(?P<admin_state>(up|down))\s*((?P<back_pressure>\S+)\s+"
         r"(?P<mdix_mode>\S+)\s*)?$",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
 
     INTERFACE_TYPES = {
-        "Et": "physical",    # Ethernet
-        "Fa": "physical",    # FastEthernet
-        "Gi": "physical",    # GigabitEthernet
-        "Te": "physical",    # TenGigabitEthernet
-        "Lo": "loopback",    # Loopback
+        "Et": "physical",  # Ethernet
+        "Fa": "physical",  # FastEthernet
+        "Gi": "physical",  # GigabitEthernet
+        "Te": "physical",  # TenGigabitEthernet
+        "Lo": "loopback",  # Loopback
         "Po": "aggregated",  # Port-channel/Portgroup
-        "Tu": "tunnel",      # Tunnel
-        "Vl": "SVI",         # Vlan
+        "Tu": "tunnel",  # Tunnel
+        "Vl": "SVI",  # Vlan
         "oo": "management",  # oob
     }
 
     def execute_cli(self):
 
-        reply = [{
-            "forwarding_instance": "default",
-            "type": "ip",
-            "interfaces": []
-        }]
+        reply = [{"forwarding_instance": "default", "type": "ip", "interfaces": []}]
         interfaces = []
 
         # IPv4 interfaces:
@@ -58,8 +55,8 @@ class Script(BaseScript):
                 continue
             status = row[2].strip()
             try:
-                admin_status = status.split("/")[0].lower() == 'up'
-                oper_status = status.split("/")[1].lower() == 'up'
+                admin_status = status.split("/")[0].lower() == "up"
+                oper_status = status.split("/")[1].lower() == "up"
             except IndexError:
                 # just blind guess for some models like sf300
                 # that haven't command to show vlan interface status
@@ -70,13 +67,15 @@ class Script(BaseScript):
                 "type": self.INTERFACE_TYPES.get(iface[:2], "unknown"),
                 "admin_status": admin_status,
                 "oper_status": oper_status,
-                "subinterfaces": [{
-                    "name": iface,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [ipv4]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": iface,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ipv4],
+                    }
+                ],
             }
             interfaces.append(interface)
 
@@ -101,18 +100,16 @@ class Script(BaseScript):
                 # skip header for Port-Channel section
                 continue
             try:
-                oper_status = row[6].strip().lower() == 'up'
+                oper_status = row[6].strip().lower() == "up"
             except IndexError:
-                oper_status = row[5].strip().lower() == 'up'
+                oper_status = row[5].strip().lower() == "up"
             interface = {
                 "name": iface,
                 "type": self.INTERFACE_TYPES.get(iface[:2], "unknown"),
                 "oper_status": oper_status,
-                "subinterfaces": [{
-                    "name": iface,
-                    "oper_status": oper_status,
-                    "enabled_afi": ["BRIDGE"]
-                }]
+                "subinterfaces": [
+                    {"name": iface, "oper_status": oper_status, "enabled_afi": ["BRIDGE"]}
+                ],
             }
             # Portchannel member
             if iface in portchannel_members:
@@ -134,7 +131,7 @@ class Script(BaseScript):
             for key in phys_int:
                 index = phys_int.index(key)
                 if phys_int[index]["name"] == iface:
-                    admin_status = interface["admin_state"].lower() == 'up'
+                    admin_status = interface["admin_state"].lower() == "up"
                     phys_int[index]["admin_status"] = admin_status
                     phys_int[index]["subinterfaces"][0]["admin_status"] = admin_status
 

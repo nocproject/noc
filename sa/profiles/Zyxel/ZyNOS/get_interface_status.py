@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -20,7 +21,7 @@ class Script(BaseScript):
     rx_link = re.compile(
         r"Port Info\s+Port NO\.\s+:(?P<interface>\d+)\s*Link"
         r"\s+:(?P<status>(1[02]+[MG]/[FH]\s*(Copper|SFP)?)|Down)",
-        re.MULTILINE | re.IGNORECASE
+        re.MULTILINE | re.IGNORECASE,
     )
     cache = True
 
@@ -30,18 +31,14 @@ class Script(BaseScript):
                 r = []
                 if interface is None:
                     # Get all interfaces
-                    for i, n, s in self.snmp.join([
-                        mib["IF-MIB::ifName"],
-                        mib["IF-MIB::ifOperStatus"]
-                    ]):
+                    for i, n, s in self.snmp.join(
+                        [mib["IF-MIB::ifName"], mib["IF-MIB::ifOperStatus"]]
+                    ):
                         if i > 1023:
                             break
                         if n == "enet0":
                             continue  # Skip outbound management
-                        r += [{
-                            "interface": n,
-                            "status": s == 1
-                        }]
+                        r += [{"interface": n, "status": s == 1}]
                     if r:
                         return r
                 else:
@@ -62,8 +59,10 @@ class Script(BaseScript):
 
         r = []
         for match in self.rx_link.finditer(s):
-            r += [{
-                "interface": match.group("interface"),
-                "status": match.group("status").lower() != "down"
-            }]
+            r += [
+                {
+                    "interface": match.group("interface"),
+                    "status": match.group("status").lower() != "down",
+                }
+            ]
         return r

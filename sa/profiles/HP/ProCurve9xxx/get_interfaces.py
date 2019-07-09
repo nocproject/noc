@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -17,11 +18,20 @@ class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_interfaces"
     interface = IGetInterfaces
 
-    rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
-    rx_int_alias = re.compile(r"^(Description|Vlan alias name is)\s*(?P<alias>.*?)$", re.MULTILINE | re.IGNORECASE)
+    rx_sh_int = re.compile(
+        r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_int_alias = re.compile(
+        r"^(Description|Vlan alias name is)\s*(?P<alias>.*?)$", re.MULTILINE | re.IGNORECASE
+    )
     rx_int_mac = re.compile(r"address\s+is\s+(?P<mac>\S+)", re.MULTILINE | re.IGNORECASE)
-    rx_int_ipv4 = re.compile(r"Internet address is (?P<address>[0-9\.\/]+)", re.MULTILINE | re.IGNORECASE)
-    rx_vlan_list = re.compile(r"untagged|(?P<from>\w+\s[0-9\.\/]+)(?P<to>\sto\s[0-9\.\/]+)?", re.MULTILINE | re.IGNORECASE)
+    rx_int_ipv4 = re.compile(
+        r"Internet address is (?P<address>[0-9\.\/]+)", re.MULTILINE | re.IGNORECASE
+    )
+    rx_vlan_list = re.compile(
+        r"untagged|(?P<from>\w+\s[0-9\.\/]+)(?P<to>\sto\s[0-9\.\/]+)?", re.MULTILINE | re.IGNORECASE
+    )
 
     def execute(self):
         portchannel_members = {}  # member -> (portchannel, type)
@@ -36,16 +46,16 @@ class Script(BaseScript):
         ospfint = []
         for s in shospf.split("\n"):
             if s.find("OSPF enabled") > 0:
-                i = s.split(',')[0]
-                if i[0] == 'v':
-                    ospfint.append('ve' + i[1:])
+                i = s.split(",")[0]
+                if i[0] == "v":
+                    ospfint.append("ve" + i[1:])
                 else:
                     ospfint.append(i)
 
         shrunvlan = self.cli("sh running-config vlan")
         tagged = {}
         untagged = {}
-        for v in shrunvlan.split('!'):
+        for v in shrunvlan.split("!"):
             match = self.rx_vlan_list.findall(v)
             if match:
                 tag = 1
@@ -59,14 +69,14 @@ class Script(BaseScript):
                         continue
 
                     elif m[0][:3] == "ve ":
-                        ifc = '' . join(m[0].split())
+                        ifc = "".join(m[0].split())
                         if ifc in untagged:
                             untagged[ifc].append(vlan)
                         else:
                             untagged[ifc] = vlan
                             continue
 
-                    elif not m[0].split()[0] == 'ethe':
+                    elif not m[0].split()[0] == "ethe":
                         continue
 
                     elif not m[1]:
@@ -80,10 +90,10 @@ class Script(BaseScript):
                             untagged[ifc] = vlan
 
                     else:
-                        first = m[0].split()[1].split('/')[1]
-                        last = m[1].split()[1].split('/')[1]
+                        first = m[0].split()[1].split("/")[1]
+                        last = m[1].split()[1].split("/")[1]
                         for n in range(int(first), int(last) + 1):
-                            ifc = m[0].split()[1].split('/')[0] + '/' + repr(n)
+                            ifc = m[0].split()[1].split("/")[0] + "/" + repr(n)
                             if tag == 1:
                                 if ifc in tagged:
                                     tagged[ifc].append(vlan)
@@ -109,17 +119,17 @@ class Script(BaseScript):
             if len(s.split()) > 9:
                 desc = s.split()[9]
             else:
-                desc = ''
+                desc = ""
 
             iface = {
                 "name": ifname,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "type": ift,
-                "description": desc
+                "description": desc,
             }
             mac = s.split()[8]
-            if not mac == 'N/A':
+            if not mac == "N/A":
                 iface["mac"] = mac
             # Process portchannel members
             if ifname in portchannel_members:
@@ -129,11 +139,7 @@ class Script(BaseScript):
             enabled_afi = []
             enabled_protocols = []
             if "aggregated_interface" not in iface:
-                sub = {
-                    "name": ifname,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status
-                }
+                sub = {"name": ifname, "admin_status": admin_status, "oper_status": oper_status}
 
                 if ifname in untagged:
                     sub["untagged_vlan"] = untagged[ifname]

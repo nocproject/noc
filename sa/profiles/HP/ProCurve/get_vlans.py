@@ -19,7 +19,4 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.cli("show vlans")
-        return [{
-            "vlan_id": int(row[0]),
-             "name": row[1]
-        } for row in parse_table(v)]
+        return [{"vlan_id": int(row[0]), "name": row[1]} for row in parse_table(v)]

@@ -9,6 +9,7 @@
 # Python modules
 import six
 from six.moves import zip
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.core.snmp.error import SNMPError
@@ -24,10 +25,7 @@ class Script(BaseScript):
     # OIDS to get MACs via SNMP GET
     # capability -> [oid, ...]
     SNMP_GET_OIDS = {
-        "SNMP": [
-            mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0],
-            mib["LLDP-MIB::lldpLocChassisId", 0]
-        ]
+        "SNMP": [mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0], mib["LLDP-MIB::lldpLocChassisId", 0]]
     }
     # OIDS to get MACs via SNMP GETNEXT request
     # capability -> [oid, ...]
@@ -36,7 +34,7 @@ class Script(BaseScript):
     IGNORED_MACS = {
         "00:00:00:00:00:00",  # Empty MAC
         "00:01:02:03:04:00",  # Very Smart programmer
-        "FF:FF:FF:FF:FF:FF"  # Broadcast
+        "FF:FF:FF:FF:FF:FF",  # Broadcast
     }
 
     def snmp_safe(self, oids):
@@ -74,10 +72,11 @@ class Script(BaseScript):
         except SNMPError:
             pass
         # Filter and convert macs
-        r = [{
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        } for mac in sorted(macs) if not self.is_ignored_mac(mac)]
+        r = [
+            {"first_chassis_mac": mac, "last_chassis_mac": mac}
+            for mac in sorted(macs)
+            if not self.is_ignored_mac(mac)
+        ]
         if not r:
             raise NotImplementedError
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import os
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -25,7 +26,10 @@ class Migration(BaseMigration):
         if p.get("storage") or p.get("user"):
             return
         # Check user probe is not exists
-        if self.db.execute("SELECT COUNT(*) FROM auth_user WHERE username=%s", [PROBEUSER])[0][0] > 0:
+        if (
+            self.db.execute("SELECT COUNT(*) FROM auth_user WHERE username=%s", [PROBEUSER])[0][0]
+            > 0
+        ):
             return
         # Check ./noc user is valid command
         if not os.path.exists("main/management/commands/user.py"):
@@ -44,6 +48,7 @@ class Migration(BaseMigration):
         )
         if r != 0:
             import sys
+
             sys.stderr.write("\nCannot create probe user. Terminating\n")
             sys.exit(1)
         uid = self.db.execute("SELECT id FROM auth_user WHERE username=%s", [PROBEUSER])[0][0]

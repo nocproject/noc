@@ -28,7 +28,7 @@ from .base import AddressParser
 
 class FIASParser(AddressParser):
     name = "FIAS"
-    TOP_NAME = u"Российская Федерация"
+    TOP_NAME = "Российская Федерация"
 
     rx_letter = re.compile("^(\d*)([^\d]*\S*)$")
     rx_letter2 = re.compile("^(\d*)([^/]*)(/\d+)?(\S*)$")

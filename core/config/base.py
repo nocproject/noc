@@ -11,8 +11,10 @@ from __future__ import absolute_import
 import inspect
 import re
 import os
+
 # Third-party modules
 import six
+
 # NOC modules
 from .params import BaseParameter
 
@@ -43,14 +45,11 @@ class ConfigBase(type):
             if isinstance(attrs[k], BaseParameter):
                 cls._params[k] = attrs[k]
                 cls._params[k].name = k
-            elif (inspect.isclass(attrs[k]) and issubclass(attrs[k], ConfigSection)):
+            elif inspect.isclass(attrs[k]) and issubclass(attrs[k], ConfigSection):
                 for kk in attrs[k]._params:
                     sn = "%s.%s" % (k, kk)
                     cls._params[sn] = attrs[k]._params[kk]
-        cls._params_order = sorted(
-            cls._params,
-            key=lambda x: cls._params[x].param_number
-        )
+        cls._params_order = sorted(cls._params, key=lambda x: cls._params[x].param_number)
         return cls
 
 
@@ -59,7 +58,7 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
         "consul": "noc.core.config.proto.consul.ConsulProtocol",
         "env": "noc.core.config.proto.env.EnvProtocol",
         "yaml": "noc.core.config.proto.yaml.YAMLProtocol",
-        "legacy": "noc.core.config.proto.legacy.LegacyProtocol"
+        "legacy": "noc.core.config.proto.legacy.LegacyProtocol",
     }
 
     _rx_env_sh = re.compile(r"\${([^:}]+)(:-[^}]+)?}")

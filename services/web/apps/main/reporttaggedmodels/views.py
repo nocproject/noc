@@ -2,12 +2,13 @@
 # ---------------------------------------------------------------------
 # Tagged Models Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.db import models as django_models
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.settings import INSTALLED_APPS
@@ -26,11 +27,9 @@ class ReportTaggedModels(SimpleReport):
                 for n in dir(module):
                     obj = getattr(module, n)
                     try:
-                        if (issubclass(obj, django_models.Model) and
-                                hasattr(obj, "tags")):
+                        if issubclass(obj, django_models.Model) and hasattr(obj, "tags"):
                             seen.add(obj)
-                    except:
+                    except Exception:
                         pass
         data = sorted((m._meta.app_label, m._meta.verbose_name) for m in seen)
-        return self.from_dataset(title=self.title,
-                                 columns=["Module", "Model"], data=data)
+        return self.from_dataset(title=self.title, columns=["Module", "Model"], data=data)

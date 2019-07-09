@@ -8,6 +8,7 @@
 
 # Python modules
 import struct
+
 # Third-party modules
 from csiphash import siphash24
 

@@ -16,8 +16,7 @@ class Script(BaseScript):
     name = "Siklu.EH.get_local_users"
     interface = IGetLocalUsers
 
-    rx_line = re.compile(
-        r"^\s*(?P<username>\S+)\s+(?P<privilege>\S+)\s*$", re.MULTILINE)
+    rx_line = re.compile(r"^\s*(?P<username>\S+)\s+(?P<privilege>\S+)\s*$", re.MULTILINE)
 
     def execute(self):
         r = []

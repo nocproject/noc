@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -22,13 +23,11 @@ class Script(BaseScript):
         "ma": "management",
         "vl": "SVI",
         "po": "aggregated",
-        "lo": "loopback"
+        "lo": "loopback",
     }
 
     rx_iface_sep = re.compile(r"^(\S+\d+)\s+is\s+.+$", re.MULTILINE)
-    rx_hw_mac = re.compile(
-        r"^\s+Hardware is \S+, address is (?P<mac>\S+)"
-    )
+    rx_hw_mac = re.compile(r"^\s+Hardware is \S+, address is (?P<mac>\S+)")
     rx_description = re.compile(r"^\s+Description:\s+(?P<description>.+)")
     rx_member = re.compile(r"^\s+Member of (?P<agg>\S+)")
     rx_ip = re.compile(r"^\s+Internet address is (?P<ip>\S+)")
@@ -50,7 +49,7 @@ class Script(BaseScript):
                 "type": self.type_map[name[:2].lower()],
                 # admin status
                 # oper status
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             ip = None
             for l in data.splitlines():
@@ -77,13 +76,15 @@ class Script(BaseScript):
                         ip = match.group("ip")
             # Add subinterfaces
             if ip:
-                iface["subinterfaces"] += [{
-                    "name": name,
-                    "description": iface.get("description"),
-                    "mac": iface.get("mac"),
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [ip]
-                }]
+                iface["subinterfaces"] += [
+                    {
+                        "name": name,
+                        "description": iface.get("description"),
+                        "mac": iface.get("mac"),
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip],
+                    }
+                ]
             if name in sw:
                 si = {
                     "name": name,

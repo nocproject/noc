@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetipv6neighbor import IGetIPv6Neighbor
@@ -21,7 +22,8 @@ class Script(BaseScript):
         r"^(?P<ip>[0-9a-f:]+)\s+"
         r"(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:"
         r"[0-9a-f]{2}:[0-9a-f]{2})\s+"
-        r"(?P<state>\S+)\s+\S+\s+\S+\s+\S+\s+(?P<interface>\S+)\s*$")
+        r"(?P<state>\S+)\s+\S+\s+\S+\s+\S+\s+(?P<interface>\S+)\s*$"
+    )
 
     def execute(self, vrf=None):
         cmd = "show ipv6 neighbor"

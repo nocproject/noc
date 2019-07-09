@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-from noc.lib.validators import is_int, is_ipv4
-import re
+from noc.lib.validators import is_ipv4
 
 
 class Script(BaseScript):
@@ -18,10 +20,10 @@ class Script(BaseScript):
     interface = IPing
     rx_result = re.compile(
         r"Success rate = \d+% \((?P<success>\d+)/(?P<count>\d+)\), "
-        r"round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms")
+        r"round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms"
+    )
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         cmd = "ping"
         if is_ipv4(address):
             cmd += " ip"
@@ -36,18 +38,16 @@ class Script(BaseScript):
             cmd += " source address %s" % source_address
         if size:
             cmd += " data-size %d" % int(size)
-        match = self.rx_result.search(self.cli(cmd))
+        s = self.cli(cmd)
+        match = self.rx_result.search(s)
         if match:
             return {
                 "success": match.group("success"),
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
             match = self.rx_result1.search(s)
-            return {
-                "success": match.group("success"),
-                "count": match.group("count")
-            }
+            return {"success": match.group("success"), "count": match.group("count")}

@@ -9,15 +9,12 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 
 # model -> label field
-ORDER_MAP_MODELS = {
-    "sa.Profile": "name",
-    "inv.Platform": "full_name",
-    "inv.Firmware": "version"
-}
+ORDER_MAP_MODELS = {"sa.Profile": "name", "inv.Platform": "full_name", "inv.Firmware": "version"}
 
 
 @six.python_2_unicode_compatible
@@ -25,6 +22,7 @@ class OrderMap(NOCModel):
     """
     Custom field description
     """
+
     class Meta(object):
         verbose_name = "Order Map"
         verbose_name_plural = "Order Map"
@@ -43,18 +41,18 @@ class OrderMap(NOCModel):
     def update_for_model(model):
         from django.db import connection
         from noc.models import get_model
+
         # Get model data
         name_field = ORDER_MAP_MODELS[model]
         coll = get_model(model)._get_collection()
         data = [
-            (model, str(d["_id"]), d[name_field])
-            for d in coll.find({}, {"_id": 1, name_field: 1})
+            (model, str(d["_id"]), d[name_field]) for d in coll.find({}, {"_id": 1, name_field: 1})
         ]
         c = connection.cursor()
         c.execute("DELETE FROM main_ordermap WHERE model = %s", [model])
         c.execute(
-            "INSERT INTO main_ordermap(model, ref_id, name) VALUES " +
-            ",".join(c.mogrify("(%s,%s,%s)", d) for d in data)
+            "INSERT INTO main_ordermap(model, ref_id, name) VALUES "
+            + ",".join(c.mogrify("(%s,%s,%s)", d) for d in data)
         )
 
     @staticmethod

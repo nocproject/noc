@@ -8,26 +8,24 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.vc.models.vctype import VCType
 
 
 @pytest.mark.parametrize(
-    "data", [
+    "data",
+    [
+        {"name": "Test 1", "min_labels": 1, "label1_min": 0, "label1_max": 15},
         {
-            "name": "Test 1",
-            "min_labels": 1,
-            "label1_min": 0,
-            "label1_max": 15
-        }, {
             "name": "Test 2",
             "min_labels": 2,
             "label1_min": 0,
             "label1_max": 15,
             "label2_min": 0,
-            "label2_max": 15
-        }
-    ]
+            "label2_max": 15,
+        },
+    ],
 )
 def test_insert(data):
     vc_type = VCType(**data)

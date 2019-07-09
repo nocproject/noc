@@ -21,8 +21,7 @@ class Script(BaseScript):
     interface = IGetFQDN
 
     rx_hostname = re.compile(r"^hostname\s+(?P<hostname>\S+)", re.MULTILINE)
-    rx_domain_name = re.compile(r"^ip domain-name\s+(?P<domain>\S+)",
-        re.MULTILINE)
+    rx_domain_name = re.compile(r"^ip domain-name\s+(?P<domain>\S+)", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show running-config | include ^(hostname|ip domain-name)")
@@ -33,4 +32,4 @@ class Script(BaseScript):
         match = self.rx_domain_name.search(v)
         if match:
             fqdn += [match.group("domain")]
-        return "." . join(fqdn)
+        return ".".join(fqdn)

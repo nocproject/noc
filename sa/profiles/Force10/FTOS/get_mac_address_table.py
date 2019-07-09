@@ -11,7 +11,9 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
-rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+\s+\S+).*$")
+rx_line = re.compile(
+    r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+\s+\S+).*$"
+)
 
 
 class Script(BaseScript):
@@ -31,10 +33,12 @@ class Script(BaseScript):
         for l in vlans.split("\n"):
             match = rx_line.match(l.strip())
             if match:
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {"Dynamic": "D"}[match.group("type")],
-                })
+                r.append(
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": {"Dynamic": "D"}[match.group("type")],
+                    }
+                )
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -18,7 +19,8 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
     rx_line = re.compile(
         r"^(?P<interface>\S+\s*\d+(\/\d+)?)\s+(?P<status>up|down)\s+\d+\s+"
-        r"(Unknown|Half|Full)\s+\S+\s+(copper|fiber)\s*$", re.IGNORECASE | re.MULTILINE
+        r"(Unknown|Half|Full)\s+\S+\s+(copper|fiber)\s*$",
+        re.IGNORECASE | re.MULTILINE,
     )
 
     def execute(self, interface=None):
@@ -37,5 +39,10 @@ class Script(BaseScript):
         # Fallback to CLI
         r = []
         for match in self.rx_line.finditer(self.cli("show interfaces status")):
-            r += [{"interface": match.group("interface"), "status": match.group("status").lower() == "up"}]
+            r += [
+                {
+                    "interface": match.group("interface"),
+                    "status": match.group("status").lower() == "up",
+                }
+            ]
         return r

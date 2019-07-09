@@ -9,16 +9,15 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
-@on_delete_check(check=[
-    ("inv.Interface", "state"),
-    ("vc.VC", "state"),
-    ("main.ResourceState", "step_to")
-])
+@on_delete_check(
+    check=[("inv.Interface", "state"), ("vc.VC", "state"), ("main.ResourceState", "step_to")]
+)
 @six.python_2_unicode_compatible
 class ResourceState(NOCModel):
     class Meta(object):

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -21,21 +22,17 @@ class Script(BaseScript):
     objstr = {"ifName": "interface", "ifDescr": "description", "ifOperStatus": "status"}
 
     def getVlanPort(self):
-
         untag = {}
         tag = {}
         egr = {}
-        lmap = {
-            "dot1qVlanStaticUntaggedPorts": untag,
-            "dot1qVlanStaticEgressPorts": egr,
-        }
-        stat = 'dot1qVlanStatic'
+        lmap = {"dot1qVlanStaticUntaggedPorts": untag, "dot1qVlanStaticEgressPorts": egr}
+        stat = "dot1qVlanStatic"
         lines = self.cli("walkMIB " + " ".join(lmap)).split(stat)[1:-1]
 
         for l in lines:
             inc = 0
-            leaf, val = l.split(' = ')
-            type, vlan = leaf.split('.')
+            leaf, val = l.split(" = ")
+            type, vlan = leaf.split(".")
             lmap[stat + type][int(vlan)] = []
             for hex in val.split():
                 dec = int(hex, 16)
@@ -55,14 +52,13 @@ class Script(BaseScript):
         return untag, tag
 
     def execute(self):
-        port = self.cli("walkMIB dot1dBaseNumPorts").split('=')[1]
-        portsnum = int(re.sub(r'[^\d-]+', '', port))
+        port = self.cli("walkMIB dot1dBaseNumPorts").split("=")[1]
+        portsnum = int(re.sub(r"[^\d-]+", "", port))
         untagged, tagged = self.getVlanPort()
         iface = {}
         sports = []
         step = len(self.objstr)
         lines = self.cli("walkMIB " + " ".join(self.objstr)).split("\n")[:-1]
-        portchannel_members = {}  # member -> (portchannel, type)
         portchannels = {}  # portchannel name -> [members]
 
         for p in self.scripts.get_portchannel():
@@ -74,7 +70,7 @@ class Script(BaseScript):
             if i == portsnum * step:
                 break
 
-            for strn in lines[i:i + step]:
+            for strn in lines[i : i + step]:
                 leaf = strn.split(".")[0]
                 val = strn.split("=")[1].lstrip()
                 if leaf[-6:] == "ifName":
@@ -83,7 +79,7 @@ class Script(BaseScript):
                     iface[self.objstr[leaf]] = val == "1"
                 elif leaf[-7:] == "ifDescr":
                     iface[self.objstr[leaf]] = val
-            ifindex = int(strn.split('=')[0].split(".")[1])
+            ifindex = int(strn.split("=")[0].split(".")[1])
             iface["untagged"] = 1
             for t in untagged:
                 if ifindex in untagged[t]:
@@ -95,8 +91,8 @@ class Script(BaseScript):
                 if ifindex in tagged[t]:
                     iface["tagged"] += [t]
 
-            iface['members'] = portchannels.get(iface["interface"], [])
-            if iface['tagged']:
+            iface["members"] = portchannels.get(iface["interface"], [])
+            if iface["tagged"]:
                 iface["802.1Q Enabled"] = True
             else:
                 iface["802.1Q Enabled"] = False

@@ -72,5 +72,5 @@ MIB = {
     "EtherLike-MIB::etherMIBObjects": "1.3.6.1.2.1.35.1",
     "EtherLike-MIB::etherConformance": "1.3.6.1.2.1.35.2",
     "EtherLike-MIB::etherGroups": "1.3.6.1.2.1.35.2.1",
-    "EtherLike-MIB::etherCompliances": "1.3.6.1.2.1.35.2.2"
+    "EtherLike-MIB::etherCompliances": "1.3.6.1.2.1.35.2.2",
 }

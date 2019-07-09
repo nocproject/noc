@@ -10,8 +10,10 @@
 from __future__ import absolute_import
 import datetime
 import operator
+
 # Third-party modules
 from mongoengine.errors import DoesNotExist
+
 # NOC modules
 from .base import BaseCard
 from noc.fm.models.utils import get_alarm
@@ -51,10 +53,7 @@ class AlarmCard(BaseCard):
                     o = Object.objects.get(id=c)
                     # @todo: Address data
                     if o.container:
-                        cp.insert(0, {
-                            "id": o.id,
-                            "name": o.name
-                        })
+                        cp.insert(0, {"id": o.id, "name": o.name})
                     c = o.container.id if o.container else None
                 except DoesNotExist:
                     metrics["error", ("type", "user_not_found")] += 1
@@ -67,23 +66,22 @@ class AlarmCard(BaseCard):
                     "timestamp": l.timestamp,
                     "from_status": l.from_status,
                     "to_status": l.to_status,
-                    "message": l.message
-                } for l in self.object.log
+                    "message": l.message,
+                }
+                for l in self.object.log
             ]
         # Build alarm tree
         alarms = self.get_alarms()
         # Service summary
         service_summary = {
             "service": SummaryItem.items_to_dict(self.object.total_services),
-            "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
+            "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers),
         }
         # Maintenance
         mainteinance = Maintenance.objects.filter(
             is_completed=False,
             start__lte=datetime.datetime.now(),
-            affected_objects__in=[
-                MaintenanceObject(object=self.object.managed_object)
-            ]
+            affected_objects__in=[MaintenanceObject(object=self.object.managed_object)],
         )
         mo = self.object.managed_object
         # Build result
@@ -105,13 +103,17 @@ class AlarmCard(BaseCard):
             "lon": mo.x,
             "lat": mo.y,
             "zoom": mo.default_zoom,
-            "tt_system": self.object.managed_object.tt_system.name if self.object.managed_object.tt_system else None,
-            "tt_system_failed": (self.object.status == "A" and
-                                 not self.object.escalation_tt and
-                                 self.object.managed_object.tt_system and
-                                 self.object.managed_object.tt_system.is_failed()),
+            "tt_system": self.object.managed_object.tt_system.name
+            if self.object.managed_object.tt_system
+            else None,
+            "tt_system_failed": (
+                self.object.status == "A"
+                and not self.object.escalation_tt
+                and self.object.managed_object.tt_system
+                and self.object.managed_object.tt_system.is_failed()
+            ),
             "escalation_ctx": self.object.escalation_ctx,
-            "escalation_close_ctx": getattr(self.object, "escalation_close_ctx", None)
+            "escalation_close_ctx": getattr(self.object, "escalation_close_ctx", None),
         }
         return r
 
@@ -127,7 +129,7 @@ class AlarmCard(BaseCard):
             ca._level = level
             ca.service_summary = {
                 "service": SummaryItem.items_to_dict(ca.direct_services),
-                "subscriber": SummaryItem.items_to_dict(ca.direct_subscribers)
+                "subscriber": SummaryItem.items_to_dict(ca.direct_subscribers),
             }
             r += [ca]
             if hasattr(ca, "_children"):

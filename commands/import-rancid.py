@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Import managed objects from rancid
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,10 +12,13 @@ import subprocess
 import re
 import datetime
 import os
-# Django modules
+
+# Third-party modules
 from django.db.models import Q
+
 # Third-party modules
 import pytz
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -32,6 +35,7 @@ class Command(BaseCommand):
     """
     Manage Jobs
     """
+
     logger = logging.getLogger("main")
     TZ = pytz.timezone(noc.settings.TIME_ZONE)
     TMP = "/tmp/noc-import-rancid"
@@ -42,104 +46,77 @@ class Command(BaseCommand):
 
         parser.add_argument(
             parser.add_argument(
-                "--routerdb",
-                action="append",
-                dest="routerdb",
-                help="Path to the router.db"
+                "--routerdb", action="append", dest="routerdb", help="Path to the router.db"
             ),
             parser.add_argument(
-                "--cloginrc",
-                action="append",
-                dest="cloginrc",
-                help="Path to the .cloginrc"
+                "--cloginrc", action="append", dest="cloginrc", help="Path to the .cloginrc"
             ),
             parser.add_argument(
-                "--hosts",
-                action="append",
-                dest="hosts",
-                help="Path to the /etc/hosts"
+                "--hosts", action="append", dest="hosts", help="Path to the /etc/hosts"
             ),
-            parser.add_argument(
-                "--repo",
-                action="store",
-                dest="repo",
-                help="CVS repository"
-            ),
+            parser.add_argument("--repo", action="store", dest="repo", help="CVS repository"),
             parser.add_argument(
                 "--repo-prefix",
                 action="store",
                 dest="repoprefix",
-                help="File path prefix to checkout from repo"
+                help="File path prefix to checkout from repo",
             ),
             parser.add_argument(
                 "--dry-run",
                 action="store_true",
                 dest="dry_run",
-                help="Check only, do not write to database"
+                help="Check only, do not write to database",
             ),
             parser.add_argument(
-                "--tags",
-                action="append",
-                dest="tags",
-                help="Mark created managed objects by tags"
+                "--tags", action="append", dest="tags", help="Mark created managed objects by tags"
             ),
             parser.add_argument(
                 "--profile",
                 action="store",
                 dest="object_profile",
                 help="Set managed object profile for created objects",
-                default="default"
+                default="default",
             ),
             parser.add_argument(
                 "--domain",
                 action="store",
                 dest="domain",
                 help="Set administrative domain for created objects",
-                default="default"
+                default="default",
             ),
             parser.add_argument(
                 "--pool",
                 action="store",
                 dest="pool",
                 help="Set pool for created objects",
-                default="default"
+                default="default",
             ),
             parser.add_argument(
-                "--shard",
-                action="store",
-                dest="shard",
-                help="Shard import to separate processes"
-            )
+                "--shard", action="store", dest="shard", help="Shard import to separate processes"
+            ),
         )
 
     PROFILE_MAP = {
         "cisco": Profile.get_by_name("Cisco.IOS"),
-        "juniper": Profile.get_by_name("Juniper.JUNOS")
+        "juniper": Profile.get_by_name("Juniper.JUNOS"),
     }
 
-    rx_f = re.compile(
-        r"^RCS file: (?P<file>.+?),v$",
-        re.MULTILINE | re.DOTALL
-    )
+    rx_f = re.compile(r"^RCS file: (?P<file>.+?),v$", re.MULTILINE | re.DOTALL)
 
-    rx_fn = re.compile(
-        r"^Working file: (?P<fn>.+?)$",
-        re.MULTILINE | re.DOTALL
-    )
+    rx_fn = re.compile(r"^Working file: (?P<fn>.+?)$", re.MULTILINE | re.DOTALL)
 
     rx_rev = re.compile(
         r"^-----+\n"
         r"revision (?P<rev>\S+)\n"
         r"date: (?P<date>\S+ \S+(?: \S+)?);.+? state: (?P<state>\S+)",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
 
     # Regular expresion to split config
     # Config is a final part
     SPLIT_MAP = {
         "Cisco.IOS": re.compile(r"^\n", re.MULTILINE),
-        "Juniper.JUNOS": re.compile(r"^#[^#>\n]+> show configuration\s*\n",
-                                    re.MULTILINE)
+        "Juniper.JUNOS": re.compile(r"^#[^#>\n]+> show configuration\s*\n", re.MULTILINE),
     }
 
     def parse_hosts(self, hosts):
@@ -222,11 +199,7 @@ class Command(BaseCommand):
 
     def index_cvs(self, repo):
         r = {}  # path -> (revision, date)
-        p = subprocess.Popen(
-            ["cvs", "log"],
-            cwd=repo,
-            stdout=subprocess.PIPE
-        )
+        p = subprocess.Popen(["cvs", "log"], cwd=repo, stdout=subprocess.PIPE)
         data = p.stdout.read()
         parts = self.rx_f.split(data)[2::2]
         for data in parts:
@@ -248,17 +221,12 @@ class Command(BaseCommand):
                 if len(ds) == 3:
                     # Date with TZ
                     date = "%s %s" % (ds[0], ds[1])
-                r[fn] += [(
-                    rev,
-                    self.TZ.normalize(
-                        pytz.utc.localize(
-                            datetime.datetime.strptime(
-                                date,
-                                fmt
-                            )
-                        )
+                r[fn] += [
+                    (
+                        rev,
+                        self.TZ.normalize(pytz.utc.localize(datetime.datetime.strptime(date, fmt))),
                     )
-                )]
+                ]
         return r
 
     def handle(self, *args, **options):
@@ -267,9 +235,7 @@ class Command(BaseCommand):
         else:
             self.logger.setLevel(logging.INFO)
         for h in self.logger.handlers:
-            h.setFormatter(logging.Formatter(
-                "%(asctime)s [%(levelname)s] %(message)s"
-            ))
+            h.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
         if not options["routerdb"]:
             raise CommandError("No routerdb given")
         if not options["cloginrc"]:
@@ -283,21 +249,20 @@ class Command(BaseCommand):
             raise CommandError("No object profile set")
         try:
             object_profile = ManagedObjectProfile.objects.get(
-                name=options["object_profile"].strip())
+                name=options["object_profile"].strip()
+            )
         except ManagedObjectProfile.DoesNotExist:
             raise CommandError("Invalid object profile: %s" % options["object_profile"])
         if not options["domain"]:
             raise CommandError("No administrative domain set")
         try:
-            domain = AdministrativeDomain.objects.get(
-                name=options["domain"].strip())
+            domain = AdministrativeDomain.objects.get(name=options["domain"].strip())
         except AdministrativeDomain.DoesNotExist:
             raise CommandError("Invalid administrative domain: %s" % options["domain"])
         if not options["pool"]:
             raise CommandError("No pool set")
         try:
-            pool = Pool.objects.get(
-                name=options["domain"].strip())
+            pool = Pool.objects.get(name=options["domain"].strip())
         except Pool.DoesNotExist:
             raise CommandError("Invalid pool: %s" % options["pool"])
         shard_member = 0
@@ -347,13 +312,17 @@ class Command(BaseCommand):
                 method = "ssh"
             else:
                 method = "telnet"
-            self.logger.info("Managed object found: %s (%s, %s://%s@%s/)",
-                             name, profile.name, method, user, address)
+            self.logger.info(
+                "Managed object found: %s (%s, %s://%s@%s/)",
+                name,
+                profile.name,
+                method,
+                user,
+                address,
+            )
             if not self.dry_run:
                 try:
-                    mo = ManagedObject.objects.get(
-                        Q(name=name) | Q(address=address)
-                    )
+                    mo = ManagedObject.objects.get(Q(name=name) | Q(address=address))
                     self.logger.info("Already in the database")
                 except ManagedObject.DoesNotExist:
                     self.logger.info("Creating managed object %s", name)
@@ -368,22 +337,18 @@ class Command(BaseCommand):
                         user=user,
                         password=password,
                         trap_source_ip=address,
-                        tags=tags
+                        tags=tags,
                     )
                     mo.save()
             if name not in revisions:
                 self.logger.error("Cannot find config for %s", name)
                 continue
             if not self.dry_run:
-                self.import_revisions(
-                    options["repo"], repo_prefix,
-                    mo, name, revisions[name])
+                self.import_revisions(options["repo"], repo_prefix, mo, name, revisions[name])
 
     def get_diff(self, repo, name, r0, r1):
         p = subprocess.Popen(
-            ["cvs", "diff", "-r%s" % r0, "-r%s" % r1, name],
-            cwd=repo,
-            stdout=subprocess.PIPE
+            ["cvs", "diff", "-r%s" % r0, "-r%s" % r1, name], cwd=repo, stdout=subprocess.PIPE
         )
         return p.stdout.read()
 
@@ -391,6 +356,7 @@ class Command(BaseCommand):
         """
         Import CVS file revisions
         """
+
         def write_file(path, data):
             with open(path, "w") as f:
                 f.write(data)
@@ -401,22 +367,16 @@ class Command(BaseCommand):
         gridvcs = GridVCS("config")
         split_re = self.SPLIT_MAP[mo.profile.name]
         for rev, ts in reversed(revisions):
-            self.logger.debug("%s: importing rev %s [%s/%s]",
-                              name, rev, n, lr)
+            self.logger.debug("%s: importing rev %s [%s/%s]", name, rev, n, lr)
             n += 1
             try:
                 subprocess.check_call(
-                    "cvs co -p -r%s -f %s > %s" % (
-                        rev,
-                        os.path.join(repo_prefix, name),
-                        path
-                    ),
+                    "cvs co -p -r%s -f %s > %s" % (rev, os.path.join(repo_prefix, name), path),
                     cwd=repo,
-                    shell=True
+                    shell=True,
                 )
             except subprocess.CalledProcessError as e:
-                self.logger.error("Failed to import %s@%s. Skipping",
-                                  name, rev)
+                self.logger.error("Failed to import %s@%s. Skipping", name, rev)
                 self.logger.error("CVS reported: %s", e)
                 continue
             if not self.dry_run:

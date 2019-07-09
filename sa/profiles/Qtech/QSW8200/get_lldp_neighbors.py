@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -30,18 +31,15 @@ class Script(BaseScript):
         r"^SysDesc:(?P<system_descr>.*)\n"
         r"^SysCapSupported:.*\n"
         r"^SysCapEnabled:(?P<caps>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    CHASSIS_TYPE = {
-        "macAddress": 4,
-        "networkAddress": 5
-    }
+    CHASSIS_TYPE = {"macAddress": 4, "networkAddress": 5}
     PORT_TYPE = {
         "interfaceAlias": 1,
         "portComponent": 2,
         "macAddress": 3,
         "nterfaceName": 5,
-        "local": 7
+        "local": 7,
     }
 
     def execute(self):
@@ -50,16 +48,16 @@ class Script(BaseScript):
         for match in self.rx_int.finditer(c):
             r = {
                 "local_interface": match.group("interface"),
-                "neighbors": [{
-                    "remote_chassis_id_subtype": self.CHASSIS_TYPE[
-                        match.group("chassis_subtype")
-                    ],
-                    "remote_chassis_id": match.group("chassis_id"),
-                    "remote_port_subtype": self.PORT_TYPE[
-                        match.group("port_subtype")
-                    ],
-                    "remote_port": match.group("port_id")
-                }]
+                "neighbors": [
+                    {
+                        "remote_chassis_id_subtype": self.CHASSIS_TYPE[
+                            match.group("chassis_subtype")
+                        ],
+                        "remote_chassis_id": match.group("chassis_id"),
+                        "remote_port_subtype": self.PORT_TYPE[match.group("port_subtype")],
+                        "remote_port": match.group("port_id"),
+                    }
+                ],
             }
             system_name = match.group("system_name").strip()
             if system_name and system_name != "N/A":

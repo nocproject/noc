@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -17,9 +18,10 @@ class Migration(BaseMigration):
 
         # Model 'MIMEType'
         self.db.create_table(
-            'main_mimetype', (
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('extension', models.CharField("Extension", max_length=32, unique=True)),
-                ('mime_type', models.CharField("MIME Type", max_length=63))
-            )
+            "main_mimetype",
+            (
+                ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
+                ("extension", models.CharField("Extension", max_length=32, unique=True)),
+                ("mime_type", models.CharField("MIME Type", max_length=63)),
+            ),
         )

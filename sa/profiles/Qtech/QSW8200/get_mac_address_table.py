@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -18,9 +19,8 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^(?P<mac>\S+\.\S+\.\S+)\s+(?P<iface>\S+)\s+(?P<vlan_id>\d+)\s+"
-        r"(?P<type>\S+)",
-        re.MULTILINE
+        r"^(?P<mac>\S+\.\S+\.\S+)\s+(?P<iface>\S+)\s+(?P<vlan_id>\d+)\s+" r"(?P<type>\S+)",
+        re.MULTILINE,
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -35,10 +35,7 @@ class Script(BaseScript):
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
                 "interfaces": [match.group("iface")],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S"
-                }[match.group("type").lower()],
+                "type": {"dynamic": "D", "static": "S"}[match.group("type").lower()],
             }
             r += [m]
         return r

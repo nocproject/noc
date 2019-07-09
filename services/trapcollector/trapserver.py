@@ -9,6 +9,7 @@
 # Python modules
 import logging
 import time
+
 # NOC modules
 from noc.core.ioloop.udpserver import UDPServer
 from noc.lib.escape import fm_escape
@@ -47,10 +48,7 @@ class TrapServer(UDPServer):
         # Get timestamp
         ts = int(time.time())
         # Build body
-        body = {
-            "source": "SNMP Trap",
-            "collector": config.pool
-        }
+        body = {"source": "SNMP Trap", "collector": config.pool}
         body.update(varbinds)
         body = dict((k, fm_escape(body[k])) for k in body)
         self.service.register_message(cfg.id, ts, body)

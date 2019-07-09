@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import re
+
 try:
     import xml.etree.ElementTree as ET
 except Exception:
@@ -17,6 +18,7 @@ except Exception:
 from mwlib import siteinfo
 from mwlib.uparser import parseString
 from mwlib.xhtmlwriter import MWXHTMLWriter, preprocess
+
 # NOC modules
 from .base import BaseParser
 

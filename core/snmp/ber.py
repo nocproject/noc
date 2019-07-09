@@ -9,6 +9,7 @@
 # Python modules
 import math
 import struct
+
 # NOC modules
 from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int
 
@@ -30,12 +31,16 @@ def did(tag_class, is_constructed, tag_id):
 class BERDecoder(object):
     @staticmethod
     def split_tlv(msg):
-        decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(msg)
-        return msg[offset:offset + length], msg[offset + length:]
+        decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(
+            msg
+        )
+        return msg[offset : offset + length], msg[offset + length :]
 
     def parse_tlv(self, msg):
-        decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(msg)
-        value, rest = msg[offset:offset + length], msg[offset + length:]
+        decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(
+            msg
+        )
+        value, rest = msg[offset : offset + length], msg[offset + length :]
         if is_implicit:
             return self.parse_implicit(value, tag), rest
         try:
@@ -48,8 +53,8 @@ class BERDecoder(object):
             if tag_class:
                 pt += " application %d" % tag_class
             raise ValueError(
-                "Cannot find BER decoder for %s class %d (0x%X): %s" % (
-                    pt, tag, tag, value.encode('hex'))
+                "Cannot find BER decoder for %s class %d (0x%X): %s"
+                % (pt, tag, tag, value.encode("hex"))
             )
 
     def parse_eoc(self, msg):
@@ -64,7 +69,7 @@ class BERDecoder(object):
         1: struct.Struct("!b"),
         2: struct.Struct("!h"),
         4: struct.Struct("!i"),
-        8: struct.Struct("!q")
+        8: struct.Struct("!q"),
     }
 
     def parse_int(self, msg):
@@ -113,24 +118,20 @@ class BERDecoder(object):
         f = ord(msg[0])
         if f & 0x80:  # Binary encoding, 8.5.6
             # @todo: Снести в конец
-            base = {
-                0x00: 2,
-                0x10: 4,
-                0x20: 16
-            }[f & 0x30]  # 8.5.6.2
+            base = {0x00: 2, 0x10: 4, 0x20: 16}[f & 0x30]  # 8.5.6.2
             n = (f & 0x03) + 1
-            e = self.parse_int(msg[1:n + 1])  # 8.5.6.4
-            p = self.parse_int(msg[n + 1:])  # 8.5.6.5
+            e = self.parse_int(msg[1 : n + 1])  # 8.5.6.4
+            p = self.parse_int(msg[n + 1 :])  # 8.5.6.5
             if f & 0x40:
                 p = -p  # 8.5.6.1
             return p * pow(base, e)
-        elif f & 0xc0 == 0:  # Decimal encoding, 8.5.7
+        elif f & 0xC0 == 0:  # Decimal encoding, 8.5.7
             try:
-                if f & 0x3f == 0x01:  # ISO 6093 NR1 form
+                if f & 0x3F == 0x01:  # ISO 6093 NR1 form
                     return float(msg[1:])  # 456
-                elif f & 0x3f == 0x02:  # ISO 6093 NR2 form
+                elif f & 0x3F == 0x02:  # ISO 6093 NR2 form
                     return float(msg[1:])  # 4.56
-                elif f & 0x3f == 0x03:  # ISO 6093 NR3 form
+                elif f & 0x3F == 0x03:  # ISO 6093 NR3 form
                     return float(msg[1:])  # 0123e456
             except ValueError:
                 raise ValueError("Invalid REAL representation: %s" % msg[1:])
@@ -172,8 +173,7 @@ class BERDecoder(object):
     def parse_a_ipaddress(self, msg):
         if not msg:
             raise ValueError("Invalid IP Address: '%s'" % msg.encode("hex"))
-        return "%d.%d.%d.%d" % (
-            ord(msg[0]), ord(msg[1]), ord(msg[2]), ord(msg[3]))
+        return "%d.%d.%d.%d" % (ord(msg[0]), ord(msg[1]), ord(msg[2]), ord(msg[3]))
 
     def parse_p_oid(self, msg):
         """
@@ -303,13 +303,13 @@ class BERDecoder(object):
         did(64, False, 3): parse_int,  # TimeTicks
         did(64, False, 4): parse_opaque,  # Opaque
         # 5: NsapAddress
-        did(64, False, 6): parse_int,   # 6, Counter64
+        did(64, False, 6): parse_int,  # 6, Counter64
         # 7: UInteger32
         did(64, False, 14): parse_p_oid,  # 14: Uncompressed delta identifier
         did(64, False, 15): parse_compressed_oid,  # 15: Compressed delta identifier
         # SNMP Float types
         did(128, False, 120): parse_float,
-        did(128, False, 121): parse_double
+        did(128, False, 121): parse_double,
     }
 
 
@@ -429,8 +429,7 @@ class BEREncoder(object):
         while m and m % 10 == 0:
             m /= 10
             e += 1
-        return self.encode_tlv(
-            9, True, "0x03%dE%s%d" % (m, "" if e else "+", e))
+        return self.encode_tlv(9, True, "0x03%dE%s%d" % (m, "" if e else "+", e))
 
     def encode_null(self):
         """
@@ -450,15 +449,15 @@ class BEREncoder(object):
         d = [int(x) for x in data.split(".")]
         r = [chr(d[0] * 40 + d[1])]
         for v in d[2:]:
-            if v < 0x7f:
+            if v < 0x7F:
                 r += [chr(v)]
             else:
                 rr = []
                 while v:
-                    rr += [(v & 0x7f) | 0x80]
+                    rr += [(v & 0x7F) | 0x80]
                     v >>= 7
                 rr.reverse()
-                rr[-1] &= 0x7f
+                rr[-1] &= 0x7F
                 r += [chr(x) for x in rr]
         return self.encode_tlv(6, True, "".join(r))
 
@@ -476,5 +475,4 @@ def decode(msg):
 # value -> string of bits
 BITSTING = {}
 for i in range(256):
-    BITSTING[i] = "".join(
-        "%d" % ((i >> j) & 1) for j in range(7, -1, -1))
+    BITSTING[i] = "".join("%d" % ((i >> j) & 1) for j in range(7, -1, -1))

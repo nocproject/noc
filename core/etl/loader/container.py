@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.inv.models.objectmodel import ObjectModel
@@ -18,6 +19,7 @@ class ContainerLoader(BaseLoader):
     """
     Inventory container loader
     """
+
     name = "container"
     model = Object
     fields = [
@@ -31,7 +33,7 @@ class ContainerLoader(BaseLoader):
         "addr_text",
         "adm_contact_text",
         "tech_contact_text",
-        "billing_contact_text"
+        "billing_contact_text",
     ]
 
     CONTAINER_MODEL = "Group"
@@ -62,7 +64,7 @@ class ContainerLoader(BaseLoader):
                 self.containers[path] = Object(
                     name=pp[-1],
                     container=parent.id if parent else None,
-                    model=self.get_model(self.CONTAINER_MODEL)
+                    model=self.get_model(self.CONTAINER_MODEL),
                 )
                 self.containers[path].save()
         return self.containers[path]
@@ -72,7 +74,7 @@ class ContainerLoader(BaseLoader):
             name=v["name"],
             container=self.get_container(v["path"]).id,
             model=self.get_model(v["model"]),
-            tags=self.tags
+            tags=self.tags,
         )
         if v.get("lon") and v.get("lat"):
             o.set_data("geopoint", "x", v["lon"])

@@ -15,6 +15,7 @@ class Script(BaseScript):
     """
     Try to log in
     """
+
     name = "Linksys.SRW.get_version"
     interface = IGetVersion
     requires = []
@@ -22,15 +23,7 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992")
         platform = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.7.68420352")
-        return {
-            "vendor": "Linksys",
-            "version": version,
-            "platform": platform
-        }
+        return {"vendor": "Linksys", "version": version, "platform": platform}
 
     def execute_cli(self, **kwargs):
-        return {
-            "vendor": "Linksys",
-            "version": "",
-            "platform": "Unknown"
-        }
+        return {"vendor": "Linksys", "version": "", "platform": "Unknown"}

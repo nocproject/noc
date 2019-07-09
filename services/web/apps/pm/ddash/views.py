@@ -9,6 +9,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from .dashboards.base import BaseDashboard
@@ -23,18 +24,17 @@ class DynamicDashboardApplication(ExtApplication):
     """
     MetricType application
     """
+
     title = _("Dynamic Dashboard")
 
     dashboards = {
         "mo": MODashboard,
         "link": LinkDashboard,
         "ipsla": IPSLADashboard,
-        "container": ContainerDashboard
+        "container": ContainerDashboard,
     }
 
-    @view(
-        url="^$", method="GET", access="launch", api=True
-    )
+    @view(url="^$", method="GET", access="launch", api=True)
     def api_dashboard(self, request):
         dt = self.dashboards.get(request.GET.get("dashboard"))
         if not dt:

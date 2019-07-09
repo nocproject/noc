@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -17,22 +18,23 @@ class Profile(BaseProfile):
     name = "SKS.SKS"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_prompt = r"^(?P<hostname>\S+)\s*#"
-    pattern_syntax_error = \
-        r"% Unrecognized command|% Wrong number of parameters|" \
-        r"% Unrecognized host or address|" \
+    pattern_syntax_error = (
+        r"% Unrecognized command|% Wrong number of parameters|"
+        r"% Unrecognized host or address|"
         r"Unknown command|Incomplete command|Too many parameters"
+    )
     command_super = "enable"
     command_disable_pager = "terminal datadump"
     rogue_chars = [re.compile(r"\r\n##+#\r\n"), "\r"]
     pattern_more = [
         ("More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
-        ("^ --More-- ", " ")
+        ("^ --More-- ", " "),
     ]
     config_volatile = [
         r"enable password 7 \S+( level \d+)?\n",
         r"username \S+ password 7 \S+( author\-group \S+)?\n",
         r"radius(-server | accounting-server )(encrypt-key|key) \d+ \S+\n",
-        r"tacacs(-server | accounting-server )(encrypt-key|key) \d+ \S+\n"
+        r"tacacs(-server | accounting-server )(encrypt-key|key) \d+ \S+\n",
     ]
 
     rx_iface = re.compile(r"^[fgvn]\d+\S*$")

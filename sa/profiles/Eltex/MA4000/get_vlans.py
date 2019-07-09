@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -17,8 +18,7 @@ class Script(BaseScript):
     name = "Eltex.MA4000.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile(
-        r"^(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
+    rx_vlan = re.compile(r"^(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
 
     def execute(self):
         r = []

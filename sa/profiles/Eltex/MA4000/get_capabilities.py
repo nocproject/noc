@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -53,5 +54,5 @@ class Script(BaseScript):
             if s:
                 caps["Stack | Members"] = len(s) if len(s) != 1 else 0
                 caps["Stack | Member Ids"] = " | ".join(s)
-        except:
+        except Exception:
             pass

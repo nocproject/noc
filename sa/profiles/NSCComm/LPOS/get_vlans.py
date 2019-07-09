@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.core.script.base import BaseScript
@@ -25,6 +26,6 @@ class Script(BaseScript):
         for match in self.rx_vlan.finditer(self.cli("vlan", cached=True)):
             vid = int(match.group("vlan_id"))
             if vid == 1:
-                    continue
+                continue
             r += [{"vlan_id": vid}]
         return r

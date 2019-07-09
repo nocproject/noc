@@ -16,22 +16,25 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_vrp3line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>Learned|Config static)\s+(?P<interfaces>[^ ]+)\s{2,}")
+        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>Learned|Config static)\s+(?P<interfaces>[^ ]+)\s{2,}"
+    )
     rx_vrp5line = re.compile(
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)(?:\s+|/)\-\s+(?:\-\s+)?(?P<interfaces>\S+)\s+"
-        r"(?P<type>dynamic|static|security)(?:\s+\-)?")
+        r"(?P<type>dynamic|static|security)(?:\s+\-)?"
+    )
     rx_vrp5_bd_line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)/\-/\-\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)")
+        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)/\-/\-\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)"
+    )
     rx_vrp53line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+")
+        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+"
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "display mac-address"
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
         v = self.cli(cmd)
-        version = self.profile.fix_version(
-            self.scripts.get_version())
+        version = self.profile.fix_version(self.scripts.get_version())
         if version.startswith("3"):
             rx_line = self.rx_vrp3line
         elif version.startswith("5.3"):
@@ -52,13 +55,18 @@ class Script(BaseScript):
                     continue
                 if interface is not None and match.group("interfaces") != interface:
                     continue
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {
-                        "dynamic": "D", "static": "S", "learned": "D",
-                        "config static": "S", "security": "S"
-                    }[match.group("type").lower()],
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": {
+                            "dynamic": "D",
+                            "static": "S",
+                            "learned": "D",
+                            "config static": "S",
+                            "security": "S",
+                        }[match.group("type").lower()],
+                    }
+                ]
         return r

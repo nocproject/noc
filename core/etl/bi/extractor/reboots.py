@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import, print_function
+
 # NOC modules
 from .base import BaseExtractor
 from noc.fm.models.reboot import Reboot
@@ -28,12 +29,11 @@ class RebootsExtractor(BaseExtractor):
 
     def extract(self):
         nr = 0
-        for d in Reboot._get_collection().find({
-            "ts": {
-                "$gt": self.start,
-                "$lte": self.stop
-            }
-        }, no_cursor_timeout=True).sort("ts"):
+        for d in (
+            Reboot._get_collection()
+            .find({"ts": {"$gt": self.start, "$lte": self.stop}}, no_cursor_timeout=True)
+            .sort("ts")
+        ):
             mo = ManagedObject.get_by_id(d["object"])
             if not mo:
                 continue
@@ -51,7 +51,7 @@ class RebootsExtractor(BaseExtractor):
                 segment=mo.segment,
                 container=mo.container,
                 x=mo.x,
-                y=mo.y
+                y=mo.y,
             )
             nr += 1
             self.last_ts = d["ts"]
@@ -61,19 +61,11 @@ class RebootsExtractor(BaseExtractor):
     def clean(self, force=False):
         if force:
             print("Clean Reboots collection before %s" % self.clean_ts)
-            Reboot._get_collection().remove({
-                "ts": {
-                    "$lte": self.clean_ts
-                }
-            })
+            Reboot._get_collection().remove({"ts": {"$lte": self.clean_ts}})
 
     @classmethod
     def get_start(cls):
-        d = Reboot._get_collection().find_one(
-            {},
-            {"_id": 0, "ts": 1},
-            sort=[("ts", 1)]
-        )
+        d = Reboot._get_collection().find_one({}, {"_id": 0, "ts": 1}, sort=[("ts", 1)])
         if not d:
             return None
         return d.get("ts")

@@ -15,6 +15,7 @@ class BaseExtractor(object):
     """
     Extract data between timestamps
     """
+
     name = None
     # Time in seconds to delay extraction
     extract_delay = 0

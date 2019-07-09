@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -19,9 +20,12 @@ class Script(BaseScript):
     interface = IPing
     rx_result1 = re.compile(
         r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\n"
-        r"round-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE | re.DOTALL)
+        r"round-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
+        re.MULTILINE | re.DOTALL,
+    )
     rx_result2 = re.compile(
-        r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss")
+        r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss"
+    )
 
     def execute_cli(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         if is_ipv4(address):
@@ -40,11 +44,8 @@ class Script(BaseScript):
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
             match = self.rx_result2.search(s)
-            return {
-                "success": match.group("success"),
-                "count": match.group("count")
-            }
+            return {"success": match.group("success"), "count": match.group("count")}

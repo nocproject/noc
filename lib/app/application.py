@@ -13,10 +13,14 @@ import os
 import datetime
 import functools
 from collections import OrderedDict
+
 # Third-party modules
-from django.template import RequestContext
-from django.http import (HttpResponse, HttpResponseRedirect,
-                         HttpResponseForbidden, HttpResponseNotFound)
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    HttpResponseForbidden,
+    HttpResponseNotFound,
+)
 from django.shortcuts import render
 from django.db import connection
 from django.shortcuts import get_object_or_404
@@ -29,6 +33,7 @@ from django.http import Http404
 import ujson
 import six
 import jinja2
+
 # NOC modules
 from noc.lib.forms import NOCForm
 from noc import settings
@@ -38,8 +43,7 @@ from .access import HasPerm, Permit, Deny
 from .site import site
 
 
-def view(url, access, url_name=None, menu=None, method=None, validate=None,
-         api=False):
+def view(url, access, url_name=None, menu=None, method=None, validate=None, api=False):
     """
     @view decorator
     :param url: URL relative to application root
@@ -77,6 +81,7 @@ class FormErrorsContext(object):
     """
     Catch ValueError exception and populate form's _errors fields
     """
+
     def __init__(self, form):
         self.form = form
 
@@ -115,6 +120,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
     Application combined by set of methods, decorated with @view.
     Each method accepts requests and returns reply
     """
+
     title = "APPLICATION TITLE"
     icon = "icon_application"
     glyph = "file"
@@ -144,11 +150,10 @@ class Application(six.with_metaclass(ApplicationBase, object)):
             self.module = parts[4]
             self.app = parts[5]
         self.module_title = __import__(
-            "noc.services.web.apps.%s" % self.module, {}, {},
-            ["MODULE_NAME"]
+            "noc.services.web.apps.%s" % self.module, {}, {}, ["MODULE_NAME"]
         ).MODULE_NAME
         self.app_id = "%s.%s" % (self.module, self.app)
-        self.menu_url = None   # Set by site.autodiscover()
+        self.menu_url = None  # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
         self.j2_env = None
 
@@ -163,17 +168,35 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         pass
 
     @classmethod
-    def add_view(cls, name, func, url, access, url_name=None,
-                 menu=None, method=None, validate=None, api=False):
+    def add_view(
+        cls,
+        name,
+        func,
+        url,
+        access,
+        url_name=None,
+        menu=None,
+        method=None,
+        validate=None,
+        api=False,
+    ):
         # Decorate function to clear attributes
         f = functools.partial(func)
         f.__self__ = func.__self__
         f.__name__ = func.__name__
         # Add to class
         cls.add_to_class(
-            name, view(url=url, access=access, url_name=url_name,
-                       menu=menu, method=method, validate=validate,
-                       api=api)(f))
+            name,
+            view(
+                url=url,
+                access=access,
+                url_name=url_name,
+                menu=menu,
+                method=method,
+                validate=validate,
+                api=api,
+            )(f),
+        )
         site.add_contributor(cls, func.__self__)
 
     @property
@@ -201,8 +224,8 @@ class Application(six.with_metaclass(ApplicationBase, object)):
                 "url": self.menu_url,
                 "permissions": app_perms,
                 "app_id": self.app_id,
-                "link": self.link
-            }
+                "link": self.link,
+            },
         }
 
     @classmethod
@@ -236,12 +259,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         if "noc_user" in request.COOKIES:
             session_id = request.COOKIES["noc_user"].rsplit("|", 1)[-1]
             key = "msg-%s" % session_id
-            cache.set(
-                key,
-                ujson.dumps([message]),
-                ttl=30,
-                version=1
-            )
+            cache.set(key, ujson.dumps([message]), ttl=30, version=1)
 
     def get_template_path(self, template):
         """
@@ -252,10 +270,9 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         r = []
         for t in template:
             r += [
-                os.path.join("services", "web", "apps", self.module,
-                             self.app, "templates", t),
+                os.path.join("services", "web", "apps", self.module, self.app, "templates", t),
                 os.path.join(self.module, "templates", t),
-                os.path.join("templates", t)
+                os.path.join("templates", t),
             ]
         return r
 
@@ -281,10 +298,12 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         """
         if not self.j2_env:
             self.j2_env = jinja2.Environment(
-                loader=jinja2.FileSystemLoader([
-                    os.path.join("services", "web", "apps", self.module, self.app, "templates"),
-                    "templates"
-                ])
+                loader=jinja2.FileSystemLoader(
+                    [
+                        os.path.join("services", "web", "apps", self.module, self.app, "templates"),
+                        "templates",
+                    ]
+                )
             )
         return self.j2_env
 
@@ -295,26 +314,14 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         if template.endswith(".j2"):
             env = self.get_environment()
             tpl = env.get_template(template)
-            return HttpResponse(
-                tpl.render(
-                    request=request,
-                    app=self,
-                    **(dict if dict else kwargs)
-                )
-            )
+            return HttpResponse(tpl.render(request=request, app=self, **(dict if dict else kwargs)))
         else:
-            ctx = {
-                "app": self
-            }
+            ctx = {"app": self}
             if dict:
                 ctx.update(dict)
             else:
                 ctx.update(kwargs)
-            return render(
-                request,
-                self.get_template_path(template),
-                ctx
-            )
+            return render(request, self.get_template_path(template), ctx)
 
     def render_template(self, template, dict=None, **kwargs):
         """
@@ -343,31 +350,27 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         """
         Create serialized JSON-encoded response
         """
-        return HttpResponse(ujson.dumps(obj),
-                            content_type="text/json", status=status)
+        return HttpResponse(ujson.dumps(obj), content_type="text/json", status=status)
 
     def render_success(self, request, subject=None, text=None):
         """
         Render "success" page
         """
-        return self.site.views.main.message.success(request, subject=subject,
-                                                    text=text)
+        return self.site.views.main.message.success(request, subject=subject, text=text)
 
     def render_failure(self, request, subject=None, text=None):
         """
         Render "failure" page
         """
-        return self.site.views.main.message.failure(request, subject=subject,
-                                                    text=text)
+        return self.site.views.main.message.failure(request, subject=subject, text=text)
 
-    def render_wait(self, request, subject=None, text=None, url=None, timeout=5,
-                    progress=None):
+    def render_wait(self, request, subject=None, text=None, url=None, timeout=5, progress=None):
         """
         Render wait page
         """
-        return self.site.views.main.message.wait(request, subject=subject,
-                                                 text=text, timeout=timeout,
-                                                 url=url, progress=progress)
+        return self.site.views.main.message.wait(
+            request, subject=subject, text=text, timeout=timeout, url=url, progress=progress
+        )
 
     def render_static(self, request, path, document_root=None):
         document_root = document_root or self.document_root
@@ -387,8 +390,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         """
         if back_url is None:
             back_url = self.base_url
-        return self.response_redirect(
-            request.META.get("HTTP_REFERER", back_url))
+        return self.response_redirect(request.META.get("HTTP_REFERER", back_url))
 
     def response_redirect_to_object(self, object):
         """
@@ -486,10 +488,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         """
         Iterator returning application views
         """
-        for n in (
-            v for v in dir(self)
-            if v != "model" and hasattr(getattr(self, v), "url")
-        ):
+        for n in (v for v in dir(self) if v != "model" and hasattr(getattr(self, v), "url")):
             yield getattr(self, n)
 
     def get_permissions(self):
@@ -548,6 +547,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         Add custom fields to django form class
         """
         from noc.main.models.customfield import CustomField
+
         fields = []
         for f in CustomField.table_fields(table):
             if f.is_hidden:
@@ -555,20 +555,15 @@ class Application(six.with_metaclass(ApplicationBase, object)):
             if f.type == "str":
                 if search and f.is_filtered:
                     ff = forms.ChoiceField(
-                        required=False,
-                        label=f.label,
-                        choices=[("", "---")] + f.get_choices()
+                        required=False, label=f.label, choices=[("", "---")] + f.get_choices()
                     )
                 elif f.enum_group:
                     ff = forms.ChoiceField(
-                        required=False,
-                        label=f.label,
-                        choices=[("", "---")] + f.get_enums()
+                        required=False, label=f.label, choices=[("", "---")] + f.get_enums()
                     )
                 else:
                     ml = f.max_length if f.max_length else 256
-                    ff = forms.CharField(required=False, label=f.label,
-                                         max_length=ml)
+                    ff = forms.CharField(required=False, label=f.label, max_length=ml)
             elif f.type == "int":
                 ff = forms.IntegerField(required=False, label=f.label)
             elif f.type == "bool":
@@ -592,6 +587,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         :return:
         """
         from noc.main.models.customfield import CustomField
+
         for f in CustomField.table_fields(table):
             n = str(f.name)
             if n in v:
@@ -607,6 +603,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         :return:
         """
         from noc.main.models.customfield import CustomField
+
         for f in CustomField.table_fields(table):
             n = str(f.name)
             if n not in v:
@@ -637,8 +634,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         else:
             raise Exception("Invalid to_json type")
 
-    @view(url="^launch_info/$", method=["GET"],
-          access="launch", api=True)
+    @view(url="^launch_info/$", method=["GET"], access="launch", api=True)
     def api_launch_info(self, request):
         return self.get_launch_info(request)
 

@@ -18,7 +18,8 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^\s*(?P<interface>\S+)\s+(Enabled|Disabled)\s+\S+\s+"
         r"(?P<status>.+)\s+(Enabled|Disabled)\s*$",
-        re.IGNORECASE | re.MULTILINE)
+        re.IGNORECASE | re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         # Not tested. Must be identical in different vendors
@@ -27,10 +28,7 @@ class Script(BaseScript):
                 # Get interface status
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for i, n, s in self.snmp.join([
-                    "1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"
-                ]):
+                for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
                     if not n.startswith("802.1Q Encapsulation Tag"):
                         if interface is not None and interface == n:
                             r += [{"interface": n, "status": int(s) == 1}]
@@ -49,8 +47,10 @@ class Script(BaseScript):
 
         r = []
         for match in self.rx_line.finditer(s):
-            r += [{
-                "interface": match.group("interface"),
-                "status": match.group("status").strip() != "Link Down"
-            }]
+            r += [
+                {
+                    "interface": match.group("interface"),
+                    "status": match.group("status").strip() != "Link Down",
+                }
+            ]
         return r

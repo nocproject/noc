@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -19,7 +20,8 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_po = re.compile(
-        r"^(?P<pcname>Po\d+)\s*(?:Active|Non-candidate): (?P<aports>\S+)?[, ]*(?P<iports>Inactive: \S+)?")
+        r"^(?P<pcname>Po\d+)\s*(?:Active|Non-candidate): (?P<aports>\S+)?[, ]*(?P<iports>Inactive: \S+)?"
+    )
 
     @staticmethod
     def iter_range(s):
@@ -42,9 +44,11 @@ class Script(BaseScript):
                 aports = match.group("aports")
                 for p in aports.split(","):
                     ports += list(self.iter_range(p))
-                r += [{
-                    "interface": match.group("pcname"),
-                    "members": ports,  # <!> TODO: inactive ports??? - (Added only active ports @fx00f)
-                    "type": "S",  # <!> TODO: port-channel type detection (LACP) - (test pass @fx00f)
-                }]
+                r += [
+                    {
+                        "interface": match.group("pcname"),
+                        "members": ports,  # <!> TODO: inactive ports??? - (Added only active ports @fx00f)
+                        "type": "S",  # <!> TODO: port-channel type detection (LACP) - (test pass @fx00f)
+                    }
+                ]
         return r

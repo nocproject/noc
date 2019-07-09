@@ -21,6 +21,7 @@ class Script(BaseScript):
         """
         cmd = self.cli("show lldp interface")
         return "System LLDP: enable" in cmd
+
     """
     @false_on_cli_error
     def has_stp_cli(self):

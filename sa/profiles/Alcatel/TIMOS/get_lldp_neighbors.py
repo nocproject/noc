@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -19,7 +20,8 @@ class Script(BaseScript):
 
     rx_some = re.compile(r"^(?P<port>\w/\w/\w+)\s+")
     rx_local_lldp = re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
-    rx_remote_info = re.compile(r"""
+    rx_remote_info = re.compile(
+        r"""
         Supported\sCaps\s+:\s(?P<remote_capabilities>.+?)\n
         .*?
         Chassis\sId\sSubtype\s+:\s(?P<remote_chassis_id_subtype>\d)\s
@@ -31,7 +33,9 @@ class Script(BaseScript):
         Port\sId\s+:\s(?P<remote_port>.+?)("|Port)
         .*?
         System\sName\s+:\s(?P<remote_system_name>\S+).+
-        """, re.MULTILINE | re.DOTALL | re.VERBOSE)
+        """,
+        re.MULTILINE | re.DOTALL | re.VERBOSE,
+    )
 
     CAPS_MAP = {
         "other": 1,
@@ -42,7 +46,7 @@ class Script(BaseScript):
         "telephone": 32,
         "docsis": 64,
         "station": 128,
-        "cvlan": 0
+        "cvlan": 0,
     }
 
     NOT_SPECIFIED = "(not specified)"
@@ -63,18 +67,18 @@ class Script(BaseScript):
     def fixport(port, port_type):
         # fix alcatel encode port like hex string
         remote_port = "u"
-        if port_type == '5' and "\n " in port:
+        if port_type == "5" and "\n " in port:
             remote_port = port.replace("\n                        ", "")
             remote_port = remote_port.replace(":", "").replace("\n", "")
             remote_port = remote_port.decode("hex")
-        elif port_type == '5' and "\n" in port:
+        elif port_type == "5" and "\n" in port:
             remote_port = port.replace("\n", "")
             remote_port = remote_port.replace(":", "").replace("\n", "")
             remote_port = remote_port.decode("hex")
-        elif port_type == '5' and "\n " not in port:
+        elif port_type == "5" and "\n " not in port:
             remote_port = remote_port.replace(":", "").replace("\n", "")
             remote_port = remote_port.decode("hex")
-        elif port_type == '7':
+        elif port_type == "7":
             return port.replace("\n", "")
         return remote_port
 
@@ -87,10 +91,9 @@ class Script(BaseScript):
             match_obj = self.rx_remote_info.search(v)
             pri = match_obj.groupdict()
             pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
-            pri["remote_port"] = self.fixport(pri["remote_port"],
-                                              pri["remote_port_subtype"])
-            if 'n/a' in pri['remote_system_name']:
-                del pri['remote_system_name']
+            pri["remote_port"] = self.fixport(pri["remote_port"], pri["remote_port_subtype"])
+            if "n/a" in pri["remote_system_name"]:
+                del pri["remote_system_name"]
             return pri
 
     def execute(self):
@@ -103,16 +106,18 @@ class Script(BaseScript):
             match = self.rx_some.search(line)
             if not match:
                 continue
-            port = match.group('port')
-            local_lldp = self.cli('show port %s ethernet detail | match IfIndex' % port)
+            port = match.group("port")
+            local_lldp = self.cli("show port %s ethernet detail | match IfIndex" % port)
             lldp_match = self.rx_local_lldp.search(local_lldp)
             if not lldp_match:
                 continue
-            local_interface_id = str(lldp_match.group('local_interface_id'))
+            local_interface_id = str(lldp_match.group("local_interface_id"))
             pri = self.get_port_info(port)
-            r += [{
-                "local_interface": port,
-                "local_interface_id": local_interface_id,
-                "neighbors": [pri]
-            }]
+            r += [
+                {
+                    "local_interface": port,
+                    "local_interface_id": local_interface_id,
+                    "neighbors": [pri],
+                }
+            ]
         return r

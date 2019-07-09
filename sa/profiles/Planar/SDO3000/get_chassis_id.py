@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -18,18 +19,13 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_mac = re.compile(
-        r"^\s+MAC Address:\s+(?P<mac>\S+)$", re.MULTILINE
-    )
+    rx_mac = re.compile(r"^\s+MAC Address:\s+(?P<mac>\S+)$", re.MULTILINE)
 
     def execute_snmp(self, **kwargs):
         try:
             # PLANAR-sdo3002-MIB::macAddress
             mac = self.snmp.get("1.3.6.1.4.1.32108.1.7.1.4.0")
-            return [{
-                "first_chassis_mac": mac,
-                "last_chassis_mac": mac
-            }]
+            return [{"first_chassis_mac": mac, "last_chassis_mac": mac}]
         except self.snmp.TimeOutError:
             raise self.NotSupportedError
 
@@ -40,7 +36,4 @@ class Script(BaseScript):
             mac = match.group("mac")
         else:
             raise self.NotSupportedError
-        return [{
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }]
+        return [{"first_chassis_mac": mac, "last_chassis_mac": mac}]

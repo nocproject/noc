@@ -106,7 +106,7 @@ class State(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
-        return u"%s: %s" % (self.workflow.name, self.name)
+        return "%s: %s" % (self.workflow.name, self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

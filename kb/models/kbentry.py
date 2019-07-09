@@ -61,9 +61,9 @@ class KBEntry(NOCModel):
 
     def __str__(self):
         if self.id:
-            return u"KB%d: %s" % (self.id, self.subject)
+            return "KB%d: %s" % (self.id, self.subject)
         else:
-            return u"New: %s" % self.subject
+            return "New: %s" % self.subject
 
     def get_absolute_url(self):
         return site.reverse("kb:view:view", self.id)

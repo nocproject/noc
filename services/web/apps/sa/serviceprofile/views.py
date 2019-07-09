@@ -16,6 +16,7 @@ class ServiceProfileApplication(ExtDocApplication):
     """
     ServiceProfile application
     """
+
     title = _("Service Profile")
     menu = [_("Setup"), _("Service Profiles")]
     model = ServiceProfile

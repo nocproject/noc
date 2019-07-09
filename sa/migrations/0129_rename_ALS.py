@@ -12,4 +12,6 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.execute("UPDATE sa_managedobject SET profile_name='Alsitec.7200' WHERE profile_name LIKE 'ALS.7200'")
+        self.db.execute(
+            "UPDATE sa_managedobject SET profile_name='Alsitec.7200' WHERE profile_name LIKE 'ALS.7200'"
+        )

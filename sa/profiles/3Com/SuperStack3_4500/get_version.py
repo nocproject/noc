@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,11 +20,12 @@ class Script(BaseScript):
     cache = True
 
     rx_version = re.compile(
-        r"^SuperStack 3 Switch (?P<platform>\S+).+"
-        r"Software Version (?P<version>.+)$", re.MULTILINE)
+        r"^SuperStack 3 Switch (?P<platform>\S+).+" r"Software Version (?P<version>.+)$",
+        re.MULTILINE,
+    )
     rx_dev = re.compile(
-        r"0\s+0\s+\d+\s+(?P<hardware>\S+)\s+\S+\s+\S+\s+(?P<bootprom>\S+)",
-        re.MULTILINE)
+        r"0\s+0\s+\d+\s+(?P<hardware>\S+)\s+\S+\s+\S+\s+(?P<bootprom>\S+)", re.MULTILINE
+    )
 
     def execute(self):
         v = self.cli("display version", cached=True)
@@ -37,5 +39,5 @@ class Script(BaseScript):
             "attributes": {
                 "Boot PROM": match1.group("bootprom"),
                 "HW version": match1.group("hardware"),
-                }
-            }
+            },
+        }

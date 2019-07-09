@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -23,7 +24,8 @@ class Script(BaseScript):
         r"^interface (?P<port>\d+/\d+)\s*\n"
         r"(?:^no.+\n)*(^vlan pvid (?P<pvid>\d+)\s*$)?"
         r"(^vlan tagging (?P<tagged>\S+)\s*$)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_split = re.compile(r"^interface (?P<port>\d+/\d+)\s*$", re.MULTILINE)
     rx_pvid = re.compile(r"vlan pvid (?P<pvid>\d+)\s*")
     rx_tagged = re.compile(r"vlan tagging (?P<tagged>\S+)\s*")
@@ -33,12 +35,8 @@ class Script(BaseScript):
         c = self.scripts.get_config()
         ne = self.rx_split.split(c)
         for n in range(1, len(ne), 2):
-            iface, body = ne[n:n + 2]
-            r += [{
-                "interface": iface,
-                "tagged": [],
-                "members": []
-            }]
+            iface, body = ne[n : n + 2]
+            r += [{"interface": iface, "tagged": [], "members": []}]
             if self.rx_pvid.search(body):
                 r[-1]["untagged"] = self.rx_pvid.search(body).group("pvid")
             if self.rx_tagged.search(body):

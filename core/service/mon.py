@@ -12,15 +12,16 @@ import tornado.web
 import ujson
 
 if hasattr(string, "maketrans"):
-    TR = string.maketrans(".-\"", "___")
+    TR = string.maketrans('.-"', "___")
 else:
-    TR = str.maketrans(".-\"", "___")
+    TR = str.maketrans('.-"', "___")
 
 
 class MonRequestHandler(tornado.web.RequestHandler):
     """
     Response with general purpose monitoring data
     """
+
     def initialize(self, service):
         self.service = service
 

@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -22,13 +23,14 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^\s+(?P<port>(?:gi|te)\d+\S+)\s+(?P<temp>\S+)\s+(?P<volt>\S+)\s+"
         r"(?P<bias>\S+)\s+(?P<txpw>\S+)\s+(?P<rxpw>\S+)\s+(?P<los>\S+)\s*$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def parse_value(self, m, g):
         v = m.group(g)
         if v in ["N/A", "N/S"]:
             v = None
-        elif g in["rxpw", "txpw"]:
+        elif g in ["rxpw", "txpw"]:
             v = round(mw2dbm(v), 2)
         return v
 
@@ -48,12 +50,14 @@ class Script(BaseScript):
                 "voltage_v": self.parse_value(match, "volt"),
                 "current_ma": self.parse_value(match, "bias"),
                 "optical_rx_dbm": self.parse_value(match, "rxpw"),
-                "optical_tx_dbm": self.parse_value(match, "txpw")
+                "optical_tx_dbm": self.parse_value(match, "txpw"),
             }
             if (
-                i["temp_c"] is None and i["voltage_v"] is None and
-                i["current_ma"] is None and i["optical_rx_dbm"] is None and
-                i["optical_tx_dbm"] is None
+                i["temp_c"] is None
+                and i["voltage_v"] is None
+                and i["current_ma"] is None
+                and i["optical_rx_dbm"] is None
+                and i["optical_tx_dbm"] is None
             ):
                 continue
             r += [i]

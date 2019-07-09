@@ -10,9 +10,10 @@
 # Python modules
 from __future__ import print_function
 import argparse
+
 # Third-party modules
-import six
 import ujson
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.datastream.loader import loader
@@ -36,7 +37,7 @@ class Command(BaseCommand):
         "cfgtrap": ManagedObject,
         "dnszone": DNSZone,
         "resourcegroup": ResourceGroup,
-        "alarm": (ActiveAlarm, ArchivedAlarm)
+        "alarm": (ActiveAlarm, ArchivedAlarm),
     }
 
     def add_arguments(self, parser):
@@ -45,26 +46,12 @@ class Command(BaseCommand):
         subparsers.add_parser("list")
         # rebuild
         rebuild_parser = subparsers.add_parser("rebuild")
-        rebuild_parser.add_argument(
-            "--datastream",
-            help="Datastream name"
-        )
+        rebuild_parser.add_argument("--datastream", help="Datastream name")
         # get
         get_parser = subparsers.add_parser("get")
-        get_parser.add_argument(
-            "--datastream",
-            help="Datastream name"
-        )
-        get_parser.add_argument(
-            "--filter",
-            action="append",
-            help="Datastream filter"
-        )
-        get_parser.add_argument(
-            "objects",
-            nargs=argparse.REMAINDER,
-            help="Object ids"
-        )
+        get_parser.add_argument("--datastream", help="Datastream name")
+        get_parser.add_argument("--filter", action="append", help="Datastream filter")
+        get_parser.add_argument("objects", nargs=argparse.REMAINDER, help="Object ids")
 
     def handle(self, cmd, *args, **options):
         getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -81,8 +68,12 @@ class Command(BaseCommand):
                 match = {}
                 while True:
                     print(match)
-                    cursor = m._get_collection().find(
-                        match, {"_id": 1}, no_cursor_timeout=True).sort("_id").limit(BATCH_SIZE)
+                    cursor = (
+                        m._get_collection()
+                        .find(match, {"_id": 1}, no_cursor_timeout=True)
+                        .sort("_id")
+                        .limit(BATCH_SIZE)
+                    )
                     for d in cursor:
                         yield d["_id"]
                     if match and match["_id"]["$gt"] == d["_id"]:
@@ -134,7 +125,9 @@ class Command(BaseCommand):
             filters += ["id(%s)" % ",".join(objects)]
         for obj_id, change_id, data in ds.iter_data(filters=filters):
             gt = change_id.generation_time.strftime("%Y-%m-%d %H:%M:%S")
-            self.print("===[id: %s, change id: %s, time: %s]================" % (obj_id, change_id, gt))
+            self.print(
+                "===[id: %s, change id: %s, time: %s]================" % (obj_id, change_id, gt)
+            )
             d = ujson.loads(data)
             self.print(ujson.dumps(d, indent=2))
 

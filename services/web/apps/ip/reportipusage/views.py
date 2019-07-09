@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 from django.utils.translation import ugettext_lazy as _
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.core.ip import IP
@@ -50,13 +51,15 @@ class ReportIPUsageApplication(SimpleReport):
                     free = "-"
                     percent = "-"
             data += [[prefix, description, used, free, total, percent]]
-        return self.from_dataset(title=self.title,
+        return self.from_dataset(
+            title=self.title,
             columns=[
                 "Prefix",
                 "Description",
                 TableColumn("IP Used", align="right", format="numeric"),
                 TableColumn("IP Free", align="right", format="numeric"),
                 TableColumn("IP Total", align="right", format="numeric"),
-                TableColumn("% Used", align="right", format="percent")
+                TableColumn("% Used", align="right", format="percent"),
             ],
-            data=data)
+            data=data,
+        )

@@ -8,6 +8,7 @@
 
 # Python modules
 import uuid
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 

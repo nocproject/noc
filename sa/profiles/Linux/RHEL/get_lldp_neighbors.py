@@ -38,6 +38,7 @@ dump CDP traffic
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -47,18 +48,22 @@ class Script(BaseScript):
     name = "Linux.RHEL.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_lldpd = re.compile(r"Interface:\s+(?P<local_interface>\S+), via: LLDP\n"
-                          r"\s+Chassis:\s+\n"
-                          r"\s+ChassisID:\s+mac\s+(?P<remote_id>\S+)\n"
-                          r"\s+SysName:\s+(?P<remote_system_name>\S+)\n"
-                          r"\s+Port:\s+\n"
-                          r"\s+PortID:\s+(?P<remote_port_type>\S+)\s+(?P<remote_chassis_id>\S+)\n"
-                          r"\s+PortDescr:\s+(?P<remote_port>\S+)\n",
-                          re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_lldpd = re.compile(
+        r"Interface:\s+(?P<local_interface>\S+), via: LLDP\n"
+        r"\s+Chassis:\s+\n"
+        r"\s+ChassisID:\s+mac\s+(?P<remote_id>\S+)\n"
+        r"\s+SysName:\s+(?P<remote_system_name>\S+)\n"
+        r"\s+Port:\s+\n"
+        r"\s+PortID:\s+(?P<remote_port_type>\S+)\s+(?P<remote_chassis_id>\S+)\n"
+        r"\s+PortDescr:\s+(?P<remote_port>\S+)\n",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     # Linux interface regex
-    check_ifcfg = re.compile(r"(bond\d+|eno\d+|ens\d+|enp\d+s\d+|en[0-9a-fA-F]{8}|eth\d+|vnet\d+|vif\d+)",
-                             re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    check_ifcfg = re.compile(
+        r"(bond\d+|eno\d+|ens\d+|enp\d+s\d+|en[0-9a-fA-F]{8}|eth\d+|vnet\d+|vif\d+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     def execute(self):
         """
@@ -76,7 +81,7 @@ class Script(BaseScript):
             "INTERFACE": "local_interface",
             "HOSTNAME": "remote_chassis_id",
             "PORTNAME": "remote_port",
-            "CAPABILITIES": "remote_capabilities"
+            "CAPABILITIES": "remote_capabilities",
         }
 
         # try ladvdc
@@ -85,22 +90,22 @@ class Script(BaseScript):
 
         if "INTERFACE" in v:
             for l in v.splitlines():
-                name, value = l.split('=')
-                id = int(name.split('_')[-1])
+                name, value = l.split("=")
+                id = int(name.split("_")[-1])
 
-                name2 = ''.join(name.split('_')[:-1])
+                name2 = "".join(name.split("_")[:-1])
                 if name2 not in map:
                     continue
 
-                if id != id_last and map[name2] == 'local_interface':
-                    neighbors += [{map[name2]: value.strip("'"), 'neighbors': [remotehost]}]
+                if id != id_last and map[name2] == "local_interface":
+                    neighbors += [{map[name2]: value.strip("'"), "neighbors": [remotehost]}]
                 else:
                     # chech capabilites
-                    if map[name2] == 'remote_capabilities':
-                        remotehost.update({map[name2]: '30'})
-                    elif map[name2] == 'remote_port':
+                    if map[name2] == "remote_capabilities":
+                        remotehost.update({map[name2]: "30"})
+                    elif map[name2] == "remote_port":
                         # try convert to Cisco format
-                        remotehost.update({'remote_port_subtype': 5})
+                        remotehost.update({"remote_port_subtype": 5})
                         remotehost.update({map[name2]: value.strip("'")})
                     else:
                         remotehost.update({map[name2]: value.strip("'")})
@@ -126,35 +131,34 @@ class Script(BaseScript):
                 if self.check_ifcfg.match(match.group("remote_port")):
                     remote_if = match.group("remote_port")
                 else:
-                    remote_if = self.profile.convert_interface_name_cisco(match.group("remote_port"))
+                    remote_if = self.profile.convert_interface_name_cisco(
+                        match.group("remote_port")
+                    )
 
-                i = {
-                    "local_interface": match.group("local_interface"),
-                    "neighbors": []
-                }
+                i = {"local_interface": match.group("local_interface"), "neighbors": []}
 
-                if match.group("remote_port_type") == 'ifname':
+                if match.group("remote_port_type") == "ifname":
                     rps = 5
                     remote_port = remote_if
 
-                if match.group("remote_port_type") == 'mac':
+                if match.group("remote_port_type") == "mac":
                     remote_port = match.group("remote_chassis_id")
                     rps = 3
-                if match.group("remote_port_type") == 'local':
+                if match.group("remote_port_type") == "local":
                     remote_port = remote_if
                     rps = 1
 
                 # print (match.group("remote_port"))
                 # see sa/profiles/HP/Comware/get_lldp_neighbors.py
                 n = {
-                    'remote_capabilities': 20,
+                    "remote_capabilities": 20,
                     "remote_chassis_id": match.group("remote_id"),
                     "remote_chassis_id_subtype": 4,
                     # "remote_port": match.group("remote_chassis_id"),
                     # "remote_port": match.group("remote_port"),
                     "remote_port": remote_port,
                     "remote_port_subtype": rps,
-                    "remote_system_name": match.group("remote_system_name")
+                    "remote_system_name": match.group("remote_system_name"),
                 }
 
                 i["neighbors"] += [n]

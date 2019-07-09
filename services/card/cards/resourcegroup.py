@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.models import get_model
@@ -22,7 +23,7 @@ class ResourceGroupCard(BaseCard):
     CARD_MAP = {
         "sa.ManagedObject": "managedobject",
         "phone.PhoneRange": "phonerange",
-        "phone.PhoneNumber": "phonenumber"
+        "phone.PhoneNumber": "phonenumber",
     }
 
     def get_data(self):
@@ -32,11 +33,7 @@ class ResourceGroupCard(BaseCard):
             s_model = get_model(self.object.technology.service_model)
             card = self.get_card_name(self.object.technology.service_model)
             for i in s_model.objects.filter(effective_service_groups=str(self.object.id)):
-                services += [{
-                    "id": i.id,
-                    "card": card,
-                    "label": unicode(i)
-                }]
+                services += [{"id": i.id, "card": card, "label": unicode(i)}]
         else:
             services = []
         # Clients
@@ -45,11 +42,7 @@ class ResourceGroupCard(BaseCard):
             c_model = get_model(self.object.technology.client_model)
             card = self.get_card_name(self.object.technology.client_model)
             for i in c_model.objects.filter(effective_client_groups=str(self.object.id)):
-                clients += [{
-                    "id": i.id,
-                    "card": card,
-                    "label": unicode(i)
-                }]
+                clients += [{"id": i.id, "card": card, "label": unicode(i)}]
         else:
             clients = []
         # Data
@@ -60,7 +53,7 @@ class ResourceGroupCard(BaseCard):
             "allow_clients": bool(self.object.technology.client_model),
             "services": services,
             "clients": clients,
-            "children": []
+            "children": [],
         }
         # Append children
         for rg in ResourceGroup.objects.filter(parent=self.object.id).order_by("name"):

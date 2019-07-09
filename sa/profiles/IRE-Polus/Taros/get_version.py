@@ -35,10 +35,7 @@ class Script(BaseScript):
                 "vendor": "IRE-Polus",
                 "platform": platform,
                 "version": version,
-                "attributes": {
-                    "Serial Number": serial,
-                    "HW version": hw_ver
-                }
+                "attributes": {"Serial Number": serial, "HW version": hw_ver},
             }
         except self.snmp.TimeOutError:
             raise self.NotSupportedError

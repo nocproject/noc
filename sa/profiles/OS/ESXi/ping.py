@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -21,7 +22,8 @@ class Script(BaseScript):
         r"(?P<success>\d+) packets received, \d+% packet loss\n"
         r"round-trip min/avg/max = (?P<min>\d+\.\d+)/(?P<avg>\d+\.\d+)/"
         r"(?P<max>\d+\.\d+) ms",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping"
@@ -45,5 +47,5 @@ class Script(BaseScript):
             "count": match.group("count"),
             "min": match.group("min"),
             "avg": match.group("avg"),
-            "max": match.group("max")
+            "max": match.group("max"),
         }

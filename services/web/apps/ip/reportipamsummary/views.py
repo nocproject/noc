@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 from django.utils.translation import ugettext_lazy as _
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 
@@ -18,11 +19,10 @@ class ReportIPAMSummaryApplication(SimpleReport):
         return self.from_query(
             title="IPAM Summary",
             columns=[
-                "VRF", "RD",
-                TableColumn("Prefixes", align="right",
-                            format="integer", total="sum"),
-                TableColumn("Addresses", align="right",
-                            format="integer", total="sum")
+                "VRF",
+                "RD",
+                TableColumn("Prefixes", align="right", format="integer", total="sum"),
+                TableColumn("Addresses", align="right", format="integer", total="sum"),
             ],
             query="""
                 SELECT vrf.name, vrf.rd,
@@ -33,5 +33,5 @@ class ReportIPAMSummaryApplication(SimpleReport):
                 FROM ip_vrf vrf
                 ORDER BY 1
             """,
-            enumerate=True
+            enumerate=True,
         )

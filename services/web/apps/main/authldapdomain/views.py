@@ -16,6 +16,7 @@ class AuthLDAPDomainApplication(ExtDocApplication):
     """
     AuthLDAPDomain application
     """
+
     title = "LDAP Domain"
     menu = [_("Setup"), _("LDAP Domains")]
     model = AuthLDAPDomain

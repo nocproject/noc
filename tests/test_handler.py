@@ -8,6 +8,7 @@
 
 # Python modules
 import pytest
+
 # NOC modules
 from noc.core.handler import get_handler, _CCACHE
 

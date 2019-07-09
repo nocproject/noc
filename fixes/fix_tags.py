@@ -23,7 +23,7 @@ def fix():
     bulk = []
     # Model
     ex_tags = []
-    print ("Update models....")
+    print("Update models....")
     for m in [ManagedObject]:
         tags = set()
         for s in (
@@ -46,7 +46,7 @@ def fix():
             ]
         ex_tags += [t.decode("utf8") for t in tags]
     # Documents
-    print ("Fixing documents....")
+    print("Fixing documents....")
     for m in [NetworkSegment]:
         tags = set(t[0] for t in m.objects.filter(tags__exists=True).values_list("tags") if t)
         ex_tags += list(tags)
@@ -62,18 +62,18 @@ def fix():
                 )
             ]
     delete_tags = set(Tag.objects.values_list("tag")) - set(ex_tags)
-    print ("Clean tags: %s" % delete_tags)
+    print("Clean tags: %s" % delete_tags)
     for t in delete_tags:
         bulk += [DeleteOne({"tag": t})]
     if bulk:
-        print ("Commiting changes to database")
+        print("Commiting changes to database")
         try:
             r = Tag._get_collection().bulk_write(bulk)
-            print ("Database has been synced")
-            print (
+            print("Database has been synced")
+            print(
                 "Inserted: %d, Modify: %d, Deleted: %d"
                 % (r.inserted_count + r.upserted_count, r.modified_count, r.deleted_count)
             )
         except BulkWriteError as e:
-            print ("Bulk write error: '%s'", e.details)
-            print ("Stopping check")
+            print("Bulk write error: '%s'", e.details)
+            print("Stopping check")

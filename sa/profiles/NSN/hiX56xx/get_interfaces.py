@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^\s*(?P<port>\d+/\d+)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<admin_status>Up|Dwn|-)/(?P<oper_status>Up|Dwn)",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_port_stat = re.compile(
         r"^\s+ifIndex\s+(?P<snmp_ifindex>\d+)\s*\n"
@@ -28,29 +28,24 @@ class Script(BaseScript):
         r"^\s+ifMtu\s+(?P<mtu>\d+)\s*\n"
         r"^\s+ifSpeed\s+\d+\s*\n"
         r"^\s+ifPhysAddress\s+(?P<mac>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    rx_port_name = re.compile(
-        r"^\s+ifName\s+(?P<ifname>\S+)\s*\n", re.MULTILINE
-    )
+    rx_port_name = re.compile(r"^\s+ifName\s+(?P<ifname>\S+)\s*\n", re.MULTILINE)
     rx_vlan = re.compile(r"^\s+(\d+\s+)?\|(?P<vlans>.*)\n", re.MULTILINE)
     rx_ifname_sub = re.compile(r"^(?P<ifname>\d+/\d+)/(?P<sub>\d+)$")
     rx_line = re.compile(
         r"^(?P<ifname>\d+/\d+)?\s+(?P<sub>\d+)\s+"
         r"(?P<admin_status>\S+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+llc",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_interface = re.compile(  # "index" do not correlate with "snmp_ifindex"
         r"^(?:Interface )?(?P<ifname>\S+)\s*\n"
         r"^\s+Hardware is \S+(, address is (?P<mac>\S+))?\s*\n"
         r"^\s+index \d+ metric \d+ mtu (?P<mtu>\d+) <(?P<flags>\S+)>\s*\n"
         r"^\s+VRF Binding: (?P<vrf>.+)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    rx_ip = re.compile(
-        r"^\s+inet (?P<ip>\S+) broadcast \S+\s*\n",
-        re.MULTILINE
-    )
+    rx_ip = re.compile(r"^\s+inet (?P<ip>\S+) broadcast \S+\s*\n", re.MULTILINE)
 
     def execute(self):
         interfaces = []
@@ -69,14 +64,16 @@ class Script(BaseScript):
                 "type": iftype,
                 "admin_status": admin_status,
                 "oper_status": match.group("oper_status") == "Up",
-                "subinterfaces": [{
-                    "name": match.group("port"),
-                    "admin_status": admin_status,
-                    "oper_status": match.group("oper_status") == "Up",
-                    "enabled_afi": ["BRIDGE"],
-                    "untagged_vlan": match.group("vlan_id"),
-                    "tagged_vlans": []
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("port"),
+                        "admin_status": admin_status,
+                        "oper_status": match.group("oper_status") == "Up",
+                        "enabled_afi": ["BRIDGE"],
+                        "untagged_vlan": match.group("vlan_id"),
+                        "tagged_vlans": [],
+                    }
+                ],
             }
             interfaces += [iface]
 
@@ -84,7 +81,7 @@ class Script(BaseScript):
             sub = i["subinterfaces"][0]
             v = self.cli(
                 "show port statistics interface %s" % i["name"],
-                cached=True  # used in get_mac_address_table
+                cached=True,  # used in get_mac_address_table
             )
             match = self.rx_port_stat.search(v)
             i["snmp_ifindex"] = match.group("snmp_ifindex")
@@ -116,18 +113,16 @@ class Script(BaseScript):
                         sub = {
                             "name": ifname,
                             "enabled_afi": ["BRIDGE", "ATM"],
-                            "vlan_ids": [vlan_id]
+                            "vlan_ids": [vlan_id],
                         }
                         for iface in interfaces:
                             if iface["name"] == ifname1:
                                 iface["subinterfaces"] += [sub]
                                 break
                         else:
-                            interfaces += [{
-                                "name": ifname1,
-                                "type": "physical",
-                                "subinterfaces": [sub]
-                            }]
+                            interfaces += [
+                                {"name": ifname1, "type": "physical", "subinterfaces": [sub]}
+                            ]
                     else:
                         for iface in interfaces:
                             if iface["name"] == ifname:
@@ -182,12 +177,14 @@ class Script(BaseScript):
                 "name": ifname,
                 "admin_status": "UP," in match.group("flags"),
                 "oper_status": "UP," in match.group("flags"),
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": "UP," in match.group("flags"),
-                    "oper_status": "UP," in match.group("flags"),
-                    "mtu": match.group("mtu")
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": "UP," in match.group("flags"),
+                        "oper_status": "UP," in match.group("flags"),
+                        "mtu": match.group("mtu"),
+                    }
+                ],
             }
             sub = iface["subinterfaces"][0]
             if ifname.startswith("lo"):

@@ -9,11 +9,13 @@
 # Python modules
 from __future__ import absolute_import
 import math
+
 # Third-party modules
 import six
 from six.moves import zip
 import networkx as nx
 import numpy as np
+
 # NOC modules
 from noc.config import config
 from .base import LayoutBase
@@ -42,11 +44,7 @@ class SpringLayout(LayoutBase):
         k = float(self.L) / scale
         min_dist = 2.0 * self.NODE_SIZE / scale
         return fruchterman_reingold_layout(
-            G,
-            scale=scale,
-            k=k,
-            iterations=self.FR_ITERATIONS,
-            min_dist=min_dist
+            G, scale=scale, k=k, iterations=self.FR_ITERATIONS, min_dist=min_dist
         )
 
     @classmethod
@@ -56,19 +54,20 @@ class SpringLayout(LayoutBase):
 
 
 @nx.utils.random_state(10)
-def fruchterman_reingold_layout(G,
-                                k=None,
-                                pos=None,
-                                fixed=None,
-                                iterations=50,
-                                threshold=1e-4,
-                                weight='weight',
-                                scale=1,
-                                center=None,
-                                dim=2,
-                                seed=None,
-                                min_dist=0.01
-                                ):
+def fruchterman_reingold_layout(
+    G,
+    k=None,
+    pos=None,
+    fixed=None,
+    iterations=50,
+    threshold=1e-4,
+    weight="weight",
+    scale=1,
+    center=None,
+    dim=2,
+    seed=None,
+    min_dist=0.01,
+):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
     Parameters
     ----------
@@ -148,21 +147,29 @@ def fruchterman_reingold_layout(G,
         nnodes, _ = A.shape
         k = dom_size / np.sqrt(nnodes)
     # Cycles
-    cycles = [
-        [nfixed[x] for x in c]
-        for c in nx.cycle_basis(G)
-    ]
+    cycles = [[nfixed[x] for x in c] for c in nx.cycle_basis(G)]
     #
-    pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations,
-                                threshold, dim, seed, min_dist, cycles)
+    pos = _fruchterman_reingold(
+        A, k, pos_arr, fixed, iterations, threshold, dim, seed, min_dist, cycles
+    )
     if fixed is None:
         pos = nx.rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
     return pos
 
 
-def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
-                          threshold=1e-4, dim=2, seed=None, min_dist=0.01, cycles=None):
+def _fruchterman_reingold(
+    A,
+    k=None,
+    pos=None,
+    fixed=None,
+    iterations=50,
+    threshold=1e-4,
+    dim=2,
+    seed=None,
+    min_dist=0.01,
+    cycles=None,
+):
     """
     Position nodes in adjacency matrix A using Fruchterman-Reingold
     """
@@ -232,16 +239,14 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
         # displacement "force"
         # Propulsion - reverse cubic
         # Attraction - square against optimal length difference
-        displacement = np.einsum('ijk,ij->ik',
-                                 delta,
-                                 k3 / distance ** 3 - WA * (distance - k) ** 2)
+        displacement = np.einsum("ijk,ij->ik", delta, k3 / distance ** 3 - WA * (distance - k) ** 2)
         # Apply bubbling force
         if cycles:
             displacement += WBF * bubble_disp
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
         length = np.where(length < min_dist, min_dist, length)
-        delta_pos = np.einsum('ij,i->ij', displacement, t / length)
+        delta_pos = np.einsum("ij,i->ij", displacement, t / length)
         if fixed is not None:
             # don't change positions of fixed nodes
             delta_pos[fixed] = 0.0

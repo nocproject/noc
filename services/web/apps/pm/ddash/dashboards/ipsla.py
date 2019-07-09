@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-Party modules
 import demjson
 from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
+
 # NOC modules
 from .base import BaseDashboard
 from sla.models.slaprobe import SLAProbe
@@ -36,8 +38,10 @@ class IPSLADashboard(BaseDashboard):
             "device_id": self.object.id,
             "bi_id": self.object.bi_id,
             "segment": self.object.segment.id,
-            "probes": [{"name": self.str_cleanup(probe.name), "value": probe.target} for
-                       probe in SLAProbe.objects.filter(managed_object=self.object.id)]
+            "probes": [
+                {"name": self.str_cleanup(probe.name), "value": probe.target}
+                for probe in SLAProbe.objects.filter(managed_object=self.object.id)
+            ],
         }
         self.logger.info("Context with data: %s" % context)
         j2_env = Environment(loader=FileSystemLoader(config.path.pm_templates))

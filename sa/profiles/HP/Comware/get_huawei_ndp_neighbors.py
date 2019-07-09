@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from six.moves import zip
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igethuaweindpneighbors import IGetHuaweiNDPNeighbors
@@ -19,17 +21,14 @@ class Script(BaseScript):
     name = "HP.Comware.get_huawei_ndp_neighbors"
     interface = IGetHuaweiNDPNeighbors
 
-    neigh_split = re.compile(
-        r"^\sInterface:\s",
-        re.IGNORECASE | re.MULTILINE
-    )
+    neigh_split = re.compile(r"^\sInterface:\s", re.IGNORECASE | re.MULTILINE)
 
     neigh = re.compile(
         r"^\s*(?P<local_interface>\S+).+?"
         r"^\s*MAC\sAddress\s*:\s(?P<chassis_mac>\S+).+?"
         r"^\s*Port\sName\s*:\s(?P<interface>\S+).+?"
         r"^\s*Device\sName\s*:\s(?P<name>\S+).+?",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
 
     def execute(self, **kwargs):
@@ -42,6 +41,5 @@ class Script(BaseScript):
             match = self.neigh.match(b)
             if match:
                 n = match.groups()
-                data += [{"local_interface": n[0],
-                          "neighbors": [dict(zip(column, n[1:]))]}]
+                data += [{"local_interface": n[0], "neighbors": [dict(zip(column, n[1:]))]}]
         return data

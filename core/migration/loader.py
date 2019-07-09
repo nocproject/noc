@@ -9,8 +9,10 @@
 # Python modules
 import os
 import operator
+
 # Third-party modules
 import cachetools
+
 # NOC modules
 from noc.config import config
 from noc.settings import INSTALLED_APPS
@@ -117,9 +119,10 @@ class MigrationLoader(object):
                     del chains[app]
             if pending and l_seen == len(seen):
                 # No migrations can further be resolved
-                raise ValueError("Circular dependencies between %s" % ", ".join(
-                    pending[x].get_name() for x in pending
-                ))
+                raise ValueError(
+                    "Circular dependencies between %s"
+                    % ", ".join(pending[x].get_name() for x in pending)
+                )
 
 
 loader = MigrationLoader()

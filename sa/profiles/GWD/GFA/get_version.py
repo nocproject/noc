@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,12 +19,10 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_version = re.compile(
-        r"^ProductOS Version (?P<version>\S+)", re.MULTILINE
-    )
+    rx_version = re.compile(r"^ProductOS Version (?P<version>\S+)", re.MULTILINE)
     rx_hardware = re.compile(
         r"^CHASSIS : (?P<platform>\S+)\s+(?P<hardware>\S+)\s+\d{4}\-\d\d\-\d\d\s+(?P<serial>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -33,11 +32,11 @@ class Script(BaseScript):
         match = self.rx_hardware.search(v)
 
         return {
-            "vendor": 'GWD',
+            "vendor": "GWD",
             "platform": match.group("platform"),
             "version": version,
             "attributes": {
                 "HW version": match.group("hardware"),
-                "Serial Number": match.group("serial")
-            }
+                "Serial Number": match.group("serial"),
+            },
         }

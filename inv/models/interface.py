@@ -26,7 +26,7 @@ from pymongo import ReadPreference
 
 # NOC Modules
 from noc.config import config
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -115,9 +115,9 @@ class Interface(Document):
     PROFILE_LINK = "profile"
 
     def __str__(self):
-        return u"%s: %s" % (self.managed_object.name, self.name)
+        return "%s: %s" % (self.managed_object.name, self.name)
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             yield "managedobject", self.managed_object.id
 

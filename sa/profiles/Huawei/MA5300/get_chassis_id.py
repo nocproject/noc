@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,13 +20,10 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(
-        r"^\s*The bridge has priority \d+, MAC address:\s+(?P<mac>\S+)",
-        re.MULTILINE)
+        r"^\s*The bridge has priority \d+, MAC address:\s+(?P<mac>\S+)", re.MULTILINE
+    )
 
     def execute(self):
         v = self.cli("show spanning-tree")
         match = self.rx_mac.search(v)
-        return {
-            "first_chassis_mac": match.group("mac"),
-            "last_chassis_mac": match.group("mac")
-        }
+        return {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}

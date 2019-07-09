@@ -17,13 +17,11 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_line = re.compile(
-        r"^\S+\s+UP\s+\d+\s+\S+\s+(?P<mac>\S+)\s+\S+", re.MULTILINE)
+    rx_line = re.compile(r"^\S+\s+UP\s+\d+\s+\S+\s+(?P<mac>\S+)\s+\S+", re.MULTILINE)
 
     def execute(self):
         v = self.cli("interface show", cached=True)
         macs = sorted(self.rx_line.findall(v))
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

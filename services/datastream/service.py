@@ -11,12 +11,14 @@
 import threading
 import time
 import random
+
 # Third-party modules
 from six.moves.queue import Queue, Empty as QueueEmpty
 import tornado.gen
 import tornado.locks
 import tornado.ioloop
 import pymongo.errors
+
 # NOC modules
 from noc.core.service.base import Service
 from noc.services.datastream.handler import DataStreamRequestHandler
@@ -51,11 +53,11 @@ class DataStreamService(Service):
     def get_handlers(self):
         return [
             (
-                r"/api/datastream/%s" % ds.name, DataStreamRequestHandler, {
-                    "service": self,
-                    "datastream": ds
-                }
-            ) for ds in self.get_datastreams()
+                r"/api/datastream/%s" % ds.name,
+                DataStreamRequestHandler,
+                {"service": self, "datastream": ds},
+            )
+            for ds in self.get_datastreams()
         ]
 
     @tornado.gen.coroutine

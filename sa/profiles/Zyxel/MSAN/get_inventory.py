@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -24,18 +25,20 @@ class Script(BaseScript):
         r"^\s*name\s*:\s+(?P<part_no>\S+)\s*\n"
         r"^.+?\n"
         r"^\s*hardware version\s*:\s+(?P<revision>\S+)\s*\n"
-        r"^\s*hardware serial number\s*:\s+(?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL
+        r"^\s*hardware serial number\s*:\s+(?P<serial>\S+)\s*\n",
+        re.MULTILINE | re.DOTALL,
     )
 
     rx_hw = re.compile(
         r"^\s*Model\s*:\s+(?:\S+ \/ )?(?P<part_no>\S+)\s*\n"
         r"^.+?\n"
         r"^\s*Hardware version\s*:\s+(?P<revision>\S+)\s*\n"
-        r"^\s*Serial number\s*:\s+(?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL
+        r"^\s*Serial number\s*:\s+(?P<serial>\S+)\s*\n",
+        re.MULTILINE | re.DOTALL,
     )
     rx_hw2 = re.compile(
-        r"^\s*Hardware Version: (?P<revision>\S+)\s*\n"
-        r"^\s*Serial Number: (?P<serial>\S+)\s*\n", re.MULTILINE
+        r"^\s*Hardware Version: (?P<revision>\S+)\s*\n" r"^\s*Serial Number: (?P<serial>\S+)\s*\n",
+        re.MULTILINE,
     )
     rx_chips = re.compile(r"^\s*(?P<platform>\S+?)(/(?P<module>\S+))?\s+")
 
@@ -43,7 +46,7 @@ class Script(BaseScript):
         "IES-2000": "MSC1000",
         "IES-2000M": "MSC1000A",
         "IES-3000": "MSC1000",
-        "IES-3000M": "MSC1000A"
+        "IES-3000M": "MSC1000A",
     }
 
     def execute(self):
@@ -63,22 +66,14 @@ class Script(BaseScript):
                                 "vendor": "ZYXEL",
                                 "part_no": match.group("part_no"),
                                 "serial": match.group("serial"),
-                                "revision": match.group("revision")
+                                "revision": match.group("revision"),
                             }
                         ]
                         c = self.profile.get_platform(self, slots, part_no)
                         if c:
-                            r.insert(0, {
-                                "type": "CHASSIS",
-                                "vendor": "ZYXEL",
-                                "part_no": c,
-                            })
+                            r.insert(0, {"type": "CHASSIS", "vendor": "ZYXEL", "part_no": c})
             else:
-                r += [{
-                    "type": "CHASSIS",
-                    "vendor": "ZYXEL",
-                    "part_no": version["platform"],
-                }]
+                r += [{"type": "CHASSIS", "vendor": "ZYXEL", "part_no": version["platform"]}]
                 t = parse_table(self.cli("lcman show"))
                 for i in t:
                     if i[1] == "-":
@@ -87,12 +82,7 @@ class Script(BaseScript):
                     if part_no == "msc":
                         part_no = self.M_TYPE[version["platform"]]
                     r += [
-                        {
-                            "type": "LINECARD",
-                            "number": i[0],
-                            "vendor": "ZYXEL",
-                            "part_no": part_no
-                        }
+                        {"type": "LINECARD", "number": i[0], "vendor": "ZYXEL", "part_no": part_no}
                     ]
         else:
             module = None
@@ -110,7 +100,7 @@ class Script(BaseScript):
                     "vendor": "ZYXEL",
                     "part_no": c,
                     "serial": match.group("serial"),
-                    "revision": match.group("revision")
+                    "revision": match.group("revision"),
                 }
             ]
             if module:

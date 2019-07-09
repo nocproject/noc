@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -27,7 +28,7 @@ class Profile(BaseProfile):
         "Ethernet": "physical",
         "Loopback": "loopback",
         "Tunnel": "tunnel",
-        "PPP": "tunnel"
+        "PPP": "tunnel",
     }
 
     def setup_script(self, script):
@@ -45,7 +46,7 @@ class Profile(BaseProfile):
         prompt = script.get_cli_stream().patterns["prompt"].pattern
         prompt = prompt.replace("^", "")
         prompt = prompt.replace("\\", "")
-        r = cmd[0] + '(\x08)+' + prompt
+        r = cmd[0] + "(\x08)+" + prompt
         self.rogue_chars = [re.compile(r"%s" % r), "\r"]
         if cached:
             return script.cli(cmd, cached=True)

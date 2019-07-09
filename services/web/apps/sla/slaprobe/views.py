@@ -16,6 +16,7 @@ class SLAProbeApplication(ExtDocApplication):
     """
     SLAProbe application
     """
+
     title = "SLA Probe"
     menu = _("SLA Probes")
     model = SLAProbe

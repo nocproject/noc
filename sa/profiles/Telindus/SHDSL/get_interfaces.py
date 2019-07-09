@@ -25,7 +25,7 @@ class Script(BaseScript):
         "bri": "physical",  # No comment
         "BR_": "unknown",  # No comment
         "tun": "tunnel",  # No comment
-        "Lin": "unknown"
+        "Lin": "unknown",
     }
 
     @classmethod
@@ -45,9 +45,7 @@ class Script(BaseScript):
                         continue
                     iftype = self.get_interface_type(name)
                     if not name:
-                        self.logger.info(
-                            "Ignoring unknown interface type: '%s", iftype
-                        )
+                        self.logger.info("Ignoring unknown interface type: '%s", iftype)
                         continue
                     s = self.snmp.get("1.3.6.1.2.1.2.2.1.6." + str(i))
                     if s:
@@ -63,22 +61,26 @@ class Script(BaseScript):
                     else:
                         o_stat = False
                     # print repr("%s\n" % admin_status)
-                    interfaces += [{
-                        "type": iftype,
-                        "name": name.replace("softwareLoopback", "lo"),
-                        "mac": mac,
-                        "admin_status": a_stat,
-                        "oper_status": o_stat,
-                        "ifindex": i,
-                        "subinterfaces": [{
+                    interfaces += [
+                        {
+                            "type": iftype,
                             "name": name.replace("softwareLoopback", "lo"),
+                            "mac": mac,
                             "admin_status": a_stat,
                             "oper_status": o_stat,
-                            "mac": mac,
                             "ifindex": i,
-                            "enabled_afi": ["BRIDGE"]
-                        }]
-                    }]
+                            "subinterfaces": [
+                                {
+                                    "name": name.replace("softwareLoopback", "lo"),
+                                    "admin_status": a_stat,
+                                    "oper_status": o_stat,
+                                    "mac": mac,
+                                    "ifindex": i,
+                                    "enabled_afi": ["BRIDGE"],
+                                }
+                            ],
+                        }
+                    ]
                 return [{"interfaces": interfaces}]
             except self.snmp.TimeOutError:
                 pass

@@ -12,18 +12,12 @@ import datetime
 
 # Third-party modules
 import six
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DateTimeField, ListField, IntField, ObjectIdField
 
 # NOC modules
 from noc.config import config
-from noc.lib.nosql import (
-    Document,
-    PlainReferenceListField,
-    StringField,
-    DateTimeField,
-    ListField,
-    IntField,
-    ObjectIdField,
-)
+from noc.core.mongo.fields import PlainReferenceListField
 from noc.core.model.decorator import on_delete, on_save
 from noc.core.datastream.decorator import datastream
 
@@ -89,11 +83,11 @@ class Link(Document):
 
     def __str__(self):
         if self.interfaces:
-            return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+            return "(%s)" % ", ".join(unicode(i) for i in self.interfaces)
         else:
-            return u"Stale link (%s)" % self.id
+            return "Stale link (%s)" % self.id
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             for mo_id in self.linked_objects:
                 yield "managedobject", mo_id

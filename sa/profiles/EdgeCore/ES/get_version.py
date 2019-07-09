@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -34,19 +35,14 @@ class Script(BaseScript):
                 if oid == "":
                     raise self.snmp.TimeOutError  # Fallback to CLI
                 if ", " in oid:
-                    oid = oid[1: -1].replace(", ", ".")
+                    oid = oid[1:-1].replace(", ", ".")
                 if oid[-3:] == "2.4":
                     # 3528M-SFP OID (v1.4.x.x)
-                    v = self.snmp.get(
-                        oid[: -3] + "1.4.1.1.3.1.6.1",
-                        cached=True
-                    )
+                    v = self.snmp.get(oid[:-3] + "1.4.1.1.3.1.6.1", cached=True)
                 else:
                     if oid[-3:] == "101":
                         # 3528MV2-Style OID
-                        v = self.snmp.get(
-                            oid[: -3] + "1.1.3.1.6.1", cached=True
-                        )
+                        v = self.snmp.get(oid[:-3] + "1.1.3.1.6.1", cached=True)
                     else:
                         # 3526-Style OID
                         v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
@@ -73,23 +69,23 @@ class Script(BaseScript):
     # 35xx
     #
     rx_sys_35 = re.compile(
-        r"^\s*System description\s*:\s(?P<platform>.+?)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*System description\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE | re.IGNORECASE
+    )
     rx_sys_42 = re.compile(
-        r"^\s*System OID String\s*:\s(?P<platform>.+?)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*System OID String\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE | re.IGNORECASE
+    )
     rx_ver_35 = re.compile(
-        r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$", re.MULTILINE | re.IGNORECASE
+    )
     rx_ser_35 = re.compile(
-        r"^\s*Serial Number\s*:\s*(?P<serial>\S+)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*Serial Number\s*:\s*(?P<serial>\S+)\s*$", re.MULTILINE | re.IGNORECASE
+    )
     rx_hw_35 = re.compile(
-        r"^\s*Hardware Version\s*:\s*(?P<hardware>\S+)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*Hardware Version\s*:\s*(?P<hardware>\S+)\s*$", re.MULTILINE | re.IGNORECASE
+    )
     rx_boot_35 = re.compile(
-        r"^\s*Boot ROM Version\s+:\s+(?P<boot>.+)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*Boot ROM Version\s+:\s+(?P<boot>.+)\s*$", re.MULTILINE | re.IGNORECASE
+    )
 
     def get_version_35xx(self, show_system, version):
         # Vendor default
@@ -130,8 +126,10 @@ class Script(BaseScript):
             pass
         elif "MR2228N" in platform:
             vendor = "MRV"
-        elif platform.lower() == "8 sfp ports + 4 gigabit combo ports " \
-                                 "l2/l3/l4 managed standalone switch":
+        elif (
+            platform.lower() == "8 sfp ports + 4 gigabit combo ports "
+            "l2/l3/l4 managed standalone switch"
+        ):
             platform = "ES4612"
         elif platform == "Managed 8G+4GSFP Switch":
             platform = "ECS4210-12T"
@@ -154,12 +152,7 @@ class Script(BaseScript):
                 platform = "ES3526X"
             else:
                 raise self.NotSupportedError(platform)
-        r = {
-            "vendor": vendor,
-            "platform": platform,
-            "version": version,
-            "attributes": {}
-        }
+        r = {"vendor": vendor, "platform": platform, "version": version, "attributes": {}}
         v = self.cli("show version", cached=True)
         match = self.rx_boot_35.search(v)
         if match:
@@ -176,20 +169,21 @@ class Script(BaseScript):
     # ES4626
     #
     rx_sys_4 = re.compile(
-        r"(?P<platform>ES.+?) Device, Compiled",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"(?P<platform>ES.+?) Device, Compiled", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
     rx_ver_4 = re.compile(
         r"SoftWare (Package )?Version.*?(?:_|Vco\.)(?P<version>\d.+?)$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
     rx_boot_4 = re.compile(
-        r"BootRom Version (\S+_)?(?P<boot>\d.+?)$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"BootRom Version (\S+_)?(?P<boot>\d.+?)$", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
     rx_hw_4 = re.compile(
-        r"HardWare Version (\S+_)?(?P<hardware>\S+)$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"HardWare Version (\S+_)?(?P<hardware>\S+)$", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
     rx_ser_4 = re.compile(
-        r"Device serial number (\S+_)?(?P<serial>\S+)$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"Device serial number (\S+_)?(?P<serial>\S+)$", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
 
     def get_version_4xxx(self, v, version):
         if not v:
@@ -202,7 +196,7 @@ class Script(BaseScript):
             "vendor": "EdgeCore",
             "platform": match_sys.group("platform"),
             "version": version,
-            "attributes": {}
+            "attributes": {},
         }
         match = self.rx_boot_4.search(v)
         if match:

@@ -15,10 +15,11 @@ class Script(BaseScript):
     """
     Brocade.CER-ADV.get_config
     """
-    name = 'Brocade.CER-ADV.get_config'
+
+    name = "Brocade.CER-ADV.get_config"
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        config = self.cli('show config')
+        config = self.cli("show config")
         config = self.strip_first_lines(config, 2)
         return self.cleaned_config(config)

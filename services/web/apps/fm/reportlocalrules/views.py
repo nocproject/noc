@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.utils.html import escape
+
 # NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.fm.models.eventclassificationrule import EventClassificationRule
@@ -22,10 +23,14 @@ class ReportClassificationRules(ReportApplication):
     def report_html(self, request, result=None, query=None):
         builtins = Collection.get_builtins("fm.eventclassificationrules")
         r = ["["]
-        r += [",\n".join([
-            indent(rr.to_json())
-            for rr in EventClassificationRule.objects.order_by("name")
-            if rr.uuid and unicode(rr.uuid) not in builtins
-        ])]
+        r += [
+            ",\n".join(
+                [
+                    indent(rr.to_json())
+                    for rr in EventClassificationRule.objects.order_by("name")
+                    if rr.uuid and unicode(rr.uuid) not in builtins
+                ]
+            )
+        ]
         r += ["]", ""]
         return "<pre>" + escape("\n".join(r)) + "</pre>"

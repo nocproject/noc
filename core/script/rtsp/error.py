@@ -8,9 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
-from noc.core.error import (ERR_RTSP_UNKNOWN, ERR_RTSP_CONNECTION_REFUSED,
-                            ERR_RTSP_AUTH_FAILED, ERR_RTSP_BAD_RESPONSE)
+from noc.core.error import (
+    ERR_RTSP_UNKNOWN,
+    ERR_RTSP_CONNECTION_REFUSED,
+    ERR_RTSP_AUTH_FAILED,
+    ERR_RTSP_BAD_RESPONSE,
+)
 from ..cli.error import CLIError
 
 

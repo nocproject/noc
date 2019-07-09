@@ -15,8 +15,18 @@ TIME_PATTERNS = [("Any", "Always match", []), ("Workdays", "Match workdays", ["m
 class Migration(BaseMigration):
     def migrate(self):
         for name, desc, tpd in TIME_PATTERNS:
-            if self.db.execute("SELECT COUNT(*) FROM main_timepattern WHERE name=%s", [name])[0][0] == 0:
-                self.db.execute("INSERT INTO main_timepattern(name,description) VALUES(%s,%s)", [name, desc])
-                tp_id = self.db.execute("SELECT id FROM main_timepattern WHERE name=%s", [name])[0][0]
+            if (
+                self.db.execute("SELECT COUNT(*) FROM main_timepattern WHERE name=%s", [name])[0][0]
+                == 0
+            ):
+                self.db.execute(
+                    "INSERT INTO main_timepattern(name,description) VALUES(%s,%s)", [name, desc]
+                )
+                tp_id = self.db.execute("SELECT id FROM main_timepattern WHERE name=%s", [name])[0][
+                    0
+                ]
                 for tp in tpd:
-                    self.db.execute("INSERT INTO main_timepatternterm(time_pattern_id,term) VALUES(%s,%s)", [tp_id, tp])
+                    self.db.execute(
+                        "INSERT INTO main_timepatternterm(time_pattern_id,term) VALUES(%s,%s)",
+                        [tp_id, tp],
+                    )

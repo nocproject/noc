@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
@@ -20,37 +21,43 @@ class Script(BaseScript):
     rx_link_ok = re.compile(
         r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+"
         r"(?:Link Up\s+OK|Link Down\s+ShutDown)\s+(?P<length>\d+)",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
     rx_link_nc = re.compile(
         r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+"
         r"Link Down\s+(?:No Cable)(\s+\-)?",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
     rx_link_pr = re.compile(
         r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+"
         r"Link (?:Up|Down)\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short)\s+at\s+(?P<length>\d+)\s*M\s+-",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
     rx_pair = re.compile(
-        r"^\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short|Not Support)(\s+at\s+(?P<length>\d+)\s*M)?", re.IGNORECASE
+        r"^\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short|Not Support)(\s+at\s+(?P<length>\d+)\s*M)?",
+        re.IGNORECASE,
     )
     variance = 0
 
     def parce_pair(self, pair, status, distance=None):
         pair = int(pair)
         if status == "OK":
-            st = 'T'
+            st = "T"
         elif status == "Open":
-            st = 'O'
+            st = "O"
         elif status == "Short":
-            st = 'S'
+            st = "S"
         elif status == "Not Support":
-            st = 'N'
+            st = "N"
         else:
             raise self.NotSupportedError()
         if distance is not None:
-            return {"pair": pair, "status": st, "distance_cm": int(distance), "variance_cm": self.variance}
+            return {
+                "pair": pair,
+                "status": st,
+                "distance_cm": int(distance),
+                "variance_cm": self.variance,
+            }
         else:
             return {"pair": pair, "status": st, "distance_cm": 0}
 
@@ -82,24 +89,27 @@ class Script(BaseScript):
                                 "pair": 1,
                                 "status": "T",
                                 "distance_cm": length,
-                                "variance_cm": self.variance
-                            }, {
+                                "variance_cm": self.variance,
+                            },
+                            {
                                 "pair": 2,
                                 "status": "T",
                                 "distance_cm": length,
-                                "variance_cm": self.variance
-                            }, {
+                                "variance_cm": self.variance,
+                            },
+                            {
                                 "pair": 3,
                                 "status": "T",
                                 "distance_cm": length,
-                                "variance_cm": self.variance
-                            }, {
+                                "variance_cm": self.variance,
+                            },
+                            {
                                 "pair": 4,
                                 "status": "T",
                                 "distance_cm": length,
-                                "variance_cm": self.variance
-                            }
-                        ]
+                                "variance_cm": self.variance,
+                            },
+                        ],
                     }
                 ]
 
@@ -109,24 +119,11 @@ class Script(BaseScript):
                     {
                         "interface": match.group("interface"),
                         "pairs": [
-                            {
-                                "pair": 1,
-                                "status": "N",
-                                "distance_cm": 0
-                            }, {
-                                "pair": 2,
-                                "status": "N",
-                                "distance_cm": 0
-                            }, {
-                                "pair": 3,
-                                "status": "N",
-                                "distance_cm": 0
-                            }, {
-                                "pair": 4,
-                                "status": "N",
-                                "distance_cm": 0
-                            }
-                        ]
+                            {"pair": 1, "status": "N", "distance_cm": 0},
+                            {"pair": 2, "status": "N", "distance_cm": 0},
+                            {"pair": 3, "status": "N", "distance_cm": 0},
+                            {"pair": 4, "status": "N", "distance_cm": 0},
+                        ],
                     }
                 ]
 

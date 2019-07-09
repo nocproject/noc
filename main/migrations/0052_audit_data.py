@@ -10,9 +10,11 @@
 import logging
 import re
 import datetime
+
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import InsertOne
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -61,18 +63,21 @@ class Migration(BaseMigration):
         last_id = 0
         while True:
             bulk = []
-            for a_id, user_id, timestamp, model, db_table, op, subject, body in self.db.execute("""
+            for a_id, user_id, timestamp, model, db_table, op, subject, body in self.db.execute(
+                """
                     SELECT id, user_id, "timestamp", model, db_table, operation, subject, body
                     FROM main_audittrail
                     WHERE id > %s
                     ORDER BY id
-                    LIMIT 1000""", [last_id]):
+                    LIMIT 1000""",
+                [last_id],
+            ):
                 o = {
                     "timestamp": timestamp,
                     "user": user_cache[user_id],
                     "model_id": "%s.%s" % (db_table.split("_")[0], model),
                     "op": op,
-                    "expires": timestamp + delta
+                    "expires": timestamp + delta,
                 }
                 changes = []
                 if op == "C":
@@ -113,8 +118,10 @@ class Migration(BaseMigration):
                     r = collection.bulk_write(bulk)
                     logger.info("Database has been synced")
                     logger.info(
-                        "Inserted: %d, Modify: %d, Deleted: %d", r.inserted_count + r.upserted_count, r.modified_count,
-                        r.deleted_count
+                        "Inserted: %d, Modify: %d, Deleted: %d",
+                        r.inserted_count + r.upserted_count,
+                        r.modified_count,
+                        r.deleted_count,
                     )
                 except BulkWriteError as e:
                     logger.error("Bulk write error: '%s'", e.details)

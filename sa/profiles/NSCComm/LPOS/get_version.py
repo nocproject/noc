@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"^Hardware version\s+: (?P<hardware>.+)\s*\n"
         r"^Software version\s+: LP ARM OS (?P<version>.+) \(.+\n"
         r"^Firmware version\s+: (?P<fw_version>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -30,7 +30,5 @@ class Script(BaseScript):
             "vendor": "NSCComm",
             "platform": match.group("platform"),
             "version": match.group("version"),
-            "attributes": {
-                "HW version": match.group("hardware")
-            }
+            "attributes": {"HW version": match.group("hardware")},
         }

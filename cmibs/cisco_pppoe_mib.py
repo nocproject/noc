@@ -76,5 +76,5 @@ MIB = {
     "CISCO-PPPOE-MIB::cPppoePerInterfaceSessionLossPercentNotif": "1.3.6.1.4.1.9.9.194.2.0.12",
     "CISCO-PPPOE-MIB::ciscoPppoeMIBConformance": "1.3.6.1.4.1.9.9.194.3",
     "CISCO-PPPOE-MIB::ciscoPppoeMIBCompliances": "1.3.6.1.4.1.9.9.194.3.1",
-    "CISCO-PPPOE-MIB::ciscoPppoeMIBGroups": "1.3.6.1.4.1.9.9.194.3.2"
+    "CISCO-PPPOE-MIB::ciscoPppoeMIBGroups": "1.3.6.1.4.1.9.9.194.3.2",
 }

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # NOC modules
 from .base import BaseCard
 from noc.fm.models.ttsystem import TTSystem
@@ -55,17 +56,19 @@ class TTCard(BaseCard):
                     duration = a.clear_timestamp - a.timestamp
                 else:
                     duration = now - a.timestamp
-                r["alarms"] += [{
-                    "alarm": a,
-                    "id": a.id,
-                    "timestamp": a.timestamp,
-                    "duration": duration,
-                    "subject": a.subject,
-                    "summary": {
-                        "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
-                        "service": SummaryItem.items_to_dict(a.total_services)
+                r["alarms"] += [
+                    {
+                        "alarm": a,
+                        "id": a.id,
+                        "timestamp": a.timestamp,
+                        "duration": duration,
+                        "subject": a.subject,
+                        "summary": {
+                            "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
+                            "service": SummaryItem.items_to_dict(a.total_services),
+                        },
                     }
-                }]
+                ]
         return r
 
     def redirect_to_alarm(self, tt_id):
@@ -74,13 +77,14 @@ class TTCard(BaseCard):
         :param tt_id:
         :return:
         """
-        a = ActiveAlarm.objects.filter(
-            escalation_tt=tt_id
-        ).order_by("timestamp").only("id").first()
+        a = ActiveAlarm.objects.filter(escalation_tt=tt_id).order_by("timestamp").only("id").first()
         if not a:
-            a = ArchivedAlarm.objects.filter(
-                escalation_tt=tt_id
-            ).order_by("timestamp").only("id").first()
+            a = (
+                ArchivedAlarm.objects.filter(escalation_tt=tt_id)
+                .order_by("timestamp")
+                .only("id")
+                .first()
+            )
         if a:
             self.redirect("/api/card/view/alarm/%s/" % a.id)
         else:

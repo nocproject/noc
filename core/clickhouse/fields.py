@@ -13,9 +13,11 @@ import itertools
 from functools import partial
 import socket
 import struct
+
 # Third-party modules
 import six
 from six.moves import zip
+
 # NOC modules
 from noc.config import config
 
@@ -24,6 +26,7 @@ class BaseField(object):
     """
     BaseField class for ClickHouse structure
     """
+
     FIELD_NUMBER = itertools.count()
     db_type = None
     default_value = ""
@@ -250,7 +253,7 @@ class ArrayField(BaseField):
         if not value or value == "[]":
             return []
         else:
-            return [self.field_type.to_python(x.strip("\'\" ")) for x in value[1:-1].split(",")]
+            return [self.field_type.to_python(x.strip("'\" ")) for x in value[1:-1].split(",")]
 
 
 class ReferenceField(BaseField):
@@ -259,7 +262,9 @@ class ReferenceField(BaseField):
     SELF_REFERENCE = "self"
 
     def __init__(self, dict_type, description=None, model=None, low_cardinality=False):
-        super(ReferenceField, self).__init__(description=description, low_cardinality=low_cardinality)
+        super(ReferenceField, self).__init__(
+            description=description, low_cardinality=low_cardinality
+        )
         self.is_self_reference = dict_type == self.SELF_REFERENCE
         self.dict_type = dict_type
         self.model = model
@@ -318,9 +323,7 @@ class AggregatedField(BaseField):
         pass
 
     def get_expr(self, function, f_param):
-        return self.f_expr.format(p={"field": self.name,
-                                     "function": function,
-                                     "f_param": f_param})
+        return self.f_expr.format(p={"field": self.name, "function": function, "f_param": f_param})
 
 
 class NestedField(ArrayField):
@@ -336,11 +339,7 @@ class NestedField(ArrayField):
         def get_tsv_encoder(fld, name, nested_name):
             def get(record):
                 data = record.get(name, [])
-                r = [
-                    "[",
-                    ",".join(fld.to_tsv_array(x.get(nested_name)) for x in data),
-                    "]"
-                ]
+                r = ["[", ",".join(fld.to_tsv_array(x.get(nested_name)) for x in data), "]"]
                 return "".join(r)
 
             return get
@@ -351,14 +350,20 @@ class NestedField(ArrayField):
             cls._fields[field] = self.field_type._fields[nested_name]
             cls._fields[field].name = field
             cls._fields[field].field_number = self.field_number + n + 1
-            cls._fields[field].get_create_sql = partial(self.get_create_nested_sql, field, cls._fields[field].db_type)
+            cls._fields[field].get_create_sql = partial(
+                self.get_create_nested_sql, field, cls._fields[field].db_type
+            )
             cls._tsv_encoders[field] = get_tsv_encoder(cls._fields[field], name, nested_name)
 
     def to_tsv(self, value):
         out = []
         for field_type in self.field_type._fields_order:
             r = ["["]
-            r += [",".join(self.field_type._fields[field_type].to_tsv_array(v[field_type]) for v in value)]
+            r += [
+                ",".join(
+                    self.field_type._fields[field_type].to_tsv_array(v[field_type]) for v in value
+                )
+            ]
             r += ["]"]
             out += ["".join(r)]
         # r = r[:-1]
@@ -375,14 +380,21 @@ class NestedField(ArrayField):
         return "`%s` Array(%s)" % (name, type)
 
     def to_python(self, value):
-        if not value or value == '[]':
+        if not value or value == "[]":
             return []
         value = literal_eval(value)
-        return [{k: self.field_type._fields[k].to_python(v.strip("'")) for k, v in
-                six.iteritems(dict(zip(self.field_type._fields_order, v)))} for v in value]
+        return [
+            {
+                k: self.field_type._fields[k].to_python(v.strip("'"))
+                for k, v in six.iteritems(dict(zip(self.field_type._fields_order, v)))
+            }
+            for v in value
+        ]
 
     def get_select_sql(self):
         m = ["toString(%s.%s[x])" % (self.name, x) for x in self.field_type._fields_order]
-        r = ["arrayMap(x -> [%s], arrayEnumerate(%s.%s))" % (
-            ",".join(m), self.name, self.field_type._fields_order[0])]
+        r = [
+            "arrayMap(x -> [%s], arrayEnumerate(%s.%s))"
+            % (",".join(m), self.name, self.field_type._fields_order[0])
+        ]
         return "".join(r)

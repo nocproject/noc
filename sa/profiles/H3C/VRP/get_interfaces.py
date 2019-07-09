@@ -9,8 +9,10 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,30 +22,19 @@ class Script(BaseScript):
     name = "H3C.VRP.get_interfaces"
     interface = IGetInterfaces
 
-    rx_iface_sep = re.compile(
-        r"^\s*(\S+) current state\s*:\s*\s*",
-        re.MULTILINE
-    )
-    rx_line_proto = re.compile(
-        r"Line protocol current state : (?P<o_state>UP|DOWN)",
-        re.IGNORECASE
-    )
-    rx_mac = re.compile(
-        "Hardware address is (?P<mac>[0-9af]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
-    )
+    rx_iface_sep = re.compile(r"^\s*(\S+) current state\s*:\s*\s*", re.MULTILINE)
+    rx_line_proto = re.compile(r"Line protocol current state : (?P<o_state>UP|DOWN)", re.IGNORECASE)
+    rx_mac = re.compile("Hardware address is (?P<mac>[0-9af]{4}-[0-9a-f]{4}-[0-9a-f]{4})")
     rx_iftype = re.compile(r"^(\S+?)\d+.*$")
 
     rx_dis_ip_int = re.compile(
         r"^(?P<interface>\S+?)\s+current\s+state\s+:\s*"
-        r"(?:administratively\s+)?(?P<admin_status>UP|DOWN)",
+        r"(?:administratively\s+)?(?P<admin_status>UP|DOWN)"
     )
-    rx_ip = re.compile(
-        r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})"
-    )
+    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})")
     rx_ospf = re.compile(
-        r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+"
-        r"\((?P<name>\S+)\)\s+",
-        re.MULTILINE
+        r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+" r"\((?P<name>\S+)\)\s+",
+        re.MULTILINE,
     )
 
     types = {
@@ -65,7 +56,7 @@ class Script(BaseScript):
         "Virtual-Template": None,
         "Vlanif": "SVI",
         "Vlan-interface": "SVI",
-        "NULL": "null"
+        "NULL": "null",
     }
 
     def get_ospfint(self):
@@ -86,7 +77,7 @@ class Script(BaseScript):
         for sp in self.scripts.get_switchport():
             switchports[sp["interface"]] = (
                 sp["untagged"] if "untagged" in sp else None,
-                sp["tagged"]
+                sp["tagged"],
             )
 
         # Get portchannels
@@ -127,24 +118,18 @@ class Script(BaseScript):
             """
             ifname = self.profile.convert_interface_name(full_ifname)
             # I do not known, what are these
-            if (
-                ifname.startswith("DCN-Serial") or
-                ifname.startswith("Cpos-Trunk")
-            ):
+            if ifname.startswith("DCN-Serial") or ifname.startswith("Cpos-Trunk"):
                 continue
             sub = {
                 "name": ifname,
                 "admin_status": True,
                 "oper_status": True,
                 "enabled_protocols": [],
-                "enabled_afi": []
+                "enabled_afi": [],
             }
-            if (
-                ifname in switchports and
-                ifname not in portchannel_members
-            ):
+            if ifname in switchports and ifname not in portchannel_members:
                 # Bridge
-                sub["enabled_afi"] += ['BRIDGE']
+                sub["enabled_afi"] += ["BRIDGE"]
                 u, t = switchports[ifname]
                 if u:
                     sub["untagged_vlan"] = u
@@ -152,7 +137,7 @@ class Script(BaseScript):
                     sub["tagged_vlans"] = t
             elif ifname in ipv4_interfaces:
                 # IPv4
-                sub["enabled_afi"] = ['IPv4']
+                sub["enabled_afi"] = ["IPv4"]
                 sub["ipv4_addresses"] = ipv4_interfaces[ifname]
             if ifname in ospfs:
                 # OSPF
@@ -202,7 +187,7 @@ class Script(BaseScript):
                     "oper_status": o_stat,
                     "type": iftype,
                     "enabled_protocols": [],
-                    "subinterfaces": [sub]
+                    "subinterfaces": [sub],
                 }
                 if "mac" in sub:
                     iface["mac"] = sub["mac"]
@@ -219,21 +204,16 @@ class Script(BaseScript):
             else:
                 interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
-        vrfs = {
-            "default": {
-                "forwarding_instance": "default",
-                "type": "ip",
-                "interfaces": []
-            }
-        }
+        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         imap = {}  # interface -> VRF
         for i in interfaces:
             subs = i["subinterfaces"]
             if subs:
                 for vrf in set(imap.get(si["name"], "default") for si in subs):
                     c = i.copy()
-                    c["subinterfaces"] = [si for si in subs
-                                          if imap.get(si["name"], "default") == vrf]
+                    c["subinterfaces"] = [
+                        si for si in subs if imap.get(si["name"], "default") == vrf
+                    ]
                     vrfs[vrf]["interfaces"] += [c]
             elif i.get("aggregated_interface"):
                 vrfs["default"]["interfaces"] += [i]

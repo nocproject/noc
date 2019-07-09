@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # Discovered Prefixes Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
+
 # NOC Modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.lib.app.simplereport import SimpleReport
 from noc.inv.models.newprefixdiscoverylog import NewPrefixDiscoveryLog
 
 
@@ -17,21 +19,12 @@ class ReportDiscoveredPrefixes(SimpleReport):
 
     def get_data(self, **kwargs):
         data = [
-            (
-                p.timestamp, p.vrf, p.prefix, p.description,
-                p.managed_object, p.interface
-            ) for p in
-              NewPrefixDiscoveryLog.objects.order_by("-timestamp")
+            (p.timestamp, p.vrf, p.prefix, p.description, p.managed_object, p.interface)
+            for p in NewPrefixDiscoveryLog.objects.order_by("-timestamp")
         ]
 
         return self.from_dataset(
             title="Discovered Prefixes",
-            columns=[
-                "Timestamp",
-                "VRF",
-                "Prefix",
-                "Description",
-                "Object",
-                "Interface"
-            ],
-            data=data)
+            columns=["Timestamp", "VRF", "Prefix", "Description", "Object", "Interface"],
+            data=data,
+        )

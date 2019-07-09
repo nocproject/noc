@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -19,10 +20,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Invalid input"
-    pattern_more = [
-        (r"^ --More--", "\n"),
-        (r"\?\s*\[confirm\]", "\n")
-    ]
+    pattern_more = [(r"^ --More--", "\n"), (r"\?\s*\[confirm\]", "\n")]
     command_submit = "\r"
     command_super = "enable"
     command_disable_pager = "terminal length 0"

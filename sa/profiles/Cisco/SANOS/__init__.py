@@ -13,10 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Cisco.SANOS"
-    pattern_more = [
-        (r"^ --More--", "\n"),
-        (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
-    ]
+    pattern_more = [(r"^ --More--", "\n"), (r"(?:\?|interfaces)\s*\[confirm\]", "\n")]
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% invalid command detected at"
     command_disable_pager = "terminal length 0"
@@ -25,9 +22,7 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" \
-        r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" r"(?:\(config[^\)]*\))?#"
     can_strip_hostname_to = 20
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco

@@ -8,12 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import (IntParameter,
-                                    MACAddressParameter,
-                                    InterfaceTypeError)
+from noc.sa.interfaces.base import IntParameter, MACAddressParameter, InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -28,7 +27,7 @@ class Script(BaseScript):
         r"^ChassisId :(?P<id>.*)\n"
         r"^PortIdSubtype :(?P<p_type>.*)\n"
         r"^PortId :(?P<port_id>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -79,17 +78,14 @@ class Script(BaseScript):
         for lldp in self.cli("show lldp neighbors interface").split("\n\n"):
             match = self.rx_detail.search(lldp)
             if match:
-                i = {
-                    "local_interface": match.group("local_if"),
-                    "neighbors": []
-                }
+                i = {"local_interface": match.group("local_if"), "neighbors": []}
                 n = {"remote_chassis_id_subtype": match.group("rem_cid_type")}
                 n["remote_port_subtype"] = {
                     "Interface alias": 1,
                     # "Port component": 2,
                     "MAC address": 3,
                     "Interface": 5,
-                    "Local": 7
+                    "Local": 7,
                 }[match.group("p_type")]
                 if n["remote_port_subtype"] == 3:
                     remote_port = MACAddressParameter().clean(match.group("port_id"))

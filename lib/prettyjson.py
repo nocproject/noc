@@ -9,8 +9,10 @@
 # Python modules
 import uuid
 from functools import reduce
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.lib.escape import json_escape
 from noc.lib.text import indent
@@ -29,7 +31,7 @@ class PrettyJSON(object):
         if o is None:
             return indent("null", i)
         if isinstance(o, six.string_types):
-            return indent("\"%s\"" % json_escape(o), i)
+            return indent('"%s"' % json_escape(o), i)
         elif isinstance(o, bool):
             return indent("true" if o else "false", i)
         elif isinstance(o, six.integer_types):
@@ -37,7 +39,7 @@ class PrettyJSON(object):
         elif isinstance(o, float):
             return indent(str(o), i)
         elif isinstance(o, uuid.UUID):
-            return indent("\"%s\"" % o, i)
+            return indent('"%s"' % o, i)
         elif isinstance(o, list):
             if len(o) == 0:
                 return indent("[]", i)
@@ -61,8 +63,7 @@ class PrettyJSON(object):
                 nk = [k for k in order if k in keys]
                 nk += [k for k in keys if k not in order]
                 keys = nk
-            r = ",\n".join("%s: %s" % (
-                cls.convert(k, 0), cls.convert(o[k], 0)) for k in keys)
+            r = ",\n".join("%s: %s" % (cls.convert(k, 0), cls.convert(o[k], 0)) for k in keys)
             return indent("{\n%s\n}" % indent(r, 4), i)
         raise ValueError("Cannot encode %r" % o)
 

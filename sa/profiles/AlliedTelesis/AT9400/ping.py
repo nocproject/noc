@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -16,8 +17,7 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "AlliedTelesis.AT9400.ping"
     interface = IPing
-    rx_result = re.compile(
-        r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$", re.MULTILINE | re.DOTALL)
+    rx_result = re.compile(r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$", re.MULTILINE | re.DOTALL)
 
     def execute(self, address, size=None, count=None, timeout=None):
         cmd = "ping %s" % address
@@ -30,10 +30,4 @@ class Script(BaseScript):
                 r += [match.group("resp")]
                 n += int(match.group("resp"))
         avg1 = int(n / len(r))
-        return {
-                "success": len(r),
-                "count": 4,
-                "min": min(r),
-                "avg": avg1,
-                "max": max(r)
-               }
+        return {"success": len(r), "count": 4, "min": min(r), "avg": avg1, "max": max(r)}

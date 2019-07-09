@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -22,14 +23,17 @@ class Script(BaseScript):
         r"^.+?\n"
         r"^\s*Hardware version\s*:\s+(?P<revision>\S+)\s*\n"
         r"^\s*Serial number\s*:\s+(?P<serial>\S+)\s*\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         match = self.rx_hw.search(self.cli("sys info show"))
-        return [{
-            "type": "CHASSIS",
-            "vendor": "ZYXEL",
-            "part_no": match.group("part_no"),
-            "serial": match.group("serial"),
-            "revision": match.group("revision")
-        }]
+        return [
+            {
+                "type": "CHASSIS",
+                "vendor": "ZYXEL",
+                "part_no": match.group("part_no"),
+                "serial": match.group("serial"),
+                "revision": match.group("revision"),
+            }
+        ]

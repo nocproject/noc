@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from six.moves import zip
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -20,32 +22,30 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_inventory"
     interface = IGetInventory
 
-    rx_slot_key = re.compile(
-        r"^\d+|PWR\d+|FAN\d+|CMU\d", re.DOTALL | re.MULTILINE | re.VERBOSE)
+    rx_slot_key = re.compile(r"^\d+|PWR\d+|FAN\d+|CMU\d", re.DOTALL | re.MULTILINE | re.VERBOSE)
     rx_backplane = re.compile(
-        r"\[(?P<type>BackPlane)_(?P<number>.*?)\]"
-        r"(?P<body>.*?)"
-        r"(?P<bom>BOM=.*?)", re.DOTALL | re.MULTILINE | re.VERBOSE)
+        r"\[(?P<type>BackPlane)_(?P<number>.*?)\]" r"(?P<body>.*?)" r"(?P<bom>BOM=.*?)",
+        re.DOTALL | re.MULTILINE | re.VERBOSE,
+    )
     rx_slot = re.compile(
-        r"\[(?P<type>Slot)_(?P<number>.*?)\]"
-        r"(?P<body>.*?)"
-        r"(?P<bom>BOM=.*?)", re.DOTALL | re.MULTILINE | re.VERBOSE)
+        r"\[(?P<type>Slot)_(?P<number>.*?)\]" r"(?P<body>.*?)" r"(?P<bom>BOM=.*?)",
+        re.DOTALL | re.MULTILINE | re.VERBOSE,
+    )
     rx_port = re.compile(
         r"\[Port_(?P<port_num>\d+)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
-        re.DOTALL | re.MULTILINE | re.VERBOSE
+        re.DOTALL | re.MULTILINE | re.VERBOSE,
     )
     rx_mainboard = re.compile(
         r"\[(?:Main_Board|BackPlane_\d)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
-        re.DOTALL | re.MULTILINE | re.VERBOSE
+        re.DOTALL | re.MULTILINE | re.VERBOSE,
     )
     rx_mainboard_ne = re.compile(
-        r"\[Board\sProperties\](?P<body>.*?)\n\n",
-        re.DOTALL | re.MULTILINE | re.VERBOSE
+        r"\[Board\sProperties\](?P<body>.*?)\n\n", re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_subitem = re.compile(
-        r"\[(?P<type>Port|Daughter_Board)_(?P<number>.*?)\]"
-        r"(?P<body>.*?)"
-        r"(?P<bom>BOM=.*?)", re.DOTALL | re.MULTILINE | re.VERBOSE)
+        r"\[(?P<type>Port|Daughter_Board)_(?P<number>.*?)\]" r"(?P<body>.*?)" r"(?P<bom>BOM=.*?)",
+        re.DOTALL | re.MULTILINE | re.VERBOSE,
+    )
     rx_item_content = re.compile(
         r"\[Board.Properties\]\n"
         r"Board Type=(?P<board_type>.*?)\n"
@@ -55,7 +55,9 @@ class Script(BaseScript):
         r"Manufactured=(?P<mnf_date>.*?)\n"
         r"^.*?VendorName=(?P<vendor>.*?)\n"
         r"IssueNumber=(?P<issue_number>.*?)\n"
-        r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
+        r"CLEICode=(?P<code>.*?)\n",
+        re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE,
+    )
 
     rx_item_content2 = re.compile(
         r"Board(\s|)Type=(?P<board_type>.*?)(\n|)"
@@ -65,13 +67,17 @@ class Script(BaseScript):
         r"Manufactured=(?P<mnf_date>.*?)(\n|)"
         r".*?VendorName=(?P<vendor>.*?)(\n|)"
         r"IssueNumber=(?P<issue_number>.*?)\n"
-        r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
+        r"CLEICode=(?P<code>.*?)\n",
+        re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE,
+    )
 
     rx_hw = re.compile(
         r"DEVICE_NAME\s+:\s+(?P<part_no>\S+)\s*\n"
         r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\s*\n"
         r"MAC_ADDRESS\s+:\s+(?P<mac>\S+)\s*\n"
-        r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n", re.MULTILINE)
+        r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_date_check = re.compile("\d+-\d+-\d+")
     rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+", re.MULTILINE)
     rx_header_repl = re.compile(r"((Slot|Brd|Subslot|Sft|Unit|SubCard)\s)")
@@ -86,12 +92,19 @@ class Script(BaseScript):
             "number": number,
             "vendor": "Huawei",
             "description": "",
-            "part_no": [part_no]
+            "part_no": [part_no],
         }
-        r.update(parse_kv({"board_serial_number": "serial",
-                           "device_serial_number": "serial",
-                           "manufacturing_date": "mfg_date",
-                           "vendor_name": "vendor"}, content))
+        r.update(
+            parse_kv(
+                {
+                    "board_serial_number": "serial",
+                    "device_serial_number": "serial",
+                    "manufacturing_date": "mfg_date",
+                    "vendor_name": "vendor",
+                },
+                content,
+            )
+        )
         return [r]
 
     def parse_item_content(self, item, number, item_type):
@@ -121,7 +134,7 @@ class Script(BaseScript):
             "description": desc,
             "part_no": [part_no],
             "revision": None,
-            "mfg_date": manufactured
+            "mfg_date": manufactured,
         }
 
     def part_parse(self, i_type, slot_num, subcard_num=""):
@@ -184,7 +197,7 @@ class Script(BaseScript):
         for f in self.rx_port.finditer(v):
             # port block, search XCVR
             num = f.group("port_num")
-            if f.group("body") == '':
+            if f.group("body") == "":
                 self.logger.info("Slot %s, Port %s not having asset" % (slot_num, num))
                 continue
             sfp = self.parse_item_content(f.group("body"), num, "XCVR")
@@ -292,12 +305,7 @@ class Script(BaseScript):
             # Chassis: S5328C-EI-24S's Device status:
             ch = s.pop(0)
             chassis = ch.split("'")[0]
-            r.append({
-                "Type": "CHASSIS",
-                "Slot": 0,
-                "Sub": "-",
-                "part_no": ch.split("'")[0]
-            })
+            r.append({"Type": "CHASSIS", "Slot": 0, "Sub": "-", "part_no": ch.split("'")[0]})
         elif "Unit" in s[0]:
             # @todo Unit devices
             s.pop(0)
@@ -343,15 +351,15 @@ class Script(BaseScript):
         # @todo use datetime.strftime()
         result = date
         need_edit = False
-        parts = date.split('-')
+        parts = date.split("-")
         year = int(parts[0])
         month = int(parts[1])
         day = int(self.rx_d.search(parts[2]).group(0))
         if month < 10:
-            month = '0' + str(month)
+            month = "0" + str(month)
             need_edit = True
         if day < 10:
-            day = '0' + str(day)
+            day = "0" + str(day)
             need_edit = True
         if len(str(year)) < 4:
             year = "2" + "0" * (3 - len(str(year))) + str(year)
@@ -360,7 +368,7 @@ class Script(BaseScript):
         #     need_edit = True
         if need_edit:
             parts = [year, month, day]
-            result = '-'.join([str(el) for el in parts])
+            result = "-".join([str(el) for el in parts])
         return result
 
     def get_type(self, slot, sub, part_no):
@@ -450,12 +458,14 @@ class Script(BaseScript):
             except self.CLISyntaxError:
                 return []
             if match:
-                return [{
-                    "type": "CHASSIS",
-                    "vendor": "HUAWEI",
-                    "serial": match.group("serial"),
-                    "part_no": [match.group("part_no")],
-                    "mfg_date": match.group("mdate")
-                }]
+                return [
+                    {
+                        "type": "CHASSIS",
+                        "vendor": "HUAWEI",
+                        "serial": match.group("serial"),
+                        "part_no": [match.group("part_no")],
+                        "mfg_date": match.group("mdate"),
+                    }
+                ]
 
         return items

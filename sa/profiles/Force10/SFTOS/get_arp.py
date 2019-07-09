@@ -17,8 +17,6 @@ class Script(BaseScript):
     interface = IGetARP
 
     def execute(self):
-        return [{
-            "ip": x[0],
-            "mac": x[1],
-            "interface": x[2]
-        } for x in parse_table(self.cli("show arp"))]
+        return [
+            {"ip": x[0], "mac": x[1], "interface": x[2]} for x in parse_table(self.cli("show arp"))
+        ]

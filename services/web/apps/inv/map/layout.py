@@ -9,6 +9,7 @@
 # Python modules
 import math
 from collections import defaultdict
+
 # Third-party modules
 import networkx as nx
 
@@ -100,7 +101,7 @@ class Layout(object):
             self.G,
             scale=scale,
             pos=self.fixed_positions or None,
-            fixed=list(self.fixed_positions) or None
+            fixed=list(self.fixed_positions) or None,
         )
         if self.fixed_positions:
             # Overwrite fixed positions

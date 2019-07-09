@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,28 +21,25 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^(?P<port>(?:e|g|ch)\d+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<oper_status>Up|Down|Not Present)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_port1 = re.compile(
-        r"^(?P<port>(?:e|g|ch)\d+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
-        r"(?P<admin_status>Up|Down)",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<port>(?:e|g|ch)\d+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+" r"(?P<admin_status>Up|Down)",
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_descr = re.compile(
-        r"^(?P<port>(?:e|g|cg)\d+)\s+(?P<descr>.+)$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<port>(?:e|g|cg)\d+)\s+(?P<descr>.+)$", re.MULTILINE | re.IGNORECASE
+    )
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
-        r"(?P<membership>\S+)\s*\n", re.MULTILINE)
+        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+" r"(?P<membership>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_vlan_ipif = re.compile(
-        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+"
-        r"(?:Static|DHCP)(\s+Valid)?")
-    rx_mac = re.compile(
-        r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
-    rx_enabled = re.compile(
-        r"^\s*(?P<port>(?:e|g|ch)\d+)\s+Enabled",
-        re.MULTILINE | re.IGNORECASE)
-    rx_lldp = re.compile(
-        r"^(?P<port>(?:e|g|ch)\d+)\s+(?:Rx|Tx)",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+" r"(?:Static|DHCP)(\s+Valid)?"
+    )
+    rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
+    rx_enabled = re.compile(r"^\s*(?P<port>(?:e|g|ch)\d+)\s+Enabled", re.MULTILINE | re.IGNORECASE)
+    rx_lldp = re.compile(r"^(?P<port>(?:e|g|ch)\d+)\s+(?:Rx|Tx)", re.MULTILINE | re.IGNORECASE)
 
     def get_gvrp(self):
         try:
@@ -111,7 +109,7 @@ class Script(BaseScript):
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             if ifname in gvrp:
                 iface["enabled_protocols"] += ["GVRP"]
@@ -128,7 +126,7 @@ class Script(BaseScript):
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_afi": ["BRIDGE"],
-                "tagged_vlans": []
+                "tagged_vlans": [],
             }
             for i in descr:
                 if ifname == i["port"]:
@@ -161,15 +159,17 @@ class Script(BaseScript):
                     "admin_status": True,
                     "oper_status": True,
                     "mac": mac,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": True,
-                        "oper_status": True,
-                        "mac": mac,
-                        "enabled_afi": ["IPv4"],
-                        "ipv4_addresses": [match.group("address")],
-                        "vlan_ids": [int(match.group("vlan_id"))]
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "admin_status": True,
+                            "oper_status": True,
+                            "mac": mac,
+                            "enabled_afi": ["IPv4"],
+                            "ipv4_addresses": [match.group("address")],
+                            "vlan_ids": [int(match.group("vlan_id"))],
+                        }
+                    ],
                 }
                 interfaces += [iface]
         # Not implemented

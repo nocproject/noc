@@ -19,16 +19,17 @@ class Script(BaseScript):
 
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s+(?P<admin_status>\S+)\s+"
-        r"\S+\s+(?:\S+\s+)?\d+\s+\S+\s+(?P<oper_status>\S+)\s*\n", re.MULTILINE)
-    rx_stp = re.compile(
-        r"^(?P<port>(?:Gi|2.5G|10G) \S+)\s+", re.MULTILINE)
+        r"\S+\s+(?:\S+\s+)?\d+\s+\S+\s+(?P<oper_status>\S+)\s*\n",
+        re.MULTILINE,
+    )
+    rx_stp = re.compile(r"^(?P<port>(?:Gi|2.5G|10G) \S+)\s+", re.MULTILINE)
     rx_ctp = re.compile(
-        r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n"
-        r"^\-+\s*\n"
-        r"^\s+Loop protect mode is enabled", re.MULTILINE)
+        r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n" r"^\-+\s*\n" r"^\s+Loop protect mode is enabled",
+        re.MULTILINE,
+    )
     rx_oam = re.compile(
-        r"^(?P<port>(?:Gi|2.5G|10G)\S+)\s+(?P<port_num>\S+)\s+enabled",
-        re.MULTILINE)
+        r"^(?P<port>(?:Gi|2.5G|10G)\S+)\s+(?P<port_num>\S+)\s+enabled", re.MULTILINE
+    )
     rx_switchport = re.compile(
         r"^Name: (?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n"
         r"^Administrative mode: (?P<mode>\S+)\s*\n"
@@ -36,13 +37,14 @@ class Script(BaseScript):
         r"^Trunk Native Mode VLAN: (?P<native_vlan>\d+)\s*\n"
         r"^Administrative Native VLAN tagging: \S+\s*\n"
         r"(^VLAN Trunking: \S+\s*\n)?"
-        r"^Allowed VLANs:(?P<vlans>.*)\n", re.MULTILINE)
+        r"^Allowed VLANs:(?P<vlans>.*)\n",
+        re.MULTILINE,
+    )
     rx_vlan = re.compile(r"^\s*(?:VLAN )?(?P<vlan>\d+)\s+", re.MULTILINE)
-    rx_hybrid_vlan = re.compile(
-        r"^Hybrid Native Mode VLAN: (?P<native_vlan>\d+)", re.MULTILINE)
+    rx_hybrid_vlan = re.compile(r"^Hybrid Native Mode VLAN: (?P<native_vlan>\d+)", re.MULTILINE)
     rx_link = re.compile(
-        r"^\s*LINK: (?P<mac>\S+) Mtu:(?P<mtu>\d+) \<(?P<options>.+?)\>",
-        re.MULTILINE)
+        r"^\s*LINK: (?P<mac>\S+) Mtu:(?P<mtu>\d+) \<(?P<options>.+?)\>", re.MULTILINE
+    )
     rx_ipv4 = re.compile(r"^\s+IPv4:\s+(?P<ip>\S+)", re.MULTILINE)
     rx_ipv6 = re.compile(r"^\s+IPv6:\s+(?P<ip>\S+)", re.MULTILINE)
 
@@ -98,11 +100,13 @@ class Script(BaseScript):
         snmp_indexes = []
         v = self.cli("show snmp mib ifmib ifIndex")
         for row in parse_table(v, max_width=80):
-            snmp_indexes += [{
-                "ifindex": int(row[0].strip()),
-                "ifdescr": row[1].strip(),
-                "ifname": row[2].strip()
-            }]
+            snmp_indexes += [
+                {
+                    "ifindex": int(row[0].strip()),
+                    "ifdescr": row[1].strip(),
+                    "ifname": row[2].strip(),
+                }
+            ]
         for match in self.rx_port.finditer(self.cli("show interface * status")):
             ifname = match.group("port")
             iface = {
@@ -111,7 +115,7 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_status") != "Down",
                 "oper_status": match.group("oper_status") != "Down",
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             if ifname in gvrp:
                 iface["enabled_protocols"] += ["GVRP"]
@@ -133,7 +137,7 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_status") != "Down",
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_afi": ["BRIDGE"],
-                "tagged_vlans": []
+                "tagged_vlans": [],
             }
             s = self.cli("show interface %s switchport" % ifname)
             match1 = self.rx_switchport.search(s)
@@ -141,12 +145,10 @@ class Script(BaseScript):
                 sub["untagged_vlan"] = int(match1.group("access_vlan"))
             elif match1.group("mode") == "trunk":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
-                sub["tagged_vlans"] = \
-                    self.expand_rangelist(match1.group("vlans").strip())
+                sub["tagged_vlans"] = self.expand_rangelist(match1.group("vlans").strip())
             elif match1.group("mode") == "hybrid":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
-                sub["tagged_vlans"] = \
-                    self.expand_rangelist(match1.group("vlans").strip())
+                sub["tagged_vlans"] = self.expand_rangelist(match1.group("vlans").strip())
                 match2 = self.rx_hybrid_vlan.search(s)
                 if match2:
                     sub["untagged_vlan"] = int(match2.group("native_vlan"))
@@ -166,15 +168,17 @@ class Script(BaseScript):
                 "admin_status": True,
                 "oper_status": "UP " in match1.group("options"),
                 "mac": match1.group("mac"),
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": True,
-                    "oper_status": "UP " in match1.group("options"),
-                    "mtu": match1.group("mtu"),
-                    "mac": match1.group("mac"),
-                    "enabled_afi": [],
-                    "vlan_ids": [int(vlan_id)]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": True,
+                        "oper_status": "UP " in match1.group("options"),
+                        "mtu": match1.group("mtu"),
+                        "mac": match1.group("mac"),
+                        "enabled_afi": [],
+                        "vlan_ids": [int(vlan_id)],
+                    }
+                ],
             }
             match1 = self.rx_ipv4.search(ll)
             if match1:

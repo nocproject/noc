@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.ip.models.vrf import VRF
@@ -25,20 +26,19 @@ class ReportVPNStatusApplication(SimpleReport):
                 continue  # Skip global
             d = []
             for fi in ForwardingInstance.objects.filter(type="VRF", name=vrf.name):
-                si = [i.name for i in
-                      SubInterface.objects.filter(
-                          forwarding_instance=fi.id).only("name")]
+                si = [
+                    i.name
+                    for i in SubInterface.objects.filter(forwarding_instance=fi.id).only("name")
+                ]
                 si = sorted(si)
                 if si:
                     d += [[fi.managed_object.name, ", ".join(si)]]
             if d:
-                data += [SectionRow(name="VRF %s, RD: %s [%s]" % (
-                    vrf.name, vrf.rd, vrf.state.name
-                ))]
+                data += [
+                    SectionRow(name="VRF %s, RD: %s [%s]" % (vrf.name, vrf.rd, vrf.state.name))
+                ]
                 data += d
         #
         return self.from_dataset(
-            title=self.title,
-            columns=[_("Managed Object"), _("Interfaces")],
-            data=data
+            title=self.title, columns=[_("Managed Object"), _("Interfaces")], data=data
         )

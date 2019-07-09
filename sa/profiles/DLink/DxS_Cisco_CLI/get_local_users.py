@@ -17,7 +17,9 @@ class Script(BaseScript):
     interface = IGetLocalUsers
     rx_line = re.compile(
         r"^username (?P<username>\S+) password( \d)? \S+\nusername \S+ "
-        r"privilege (?P<privilege>\d+)$", re.MULTILINE)
+        r"privilege (?P<privilege>\d+)$",
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
@@ -27,9 +29,5 @@ class Script(BaseScript):
                 user_class = "superuser"
             else:
                 user_class = "operator"
-            r += [{
-                "username": match.group("username"),
-                "class": user_class,
-                "is_active": True
-                }]
+            r += [{"username": match.group("username"), "class": user_class, "is_active": True}]
         return r

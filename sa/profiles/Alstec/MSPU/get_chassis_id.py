@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Alstec.MSPU.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -22,8 +21,5 @@ class Script(BaseScript):
         v = self.scripts.get_mac_address_table()
         for i in v:
             if i["type"] == "C":
-                r += [{
-                    "first_chassis_mac": i["mac"],
-                    "last_chassis_mac": i["mac"]
-                }]
+                r += [{"first_chassis_mac": i["mac"], "last_chassis_mac": i["mac"]}]
         return r

@@ -32,7 +32,7 @@ BI_SYNC_MODELS = [
 def fix():
     for model_id in BI_SYNC_MODELS:
         model = get_model(model_id)
-        print ("[%s]" % model_id)
+        print("[%s]" % model_id)
         if is_document(model):
             fix_document(model)
         else:
@@ -46,7 +46,7 @@ def fix_document(model):
         bi_id = bi_hash(d["_id"])
         bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_id)}})]
     if bulk:
-        print ("    Update %d items" % len(bulk))
+        print("    Update %d items" % len(bulk))
         coll.bulk_write(bulk)
 
 

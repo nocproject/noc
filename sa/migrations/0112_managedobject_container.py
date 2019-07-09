@@ -13,4 +13,6 @@ from noc.core.model.fields import DocumentReferenceField
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("sa_managedobject", "container", DocumentReferenceField("self", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject", "container", DocumentReferenceField("self", null=True, blank=True)
+        )

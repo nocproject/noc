@@ -13,10 +13,12 @@ import datetime
 import os
 import re
 from collections import defaultdict
+
 # Third-party modules
 import six
 import ujson
 import yaml
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
@@ -28,175 +30,76 @@ from noc.main.models.extstorage import ExtStorage
 class Command(BaseCommand):
     CLI_ENCODING = "quopri"
     MIB_ENCODING = "base64"
-    DEFAULT_BEEF_PATH_TEMPLATE = u"ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json"
-    DEFAULT_TEST_CASE_TEMPLATE = u"ad-hoc/{0.profile.name}/{0.uuid}/"
+    DEFAULT_BEEF_PATH_TEMPLATE = "ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json"
+    DEFAULT_TEST_CASE_TEMPLATE = "ad-hoc/{0.profile.name}/{0.uuid}/"
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # collect command
         collect_parser = subparsers.add_parser("collect")
-        collect_parser.add_argument(
-            "--spec",
-            help="Spec path or URL"
-        )
+        collect_parser.add_argument("--spec", help="Spec path or URL")
         collect_parser.add_argument(
             "--force",
             action="store_true",
             default=False,
-            help="Ignore beef policy setings in ManagedObject"
+            help="Ignore beef policy setings in ManagedObject",
         )
-        collect_parser.add_argument(
-            "--storage",
-            help="External storage name"
-        )
-        collect_parser.add_argument(
-            "--path",
-            help="Path name"
-        )
-        collect_parser.add_argument(
-            "objects",
-            nargs=argparse.REMAINDER,
-            help="Object names or ids"
-        )
+        collect_parser.add_argument("--storage", help="External storage name")
+        collect_parser.add_argument("--path", help="Path name")
+        collect_parser.add_argument("objects", nargs=argparse.REMAINDER, help="Object names or ids")
         # view command
         view_parser = subparsers.add_parser("view")
-        view_parser.add_argument(
-            "--storage",
-            help="External storage name"
-        )
-        view_parser.add_argument(
-            "--path",
-            help="Path name"
-        )
+        view_parser.add_argument("--storage", help="External storage name")
+        view_parser.add_argument("--path", help="Path name")
         # edit command
         export_parser = subparsers.add_parser("export")
-        export_parser.add_argument(
-            "--storage",
-            help="External storage name"
-        )
-        export_parser.add_argument(
-            "--path",
-            type=unicode,
-            help="Path name"
-        )
-        export_parser.add_argument(
-            "--export-path",
-            help="Path file for export"
-        )
+        export_parser.add_argument("--storage", help="External storage name")
+        export_parser.add_argument("--path", type=unicode, help="Path name")
+        export_parser.add_argument("--export-path", help="Path file for export")
         # edit command
         import_parser = subparsers.add_parser("import")
-        import_parser.add_argument(
-            "--storage",
-            help="External storage name"
-        )
-        import_parser.add_argument(
-            "--path",
-            type=unicode,
-            help="Path name"
-        )
-        import_parser.add_argument(
-            "paths",
-            nargs=argparse.REMAINDER,
-            help="Path to imported beef"
-        )
+        import_parser.add_argument("--storage", help="External storage name")
+        import_parser.add_argument("--path", type=unicode, help="Path name")
+        import_parser.add_argument("paths", nargs=argparse.REMAINDER, help="Path to imported beef")
         # list command
         list_parser = subparsers.add_parser("list")  # noqa
-        list_parser.add_argument(
-            "--storage",
-            help="External storage name"
-        )
-        list_parser.add_argument(
-            "--path",
-            type=unicode,
-            help="Path name"
-        )
+        list_parser.add_argument("--storage", help="External storage name")
+        list_parser.add_argument("--path", type=unicode, help="Path name")
         # test command
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
-            "--script",
-            action="append",
-            help="Script name for runs. Default (get_version)"
+            "--script", action="append", help="Script name for runs. Default (get_version)"
         )
-        run_parser.add_argument(
-            "--storage",
-            help="External storage name"
-        )
-        run_parser.add_argument(
-            "--path",
-            type=unicode,
-            help="Path name"
-        )
-        run_parser.add_argument(
-            "--access-preference",
-            default="SC",
-            help="Access preference"
-        )
+        run_parser.add_argument("--storage", help="External storage name")
+        run_parser.add_argument("--path", type=unicode, help="Path name")
+        run_parser.add_argument("--access-preference", default="SC", help="Access preference")
         out_group = run_parser.add_mutually_exclusive_group()
         out_group.add_argument(
             "--pretty",
             action="store_true",
             dest="pretty",
             default=False,
-            help="Pretty-print output"
+            help="Pretty-print output",
         )
         out_group.add_argument(
-            "--yaml",
-            action="store_true",
-            dest="yaml",
-            default=False,
-            help="YAML output"
+            "--yaml", action="store_true", dest="yaml", default=False, help="YAML output"
         )
-        run_parser.add_argument(
-            "arguments",
-            nargs=argparse.REMAINDER,
-            help="Script arguments"
-        )
+        run_parser.add_argument("arguments", nargs=argparse.REMAINDER, help="Script arguments")
         # create-test-case
         create_test_case_parser = subparsers.add_parser("create-test-case")
+        create_test_case_parser.add_argument("--storage", help="External storage name")
+        create_test_case_parser.add_argument("--path", type=unicode, help="Path name")
+        create_test_case_parser.add_argument("--test-storage", help="External storage name")
+        create_test_case_parser.add_argument("--test-path", type=unicode, help="Path name")
+        create_test_case_parser.add_argument("--config-storage", help="External storage name")
+        create_test_case_parser.add_argument("--config-path", default="/", help="Path name")
         create_test_case_parser.add_argument(
-            "--storage",
-            help="External storage name"
-        )
-        create_test_case_parser.add_argument(
-            "--path",
-            type=unicode,
-            help="Path name"
-        )
-        create_test_case_parser.add_argument(
-            "--test-storage",
-            help="External storage name"
-        )
-        create_test_case_parser.add_argument(
-            "--test-path",
-            type=unicode,
-            help="Path name"
-        )
-        create_test_case_parser.add_argument(
-            "--config-storage",
-            help="External storage name"
-        )
-        create_test_case_parser.add_argument(
-            "--config-path",
-            default=u"/",
-            help="Path name"
-        )
-        create_test_case_parser.add_argument(
-            "--build",
-            action="store_true",
-            default=False,
-            help="Build test case after create"
+            "--build", action="store_true", default=False, help="Build test case after create"
         )
         # build-test-case
         build_test_case_parser = subparsers.add_parser("build-test-case")
-        build_test_case_parser.add_argument(
-            "--test-storage",
-            help="External storage name"
-        )
-        build_test_case_parser.add_argument(
-            "--test-path",
-            type=unicode,
-            help="Path name"
-        )
+        build_test_case_parser.add_argument("--test-storage", help="External storage name")
+        build_test_case_parser.add_argument("--test-path", type=unicode, help="Path name")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
@@ -233,9 +136,7 @@ class Command(BaseCommand):
                 path = self.DEFAULT_BEEF_PATH_TEMPLATE.format(mo)
             else:
                 path = mo.object_profile.beef_path_template.render_subject(
-                    object=mo,
-                    spec=sp,
-                    datetime=datetime
+                    object=mo, spec=sp, datetime=datetime
                 )
             storage = mo.object_profile.beef_storage or self.get_storage(storage, beef=True)
             if not path:
@@ -253,8 +154,10 @@ class Command(BaseCommand):
                 if cdata == udata:
                     self.print("  %d bytes written" % cdata)
                 else:
-                    self.print("  %d bytes written (%d uncompressed. Ratio %.2f/1)" % (
-                        cdata, udata, float(udata) / float(cdata)))
+                    self.print(
+                        "  %d bytes written (%d uncompressed. Ratio %.2f/1)"
+                        % (cdata, udata, float(udata) / float(cdata))
+                    )
             except IOError as e:
                 self.print("  Failed to save: %s" % e)
             self.print("  Done")
@@ -265,13 +168,9 @@ class Command(BaseCommand):
         r = [
             "UUID     : %s" % beef.uuid,
             "Profile  : %s" % beef.box.profile,
-            "Platform : %s %s Version: %s" % (
-                beef.box.vendor,
-                beef.box.platform,
-                beef.box.version
-            ),
+            "Platform : %s %s Version: %s" % (beef.box.vendor, beef.box.platform, beef.box.version),
             "Spec     : %s" % beef.spec,
-            "Changed  : %s" % beef.changed
+            "Changed  : %s" % beef.changed,
         ]
         if True or beef.description:
             r += ["Description:\n  %s\n" % beef.description.replace("\n", "\n  ")]
@@ -279,19 +178,13 @@ class Command(BaseCommand):
         for c in beef.cli_fsm:
             r += ["---- State: %s" % c.state]
             for n, reply in enumerate(c.reply):
-                r += [
-                    "-------- Packet #%d" % n,
-                    "%r" % beef._cli_decoder(reply)
-                ]
+                r += ["-------- Packet #%d" % n, "%r" % beef._cli_decoder(reply)]
         r += ["--[CLI]----------"]
         for c in beef.cli:
             r += ["---- Names: %s" % ", ".join(c.names)]
             r += ["-------- Request: %r" % c.request]
             for n, reply in enumerate(c.reply):
-                r += [
-                    "-------- Packet #%d" % n,
-                    "%r" % beef._cli_decoder(reply)
-                ]
+                r += ["-------- Packet #%d" % n, "%r" % beef._cli_decoder(reply)]
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
         return
@@ -340,28 +233,43 @@ class Command(BaseCommand):
         for storage in self.iter_storage(name=storage, beef=True):
             self.print("\n%sStorage: %s%s\n" % ("=" * 20, storage.name, "=" * 20))
             st_fs = storage.open_fs()
-            for step in st_fs.walk(''):
+            for step in st_fs.walk(""):
                 if not step.files:
                     continue
                 for file in step.files:
                     beef = Beef.load(storage, file.make_path(step.path))
-                    r += [",".join([
-                        beef.uuid,
-                        beef.box.profile,
-                        beef.box.vendor,
-                        beef.box.platform,
-                        beef.box.version,
-                        beef.spec,
-                        beef.changed,
-                        file.make_path(step.path)
-                    ])]
+                    r += [
+                        ",".join(
+                            [
+                                beef.uuid,
+                                beef.box.profile,
+                                beef.box.vendor,
+                                beef.box.platform,
+                                beef.box.version,
+                                beef.spec,
+                                beef.changed,
+                                file.make_path(step.path),
+                            ]
+                        )
+                    ]
             # Dump output
             self.stdout.write("\n".join(r) + "\n")
         return
 
-    def handle_run(self, path, storage, script, pretty=False, yaml=False, access_preference="SC",
-                   arguments=None, *args, **options):
+    def handle_run(
+        self,
+        path,
+        storage,
+        script,
+        pretty=False,
+        yaml=False,
+        access_preference="SC",
+        arguments=None,
+        *args,
+        **options
+    ):
         from noc.core.script.loader import loader
+
         st = self.get_storage(storage, beef=True)
         beef = self.get_beef(st, path)
         # Build credentials
@@ -371,7 +279,7 @@ class Command(BaseCommand):
             "beef_storage_url": st.url,
             "beef_path": path,
             "access_preference": access_preference,
-            "snmp_ro": "public"
+            "snmp_ro": "public",
         }
         # Get capabilities
         caps = {}
@@ -392,25 +300,37 @@ class Command(BaseCommand):
                 version={
                     "vendor": beef.box.vendor,
                     "platform": beef.box.platform,
-                    "version": beef.box.version
+                    "version": beef.box.version,
                 },
                 timeout=3600,
                 name=s_name,
-                args=script_args
+                args=script_args,
             )
             result = scr.run()
             if pretty:
                 import pprint
+
                 pprint.pprint(result)
             elif yaml:
                 import yaml
                 import sys
+
                 yaml.dump(result, sys.stdout, indent=2)
             else:
                 self.stdout.write("%s\n" % result)
 
-    def handle_create_test_case(self, storage=None, path=None, config_storage=None, config_path=None,
-                                test_storage=None, test_path=None, build=False, *args, **options):
+    def handle_create_test_case(
+        self,
+        storage=None,
+        path=None,
+        config_storage=None,
+        config_path=None,
+        test_storage=None,
+        test_path=None,
+        build=False,
+        *args,
+        **options
+    ):
         # Load beef
         beefs = self.get_beefs(storage=storage, path=path)
         # Load config
@@ -431,8 +351,10 @@ class Command(BaseCommand):
                 config = cfg[beef.uuid][0] if beef.uuid in cfg else cfg[""][0]
                 config["beef"] = str(beef.uuid)
                 self.print("Writing %s:%s/test-config.yml" % (test_storage, save_path))
-                fs.setbytes(unicode(os.path.join(save_path, "test-config.yml")),
-                            yaml.dump(config, default_flow_style=False))
+                fs.setbytes(
+                    unicode(os.path.join(save_path, "test-config.yml")),
+                    yaml.dump(config, default_flow_style=False),
+                )
                 # Write beef
                 self.print("Writing %s:%s/beef.json.bz2" % (test_storage, save_path))
                 beef.save(test_storage, unicode(os.path.join(save_path, "beef.json.bz2")))
@@ -472,13 +394,13 @@ class Command(BaseCommand):
                 "cli_protocol": "beef",
                 "beef_storage_url": test_st.url,
                 "beef_path": beef_path,
-                "access_preference": test.get("access_preference", "SC")
+                "access_preference": test.get("access_preference", "SC"),
             }
             # Build version
             version = {
                 "vendor": beef.box.vendor,
                 "platform": beef.box.platform,
-                "version": beef.box.version
+                "version": beef.box.version,
             }
             # @todo: Input
             scr = scls(
@@ -487,7 +409,7 @@ class Command(BaseCommand):
                 capabilities=caps,
                 version=version,
                 timeout=3600,
-                name=script
+                name=script,
             )
             self.print("[%04d] Running %s" % (n, test["script"]))
             result = scr.run()
@@ -497,7 +419,7 @@ class Command(BaseCommand):
                 "credentials": credentials,
                 "version": version,
                 "input": {},
-                "result": result
+                "result": result,
             }
             data = bz2.compress(ujson.dumps(tc))
             #
@@ -594,14 +516,13 @@ class Command(BaseCommand):
                 r[(st_fs, beef_path)] = beef
         return r
 
-    rx_arg = re.compile(
-        r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$"
-    )
+    rx_arg = re.compile(r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$")
 
     def get_script_args(self, arguments):
         """
         Parse arguments and return script's
         """
+
         def read_file(path):
             if not os.path.exists(path):
                 self.die("Cannot open file '%s'" % path)

@@ -18,7 +18,7 @@ class MaintenanceType(Document):
         "collection": "noc.maintenancetype",
         "strict": False,
         "auto_create_index": False,
-        "legacy_collections": ["noc.maintainancetype"]
+        "legacy_collections": ["noc.maintainancetype"],
     }
 
     name = StringField(unique=True)

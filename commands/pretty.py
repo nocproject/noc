@@ -10,8 +10,10 @@
 import json
 import sys
 import pprint
+
 # Third-party modules
 import yaml
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -19,18 +21,10 @@ from noc.core.management.base import BaseCommand
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "--yaml",
-            action="store_const",
-            dest="format",
-            const="yaml",
-            help="YAML output"
+            "--yaml", action="store_const", dest="format", const="yaml", help="YAML output"
         )
         parser.add_argument(
-            "--json",
-            action="store_const",
-            dest="format",
-            const="json",
-            help="JSON output"
+            "--json", action="store_const", dest="format", const="json", help="JSON output"
         )
 
     def handle(self, format, *args, **options):

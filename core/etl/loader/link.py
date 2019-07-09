@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.inv.models.extnrilink import ExtNRILink
@@ -17,21 +18,12 @@ class LinkLoader(BaseLoader):
     """
     Managed Object loader
     """
+
     name = "link"
     model = ExtNRILink
-    fields = [
-        "id",
-        "source",
-        "src_mo",
-        "src_interface",
-        "dst_mo",
-        "dst_interface"
-    ]
+    fields = ["id", "source", "src_mo", "src_interface", "dst_mo", "dst_interface"]
 
-    mapped_fields = {
-        "src_mo": "managedobject",
-        "dst_mo": "managedobject"
-    }
+    mapped_fields = {"src_mo": "managedobject", "dst_mo": "managedobject"}
 
     discard_deferred = True
 

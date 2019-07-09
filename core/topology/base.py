@@ -8,11 +8,13 @@
 
 # Python modules
 import operator
+
 # Third-Party modules
 import six
 from networkx import nx
 import numpy as np
 import cachetools
+
 # NOC modules
 from noc.core.stencil import stencil_registry
 from noc.lib.text import split_alnum
@@ -22,9 +24,7 @@ from .layout.tree import TreeLayout
 
 
 class BaseTopology(object):
-    CAPS = {
-        "Network | STP"
-    }
+    CAPS = {"Network | STP"}
     # Top padding for isolated nodes
     ISOLATED_PADDING = 50
     # Minimum width to place isolated nodes
@@ -87,20 +87,22 @@ class BaseTopology(object):
         # Apply node hints
         attrs.update(self.node_hints.get(mo_id) or {})
         # Apply default attributes
-        attrs.update({
-            "mo": mo,
-            "type": "managedobject",
-            "id": mo_id,
-            "name": mo.name,
-            "address": mo.address,
-            "role": self.get_role(mo),
-            "shape": getattr(stencil, "path", ""),
-            "shape_width": getattr(stencil, "width", 0),
-            "shape_height": getattr(stencil, "height", 0),
-            "level": mo.object_profile.level,
-            "ports": [],
-            "caps": list(oc)
-        })
+        attrs.update(
+            {
+                "mo": mo,
+                "type": "managedobject",
+                "id": mo_id,
+                "name": mo.name,
+                "address": mo.address,
+                "role": self.get_role(mo),
+                "shape": getattr(stencil, "path", ""),
+                "shape_width": getattr(stencil, "width", 0),
+                "shape_height": getattr(stencil, "height", 0),
+                "level": mo.object_profile.level,
+                "ports": [],
+                "caps": list(oc),
+            }
+        )
         self.G.add_node(mo_id, **attrs)
 
     def add_cloud(self, link, attrs=None):
@@ -120,30 +122,28 @@ class BaseTopology(object):
         # Apply node hints
         attrs.update(self.node_hints.get(link_id) or {})
         # Apply default attributes
-        attrs.update({
-            "link": link,
-            "type": "cloud",
-            "id": link_id,
-            "name": link.name or "",
-            "ports": [],
-            "shape": getattr(stencil, "path", ""),
-            "shape_width": getattr(stencil, "width", 0),
-            "shape_height": getattr(stencil, "height", 0),
-        })
+        attrs.update(
+            {
+                "link": link,
+                "type": "cloud",
+                "id": link_id,
+                "name": link.name or "",
+                "ports": [],
+                "shape": getattr(stencil, "path", ""),
+                "shape_width": getattr(stencil, "width", 0),
+                "shape_height": getattr(stencil, "height", 0),
+            }
+        )
         self.G.add_node(link_id, **attrs)
 
     def add_link(self, o1, o2, attrs=None):
         """
         Add link between interfaces to topology
         """
-        a = {
-            "connector": "normal"
-        }
+        a = {"connector": "normal"}
         if attrs:
             a.update(attrs)
-        a.update({
-            "type": "link"
-        })
+        a.update({"type": "link"})
         #
         self.G.add_edge(o1, o2, **a)
 
@@ -213,10 +213,9 @@ class BaseTopology(object):
         s = maxv - minv
         # Shift positions according to offset and node size
         for p in pos:
-            so = np.array([
-                self.G.node[p]["shape_width"] / 2.0,
-                self.G.node[p]["shape_height"] / 2.0
-            ])
+            so = np.array(
+                [self.G.node[p]["shape_width"] / 2.0, self.G.node[p]["shape_height"] / 2.0]
+            )
             pos[p] -= minv + so - self.MAP_OFFSET
         return s[0], s[1], pos
 
@@ -246,8 +245,7 @@ class BaseTopology(object):
         pos = dict((o, pos[o]) for o in pos if o in self.G.node)
         width, height, pos = self.normalize_pos(pos)
         # Place isolated nodes
-        isolated = sorted((o for o in self.G if o not in pos),
-                          key=lambda x: self.G.node[x]["name"])
+        isolated = sorted((o for o in self.G if o not in pos), key=lambda x: self.G.node[x]["name"])
         y = height + self.ISOLATED_PADDING
         x = 0
         w = max(width, self.ISOLATED_WIDTH)

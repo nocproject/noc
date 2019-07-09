@@ -19,14 +19,20 @@ class ReportUnclassifiedOIDs(SimpleReport):
 
     def get_data(self, **kwargs):
         c = EventClass.objects.filter(name="Unknown | SNMP Trap").first()
-        pipeline = [{"$match": {"event_class": c.id}},
-                    {"$project": {"vars": 1}},
-                    {"$group": {"_id": "$vars.trap_oid", "count": {"$sum": 1}}}]
+        pipeline = [
+            {"$match": {"event_class": c.id}},
+            {"$project": {"vars": 1}},
+            {"$group": {"_id": "$vars.trap_oid", "count": {"$sum": 1}}},
+        ]
         oids = ActiveEvent._get_collection().aggregate(pipeline)
         data = [(e["_id"], MIB.get_name(e["_id"]), e["count"]) for e in oids]
         data = sorted(data, key=lambda x: -x[2])
-        return self.from_dataset(title=self.title,
-                                 columns=["OID", "Name",
-                                          TableColumn("Count", format="integer",
-                                                      align="right", total="sum")],
-                                 data=data)
+        return self.from_dataset(
+            title=self.title,
+            columns=[
+                "OID",
+                "Name",
+                TableColumn("Count", format="integer", align="right", total="sum"),
+            ],
+            data=data,
+        )

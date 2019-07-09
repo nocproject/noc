@@ -16,6 +16,7 @@ class CommunityTypeApplication(ExtModelApplication):
     """
     Community Types application
     """
+
     title = _("Community Types")
     menu = [_("Setup"), _("Community Types")]
     model = CommunityType

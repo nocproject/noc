@@ -8,12 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import tornado.web
 import tornado.gen
 import cachetools
 import threading
 import operator
+
 # NOC modules
 from .loader import get_datasource
 from noc.core.perf import metrics
@@ -44,8 +46,7 @@ class DataSourceRequestHandler(tornado.web.RequestHandler):
         writer(data)
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_cache"),
-                             lock=lambda _: ds_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_cache"), lock=lambda _: ds_lock)
     def get_datasource(cls, name):
         return get_datasource(name)
 

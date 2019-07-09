@@ -30,11 +30,12 @@ class Script(BaseScript):
                 "admin_status": True,
                 "oper_status": True,
                 "mtu": res["table.Network.%s.MTU" % name],
-                "mac": res["table.Network.%s.PhysicalAddress" % name]
+                "mac": res["table.Network.%s.PhysicalAddress" % name],
             }
             ip_address = "%s/%s" % (
                 res["table.Network.%s.IPAddress" % name],
-                IPv4.netmask_to_len(res["table.Network.%s.SubnetMask" % name]))
+                IPv4.netmask_to_len(res["table.Network.%s.SubnetMask" % name]),
+            )
 
             sub = {
                 "name": name,
@@ -42,7 +43,7 @@ class Script(BaseScript):
                 "oper_status": True,
                 "mac": res["table.Network.%s.PhysicalAddress" % name],
                 "enabled_afi": ["IPv4"],
-                "ipv4_addresses": [ip_address]
+                "ipv4_addresses": [ip_address],
             }
             iface["subinterfaces"] = [sub]
             r += [iface]

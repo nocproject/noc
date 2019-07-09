@@ -11,8 +11,10 @@ from __future__ import print_function
 import datetime
 from collections import namedtuple
 import operator
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
@@ -21,32 +23,28 @@ from noc.sa.models.objectdata import ObjectData
 from noc.config import config
 
 
-Record = namedtuple("Record", [
-    "timestamp", "alarm_id", "root_id",
-    "managed_object", "address", "platform",
-    "uplink1", "uplink2"
-])
+Record = namedtuple(
+    "Record",
+    [
+        "timestamp",
+        "alarm_id",
+        "root_id",
+        "managed_object",
+        "address",
+        "platform",
+        "uplink1",
+        "uplink2",
+    ],
+)
 
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument("--delta", type=int, default=60, help="Alarm delta")
         parser.add_argument(
-            "--delta",
-            type=int,
-            default=60,
-            help="Alarm delta"
+            "--trace", action="store_true", default=False, help="Trace RCA decision"
         )
-        parser.add_argument(
-            "--trace",
-            action="store_true",
-            default=False,
-            help="Trace RCA decision"
-        )
-        parser.add_argument(
-            "alarm",
-            nargs=1,
-            help="Alarm ID"
-        )
+        parser.add_argument("alarm", nargs=1, help="Alarm ID")
 
     def handle(self, alarm, delta, trace=False, *args, **kwargs):
         def nq(s):
@@ -65,9 +63,7 @@ class Command(BaseCommand):
         alarms = {}
         mos = list(a0.managed_object.segment.managed_objects)
         for a in ArchivedAlarm.objects.filter(
-            timestamp__gte=t0,
-            timestamp__lte=t1,
-            managed_object__in=[o.id for o in mos]
+            timestamp__gte=t0, timestamp__lte=t1, managed_object__in=[o.id for o in mos]
         ):
             alarms[a.managed_object.id] = a
         # Enrich with roots
@@ -85,25 +81,34 @@ class Command(BaseCommand):
                 if uplinks:
                     uplink2 = nq(uplinks.pop(0).name)
             a = alarms.get(mo.id)
-            r += [Record(
-                timestamp=a.timestamp.strftime("%Y-%m-%d %H:%M:%S") if a else "",
-                alarm_id=a.id if a else "",
-                root_id=a.root if a and a.root else "",
-                managed_object=nq(mo.name),
-                address=mo.address,
-                platform=mo.platform,
-                uplink1=uplink1,
-                uplink2=uplink2
-            )]
+            r += [
+                Record(
+                    timestamp=a.timestamp.strftime("%Y-%m-%d %H:%M:%S") if a else "",
+                    alarm_id=a.id if a else "",
+                    root_id=a.root if a and a.root else "",
+                    managed_object=nq(mo.name),
+                    address=mo.address,
+                    platform=mo.platform,
+                    uplink1=uplink1,
+                    uplink2=uplink2,
+                )
+            ]
         MASK = "%19s | %24s | %24s | %16s | %15s | %20s | %16s | %16s"
-        self.print(MASK % ("ts", "alarm", "root", "object", "address",
-                           "platform", "uplink1", "uplink2"))
+        self.print(
+            MASK % ("ts", "alarm", "root", "object", "address", "platform", "uplink1", "uplink2")
+        )
         for x in sorted(r, key=operator.attrgetter("timestamp")):
             self.print(MASK % x)
         if trace:
             self.print("Time range: %s -- %s" % (t0, t1))
-            self.print("Topology RCA Window: %s" % ("%ss" % config.correlator.topology_rca_window if
-                                                    config.correlator.topology_rca_window else "Disabled"))
+            self.print(
+                "Topology RCA Window: %s"
+                % (
+                    "%ss" % config.correlator.topology_rca_window
+                    if config.correlator.topology_rca_window
+                    else "Disabled"
+                )
+            )
             amap = dict((a.id, a) for a in six.itervalues(alarms))
             for x in sorted(r, key=operator.attrgetter("timestamp")):
                 if not x.alarm_id:
@@ -124,8 +129,9 @@ class Command(BaseCommand):
             :return:
             """
             return (
-                not config.correlator.topology_rca_window or
-                (a1.timestamp - a2.timestamp).total_seconds() <= config.correlator.topology_rca_window
+                not config.correlator.topology_rca_window
+                or (a1.timestamp - a2.timestamp).total_seconds()
+                <= config.correlator.topology_rca_window
             )
 
         def all_uplinks_failed(a1):
@@ -192,7 +198,13 @@ class Command(BaseCommand):
             if a and a.timestamp <= ts and mo in a.rca_neighbors:
                 na[n] = a
                 uplinks |= set(a.uplinks)
-        self.print("    Neighbor alarms: %s" % ", ".join("%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name) for x in na))
+        self.print(
+            "    Neighbor alarms: %s"
+            % ", ".join(
+                "%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name)
+                for x in na
+            )
+        )
         self.print("    Uplinks: %s" % ", ".join(ManagedObject.get_by_id(u).name for u in uplinks))
         # Correlate current alarm
         correlate(alarm)
@@ -204,13 +216,16 @@ class Command(BaseCommand):
     def topology_rca_uplink(self, alarm, alarms, seen=None, ts=None):
         def can_correlate(a1, a2):
             return (
-                not config.correlator.topology_rca_window or
-                (a1.timestamp - a2.timestamp).total_seconds() <= config.correlator.topology_rca_window
+                not config.correlator.topology_rca_window
+                or (a1.timestamp - a2.timestamp).total_seconds()
+                <= config.correlator.topology_rca_window
             )
 
         ts = ts or alarm.timestamp
         seen = seen or set()
-        self.print(">>> topology_rca(%s, %s)" % (alarm.id, "{%s}" % ", ".join(str(x) for x in seen)))
+        self.print(
+            ">>> topology_rca(%s, %s)" % (alarm.id, "{%s}" % ", ".join(str(x) for x in seen))
+        )
         if hasattr(alarm, "_trace_root"):
             self.print("<<< already correlated")
             return
@@ -237,8 +252,13 @@ class Command(BaseCommand):
             a = alarms.get(n)
             if a and a.timestamp <= ts:
                 na[n] = a
-        self.print("    Neighbor alarms: %s" % ", ".join("%s%s (%s)" % ("U:" if x in uplinks else "", na[x],
-                                                                        ManagedObject.get_by_id(x).name) for x in na))
+        self.print(
+            "    Neighbor alarms: %s"
+            % ", ".join(
+                "%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name)
+                for x in na
+            )
+        )
         self.print("    Uplinks: %s" % ", ".join(ManagedObject.get_by_id(u).name for u in uplinks))
         if uplinks and len([na[o] for o in uplinks if o in na]) == len(uplinks):
             # All uplinks are faulty

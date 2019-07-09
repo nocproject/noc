@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>\S+)\s+> "
     pattern_more = [
         (r"^\s+Press any key to continue", "\r\n"),
-        (r"Press any letter key to start filtering items", "\x03\r")
+        (r"Press any letter key to start filtering items", "\x03\r"),
     ]
     command_exit = "exit"
     username_submit = "\r"

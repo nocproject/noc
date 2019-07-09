@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 from collections import defaultdict
+
 # NOC modules
 from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
@@ -33,19 +34,21 @@ class SegmentAlarmCard(BaseCard):
             # Self alarms
             if segment.id in aseg:
                 for a in aseg[segment.id]:
-                    r["alarms"] += [{
-                        "alarm_id": a.id,
-                        "object": a.managed_object,
-                        "alarm": a,
-                        "severity": a.severity,
-                        "timestamp": a.timestamp,
-                        "duration": a.display_duration,
-                        "escalation_tt": a.escalation_tt or "",
-                        "summary": {
-                            "subscriber": SummaryItem.items_to_dict(a.direct_subscribers),
-                            "service": SummaryItem.items_to_dict(a.direct_services)
+                    r["alarms"] += [
+                        {
+                            "alarm_id": a.id,
+                            "object": a.managed_object,
+                            "alarm": a,
+                            "severity": a.severity,
+                            "timestamp": a.timestamp,
+                            "duration": a.display_duration,
+                            "escalation_tt": a.escalation_tt or "",
+                            "summary": {
+                                "subscriber": SummaryItem.items_to_dict(a.direct_subscribers),
+                                "service": SummaryItem.items_to_dict(a.direct_services),
+                            },
                         }
-                    }]
+                    ]
             for ns in NetworkSegment.objects.filter(parent=segment.id):
                 if ns.id not in seen_seg:
                     continue
@@ -53,10 +56,7 @@ class SegmentAlarmCard(BaseCard):
                     "segment": ns,
                     "children": [],
                     "alarms": [],
-                    "summary": {
-                        "subscriber": {},
-                        "service": {}
-                    }
+                    "summary": {"subscriber": {}, "service": {}},
                 }
                 process_segment(sr, ns)
                 r["children"] += [sr]
@@ -83,13 +83,8 @@ class SegmentAlarmCard(BaseCard):
             "segment": self.object,
             "children": [],
             "alarms": [],
-            "summary": {
-                "subscriber": {},
-                "service": {}
-            }
+            "summary": {"subscriber": {}, "service": {}},
         }
         process_segment(tree, self.object)
         update_summary(tree)
-        return {
-            "tree": [tree]
-        }
+        return {"tree": [tree]}

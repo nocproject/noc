@@ -16,6 +16,7 @@ class CHPolicyApplication(ExtDocApplication):
     """
     CHPolicy application
     """
+
     title = "CHPolicy"
     menu = [_("Setup"), _("CH Policies")]
     model = CHPolicy

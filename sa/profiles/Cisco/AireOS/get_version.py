@@ -11,10 +11,8 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
-rx_ver = re.compile(r"^Product Version\.+\s+(?P<version>\S+)",
-    re.MULTILINE | re.DOTALL)
-rx_inv = re.compile("^PID:\s+(?P<platform>\S+)",
-    re.MULTILINE | re.DOTALL)
+rx_ver = re.compile(r"^Product Version\.+\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
+rx_inv = re.compile("^PID:\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
 
 
 class Script(BaseScript):
@@ -29,8 +27,4 @@ class Script(BaseScript):
         v = self.cli("show inventory")
         match = rx_inv.search(v)
         platform = match.group("platform")
-        return {
-            "vendor": "Cisco",
-            "platform": platform,
-            "version": version,
-        }
+        return {"vendor": "Cisco", "platform": platform, "version": version}

@@ -11,6 +11,7 @@
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
+
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -36,21 +37,11 @@ class DiscoveryService(Service):
         self.slot_number, self.total_slots = yield self.acquire_slot()
         if self.total_slots > 1:
             self.logger.info(
-                "Enabling distributed mode: Slot %d/%d",
-                self.slot_number, self.total_slots
+                "Enabling distributed mode: Slot %d/%d", self.slot_number, self.total_slots
             )
-            ifilter = {
-                "key": {
-                    "$mod": [
-                        self.total_slots,
-                        self.slot_number
-                    ]
-                }
-            }
+            ifilter = {"key": {"$mod": [self.total_slots, self.slot_number]}}
         else:
-            self.logger.info(
-                "Enabling standalone mode"
-            )
+            self.logger.info("Enabling standalone mode")
             ifilter = None
         self.scheduler = Scheduler(
             "discovery",
@@ -60,7 +51,7 @@ class DiscoveryService(Service):
             ioloop=self.ioloop,
             filter=ifilter,
             service=self,
-            sample=config.discovery.sample
+            sample=config.discovery.sample,
         )
         self.scheduler.run()
 

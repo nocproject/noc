@@ -13,12 +13,14 @@ import datetime
 import random
 import threading
 import time
+
 # Third-party modules
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
 from concurrent.futures import Future
 from pymongo import DeleteOne, UpdateOne
+
 # NOC modules
 from .job import Job
 from noc.lib.nosql import get_db
@@ -38,10 +40,20 @@ class Scheduler(object):
 
     CACHE_DEFAULT_TTL = config.scheduler.cache_default_ttl
 
-    def __init__(self, name, pool=None, reset_running=False,
-                 max_threads=5, ioloop=None, check_time=1000,
-                 submit_threshold=None, max_chunk=None,
-                 filter=None, service=None, sample=0):
+    def __init__(
+        self,
+        name,
+        pool=None,
+        reset_running=False,
+        max_threads=5,
+        ioloop=None,
+        check_time=1000,
+        submit_threshold=None,
+        max_chunk=None,
+        filter=None,
+        service=None,
+        sample=0,
+    ):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -81,17 +93,11 @@ class Scheduler(object):
         if submit_threshold:
             self.submit_threshold = submit_threshold
         else:
-            self.submit_threshold = max(
-                self.max_threads // self.SUBMIT_THRESHOLD_FACTOR,
-                1
-            )
+            self.submit_threshold = max(self.max_threads // self.SUBMIT_THRESHOLD_FACTOR, 1)
         if max_chunk:
             self.max_chunk = max_chunk
         else:
-            self.max_chunk = max(
-                self.max_threads // self.MAX_CHUNK_FACTOR,
-                2
-            )
+            self.max_chunk = max(self.max_threads // self.MAX_CHUNK_FACTOR, 2)
         self.filter = filter
         self.to_shutdown = False
         self.min_sleep = float(check_time) / self.UPDATES_PER_CHECK / 1000.0
@@ -103,7 +109,9 @@ class Scheduler(object):
         if self.service:
             self.scheduler_id = "%s[%s:%s]" % (
                 self.service.service_id,
-                self.service.address, self.service.port)
+                self.service.address,
+                self.service.port,
+            )
         else:
             self.scheduler_id = "standalone scheduler"
         self.sample = sample
@@ -134,8 +142,7 @@ class Scheduler(object):
         Returns mongo collection instance
         """
         if not self.collection:
-            self.logger.debug("Open collection %s",
-                              self.collection_name)
+            self.logger.debug("Open collection %s", self.collection_name)
             self.collection = get_db()[self.collection_name]
             self.bulk = []
         return self.collection
@@ -145,10 +152,8 @@ class Scheduler(object):
         Returns threadpool executor
         """
         if not self.executor:
-            self.logger.debug("Run thread executor (%d threads)",
-                              self.max_threads)
-            self.executor = ThreadPoolExecutor(self.max_threads,
-                                               name=self.name)
+            self.logger.debug("Run thread executor (%d threads)", self.max_threads)
+            self.executor = ThreadPoolExecutor(self.max_threads, name=self.name)
         return self.executor
 
     def reset_running(self):
@@ -156,13 +161,9 @@ class Scheduler(object):
         Reset all running jobs to waiting status
         """
         self.logger.debug("Reset running jobs")
-        r = self.get_collection().update_many(self.get_query({
-            Job.ATTR_STATUS: Job.S_RUN
-        }), {
-            "$set": {
-                Job.ATTR_STATUS: Job.S_WAIT
-            }
-        })
+        r = self.get_collection().update_many(
+            self.get_query({Job.ATTR_STATUS: Job.S_RUN}), {"$set": {Job.ATTR_STATUS: Job.S_WAIT}}
+        )
         if r.acknowledged:
             if r.modified_count:
                 self.logger.info("Reset: %d", r.modified_count)
@@ -176,10 +177,7 @@ class Scheduler(object):
         Create all nesessary indexes
         """
         self.logger.debug("Check indexes")
-        self.get_collection().create_index(
-            [("ts", 1)],
-            partialFilterExpression={"s": "W"}
-        )
+        self.get_collection().create_index([("ts", 1)], partialFilterExpression={"s": "W"})
         self.get_collection().create_index([("jcls", 1), ("key", 1)])
         self.logger.debug("Indexes are ready")
 
@@ -235,12 +233,19 @@ class Scheduler(object):
         """
         Yields pending jobs
         """
-        qs = self.get_collection().find(self.get_query({
-            Job.ATTR_TS: {
-                "$lte": datetime.datetime.now() + self.read_ahead_interval
-            },
-            Job.ATTR_STATUS: Job.S_WAIT
-        })).limit(limit).sort(Job.ATTR_TS)
+        qs = (
+            self.get_collection()
+            .find(
+                self.get_query(
+                    {
+                        Job.ATTR_TS: {"$lte": datetime.datetime.now() + self.read_ahead_interval},
+                        Job.ATTR_STATUS: Job.S_WAIT,
+                    }
+                )
+            )
+            .limit(limit)
+            .sort(Job.ATTR_TS)
+        )
         try:
             for job in qs:
                 job[Job.ATTR_SAMPLE] = self.sample
@@ -248,8 +253,7 @@ class Scheduler(object):
                     jcls = get_handler(job[Job.ATTR_CLASS])
                     yield jcls(self, job)
                 except ImportError as e:
-                    self.logger.error("Invalid job class %s",
-                                      job[Job.ATTR_CLASS])
+                    self.logger.error("Invalid job class %s", job[Job.ATTR_CLASS])
                     self.logger.error("Error: %s", e)
                     self.remove_job_by_id(job[Job.ATTR_ID])
         except pymongo.errors.CursorNotFound:
@@ -273,7 +277,8 @@ class Scheduler(object):
         burst_ids = set(j.attrs[Job.ATTR_ID] for j in jobs)
         if len(jobs) <= self.max_chunk // 2:
             jobs += [
-                j for j in self.iter_pending_jobs(self.max_chunk)
+                j
+                for j in self.iter_pending_jobs(self.max_chunk)
                 if j.attrs[Job.ATTR_ID] not in burst_ids
             ]
         while jobs:
@@ -283,31 +288,22 @@ class Scheduler(object):
                 self.jobs_burst = jobs
                 break
             now = datetime.datetime.now()
-            rl = min(
-                sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now),
-                free_workers
-            )
+            rl = min(sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now), free_workers)
             rjobs, jobs = jobs[:rl], jobs[rl:]
             if rjobs:
                 jids = [j.attrs[Job.ATTR_ID] for j in rjobs]
                 self.logger.debug(
-                    "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
-                    jids, Job.ATTR_STATUS, Job.S_RUN
+                    "update({_id: {$in: %s}}, {$set: {%s: '%s'}})", jids, Job.ATTR_STATUS, Job.S_RUN
                 )
-                r = collection.update_many({
-                    "_id": {
-                        "$in": jids
-                    }
-                }, {
-                    "$set": {
-                        Job.ATTR_STATUS: Job.S_RUN
-                    }
-                })
+                r = collection.update_many(
+                    {"_id": {"$in": jids}}, {"$set": {Job.ATTR_STATUS: Job.S_RUN}}
+                )
                 if r.acknowledged:
                     if r.modified_count != len(jids):
                         self.logger.error(
                             "Failed to update all running statuses: %d of %d",
-                            r.modified_count, len(jids)
+                            r.modified_count,
+                            len(jids),
                         )
                 else:
                     self.logger.error("Failed to update running status")
@@ -335,10 +331,7 @@ class Scheduler(object):
                         metrics["%s_jobs_retries_exceeded" % self.name] += 1
                     in_label = None
                     if config.features.forensic:
-                        in_label = "%s:%s" % (
-                            job.attrs[Job.ATTR_CLASS],
-                            job.attrs[Job.ATTR_KEY]
-                        )
+                        in_label = "%s:%s" % (job.attrs[Job.ATTR_CLASS], job.attrs[Job.ATTR_KEY])
                     executor.submit(job.run, _in_label=in_label)
                     metrics["%s_jobs_started" % self.name] += 1
                     n += 1
@@ -362,18 +355,15 @@ class Scheduler(object):
                 r = self.collection.bulk_write(self.bulk)
                 dt = perf_counter() - t0
                 self.logger.info(
-                    "%d bulk operations complete in %dms: "
-                    "inserted=%d, updated=%d, removed=%d",
+                    "%d bulk operations complete in %dms: " "inserted=%d, updated=%d, removed=%d",
                     len(self.bulk),
                     int(dt * 1000),
                     r.inserted_count,
                     r.modified_count,
-                    r.deleted_count
+                    r.deleted_count,
                 )
             except pymongo.errors.BulkWriteError as e:
-                self.logger.error(
-                    "Cannot apply bulk operations: %s [%s]",
-                    e.details, e.code)
+                self.logger.error("Cannot apply bulk operations: %s [%s]", e.details, e.code)
                 metrics["%s_bulk_failed" % self.name] += 1
                 return
             except Exception as e:
@@ -388,10 +378,7 @@ class Scheduler(object):
         Remove job from schedule
         """
         self.logger.info("Remove job %s(%s)", jcls, key)
-        self.get_collection().remove({
-            Job.ATTR_CLASS: jcls,
-            Job.ATTR_KEY: key
-        })
+        self.get_collection().remove({Job.ATTR_CLASS: jcls, Job.ATTR_KEY: key})
 
     def remove_job_by_id(self, jid):
         """
@@ -401,8 +388,7 @@ class Scheduler(object):
         with self.bulk_lock:
             self.bulk += [DeleteOne({Job.ATTR_ID: jid})]
 
-    def submit(self, jcls, key=None, data=None, ts=None, delta=None,
-               keep_ts=False, max_runs=None):
+    def submit(self, jcls, key=None, data=None, ts=None, delta=None, keep_ts=False, max_runs=None):
         """
         Submit new job or adjust existing one
         :param jcls: Job class name
@@ -421,41 +407,45 @@ class Scheduler(object):
             Job.ATTR_STATUS: Job.S_WAIT,
             Job.ATTR_RUNS: 0,
             Job.ATTR_FAULTS: 0,
-            Job.ATTR_OFFSET: random.random()
+            Job.ATTR_OFFSET: random.random(),
         }
         if max_runs is not None:
             iset_op[Job.ATTR_MAX_RUNS] = max_runs
         if ts:
             set_op[Job.ATTR_TS] = ts
         elif delta:
-            set_op[Job.ATTR_TS] = (now +
-                                   datetime.timedelta(seconds=delta))
+            set_op[Job.ATTR_TS] = now + datetime.timedelta(seconds=delta)
         else:
             set_op[Job.ATTR_TS] = now
         if keep_ts:
             iset_op[Job.ATTR_TS] = set_op.pop(Job.ATTR_TS)
         if data:
             set_op[Job.ATTR_DATA] = data
-        q = {
-            Job.ATTR_CLASS: jcls,
-            Job.ATTR_KEY: key
-        }
-        op = {
-            "$setOnInsert": iset_op
-        }
+        q = {Job.ATTR_CLASS: jcls, Job.ATTR_KEY: key}
+        op = {"$setOnInsert": iset_op}
         if set_op:
             op["$set"] = set_op
         self.logger.info(
             "Submit job %s(%s, %s) at %s",
-            jcls, key, data,
-            set_op.get(Job.ATTR_TS) or iset_op.get(Job.ATTR_TS))
+            jcls,
+            key,
+            data,
+            set_op.get(Job.ATTR_TS) or iset_op.get(Job.ATTR_TS),
+        )
         self.logger.debug("update(%s, %s, upsert=True)", q, op)
         self.get_collection().update(q, op, upsert=True)
 
-    def set_next_run(self, jid, status=None, ts=None, delta=None,
-                     duration=None,
-                     context=None, context_version=None,
-                     context_key=None):
+    def set_next_run(
+        self,
+        jid,
+        status=None,
+        ts=None,
+        delta=None,
+        duration=None,
+        context=None,
+        context_version=None,
+        context_key=None,
+    ):
         """
         Reschedule job and set next run time
         :param jid: Job id
@@ -469,17 +459,14 @@ class Scheduler(object):
         """
         # Build increase/set operations
         now = datetime.datetime.now()
-        set_op = {
-            Job.ATTR_STATUS: Job.S_WAIT,
-            Job.ATTR_LAST: now
-        }
+        set_op = {Job.ATTR_STATUS: Job.S_WAIT, Job.ATTR_LAST: now}
         inc_op = {}
         if status:
             set_op[Job.ATTR_LAST_STATUS] = status
         if ts:
             set_op[Job.ATTR_TS] = ts
         elif delta:
-            set_op[Job.ATTR_TS] = (now + datetime.timedelta(seconds=delta))
+            set_op[Job.ATTR_TS] = now + datetime.timedelta(seconds=delta)
         else:
             set_op[Job.ATTR_TS] = now
         if duration:
@@ -493,11 +480,7 @@ class Scheduler(object):
             elif status == Job.E_EXCEPTION:
                 inc_op[Job.ATTR_FAULTS] = 1
         if context_version is not None:
-            self.cache_set(
-                key=context_key,
-                value=context,
-                version=context_version
-            )
+            self.cache_set(key=context_key, value=context, version=context_version)
         op = {}
         if set_op:
             op["$set"] = set_op
@@ -505,9 +488,7 @@ class Scheduler(object):
             op["$inc"] = inc_op
 
         if op:
-            q = {
-                Job.ATTR_ID: jid
-            }
+            q = {Job.ATTR_ID: jid}
             self.logger.debug("update(%s, %s)", q, op)
             with self.bulk_lock:
                 self.bulk += [UpdateOne(q, op)]
@@ -522,10 +503,7 @@ class Scheduler(object):
         for version in cache_set_ops:
             metrics["%s_cache_set_requests" % self.name] += 1
             try:
-                cache.set_many(
-                    cache_set_ops[version],
-                    version=version,
-                    ttl=self.CACHE_DEFAULT_TTL)
+                cache.set_many(cache_set_ops[version], version=version, ttl=self.CACHE_DEFAULT_TTL)
             except Exception as e:
                 self.logger.error("Error writing cache: %s", e)
                 metrics["%s_cache_set_errors" % self.name] += 1
@@ -544,9 +522,7 @@ class Scheduler(object):
         """
         if self.executor:
             self.executor.apply_metrics(d)
-        d.update({
-            "%s_jobs_burst" % self.name: len(self.jobs_burst)
-        })
+        d.update({"%s_jobs_burst" % self.name: len(self.jobs_burst)})
 
     def shutdown(self, sync=False):
         self.to_shutdown = True

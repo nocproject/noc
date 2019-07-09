@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,12 +22,12 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"^Cisco IOS XR Software, Version\s+(?P<version>\S+)\[\S+\].+"
         r"cisco\s+(?P<platform>\S+)(?: Series)? \([^)]+\) processor with \d+",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
     rx_ver2 = re.compile(
         r"^Cisco IOS XR Software, Version\s+(?P<version>\d\S+).+"
         r"cisco\s+(?P<platform>\S+) \(\) processor",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
     rx_snmp_ver = re.compile(
         r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+"
@@ -47,7 +48,7 @@ class Script(BaseScript):
                 return {
                     "vendor": "Cisco",
                     "platform": match.group("platform"),
-                    "version": match.group("version")
+                    "version": match.group("version"),
                 }
             except self.snmp.TimeOutError:
                 pass
@@ -58,5 +59,5 @@ class Script(BaseScript):
         return {
             "vendor": "Cisco",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

@@ -8,9 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+
 #
 # SNMP OIDs to get FW version for some platforms
 #
@@ -27,7 +29,7 @@ FW_OIDS = {
     "ES-4124": 24,
     "XGS-4728F": 46,
     "MES-3528": 51,
-    "GS2200-24": 55
+    "GS2200-24": 55,
 }
 
 
@@ -36,12 +38,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_fwver = re.compile(r"^ZyNOS F/W Version\s+:\s+V?(?P<version>\S+).+$",
-                re.MULTILINE)
-    rx_platform = re.compile(r"^Product Model\s+:\s+(?P<platform>\S+)$",
-                re.MULTILINE)
-    rx_prom = re.compile(r"^Bootbase Version\s+:\s+V?(?P<bootprom>\S+).+$",
-                re.MULTILINE)
+    rx_fwver = re.compile(r"^ZyNOS F/W Version\s+:\s+V?(?P<version>\S+).+$", re.MULTILINE)
+    rx_platform = re.compile(r"^Product Model\s+:\s+(?P<platform>\S+)$", re.MULTILINE)
+    rx_prom = re.compile(r"^Bootbase Version\s+:\s+V?(?P<bootprom>\S+).+$", re.MULTILINE)
 
     def execute(self):
         if self.has_snmp():
@@ -52,19 +51,13 @@ class Script(BaseScript):
                 # Get major and minor versions, model string
                 # and version control number
                 if oid:
-                    fwmaj = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.1.0"
-                                            % oid)
-                    fwmin = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.2.0"
-                                            % oid)
-                    fwmod = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.3.0"
-                                            % oid)
-                    fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0"
-                                            % oid)
-                    fwser = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.10.0"
-                                            % oid)
+                    fwmaj = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.1.0" % oid)
+                    fwmin = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.2.0" % oid)
+                    fwmod = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.3.0" % oid)
+                    fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0" % oid)
+                    fwser = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.10.0" % oid)
                 else:
-                    self.logger.error("Cannot find base OID for model '%s'"
-                                % platform)
+                    self.logger.error("Cannot find base OID for model '%s'" % platform)
                     raise self.snmp.TimeOutError  # Fallback to CLI
                 return {
                     "vendor": "Zyxel",
@@ -76,11 +69,7 @@ class Script(BaseScript):
                 pass
 
         cmd = self.cli("show system-information", cached=True)
-        r = {
-            "vendor": "Zyxel",
-            "version": "Unsupported",
-            "platform": "Unsupported",
-        }
+        r = {"vendor": "Zyxel", "version": "Unsupported", "platform": "Unsupported"}
         match = self.rx_fwver.search(cmd)
         if match:
             r["version"] = match.group("version")

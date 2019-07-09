@@ -16,9 +16,11 @@ import csv
 import time
 import shutil
 import functools
+
 # Third party modules
 import six
 from six.moves import zip_longest
+
 # NOC modules
 # from noc.lib.nosql import MultipleObjectsReturned
 # from django.core.exceptions import MultipleObjectsReturned as MultipleObjectsReturnedD
@@ -55,6 +57,7 @@ class BaseLoader(object):
     :param fields: List of either field names or tuple of
         (field name, related loader name)
     """
+
     # Loader name
     name = None
     # Loader model
@@ -68,9 +71,7 @@ class BaseLoader(object):
     tags = []
 
     PREFIX = config.path.etl_import
-    rx_archive = re.compile(
-        "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
-    )
+    rx_archive = re.compile("^import-\d{4}(?:-\d{2}){5}.csv.gz$")
 
     # Discard records which cannot be dereferenced
     discard_deferred = False
@@ -85,44 +86,42 @@ class BaseLoader(object):
     def __init__(self, chain):
         self.chain = chain
         self.system = chain.system
-        self.logger = PrefixLoggerAdapter(
-            logger, "%s][%s" % (self.system.name, self.name)
-        )
+        self.logger = PrefixLoggerAdapter(logger, "%s][%s" % (self.system.name, self.name))
         self.disable_mappings = False
-        self.import_dir = os.path.join(self.PREFIX,
-                                       self.system.name, self.name)
+        self.import_dir = os.path.join(self.PREFIX, self.system.name, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
-        self.mappings_path = os.path.join(
-            self.import_dir,
-            "mappings.csv"
-        )
+        self.mappings_path = os.path.join(self.import_dir, "mappings.csv")
         self.mappings = {}
         self.new_state_path = None
         self.c_add = 0
         self.c_change = 0
         self.c_delete = 0
         # Build clean map
-        self.clean_map = dict((n, self.clean_str)
-                              for n in
-                              self.fields)  # field name -> clean function
+        self.clean_map = dict(
+            (n, self.clean_str) for n in self.fields
+        )  # field name -> clean function
         self.pending_deletes = []  # (id, string)
         self.reffered_errors = []  # (id, string)
         if self.is_document:
             import mongoengine.errors
+
             unique_fields = [
                 f.name
                 for f in six.itervalues(self.model._fields)
-                if f.unique and f.name not in self.ignore_unique]
+                if f.unique and f.name not in self.ignore_unique
+            ]
             self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
             # Third-party modules
             import django.db.utils
 
             unique_fields = [
-                f.name for f in self.model._meta.fields
-                if f.unique and
-                f.name != self.model._meta.pk.name and
-                f.name not in self.ignore_unique]
+                f.name
+                for f in self.model._meta.fields
+                if f.unique
+                and f.name != self.model._meta.pk.name
+                and f.name not in self.ignore_unique
+            ]
             self.integrity_exception = django.db.utils.IntegrityError
         if unique_fields:
             self.unique_field = unique_fields[0]
@@ -179,19 +178,14 @@ class BaseLoader(object):
         """
         self.load_mappings()
         if not os.path.isdir(self.archive_dir):
-            self.logger.info("Creating archive directory: %s",
-                             self.archive_dir)
+            self.logger.info("Creating archive directory: %s", self.archive_dir)
             try:
                 os.mkdir(self.archive_dir)
             except OSError as e:
-                self.logger.error("Failed to create directory: %s (%s)",
-                                  self.archive_dir, e)
+                self.logger.error("Failed to create directory: %s (%s)", self.archive_dir, e)
                 # @todo: Die
         if os.path.isdir(self.archive_dir):
-            fn = sorted(
-                f for f in os.listdir(self.archive_dir)
-                if self.rx_archive.match(f)
-            )
+            fn = sorted(f for f in os.listdir(self.archive_dir) if self.rx_archive.match(f))
         else:
             fn = []
         if fn:
@@ -312,8 +306,7 @@ class BaseLoader(object):
         if not v.get("remote_system") or not v.get("remote_id"):
             self.logger.warning("RS or RID not found")
             return None
-        find_query = {"remote_system": v.get("remote_system"),
-                      "remote_id": v.get("remote_id")}
+        find_query = {"remote_system": v.get("remote_system"), "remote_id": v.get("remote_id")}
         try:
             return self.model.objects.get(**find_query)
         except self.model.MultipleObjectsReturned:
@@ -336,9 +329,7 @@ class BaseLoader(object):
         for k, nv in six.iteritems(v):
             if k == "tags":
                 # Merge tags
-                nv = sorted(
-                    "%s:%s" % (self.system.name, x) for x in nv
-                )
+                nv = sorted("%s:%s" % (self.system.name, x) for x in nv)
                 v[k] = nv
         o = self.model(**v)
         try:
@@ -348,6 +339,7 @@ class BaseLoader(object):
             assert self.unique_field
             if not self.is_document:
                 from django.db import connection
+
                 connection._rollback()
             # Fallback to change object
             o = self.model.objects.get(**{self.unique_field: v[self.unique_field]})
@@ -365,10 +357,7 @@ class BaseLoader(object):
         try:
             o = self.model.objects.get(pk=object_id)
         except self.model.DoesNotExist:
-            self.logger.error(
-                "Cannot change %s:%s: Does not exists",
-                self.name, object_id
-            )
+            self.logger.error("Cannot change %s:%s: Does not exists", self.name, object_id)
             return None
         for k, nv in six.iteritems(v):
             if k == "tags":
@@ -376,11 +365,11 @@ class BaseLoader(object):
                 ov = o.tags or []
                 nv = sorted(
                     [
-                        x for x in ov
+                        x
+                        for x in ov
                         if not (x.startswith(self.system.name + ":") or x == "remote:deleted")
-                    ] + [
-                        "%s:%s" % (self.system.name, x) for x in nv
                     ]
+                    + ["%s:%s" % (self.system.name, x) for x in nv]
                 )
             setattr(o, k, nv)
         o.save()
@@ -403,10 +392,7 @@ class BaseLoader(object):
             self.c_change += 1
             # Lost&found object with same remote_id
             self.logger.debug("Lost and Found object")
-            vv = {
-                "remote_system": v["remote_system"],
-                "remote_id": v["remote_id"]
-            }
+            vv = {"remote_system": v["remote_system"], "remote_id": v["remote_id"]}
             for fn, nv in six.iteritems(v):
                 if fn in vv:
                     continue
@@ -427,10 +413,7 @@ class BaseLoader(object):
         self.logger.debug("Change: %s", ";".join(n))
         self.c_change += 1
         v = self.clean(n)
-        vv = {
-            "remote_system": v["remote_system"],
-            "remote_id": v["remote_id"]
-        }
+        vv = {"remote_system": v["remote_system"], "remote_id": v["remote_id"]}
         for fn, (ov, nv) in zip(self.fields[1:], zip_longest(o[1:], n[1:])):
             if ov != nv:
                 self.logger.debug("   %s: %s -> %s", fn, ov, nv)
@@ -470,20 +453,14 @@ class BaseLoader(object):
         if not self.new_state_path:
             return
         self.logger.info(
-            "Summary: %d new, %d changed, %d removed",
-            self.c_add, self.c_change, self.c_delete
+            "Summary: %d new, %d changed, %d removed", self.c_add, self.c_change, self.c_delete
         )
-        self.logger.info(
-            "Error delete by reffered: %s", "\n".join(self.reffered_errors)
-        )
+        self.logger.info("Error delete by reffered: %s", "\n".join(self.reffered_errors))
         t = time.localtime()
         archive_path = os.path.join(
-            self.archive_dir,
-            "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
-                t[:6])
+            self.archive_dir, "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(t[:6])
         )
-        self.logger.info("Moving %s to %s",
-                         self.new_state_path, archive_path)
+        self.logger.info("Moving %s to %s", self.new_state_path, archive_path)
         if self.new_state_path.endswith(".gz"):
             # Simply move the file
             shutil.move(self.new_state_path, archive_path)
@@ -495,16 +472,14 @@ class BaseLoader(object):
                     d.write(s.read())
             os.unlink(self.new_state_path)
         self.logger.info("Saving mappings to %s", self.mappings_path)
-        mdata = "\n".join("%s,%s" % (k, self.mappings[k])
-                          for k in sorted(self.mappings))
+        mdata = "\n".join("%s,%s" % (k, self.mappings[k]) for k in sorted(self.mappings))
         safe_rewrite(self.mappings_path, mdata)
 
     def clean(self, row):
         """
         Cleanup row and return a dict of field name -> value
         """
-        r = dict((k, self.clean_map[k](v))
-                 for k, v in zip(self.fields, row))
+        r = dict((k, self.clean_map[k](v)) for k, v in zip(self.fields, row))
         # Fill integration fields
         r["remote_system"] = self.system.remote_system
         r["remote_id"] = self.clean_str(row[0])
@@ -553,8 +528,7 @@ class BaseLoader(object):
             try:
                 value = mappings[value]
             except KeyError:
-                self.logger.info("Deferred. Unknown value %s:%s",
-                                 r_model, value)
+                self.logger.info("Deferred. Unknown value %s:%s", r_model, value)
                 raise self.Deferred()
             return self.chain.cache[r_model, value]
 
@@ -568,8 +542,7 @@ class BaseLoader(object):
             try:
                 value = int(mappings[value])
             except KeyError:
-                self.logger.info("Deferred. Unknown value %s:%s",
-                                 r_model, value)
+                self.logger.info("Deferred. Unknown value %s:%s", r_model, value)
                 raise self.Deferred()
             return self.chain.cache[r_model, value]
 
@@ -579,7 +552,7 @@ class BaseLoader(object):
 
     def update_document_clean_map(self):
         from mongoengine.fields import BooleanField, ReferenceField
-        from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+        from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
         for fn, ft in six.iteritems(self.model._fields):
             if fn not in self.clean_map:
@@ -591,20 +564,18 @@ class BaseLoader(object):
                     self.clean_map[fn] = functools.partial(
                         self.clean_reference,
                         self.chain.get_mappings(self.mapped_fields[fn]),
-                        ft.document_type
+                        ft.document_type,
                     )
             elif isinstance(ft, ForeignKeyField):
                 if fn in self.mapped_fields:
                     self.clean_map[fn] = functools.partial(
                         self.clean_int_reference,
                         self.chain.get_mappings(self.mapped_fields[fn]),
-                        ft.document_type
+                        ft.document_type,
                     )
             elif fn in self.mapped_fields:
                 self.clean_map[fn] = functools.partial(
-                    self.clean_map_str,
-                    self.chain.get_mappings(
-                        self.mapped_fields[fn])
+                    self.clean_map_str, self.chain.get_mappings(self.mapped_fields[fn])
                 )
 
     def update_model_clean_map(self):
@@ -620,23 +591,19 @@ class BaseLoader(object):
                 if f.name in self.mapped_fields:
                     self.clean_map[f.name] = functools.partial(
                         self.clean_reference,
-                        self.chain.get_mappings(
-                            self.mapped_fields[f.name]),
-                        f.document
+                        self.chain.get_mappings(self.mapped_fields[f.name]),
+                        f.document,
                     )
             elif isinstance(f, ForeignKey):
                 if f.name in self.mapped_fields:
                     self.clean_map[f.name] = functools.partial(
                         self.clean_reference,
-                        self.chain.get_mappings(
-                            self.mapped_fields[f.name]),
-                        f.remote_field.model
+                        self.chain.get_mappings(self.mapped_fields[f.name]),
+                        f.remote_field.model,
                     )
             elif f.name in self.mapped_fields:
                 self.clean_map[f.name] = functools.partial(
-                    self.clean_map_str,
-                    self.chain.get_mappings(
-                        self.mapped_fields[f.name])
+                    self.clean_map_str, self.chain.get_mappings(self.mapped_fields[f.name])
                 )
 
     def check(self, chain):
@@ -645,22 +612,17 @@ class BaseLoader(object):
         if self.is_document:
             # Document
             required_fields = [
-                f.name
-                for f in six.itervalues(self.model._fields)
-                if f.required or f.unique
+                f.name for f in six.itervalues(self.model._fields) if f.required or f.unique
             ]
-            unique_fields = [
-                f.name
-                for f in six.itervalues(self.model._fields)
-                if f.unique
-            ]
+            unique_fields = [f.name for f in six.itervalues(self.model._fields) if f.unique]
         else:
             # Model
-            required_fields = [f.name for f in self.model._meta.fields
-                               if not f.blank]
-            unique_fields = [f.name for f in self.model._meta.fields
-                             if f.unique and
-                             f.name != self.model._meta.pk.name]
+            required_fields = [f.name for f in self.model._meta.fields if not f.blank]
+            unique_fields = [
+                f.name
+                for f in self.model._meta.fields
+                if f.unique and f.name != self.model._meta.pk.name
+            ]
         if not required_fields and not unique_fields:
             self.logger.info("Nothing to check, skipping")
             return 0
@@ -670,10 +632,8 @@ class BaseLoader(object):
             self.logger.info("No new state, skipping")
             return 0
         new_state = csv.reader(ns)
-        r_index = set(self.fields.index(f) for f in required_fields
-                      if f in self.fields)
-        u_index = set(self.fields.index(f) for f in unique_fields
-                      if f not in self.ignore_unique)
+        r_index = set(self.fields.index(f) for f in required_fields if f in self.fields)
+        u_index = set(self.fields.index(f) for f in unique_fields if f not in self.ignore_unique)
         m_index = set(self.fields.index(f) for f in self.mapped_fields)
         uv = set()
         m_data = {}  # field_number -> set of mapped ids
@@ -694,7 +654,9 @@ class BaseLoader(object):
                 if not row[i]:
                     self.logger.error(
                         "ERROR: Required field #%d(%s) is missed in row: %s",
-                        i, self.fields[i], ",".join(row)
+                        i,
+                        self.fields[i],
+                        ",".join(row),
                     )
                     n_errors += 1
                     continue
@@ -704,7 +666,9 @@ class BaseLoader(object):
                 if (i, v) in uv:
                     self.logger.error(
                         "ERROR: Field #%d(%s) value is not unique: %s",
-                        i, self.fields[i], ",".join(row)
+                        i,
+                        self.fields[i],
+                        ",".join(row),
                     )
                     n_errors += 1
                 else:
@@ -717,7 +681,10 @@ class BaseLoader(object):
                 if v and v not in m_data[i]:
                     self.logger.error(
                         "ERROR: Field #%d(%s) == '%s' refers to non-existent record: %s",
-                        i, self.fields[i], row[i], ",".join(row)
+                        i,
+                        self.fields[i],
+                        row[i],
+                        ",".join(row),
                     )
                     n_errors += 1
         if n_errors:

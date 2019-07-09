@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .query import QueryApplicator
 
@@ -16,6 +17,7 @@ class DefaultLoopDetectStatusApplicator(QueryApplicator):
     """
     Apply loop-detect status
     """
+
     CHECK_QUERY = "Match('hints', 'protocols', 'loop-detect', 'status')"
     QUERY = [
         # loop-detect is globally enabled

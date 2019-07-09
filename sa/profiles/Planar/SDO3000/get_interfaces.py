@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -28,26 +29,30 @@ class Script(BaseScript):
         :return:
         :rtype: list
         """
-        ports = [{
-            "name": "Output",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "physical",
-            "subinterfaces": []
-        }]
+        ports = [
+            {
+                "name": "Output",
+                "admin_status": True,
+                "oper_status": True,
+                "type": "physical",
+                "subinterfaces": [],
+            }
+        ]
         plat = self.scripts.get_version()["platform"]
         if plat == "SDO3001":
             inp_num = 1
         elif plat == "SDO3002":
             inp_num = 2
         for inp in range(1, inp_num + 1):
-            ports += [{
-                "name": "Input %d" % inp,
-                "admin_status": True,
-                "oper_status": True,
-                "type": "physical",
-                "subinterfaces": []
-            }]
+            ports += [
+                {
+                    "name": "Input %d" % inp,
+                    "admin_status": True,
+                    "oper_status": True,
+                    "type": "physical",
+                    "subinterfaces": [],
+                }
+            ]
         return ports
 
     def execute_cli(self, **kwargs):
@@ -62,21 +67,25 @@ class Script(BaseScript):
         # netmask may be wrong when DHCP is used!
         mask = match.group("mask")
         ip = IPv4(ipaddr, mask)
-        iface += [{
-            "name": "mgmt",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "management",
-            "mac": mac,
-            "subinterfaces": [{
+        iface += [
+            {
                 "name": "mgmt",
-                "enabled_afi": ["IPv4"],
-                "mac": mac,
-                "ipv4_addresses": [ip],
                 "admin_status": True,
                 "oper_status": True,
-            }]
-        }]
+                "type": "management",
+                "mac": mac,
+                "subinterfaces": [
+                    {
+                        "name": "mgmt",
+                        "enabled_afi": ["IPv4"],
+                        "mac": mac,
+                        "ipv4_addresses": [ip],
+                        "admin_status": True,
+                        "oper_status": True,
+                    }
+                ],
+            }
+        ]
         iface += self.get_phys_ports()
         return [{"interfaces": iface}]
 
@@ -89,20 +98,24 @@ class Script(BaseScript):
             "1.3.6.1.4.1.32108.1.7.4.1.4.0"
         )  # PLANAR-sdo3002-MIB::staticSubnetMask
         ip = IPv4(ipaddr, mask)
-        ifaces = [{
-            "name": "mgmt",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "management",
-            "mac": mac,
-            "subinterfaces": [{
+        ifaces = [
+            {
                 "name": "mgmt",
-                "enabled_afi": ["IPv4"],
-                "mac": mac,
-                "ipv4_addresses": [ip],
                 "admin_status": True,
                 "oper_status": True,
-            }]
-        }]
+                "type": "management",
+                "mac": mac,
+                "subinterfaces": [
+                    {
+                        "name": "mgmt",
+                        "enabled_afi": ["IPv4"],
+                        "mac": mac,
+                        "ipv4_addresses": [ip],
+                        "admin_status": True,
+                        "oper_status": True,
+                    }
+                ],
+            }
+        ]
         ifaces += self.get_phys_ports()
         return [{"interfaces": ifaces}]

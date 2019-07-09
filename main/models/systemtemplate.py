@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from django.db import models
 import six
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User

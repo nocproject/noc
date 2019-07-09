@@ -17,8 +17,8 @@ class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.get_arp"
     interface = IGetARP
     rx_line = re.compile(
-        r"^vlan \d+\s+(?P<interface>(?:\d/)?[ge]\d+)\s+(?P<ip>\S+)\s+"
-        r"(?P<mac>[\d:a-f]+)\s+")
+        r"^vlan \d+\s+(?P<interface>(?:\d/)?[ge]\d+)\s+(?P<ip>\S+)\s+" r"(?P<mac>[\d:a-f]+)\s+"
+    )
 
     def execute(self):
         s = self.cli("show arp")
@@ -27,9 +27,11 @@ class Script(BaseScript):
             match = self.rx_line.match(l.strip())
             if not match:
                 continue
-            r += [{
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "interface": match.group("interface")
-            }]
+            r += [
+                {
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface"),
+                }
+            ]
         return r

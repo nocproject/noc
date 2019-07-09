@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models.timepattern import TimePattern
@@ -21,6 +22,7 @@ class TimePatternApplication(ExtModelApplication):
     """
     TimePattern application
     """
+
     title = _("Time Pattern")
     menu = [_("Setup"), _("Time Patterns")]
     model = TimePattern
@@ -28,23 +30,21 @@ class TimePatternApplication(ExtModelApplication):
 
     terms = ModelInline(TimePatternTerm)
 
-    @view(url="^actions/test/", method=["POST"],
-          access="read", api=True,
-          validate={
-              "ids": ListOfParameter(element=ModelParameter(TimePattern)),
-              "date": StringParameter(required=True),
-              "time": StringParameter(required=True),
-          })
+    @view(
+        url="^actions/test/",
+        method=["POST"],
+        access="read",
+        api=True,
+        validate={
+            "ids": ListOfParameter(element=ModelParameter(TimePattern)),
+            "date": StringParameter(required=True),
+            "time": StringParameter(required=True),
+        },
+    )
     def api_action_test(self, request, ids, date=None, time=None):
         d = "%sT%s" % (date, time)
         dt = datetime.datetime.strptime(d, "%Y-%m-%dT%H:%M")
         return {
             "ts": dt.isoformat(),
-            "result": [{
-                "id": p.id,
-                "name": p.name,
-                "result": p.match(dt)
-            } for p in ids]
+            "result": [{"id": p.id, "name": p.name, "result": p.match(dt)} for p in ids],
         }
-
-

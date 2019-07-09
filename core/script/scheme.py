@@ -17,16 +17,10 @@ SCHEME_CHOICES = [
     (SSH, "ssh"),
     (HTTP, "http"),
     (HTTPS, "https"),
-    (BEEF, "beef")
+    (BEEF, "beef"),
 ]
 
-PROTOCOLS = {
-    TELNET: "telnet",
-    SSH: "ssh",
-    HTTP: "http",
-    HTTPS: "https",
-    BEEF: "beef"
-}
+PROTOCOLS = {TELNET: "telnet", SSH: "ssh", HTTP: "http", HTTPS: "https", BEEF: "beef"}
 
 CLI_PROTOCOLS = {TELNET, SSH, BEEF}
 HTTP_PROTOCOLS = {HTTP, HTTPS}

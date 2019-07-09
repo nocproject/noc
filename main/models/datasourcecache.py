@@ -10,10 +10,10 @@
 import logging
 import datetime
 import bz2
+
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BinaryField,
-                                DateTimeField, IntField)
+from mongoengine.fields import StringField, BinaryField, DateTimeField, IntField
 import bson
 
 logger = logging.getLogger(__name__)
@@ -28,10 +28,7 @@ class DataSourceCache(Document):
         "collection": "datasource_cache",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [{
-            "fields": ["expires"],
-            "expireAfterSeconds": 0
-        }]
+        "indexes": [{"fields": ["expires"], "expireAfterSeconds": 0}],
     }
 
     name = StringField(primary_key=True)
@@ -79,7 +76,7 @@ class DataSourceCache(Document):
         coll = DataSourceCache._get_collection()
         n_chunk = 0
         fmt_chunk_name = "%s.%%d" % name
-        expires = datetime.datetime.now() + datetime.timedelta(seconds=ttl),
+        expires = (datetime.datetime.now() + datetime.timedelta(seconds=ttl),)
         while data:
             # Split chunk and rest of data
             chunk, data = data[:MAX_DATA_SIZE], data[MAX_DATA_SIZE:]
@@ -91,19 +88,19 @@ class DataSourceCache(Document):
                 next_name = None
             logger.info("Writing chunk %s", name)
             # Update chunk
-            coll.update_one({
-                "_id": name
-            }, {
-                "$set": {
-                    "data": bson.Binary(chunk),
-                    "version": CURRENT_VERSION,
-                    "expires": expires,
-                    "next_name": next_name
+            coll.update_one(
+                {"_id": name},
+                {
+                    "$set": {
+                        "data": bson.Binary(chunk),
+                        "version": CURRENT_VERSION,
+                        "expires": expires,
+                        "next_name": next_name,
+                    },
+                    "$setOnInsert": {"name": name},
                 },
-                "$setOnInsert": {
-                    "name": name
-                }
-            }, upsert=True)
+                upsert=True,
+            )
             # Name for next chunk
             name = next_name
 

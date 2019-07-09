@@ -16,6 +16,7 @@ class SpecApplication(ExtDocApplication):
     """
     Spec application
     """
+
     title = "Spec"
     menu = [_("Setup"), _("Specs")]
     model = Spec

@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,13 +21,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(
-        r"^Version:\s+(?P<version>(?:VyOS )?\S+)",
-        re.MULTILINE
-    )
-    rx_snmp_ver = re.compile(
-        r"^Vyatta\s+(?P<version>(?:VyOS )?\S+)$"
-    )
+    rx_ver = re.compile(r"^Version:\s+(?P<version>(?:VyOS )?\S+)", re.MULTILINE)
+    rx_snmp_ver = re.compile(r"^Vyatta\s+(?P<version>(?:VyOS )?\S+)$")
 
     def execute(self):
         version = None
@@ -49,8 +45,4 @@ class Script(BaseScript):
         else:
             vendor = "Vyatta"
             platform = "VC"
-        return {
-            "vendor": vendor,
-            "platform": platform,
-            "version": version
-        }
+        return {"vendor": vendor, "platform": platform, "version": version}

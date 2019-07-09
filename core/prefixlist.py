@@ -23,6 +23,7 @@ class Node(object):
     """
     Optimizing prefix tree.
     """
+
     __slots__ = ["parent", "prefix", "children", "is_final", "n"]
 
     def __init__(self, parent=None, prefix=None, prefixes=None):

@@ -10,13 +10,15 @@
 import os
 import logging
 import uuid
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (UUIDField, DateTimeField, StringField)
+from mongoengine.fields import UUIDField, DateTimeField, StringField
 import mongoengine.signals
 import dateutil.parser
 import ujson
+
 # NOC modules
 from noc.support.cp import CPClient
 
@@ -29,7 +31,7 @@ class Crashinfo(Document):
         "collection": "noc.crashinfo",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [("status", "timestamp")]
+        "indexes": [("status", "timestamp")],
     }
     uuid = UUIDField(primary_key=True)
     timestamp = DateTimeField(required=True)
@@ -40,23 +42,17 @@ class Crashinfo(Document):
             ("R", "Reported"),
             ("X", "Rejected"),
             ("f", "Fix ready"),
-            ("F", "Fixed")
+            ("F", "Fixed"),
         ],
-        default="N"
+        default="N",
     )
     process = StringField()
     branch = StringField()
     tip = StringField()
     comment = StringField()
     priority = StringField(
-        choices=[
-            ("I", "Info"),
-            ("L", "Low"),
-            ("M", "Medium"),
-            ("H", "High"),
-            ("C", "Critical")
-        ],
-        default="I"
+        choices=[("I", "Info"), ("L", "Low"), ("M", "Medium"), ("H", "High"), ("C", "Critical")],
+        default="I",
     )
     # @todo: comment
 
@@ -84,10 +80,7 @@ class Crashinfo(Document):
                 with open(os.path.join(cls.NEW_ROOT, f)) as f:
                     ci = ujson.loads(f.read())
             except Exception as why:
-                logger.error(
-                    "Unable to load and decode crashinfo %s: %s",
-                    u, why
-                )
+                logger.error("Unable to load and decode crashinfo %s: %s", u, why)
                 continue
             c = Crashinfo(
                 uuid=u,
@@ -95,7 +88,7 @@ class Crashinfo(Document):
                 process=ci["process"],
                 branch=ci.get("branch"),
                 tip=ci.get("tip"),
-                status="N"
+                status="N",
             )
             c.save()
 
@@ -111,10 +104,7 @@ class Crashinfo(Document):
                 with open(path) as f:
                     return ujson.loads(f.read())
             except Exception as why:
-                logger.error(
-                    "Unable to load and decode crashinfo %s: %s",
-                    self.uuid, why
-                )
+                logger.error("Unable to load and decode crashinfo %s: %s", self.uuid, why)
         return None
 
     @property
@@ -150,7 +140,4 @@ class Crashinfo(Document):
         self.save()
 
 
-mongoengine.signals.pre_delete.connect(
-    Crashinfo.on_delete,
-    sender=Crashinfo
-)
+mongoengine.signals.pre_delete.connect(Crashinfo.on_delete, sender=Crashinfo)

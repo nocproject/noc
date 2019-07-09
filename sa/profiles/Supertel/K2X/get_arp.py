@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -21,7 +22,8 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(VLAN\s+\d+|)\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+"
         r"(?P<mac>\S+)\s+(Dynamic|Static)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def execute(self):
         r = []
@@ -55,15 +57,13 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(self.cli("show arp", cached=True)):
             mac = match.group("mac")
             if mac.lower() == "incomplete":
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": None,
-                    "interface": None
-                    })
+                r.append({"ip": match.group("ip"), "mac": None, "interface": None})
             else:
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": match.group("mac"),
-                    "interface": match.group("interface")
-                    })
+                r.append(
+                    {
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "interface": match.group("interface"),
+                    }
+                )
         return r

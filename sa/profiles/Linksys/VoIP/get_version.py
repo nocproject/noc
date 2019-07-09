@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,12 +21,12 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_platform = re.compile(
-        r"^Product Name:+(?P<platform>\S+)+Serial Number:+(?P<serial>\S+)$",
-        re.MULTILINE)
+        r"^Product Name:+(?P<platform>\S+)+Serial Number:+(?P<serial>\S+)$", re.MULTILINE
+    )
     rx_version = re.compile(
-        r"^Software Version:+(?P<version>\S+)+Hardware Version:+"
-        r"(?P<hardware>\S+)$",
-        re.MULTILINE)
+        r"^Software Version:+(?P<version>\S+)+Hardware Version:+" r"(?P<hardware>\S+)$",
+        re.MULTILINE,
+    )
 
     def execute(self):
         v = self.http.get("/")
@@ -33,11 +34,11 @@ class Script(BaseScript):
         platform = self.rx_platform.search(v)
         version = self.rx_version.search(v)
         return {
-                "vendor": "Linksys",
-                "platform": platform.group("platform"),
-                "version": version.group("version"),
-                "attributes": {
-                            "HW version": version.group("hardware"),
-                            "Serial Number": platform.group("serial")
-                            }
-                }
+            "vendor": "Linksys",
+            "platform": platform.group("platform"),
+            "version": version.group("version"),
+            "attributes": {
+                "HW version": version.group("hardware"),
+                "Serial Number": platform.group("serial"),
+            },
+        }

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,7 +21,9 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"Machine Model\.+ (?P<platform>\S+).+?"
         r"Serial Number\.+ (?P<serial>\S+).+?"
-        r"Software Version\.+ (?P<version>\S+)", re.MULTILINE | re.DOTALL)
+        r"Software Version\.+ (?P<version>\S+)",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         s = self.cli("show tech-support", cached=True)
@@ -29,7 +32,5 @@ class Script(BaseScript):
             "vendor": "Dell",
             "platform": match.group("platform"),
             "version": match.group("version"),
-            "attributes": {
-                "Serial Number": match.group("serial")
-            }
+            "attributes": {"Serial Number": match.group("serial")},
         }

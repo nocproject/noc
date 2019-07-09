@@ -15,7 +15,7 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField
 
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.decorator import on_delete_check
 
@@ -43,7 +43,7 @@ class ForwardingInstance(Document):
     rd = StringField(required=False)
 
     def __str__(self):
-        return u"%s: %s" % (self.managed_object.name, self.name if self.name else "default")
+        return "%s: %s" % (self.managed_object.name, self.name if self.name else "default")
 
     def delete(self, *args, **kwargs):
         # Delete subinterfaces

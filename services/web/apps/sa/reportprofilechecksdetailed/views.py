@@ -8,6 +8,7 @@
 
 #
 from django import forms
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.app.reportdatasources.base import ReportModelFilter
@@ -28,11 +29,7 @@ class ReportFilterApplication(SimpleReport):
     except Exception:
         default_pool = Pool.objects.all()[0]
     predefined_reports = {
-        "default": PredefinedReport(
-            _("Failed Discovery (default)"), {
-                "pool": default_pool
-            }
-        )
+        "default": PredefinedReport(_("Failed Discovery (default)"), {"pool": default_pool})
     }
 
     def get_form(self):
@@ -41,12 +38,15 @@ class ReportFilterApplication(SimpleReport):
                 label=_("Managed Objects Pool"),
                 required=False,
                 help_text="Pool for choice",
-                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+            )
             selector = forms.ModelChoiceField(
                 label=_("Managed Objects Selector"),
                 required=False,
                 help_text="Selector for choice",
-                queryset=ManagedObjectSelector.objects.order_by("name"))
+                queryset=ManagedObjectSelector.objects.order_by("name"),
+            )
+
         return ReportForm
 
     @staticmethod
@@ -68,7 +68,8 @@ class ReportFilterApplication(SimpleReport):
             "Remote error code 10200": "SNMP Problem",
             "Remote error code 10201": "SNMP Timeout",
             "Remote error code 599": "HTTP Error: Connection Timeout",
-            "Remote error code 1": "Adapter failed"}
+            "Remote error code 1": "Adapter failed",
+        }
 
         decode, message = None, ""
         if not problems:
@@ -89,7 +90,7 @@ class ReportFilterApplication(SimpleReport):
         r_map = [
             (_("Not Available"), "2is1.3isp1.3is1"),
             (_("Failed to guess CLI credentials"), "2is1.3isp0.2isp1"),
-            (_("Failed to guess SNMP community"), "2is1.3isp1.3is2.1isp1")
+            (_("Failed to guess SNMP community"), "2is1.3isp1.3is2.1isp1"),
         ]
         for x, y in r_map:
             columns += [y]
@@ -117,25 +118,36 @@ class ReportFilterApplication(SimpleReport):
                 problem = self.decode_problem(d_result.get(mo_id))
                 if not problem and mo_id not in d_result:
                     problem = "Discovery disabled"
-                data += [(
-                    mo.name,
-                    mo.address,
-                    mo.administrative_domain.name,
-                    mo.profile.name,
-                    mo_hostname.get(mo.id, ""),
-                    mo.auth_profile if mo.auth_profile else "",
-                    mo.auth_profile.user if mo.auth_profile else mo.user,
-                    mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
-                    _("No") if not mo.get_status() else _("Yes"),
-                    columns_desr[columns.index(col)],
-                    problem
-                )]
+                data += [
+                    (
+                        mo.name,
+                        mo.address,
+                        mo.administrative_domain.name,
+                        mo.profile.name,
+                        mo_hostname.get(mo.id, ""),
+                        mo.auth_profile if mo.auth_profile else "",
+                        mo.auth_profile.user if mo.auth_profile else mo.user,
+                        mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
+                        _("No") if not mo.get_status() else _("Yes"),
+                        columns_desr[columns.index(col)],
+                        problem,
+                    )
+                ]
 
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Administrative Domain"), _("Profile"), _("Hostname"),
-                _("Auth Profile"), _("Username"), _("SNMP Community"),
-                _("Avail"), _("Error"), _("Error Detail")
+                _("Managed Object"),
+                _("Address"),
+                _("Administrative Domain"),
+                _("Profile"),
+                _("Hostname"),
+                _("Auth Profile"),
+                _("Username"),
+                _("SNMP Community"),
+                _("Avail"),
+                _("Error"),
+                _("Error Detail"),
             ],
-            data=data)
+            data=data,
+        )

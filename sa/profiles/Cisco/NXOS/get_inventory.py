@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -20,7 +21,7 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\",\s+DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
         r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*,\s+SN: (?P<serial>\S+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_sfp = re.compile(
         r"^(?P<number>Ethernet\d+(/\d+)*)\n"
@@ -30,14 +31,11 @@ class Script(BaseScript):
         r"^\s+part number is\s(?P<partno>\S+(?: \S+)*)\s*\n"
         r"^\s+revision is\s(?P<rev>\S+)\s*\n"
         r"^\s+serial number is\s(?P<serial>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_trans = re.compile(r"((?:100|1000|10G)BASE\S+)")
     # set of pids GEM modules w/o transceivers
-    gem_w_o_sfp = {
-        "N55-M160L3",
-        "N55-M160L3-V2"
-    }
+    gem_w_o_sfp = {"N55-M160L3", "N55-M160L3-V2"}
 
     def execute_cli(self):
         objects = []
@@ -49,10 +47,7 @@ class Script(BaseScript):
         for match in self.rx_sfp.finditer(s):
             if match.group("number").startswith("Ethernet"):
                 if match.group("type"):
-                    if (
-                        "Fabric" in match.group("type") or
-                        "BASE" in match.group("type").upper()
-                    ):
+                    if "Fabric" in match.group("type") or "BASE" in match.group("type").upper():
                         parts = [match.group("partno")]
                     elif "BASE" in match.group("partno").upper():
                         parts = [match.group("type")]
@@ -60,21 +55,22 @@ class Script(BaseScript):
                         parts = [match.group("partno"), match.group("type")]
                 else:
                     parts = [match.group("partno")]
-                trans += [{
-                    "type": "XCVR",
-                    "number": self.get_xcvr_num(match.group("number")),
-                    "vendor": self.get_vendor(match.group("vendor")),
-                    "serial": match.group("serial"),
-                    "description": match.group("type"),
-                    "part_no": parts,
-                    "revision": match.group("rev"),
-                    "builtin": False
-                }]
+                trans += [
+                    {
+                        "type": "XCVR",
+                        "number": self.get_xcvr_num(match.group("number")),
+                        "vendor": self.get_vendor(match.group("vendor")),
+                        "serial": match.group("serial"),
+                        "description": match.group("type"),
+                        "part_no": parts,
+                        "revision": match.group("rev"),
+                        "builtin": False,
+                    }
+                ]
 
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
-                match.group("name"), match.group("pid"),
-                match.group("descr"), len(objects)
+                match.group("name"), match.group("pid"), match.group("descr"), len(objects)
             )
             builtin = False
             serial = [match.group("serial"), None]["N/A" in match.group("serial")]
@@ -83,20 +79,23 @@ class Script(BaseScript):
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"
-                objects += [{
-                    "type": type,
-                    "number": number,
-                    "vendor": vendor,
-                    "serial": serial,
-                    "description": match.group("descr"),
-                    "part_no": [part_no],
-                    "revision": rev,
-                    "builtin": builtin
-                }]
+                objects += [
+                    {
+                        "type": type,
+                        "number": number,
+                        "vendor": vendor,
+                        "serial": serial,
+                        "description": match.group("descr"),
+                        "part_no": [part_no],
+                        "revision": rev,
+                        "builtin": builtin,
+                    }
+                ]
                 # Add transceivers
-                if (objects[-1]["type"] == "SUP" or
-                    (objects[-1]["type"] == "GEM" and
-                     objects[-1]["part_no"][0] not in self.gem_w_o_sfp)):
+                if objects[-1]["type"] == "SUP" or (
+                    objects[-1]["type"] == "GEM"
+                    and objects[-1]["part_no"][0] not in self.gem_w_o_sfp
+                ):
 
                     # Get number of last chassis
                     for c in objects:

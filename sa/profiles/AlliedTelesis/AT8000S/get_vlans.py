@@ -40,8 +40,5 @@ class Script(BaseScript):
         for l in vlans.split("\n"):
             match = self.rx_vlan_line.match(l.strip())
             if match:
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "name": match.group("name")
-                }]
+                r += [{"vlan_id": match.group("vlan_id"), "name": match.group("name")}]
         return r

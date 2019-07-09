@@ -16,6 +16,7 @@ class ProjectApplication(ExtModelApplication):
     """
     Project application
     """
+
     title = _("Project")
     menu = _("Projects")
     model = Project

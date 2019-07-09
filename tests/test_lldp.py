@@ -8,14 +8,25 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
-from noc.core.lldp import (lldp_bits_to_caps, lldp_caps_to_bits, LLDP_CAP_OTHER, LLDP_CAP_REPEATER,
-                           LLDP_CAP_BRIDGE, LLDP_CAP_WLAN_ACCESS_POINT, LLDP_CAP_ROUTER,
-                           LLDP_CAP_TELEPHONE, LLDP_CAP_DOCSIS_CABLE_DEVICE, LLDP_CAP_STATION_ONLY)
+from noc.core.lldp import (
+    lldp_bits_to_caps,
+    lldp_caps_to_bits,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+)
 
 
 @pytest.mark.parametrize(
-    "value,expected", [
+    "value,expected",
+    [
         # Empty value
         ([], 0),
         # Single bits
@@ -35,8 +46,8 @@ from noc.core.lldp import (lldp_bits_to_caps, lldp_caps_to_bits, LLDP_CAP_OTHER,
         (["other", "repeater", "bridge", "wap", "router", "phone", "docsis", "station"], 255),
         # Case
         (["OtHeR"], 1),
-        (["OtHeR", "repeAter"], 3)
-    ]
+        (["OtHeR", "repeAter"], 3),
+    ],
 )
 def test_lldp_caps_to_bits(value, expected):
     cmap = {
@@ -47,13 +58,14 @@ def test_lldp_caps_to_bits(value, expected):
         "router": LLDP_CAP_ROUTER,
         "phone": LLDP_CAP_TELEPHONE,
         "docsis": LLDP_CAP_DOCSIS_CABLE_DEVICE,
-        "station": LLDP_CAP_STATION_ONLY
+        "station": LLDP_CAP_STATION_ONLY,
     }
     assert lldp_caps_to_bits(value, cmap) == expected
 
 
 @pytest.mark.parametrize(
-    "value,expected", [
+    "value,expected",
+    [
         # Empty value
         (0, []),
         # Single bit
@@ -67,8 +79,20 @@ def test_lldp_caps_to_bits(value, expected):
         (128, ["station-only"]),
         # Multi-bit
         (3, ["other", "repeater"]),
-        (255, ["other", "repeater", "bridge", "wap", "router", "phone", "docsis-cable-device", "station-only"])
-    ]
+        (
+            255,
+            [
+                "other",
+                "repeater",
+                "bridge",
+                "wap",
+                "router",
+                "phone",
+                "docsis-cable-device",
+                "station-only",
+            ],
+        ),
+    ],
 )
 def test_lldp_bits_to_caps(value, expected):
     assert lldp_bits_to_caps(value) == expected

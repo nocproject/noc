@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,14 +20,11 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(
-        r"^System MAC Address:\s+(?P<mac>[0-9a-f:]+)\s*$",
-        re.IGNORECASE | re.MULTILINE)
+        r"^System MAC Address:\s+(?P<mac>[0-9a-f:]+)\s*$", re.IGNORECASE | re.MULTILINE
+    )
 
     def execute_cli(self):
         v = self.cli("show system", cached=True)
         match = self.rx_mac.search(v)
         mac = match.group("mac")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

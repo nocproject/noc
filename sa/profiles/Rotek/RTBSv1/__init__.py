@@ -27,7 +27,7 @@ class Profile(BaseProfile):
         "at": "physical",
         "wi": "physical",
         "gr": "physical",
-        "re": "physical"
+        "re": "physical",
     }
 
     @classmethod
@@ -53,14 +53,6 @@ class Profile(BaseProfile):
                 self.script.cli("\r")
 
     matchers = {
-        "is_platform_BS5": {
-            "platform": {
-                "$regex": r"^RT-BS5"
-            }
-        },
-        "is_platform_BS24": {
-            "platform": {
-                "$regex": r"^RT-BS24"
-            }
-        }
+        "is_platform_BS5": {"platform": {"$regex": r"^RT-BS5"}},
+        "is_platform_BS24": {"platform": {"$regex": r"^RT-BS24"}},
     }

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.core.script.base import BaseScript
@@ -27,8 +28,6 @@ class Script(BaseScript):
             vlan_id = int(match.group("vlan_id"))
             if (vlan_id == 1) or (vlan_id in vlans):
                 continue
-            r += [{
-                "vlan_id": int(match.group("vlan_id"))
-            }]
+            r += [{"vlan_id": int(match.group("vlan_id"))}]
             vlans += [vlan_id]
         return r

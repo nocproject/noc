@@ -10,16 +10,22 @@
 import logging
 import socket
 import errno
+
 # Third-party modules
 from tornado.gen import coroutine, Return
 import six
+
 # NOC modules
 from noc.core.snmp.version import SNMP_v2c
-from noc.core.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
-                               parse_get_response, parse_get_response_raw)
+from noc.core.snmp.get import (
+    get_pdu,
+    getnext_pdu,
+    getbulk_pdu,
+    parse_get_response,
+    parse_get_response_raw,
+)
 from noc.core.snmp.set import set_pdu
-from noc.core.snmp.error import (NO_ERROR, NO_SUCH_NAME,
-                                 SNMPError, TIMED_OUT, UNREACHABLE, BER_ERROR)
+from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME, SNMPError, TIMED_OUT, UNREACHABLE, BER_ERROR
 from noc.core.ioloop.udp import UDPSocket
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
@@ -28,14 +34,18 @@ BULK_MAX_REPETITIONS = 20
 
 
 @coroutine
-def snmp_get(address, oids, port=161,
-             community="public",
-             version=SNMP_v2c,
-             timeout=10,
-             tos=None,
-             ioloop=None,
-             udp_socket=None,
-             raw_varbinds=False):
+def snmp_get(
+    address,
+    oids,
+    port=161,
+    community="public",
+    version=SNMP_v2c,
+    timeout=10,
+    tos=None,
+    ioloop=None,
+    udp_socket=None,
+    raw_varbinds=False,
+):
     """
     Perform SNMP get request and returns Future to be used
     inside @tornado.gen.coroutine
@@ -90,10 +100,7 @@ def snmp_get(address, oids, port=161,
                 if k in oid_map:
                     result[oid_map[k]] = v
                 else:
-                    logger.error(
-                        "[%s] Invalid oid %s returned in reply",
-                        address, k
-                    )
+                    logger.error("[%s] Invalid oid %s returned in reply", address, k)
         else:
             result = resp.varbinds[0][1]
         logger.debug("[%s] GET result: %r", address, result)
@@ -101,8 +108,9 @@ def snmp_get(address, oids, port=161,
     elif resp.error_status == NO_SUCH_NAME and len(oids) > 1:
         # One or more invalid oids
         b_idx = resp.error_index - 1
-        logger.debug("[%s] Invalid oid %s detected, trying to exclude",
-                     address, resp.varbinds[b_idx][0])
+        logger.debug(
+            "[%s] Invalid oid %s detected, trying to exclude", address, resp.varbinds[b_idx][0]
+        )
         result = {}
         oid_parts = []
         if b_idx:
@@ -110,7 +118,7 @@ def snmp_get(address, oids, port=161,
             oid_parts += [[vb[0] for vb in resp.varbinds[:b_idx]]]
         if b_idx < len(resp.varbinds) - 1:
             # Some oids after b_idx may be correct
-            oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1:]]]
+            oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1 :]]]
         for new_oids in oid_parts:
             try:
                 new_result = yield snmp_get(
@@ -122,7 +130,7 @@ def snmp_get(address, oids, port=161,
                     timeout=timeout,
                     tos=tos,
                     ioloop=ioloop,
-                    udp_socket=sock
+                    udp_socket=sock,
                 )
             except SNMPError as e:
                 if e.code == NO_SUCH_NAME and len(new_oids) == 1:
@@ -134,10 +142,7 @@ def snmp_get(address, oids, port=161,
                 if k in oid_map:
                     result[oid_map[k]] = new_result[k]
                 else:
-                    logger.info(
-                        "[%s] Invalid oid %s returned in reply",
-                        address, k
-                    )
+                    logger.info("[%s] Invalid oid %s returned in reply", address, k)
         if result:
             logger.debug("[%s] GET result: %r", address, result)
             raise Return(result)
@@ -154,26 +159,30 @@ def snmp_get(address, oids, port=161,
                 oid = resp.varbinds[65536 - resp.error_index][0]
             else:
                 oid = resp.varbinds[resp.error_index - 1][0]
-        logger.debug("[%s] SNMP error: %s %s",
-                     address, oid, resp.error_status)
+        logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
         raise SNMPError(code=resp.error_status, oid=oid)
 
 
 @coroutine
-def snmp_count(address, oid, port=161,
-               community="public",
-               version=SNMP_v2c,
-               timeout=10,
-               bulk=False,
-               filter=None,
-               max_repetitions=BULK_MAX_REPETITIONS,
-               tos=None,
-               ioloop=None,
-               udp_socket=None):
+def snmp_count(
+    address,
+    oid,
+    port=161,
+    community="public",
+    version=SNMP_v2c,
+    timeout=10,
+    bulk=False,
+    filter=None,
+    max_repetitions=BULK_MAX_REPETITIONS,
+    tos=None,
+    ioloop=None,
+    udp_socket=None,
+):
     """
     Perform SNMP get request and returns Future to be used
     inside @tornado.gen.coroutine
     """
+
     def true(x, y):
         return true
 
@@ -191,9 +200,7 @@ def snmp_count(address, oid, port=161,
     while True:
         # Get PDU
         if bulk:
-            pdu = getbulk_pdu(community, oid,
-                              max_repetitions=max_repetitions,
-                              version=version)
+            pdu = getbulk_pdu(community, oid, max_repetitions=max_repetitions, version=version)
         else:
             pdu = getnext_pdu(community, oid, version=version)
         # Send request and wait for response
@@ -232,30 +239,34 @@ def snmp_count(address, oid, port=161,
                     if filter(oid, v):
                         result += 1
                 else:
-                    logger.debug("[%s] COUNT result: %s",
-                                 address, result)
+                    logger.debug("[%s] COUNT result: %s", address, result)
                     sock.close()
                     raise Return(result)
 
 
 @coroutine
-def snmp_getnext(address, oid, port=161,
-                 community="public",
-                 version=SNMP_v2c,
-                 timeout=10,
-                 bulk=False,
-                 filter=None,
-                 max_repetitions=BULK_MAX_REPETITIONS,
-                 only_first=False,
-                 tos=None,
-                 ioloop=None,
-                 udp_socket=None,
-                 max_retries=0,
-                 raw_varbinds=False):
+def snmp_getnext(
+    address,
+    oid,
+    port=161,
+    community="public",
+    version=SNMP_v2c,
+    timeout=10,
+    bulk=False,
+    filter=None,
+    max_repetitions=BULK_MAX_REPETITIONS,
+    only_first=False,
+    tos=None,
+    ioloop=None,
+    udp_socket=None,
+    max_retries=0,
+    raw_varbinds=False,
+):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
     inside @tornado.gen.coroutine
     """
+
     def true(x, y):
         return True
 
@@ -281,9 +292,10 @@ def snmp_getnext(address, oid, port=161,
         # Get PDU
         if bulk:
             pdu = getbulk_pdu(
-                community, oid,
+                community,
+                oid,
                 max_repetitions=max_repetitions or BULK_MAX_REPETITIONS,
-                version=version
+                version=version,
             )
         else:
             pdu = getnext_pdu(community, oid, version=version)
@@ -329,21 +341,24 @@ def snmp_getnext(address, oid, port=161,
                         result += [(oid, v)]
                     last_oid = oid
                 else:
-                    logger.debug("[%s] GETNEXT result: %s",
-                                 address, result)
+                    logger.debug("[%s] GETNEXT result: %s", address, result)
                     close_socket()
                     raise Return(result)
     close_socket()
 
 
 @coroutine
-def snmp_set(address, varbinds, port=161,
-             community="public",
-             version=SNMP_v2c,
-             timeout=10,
-             tos=None,
-             ioloop=None,
-             udp_socket=None):
+def snmp_set(
+    address,
+    varbinds,
+    port=161,
+    community="public",
+    version=SNMP_v2c,
+    timeout=10,
+    tos=None,
+    ioloop=None,
+    udp_socket=None,
+):
     """
     Perform SNMP set request and returns Future to be used
     inside @tornado.gen.coroutine
@@ -382,8 +397,7 @@ def snmp_set(address, varbinds, port=161,
         oid = None
         if resp.error_index and resp.varbinds:
             oid = resp.varbinds[resp.error_index - 1][0]
-        logger.debug("[%s] SNMP error: %s %s",
-                     address, oid, resp.error_status)
+        logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
         raise SNMPError(code=resp.error_status, oid=oid)
     else:
         logger.debug("[%s] SET result: OK", address)

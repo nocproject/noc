@@ -21,26 +21,24 @@ class ReportPartnumbersApplication(SimpleReport):
         for v in Vendor.objects.order_by("name"):
             data += [SectionRow(name=v.name)]
             for m in ObjectModel.objects.filter(vendor=v.id):
-                data += [[
-                    m.get_data("asset", "part_no0"),
-                    m.get_data("asset", "part_no1"),
-                    m.get_data("asset", "part_no2"),
-                    m.get_data("asset", "part_no3"),
-                    m.get_data("asset", "asset_part_no0"),
-                    m.get_data("asset", "asset_part_no1"),
-                    m.get_data("asset", "asset_part_no2"),
-                    m.get_data("asset", "asset_part_no3"),
-                    m.name,
-                    m.description
-                ]]
+                data += [
+                    [
+                        m.get_data("asset", "part_no0"),
+                        m.get_data("asset", "part_no1"),
+                        m.get_data("asset", "part_no2"),
+                        m.get_data("asset", "part_no3"),
+                        m.get_data("asset", "asset_part_no0"),
+                        m.get_data("asset", "asset_part_no1"),
+                        m.get_data("asset", "asset_part_no2"),
+                        m.get_data("asset", "asset_part_no3"),
+                        m.name,
+                        m.description,
+                    ]
+                ]
 
         return self.from_dataset(
             title=self.title,
-            columns=[
-                "0", "1", "2", "3",
-                "0", "1", "2", "3",
-                "Name",
-                "Description"
-            ],
-            data=data, enumerate=True
+            columns=["0", "1", "2", "3", "0", "1", "2", "3", "Name", "Description"],
+            data=data,
+            enumerate=True,
         )

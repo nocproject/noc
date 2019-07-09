@@ -7,6 +7,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,19 +20,15 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^Model:\s+(?P<platform>\S+)\s*\n"
-        r"^Junos: (?P<version>\S+[0-9])",
-        re.MULTILINE
+        r"^Model:\s+(?P<platform>\S+)\s*\n" r"^Junos: (?P<version>\S+[0-9])", re.MULTILINE
     )
     rx_ver2 = re.compile(
-        r"^Model:\s+(?P<platform>\S+)\s*\n"
-        r"^JUNOS .*? \[(?P<version>\S+)\]",
-        re.MULTILINE
+        r"^Model:\s+(?P<platform>\S+)\s*\n" r"^JUNOS .*? \[(?P<version>\S+)\]", re.MULTILINE
     )
     # JUNOS .*? \[(?P<version>[^\]]+)\]",
     rx_snmp_ver = re.compile(
-        r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+"
-        r"(?P<version>\S+[0-9])")
+        r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+" r"(?P<version>\S+[0-9])"
+    )
 
     def execute_snmp(self):
         v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
@@ -52,5 +49,5 @@ class Script(BaseScript):
         return {
             "vendor": "Juniper",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

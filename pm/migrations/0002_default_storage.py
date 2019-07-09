@@ -9,7 +9,7 @@
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
+
 class Migration(BaseMigration):
     def migrate(self):
         pass  # Deprecated
-

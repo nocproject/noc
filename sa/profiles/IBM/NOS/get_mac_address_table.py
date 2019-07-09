@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -33,10 +34,12 @@ class Script(BaseScript):
         r = []
         for match in self.rx_mac.finditer(v):
             if match:
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("port")],
-                    "type": "D"
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("port")],
+                        "type": "D",
+                    }
+                ]
         return r

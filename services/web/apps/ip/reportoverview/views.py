@@ -8,8 +8,10 @@
 
 # Third-party modules
 from django.db import connection
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models.customfield import CustomField
@@ -17,8 +19,7 @@ from noc.ip.models.vrfgroup import VRFGroup
 from noc.ip.models.prefix import Prefix
 from noc.core.ip import IP
 
-prefix_fields = [f for f in CustomField.table_fields("ip_prefix")
-                 if not f.is_hidden]
+prefix_fields = [f for f in CustomField.table_fields("ip_prefix") if not f.is_hidden]
 
 # % fixme rewrite to separate file
 CSS = """
@@ -83,7 +84,6 @@ TABLE TR TD {
 
 
 class Node(object):
-
     def __init__(self, app):
         self.app = app
         self.children = []
@@ -96,8 +96,7 @@ class Node(object):
     def get_depth(self):
         if not self.depth:
             if self.children:
-                self.depth = 1 + max(c.get_depth()
-                                     for c in self.children)
+                self.depth = 1 + max(c.get_depth() for c in self.children)
             else:
                 self.depth = 1
         return self.depth
@@ -133,11 +132,13 @@ class Node(object):
 
     @staticmethod
     def get_bar(percent):
-        return ("<div class='bar_wrap'>"
-                "<div class='bar' style='width:%d%%'>"
-                "<div class='bar_text'>%d%%</div>"
-                "</div>"
-                "</div>") % (int(percent), int(percent))
+        return (
+            "<div class='bar_wrap'>"
+            "<div class='bar' style='width:%d%%'>"
+            "<div class='bar_text'>%d%%</div>"
+            "</div>"
+            "</div>"
+        ) % (int(percent), int(percent))
 
 
 class VRFGroupNode(Node):
@@ -149,15 +150,13 @@ class VRFGroupNode(Node):
     def populate(self):
         if self.vrfs:
             vid = "{%s}" % ",".join([str(v.id) for v in self.vrfs])
-            root = Prefix.objects.get(vrf=self.vrfs[0],
-                                      prefix="0.0.0.0/0")
+            root = Prefix.objects.get(vrf=self.vrfs[0], prefix="0.0.0.0/0")
             c = GPrefixNode(self.app, root, vid)
             self.children = c.children  # Relink
 
     def get_html(self):
         r = ["<b>VRF Group: %s</b>" % self.vrf_group.name]
-        r += ["&nbsp;&nbsp;<b>%s</b> (RD: %s)" % (v.name, v.rd)
-              for v in self.vrfs]
+        r += ["&nbsp;&nbsp;<b>%s</b> (RD: %s)" % (v.name, v.rd) for v in self.vrfs]
         return "<br>".join(r)
 
 
@@ -254,8 +253,9 @@ class GPrefixNode(PrefixNode):
 
     def populate(self):
         self.children = [
-            GPrefixNode(self.app, p, self.vrfs) for p in
-            Prefix.objects.raw("""
+            GPrefixNode(self.app, p, self.vrfs)
+            for p in Prefix.objects.raw(
+                """
                 SELECT * FROM ip_prefix p
                 WHERE
                         vrf_id = ANY (%s::integer[])
@@ -269,8 +269,10 @@ class GPrefixNode(PrefixNode):
                             AND prefix >> p.prefix
                         )
                 ORDER BY p.prefix
-            """, [self.vrfs, self.prefix.prefix,
-                  self.vrfs, self.prefix.prefix])]
+            """,
+                [self.vrfs, self.prefix.prefix, self.vrfs, self.prefix.prefix],
+            )
+        ]
 
 
 class ReportOverviewApplication(ReportApplication):
@@ -283,11 +285,13 @@ class ReportOverviewApplication(ReportApplication):
         :return:
         """
         c = connection.cursor()
-        c.execute("""
+        c.execute(
+            """
             SELECT prefix_id, COUNT(*)
             FROM ip_address
             GROUP BY 1
-            """)
+            """
+        )
         return dict(c.fetchall())
 
     @staticmethod
@@ -297,11 +301,13 @@ class ReportOverviewApplication(ReportApplication):
         :return:
         """
         c = connection.cursor()
-        c.execute("""
+        c.execute(
+            """
             SELECT parent_id, COUNT(*)
             FROM ip_prefix
             GROUP BY 1
-            """)
+            """
+        )
         return dict(c.fetchall())
 
     def report_html(self, request, result=None, query=None):

@@ -26,33 +26,23 @@ class Script(BaseScript):
         r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
         r"(?P<descr>.*)", re.MULTILINE)
     """
-    rx_iface = re.compile(
-        r"^(?P<port>\S+\d+) is (?P<admin_state>up|down)", re.MULTILINE
-    )
-    rx_adsl_state = re.compile(
-        r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE
-    )
-    rx_vdsl_state = re.compile(
-        r"^\s*(?P<port>Vdsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE
-    )
+    rx_iface = re.compile(r"^(?P<port>\S+\d+) is (?P<admin_state>up|down)", re.MULTILINE)
+    rx_adsl_state = re.compile(r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)
+    rx_vdsl_state = re.compile(r"^\s*(?P<port>Vdsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)
     rx_adsl_line = re.compile(
-        r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+\d+\s+\d+\s+"
-        r"(?P<vpi>\d+|-)\s+(?P<vci>\d+|-)\s+",
+        r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+\d+\s+\d+\s+" r"(?P<vpi>\d+|-)\s+(?P<vci>\d+|-)\s+",
         re.MULTILINE,
     )
     rx_vlan = re.compile(r"Vlan ID:\s+(?P<vlan_id>\d+)")
     rx_port = re.compile(r"(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)")
     rx_snmp = re.compile(
-        r"^(?:Adsl|Ethernet|GigabitEthernet)(?P<card>\d+)/\d+/(?P<port>\d+)",
-        re.MULTILINE,
+        r"^(?:Adsl|Ethernet|GigabitEthernet)(?P<card>\d+)/\d+/(?P<port>\d+)", re.MULTILINE
     )
     rx_tagged = re.compile(
         r"^\s*(?:Description:\s+\S+\s+)?(?:Route Interface: not configured\s+)?Tagged\s+Ports:(?P<tagged>.+)Untagged",
         re.MULTILINE | re.DOTALL,
     )
-    rx_untagged = re.compile(
-        r"^\s*Untagged\s+Ports:(?P<untagged>.+)", re.MULTILINE | re.DOTALL
-    )
+    rx_untagged = re.compile(r"^\s*Untagged\s+Ports:(?P<untagged>.+)", re.MULTILINE | re.DOTALL)
     rx_ip_iface = re.compile(
         r"^\s*(?P<iface>\S+\d+) is (?P<admin_state>up|down),\s*"
         r"line protocol is (?P<oper_state>up|down)",
@@ -138,21 +128,15 @@ class Script(BaseScript):
             if match:
                 if name.startswith("Adsl"):
                     snmp_ifindex = (
-                        201326592
-                        + int(match.group("card")) * 65536
-                        + int(match.group("port")) * 64
+                        201326592 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                     )
                 if name.startswith("Ethernet"):
                     snmp_ifindex = (
-                        469762306
-                        + int(match.group("card")) * 65536
-                        + int(match.group("port")) * 64
+                        469762306 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                     )
                 if name.startswith("Gigabit"):
                     snmp_ifindex = (
-                        503316993
-                        + int(match.group("card")) * 65536
-                        + int(match.group("port")) * 64
+                        503316993 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                     )
                 iface["snmp_ifindex"] = snmp_ifindex
             interfaces += [iface]

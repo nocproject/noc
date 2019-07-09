@@ -15,7 +15,10 @@ import re
 class Script(BaseScript):
     name = "DLink.DxS.get_portchannel"
     interface = IGetPortchannel
-    rx_trunk = re.compile(r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)", re.MULTILINE | re.DOTALL)
+    rx_trunk = re.compile(
+        r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         try:
@@ -24,11 +27,11 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         r = []
         for match in self.rx_trunk.finditer(t):
-            r += [{
-                "interface": "T%s" % match.group("trunk"),
-                "members": self.expand_interface_range(
-                    match.group("members")
-                ),
-                "type": "L" if match.group("type").lower() == "lacp" else "S"
-            }]
+            r += [
+                {
+                    "interface": "T%s" % match.group("trunk"),
+                    "members": self.expand_interface_range(match.group("members")),
+                    "type": "L" if match.group("type").lower() == "lacp" else "S",
+                }
+            ]
         return r

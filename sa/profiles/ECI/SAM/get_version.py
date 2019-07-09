@@ -21,9 +21,8 @@ class Script(BaseScript):
     rx_platform = re.compile(r"\|\|\s+0\s+\|\|\s+(?P<platform>.+)\s*\n")
 
     rx_ver = re.compile(
-        r"^\s*NI CARD TYPE\s+: (?P<cardtype>.+)\n"
-        r"^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
-        re.MULTILINE
+        r"^\s*NI CARD TYPE\s+: (?P<cardtype>.+)\n" r"^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -42,7 +41,5 @@ class Script(BaseScript):
             "vendor": "ECI",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "cardtype": cardtype
-            }
+            "attributes": {"cardtype": cardtype},
         }

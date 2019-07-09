@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.main.models.template import Template
@@ -16,53 +17,37 @@ from noc.main.models.notificationgroup import NotificationGroup
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--dry-run",
-            action="store_true",
-            help="Dry Run (Do not send message)"
-        )
+        parser.add_argument("--dry-run", action="store_true", help="Dry Run (Do not send message)")
         parser.add_argument(
             "--notification-group",
             action="append",
             dest="notification_group",
             help="Notification group name",
-            required=True
+            required=True,
+        )
+        parser.add_argument("--template", action="store", dest="template", help="Template name")
+        parser.add_argument("--subject", action="store", dest="subject", help="Message subject")
+        parser.add_argument("--body", action="store", dest="body", help="Message body")
+        parser.add_argument(
+            "--body-file", action="store", dest="body_file", help="Message body file"
         )
         parser.add_argument(
-            "--template",
-            action="store",
-            dest="template",
-            help="Template name"
-        )
-        parser.add_argument(
-            "--subject",
-            action="store",
-            dest="subject",
-            help="Message subject"
-        )
-        parser.add_argument(
-            "--body",
-            action="store",
-            dest="body",
-            help="Message body"
-        )
-        parser.add_argument(
-            "--body-file",
-            action="store",
-            dest="body_file",
-            help="Message body file"
-        )
-        parser.add_argument(
-            "--var",
-            action="append",
-            dest="var",
-            help="Template variable in key=value form"
+            "--var", action="append", dest="var", help="Template variable in key=value form"
         )
 
-    def handle(self, notification_group=None, template=None, subject=None,
-               body=None, body_file=None, var=None,
-               debug=False, dry_run=False,
-               *args, **kwargs):
+    def handle(
+        self,
+        notification_group=None,
+        template=None,
+        subject=None,
+        body=None,
+        body_file=None,
+        var=None,
+        debug=False,
+        dry_run=False,
+        *args,
+        **kwargs
+    ):
         groups = []
         for ng in notification_group:
             g = NotificationGroup.get_by_name(ng)
@@ -104,10 +89,7 @@ class Command(BaseCommand):
             if self.is_debug:
                 self.print("Sending message to group: %s" % g.name)
             if not dry_run:
-                g.notify(
-                    subject=subject,
-                    body=body
-                )
+                g.notify(subject=subject, body=body)
 
 
 if __name__ == "__main__":

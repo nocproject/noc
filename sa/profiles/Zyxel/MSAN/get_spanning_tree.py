@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -26,7 +27,8 @@ class Script(BaseScript):
         r"^.+\n"
         r"^.+\n"
         r"^.+\n"
-        r"^force version\s+: (?P<version>rstp|mstp)\s*\n", re.MULTILINE
+        r"^force version\s+: (?P<version>rstp|mstp)\s*\n",
+        re.MULTILINE,
     )
     rx_mstid = re.compile(r"^\s*(?P<id>\d+) (?P<vlans>[0-9\-\,]+)\s*\n", re.MULTILINE)
     rx_bridge = re.compile(
@@ -49,7 +51,8 @@ class Script(BaseScript):
         r"^OperEdgePort\s+:\s+(?P<edge>\S+)\s*\n"
         r"^MACOperational\s+:\s+\S+\s*\n"
         r"^AdminP2PLink\s+:\s+\S+\s*\n"
-        r"^OperP2PLink\s+:\s+(?P<p2p>\S+)\s*\n", re.MULTILINE
+        r"^OperP2PLink\s+:\s+(?P<p2p>\S+)\s*\n",
+        re.MULTILINE,
     )
 
     @classmethod
@@ -99,7 +102,7 @@ class Script(BaseScript):
                 "designated_bridge_priority": int(match.group("ds_br_pr"), 16),
                 "designated_port_id": self.hex_to_portid(match.group("dsg_port_id")),
                 "edge": match.group("edge") == "true",
-                "point_to_point": match.group("p2p") == "true"
+                "point_to_point": match.group("p2p") == "true",
             }
             inst["interfaces"] += [iface]
         return inst
@@ -131,10 +134,10 @@ class Script(BaseScript):
                 "configuration": {
                     "MSTP": {
                         "region": match.group("region"),
-                        "revision": int(match.group("revision"))
+                        "revision": int(match.group("revision")),
                     }
                 },
-                "instances": []
+                "instances": [],
             }
             for match1 in self.rx_mstid.finditer(v):
                 r["instances"] += [self.process_mstp(match1.group("id"), match1.group("vlans"))]

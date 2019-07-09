@@ -13,22 +13,35 @@ from functools import reduce
 import os
 import re
 import hashlib
+
 # Third-party modules
 import six
 from django.http import HttpResponse
-from mongoengine.fields import (StringField, BooleanField, ListField,
-                                EmbeddedDocumentField, ReferenceField,
-                                BinaryField, ObjectIdField, UUIDField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ListField,
+    EmbeddedDocumentField,
+    ReferenceField,
+    BinaryField,
+    GeoPointField,
+)
 from mongoengine.errors import ValidationError
+from mongoengine.queryset import Q
+
 # NOC modules
-from noc.lib.nosql import (GeoPointField, ForeignKeyField,
-                           PlainReferenceField, Q, DateField)
+from noc.core.mongo.fields import DateField, ForeignKeyField, PlainReferenceField
 from noc.sa.interfaces.base import (
-    BooleanParameter, GeoPointParameter,
-    ModelParameter, ListOfParameter,
-    EmbeddedDocumentParameter, DictParameter,
-    InterfaceTypeError, DocumentParameter,
-    ObjectIdParameter)
+    BooleanParameter,
+    GeoPointParameter,
+    ModelParameter,
+    ListOfParameter,
+    EmbeddedDocumentParameter,
+    DictParameter,
+    InterfaceTypeError,
+    DocumentParameter,
+    ObjectIdParameter,
+)
 from noc.lib.validators import is_int, is_uuid
 from noc.aaa.models.permission import Permission
 from noc.core.middleware.tls import get_user
@@ -47,7 +60,9 @@ class ExtDocApplication(ExtApplication):
     clean_fields = {"id": ObjectIdParameter()}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
     parent_model = None
-    secret_fields = None  # Set of sensitive fields. "secret" permission is required to show of modify
+    secret_fields = (
+        None
+    )  # Set of sensitive fields. "secret" permission is required to show of modify
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
@@ -66,48 +81,53 @@ class ExtDocApplication(ExtApplication):
             elif isinstance(f, GeoPointField):
                 self.clean_fields[name] = GeoPointParameter()
             elif isinstance(f, ForeignKeyField):
-                self.clean_fields[f.name] = ModelParameter(
-                    f.document_type, required=f.required)
+                self.clean_fields[f.name] = ModelParameter(f.document_type, required=f.required)
             elif isinstance(f, ListField):
                 if isinstance(f.field, EmbeddedDocumentField):
                     self.clean_fields[f.name] = ListOfParameter(
-                        element=EmbeddedDocumentParameter(f.field.document_type))
+                        element=EmbeddedDocumentParameter(f.field.document_type)
+                    )
             elif isinstance(f, ReferenceField):
                 dt = f.document_type_obj
                 if dt == "self":
                     dt = self.model
-                self.clean_fields[f.name] = DocumentParameter(
-                    dt,
-                    required=f.required
-                )
+                self.clean_fields[f.name] = DocumentParameter(dt, required=f.required)
             if f.primary_key:
                 self.pk = name
             if name == "uuid":
                 self.has_uuid = True
         #
         if not self.query_fields:
-            self.query_fields = ["%s__%s" % (n, self.query_condition)
-                                 for n, f in six.iteritems(self.model._fields)
-                                 if f.unique and isinstance(f, StringField)]
-        self.unique_fields = [
-            n for n, f in six.iteritems(self.model._fields) if f.unique
-        ]
+            self.query_fields = [
+                "%s__%s" % (n, self.query_condition)
+                for n, f in six.iteritems(self.model._fields)
+                if f.unique and isinstance(f, StringField)
+            ]
+        self.unique_fields = [n for n, f in six.iteritems(self.model._fields) if f.unique]
         # Install JSON API call when necessary
         self.json_collection = self.model._meta.get("json_collection")
-        if (self.has_uuid and
-                hasattr(self.model, "to_json") and
-                not hasattr(self, "api_to_json") and
-                not hasattr(self, "api_json")):
+        if (
+            self.has_uuid
+            and hasattr(self.model, "to_json")
+            and not hasattr(self, "api_to_json")
+            and not hasattr(self, "api_json")
+        ):
             self.add_view(
                 "api_json",
                 self._api_to_json,
                 url="^(?P<id>[0-9a-f]{24})/json/$",
-                method=["GET"], access="read", api=True)
+                method=["GET"],
+                access="read",
+                api=True,
+            )
             self.add_view(
                 "api_share_info",
                 self._api_share_info,
                 url="^(?P<id>[0-9a-f]{24})/share_info/$",
-                method=["GET"], access="read", api=True)
+                method=["GET"],
+                access="read",
+                api=True,
+            )
         if self.json_collection:
             self.bulk_fields += [self._bulk_field_is_builtin]
         # Find field_* and populate custom fields
@@ -125,6 +145,7 @@ class ExtDocApplication(ExtApplication):
 
     def get_custom_fields(self):
         from noc.main.models.customfield import CustomField
+
         return list(CustomField.table_fields(self.model._get_collection_name()))
 
     def get_launch_info(self, request):
@@ -133,18 +154,20 @@ class ExtDocApplication(ExtApplication):
             li["params"]["collection"] = self.json_collection
         cf = self.get_custom_fields()
         if cf:
-            li["params"].update({
-                "cust_model_fields": [f.ext_model_field for f in cf],
-                "cust_grid_columns": [f.ext_grid_column for f in cf],
-                "cust_form_fields": [f.ext_form_field for f in cf
-                                     if not f.is_hidden]
-            })
+            li["params"].update(
+                {
+                    "cust_model_fields": [f.ext_model_field for f in cf],
+                    "cust_grid_columns": [f.ext_grid_column for f in cf],
+                    "cust_form_fields": [f.ext_form_field for f in cf if not f.is_hidden],
+                }
+            )
         return li
 
     def get_Q(self, request, query):
         """
         Prepare Q statement for query
         """
+
         def get_q(f):
             if f == "uuid":
                 if is_uuid(query):
@@ -158,9 +181,7 @@ class ExtDocApplication(ExtApplication):
 
         qfx = [get_q(f) for f in self.query_fields]
         qfx = [x for x in qfx if x]
-        q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
-                   qfx[1:],
-                   Q(**{qfx[0]: query}))
+        q = reduce(lambda x, y: x | Q(**{get_q(y): query}), qfx[1:], Q(**{qfx[0]: query}))
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -187,7 +208,8 @@ class ExtDocApplication(ExtApplication):
         # Strip ignored fields and convert empty strings to None
         data = dict(
             (str(k), data[k] if data[k] != "" else None)
-            for k in data if k not in self.ignored_fields
+            for k in data
+            if k not in self.ignored_fields
         )
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
@@ -206,9 +228,13 @@ class ExtDocApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (
-            self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param,
-            self.only_param
+            self.limit_param,
+            self.page_param,
+            self.start_param,
+            self.format_param,
+            self.sort_param,
+            self.query_param,
+            self.only_param,
         ):
             if p in q:
                 del q[p]
@@ -275,8 +301,7 @@ class ExtDocApplication(ExtApplication):
                     else:
                         v = str(v)
                 elif isinstance(f, ListField):
-                    if (hasattr(f, "field") and
-                            isinstance(f.field, EmbeddedDocumentField)):
+                    if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                 elif isinstance(f, BinaryField):
                     v = repr(v)
@@ -285,8 +310,11 @@ class ExtDocApplication(ExtApplication):
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
-                elif not (isinstance(v, six.string_types) or isinstance(v, six.integer_types) or
-                          isinstance(v, (bool, dict))):
+                elif not (
+                    isinstance(v, six.string_types)
+                    or isinstance(v, six.integer_types)
+                    or isinstance(v, (bool, dict))
+                ):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
@@ -299,10 +327,7 @@ class ExtDocApplication(ExtApplication):
         return r
 
     def instance_to_lookup(self, o, fields=None):
-        return {
-            "id": str(o.id),
-            "label": unicode(o)
-        }
+        return {"id": str(o.id), "label": unicode(o)}
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
@@ -322,8 +347,7 @@ class ExtDocApplication(ExtApplication):
 
         if not self.parent_field:
             return None
-        q = dict((str(k), v[0] if len(v) == 1 else v)
-                 for k, v in request.GET.lists())
+        q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
         model = self.parent_model or self.model
         parent = q.get("parent")
         if not parent:
@@ -338,11 +362,7 @@ class ExtDocApplication(ExtApplication):
             data = data.order_by(*ordering)
         count = data.count()
         data = [{"id": str(o.id), "label": trim(o)} for o in data]
-        return {
-            "total": count,
-            "success": True,
-            "data": data
-        }
+        return {"total": count, "success": True, "data": data}
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
@@ -358,8 +378,7 @@ class ExtDocApplication(ExtApplication):
             attrs["uuid"] = uuid.uuid4()
         # Check for duplicates
         if self.unique_fields:
-            q = dict((k, attrs[k])
-                     for k in self.unique_fields if k in attrs)
+            q = dict((k, attrs[k]) for k in self.unique_fields if k in attrs)
             if q:
                 if self.queryset(request).filter(**q).first():
                     return self.response(status=self.CONFLICT)
@@ -374,17 +393,17 @@ class ExtDocApplication(ExtApplication):
         # Reread result
         o = self.model.objects.get(**{self.pk: o.pk})
         if request.is_extjs:
-            r = {
-                "success": True,
-                "data": self.instance_to_dict(o)
-            }
+            r = {"success": True, "data": self.instance_to_dict(o)}
         else:
             r = self.instance_to_dict(o)
         return self.response(r, status=self.CREATED)
 
-    @view(method=["GET"],
-          url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
-          access="read", api=True)
+    @view(
+        method=["GET"],
+        url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+        access="read",
+        api=True,
+    )
     def api_read(self, request, id):
         """
         Returns dict with object's fields and values
@@ -396,12 +415,14 @@ class ExtDocApplication(ExtApplication):
         only = request.GET.get(self.only_param)
         if only:
             only = only.split(",")
-        return self.response(self.instance_to_dict(o, fields=only),
-                             status=self.OK)
+        return self.response(self.instance_to_dict(o, fields=only), status=self.OK)
 
-    @view(method=["PUT"],
-          url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
-          access="update", api=True)
+    @view(
+        method=["PUT"],
+        url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+        access="update",
+        api=True,
+    )
     def api_update(self, request, id):
         try:
             attrs = self.clean(self.deserialize(request.body))
@@ -434,17 +455,17 @@ class ExtDocApplication(ExtApplication):
         # Reread result
         o = self.model.objects.get(**{self.pk: id})
         if request.is_extjs:
-            r = {
-                "success": True,
-                "data": self.instance_to_dict(o)
-            }
+            r = {"success": True, "data": self.instance_to_dict(o)}
         else:
             r = self.instance_to_dict(o)
         return self.response(r, status=self.OK)
 
-    @view(method=["DELETE"],
-          url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
-          access="delete", api=True)
+    @view(
+        method=["DELETE"],
+        url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+        access="delete",
+        api=True,
+    )
     def api_delete(self, request, id):
         try:
             o = self.queryset(request).get(**{self.pk: id})
@@ -454,10 +475,8 @@ class ExtDocApplication(ExtApplication):
             o.delete()
         except ValueError as e:
             return self.render_json(
-                {
-                    "success": False,
-                    "message": "ERROR: %s" % e
-                }, status=self.CONFLICT)
+                {"success": False, "message": "ERROR: %s" % e}, status=self.CONFLICT
+            )
         return HttpResponse(status=self.DELETED)
 
     def _api_to_json(self, request, id):
@@ -479,12 +498,10 @@ class ExtDocApplication(ExtApplication):
         hash = hashlib.sha256(content).hexdigest()[:8]
         return {
             "file_path": os.path.join(
-                "src",
-                self.model._meta["json_collection"],
-                o.get_json_path()
+                "src", self.model._meta["json_collection"], o.get_json_path()
             ),
             "content": content,
-            "hash": hash
+            "hash": hash,
         }
 
     def _bulk_field_is_builtin(self, data):
@@ -499,35 +516,29 @@ class ExtDocApplication(ExtApplication):
             x["is_builtin"] = u and u in builtins
         return data
 
-    @view(url="^actions/group_edit/$", method=["POST"],
-          access="update", api=True)
+    @view(url="^actions/group_edit/$", method=["POST"], access="update", api=True)
     def api_action_group_edit(self, request):
-        validator = DictParameter(attrs={
-            "ids": ListOfParameter(
-                element=DocumentParameter(self.model),
-                convert=True
-            )
-        })
+        validator = DictParameter(
+            attrs={"ids": ListOfParameter(element=DocumentParameter(self.model), convert=True)}
+        )
         rv = self.deserialize(request.body)
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
-            return self.render_json({
-                "status": False,
-                "message": "Bad request",
-                "traceback": str(e)
-            }, status=self.BAD_REQUEST)
+            return self.render_json(
+                {"status": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         objects = v["ids"]
         del v["ids"]
         try:
             v = self.clean(v)
         except ValueError as e:
-            return self.render_json({
-                "status": False,
-                "message": "Bad request",
-                "traceback": str(e)
-            }, status=self.BAD_REQUEST)
+            return self.render_json(
+                {"status": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         for o in objects:
             for p in v:
                 setattr(o, p, v[p])

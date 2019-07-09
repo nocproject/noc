@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -86,15 +87,47 @@ class Migration(BaseMigration):
         for o, n in self.RENAME_COLUMNS:
             self.db.rename_column("sa_managedobjectprofile", n, o)
         # Create new columns
-        self.db.add_column("sa_managedobjectprofile", "enable_box_discovery", models.BooleanField(default=False))
-        self.db.add_column("sa_managedobjectprofile", "box_discovery_interval", models.IntegerField(default=86400))
-        self.db.add_column("sa_managedobjectprofile", "box_discovery_failed_interval", models.IntegerField(default=10800))
-        self.db.add_column("sa_managedobjectprofile", "box_discovery_on_system_start", models.BooleanField(default=False))
-        self.db.add_column("sa_managedobjectprofile", "box_discovery_system_start_delay", models.IntegerField(default=300))
-        self.db.add_column("sa_managedobjectprofile", "box_discovery_on_config_changed", models.BooleanField(default=False))
-        self.db.add_column("sa_managedobjectprofile", "box_discovery_config_changed_delay", models.IntegerField(default=300))
-        self.db.add_column("sa_managedobjectprofile", "enable_periodic_discovery", models.BooleanField(default=False))
-        self.db.add_column("sa_managedobjectprofile", "periodic_discovery_interval", models.IntegerField(default=300))
+        self.db.add_column(
+            "sa_managedobjectprofile", "enable_box_discovery", models.BooleanField(default=False)
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile", "box_discovery_interval", models.IntegerField(default=86400)
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "box_discovery_failed_interval",
+            models.IntegerField(default=10800),
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "box_discovery_on_system_start",
+            models.BooleanField(default=False),
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "box_discovery_system_start_delay",
+            models.IntegerField(default=300),
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "box_discovery_on_config_changed",
+            models.BooleanField(default=False),
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "box_discovery_config_changed_delay",
+            models.IntegerField(default=300),
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "enable_periodic_discovery",
+            models.BooleanField(default=False),
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "periodic_discovery_interval",
+            models.IntegerField(default=300),
+        )
         # Drop deprecated columns
         for n in self.DROP_COLUMNS:
             self.db.delete_column("sa_managedobjectprofile", n)

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -26,6 +27,7 @@ class Script(BaseScript):
     @todo: subinterfaces
     @todo: Q-in-Q
     """
+
     name = "Force10.FTOS.get_interfaces"
     interface = IGetInterfaces
 
@@ -37,21 +39,23 @@ class Script(BaseScript):
         "vl": "SVI",
         "po": "aggregated",
         "lo": "loopback",
-        "ma": "management"
+        "ma": "management",
     }
 
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down|not present)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_int_alias = re.compile(
-        r"^(Description|Vlan alias name is):\s*(?P<alias>.*?)$",
-        re.MULTILINE | re.IGNORECASE)
-    rx_int_mac = re.compile(r"Current\s+address\s+is\s+(?P<mac>\S+)",
-                            re.MULTILINE | re.IGNORECASE)
-    rx_int_ipv4 = re.compile(r"^Internet address is (?P<address>[0-9]\S+)",
-                             re.MULTILINE | re.IGNORECASE)
-    rx_int_ifindex = re.compile(r"^Interface index is (?P<ifindex>\d+)",
-                                re.MULTILINE | re.IGNORECASE)
+        r"^(Description|Vlan alias name is):\s*(?P<alias>.*?)$", re.MULTILINE | re.IGNORECASE
+    )
+    rx_int_mac = re.compile(r"Current\s+address\s+is\s+(?P<mac>\S+)", re.MULTILINE | re.IGNORECASE)
+    rx_int_ipv4 = re.compile(
+        r"^Internet address is (?P<address>[0-9]\S+)", re.MULTILINE | re.IGNORECASE
+    )
+    rx_int_ifindex = re.compile(
+        r"^Interface index is (?P<ifindex>\d+)", re.MULTILINE | re.IGNORECASE
+    )
 
     def execute(self):
         # Get portchannes
@@ -64,8 +68,10 @@ class Script(BaseScript):
         # Get switchports
         switchports = {}  # interface -> (untagged, tagged)
         for sp in self.scripts.get_switchport():
-            switchports[sp["interface"]] = (sp["untagged"] if "untagged" in sp
-                                            else None, sp["tagged"])
+            switchports[sp["interface"]] = (
+                sp["untagged"] if "untagged" in sp else None,
+                sp["tagged"],
+            )
         # Get interfaces
         interfaces = []
         v = self.cli("show interfaces")
@@ -74,23 +80,22 @@ class Script(BaseScript):
             if not s:
                 continue
             match = self.re_match(self.rx_sh_int, s)
-            ifname = self.profile.convert_interface_name(
-                match.group("interface"))
+            ifname = self.profile.convert_interface_name(match.group("interface"))
             try:
                 ift = self.types[ifname.lower()[:2]]
             except KeyError:
                 raise self.UnexpectedResultError(
-                    "Cannot determine interface type for: '%s'" % ifname)
+                    "Cannot determine interface type for: '%s'" % ifname
+                )
             admin_status = match.group("admin_status").lower() == "up"
-            oper_status = match.group("oper_status").lower() in ("up",
-                                                                 "not present")
+            oper_status = match.group("oper_status").lower() in ("up", "not present")
             iface = {
                 "name": ifname,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "type": ift,
-                "enabled_protocols": []
-                }
+                "enabled_protocols": [],
+            }
             # Get description
             description = None
             match = self.rx_int_alias.search(s)
@@ -114,8 +119,8 @@ class Script(BaseScript):
                     "admin_status": admin_status,
                     "oper_status": oper_status,
                     "enabled_afi": [],
-                    "enabled_protocols": []
-                    }
+                    "enabled_protocols": [],
+                }
                 # Description
                 if iface.get("description"):
                     sub["description"] = iface["description"]

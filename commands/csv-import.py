@@ -10,9 +10,10 @@
 from __future__ import print_function
 import argparse
 import sys
-# Django modules
-from django.db import models
+
+# Third-party modules
 from django.apps import apps
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject  # noqa
 from noc.core.management.base import BaseCommand, CommandError
@@ -25,25 +26,16 @@ class Command(BaseCommand):
     help = "Import data from csv file"
 
     def add_arguments(self, parser):
-        parser.add_argument("-r", "--resolve",
-                            dest="resolve",
-                            action="store",
-                            default="fail",
-                            ),
-        parser.add_argument("-d", "--delimiter",
-                            dest="delimiter",
-                            action="store",
-                            default=",",
-                            ),
-        parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
-        )
+        parser.add_argument("-r", "--resolve", dest="resolve", action="store", default="fail"),
+        parser.add_argument("-d", "--delimiter", dest="delimiter", action="store", default=","),
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
 
     def _usage(self):
         print("Usage:")
-        print("%s csv-import [--resolve=action] [--delimiter=<char>] <model> <file1> .. <fileN>" % (sys.argv[0]))
+        print(
+            "%s csv-import [--resolve=action] [--delimiter=<char>] <model> <file1> .. <fileN>"
+            % (sys.argv[0])
+        )
         print("<action> is one of:")
         print("        fail - fail when record is already exists")
         print("        skip - skip duplicated records")
@@ -79,19 +71,14 @@ class Command(BaseCommand):
             return self._usage()
         #
         try:
-            resolve = {
-                "fail": IR_FAIL,
-                "skip": IR_SKIP,
-                "update": IR_UPDATE
-            }[options["resolve"]]
+            resolve = {"fail": IR_FAIL, "skip": IR_SKIP, "update": IR_UPDATE}[options["resolve"]]
         except KeyError:
             raise CommandError("Invalid resolve option: %s" % options["resolve"])
         # Begin import
         for f in args[1:]:
             print("Importing %s" % f)
             with open(f) as f:
-                count, error = csv_import(m, f, resolution=resolve,
-                                          delimiter=options["delimiter"])
+                count, error = csv_import(m, f, resolution=resolve, delimiter=options["delimiter"])
                 if count is None:
                     raise CommandError(error)
                 else:

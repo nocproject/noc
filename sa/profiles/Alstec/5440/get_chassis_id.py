@@ -20,12 +20,12 @@ class Script(BaseScript):
     rx_mac = re.compile(
         r"^\s+\d+\s+([0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:"
         r"[0-9a-f]{2}:[0-9a-f]{2})\s+yes",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         v = self.cli("brctl showmacs br0", cached=True)
         macs = sorted(self.rx_mac.findall(v))
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

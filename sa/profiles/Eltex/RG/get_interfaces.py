@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -28,7 +29,7 @@ class Script(BaseScript):
         117: "physical",  # gigabitEthernet
         135: "SVI",  # l2vlan
         161: "aggregated",  # ieee8023adLag
-        53: "SVI"  # propVirtual
+        53: "SVI",  # propVirtual
     }
 
     def get_ifindexes(self):
@@ -40,17 +41,15 @@ class Script(BaseScript):
                     try:
                         v = self.profile.convert_interface_name(name)
                     except InterfaceTypeError as why:
-                        self.logger.debug(
-                            "Ignoring unknown interface %s: %s",
-                            name, why
-                        )
+                        self.logger.debug("Ignoring unknown interface %s: %s", name, why)
                         unknown_interfaces += [name]
                         continue
                     ifindex = int(oid.split(".")[-1])
                     r[v] = ifindex
                 if unknown_interfaces:
-                    self.logger.info("%d unknown interfaces has been ignored",
-                                     len(unknown_interfaces))
+                    self.logger.info(
+                        "%d unknown interfaces has been ignored", len(unknown_interfaces)
+                    )
             except self.snmp.TimeOutError:
                 pass
         return r
@@ -63,8 +62,10 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
+
             def f(x):
                 return x
+
         for ifindex, v in self.get_iftable(mib):
             s = r.get(ifindex)
             if s:
@@ -131,13 +132,17 @@ class Script(BaseScript):
             if l["name"] in subs:
                 l["subinterfaces"] = subs[l["name"]]
             else:
-                l["subinterfaces"] = [{
-                    "name": l["name"],
-                    "description": l.get("description", ""),
-                    "type": "SVI",
-                    "enabled_afi": ["BRIDGE"] if l["type"] in ["physical", "aggregated"] else [],
-                    "admin_status": l["admin_status"],
-                    "oper_status": l["oper_status"],
-                    "snmp_ifindex": l["snmp_ifindex"],
-                }]
+                l["subinterfaces"] = [
+                    {
+                        "name": l["name"],
+                        "description": l.get("description", ""),
+                        "type": "SVI",
+                        "enabled_afi": ["BRIDGE"]
+                        if l["type"] in ["physical", "aggregated"]
+                        else [],
+                        "admin_status": l["admin_status"],
+                        "oper_status": l["oper_status"],
+                        "snmp_ifindex": l["snmp_ifindex"],
+                    }
+                ]
         return [{"interfaces": r}]

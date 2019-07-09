@@ -23,10 +23,7 @@ class Script(BaseScript):
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
-        if (
-            not self.is_switch or
-            not self.profile.command_exist(self, "ethernet-switching")
-        ):
+        if not self.is_switch or not self.profile.command_exist(self, "ethernet-switching"):
             return []
         r = []
         vlans = {}
@@ -49,21 +46,23 @@ class Script(BaseScript):
                 ifname = match.group("interfaces")
                 if ifname.endswith(".0"):
                     ifname = ifname[:-2]
-                r += [{
-                    "vlan_id": vlan_id,
-                    "mac": match.group("mac"),
-                    "interfaces": [ifname],
-                    "type": {
-                        "learn": "D",
-                        "static": "S",
-                        "d": "D",  # dynamic
-                        "s": "S",  # static
-                        "l": "D",  # locally learned
-                        "p": "S",  # Persistent static
-                        # "se": "s",  # statistics enabled - already in regexp
-                        # "nm": "s",  # non configured MAC
-                        # "r": "s",  # remote PE MAC
-                        # "o": "s"  # ovsdb MAC
-                    }[match.group("type").lower()]
-                }]
+                r += [
+                    {
+                        "vlan_id": vlan_id,
+                        "mac": match.group("mac"),
+                        "interfaces": [ifname],
+                        "type": {
+                            "learn": "D",
+                            "static": "S",
+                            "d": "D",  # dynamic
+                            "s": "S",  # static
+                            "l": "D",  # locally learned
+                            "p": "S",  # Persistent static
+                            # "se": "s",  # statistics enabled - already in regexp
+                            # "nm": "s",  # non configured MAC
+                            # "r": "s",  # remote PE MAC
+                            # "o": "s"  # ovsdb MAC
+                        }[match.group("type").lower()],
+                    }
+                ]
         return r

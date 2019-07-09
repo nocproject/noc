@@ -16,6 +16,7 @@ class PeeringPointApplication(ExtModelApplication):
     """
     Peering Point application
     """
+
     title = _("Peering Points")
     menu = [_("Setup"), _("Peering Points")]
     model = PeeringPoint

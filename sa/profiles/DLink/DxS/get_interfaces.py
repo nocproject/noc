@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -40,7 +41,8 @@ class Script(BaseScript):
         r"(DHCP Option12 State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
         r"(DHCP Option12 Host Name\s+:\s*\S*\s*\n)?"
         r"(Description\s+:\s*(?P<desc>\S*?)\s*\n)?",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
     rx_ipif2 = re.compile(
         r"IP Interface\s+:\s+(?P<ifname>\S+)\s*\n"
         r"VLAN Name\s+:\s+(?P<vlan_name>\S*)\s*\n"
@@ -56,7 +58,8 @@ class Script(BaseScript):
         r"(IPv6 Link-Local Address\s+:\s+\S+\s*\n)?"
         r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+) \(\S+\)\s*\n)?"
         r"(IP MTU\s+:\s+(?P<mtu>\d+)\s+\n)?",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
     # Work only on DES-1210-XX/ME/BX
     rx_ipif3 = re.compile(
         r"IP Interface\s+:\s+(?P<ifname>.+?)\s*\n"
@@ -68,7 +71,8 @@ class Script(BaseScript):
         r"(DHCPv6 Client State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
         r"(IPv4 State\s+:\s+(?P<is_ipv4>Enabled|Disabled)\s*\n)?"
         r"(IPv6 State\s+:\s+(?P<is_ipv6>Enabled|Disabled)\s*\n)?",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
     # Work only on DGS-1210-XX/ME/BX
     rx_ipif4 = re.compile(
         r"Interface Name\s+:\s+(?P<ifname>\S+)\s*\n"
@@ -77,7 +81,8 @@ class Script(BaseScript):
         r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n"
         r"Default Gateway\s+:.+\n"
         r"Interface Admin State\s+:\s+(?P<admin_state>\S+)\s*\n",
-        re.IGNORECASE | re.MULTILINE)
+        re.IGNORECASE | re.MULTILINE,
+    )
     rx_ipmgmt = re.compile(
         r"IP Interface\s+:\s+(?P<ifname>mgmt_ipif)\s*\n"
         r"Status\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
@@ -85,73 +90,74 @@ class Script(BaseScript):
         r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n"
         r"(Gateway\s+:\s+\S+\s*\n)?"
         r"Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
     rx_ipswitch = re.compile(
         r"MAC Address\s+:\s*(?P<mac_address>\S+)\s*\n"
         r"IP Address\s+:\s*(?P<ip_address>\S+)\s*\n"
         r"VLAN Name\s+:\s*(?P<vlan_name>\S+)\s*\n"
         r"Subnet Mask\s+:\s*(?P<ip_subnet>\S+)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
     rx_rip_gs = re.compile(r"RIP Global State : Enabled")
-    rx_ospf_gs = re.compile(
-        r"OSPF Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
-    rx_ospfv3_gs = re.compile(
-        r"OSPFv3 Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
+    rx_ospf_gs = re.compile(r"OSPF Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
+    rx_ospfv3_gs = re.compile(r"OSPFv3 Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
     rx_ctp_gs = re.compile(r"(LBD )?Status\s+: Enabled")
     rx_pim_gs = re.compile(r"PIM Global State\s+: Enabled")
     rx_gvrp_gs = re.compile(r"Global GVRP\s+: Enabled")
     rx_dvmrp_gs = re.compile(r"DVMRP Global State\s+: Enabled")
     rx_rip = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+(?:Disabled|Enabled)\s+"
-        r"(?:Disabled|Enabled)\s+(?:Disabled|Enabled)\s+Enabled\s*")
+        r"(?:Disabled|Enabled)\s+(?:Disabled|Enabled)\s+Enabled\s*"
+    )
     rx_ospf = re.compile(
-        r"(?P<ipif>\S+)\s+\S+\s+\S+\s+Enabled\s+"
-        r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE)
+        r"(?P<ipif>\S+)\s+\S+\s+\S+\s+Enabled\s+" r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE
+    )
     rx_ospfv3 = re.compile(
-        r"(?P<ipif>\S+)\s+\S+\s+Enabled\s+"
-        r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE)
+        r"(?P<ipif>\S+)\s+\S+\s+Enabled\s+" r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE
+    )
     rx_lldp = re.compile(
         r"Port ID\s+:\s+(?P<port>\d+(?:[:/]\d+)?)\s*\n"
-        r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)")
+        r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)"
+    )
     rx_lldp1 = re.compile(
         r"Port ID\s+:\s+(?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"\-+\s*\nPort ID Subtype\s+: MAC Address\s*\n"
-        r"Port ID\s+: (?P<mac>\S+)")
+        r"Port ID\s+: (?P<mac>\S+)"
+    )
     rx_pd = re.compile(
         r"Port\s+:\s+(?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"\-+\s*\nPort Status\s+: Link (?:Up|Down)\s*\n"
         r"Description\s+:\s*(?P<desc>.*?)\s*\n"
         r"HardWare Type\s+:\s*.+\s*\n"
-        r"MAC Address\s+:\s*(?P<mac>\S+)\s*\n")
+        r"MAC Address\s+:\s*(?P<mac>\S+)\s*\n"
+    )
     rx_ctp = re.compile(
-        r"^(?P<port>\d+(?:[:/]\d+)?)\s+(?P<status>Enabled|Disabled)\s+\S+",
-        re.MULTILINE)
-    rx_pim = re.compile(
-        r"(?P<ipif>\S+)\s+\S+\s+\S+\s+\d+\s+\d+\s+\S+\s+Enabled\s+")
-    rx_igmp = re.compile(
-        r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
-    rx_dvmrp = re.compile(
-        r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
-    rx_gvrp = re.compile(
-        r"^ (?P<port>\d+(?:[:/]\d+)?)\s+\d+\s+Enabled")
+        r"^(?P<port>\d+(?:[:/]\d+)?)\s+(?P<status>Enabled|Disabled)\s+\S+", re.MULTILINE
+    )
+    rx_pim = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\S+\s+\d+\s+\d+\s+\S+\s+Enabled\s+")
+    rx_igmp = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
+    rx_dvmrp = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
+    rx_gvrp = re.compile(r"^ (?P<port>\d+(?:[:/]\d+)?)\s+\d+\s+Enabled")
     rx_stp = re.compile(
         r"Port Index\s+: (?P<port>\d+(?:[:/]\d+)?)\s+.+?"
-        r"Port STP (: )?(?P<state>[Ee]nabled|[Dd]isabled)")
+        r"Port STP (: )?(?P<state>[Ee]nabled|[Dd]isabled)"
+    )
     rx_stp1 = re.compile(
         r"Port Index\s+: (?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"Connection\s+: Link (?:Up|Down)\s*\n"
-        r"State : (?:Yes|Enabled)")
-    rx_stp2 = re.compile(
-        r"^(?P<port>\d+(?:[:/]\d+)?)\s+\S+\/\S+\s+Yes",
-        re.MULTILINE)
+        r"State : (?:Yes|Enabled)"
+    )
+    rx_stp2 = re.compile(r"^(?P<port>\d+(?:[:/]\d+)?)\s+\S+\/\S+\s+Yes", re.MULTILINE)
     rx_oam = re.compile(
-        r"^Port (?P<port>\d+(?:[:/]\d+)?)\s*\n\-+\s*\nOAM\s+:\s+Enabled\s*\n",
-        re.MULTILINE)
+        r"^Port (?P<port>\d+(?:[:/]\d+)?)\s*\n\-+\s*\nOAM\s+:\s+Enabled\s*\n", re.MULTILINE
+    )
     rx_trunk = re.compile(
         r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?"
         r"Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     INTERFACE_TYPES = {
         1: "other",
@@ -170,26 +176,20 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
+
             def f(x):
                 return x
+
         for ifindex, v in self.get_iftable(mib):
             s = r.get(ifindex)
             if s:
                 s[name] = f(v)
 
     def get_ip_ifaces(self):
-        ipAdEntIfIndex = self.get_iftable(
-            mib["RFC1213-MIB::ipAdEntIfIndex"], False
-        )
-        ipAdEntNetMask = self.get_iftable(
-            mib["RFC1213-MIB::ipAdEntNetMask"], False
-        )
-        ip_iface = dict(
-            (l, ".".join(o.rsplit(".")[-4:])) for o, l in ipAdEntIfIndex
-        )
-        ip_mask = dict(
-            (".".join(o.rsplit(".")[-4:]), l) for o, l in ipAdEntNetMask
-        )
+        ipAdEntIfIndex = self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False)
+        ipAdEntNetMask = self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False)
+        ip_iface = dict((l, ".".join(o.rsplit(".")[-4:])) for o, l in ipAdEntIfIndex)
+        ip_mask = dict((".".join(o.rsplit(".")[-4:]), l) for o, l in ipAdEntNetMask)
 
         r = {}
         for ip in ip_iface:
@@ -236,13 +236,15 @@ class Script(BaseScript):
                 "admin_status": iface.get("admin_status", False),
                 "oper_status": iface.get("oper_status", False),
                 "snmp_ifindex": l,
-                "subinterfaces": [{
-                    "name": iface["interface"],
-                    "enabled_afi": ["BRIDGE"],
-                    "admin_status": iface.get("admin_status", False),
-                    "oper_status": iface.get("oper_status", False),
-                    "snmp_ifindex": l
-                }]
+                "subinterfaces": [
+                    {
+                        "name": iface["interface"],
+                        "enabled_afi": ["BRIDGE"],
+                        "admin_status": iface.get("admin_status", False),
+                        "oper_status": iface.get("oper_status", False),
+                        "snmp_ifindex": l,
+                    }
+                ],
             }
             mtu = iface.get("mtu", 0)
             if mtu:
@@ -265,7 +267,7 @@ class Script(BaseScript):
         if match:
             key = match.group("port")
             obj = {"port": key, "status": match.group("port")}
-            return key, obj, s[match.end():]
+            return key, obj, s[match.end() :]
         else:
             return None
 
@@ -278,7 +280,7 @@ class Script(BaseScript):
         if match:
             key = match.group("port")
             obj = {"port": key}
-            return key, obj, s[match.end():]
+            return key, obj, s[match.end() :]
         else:
             return None
 
@@ -352,9 +354,8 @@ class Script(BaseScript):
             pass
 
         if len(macs) == 0:
-            if (
-                self.match_version(DGS3620, version__gte="2.60.16") or
-                self.match_version(DGS3120, version__gte="4.00.00")
+            if self.match_version(DGS3620, version__gte="2.60.16") or self.match_version(
+                DGS3120, version__gte="4.00.00"
             ):
                 try:
                     c = self.cli("show ports details")
@@ -375,19 +376,18 @@ class Script(BaseScript):
                 c = self.cli(
                     "show loopdetect ports all",
                     obj_parser=self.parse_ctp,
-                    cmd_next="n", cmd_stop="q"
+                    cmd_next="n",
+                    cmd_stop="q",
                 )
             except self.CLISyntaxError:
                 c = []
             if not c:
                 c = self.cli(
-                    "show loopdetect ports",
-                    obj_parser=self.parse_ctp,
-                    cmd_next="n", cmd_stop="q"
+                    "show loopdetect ports", obj_parser=self.parse_ctp, cmd_next="n", cmd_stop="q"
                 )
             for i in c:
-                if i['status'] == "Enabled":
-                    ctp += [i['port']]
+                if i["status"] == "Enabled":
+                    ctp += [i["port"]]
 
         gvrp = []
         try:
@@ -404,12 +404,10 @@ class Script(BaseScript):
         stp = []
         if self.has_capability("Network | STP"):
             c = self.cli(
-                "show stp ports",
-                obj_parser=self.parse_stp,
-                cmd_next="n", cmd_stop="q", cached=True
+                "show stp ports", obj_parser=self.parse_stp, cmd_next="n", cmd_stop="q", cached=True
             )
             for i in c:
-                stp += [i['port']]
+                stp += [i["port"]]
 
         oam = []
         if self.has_capability("Network | OAM"):
@@ -425,45 +423,47 @@ class Script(BaseScript):
 
         interfaces = []
         for p in ports:
-            ifname = p['port']
+            ifname = p["port"]
             i = {
                 "name": ifname,
                 "type": "physical",
-                "admin_status": p['admin_state'],
-                "oper_status": p['status'],
+                "admin_status": p["admin_state"],
+                "oper_status": p["status"],
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": p['admin_state'],
-                    "oper_status": p['status'],
-                    # "ifindex": 1,
-                    "enabled_afi": ['BRIDGE']
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": p["admin_state"],
+                        "oper_status": p["status"],
+                        # "ifindex": 1,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
             }
-            desc = p['desc']
-            if desc != '' and desc != 'null':
+            desc = p["desc"]
+            if desc != "" and desc != "null":
                 i["description"] = desc
-                i['subinterfaces'][0]["description"] = desc
+                i["subinterfaces"][0]["description"] = desc
             mac = macs.get(ifname)
             if mac:
-                i['mac'] = mac
-                i['subinterfaces'][0]["mac"] = mac
+                i["mac"] = mac
+                i["subinterfaces"][0]["mac"] = mac
             if is_int(ifname):
-                i['snmp_ifindex'] = int(ifname)
+                i["snmp_ifindex"] = int(ifname)
             else:
                 match = self.rx_port_no.search(ifname)
                 if match:
                     unit_no = int(match.group("unit"))
                     port_no = int(match.group("port"))
-                    i['snmp_ifindex'] = int(port_no + (unit_no - 1) * 64)
+                    i["snmp_ifindex"] = int(port_no + (unit_no - 1) * 64)
             tagged_vlans = []
             for v in vlans:
-                if p['port'] in v['tagged_ports']:
-                    tagged_vlans += [v['vlan_id']]
-                if p['port'] in v['untagged_ports']:
-                    i['subinterfaces'][0]["untagged_vlan"] = v['vlan_id']
+                if p["port"] in v["tagged_ports"]:
+                    tagged_vlans += [v["vlan_id"]]
+                if p["port"] in v["untagged_ports"]:
+                    i["subinterfaces"][0]["untagged_vlan"] = v["vlan_id"]
             if len(tagged_vlans) != 0:
-                i['subinterfaces'][0]['tagged_vlans'] = tagged_vlans
+                i["subinterfaces"][0]["tagged_vlans"] = tagged_vlans
             if ifname in lldp:
                 i["enabled_protocols"] += ["LLDP"]
             if ifname in ctp:
@@ -491,12 +491,14 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 # 896=64*14 - obtained from DGS-3420-28SC
                 "snmp_ifindex": 896 + int(match.group("trunk")),
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": ifstatus,
-                    "oper_status": ifstatus,
-                    "enabled_afi": ['BRIDGE']
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": ifstatus,
+                        "oper_status": ifstatus,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
             }
             lacp_proto = match.group("type").lower() == "lacp"
             members = self.expand_interface_range(match.group("members"))
@@ -517,38 +519,37 @@ class Script(BaseScript):
                 "type": "SVI",
                 "admin_status": admin_status,
                 "oper_status": oper_status,
-                "subinterfaces": [{
-                    "name": match.group("ifname"),
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "enabled_afi": ["IPv4"]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("ifname"),
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "enabled_afi": ["IPv4"],
+                    }
+                ],
             }
             desc = match.group("desc")
-            if desc is not None and desc != '':
+            if desc is not None and desc != "":
                 desc = desc.strip()
                 i["description"] = desc
-                i['subinterfaces'][0]["description"] = desc
+                i["subinterfaces"][0]["description"] = desc
             ip_address = match.group("ip_address")
             ip_subnet = match.group("ip_subnet")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
             ipv6_address = match.group("ipv6_address")
             if ipv6_address is not None:
-                i['subinterfaces'][0]["ipv6_addresses"] = [ipv6_address]
-                i['subinterfaces'][0]["enabled_afi"] += ["IPv6"]
+                i["subinterfaces"][0]["ipv6_addresses"] = [ipv6_address]
+                i["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
             vlan_name = match.group("vlan_name")
             for v in vlans:
-                if vlan_name == v['vlan_name']:
-                    vlan_id = v['vlan_id']
-                    i['subinterfaces'][0]["vlan_ids"] = [vlan_id]
+                if vlan_name == v["vlan_name"]:
+                    vlan_id = v["vlan_id"]
+                    i["subinterfaces"][0]["vlan_ids"] = [vlan_id]
                     for f in fdb:
-                        if (
-                            'CPU' in f['interfaces'] and
-                            vlan_id == f['vlan_id']
-                        ):
-                            i["mac"] = f['mac']
-                            i['subinterfaces'][0]["mac"] = f['mac']
+                        if "CPU" in f["interfaces"] and vlan_id == f["vlan_id"]:
+                            i["mac"] = f["mac"]
+                            i["subinterfaces"][0]["mac"] = f["mac"]
                             break
                     break
             interfaces += [i]
@@ -569,16 +570,18 @@ class Script(BaseScript):
                 "type": "SVI",
                 "admin_status": admin_status,
                 "oper_status": oper_status,
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "enabled_afi": []
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "enabled_afi": [],
+                    }
+                ],
             }
             mtu = match.group("mtu")
             if mtu is not None:
-                i['subinterfaces'][0]["mtu"] = int(mtu)
+                i["subinterfaces"][0]["mtu"] = int(mtu)
             # TODO: Parse secondary IPv4 address and IPv6 address
             ipv4_addresses = []
             ipv4_address = match.group("ipv4_address")
@@ -591,34 +594,26 @@ class Script(BaseScript):
                 ipv4_addresses += [ipv4_addr_pri]
                 if "IPv4" not in enabled_afi:
                     enabled_afi += ["IPv4"]
-            if (
-                ipv4_address is not None or
-                ipv4_addr_pri is not None
-            ):
-                i['subinterfaces'][0].update({
-                    "ipv4_addresses": ipv4_addresses
-                })
+            if ipv4_address is not None or ipv4_addr_pri is not None:
+                i["subinterfaces"][0].update({"ipv4_addresses": ipv4_addresses})
             ipv6_address = match.group("ipv6_address")
             if ipv6_address is not None:
-                i['subinterfaces'][0]["ipv6_addresses"] = [ipv6_address]
+                i["subinterfaces"][0]["ipv6_addresses"] = [ipv6_address]
                 enabled_afi += ["IPv6"]
-            i['subinterfaces'][0].update({"enabled_afi": enabled_afi})
+            i["subinterfaces"][0].update({"enabled_afi": enabled_afi})
             vlan_name = match.group("vlan_name")
             # Found illegal stuff in DES-1210-28/ME/B2
             # In this rotten device System interface always in vlan 1
             if not vlan_name:
                 vlan_name = "default"
             for v in vlans:
-                if vlan_name == v['vlan_name']:
-                    vlan_id = v['vlan_id']
-                    i['subinterfaces'][0]["vlan_ids"] = [vlan_id]
+                if vlan_name == v["vlan_name"]:
+                    vlan_id = v["vlan_id"]
+                    i["subinterfaces"][0]["vlan_ids"] = [vlan_id]
                     for f in fdb:
-                        if (
-                            'CPU' in f['interfaces'] and
-                            vlan_id == f['vlan_id']
-                        ):
-                            i["mac"] = f['mac']
-                            i['subinterfaces'][0]["mac"] = f['mac']
+                        if "CPU" in f["interfaces"] and vlan_id == f["vlan_id"]:
+                            i["mac"] = f["mac"]
+                            i["subinterfaces"][0]["mac"] = f["mac"]
                             break
                     break
             if not L2_Switch:
@@ -634,7 +629,7 @@ class Script(BaseScript):
                     enabled_protocols += ["DVMRP"]
                 if ifname in igmp:
                     enabled_protocols += ["IGMP"]
-                i['subinterfaces'][0]["enabled_protocols"] = enabled_protocols
+                i["subinterfaces"][0]["enabled_protocols"] = enabled_protocols
             interfaces += [i]
             ipif_found = True
 
@@ -647,31 +642,30 @@ class Script(BaseScript):
                 "type": "SVI",
                 "admin_status": admin_status,
                 "oper_status": oper_status,
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "enabled_afi": ["IPv4"]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "enabled_afi": ["IPv4"],
+                    }
+                ],
             }
             ip_address = match.group("ip_address")
             ip_subnet = match.group("ip_subnet")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
             vlan_name = match.group("vlan_name")
             if not vlan_name:
                 vlan_name = "default"
             for v in vlans:
-                if vlan_name == v['vlan_name']:
-                    vlan_id = v['vlan_id']
-                    i['subinterfaces'][0]["vlan_ids"] = [vlan_id]
+                if vlan_name == v["vlan_name"]:
+                    vlan_id = v["vlan_id"]
+                    i["subinterfaces"][0]["vlan_ids"] = [vlan_id]
                     for f in fdb:
-                        if (
-                            'CPU' in f['interfaces'] and
-                            vlan_id == f['vlan_id']
-                        ):
-                            i["mac"] = f['mac']
-                            i['subinterfaces'][0]["mac"] = f['mac']
+                        if "CPU" in f["interfaces"] and vlan_id == f["vlan_id"]:
+                            i["mac"] = f["mac"]
+                            i["subinterfaces"][0]["mac"] = f["mac"]
                             break
                     break
             interfaces += [i]
@@ -688,18 +682,19 @@ class Script(BaseScript):
                     "type": "management",
                     "admin_status": admin_status,
                     "oper_status": oper_status,
-                    "subinterfaces": [{
-                        "name": match.group("ifname"),
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "enabled_afi": ["IPv4"]
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": match.group("ifname"),
+                            "admin_status": admin_status,
+                            "oper_status": oper_status,
+                            "enabled_afi": ["IPv4"],
+                        }
+                    ],
                 }
                 ip_address = match.group("ip_address")
                 ip_subnet = match.group("ip_subnet")
-                ip_address = "%s/%s" % (
-                    ip_address, IPv4.netmask_to_len(ip_subnet))
-                i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+                ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+                i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
                 interfaces += [i]
 
         if not ipif_found:
@@ -711,26 +706,27 @@ class Script(BaseScript):
                     "type": "SVI",
                     "admin_status": True,
                     "oper_status": True,
-                    "subinterfaces": [{
-                        "name": "System",
-                        "admin_status": True,
-                        "oper_status": True,
-                        "enabled_afi": ["IPv4"]
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": "System",
+                            "admin_status": True,
+                            "oper_status": True,
+                            "enabled_afi": ["IPv4"],
+                        }
+                    ],
                 }
                 mac_address = match.group("mac_address")
                 ip_address = match.group("ip_address")
                 ip_subnet = match.group("ip_subnet")
                 vlan_name = match.group("vlan_name")
-                ip_address = "%s/%s" % (
-                    ip_address, IPv4.netmask_to_len(ip_subnet))
-                i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+                ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+                i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
                 for v in vlans:
-                    if vlan_name == v['vlan_name']:
-                        i['subinterfaces'][0]["vlan_ids"] = [v['vlan_id']]
+                    if vlan_name == v["vlan_name"]:
+                        i["subinterfaces"][0]["vlan_ids"] = [v["vlan_id"]]
                         break
                 i["mac"] = mac_address
-                i['subinterfaces'][0]["mac"] = mac_address
+                i["subinterfaces"][0]["mac"] = mac_address
                 interfaces += [i]
 
         return [{"interfaces": interfaces}]

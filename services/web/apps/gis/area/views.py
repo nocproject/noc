@@ -16,6 +16,7 @@ class AreaApplication(ExtDocApplication):
     """
     Area application
     """
+
     title = _("Area")
     menu = [_("Setup"), _("Areas")]
     model = Area

@@ -19,5 +19,5 @@ class Profile(BaseProfile):
     pattern_more = [
         ("^----More", " "),
         ("ommand Line Interface...", "C"),
-        ("Enter Ctrl-Y to begin", "\x19")
+        ("Enter Ctrl-Y to begin", "\x19"),
     ]

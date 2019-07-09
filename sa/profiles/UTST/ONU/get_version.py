@@ -16,15 +16,10 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_platform = re.compile(r"^sysName\s+:\s(?P<platform>\S+)?",
-        re.MULTILINE)
+    rx_platform = re.compile(r"^sysName\s+:\s(?P<platform>\S+)?", re.MULTILINE)
 
-    rx_ver = re.compile(
-        r"SW\s+software\sVer\s:\s(?P<version>\S+)?",
-        re.MULTILINE)
-    rx_ver2 = re.compile(
-        r"^(?P<version>\S+\s\S+\s\S+)",
-        re.MULTILINE)
+    rx_ver = re.compile(r"SW\s+software\sVer\s:\s(?P<version>\S+)?", re.MULTILINE)
+    rx_ver2 = re.compile(r"^(?P<version>\S+\s\S+\s\S+)", re.MULTILINE)
 
     def execute(self):
         cmd = self.cli("show system")
@@ -38,8 +33,4 @@ class Script(BaseScript):
         if not match:
             match = self.rx_ver2.search(vcmd)
         version = match.group("version")
-        return {
-            "vendor": "UTST",
-            "platform": platform,
-            "version": version
-            }
+        return {"vendor": "UTST", "platform": platform, "version": version}

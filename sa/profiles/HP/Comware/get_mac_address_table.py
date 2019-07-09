@@ -8,6 +8,7 @@
 """
 """
 import re
+
 # NOC modules
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -21,7 +22,8 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(?P<mac>\S{4}-\S{4}-\S{4})\s+(?P<vlan_id>\d+)\s+(?P<if_type>\S+)"
         r"\s+(?P<interface>\S+)\s+\S+",
-        re.IGNORECASE | re.DOTALL | re.MULTILINE)
+        re.IGNORECASE | re.DOTALL | re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "display mac-address"
@@ -44,10 +46,12 @@ class Script(BaseScript):
                 if_type = "D"
             else:
                 if_type = "S"
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("interface")],
-                "type": if_type
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("interface")],
+                    "type": if_type,
+                }
+            ]
         return r

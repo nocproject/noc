@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.crypto import md5crypt
@@ -22,9 +24,7 @@ from .rir import RIR
 from .person import Person
 
 
-@on_delete_check(check=[
-    ("peer.Organisation", "mnt_ref")
-])
+@on_delete_check(check=[("peer.Organisation", "mnt_ref")])
 @on_save
 @six.python_2_unicode_compatible
 class Maintainer(NOCModel):

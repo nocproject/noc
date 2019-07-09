@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
@@ -34,13 +35,10 @@ class Script(BaseScript):
         r"^\s+State:\s+(?P<state>\S+)\s*\n"
         r"^\s+ONT distance:\s+(?P<ont_dist>\S+).*\n"
         r"^\s+RSSI:\s+(?P<rssi>.+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
-    state_map = {
-        "OK": "active",
-        "CFGINPROGRESS": "provisioning"
-    }
+    state_map = {"OK": "active", "CFGINPROGRESS": "provisioning"}
 
     def execute(self):
         r = []
@@ -50,22 +48,21 @@ class Script(BaseScript):
                 cpe_id = "ONT%s/%s/%s" % (
                     match.group("slot"),
                     match.group("port"),
-                    match.group("ont_id")
+                    match.group("ont_id"),
                 )
-                r += [{
-                    "id": cpe_id,
-                    "global_id": match.group("serial"),
-                    "status": self.state_map[match.group("state")],
-                    "type": "ont",
-                    "interface": "ont %s/%s/%s" % (
-                        match.group("slot"),
-                        match.group("port"),
-                        match.group("ont_id")
-                    ),
-                    "model": match.group("model"),
-                    "serial": match.group("serial"),
-                    "version": match.group("sw_version"),
-                    "distance": float(match.group("ont_dist")) * 1000
-                }]
+                r += [
+                    {
+                        "id": cpe_id,
+                        "global_id": match.group("serial"),
+                        "status": self.state_map[match.group("state")],
+                        "type": "ont",
+                        "interface": "ont %s/%s/%s"
+                        % (match.group("slot"), match.group("port"), match.group("ont_id")),
+                        "model": match.group("model"),
+                        "serial": match.group("serial"),
+                        "version": match.group("sw_version"),
+                        "distance": float(match.group("ont_dist")) * 1000,
+                    }
+                ]
 
         return r

@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # Nateks.FlexGain.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -22,7 +24,9 @@ class Script(BaseScript):
         r"System Description:(?P<platform>.+)\n"
         r"Hardware Version:(?P<hardware>\S+)\s*\n"
         r"Firmware Version:(?P<bootprom>\S+)\s*\n"
-        r"Software Version:(?P<software>\S+)", re.MULTILINE)
+        r"Software Version:(?P<software>\S+)",
+        re.MULTILINE,
+    )
 
     def execute(self):
         match = self.rx_ver.search(self.cli("show version"))
@@ -33,5 +37,5 @@ class Script(BaseScript):
             "attributes": {
                 "Boot PROM": match.group("bootprom"),
                 "HW version": match.group("hardware"),
-            }
+            },
         }

@@ -34,16 +34,18 @@ class Script(BaseScript):
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "snmp_ifindex": name,
-                "subinterfaces": [{
-                    "name": name,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "snmp_ifindex": name
-                }]
+                "subinterfaces": [
+                    {
+                        "name": name,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "snmp_ifindex": name,
+                    }
+                ],
             }
             interfaces += [iface]
         ip = self.credentials.get("address", "")
-        ip = ip + '/' + str(32)
+        ip = ip + "/" + str(32)
         ip_list = [ip]
         iface = {
             "type": "physical",
@@ -52,15 +54,17 @@ class Script(BaseScript):
             "oper_status": True,
             "mac": self.snmp.get("1.3.6.1.3.55.1.2.2.0"),
             "snmp_ifindex": 10,
-            "subinterfaces": [{
-                "name": "eth0",
-                "admin_status": True,
-                "oper_status": True,
-                "mac": self.snmp.get("1.3.6.1.3.55.1.2.2.0"),
-                "ipv4_addresses": ip_list,
-                "snmp_ifindex": 10,
-                "enabled_afi": ['BRIDGE', 'IPv4']
-            }]
+            "subinterfaces": [
+                {
+                    "name": "eth0",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "mac": self.snmp.get("1.3.6.1.3.55.1.2.2.0"),
+                    "ipv4_addresses": ip_list,
+                    "snmp_ifindex": 10,
+                    "enabled_afi": ["BRIDGE", "IPv4"],
+                }
+            ],
         }
         interfaces += [iface]
         return [{"interfaces": interfaces}]

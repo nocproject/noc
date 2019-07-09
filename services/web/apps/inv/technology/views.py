@@ -16,6 +16,7 @@ class TechnologyApplication(ExtDocApplication):
     """
     Technology application
     """
+
     title = _("Technology")
     menu = [_("Setup"), _("Technologies")]
     model = Technology

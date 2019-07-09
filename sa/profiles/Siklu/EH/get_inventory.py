@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -30,7 +31,8 @@ class Script(BaseScript):
         r"^\s*inventory \d+ mfg-name\s+: (?P<vendor>\S+)?\n"
         r"^\s*inventory \d+ model-name\s+: (?P<part_no>\S+)?\n"
         r"^\s*inventory \d+ fru\s+: (?P<fru>\S+)\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
@@ -49,7 +51,7 @@ class Script(BaseScript):
                 "vendor": vendor,
                 "part_no": part_no,
                 "revision": match.group("revision"),
-                "description": match.group("description")
+                "description": match.group("description"),
             }
             if match.group("fru") == "false":
                 p["builtin"] = True

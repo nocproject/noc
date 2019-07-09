@@ -16,15 +16,16 @@ import logging
 import json
 from collections import defaultdict
 import operator
+
 # Third-party modules
 import six
 from six.moves.urllib.parse import urlencode
-from django.http import (HttpResponse, HttpResponseNotFound,
-                         HttpResponseForbidden, Http404)
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, Http404
 from django.urls import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
 import ujson
+
 # NOC modules
 from noc.config import config
 from noc.core.debug import error_report
@@ -44,6 +45,7 @@ class URL(object):
     """
     URL Data wrapper
     """
+
     def __init__(self, url, name=None, method=None):
         self.url = url
         self.name = name
@@ -65,7 +67,7 @@ class URL(object):
     def __str__(self):
         s = self.url
         if self.name:
-            s += u", name='%s'" % self.name
+            s += ", name='%s'" % self.name
         return s
 
 
@@ -74,10 +76,8 @@ class Site(object):
     Application site. Registers applications, builds menu and
     handling views
     """
-    folder_glyps = {
-        "Setup": "wrench noc-edit",
-        "Reports": "file-text noc-preview"
-    }
+
+    folder_glyps = {"Setup": "wrench noc-edit", "Reports": "file-text noc-preview"}
 
     def __init__(self):
         self.apps = {}  # app_id -> app instance
@@ -118,9 +118,7 @@ class Site(object):
         """
         if isinstance(view.url, six.string_types):  # view.url is string type
             yield URL(
-                view.url,
-                name=getattr(view, "url_name", None),
-                method=getattr(view, "method", None)
+                view.url, name=getattr(view, "url_name", None), method=getattr(view, "method", None)
             )
         elif isinstance(view.url, URL):  # Explicit URL object
             yield view.url
@@ -131,6 +129,7 @@ class Site(object):
         """
         Curry application with access
         """
+
         def wrap(user):
             return view.access.check(app, user)
 
@@ -158,8 +157,7 @@ class Site(object):
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
-            to_log_api_call = (self.log_api_calls and
-                               hasattr(v, "api") and v.api)
+            to_log_api_call = self.log_api_calls and hasattr(v, "api") and v.api
             app_logger = v.__self__.logger
             try:
                 # Validate requests
@@ -169,21 +167,23 @@ class Site(object):
                     if isinstance(v.validate, DictParameter):
                         # Validate via NOC interfaces
                         if request.method == "GET":
-                            g = dict((nq(k), v[0] if len(v) == 1 else v)
-                                     for k, v in request.GET.lists()
-                                     if k != "_dc")
+                            g = dict(
+                                (nq(k), v[0] if len(v) == 1 else v)
+                                for k, v in request.GET.lists()
+                                if k != "_dc"
+                            )
                         else:
                             ct = request.META.get("CONTENT_TYPE")
-                            if ct and ("text/json" in ct or
-                                       "application/json" in ct):
+                            if ct and ("text/json" in ct or "application/json" in ct):
                                 try:
                                     g = ujson.loads(request.body)
                                 except ValueError as e:
                                     logger.error("Unable to decode JSON: %s", e)
                                     errors = "Unable to decode JSON: %s" % e
                             else:
-                                g = dict((k, v[0] if len(v) == 1 else v)
-                                         for k, v in request.POST.lists())
+                                g = dict(
+                                    (k, v[0] if len(v) == 1 else v) for k, v in request.POST.lists()
+                                )
                         if not errors:
                             try:
                                 kwargs.update(v.validate.clean(g))
@@ -195,34 +195,31 @@ class Site(object):
                             app_logger.error("ERROR: %s", errors)
                         # Return error response
                         ext_format = "__format=ext" in request.META["QUERY_STRING"].split("&")
-                        r = json.dumps({
-                            "status": False,
-                            "errors": errors
-                        })
+                        r = json.dumps({"status": False, "errors": errors})
                         status = 200 if ext_format else 400  # OK or BAD_REQUEST
-                        return HttpResponse(r, status=status,
-                                            content_type="text/json; charset=utf-8")
+                        return HttpResponse(
+                            r, status=status, content_type="text/json; charset=utf-8"
+                        )
                 # Log API call
                 if to_log_api_call:
                     a = {}
                     if request.method in ("POST", "PUT"):
                         ct = request.META.get("CONTENT_TYPE")
-                        if ct and ("text/json" in ct or
-                                   "application/json" in ct):
+                        if ct and ("text/json" in ct or "application/json" in ct):
                             a = json.loads(request.body)
                         else:
-                            a = dict((k, v[0] if len(v) == 1 else v)
-                                     for k, v in request.POST.lists())
+                            a = dict(
+                                (k, v[0] if len(v) == 1 else v) for k, v in request.POST.lists()
+                            )
                     elif request.method == "GET":
-                        a = dict((k, v[0] if len(v) == 1 else v)
-                                 for k, v in request.GET.lists())
-                    app_logger.debug("API %s %s %s",
-                                     request.method, request.path, a)
+                        a = dict((k, v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
+                    app_logger.debug("API %s %s %s", request.method, request.path, a)
                 # Call handler
                 r = v(request, *args, **kwargs)
                 # Dump SQL statements
                 if self.log_sql_statements:
                     from django.db import connections
+
                     tsc = 0
                     sc = defaultdict(int)
                     for conn in connections.all():
@@ -244,15 +241,12 @@ class Site(object):
                 r = HttpResponse(
                     content=error_report(logger=app_logger),
                     status=500,
-                    content_type="text/plain; charset=utf-8"
+                    content_type="text/plain; charset=utf-8",
                 )
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
-                    r = HttpResponse(
-                        json.dumps(r),
-                        content_type="text/json; charset=utf-8"
-                    )
+                    r = HttpResponse(json.dumps(r), content_type="text/json; charset=utf-8")
                 except Exception:
                     error_report(logger=app_logger)
                     r = HttpResponse(error_report(), status=500)
@@ -263,6 +257,7 @@ class Site(object):
 
         from .access import PermissionDenied
         from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
+
         return inner
 
     def register_app_menu(self, app, view=None):
@@ -289,11 +284,7 @@ class Site(object):
             if new_root:
                 root = new_root[0]
             else:
-                r = {
-                    "id": self.get_menu_id(path),
-                    "title": p,
-                    "children": []
-                }
+                r = {"id": self.get_menu_id(path), "title": p, "children": []}
                 if p in self.folder_glyps:
                     r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
                 root["children"] += [r]
@@ -304,14 +295,11 @@ class Site(object):
             "id": self.get_menu_id(path),
             "title": parts[0],
             "app": app,
-            "iconCls": "fa fa-%s noc-edit" % app.glyph
+            "iconCls": "fa fa-%s noc-edit" % app.glyph,
         }
         if view:
             r["access"] = self.site_access(app, view)
-            app.menu_url = ("/%s/%s/%s" % (
-                app.module, app.app,
-                view.url[1:])
-            ).replace("$", "")
+            app.menu_url = ("/%s/%s/%s" % (app.module, app.app, view.url[1:])).replace("$", "")
         else:
             r["access"] = lambda user: app.launch_access.check(app, user)
         root["children"] += [r]
@@ -323,8 +311,9 @@ class Site(object):
             mod_resolver = self.urlresolvers[app.module, None]
         except KeyError:
             mod_resolver = []
-            self.urlpatterns += [RegexURLResolver("^%s/" % app.module, mod_resolver,
-                                                  namespace=app.module)]
+            self.urlpatterns += [
+                RegexURLResolver("^%s/" % app.module, mod_resolver, namespace=app.module)
+            ]
             self.urlresolvers[app.module, None] = mod_resolver
         # Install application URL resolver
         try:
@@ -404,11 +393,7 @@ class Site(object):
     def add_module_menu(self, m):
         mn = "noc.services.web.apps.%s" % m[4:]  # Strip noc.
         mod_name = __import__(mn, {}, {}, ["MODULE_NAME"]).MODULE_NAME
-        r = {
-            "id": self.get_menu_id([m]),
-            "title": mod_name,
-            "children": []
-        }
+        r = {"id": self.get_menu_id([m]), "title": mod_name, "children": []}
         self.menu += [r]
         return r
 
@@ -442,9 +427,14 @@ class Site(object):
                     if os.path.isfile(os.path.join(d, "DISABLED")):
                         continue
                     # site.register will be called by metaclass, registering views
-                    __import__(".".join([basename] +
-                                        f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1:]),
-                               {}, {}, "*")
+                    __import__(
+                        ".".join(
+                            [basename] + f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1 :]
+                        ),
+                        {},
+                        {},
+                        "*",
+                    )
         # Register all collected applications
         for app_class in self.pending_applications:
             self.do_register(app_class)
@@ -454,8 +444,7 @@ class Site(object):
         # Finally, order the menu
         self.sort_menu()
 
-    rx_namespace = re.compile(r"^[a-z0-9_]+:[a-z0-9_]+:[a-z0-9_]+$",
-                              re.IGNORECASE)
+    rx_namespace = re.compile(r"^[a-z0-9_]+:[a-z0-9_]+:[a-z0-9_]+$", re.IGNORECASE)
 
     def reverse(self, url, *args, **kwargs):
         """
@@ -476,6 +465,7 @@ class Site(object):
         """
         Sort application menu
         """
+
         def sorted_menu(c):
             c = sorted(c, key=operator.itemgetter("title"))
             for m in c:

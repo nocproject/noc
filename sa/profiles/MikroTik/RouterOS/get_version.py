@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,21 +20,13 @@ class Script(BaseScript):
     interface = IGetVersion
 
     # Some versions of Mikrotik return parameter values in quotes
-    rx_ver = re.compile(
-        r"^\s+version: (?P<q>\"?)(?P<version>.*)(?P=q)\s*\n", re.MULTILINE
-    )
-    rx_arch = re.compile(
-        r"^\s+architecture-name: (?P<q>\"?)(?P<arch>.*)(?P=q)\s*\n", re.MULTILINE
-    )
-    rx_platform = re.compile(
-        r"^\s+board-name: (?P<q>\"?)(?P<platform>.*)(?P=q)\s*\n", re.MULTILINE
-    )
+    rx_ver = re.compile(r"^\s+version: (?P<q>\"?)(?P<version>.*)(?P=q)\s*\n", re.MULTILINE)
+    rx_arch = re.compile(r"^\s+architecture-name: (?P<q>\"?)(?P<arch>.*)(?P=q)\s*\n", re.MULTILINE)
+    rx_platform = re.compile(r"^\s+board-name: (?P<q>\"?)(?P<platform>.*)(?P=q)\s*\n", re.MULTILINE)
     rx_serial = re.compile(
         r"^\s+serial-number: (?P<q>\"?)(?P<serial>\S+?)(?P=q)\s*\n", re.MULTILINE
     )
-    rx_boot = re.compile(
-        r"^\s+current-firmware: (?P<q>\"?)(?P<boot>\S+?)(?P=q)\s*\n", re.MULTILINE
-    )
+    rx_boot = re.compile(r"^\s+current-firmware: (?P<q>\"?)(?P<boot>\S+?)(?P=q)\s*\n", re.MULTILINE)
 
     def execute_cli(self):
         v = self.cli("/system resource print")
@@ -47,12 +40,7 @@ class Script(BaseScript):
             # platform = "%s (%s)" % (platform, arch)
         else:
             arch = None
-        r = {
-            "vendor": "MikroTik",
-            "platform": platform,
-            "version": version,
-            "attributes": {}
-        }
+        r = {"vendor": "MikroTik", "platform": platform, "version": version, "attributes": {}}
         if "x86" not in platform and "CHR" not in platform:
             v = self.cli("/system routerboard print")
             match = self.rx_serial.search(v)

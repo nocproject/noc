@@ -15,9 +15,18 @@ import re
 class Script(BaseScript):
     name = "DLink.DGS3100.ping"
     interface = IPing
-    rx_result = re.compile(r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_dgs3100 = re.compile(r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\nround-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_dgs3100_nr = re.compile(r"^\s*(?P<count>\d+) packets transmitted, 0 packets received, 100% packet loss", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_result = re.compile(
+        r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    rx_dgs3100 = re.compile(
+        r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\nround-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    rx_dgs3100_nr = re.compile(
+        r"^\s*(?P<count>\d+) packets transmitted, 0 packets received, 100% packet loss",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     def execute(self, address, count=None):
         cmd = "ping %s" % address
@@ -38,9 +47,7 @@ class Script(BaseScript):
             "count": match.group("count"),
         }
         if not dgs3100_no_reply:
-            r.update({
-                "min": match.group("min"),
-                "avg": match.group("avg"),
-                "max": match.group("max"),
-            })
+            r.update(
+                {"min": match.group("min"), "avg": match.group("avg"), "max": match.group("max")}
+            )
         return r

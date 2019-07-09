@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 
@@ -35,7 +36,7 @@ class Script(GetMetricsScript):
         r"^\s+jitterNegMax = .+\n"
         r"^\s+jitterAvrg = .+\n"
         r"^\s+jitterPosMax = .+\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     ALL_SLA_METRICS = {"SLA | ICMP RTT", "SLA | UDP RTT", "SLA | JITTER"}
@@ -58,13 +59,7 @@ class Script(GetMetricsScript):
             if bv.metric in self.ALL_SLA_METRICS:
                 id = tuple(bv.path + [bv.metric])
                 if id in m:
-                    self.set_metric(
-                        id=bv.id,
-                        metric=bv.metric,
-                        value=m[id],
-                        ts=ts,
-                        path=bv.path,
-                    )
+                    self.set_metric(id=bv.id, metric=bv.metric, value=m[id], ts=ts, path=bv.path)
 
     def get_ip_sla_metrics(self):
         r = {}

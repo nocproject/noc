@@ -9,11 +9,13 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
+
 # NOC modules
 from noc.config import config
 from noc.core.model.base import NOCModel
@@ -30,22 +32,25 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 @bi_sync
 @datastream
-@on_delete_check(check=[
-    ("cm.ObjectNotify", "administrative_domain"),
-    # ("fm.EscalationItem", "administrative_domain"),
-    ("sa.GroupAccess", "administrative_domain"),
-    ("sa.ManagedObject", "administrative_domain"),
-    ("sa.ManagedObjectSelector", "filter_administrative_domain"),
-    ("sa.UserAccess", "administrative_domain"),
-    ("sa.AdministrativeDomain", "parent"),
-    ("phone.PhoneNumber", "administrative_domain"),
-    ("phone.PhoneRange", "administrative_domain")
-])
+@on_delete_check(
+    check=[
+        ("cm.ObjectNotify", "administrative_domain"),
+        # ("fm.EscalationItem", "administrative_domain"),
+        ("sa.GroupAccess", "administrative_domain"),
+        ("sa.ManagedObject", "administrative_domain"),
+        ("sa.ManagedObjectSelector", "filter_administrative_domain"),
+        ("sa.UserAccess", "administrative_domain"),
+        ("sa.AdministrativeDomain", "parent"),
+        ("phone.PhoneNumber", "administrative_domain"),
+        ("phone.PhoneRange", "administrative_domain"),
+    ]
+)
 @six.python_2_unicode_compatible
 class AdministrativeDomain(NOCModel):
     """
     Administrative Domain
     """
+
     class Meta(object):
         verbose_name = _("Administrative Domain")
         verbose_name_plural = _("Administrative Domains")
@@ -54,18 +59,14 @@ class AdministrativeDomain(NOCModel):
         ordering = ["name"]
 
     name = models.CharField(_("Name"), max_length=255, unique=True)
-    parent = models.ForeignKey("self", verbose_name="Parent", null=True, blank=True, on_delete=models.CASCADE)
-    description = models.TextField(
-        _("Description"),
-        null=True, blank=True)
-    default_pool = DocumentReferenceField(
-        Pool,
-        null=True, blank=True
+    parent = models.ForeignKey(
+        "self", verbose_name="Parent", null=True, blank=True, on_delete=models.CASCADE
     )
+    description = models.TextField(_("Description"), null=True, blank=True)
+    default_pool = DocumentReferenceField(Pool, null=True, blank=True)
     # Integration with external NRI systems
     # Reference to remote system object has been imported from
-    remote_system = DocumentReferenceField(RemoteSystem,
-                                           null=True, blank=True)
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
@@ -96,7 +97,7 @@ class AdministrativeDomain(NOCModel):
             return ad[0]
         return None
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_administrativedomain:
             yield "administrativedomain", self.id
 
@@ -131,10 +132,12 @@ class AdministrativeDomain(NOCModel):
     @cachetools.cachedmethod(operator.attrgetter("_nested_cache"), lock=lambda _: id_lock)
     def get_nested_ids(cls, administrative_domain):
         from django.db import connection
+
         if hasattr(administrative_domain, "id"):
             administrative_domain = administrative_domain.id
         cursor = connection.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             WITH RECURSIVE r AS (
                  SELECT id, parent_id
                  FROM sa_administrativedomain
@@ -144,7 +147,9 @@ class AdministrativeDomain(NOCModel):
                  FROM sa_administrativedomain ad JOIN r ON ad.parent_id = r.id
             )
             SELECT id FROM r
-        """ % administrative_domain)
+        """
+            % administrative_domain
+        )
         return [r[0] for r in cursor]
 
     @property

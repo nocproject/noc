@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.config import config
 from .api import API, api
@@ -25,6 +27,7 @@ class CtlAPI(API):
         Start service profiling
         """
         import yappi
+
         if yappi.is_running():
             return "Already running"
         else:
@@ -37,6 +40,7 @@ class CtlAPI(API):
         Stop service profiling
         """
         import yappi
+
         if yappi.is_running:
             yappi.stop()
             return "Profiling stopped"
@@ -49,6 +53,7 @@ class CtlAPI(API):
         Return profile threads info
         """
         import yappi
+
         i = yappi.get_thread_stats()
         out = six.StringIO()
         i.print_all(out=out)
@@ -60,6 +65,7 @@ class CtlAPI(API):
         Return profile threads info
         """
         import yappi
+
         i = yappi.get_func_stats()
         out = six.StringIO()
         i.print_all(
@@ -69,8 +75,8 @@ class CtlAPI(API):
                 1: ("ncall", 10),
                 2: ("tsub", 8),
                 3: ("ttot", 8),
-                4: ("tavg", 8)
-            }
+                4: ("tavg", 8),
+            },
         )
         return out.getvalue()
 
@@ -80,6 +86,7 @@ class CtlAPI(API):
         Open manhole
         """
         import manhole
+
         mh = manhole.install()
         return mh.uds_name
 

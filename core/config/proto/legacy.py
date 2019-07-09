@@ -10,8 +10,10 @@
 from __future__ import absolute_import
 import os
 import logging
+
 # Third-party modules
 import yaml
+
 # NOC modules
 from .base import BaseProtocol
 
@@ -25,6 +27,7 @@ class LegacyProtocol(BaseProtocol):
 
     legacy:///
     """
+
     NOC_MAPPINGS = [
         ("noc.installation_name", "installation_name"),
         ("noc.language", "language"),
@@ -43,7 +46,6 @@ class LegacyProtocol(BaseProtocol):
         ("noc.ch_password", "clickhouse.rw_password"),
         ("noc.ch_ro_password", "clickhouse.ro_password"),
         ("noc-global-%(node)s.python_interpreter", "features.pypy"),
-
         # Activator
         ("activator.script_threads", "activator.script_threads"),
         ("activator-%(pool)s-%(node)s.script_threads", "activator.script_threads"),
@@ -68,7 +70,10 @@ class LegacyProtocol(BaseProtocol):
         ("chwriter-global-%(node)s.records_buffer", "chwriter.records_buffer"),
         # Classifier
         ("classifier.default_interface_profile", "classifier.default_interface_profile"),
-        ("classifier-%(pool)s-%(node)s.default_interface_profile", "classifier.default_interface_profile"),
+        (
+            "classifier-%(pool)s-%(node)s.default_interface_profile",
+            "classifier.default_interface_profile",
+        ),
         ("classifier.lookup_solution", "classifier.lookup_handler"),
         ("classifier-%(pool)s-%(node)s.lookup_solution", "classifier.lookup_handler"),
         # Correlator
@@ -145,8 +150,7 @@ class LegacyProtocol(BaseProtocol):
         ("web.language", "web.language"),
         ("web-global-%(node)s.language", "web.language"),
         ("web.max_threads", "web.max_threads"),
-        ("web-global-%(node)s.max_threads", "web.max_threads")
-
+        ("web-global-%(node)s.max_threads", "web.max_threads"),
     ]
 
     def __init__(self, config, url):
@@ -168,20 +172,16 @@ class LegacyProtocol(BaseProtocol):
 
         if not os.path.exists(self.path):
             return
-        logger.info("Legacy config will be deprecated after 1 June 2018. "
-                    "Please update tower and remove from used config options.")
+        logger.info(
+            "Legacy config will be deprecated after 1 June 2018. "
+            "Please update tower and remove from used config options."
+        )
         with open(self.path) as f:
             data = yaml.safe_load(f)["config"]
         for legacy_key, new_key in self.NOC_MAPPINGS:
             v = get_path(data, legacy_key % {"node": self.config.node, "pool": self.config.pool})
             if v is not None:
-                self.config.set_parameter(
-                    new_key,
-                    v
-                )
-            if 'features.pypy' in new_key:
-                if v and 'pypy' in v:
-                    self.config.set_parameter(
-                        new_key,
-                        True
-                    )
+                self.config.set_parameter(new_key, v)
+            if "features.pypy" in new_key:
+                if v and "pypy" in v:
+                    self.config.set_parameter(new_key, True)

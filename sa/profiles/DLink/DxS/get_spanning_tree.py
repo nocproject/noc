@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -21,9 +22,10 @@ class Script(BaseScript):
         r"^\s*STP Bridge Global Settings\n"
         r"^\s*\-+\n"
         r"^\s*STP Status\s+: (?P<status>Enabled|Disabled)\s*\n"
-        r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\s*\n", re.MULTILINE)
-    rx_instance = re.compile(
-        "^\s*(?P<key>STP Instance Settings)\n", re.MULTILINE)
+        r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\s*\n",
+        re.MULTILINE,
+    )
+    rx_instance = re.compile("^\s*(?P<key>STP Instance Settings)\n", re.MULTILINE)
     rx_ins = re.compile(
         r"^\s*STP Instance Settings\n"
         r"^\s*\-+\n"
@@ -38,7 +40,9 @@ class Script(BaseScript):
         r"^\s*Regional Root Bridge\s+: (?P<rbridge_priority>\d+)\s*/(?P<rbridge_id>\S+)\s*\n"
         r"^\s*Internal Root Cost\s+: (?P<int_root_cost>\d+)\s*\n"
         r"^\s*Designated Bridge\s+: (?P<bridge_priority>\d+)\s*/(?P<bridge_id>\S+)\s*\n"
-        r"^\s*Root Port\s+: (?P<root_port>\S+)\s*\n", re.MULTILINE)
+        r"^\s*Root Port\s+: (?P<root_port>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_ins1 = re.compile(
         r"^\s*Designated Root Bridge\s+(?P<root_id>\S+)\s+Priority\s+(?P<root_priority>\d+)\s*\n"
         r"(^\s*.*\n)?"
@@ -46,14 +50,17 @@ class Script(BaseScript):
         r"^\s*Regional Root Bridge\s+(?P<rbridge_id>\S+)\s+Priority\s+(?P<rbridge_priority>\d+)\s*\n"
         r"^\s*Path cost (?P<int_root_cost>\d+)\s*\n"
         r"^\s*Designated Bridge\s+(?P<bridge_id>\S+)\s+Priority\s+(?P<bridge_priority>\d+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_ins2 = re.compile(
         r"^\s*Bridge\s+Address (?P<bridge_id>\S+)\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
         r"^\s*Root\s+Address (?P<root_id>\S+)\s+Priority\s+(?P<root_priority>\d+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_iface_role = re.compile(
         r"^\s*(?P<iface>\d+)\s+(P<role>\S+)\s+(P<status>\S+)\s+\d+\s+(?P<prio_n>\S+)\s+(?P<type>.+)\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_iface = re.compile(
         r"^\s*Port Index\s+: (?P<iface>\d+)\s+,.+\n"
         r"(^\s*.*\n)?"
@@ -63,7 +70,8 @@ class Script(BaseScript):
         r"^\s*MSTI   Designated Bridge   Internal PathCost  Prio  Status      Role\n"
         r"^\s*-----  ------------------  -----------------  ----  ----------  ----------\n"
         r"^\s*0\s+(?P<d_bridge>\S+)\s+(?P<patch_cost>\d+)\s+(?P<priority>\d+)\s+(?P<status>\S+)\s+(?P<role>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_iface1 = re.compile(
         r"^\s*Port Index:\s*(?P<iface>\d+).+\n"
         r"^\s*External PathCost : \S+\s+,\s+Edge Port:.+\n"
@@ -72,7 +80,8 @@ class Script(BaseScript):
         r"^\s*MSTI Designated Bridge        Internal PathCost  Prio  Status      Role\n"
         r"^\s*---- ------------------       -----------------  ----  ----------  ----------\n"
         r"^\s*0\s+(?P<d_bridge>\S+)\s+(?P<patch_cost>\d+)\s+(?P<priority>\d+)\s+(?P<status>\S+)\s+(?P<role>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     """
     rx_mst = re.compile(
@@ -99,7 +108,7 @@ class Script(BaseScript):
         "Forwarding": "forwarding",
         "Loopback": "loopback",
         "Learning": "learning",
-        "Listen": "listen"
+        "Listen": "listen",
     }
     PORT_ROLE = {
         "Alternate": "alternate",
@@ -130,7 +139,7 @@ class Script(BaseScript):
             "root_priority": int(match.group("root_priority")),
             "bridge_id": match.group("bridge_id"),
             "bridge_priority": int(match.group("bridge_priority")),
-            "interfaces": []
+            "interfaces": [],
         }
         # Reset array for each iteration
         self.iface_role = []
@@ -139,7 +148,7 @@ class Script(BaseScript):
                 "role": match_r.group("role"),
                 "state": match_r.group("status"),
                 "prio_n": match_r.group("prio_n"),
-                "type": match_r.group("type").strip()
+                "type": match_r.group("type").strip(),
             }
         self.designated_bridge = match.group("bridge_id")
         if self.iter_count < 5:
@@ -165,9 +174,10 @@ class Script(BaseScript):
                 "priority": match.group("priority"),
                 "designated_bridge_id": desg_id,
                 "designated_bridge_priority": desg_priority,
-                "designated_port_id": "%d.%d" % (int(match.group("priority")), int(match.group("iface"))),
+                "designated_port_id": "%d.%d"
+                % (int(match.group("priority")), int(match.group("iface"))),
                 "point_to_point": match.group("p2p") == "Yes",
-                "edge": match.group("edge") == "Yes"
+                "edge": match.group("edge") == "Yes",
             }
         else:
             match = self.rx_iface1.search(s)
@@ -186,19 +196,21 @@ class Script(BaseScript):
                     p2p = self.iface_role[int(iface)]["type"] == "Point to point"
                 iface = {
                     "interface": match.group("iface"),
-                    "port_id": "%d.%d" % (int(match.group("p_priority")), int(match.group("iface"))),
+                    "port_id": "%d.%d"
+                    % (int(match.group("p_priority")), int(match.group("iface"))),
                     "state": self.PORT_STATE[match.group("status")],
                     "role": self.PORT_ROLE[match.group("role")],
                     "priority": match.group("p_priority"),
                     "designated_bridge_id": desg_id,
                     "designated_bridge_priority": desg_priority,
-                    "designated_port_id": "%d.%d" % (int(match.group("priority")), int(match.group("iface"))),
+                    "designated_port_id": "%d.%d"
+                    % (int(match.group("priority")), int(match.group("iface"))),
                     "point_to_point": p2p,
-                    "edge": False
+                    "edge": False,
                 }
         if match:
             key = match.group("iface")
-            return key, iface, s[match.end():]
+            return key, iface, s[match.end() :]
         else:
             return None
 
@@ -210,16 +222,12 @@ class Script(BaseScript):
         match = self.rx_stp.search(c)
         if (not match) or (not match.group("mode")):
             return {"mode": "None", "instances": []}
-        stp = {
-            "mode": match.group("mode"),
-            "instances": []
-        }
+        stp = {"mode": match.group("mode"), "instances": []}
         inst = self.cli(
-            "show stp instance", obj_parser=self.parse_instance,
-            cmd_next="n", cmd_stop="q")
+            "show stp instance", obj_parser=self.parse_instance, cmd_next="n", cmd_stop="q"
+        )
         c = self.cli(
-            "show stp ports", obj_parser=self.parse_stp,
-            cmd_next="n", cmd_stop="q", cached=True
+            "show stp ports", obj_parser=self.parse_stp, cmd_next="n", cmd_stop="q", cached=True
         )
         for i in c:
             inst[0]["interfaces"] += [i]

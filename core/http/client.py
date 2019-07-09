@@ -15,6 +15,7 @@ import logging
 import zlib
 import time
 import struct
+
 # Third-party modules
 import six
 from six.moves.urllib.parse import urlparse
@@ -23,6 +24,7 @@ import tornado.ioloop
 import tornado.iostream
 import cachetools
 import ujson
+
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
@@ -49,10 +51,7 @@ ERR_PARSE_ERROR = 597
 NS_CACHE_SIZE = config.http_client.ns_cache_size
 RESOLVER_TTL = config.http_client.resolver_ttl
 
-DEFAULT_PORTS = {
-    "http": config.http_client.http_port,
-    "https": config.http_client.https_port
-}
+DEFAULT_PORTS = {"http": config.http_client.http_port, "https": config.http_client.https_port}
 
 # Methods require Content-Length header
 REQUIRE_LENGTH_METHODS = {"POST", "PUT"}
@@ -85,23 +84,26 @@ def resolve(host):
 
 
 @tornado.gen.coroutine
-def fetch(url, method="GET",
-          headers=None, body=None,
-          connect_timeout=DEFAULT_CONNECT_TIMEOUT,
-          request_timeout=DEFAULT_REQUEST_TIMEOUT,
-          io_loop=None,
-          resolver=resolve,
-          max_buffer_size=DEFAULT_BUFFER_SIZE,
-          follow_redirects=False,
-          max_redirects=DEFAULT_MAX_REDIRECTS,
-          validate_cert=config.http_client.validate_certs,
-          allow_proxy=False,
-          proxies=None,
-          user=None,
-          password=None,
-          content_encoding=None,
-          eof_mark=None
-          ):
+def fetch(
+    url,
+    method="GET",
+    headers=None,
+    body=None,
+    connect_timeout=DEFAULT_CONNECT_TIMEOUT,
+    request_timeout=DEFAULT_REQUEST_TIMEOUT,
+    io_loop=None,
+    resolver=resolve,
+    max_buffer_size=DEFAULT_BUFFER_SIZE,
+    follow_redirects=False,
+    max_redirects=DEFAULT_MAX_REDIRECTS,
+    validate_cert=config.http_client.validate_certs,
+    allow_proxy=False,
+    proxies=None,
+    user=None,
+    password=None,
+    content_encoding=None,
+    eof_mark=None,
+):
     """
 
     :param url: Fetch URL
@@ -125,6 +127,7 @@ def fetch(url, method="GET",
       eof_mark received (string or list)
     :return: code, headers, body
     """
+
     def get_ssl_options():
         ssl_options = {}
         if validate_cert:
@@ -144,7 +147,9 @@ def fetch(url, method="GET",
         host = u.netloc
         port = DEFAULT_PORTS.get(u.scheme)
         if not port:
-            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Cannot resolve port for scheme: %s" % u.scheme))
+            raise tornado.gen.Return(
+                (ERR_TIMEOUT, {}, "Cannot resolve port for scheme: %s" % u.scheme)
+            )
     if is_ipv4(host):
         addr = host
     else:
@@ -161,9 +166,7 @@ def fetch(url, method="GET",
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         if use_tls and not proxy:
-            stream = tornado.iostream.SSLIOStream(
-                s, io_loop=io_loop, ssl_options=get_ssl_options()
-            )
+            stream = tornado.iostream.SSLIOStream(s, io_loop=io_loop, ssl_options=get_ssl_options())
         else:
             stream = tornado.iostream.IOStream(s, io_loop=io_loop)
         try:
@@ -175,12 +178,11 @@ def fetch(url, method="GET",
                 connect_address = (addr, port)
 
             if proxy:
-                logger.debug("Connecting to proxy %s:%s",
-                             connect_address[0], connect_address[1])
+                logger.debug("Connecting to proxy %s:%s", connect_address[0], connect_address[1])
             yield tornado.gen.with_timeout(
                 io_loop.time() + connect_timeout,
                 future=stream.connect(connect_address, server_hostname=u.netloc),
-                io_loop=io_loop
+                io_loop=io_loop,
             )
         except tornado.iostream.StreamClosedError:
             metrics["httpclient_timeouts"] += 1
@@ -194,21 +196,27 @@ def fetch(url, method="GET",
             logger.debug("Sending CONNECT %s:%s", addr, port)
             # Send CONNECT request
             req = b"CONNECT %s:%s HTTP/1.1\r\nUser-Agent: %s\r\n\r\n" % (
-                addr, port, DEFAULT_USER_AGENT
+                addr,
+                port,
+                DEFAULT_USER_AGENT,
             )
             try:
                 yield tornado.gen.with_timeout(
                     deadline,
                     future=stream.write(req),
                     io_loop=io_loop,
-                    quiet_exceptions=(tornado.iostream.StreamClosedError,)
+                    quiet_exceptions=(tornado.iostream.StreamClosedError,),
                 )
             except tornado.iostream.StreamClosedError:
                 metrics["httpclient_proxy_timeouts"] += 1
-                raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"))
+                raise tornado.gen.Return(
+                    (ERR_TIMEOUT, {}, "Connection reset while connecting to proxy")
+                )
             except tornado.gen.TimeoutError:
                 metrics["httpclient_proxy_timeouts"] += 1
-                raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
+                raise tornado.gen.Return(
+                    (ERR_TIMEOUT, {}, "Timed out while sending request to proxy")
+                )
             # Wait for proxy response
             parser = HttpParser()
             while not parser.is_headers_complete():
@@ -217,14 +225,18 @@ def fetch(url, method="GET",
                         deadline,
                         future=stream.read_bytes(max_buffer_size, partial=True),
                         io_loop=io_loop,
-                        quiet_exceptions=(tornado.iostream.StreamClosedError,)
+                        quiet_exceptions=(tornado.iostream.StreamClosedError,),
                     )
                 except tornado.iostream.StreamClosedError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"))
+                    raise tornado.gen.Return(
+                        (ERR_TIMEOUT, {}, "Connection reset while connecting to proxy")
+                    )
                 except tornado.gen.TimeoutError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
+                    raise tornado.gen.Return(
+                        (ERR_TIMEOUT, {}, "Timed out while sending request to proxy")
+                    )
                 received = len(data)
                 parsed = parser.execute(data, received)
                 if parsed != received:
@@ -242,17 +254,21 @@ def fetch(url, method="GET",
                         future=stream.start_tls(
                             server_side=False,
                             ssl_options=get_ssl_options(),
-                            server_hostname=u.netloc
+                            server_hostname=u.netloc,
                         ),
                         io_loop=io_loop,
-                        quiet_exceptions=(tornado.iostream.StreamClosedError,)
+                        quiet_exceptions=(tornado.iostream.StreamClosedError,),
                     )
                 except tornado.iostream.StreamClosedError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"))
+                    raise tornado.gen.Return(
+                        (ERR_TIMEOUT, {}, "Connection reset while connecting to proxy")
+                    )
                 except tornado.gen.TimeoutError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
+                    raise tornado.gen.Return(
+                        (ERR_TIMEOUT, {}, "Timed out while sending request to proxy")
+                    )
         # Process request
         body = body or ""
         content_type = "application/binary"
@@ -261,11 +277,7 @@ def fetch(url, method="GET",
         elif not isinstance(body, six.string_types):
             body = ujson.dumps(body)
             content_type = "text/json"
-        h = {
-            "Host": str(u.netloc),
-            "Connection": "close",
-            "User-Agent": DEFAULT_USER_AGENT
-        }
+        h = {"Host": str(u.netloc), "Connection": "close", "User-Agent": DEFAULT_USER_AGENT}
         if body and content_encoding:
             if content_encoding == CE_DEFLATE:
                 # Deflate compression
@@ -275,35 +287,29 @@ def fetch(url, method="GET",
                     zlib.DEFLATED,
                     -zlib.MAX_WBITS,
                     zlib.DEF_MEM_LEVEL,
-                    zlib.Z_DEFAULT_STRATEGY
+                    zlib.Z_DEFAULT_STRATEGY,
                 )
                 body = compress.compress(body) + compress.flush()
             elif content_encoding == CE_GZIP:
                 # gzip compression
                 h["Content-Encoding"] = CE_GZIP
                 compress = zlib.compressobj(
-                    6,
-                    zlib.DEFLATED,
-                    -zlib.MAX_WBITS,
-                    zlib.DEF_MEM_LEVEL,
-                    0
+                    6, zlib.DEFLATED, -zlib.MAX_WBITS, zlib.DEF_MEM_LEVEL, 0
                 )
-                crc = zlib.crc32(body, 0) & 0xffffffff
+                crc = zlib.crc32(body, 0) & 0xFFFFFFFF
                 body = "\x1f\x8b\x08\x00%s\x02\xff%s%s%s%s" % (
                     to32u(int(time.time())),
                     compress.compress(body),
                     compress.flush(),
                     to32u(crc),
-                    to32u(len(body))
+                    to32u(len(body)),
                 )
         if method in REQUIRE_LENGTH_METHODS:
             h["Content-Length"] = str(len(body))
             h["Content-Type"] = content_type
         if user and password:
             # Include basic auth header
-            h["Authorization"] = "Basic %s" % (
-                "%s:%s" % (user, password)
-            ).encode("base64").strip()
+            h["Authorization"] = "Basic %s" % ("%s:%s" % (user, password)).encode("base64").strip()
         if headers:
             h.update(headers)
         path = u.path
@@ -313,14 +319,14 @@ def fetch(url, method="GET",
             method,
             path,
             "\r\n".join(b"%s: %s" % (k, h[k]) for k in h),
-            body
+            body,
         )
         try:
             yield tornado.gen.with_timeout(
                 deadline,
                 future=stream.write(req),
                 io_loop=io_loop,
-                quiet_exceptions=(tornado.iostream.StreamClosedError,)
+                quiet_exceptions=(tornado.iostream.StreamClosedError,),
             )
         except tornado.iostream.StreamClosedError:
             metrics["httpclient_timeouts"] += 1
@@ -336,7 +342,7 @@ def fetch(url, method="GET",
                     deadline,
                     future=stream.read_bytes(max_buffer_size, partial=True),
                     io_loop=io_loop,
-                    quiet_exceptions=(tornado.iostream.StreamClosedError,)
+                    quiet_exceptions=(tornado.iostream.StreamClosedError,),
                 )
             except tornado.iostream.StreamClosedError:
                 if not response_body and config.features.pypy:
@@ -378,7 +384,8 @@ def fetch(url, method="GET",
                 logger.debug("HTTP redirect %s %s", code, new_url)
                 code, parsed_headers, response_body = yield fetch(
                     new_url,
-                    method="GET", headers=headers,
+                    method="GET",
+                    headers=headers,
                     connect_timeout=connect_timeout,
                     request_timeout=request_timeout,
                     resolver=resolver,
@@ -387,17 +394,13 @@ def fetch(url, method="GET",
                     max_redirects=max_redirects - 1,
                     validate_cert=validate_cert,
                     allow_proxy=allow_proxy,
-                    proxies=proxies
+                    proxies=proxies,
                 )
                 raise tornado.gen.Return((code, parsed_headers, response_body))
             else:
                 raise tornado.gen.Return((404, {}, "Redirect limit exceeded"))
         # @todo: Process gzip and deflate Content-Encoding
-        raise tornado.gen.Return((
-            code,
-            parsed_headers,
-            "".join(response_body)
-        ))
+        raise tornado.gen.Return((code, parsed_headers, "".join(response_body)))
     finally:
         if stream:
             stream.close()
@@ -405,27 +408,32 @@ def fetch(url, method="GET",
             s.close()
 
 
-def fetch_sync(url, method="GET",
-               headers=None, body=None,
-               connect_timeout=DEFAULT_CONNECT_TIMEOUT,
-               request_timeout=DEFAULT_REQUEST_TIMEOUT,
-               resolver=resolve,
-               max_buffer_size=DEFAULT_BUFFER_SIZE,
-               follow_redirects=False,
-               max_redirects=DEFAULT_MAX_REDIRECTS,
-               validate_cert=config.http_client.validate_certs,
-               allow_proxy=False,
-               proxies=None,
-               user=None,
-               password=None,
-               content_encoding=None,
-               eof_mark=None):
-
+def fetch_sync(
+    url,
+    method="GET",
+    headers=None,
+    body=None,
+    connect_timeout=DEFAULT_CONNECT_TIMEOUT,
+    request_timeout=DEFAULT_REQUEST_TIMEOUT,
+    resolver=resolve,
+    max_buffer_size=DEFAULT_BUFFER_SIZE,
+    follow_redirects=False,
+    max_redirects=DEFAULT_MAX_REDIRECTS,
+    validate_cert=config.http_client.validate_certs,
+    allow_proxy=False,
+    proxies=None,
+    user=None,
+    password=None,
+    content_encoding=None,
+    eof_mark=None,
+):
     @tornado.gen.coroutine
     def _fetch():
         result = yield fetch(
             url,
-            method=method, headers=headers, body=body,
+            method=method,
+            headers=headers,
+            body=body,
             connect_timeout=connect_timeout,
             request_timeout=request_timeout,
             resolver=resolver,
@@ -438,7 +446,7 @@ def fetch_sync(url, method="GET",
             user=user,
             password=password,
             content_encoding=content_encoding,
-            eof_mark=eof_mark
+            eof_mark=eof_mark,
         )
         r.append(result)
 

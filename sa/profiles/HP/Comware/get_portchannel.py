@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -18,8 +19,8 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_po_members = re.compile(
-        r"^(?P<interface>\S+):\s*\n"
-        r"^Aggregation Interface: (?P<agg_interface>\S+)", re.MULTILINE)
+        r"^(?P<interface>\S+):\s*\n" r"^Aggregation Interface: (?P<agg_interface>\S+)", re.MULTILINE
+    )
 
     def execute(self):
         try:
@@ -35,9 +36,11 @@ class Script(BaseScript):
                     found = True
                     break
             if not found:
-                r += [{
-                    "interface": match.group("agg_interface"),
-                    "type": "L",
-                    "members": [match.group("interface")]
-                }]
+                r += [
+                    {
+                        "interface": match.group("agg_interface"),
+                        "type": "L",
+                        "members": [match.group("interface")],
+                    }
+                ]
         return r

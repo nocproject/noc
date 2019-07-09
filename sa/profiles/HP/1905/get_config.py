@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "HP.1905.get_config"
     interface = IGetConfig
 
-    def execute(self, TFTP_root='', TFTP_IP='', file_name='', **kwargs):
+    def execute(self, TFTP_root="", TFTP_IP="", file_name="", **kwargs):
         # Try snmp first
         #
         #

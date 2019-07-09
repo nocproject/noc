@@ -9,6 +9,7 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
@@ -27,71 +28,70 @@ class Peer(NOCModel):
     """
     BGP Peering session
     """
+
     class Meta(object):
         verbose_name = "Peer"
         verbose_name_plural = "Peers"
         db_table = "peer_peer"
         app_label = "peer"
 
-    peer_group = models.ForeignKey(
-        PeerGroup, verbose_name="Peer Group", on_delete=models.CASCADE)
+    peer_group = models.ForeignKey(PeerGroup, verbose_name="Peer Group", on_delete=models.CASCADE)
     project = models.ForeignKey(
-        Project, verbose_name="Project",
-        null=True, blank=True, related_name="peer_set", on_delete=models.CASCADE)
+        Project,
+        verbose_name="Project",
+        null=True,
+        blank=True,
+        related_name="peer_set",
+        on_delete=models.CASCADE,
+    )
     peering_point = models.ForeignKey(
-        PeeringPoint, verbose_name="Peering Point", on_delete=models.CASCADE)
+        PeeringPoint, verbose_name="Peering Point", on_delete=models.CASCADE
+    )
     local_asn = models.ForeignKey(AS, verbose_name="Local AS", on_delete=models.CASCADE)
     local_ip = INETField("Local IP")
-    local_backup_ip = INETField(
-        "Local Backup IP", null=True, blank=True)
+    local_backup_ip = INETField("Local Backup IP", null=True, blank=True)
     remote_asn = models.IntegerField("Remote AS")
     remote_ip = INETField("Remote IP")
-    remote_backup_ip = INETField(
-        "Remote Backup IP", null=True, blank=True)
-    status = models.CharField("Status", max_length=1, default="A",
-                              choices=[("P", "Planned"),
-                                       ("A", "Active"),
-                                       ("S", "Shutdown")])
+    remote_backup_ip = INETField("Remote Backup IP", null=True, blank=True)
+    status = models.CharField(
+        "Status",
+        max_length=1,
+        default="A",
+        choices=[("P", "Planned"), ("A", "Active"), ("S", "Shutdown")],
+    )
     import_filter = models.CharField("Import filter", max_length=64)
     # Override PeerGroup.local_pref
-    local_pref = models.IntegerField(
-        "Local Pref", null=True, blank=True)
+    local_pref = models.IntegerField("Local Pref", null=True, blank=True)
     # Override PeerGroup.import_med
-    import_med = models.IntegerField(
-        "Import MED", blank=True, null=True)
+    import_med = models.IntegerField("Import MED", blank=True, null=True)
     # Override PeerGroup.export_med
-    export_med = models.IntegerField(
-        "Export MED", blank=True, null=True)
+    export_med = models.IntegerField("Export MED", blank=True, null=True)
     export_filter = models.CharField("Export filter", max_length=64)
-    description = models.CharField("Description", max_length=64,
-                                   null=True, blank=True)
+    description = models.CharField("Description", max_length=64, null=True, blank=True)
     # Peer remark to be shown in RPSL
-    rpsl_remark = models.CharField("RPSL Remark", max_length=64,
-                                   null=True, blank=True)
+    rpsl_remark = models.CharField("RPSL Remark", max_length=64, null=True, blank=True)
     tt = models.IntegerField("TT", blank=True, null=True)
     # In addition to PeerGroup.communities
     # and PeeringPoint.communities
-    communities = models.CharField("Import Communities", max_length=128,
-                                   blank=True, null=True)
+    communities = models.CharField("Import Communities", max_length=128, blank=True, null=True)
     max_prefixes = models.IntegerField("Max. Prefixes", default=100)
     import_filter_name = models.CharField(
-        "Import Filter Name", max_length=64, blank=True, null=True)
+        "Import Filter Name", max_length=64, blank=True, null=True
+    )
     export_filter_name = models.CharField(
-        "Export Filter Name", max_length=64, blank=True, null=True)
+        "Export Filter Name", max_length=64, blank=True, null=True
+    )
     tags = TagsField("Tags", null=True, blank=True)
 
     rpsl = GridVCSField("rpsl_peer")
 
     def __str__(self):
-        return u" %s (%s@%s)" % (self.remote_asn, self.remote_ip,
-                                 self.peering_point.hostname)
+        return " %s (%s@%s)" % (self.remote_asn, self.remote_ip, self.peering_point.hostname)
 
     def save(self, *args, **kwargs):
-        if (self.import_filter_name is not None and
-                not self.import_filter_name.strip()):
+        if self.import_filter_name is not None and not self.import_filter_name.strip():
             self.import_filter_name = None
-        if (self.export_filter_name is not None and
-                not self.export_filter_name.strip()):
+        if self.export_filter_name is not None and not self.export_filter_name.strip():
             self.export_filter_name = None
         super(Peer, self).save(*args, **kwargs)
         self.peering_point.sync_cm_prefix_list()
@@ -100,9 +100,7 @@ class Peer(NOCModel):
     @property
     def all_communities(self):
         r = {}
-        for cl in [self.peering_point.communities,
-                   self.peer_group.communities,
-                   self.communities]:
+        for cl in [self.peering_point.communities, self.peer_group.communities, self.communities]:
             if cl is None:
                 continue
             for c in cl.replace(",", " ").split():
@@ -132,10 +130,7 @@ class Peer(NOCModel):
         export_med = self.effective_export_med
         if export_med:
             actions += ["med=%d;" % export_med]
-        s += "export: to AS%s at %s" % (
-            self.remote_asn,
-            self.peering_point.hostname
-        )
+        s += "export: to AS%s at %s" % (self.remote_asn, self.peering_point.hostname)
         if actions:
             s += " action " + " ".join(actions)
         s += " announce %s" % self.export_filter
@@ -185,12 +180,11 @@ class Peer(NOCModel):
         :type address: Str
         :returns: Peer instance or None
         """
-        data = list(Peer.objects.filter().extra(
-            where=[
-                "host(remote_ip)=%s OR host(remote_backup_ip)=%s"
-            ],
-            params=[address, address]
-        ))
+        data = list(
+            Peer.objects.filter().extra(
+                where=["host(remote_ip)=%s OR host(remote_backup_ip)=%s"], params=[address, address]
+            )
+        )
         if data:
             return data[0]
         else:

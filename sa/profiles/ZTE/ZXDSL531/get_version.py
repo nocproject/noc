@@ -29,8 +29,4 @@ class Script(BaseScript):
             version = match.group("version")
         else:
             raise Exception("Unsupported access scheme")
-        return {
-            "vendor": "ZTE",
-            "platform": "ZXDSL531",
-            "version": version
-        }
+        return {"vendor": "ZTE", "platform": "ZXDSL531", "version": version}

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import, print_function
 import datetime
+
 # NOC modules
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.reboot import Reboot
@@ -39,45 +40,28 @@ class AlarmsExtractor(ArchivingExtractor):
 
     def iter_data(self):
         if self.use_archive:
-            coll = [self.archive_db.get_collection(coll_name) for
-                    coll_name in self.find_archived_collections(self.start, self.stop)]
+            coll = [
+                self.archive_db.get_collection(coll_name)
+                for coll_name in self.find_archived_collections(self.start, self.stop)
+            ]
         else:
             coll = [ArchivedAlarm._get_collection()]
         for c in coll:
-            for d in c.find({
-                "clear_timestamp": {
-                    "$gt": self.start,
-                    "$lte": self.stop
-                }
-            }, no_cursor_timeout=True).sort("clear_timestamp"):
+            for d in c.find(
+                {"clear_timestamp": {"$gt": self.start, "$lte": self.stop}}, no_cursor_timeout=True
+            ).sort("clear_timestamp"):
                 yield d
 
     def extract(self):
         nr = 0
         # Get reboots
-        r = Reboot._get_collection().aggregate([
-            {
-                "$match": {
-                    "ts": {
-                        "$gt": self.start - self.reboot_interval,
-                        "$lte": self.stop
-                    }
-                }
-            },
-            {
-                "$sort": {
-                    "ts": 1
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$object",
-                    "reboots": {
-                        "$push": "$ts"
-                    }
-                }
-            }
-        ])
+        r = Reboot._get_collection().aggregate(
+            [
+                {"$match": {"ts": {"$gt": self.start - self.reboot_interval, "$lte": self.stop}}},
+                {"$sort": {"ts": 1}},
+                {"$group": {"_id": "$object", "reboots": {"$push": "$ts"}}},
+            ]
+        )
         # object -> [ts1, .., tsN]
         reboots = dict((d["_id"], d["reboots"]) for d in r)
         #
@@ -88,9 +72,7 @@ class AlarmsExtractor(ArchivingExtractor):
             # Process reboot data
             o_reboots = reboots.get(d["managed_object"], [])
             n_reboots = hits_in_range(
-                o_reboots,
-                d["timestamp"] - self.reboot_interval,
-                d["clear_timestamp"]
+                o_reboots, d["timestamp"] - self.reboot_interval, d["clear_timestamp"]
             )
             #
             self.alarm_stream.push(
@@ -123,13 +105,23 @@ class AlarmsExtractor(ArchivingExtractor):
                 x=mo.x,
                 y=mo.y,
                 reboots=n_reboots,
-                services=[{"profile": ServiceProfile.get_by_id(ss["profile"]).bi_id,
-                           "summary": ss["summary"]} for ss in d.get("direct_services", [])],
-                subscribers=[{"profile": SubscriberProfile.get_by_id(ss["profile"]).bi_id,
-                              "summary": ss["summary"]} for ss in d.get("direct_subscribers", [])],
+                services=[
+                    {
+                        "profile": ServiceProfile.get_by_id(ss["profile"]).bi_id,
+                        "summary": ss["summary"],
+                    }
+                    for ss in d.get("direct_services", [])
+                ],
+                subscribers=[
+                    {
+                        "profile": SubscriberProfile.get_by_id(ss["profile"]).bi_id,
+                        "summary": ss["summary"],
+                    }
+                    for ss in d.get("direct_subscribers", [])
+                ],
                 # location=mo.container.get_address_text()
                 ack_user=d.get("ack_user", ""),
-                ack_ts=d.get("ack_ts")
+                ack_ts=d.get("ack_ts"),
             )
             nr += 1
             self.last_ts = d["clear_timestamp"]
@@ -142,27 +134,19 @@ class AlarmsExtractor(ArchivingExtractor):
         # Clean
         if force:
             print("Clean ArchivedAlarm collection before %s" % self.clean_ts)
-            ArchivedAlarm._get_collection().remove({
-                "clear_timestamp": {
-                    "$lte": self.clean_ts
-                }
-            })
+            ArchivedAlarm._get_collection().remove({"clear_timestamp": {"$lte": self.clean_ts}})
 
     @classmethod
     def get_start(cls):
         d = ArchivedAlarm._get_collection().find_one(
-            {},
-            {"_id": 0, "timestamp": 1},
-            sort=[("timestamp", 1)]
+            {}, {"_id": 0, "timestamp": 1}, sort=[("timestamp", 1)]
         )
         if not d:
             return None
         return d.get("timestamp")
 
     def iter_archived_items(self):
-        for d in ArchivedAlarm._get_collection().find({
-            "clear_timestamp": {
-                "$lte": self.clean_ts
-            }
-        }, no_cursor_timeout=True):
+        for d in ArchivedAlarm._get_collection().find(
+            {"clear_timestamp": {"$lte": self.clean_ts}}, no_cursor_timeout=True
+        ):
             yield d

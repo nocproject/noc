@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -29,21 +30,31 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"(?P<distr>[^,]+) release (?P<version>[^ ,]+) \((?P<codename>[^,]+)\)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     """
     http://unix.stackexchange.com/questions/89714/easy-way-to-determine-virtualization-technology
     """
-    check_virtual_xen = re.compile(r"(?P<virtplatform>\S+) virtual console successfully installed as",
-                                   re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    check_virtual_vmware = re.compile(r"VMware.*\s+Vendor:\s(?P<virtplatform>\S+)",
-                                      re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    check_virtual_kvm = re.compile(r".*Booting paravirtualized kernel on (?P<virtplatform>\S+)\n",
-                                   re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    check_virtual_dom0 = re.compile(r"Booting paravirtualized kernel on (?P<virtplatform>\S+) hardware\n",
-                                    re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    check_virtual_qemu = re.compile(r": \S+ (?P<virtplatform>\S+) Virtual CPU version \S+ stepping \d+",
-                                    re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    check_virtual_xen = re.compile(
+        r"(?P<virtplatform>\S+) virtual console successfully installed as",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    check_virtual_vmware = re.compile(
+        r"VMware.*\s+Vendor:\s(?P<virtplatform>\S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
+    check_virtual_kvm = re.compile(
+        r".*Booting paravirtualized kernel on (?P<virtplatform>\S+)\n",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    check_virtual_dom0 = re.compile(
+        r"Booting paravirtualized kernel on (?P<virtplatform>\S+) hardware\n",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    check_virtual_qemu = re.compile(
+        r": \S+ (?P<virtplatform>\S+) Virtual CPU version \S+ stepping \d+",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     def execute(self):
 
@@ -65,18 +76,19 @@ class Script(BaseScript):
         see http://www.dmo.ca/blog/detecting-virtualization-on-linux/
         """
         virtual = None
-        virtual = str(
-            self.cli("dmesg | grep -i -E \"(U Virtual|on KVM|Xen virtual c)\"")
-        )
+        virtual = str(self.cli('dmesg | grep -i -E "(U Virtual|on KVM|Xen virtual c)"'))
 
-        if virtual and not virtual.startswith('dmesg'):
-            rx = self.find_re([
-                self.check_virtual_kvm,
-                self.check_virtual_vmware,
-                self.check_virtual_xen,
-                self.check_virtual_dom0,
-                self.check_virtual_qemu
-            ], virtual)
+        if virtual and not virtual.startswith("dmesg"):
+            rx = self.find_re(
+                [
+                    self.check_virtual_kvm,
+                    self.check_virtual_vmware,
+                    self.check_virtual_xen,
+                    self.check_virtual_dom0,
+                    self.check_virtual_qemu,
+                ],
+                virtual,
+            )
 
             match1 = rx.search(virtual)
 
@@ -94,9 +106,5 @@ class Script(BaseScript):
             "vendor": "Red Hat",
             "platform": "".join((plat.strip(), virtualplatform)),
             "version": version,
-            "attributes": {
-                "codename": codename,
-                "distro": distr,
-                "kernel": kernel.strip(),
-            }
+            "attributes": {"codename": codename, "distro": distr, "kernel": kernel.strip()},
         }

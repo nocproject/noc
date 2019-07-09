@@ -21,15 +21,20 @@ class Migration(BaseMigration):
         for d in pcoll.find({}, {"_id": 1, "name": 1}):
             pmap[d["name"]] = str(d["_id"])
         # Create .profile column
-        self.db.add_column("peer_peeringpoint", "profile", DocumentReferenceField("sa.Profile", null=True, blank=True))
+        self.db.add_column(
+            "peer_peeringpoint",
+            "profile",
+            DocumentReferenceField("sa.Profile", null=True, blank=True),
+        )
         # Update profiles
-        for p, in list(self.db.execute("SELECT DISTINCT profile_name FROM peer_peeringpoint")):
+        for (p,) in list(self.db.execute("SELECT DISTINCT profile_name FROM peer_peeringpoint")):
             self.db.execute(
                 """
             UPDATE peer_peeringpoint
             SET profile = %s
             WHERE profile_name = %s
-            """, [pmap[p], p]
+            """,
+                [pmap[p], p],
             )
         # Set profile as not null
         self.db.execute("ALTER TABLE peer_peeringpoint ALTER profile SET NOT NULL")

@@ -13,6 +13,7 @@ import logging
 import operator
 from threading import Lock
 import re
+
 # Third-party modules
 import six
 from pymongo import ReadPreference, UpdateOne, InsertOne, DeleteOne, WriteConcern
@@ -20,6 +21,7 @@ from pymongo.errors import BulkWriteError
 from mongoengine.document import Document
 from mongoengine.fields import IntField
 import cachetools
+
 # NOC modules
 from noc.models import get_model
 from noc.core.defer import call_later
@@ -34,7 +36,7 @@ class SelectorCache(Document):
         "collection": "noc.cache.selector",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object", "selector", "vc_domain"]
+        "indexes": ["object", "selector", "vc_domain"],
     }
     object = IntField(required=True)
     selector = IntField(required=False)
@@ -47,10 +49,7 @@ class SelectorCache(Document):
 
     @classmethod
     def refresh(cls):
-        call_later(
-            "noc.sa.models.selectorcache.refresh",
-            delay=10
-        )
+        call_later("noc.sa.models.selectorcache.refresh", delay=10)
 
     @classmethod
     def get_object_selectors(cls, object):
@@ -58,8 +57,7 @@ class SelectorCache(Document):
         if hasattr(object, "id"):
             oid = object.id
         return cls.objects.filter(
-            object=oid,
-            read_preference=ReadPreference.SECONDARY_PREFERRED
+            object=oid, read_preference=ReadPreference.SECONDARY_PREFERRED
         ).values_list("selector")
 
     @classmethod
@@ -70,17 +68,17 @@ class SelectorCache(Document):
         sid = selector
         if hasattr(selector, "id"):
             sid = selector.id
-        return bool(cls._get_collection().with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED
-        ).find_one({
-            "object": oid,
-            "selector": sid
-        }))
+        return bool(
+            cls._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find_one({"object": oid, "selector": sid})
+        )
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("q_cache"), lock=lambda x: q_lock)
     def get_active_selectors(cls):
         from .managedobjectselector import ManagedObjectSelector
+
         return list(ManagedObjectSelector.objects.filter(is_enabled=True))
 
     _REFERRED_MODELS = [
@@ -88,7 +86,7 @@ class SelectorCache(Document):
         "main.PrefixTable",
         "sa.AdministrativeDomain",
         "ip.VRF",
-        "vc.VCDomain"
+        "vc.VCDomain",
     ]
 
     @classmethod
@@ -109,6 +107,7 @@ class SelectorCache(Document):
         from noc.sa.models.administrativedomain import AdministrativeDomain
         from noc.sa.models.managedobject import ManagedObject
         from django.db import connection
+
         selectors = cls.get_active_selectors()
         if not selectors:
             return set()
@@ -125,8 +124,9 @@ class SelectorCache(Document):
             if s.filter_pool and object.pool.id != s.filter_pool.id:
                 continue
             if (
-                s.filter_administrative_domain and
-                object.administrative_domain.id not in AdministrativeDomain.get_nested_ids(s.filter_administrative_domain.id)
+                s.filter_administrative_domain
+                and object.administrative_domain.id
+                not in AdministrativeDomain.get_nested_ids(s.filter_administrative_domain.id)
             ):
                 continue
             if s.filter_name:
@@ -135,10 +135,11 @@ class SelectorCache(Document):
                         continue
                 except re.error:
                     pass
-            q = ManagedObject.objects.filter(
-                s.Q,
-                id=object.id
-            ).extra(select={"selector": s.id}).values_list("selector")
+            q = (
+                ManagedObject.objects.filter(s.Q, id=object.id)
+                .extra(select={"selector": s.id})
+                .values_list("selector")
+            )
             t, p = q.query.sql_with_params()
             sql += [t.rsplit(" ORDER BY ", 1)[0]]
             params += p
@@ -153,8 +154,7 @@ class SelectorCache(Document):
               WHERE id = %d
             )
         """ % object.id + sql.replace(
-            "\"sa_managedobject\"",
-            "\"sa_managedobject_item\""
+            '"sa_managedobject"', '"sa_managedobject_item"'
         )
         cursor = connection.cursor()
         cursor.execute(sql, params)
@@ -176,34 +176,16 @@ class SelectorCache(Document):
                 # Cache record exists
                 if sdata.get("vc_domain") != vcdomain:
                     # VC Domain changed
-                    logger.debug(
-                        "[%s] Changing VC Domain to %s",
-                        object.name,
-                        vcdomain
-                    )
-                    bulk += [UpdateOne({"_id": sdata["_id"]}, {
-                        "$set": {
-                            "vc_domain": vcdomain
-                        }
-                    })]
+                    logger.debug("[%s] Changing VC Domain to %s", object.name, vcdomain)
+                    bulk += [UpdateOne({"_id": sdata["_id"]}, {"$set": {"vc_domain": vcdomain}})]
                 del old[s]
             else:
                 # New record
-                logging.debug(
-                    "[%s] Add to selector %s",
-                    object.name, s
-                )
-                bulk += [InsertOne({
-                    "object": object.id,
-                    "selector": s,
-                    "vc_domain": vcdomain
-                })]
+                logging.debug("[%s] Add to selector %s", object.name, s)
+                bulk += [InsertOne({"object": object.id, "selector": s, "vc_domain": vcdomain})]
         # Delete stale records
         for sdata in six.itervalues(old):
-            logging.debug(
-                "[%s] Remove from selector %s",
-                object.name, sdata["_id"]
-            )
+            logging.debug("[%s] Remove from selector %s", object.name, sdata["_id"])
             bulk += [DeleteOne({"_id": sdata["_id"]})]
         # Apply changes
         if bulk:
@@ -220,6 +202,7 @@ def refresh():
     """
     Rebuild selector cache job
     """
+
     def diff(old, new):
         def getnext(g):
             try:
@@ -266,10 +249,7 @@ def refresh():
     new = []
     for s in ManagedObjectSelector.objects.filter(is_enabled=True):
         sid = s.id
-        new += [
-            (r[0], sid, r[1])
-            for r in s.managed_objects.values_list("id", "vc_domain")
-        ]
+        new += [(r[0], sid, r[1]) for r in s.managed_objects.values_list("id", "vc_domain")]
     new = sorted(new)
     logger.info("Merging selector caches")
     n_new = 0
@@ -280,9 +260,7 @@ def refresh():
     for o, n in diff(iter(old), iter(new)):
         if o is None:
             # New
-            bulk += [InsertOne({
-                "object": n[0], "selector": n[1], "vc_domain": n[2]
-            })]
+            bulk += [InsertOne({"object": n[0], "selector": n[1], "vc_domain": n[2]})]
             n_new += 1
         elif n is None:
             # Removed
@@ -290,15 +268,14 @@ def refresh():
             n_removed += 1
         else:
             # Changed
-            bulk += [UpdateOne({"_id": o[-1]}, {
-                "$set": {
-                    "object": n[0], "selector": n[1], "vc_domain": n[2]
-                }
-            })]
+            bulk += [
+                UpdateOne(
+                    {"_id": o[-1]}, {"$set": {"object": n[0], "selector": n[1], "vc_domain": n[2]}}
+                )
+            ]
             n_changed += 1
     if n_new + n_changed + n_removed:
-        logger.info("Writing (new=%s, changed=%s, removed=%s)",
-                    n_new, n_changed, n_removed)
+        logger.info("Writing (new=%s, changed=%s, removed=%s)", n_new, n_changed, n_removed)
         if bulk:
             logger.info("Commiting changes to database")
             try:

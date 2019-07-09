@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -17,6 +18,7 @@ from noc.core.ip import IPv4, IPv6
 def ranges_to_list_str(s):
     # Python modules:
     import re
+
     rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")
     r = []
     for p in s.split(","):
@@ -36,7 +38,7 @@ def ranges_to_list_str(s):
         for i in range(f, t + 1):
             r += [str(i)]
         #    return sorted(r)
-    return (r)
+    return r
 
 
 class Script(BaseScript):
@@ -46,17 +48,21 @@ class Script(BaseScript):
 
     rx_line = re.compile(r"\w*Slot/Port", re.MULTILINE)
     rx_name = re.compile(r"\s+(?P<name>.\S+)\s+:", re.MULTILINE)
-    rx_mac_local = re.compile(r"\s+MAC address\s+: (?P<mac>.+),",
-                              re.MULTILINE | re.IGNORECASE)
-    rx_oper_status = re.compile(r"\s+Operational Status\s+: (?P<status>.+),",
-                                re.MULTILINE | re.IGNORECASE)
+    rx_mac_local = re.compile(r"\s+MAC address\s+: (?P<mac>.+),", re.MULTILINE | re.IGNORECASE)
+    rx_oper_status = re.compile(
+        r"\s+Operational Status\s+: (?P<status>.+),", re.MULTILINE | re.IGNORECASE
+    )
     rx_sh_svi = re.compile(
         r"(?P<name>\S+)\s+(?P<ip>\d+.\d+.\d+.\d+)\s+(?P<mask>\d+.\d+.\d+.\d+)"
-        r"\s+UP\s+YES\s+vlan\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
-    rx_ifindex_line = re.compile(r"Local Slot \d+\/Port \d+ LLDP Info:",
-                                 re.MULTILINE | re.IGNORECASE)
-    rx_ifindex = re.compile(r"\s+Port ID\s+=\s+(?P<ifindex>\d+)\s+\(Locally assigned\),",
-                            re.MULTILINE | re.IGNORECASE)
+        r"\s+UP\s+YES\s+vlan\s+(?P<vlan>\d+)",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_ifindex_line = re.compile(
+        r"Local Slot \d+\/Port \d+ LLDP Info:", re.MULTILINE | re.IGNORECASE
+    )
+    rx_ifindex = re.compile(
+        r"\s+Port ID\s+=\s+(?P<ifindex>\d+)\s+\(Locally assigned\),", re.MULTILINE | re.IGNORECASE
+    )
 
     rx_ospf_gs = re.compile(r"\nOSPF status\s+=\s+Loaded,")
     rx_rip_gs = re.compile(r"\nRIP\s+status\s+=\s+Loaded,")
@@ -70,13 +76,27 @@ class Script(BaseScript):
     rx_lldp_gs = re.compile(r"System Name\s+=(|\s+)Alcatel\d+,")
 
     rx_lldp = re.compile(r"\n\s+(?P<port>.\S+\d+)\s+(Tx|Rx|Rx\s+\+\s+Tx)\s+", re.IGNORECASE)
-    rx_ospf = re.compile(r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE)
-    rx_rip = re.compile(r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE)
-    rx_dvmrp = re.compile(r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE)
-    rx_pim = re.compile(r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE)
-    rx_ripng = re.compile(r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE)
-    rx_ospf3 = re.compile(r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE)
-    rx_isis = re.compile(r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE)
+    rx_ospf = re.compile(
+        r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE
+    )
+    rx_rip = re.compile(
+        r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE
+    )
+    rx_dvmrp = re.compile(
+        r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE
+    )
+    rx_pim = re.compile(
+        r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE
+    )
+    rx_ripng = re.compile(
+        r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE
+    )
+    rx_ospf3 = re.compile(
+        r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE
+    )
+    rx_isis = re.compile(
+        r"\n(?P<ipif>\S+)\s+\d+\.\d+\.\d+\.\d+\s+\d+\.\d+\.\d+\.\d+\s+", re.IGNORECASE
+    )
     rx_udld = re.compile(r"\n\s+(?P<port>.\S+\d+)\s+enabled\s+\S+", re.IGNORECASE)
 
     def execute(self):
@@ -208,16 +228,12 @@ class Script(BaseScript):
             v = self.cli("show interfaces")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        i = {
-            "forwarding_instance": "default",
-            "interfaces": [],
-            "type": "physical"
-        }
+        i = {"forwarding_instance": "default", "interfaces": [], "type": "physical"}
         switchports = {}
         for swp in self.scripts.get_switchport():
             switchports[swp["interface"]] = (
                 swp["untagged"] if "untagged" in swp else None,
-                swp["tagged"]
+                swp["tagged"],
             )
 
         portchannel_members = {}
@@ -233,13 +249,15 @@ class Script(BaseScript):
             n["oper_status"] = True
             n["description"] = ""
             n["snmp_ifindex"] = 40000000 + int(i)
-            n["subinterfaces"] = [{
-                "name": iface,
-                "admin_status": True,
-                "oper_status": True,
-                "enabled_afi": ["BRIDGE"],
-                "description": "",
-            }]
+            n["subinterfaces"] = [
+                {
+                    "name": iface,
+                    "admin_status": True,
+                    "oper_status": True,
+                    "enabled_afi": ["BRIDGE"],
+                    "description": "",
+                }
+            ]
             if switchports[iface][1]:
                 n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
             if switchports[iface][0]:
@@ -269,15 +287,17 @@ class Script(BaseScript):
                 n["oper_status"] = match.group("status")
                 # status = match.group("status").lower() == "up"
                 n["admin_status"] = match.group("status")
-                n["subinterfaces"] = [{
-                    "name": iface,
-                    "admin_status": True,
-                    "oper_status": True,
-                    "enabled_afi": ["BRIDGE"],
-                    "mac": n["mac"],
-                    "snmp_ifindex": n["snmp_ifindex"],
-                    "description": ""
-                }]
+                n["subinterfaces"] = [
+                    {
+                        "name": iface,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["BRIDGE"],
+                        "mac": n["mac"],
+                        "snmp_ifindex": n["snmp_ifindex"],
+                        "description": "",
+                    }
+                ]
                 if switchports[iface][1]:
                     n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
                 if switchports[iface][0]:
@@ -304,15 +324,17 @@ class Script(BaseScript):
                 n["oper_status"] = match.group("status")
                 # status = match.group("status").lower() == "up"
                 n["admin_status"] = match.group("status")
-                n["subinterfaces"] = [{
-                    "name": iface,
-                    "admin_status": True,
-                    "oper_status": True,
-                    "enabled_afi": ["BRIDGE"],
-                    "mac": n["mac"],
-                    "snmp_ifindex": n["snmp_ifindex"],
-                    "description": ""
-                }]
+                n["subinterfaces"] = [
+                    {
+                        "name": iface,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["BRIDGE"],
+                        "mac": n["mac"],
+                        "snmp_ifindex": n["snmp_ifindex"],
+                        "description": "",
+                    }
+                ]
                 n["type"] = "physical"
                 r += [n]
         ip_int = self.cli("show ip interface")
@@ -353,16 +375,18 @@ class Script(BaseScript):
                 "admin_status": True,
                 "oper_status": True,
                 "description": "",
-                "subinterfaces": [{
-                    "name": ifname,
-                    "enabled_protocols": enabled_protocols,
-                    "description": ifname,
-                    "admin_status": True,
-                    "oper_status": True,
-                    "enabled_afi": enabled_afi,
-                    ip_interfaces: ip_list,
-                    "vlan_ids": ranges_to_list_str(vlan),
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "enabled_protocols": enabled_protocols,
+                        "description": ifname,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": enabled_afi,
+                        ip_interfaces: ip_list,
+                        "vlan_ids": ranges_to_list_str(vlan),
+                    }
+                ],
             }
             r += [iface]
         if not r:

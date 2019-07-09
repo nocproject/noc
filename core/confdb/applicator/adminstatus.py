@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .query import QueryApplicator
 
@@ -16,6 +17,7 @@ class DefaultAdminStatusApplicator(QueryApplicator):
     """
     Set missed interface's AdminStatus from "hints interfaces defaults admin-status"
     """
+
     CHECK_QUERY = "Match('hints', 'interfaces', 'defaults', 'admin-status')"
     QUERY = [
         "Match('hints', 'interfaces', 'defaults', 'admin-status', default_status) and "

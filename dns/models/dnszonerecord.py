@@ -16,11 +16,13 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_init
 from noc.core.model.fields import TagsField
 from noc.core.datastream.decorator import datastream
 from .dnszone import DNSZone
 
 
+@on_init
 @datastream
 @six.python_2_unicode_compatible
 class DNSZoneRecord(NOCModel):
@@ -43,11 +45,11 @@ class DNSZoneRecord(NOCModel):
     tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __str__(self):
-        return u"%s %s" % (
+        return "%s %s" % (
             self.zone.name,
             " ".join([x for x in (self.name, self.type, self.content) if x]),
         )
 
-    def iter_changed_datastream(self):
-        for ds, id in self.zone.iter_changed_datastream():
+    def iter_changed_datastream(self, changed_fields=None):
+        for ds, id in self.zone.iter_changed_datastream(changed_fields=changed_fields):
             yield ds, id

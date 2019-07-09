@@ -10,16 +10,17 @@
 from __future__ import absolute_import
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField,
-                                ListField)
+from mongoengine.fields import StringField, BooleanField, ListField
 import cachetools
+
 # NOC modules
 from .slaprofile import SLAProfile
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 
 
@@ -35,9 +36,7 @@ class SLAProbe(Document):
         "collection": "noc.sla_probes",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "managed_object"
-        ]
+        "indexes": ["managed_object"],
     }
 
     managed_object = ForeignKeyField(ManagedObject)
@@ -61,7 +60,7 @@ class SLAProbe(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return u"%s: %s" % (self.managed_object.name, self.name)
+        return "%s: %s" % (self.managed_object.name, self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

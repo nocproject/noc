@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -33,8 +34,10 @@ class Script(BaseScript):
 
     def apply_table(self, r, oid, name, f=None):
         if not f:
+
             def f(x):
                 return x
+
         for ifindex, v in six.iteritems(self.get_iftable(oid)):
             s = r.get(ifindex)
             if s:
@@ -48,9 +51,7 @@ class Script(BaseScript):
                 name = name.split()[2]
             if name.startswith("p"):
                 name = "s%s" % name
-            r[ifindex] = {
-                "interface": name
-            }
+            r[ifindex] = {"interface": name}
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -76,9 +77,7 @@ class Script(BaseScript):
                 name = name.split()[2]
             if name.startswith("p"):
                 name = "s%s" % name
-            r[ifindex] = {
-                "interface": name
-            }
+            r[ifindex] = {"interface": name}
         # Apply ifAdminStatus
         self.apply_table(r, "%s.15.2.1.3" % o, "admin_status", lambda x: x == "UP" or "1")
         # Apply ifOperStatus
@@ -107,9 +106,7 @@ class Script(BaseScript):
         adsl_oid = "%s.10.2.1.2" % o
         r = {}  # ifindex -> data
         for ifindex, name in six.iteritems(self.get_iftable(adsl_oid)):
-            r[ifindex] = {
-                "interface": name
-            }
+            r[ifindex] = {"interface": name}
 
         # Apply ifAdminStatus
         self.apply_table(r, "%s.10.2.1.3" % o, "admin_status", lambda x: x == "up" or x == 1)

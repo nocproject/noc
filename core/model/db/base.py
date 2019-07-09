@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import psycopg2
 from django.db.backends.postgresql_psycopg2.base import DatabaseWrapper as PGDatabaseWrapper
+
 # NOC modules
 from .monitor import SpanCursor
 

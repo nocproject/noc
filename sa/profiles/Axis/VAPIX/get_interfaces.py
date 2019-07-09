@@ -28,14 +28,14 @@ class Script(BaseScript):
                     "type": "physical",
                     "admin_status": True,
                     "oper_status": True,
-                    "mac": mac
+                    "mac": mac,
                 }
                 sub = {
                     "name": "eth%d" % i,
                     "admin_status": True,
                     "oper_status": True,
                     "mac": mac,
-                    "enabled_afi": []
+                    "enabled_afi": [],
                 }
                 ip = c.get("root.Network.eth%d.IPAddress" % i)
                 mask = c.get("root.Network.eth%d.SubnetMask" % i)
@@ -64,11 +64,7 @@ class Script(BaseScript):
                     "type": "dry",
                     "admin_status": True,
                     "oper_status": True,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": True,
-                        "oper_status": True
-                    }]
+                    "subinterfaces": [{"name": ifname, "admin_status": True, "oper_status": True}],
                 }
                 p = c.get("root.Input.I%d.Trig" % i)
                 if p == "closed":
@@ -92,11 +88,7 @@ class Script(BaseScript):
                     "type": "dry",
                     "admin_status": True,
                     "oper_status": True,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": True,
-                        "oper_status": True
-                    }]
+                    "subinterfaces": [{"name": ifname, "admin_status": True, "oper_status": True}],
                 }
                 p = c.get("root.Output.O%d.Active" % i)
                 if p == "closed":

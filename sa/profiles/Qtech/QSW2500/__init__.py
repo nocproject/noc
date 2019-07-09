@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.lib.validators import is_int
@@ -18,16 +19,16 @@ class Profile(BaseProfile):
     name = "Qtech.QSW2500"
     pattern_more = [
         (r"^ --More-- $", " "),
-        (r"^Confirm to overwrite current startup-config configuration "
-            r"[Y/N]:", "\nY\n"),
-        (r"^Confirm to overwrite current startup-config configuration",
-            "\ny\n"),
+        (r"^Confirm to overwrite current startup-config configuration " r"[Y/N]:", "\nY\n"),
+        (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
     ]
     pattern_unprivileged_prompt = r"^\S+>"
-    pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
-                           r"(?:Ambiguous|Incomplete|.+Unknown) command)|" \
-                           r"Error input in the position market by"
+    pattern_syntax_error = (
+        r"% (?:Invalid input detected at '\^' marker|"
+        r"(?:Ambiguous|Incomplete|.+Unknown) command)|"
+        r"Error input in the position market by"
+    )
     command_disable_pager = "terminal page-break disable"
     telnet_send_on_connect = "\n"
     command_super = "enable"
@@ -35,9 +36,9 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     command_submit = "\r"
-    pattern_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" \
-        r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = (
+        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" r"(?:\(config[^\)]*\))?#"
+    )
 
     rx_ver = re.compile(
         r"^\s*Product name: (?P<platform>\S+)\s*\n"
@@ -48,7 +49,7 @@ class Profile(BaseProfile):
         r"^\s*\n"
         r"^\s*(System )?[Mm][Aa][Cc]\s*[Aa]ddress( is)?\s*:\s*(?P<mac>\S+)\s*\n"
         r"^\s*Serial number: (?P<serial>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def convert_interface_name(self, interface):

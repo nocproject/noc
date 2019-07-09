@@ -16,6 +16,7 @@ class NumberCategoryApplication(ExtDocApplication):
     """
     NumberCategory application
     """
+
     title = "Number Category"
     menu = [_("Setup"), _("Number Categories")]
     model = NumberCategory

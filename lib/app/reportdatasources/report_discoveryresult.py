@@ -9,9 +9,11 @@
 # Python modules
 from __future__ import absolute_import
 from collections import namedtuple
+
 # Third-party modules
 import six
 from pymongo import ReadPreference
+
 # NOC modules
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
@@ -27,11 +29,40 @@ class ReportDiscoveryResult(BaseReportColumn):
     safe_output = False  # Convert outpur object to string
     COLL_NAME = "noc.schedules.discovery.%s"
     # @todo from managedobjectprofile
-    ATTRS = ["profile", "suggest_cli", "suggest_snmp", "version",
-             "caps", "interface", "id", "asset", "cpe", "vlan", "vpn",
-             "config", "lldp", "lacp", "stp", "huawei_ndp", "cdp", "bfd", "oam", "udld",
-             "mac", "uptime", "segmentation", "interfacestatus", "prefix", "address",
-             "metrics", "nri", "nri_portmap", "nri_service", "hk", "sla"]
+    ATTRS = [
+        "profile",
+        "suggest_cli",
+        "suggest_snmp",
+        "version",
+        "caps",
+        "interface",
+        "id",
+        "asset",
+        "cpe",
+        "vlan",
+        "vpn",
+        "config",
+        "lldp",
+        "lacp",
+        "stp",
+        "huawei_ndp",
+        "cdp",
+        "bfd",
+        "oam",
+        "udld",
+        "mac",
+        "uptime",
+        "segmentation",
+        "interfacestatus",
+        "prefix",
+        "address",
+        "metrics",
+        "nri",
+        "nri_portmap",
+        "nri_service",
+        "hk",
+        "sla",
+    ]
     # POOLS = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
 
     @staticmethod
@@ -46,16 +77,29 @@ class ReportDiscoveryResult(BaseReportColumn):
         :rtype: list
         """
         pipeline = [
-            {"$match": {"key": {"$in": filter_ids},
-                        "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"}},
-            {"$project": {
-                "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
-                "st": True,
-                "key": True}},
-            {"$lookup": {"from": "noc.joblog", "localField": "j_id",
-                         "foreignField": "_id", "as": "job"}},
-            {"$project": {"job.problems": True,
-                          "st": True, "key": True}}]  # {"$sort": {"_id": 1}}] Not use...
+            {
+                "$match": {
+                    "key": {"$in": filter_ids},
+                    "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                }
+            },
+            {
+                "$project": {
+                    "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
+                    "st": True,
+                    "key": True,
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "noc.joblog",
+                    "localField": "j_id",
+                    "foreignField": "_id",
+                    "as": "job",
+                }
+            },
+            {"$project": {"job.problems": True, "st": True, "key": True}},
+        ]  # {"$sort": {"_id": 1}}] Not use...
         if match:
             # @todo check match
             pipeline += [{"$match": match}]
@@ -68,13 +112,20 @@ class ReportDiscoveryResult(BaseReportColumn):
         ids = set(self.sync_ids[:])
 
         for p in Pool.objects.filter():
-            pool_ids = ids.intersection(set(ManagedObject.objects.filter(
-                pool=p, is_managed=True).values_list("id", flat=True)))
+            pool_ids = ids.intersection(
+                set(
+                    ManagedObject.objects.filter(pool=p, is_managed=True).values_list(
+                        "id", flat=True
+                    )
+                )
+            )
             if not pool_ids:
                 continue
-            r[p.name] = self.convert(get_db()[self.COLL_NAME % p.name].with_options(
-                read_preference=ReadPreference.SECONDARY_PREFERRED
-            ).aggregate(self.pipeline(list(pool_ids))))
+            r[p.name] = self.convert(
+                get_db()[self.COLL_NAME % p.name]
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(self.pipeline(list(pool_ids)))
+            )
             ids.difference_update(pool_ids)
             if not ids:
                 break
@@ -85,5 +136,6 @@ class ReportDiscoveryResult(BaseReportColumn):
         dresult.__new__.__defaults__ = ("",) * len(dresult._fields)
         for x in val:
             r = x["job"][0].get("problems")
-            yield int(x["key"]), dresult(**{xx: r[xx].get("", str(r[xx]) if self.safe_output else r[xx])
-                                            for xx in r})
+            yield int(x["key"]), dresult(
+                **{xx: r[xx].get("", str(r[xx]) if self.safe_output else r[xx]) for xx in r}
+            )

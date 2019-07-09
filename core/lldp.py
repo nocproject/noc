@@ -44,7 +44,7 @@ LLDP_CAP_NAMES = {
     LLDP_CAP_ROUTER: "router",
     LLDP_CAP_TELEPHONE: "phone",
     LLDP_CAP_DOCSIS_CABLE_DEVICE: "docsis-cable-device",
-    LLDP_CAP_STATION_ONLY: "station-only"
+    LLDP_CAP_STATION_ONLY: "station-only",
 }
 
 

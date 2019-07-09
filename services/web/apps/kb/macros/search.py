@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from django.db.models import Q
 from noc.lib.db import QTags
@@ -28,6 +29,7 @@ class SearchMacro(BaseMacro):
         title - table title
         display_list - list of fields ("id","subject")
     """
+
     name = "search"
 
     @classmethod
@@ -51,7 +53,7 @@ class SearchMacro(BaseMacro):
             q = q.order_by(args["order_by"])
         # Apply limition
         if "limit" in args:
-            q = q[:int(args["limit"])]
+            q = q[: int(args["limit"])]
         # Build display list
         if "display_list" in args:
             display_list = []
@@ -76,4 +78,4 @@ class SearchMacro(BaseMacro):
                     out += ["<td><a href='%s'>%s</a></td>" % (link, getattr(a, f))]
             out += ["</tr>"]
         out += ["</table>"]
-        return u"\n".join(out)
+        return "\n".join(out)

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -18,9 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_mac = re.compile(
-        r"^MAC\s+addr\s+:\s+(?P<mac>\S+)", re.MULTILINE
-    )
+    rx_mac = re.compile(r"^MAC\s+addr\s+:\s+(?P<mac>\S+)", re.MULTILINE)
 
     def execute_cli(self, **kwargs):
         cmd = self.cli("net dump")
@@ -29,7 +28,4 @@ class Script(BaseScript):
             mac = match.group("mac")
         else:
             raise self.NotSupportedError
-        return [{
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }]
+        return [{"first_chassis_mac": mac, "last_chassis_mac": mac}]

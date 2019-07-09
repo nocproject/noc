@@ -17,8 +17,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
     rx_line = re.compile(r"ifIndex\.+ ", re.IGNORECASE | re.MULTILINE)
     rx_if = re.compile(r"(?P<interface>\d+)", re.IGNORECASE | re.MULTILINE)
-    rx_oper = re.compile(
-        r"ifOperStatus\.+ (?P<status>Up|Down)", re.IGNORECASE | re.MULTILINE)
+    rx_oper = re.compile(r"ifOperStatus\.+ (?P<status>Up|Down)", re.IGNORECASE | re.MULTILINE)
 
     def execute(self, interface=None):
         # Not tested. Must be identical in different vendors
@@ -27,12 +26,10 @@ class Script(BaseScript):
                 # Get interface status
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for i, n, s in self.snmp.join([
-                    "1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"
-                ]):
-                    if not n.startswith("802.1Q Encapsulation Tag") \
-                      and (interface is not None and interface == n):
+                for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
+                    if not n.startswith("802.1Q Encapsulation Tag") and (
+                        interface is not None and interface == n
+                    ):
                         # ifOperStatus up(1)
                         r += [{"interface": n, "status": int(s) == 1}]
                 return r
@@ -56,8 +53,5 @@ class Script(BaseScript):
             if not match:
                 continue
             status = match.group("status")
-            r += [{
-                "interface": iface,
-                "status": status.lower() == "up"
-                }]
+            r += [{"interface": iface, "status": status.lower() == "up"}]
         return r

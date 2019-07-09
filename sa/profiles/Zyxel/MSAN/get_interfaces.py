@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,15 +21,16 @@ class Script(BaseScript):
 
     rx_enet = re.compile(
         r"^\s*(?P<ifname>(enet|sub|up)\d+)\s+(?P<descr>.*?)\s+"
-        r"(?P<admin_status>V|\-)\s+(?:sub|up)(?:tend|link)?\s+", re.MULTILINE
+        r"(?P<admin_status>V|\-)\s+(?:sub|up)(?:tend|link)?\s+",
+        re.MULTILINE,
     )
     rx_enet_o = re.compile(
         r"^\s*(switch )?port (?:enet|sub|up)\d+:\n\s*link status: (?P<oper_status>\S+|down)",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_sub_pvc = re.compile(
-        r"^\s*(?P<sub>\d+\-\d+)-(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+\S+\s+"
-        r"(?P<pvid>\d+)\s+", re.MULTILINE
+        r"^\s*(?P<sub>\d+\-\d+)-(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+\S+\s+" r"(?P<pvid>\d+)\s+",
+        re.MULTILINE,
     )
     rx_sub_pvc1 = re.compile(
         r"^\s*(?P<sub>\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+(?P<pvid>\-|\d+)", re.MULTILINE
@@ -37,33 +39,39 @@ class Script(BaseScript):
         r"^\s*(?P<sub>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+(?P<pvid>\S+)\s+", re.MULTILINE
     )
     rx_sub_o = re.compile(r"^\s*(?P<sub>\d+\s*\-\s*\d+)\s+(?P<admin_status>V|\-)", re.MULTILINE)
-    rx_sub_o1 = re.compile(r"^\s*(?P<sub>\d+)\s+(?P<admin_status>V|\-)(\s+\S+\s+(?P<pvid>\d+))?", re.MULTILINE)
+    rx_sub_o1 = re.compile(
+        r"^\s*(?P<sub>\d+)\s+(?P<admin_status>V|\-)(\s+\S+\s+(?P<pvid>\d+))?", re.MULTILINE
+    )
     rx_sub_o2 = re.compile(r"^\s*Port (?P<sub>\d+): (?P<admin_status>Up|Down)", re.MULTILINE)
     rx_sub_o3 = re.compile(
         r"^\s*(?:Port\=)?(?P<sub>\d+)\s.+(?P<admin_status>Enabled|Disabled)\s*/(?P<oper_status>Up|Down)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_descr = re.compile("^\s*(?P<sub>\d+)\s+(?P<descr>\S+)\s+", re.MULTILINE)
     rx_ipif = re.compile(
         r"^\s*(?P<ifname>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
-        r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s*(?P<vid>\d+|\-)?\s*$", re.MULTILINE
+        r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s*(?P<vid>\d+|\-)?\s*$",
+        re.MULTILINE,
     )
     rx_ipif1 = re.compile(
         r"^\s*device\s+(?P<ifname>\S+)\s+\S+\s+\S+\s+mtu\s+(?P<mtu>\d+)\s+"
-        r"(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mask>\d+\.\d+\.\d+\.\d+)\s*$", re.MULTILINE
+        r"(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mask>\d+\.\d+\.\d+\.\d+)\s*$",
+        re.MULTILINE,
     )
     rx_ipif_mac = re.compile(r"^\s*(?P<ifname>\S+) mac\s+: (?P<mac>\S+)\s*\n", re.MULTILINE)
     rx_ipif_vlan = re.compile(r"^\s*host join vlan: (?P<vid>\d+)\s*\n", re.MULTILINE)
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*"
-        r"(?P<name>.*)$", re.MULTILINE
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*" r"(?P<name>.*)$",
+        re.MULTILINE,
     )
     rx_vlan1 = re.compile(
-        r"^\s*\d+\s+(?:\-|msc)\s+(?P<ports>[\-FX]+)\s+(?P<mode>[TU]+)", re.MULTILINE)
+        r"^\s*\d+\s+(?:\-|msc)\s+(?P<ports>[\-FX]+)\s+(?P<mode>[TU]+)", re.MULTILINE
+    )
     rx_vlan2 = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s.+\n(^.+\n)?^\s+enabled\s+.+\n"
         r"^\s*(?P<ports>\S+) (?P<eports>\S+)\s*\n"
-        r"^\s*(?P<mode>\S+) (?P<emode>\S+)\s*\n", re.MULTILINE
+        r"^\s*(?P<mode>\S+) (?P<emode>\S+)\s*\n",
+        re.MULTILINE,
     )
     rx_vlan3 = re.compile(r"^\s*(?P<port>\S*\d+)\s+(?P<pvid>\d+)\s+.+\n", re.MULTILINE)
     rx_vlan4 = re.compile(r"^\s*(?P<vlan_id>\d+)\s+\-\s+(?P<tagged>v)\s+.+\n", re.MULTILINE)
@@ -71,8 +79,8 @@ class Script(BaseScript):
     rx_vlan6 = re.compile(r"^\s*Port\s+(?P<port>\d+):\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_mac = re.compile(r"^\s*mac address\s*: (?P<mac>\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
     rx_ports = re.compile(
-        r"^Port\s+\d+\s+\((?P<port>ethernet|adsl\d+|gshdsl\d+)\): "
-        r"(?:Enabled|Disabled)\s*\n", re.MULTILINE
+        r"^Port\s+\d+\s+\((?P<port>ethernet|adsl\d+|gshdsl\d+)\): " r"(?:Enabled|Disabled)\s*\n",
+        re.MULTILINE,
     )
     rx_stp = re.compile(r"^\s*(?P<port>\S+)\s+V\s+\d+\s+", re.MULTILINE)
 
@@ -101,7 +109,7 @@ class Script(BaseScript):
                         {
                             "vid": int(match.group("vlan_id")),
                             "ports": match.group("ports"),
-                            "mode": match.group("mode")
+                            "mode": match.group("mode"),
                         }
                     ]
             except self.CLISyntaxError:
@@ -112,7 +120,7 @@ class Script(BaseScript):
                         {
                             "vid": int(vlan["vlan_id"]),
                             "ports": match.group("ports"),
-                            "mode": match.group("mode")
+                            "mode": match.group("mode"),
                         }
                     ]
             port_num = 0
@@ -139,28 +147,24 @@ class Script(BaseScript):
                 else:
                     oper_status = admin_status
                 for v in vlans:
-                    if (v["ports"][port_num] == "F" and v["mode"][port_num] == "U"):
+                    if v["ports"][port_num] == "F" and v["mode"][port_num] == "U":
                         untagged = v["vid"]
-                    if (v["ports"][port_num] == "F" and v["mode"][port_num] == "T"):
+                    if v["ports"][port_num] == "F" and v["mode"][port_num] == "T":
                         tagged += [v["vid"]]
                 iface = {
-                    "name":
-                    ifname,
-                    "type":
-                    "physical",
-                    "admin_status":
-                    admin_status,
-                    "oper_status":
-                    oper_status,
+                    "name": ifname,
+                    "type": "physical",
+                    "admin_status": admin_status,
+                    "oper_status": oper_status,
                     "enabled_protocols": [],
                     "subinterfaces": [
                         {
                             "name": ifname,
                             "admin_status": admin_status,
                             "oper_status": oper_status,
-                            "enabled_afi": ["BRIDGE"]
+                            "enabled_afi": ["BRIDGE"],
                         }
-                    ]
+                    ],
                 }
                 if untagged:
                     iface["subinterfaces"][0]["untagged_vlan"] = untagged
@@ -201,7 +205,7 @@ class Script(BaseScript):
                         "name": ifname,
                         "admin_status": admin_status,
                         "type": "physical",
-                        "subinterfaces": []
+                        "subinterfaces": [],
                     }
                     for d in descrs:
                         if d[0] == sub and d[1] != "-":
@@ -232,7 +236,7 @@ class Script(BaseScript):
                                     "enabled_afi": ["BRIDGE", "ATM"],
                                     "vlan_ids": pvid,
                                     "vpi": int(match.group("vpi")),
-                                    "vci": int(match.group("vci"))
+                                    "vci": int(match.group("vci")),
                                 }
                             ]
                             break
@@ -248,7 +252,7 @@ class Script(BaseScript):
                         {
                             "vid": int(match.group("vlan_id")),
                             "ports": "%s%s" % (match.group("ports"), match.group("eports")),
-                            "mode": "%s%s" % (match.group("mode"), match.group("emode"))
+                            "mode": "%s%s" % (match.group("mode"), match.group("emode")),
                         }
                     ]
                 port_num = 0
@@ -258,9 +262,9 @@ class Script(BaseScript):
                     tagged = []
                     ifname = self.profile.convert_interface_name(match.group("port"))
                     for v in vlans:
-                        if (v["ports"][port_num] == "F" and v["mode"][port_num] == "U"):
+                        if v["ports"][port_num] == "F" and v["mode"][port_num] == "U":
                             untagged = v["vid"]
-                        if (v["ports"][port_num] == "F" and v["mode"][port_num] == "T"):
+                        if v["ports"][port_num] == "F" and v["mode"][port_num] == "T":
                             tagged += [v["vid"]]
                     iface = {"name": ifname, "type": "physical", "subinterfaces": []}
                     if ifname.startswith("Enet"):
@@ -280,7 +284,7 @@ class Script(BaseScript):
                                 "name": ifname,
                                 "enabled_afi": ["BRIDGE", "ATM"],
                                 "vpi": int(match.group("vpi")),
-                                "vci": int(match.group("vci"))
+                                "vci": int(match.group("vci")),
                             }
                             if match.group("pvid") != "*":
                                 sub["vlan_ids"] = int(match.group("pvid"))
@@ -302,7 +306,7 @@ class Script(BaseScript):
                             "name": ifname,
                             "admin_status": True,
                             "enabled_afi": ["BRIDGE"],
-                            "tagged_vlans": []
+                            "tagged_vlans": [],
                         }
                         for match in self.rx_vlan4.finditer(vlans_pvid):
                             vid = int(match.group("vlan_id"))
@@ -320,18 +324,14 @@ class Script(BaseScript):
                         for match in self.rx_sub_pvc2.finditer(v):
                             iface["subinterfaces"] += [
                                 {
-                                    "name":
-                                    match.group("sub"),
-                                    "admin_status":
-                                    iface["admin_status"],
+                                    "name": match.group("sub"),
+                                    "admin_status": iface["admin_status"],
                                     "enabled_afi": ["BRIDGE", "ATM"],
-                                    "vlan_ids":
-                                    int(match.group("pvid"))
-                                    if match.group("pvid") != "*" else None,
-                                    "vpi":
-                                    int(match.group("vpi")),
-                                    "vci":
-                                    int(match.group("vci"))
+                                    "vlan_ids": int(match.group("pvid"))
+                                    if match.group("pvid") != "*"
+                                    else None,
+                                    "vpi": int(match.group("vpi")),
+                                    "vci": int(match.group("vci")),
                                 }
                             ]
                         interfaces += [iface]
@@ -354,7 +354,7 @@ class Script(BaseScript):
                             "oper_status": iface["oper_status"],
                             "enabled_afi": ["BRIDGE", "ATM"],
                             "vpi": int(match.group("vpi")),
-                            "vci": int(match.group("vci"))
+                            "vci": int(match.group("vci")),
                         }
                         if match.group("pvid") != "*":
                             sub["vlan_ids"] = int(match.group("pvid"))
@@ -369,14 +369,10 @@ class Script(BaseScript):
                     mask = match.group("mask")
                     ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
                     iface = {
-                        "name":
-                        ifname,
-                        "type":
-                        "SVI",
-                        "admin_status":
-                        True,  # always True, since inactive
-                        "oper_status":
-                        True,  # SVIs aren't shown at all
+                        "name": ifname,
+                        "type": "SVI",
+                        "admin_status": True,  # always True, since inactive
+                        "oper_status": True,  # SVIs aren't shown at all
                         "subinterfaces": [
                             {
                                 "name": ifname,
@@ -386,7 +382,7 @@ class Script(BaseScript):
                                 "enabled_afi": ["IPv4"],
                                 "ipv4_addresses": [ip_address],
                             }
-                        ]
+                        ],
                     }
                     v = self.cli("vlan1q vlan status")
                     match1 = self.rx_vlan5.search(v)
@@ -409,14 +405,10 @@ class Script(BaseScript):
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
             iface = {
-                "name":
-                ifname,
-                "type":
-                "SVI",
-                "admin_status":
-                True,  # always True, since inactive
-                "oper_status":
-                True,  # SVIs aren't shown at all
+                "name": ifname,
+                "type": "SVI",
+                "admin_status": True,  # always True, since inactive
+                "oper_status": True,  # SVIs aren't shown at all
                 "subinterfaces": [
                     {
                         "name": ifname,
@@ -425,15 +417,15 @@ class Script(BaseScript):
                         "enabled_afi": ["IPv4"],
                         "ipv4_addresses": [ip_address],
                     }
-                ]
+                ],
             }
             if (match.group("vid") is not None) and (match.group("vid") != "-"):
-                iface["subinterfaces"][0]["vlan_ids"] = [int(match.group('vid'))]
+                iface["subinterfaces"][0]["vlan_ids"] = [int(match.group("vid"))]
             else:
                 if match.group("vid") is None:
                     v = self.cli("switch vlan cpu show")
                     match1 = self.rx_ipif_vlan.search(v)
-                    iface["subinterfaces"][0]["vlan_ids"] = [int(match1.group('vid'))]
+                    iface["subinterfaces"][0]["vlan_ids"] = [int(match1.group("vid"))]
             for m in iface_mac:
                 if ifname == m["ifname"]:
                     iface["mac"] = m["mac"]
@@ -445,14 +437,10 @@ class Script(BaseScript):
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
             iface = {
-                "name":
-                ifname,
-                "type":
-                "SVI",
-                "admin_status":
-                True,  # always True, since inactive
-                "oper_status":
-                True,  # SVIs aren't shown at all
+                "name": ifname,
+                "type": "SVI",
+                "admin_status": True,  # always True, since inactive
+                "oper_status": True,  # SVIs aren't shown at all
                 "subinterfaces": [
                     {
                         "name": ifname,
@@ -461,7 +449,7 @@ class Script(BaseScript):
                         "enabled_afi": ["IPv4"],
                         "ipv4_addresses": [ip_address],
                     }
-                ]
+                ],
             }
             for m in iface_mac:
                 if ifname == m["ifname"]:

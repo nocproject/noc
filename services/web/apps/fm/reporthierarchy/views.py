@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # FM Events and Alarms Hierarchy Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ class HierarchyReportAppplication(ReportApplication):
     """
     FM Events and Alarms hierarchy
     """
+
     title = _("Events and Alarm Hierarchy")
 
     def report_html(self, request, result=None, query=None):
@@ -30,14 +31,9 @@ class HierarchyReportAppplication(ReportApplication):
                 continue
             p = cc.name.split(" | ")
             ec += [(len(p) * 24, cc.name, None)]
-            ec += [(-1, c,
-                    EventClassificationRule.objects.filter(event_class=c.id))
-                   for c in e]
+            ec += [(-1, c, EventClassificationRule.objects.filter(event_class=c.id)) for c in e]
             ne += len(e)
-        ncr = 0
-        for _, _, r in ec:
-            if r:
-                ncr += len(r)
+        ncr = sum(len(r[2]) for r in ec)
         # Alarm classes
         ac = []
         na = 0
@@ -49,6 +45,6 @@ class HierarchyReportAppplication(ReportApplication):
             ac += [(len(p) * 24, cc.name)]
             ac += [(-1, c) for c in a]
             na += len(a)
-        return self.render_template("data.html",
-                                    event_classes=ec, alarm_classes=ac,
-                                    ne=ne, na=na, ncr=ncr)
+        return self.render_template(
+            "data.html", event_classes=ec, alarm_classes=ac, ne=ne, na=na, ncr=ncr
+        )

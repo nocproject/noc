@@ -39,7 +39,7 @@ class Script(BaseScript):
         Check box has lldp enabled
         """
         for v, r in self.snmp.getnext(mib["LLDP-MIB::lldpPortConfigTLVsTxEnable"], bulk=False):
-            if r != '\x00':
+            if r != "\x00":
                 return True
         return False
 
@@ -106,7 +106,7 @@ class Script(BaseScript):
         np = 0
         # jnxRpmResSumSent
         for v, r in self.snmp.getnext("1.3.6.1.4.1.2636.3.50.1.2.1.2", bulk=False):
-            tests = v.split('.')
+            tests = v.split(".")
             if tests[-1] == "1":  # currentTest(1)
                 np += 1
         if np > 0:

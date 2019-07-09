@@ -18,15 +18,11 @@ class Script(BaseScript):
 
     rx_platform = re.compile(r"product_ID\s*:\s*(?P<platform>\d+)")
     rx_version = re.compile(r"Software, Version (?P<version>\S+ Build \d+)")
-    rx_bootprom = re.compile(
-      r"ROM: System Bootstrap, Version (?P<bootprom>\S+),"
-    )
+    rx_bootprom = re.compile(r"ROM: System Bootstrap, Version (?P<bootprom>\S+),")
     rx_serial = re.compile(r"Serial num\s*:\s*(?P<serial>\S+)")
     rx_hardware = re.compile(r"hardware version\s*:\s*(?P<hardware>\S+)")
 
-    platforms = {
-        "347": "S2210PB"
-    }
+    platforms = {"347": "S2210PB"}
 
     def execute(self):
         c = self.cli("show version", cached=True)
@@ -44,9 +40,5 @@ class Script(BaseScript):
             "vendor": "BDCOM",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "Boot PROM": bootprom,
-                "HW version": hardware,
-                "Serial Number": serial
-            }
+            "attributes": {"Boot PROM": bootprom, "HW version": hardware, "Serial Number": serial},
         }

@@ -5,15 +5,19 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
 import re
 import uuid
-import struct
 import socket
+
+# Third-party modules
 try:
     from django.forms import ValidationError
 # pragma: no cover
-except:  # noqa
+except Exception:  # noqa
     pass
+# NOC modules
 from noc.core.mac import MAC
 
 #
@@ -23,8 +27,7 @@ rx_fqdn = re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$", re.IGNORECASE)
 rx_asset = re.compile(r"^AS-[A-Z0-9\-]+$")
 rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
 rx_mimetype = re.compile(r"^[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+$")
-rx_email = re.compile(r"^[a-z0-9._\-+]+@([a-z0-9\-]+\.)+[a-z0-9\-]+$",
-                      re.IGNORECASE)
+rx_email = re.compile(r"^[a-z0-9._\-+]+@([a-z0-9\-]+\.)+[a-z0-9\-]+$", re.IGNORECASE)
 rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
 rx_objectid = re.compile(r"^[0-9a-f]{24}$")
 
@@ -163,8 +166,7 @@ def is_ipv6(v):
         if not is_ipv4(parts[-1]):
             return False
         p = [int(x) for x in parts[-1].split(".")]
-        parts = (parts[:-1] +
-                 ["%02x%02x" % (p[0], p[1]), "%02x%02x" % (p[2], p[3])])
+        parts = parts[:-1] + ["%02x%02x" % (p[0], p[1]), "%02x%02x" % (p[2], p[3])]
     if len(parts) > 8:
         return False
     if len(parts) == 8:
@@ -181,7 +183,7 @@ def is_ipv6(v):
             h = parts[:i]
         if i + 1 < len(parts) and not parts[i + 1]:
             i += 1
-        t = parts[i + 1:]
+        t = parts[i + 1 :]
         parts = h + ["0"] * (8 - len(h) - len(t)) + t
     # Check all parts
     try:
@@ -528,7 +530,9 @@ def generic_validator(check, error_message):
         if not check(value):
             raise ValidationError(error_message)
         return value
+
     return inner_validator
+
 
 #
 # Validators

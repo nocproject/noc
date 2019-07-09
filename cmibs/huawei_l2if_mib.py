@@ -131,5 +131,5 @@ MIB = {
     "HUAWEI-L2IF-MIB::hwLoopDetectStatusAlarm": "1.3.6.1.4.1.2011.5.25.42.1.1.2.2",
     "HUAWEI-L2IF-MIB::hwL2IfConformance": "1.3.6.1.4.1.2011.5.25.42.1.2",
     "HUAWEI-L2IF-MIB::hwL2IfCompliances": "1.3.6.1.4.1.2011.5.25.42.1.2.1",
-    "HUAWEI-L2IF-MIB::hwL2IfGroups": "1.3.6.1.4.1.2011.5.25.42.1.2.2"
+    "HUAWEI-L2IF-MIB::hwL2IfGroups": "1.3.6.1.4.1.2011.5.25.42.1.2.2",
 }

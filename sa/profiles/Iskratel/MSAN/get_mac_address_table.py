@@ -2,17 +2,16 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
@@ -20,19 +19,19 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+"
-        r"(?P<type>\S+)\s*\n", re.MULTILINE)
-    rx_line2 = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s*\n",
-        re.MULTILINE)
+        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+" r"(?P<type>\S+)\s*\n",
+        re.MULTILINE,
+    )
+    rx_line2 = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s*\n", re.MULTILINE)
     rx_line3 = re.compile(
         r"^\s*(?P<vlan_id>[0-9A-F]{2}:[0-9A-F]{2}):"
         r"(?P<mac>[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2})\s+"
         r"(?P<interface>\d+/\d+)\s+\d+\s+(?P<type>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_line4 = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<interface>\d+/\d+)\s+(?P<type>\S+)\s*\n",
-        re.MULTILINE)
+        r"^(?P<mac>\S+)\s+(?P<interface>\d+/\d+)\s+(?P<type>\S+)\s*\n", re.MULTILINE
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-addr-table"
@@ -49,25 +48,29 @@ class Script(BaseScript):
                 mtype = "D"
             else:
                 mtype = "S"
-            r.append({
-                "vlan_id": int(match.group("vlan_id")),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("interface")],
-                "type": mtype
-            })
+            r.append(
+                {
+                    "vlan_id": int(match.group("vlan_id")),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("interface")],
+                    "type": mtype,
+                }
+            )
         if (not r) and (interface is not None):
             for match in self.rx_line2.finditer(macs):
                 if match.group("type") == "Learned":
                     mtype = "D"
                 else:
                     mtype = "S"
-                r.append({
-                    "vlan_id": int(match.group("vlan_id")),
-                    "mac": match.group("mac"),
-                    "interfaces": [interface],
-                    "type": mtype
-                })
-        if (not r):
+                r.append(
+                    {
+                        "vlan_id": int(match.group("vlan_id")),
+                        "mac": match.group("mac"),
+                        "interfaces": [interface],
+                        "type": mtype,
+                    }
+                )
+        if not r:
             for match in self.rx_line3.finditer(macs):
                 if match.group("type") == "Learned":
                     mtype = "D"
@@ -75,14 +78,16 @@ class Script(BaseScript):
                     mtype = "C"
                 else:
                     mtype = "S"
-                r.append({
-                    "vlan_id": int(match.group("vlan_id").replace(":", ""), 16),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interface")],
-                    "type": mtype
-                })
+                r.append(
+                    {
+                        "vlan_id": int(match.group("vlan_id").replace(":", ""), 16),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interface")],
+                        "type": mtype,
+                    }
+                )
 
-        if (not r):
+        if not r:
             if vlan is None:
                 vlans = self.scripts.get_vlans()
             else:
@@ -94,10 +99,12 @@ class Script(BaseScript):
                         mtype = "D"
                     else:
                         mtype = "S"
-                    r.append({
-                        "vlan_id": int(v["vlan_id"]),
-                        "mac": match.group("mac"),
-                        "interfaces": [match.group("interface")],
-                        "type": mtype
-                    })
+                    r.append(
+                        {
+                            "vlan_id": int(v["vlan_id"]),
+                            "mac": match.group("mac"),
+                            "interfaces": [match.group("interface")],
+                            "type": mtype,
+                        }
+                    )
         return r

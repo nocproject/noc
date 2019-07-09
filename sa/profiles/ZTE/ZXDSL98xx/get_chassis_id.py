@@ -21,7 +21,6 @@ class Script(BaseScript):
 
     def execute_cli(self):
         macs = sorted(self.rx_mac.findall(self.cli("show mac")))
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_username = r"^(User: |\S+ login: )"
     pattern_more = [
         (r"^Disconnect Now? (Y/N)", "Y"),
-        (r"^More: <space>,  Quit: q, One line: <return>$", " ")
+        (r"^More: <space>,  Quit: q, One line: <return>$", " "),
     ]
     pattern_syntax_error = r"^\s+\^\s+(\[Command Not Found\]|Option Not Found)$"
     command_enter_config = "CD /"

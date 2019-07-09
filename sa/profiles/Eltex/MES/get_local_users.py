@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -19,7 +20,8 @@ class Script(BaseScript):
 
     rx_name = re.compile(
         r"^username\s+(?P<username>\S+)\s+password encrypted "
-        r"(\S+\s+privilege\s+(?P<privilege>\d+)|.*)")
+        r"(\S+\s+privilege\s+(?P<privilege>\d+)|.*)"
+    )
     rx_priv = re.compile(r"^(\S+\s|\s+\S+\s|\S+\s+\S+\s)+(?P<privilege>\d+)")
 
     def execute(self):
@@ -40,9 +42,5 @@ class Script(BaseScript):
                     user_class = "superuser"
                 else:
                     user_class = privilege
-                r += [{
-                    "username": name.group("username"),
-                    "class": user_class,
-                    "is_active": True
-                }]
+                r += [{"username": name.group("username"), "class": user_class, "is_active": True}]
         return r

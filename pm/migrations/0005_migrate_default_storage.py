@@ -24,30 +24,34 @@ class Migration(BaseMigration):
                             "port": 2003,
                             "protocol": "line",
                             "is_active": True,
-                            "is_selectable": True
-                        }, {
+                            "is_selectable": True,
+                        },
+                        {
                             "address": "127.0.0.1",
                             "port": 2003,
                             "protocol": "udp",
                             "is_active": True,
-                            "is_selectable": True
+                            "is_selectable": True,
+                        },
+                    ],
+                    "access": [
+                        {
+                            "protocol": "graphite",
+                            "is_active": True,
+                            "base_url": "http://127.0.0.1:8000/render",
                         }
                     ],
-                    "access": [{
-                        "protocol": "graphite",
-                        "is_active": True,
-                        "base_url": "http://127.0.0.1:8000/render"
-                    }],
                     "description": "Default storage",
                     "select_policy": "pri",
-                    "write_concern": 1
+                    "write_concern": 1,
                 }
             )
         elif scount == 1:
             s = db.noc.pm.storages.find()[0]
             if "access" not in s or not s["access"]:
                 db.noc.pm.storages.update_many(
-                    {}, {
+                    {},
+                    {
                         "$set": {
                             "collectors": [
                                 {
@@ -55,25 +59,25 @@ class Migration(BaseMigration):
                                     "port": 2003,
                                     "protocol": "line",
                                     "is_active": True,
-                                    "is_selectable": True
-                                }, {
+                                    "is_selectable": True,
+                                },
+                                {
                                     "address": "127.0.0.1",
                                     "port": 2003,
                                     "protocol": "udp",
                                     "is_active": True,
-                                    "is_selectable": True
-                                }
+                                    "is_selectable": True,
+                                },
                             ],
                             "access": [
                                 {
                                     "protocol": "graphite",
                                     "is_active": True,
-                                    "base_url": "http://127.0.0.1:8000/render"
+                                    "base_url": "http://127.0.0.1:8000/render",
                                 }
                             ],
                             "select_policy": "pri",
-                            "write_concern": 1
+                            "write_concern": 1,
                         }
-                    }
+                    },
                 )
-

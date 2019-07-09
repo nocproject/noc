@@ -26,9 +26,5 @@ class Script(BaseScript):
                 user_class = "user"
             else:
                 user_class = "operator"
-            r += [{
-                "username": i[0],
-                "class": user_class,
-                "is_active": True
-            }]
+            r += [{"username": i[0], "class": user_class, "is_active": True}]
         return r

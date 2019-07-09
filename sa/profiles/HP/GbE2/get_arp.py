@@ -11,7 +11,9 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 import re
 
-rx_line = re.compile(r"^\s*(?P<ip>\d+\.\d+\.\d+\.\d+).+?(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})\s+\d+\s+(?P<interface>\S+)")
+rx_line = re.compile(
+    r"^\s*(?P<ip>\d+\.\d+\.\d+\.\d+).+?(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})\s+\d+\s+(?P<interface>\S+)"
+)
 
 
 class Script(BaseScript):

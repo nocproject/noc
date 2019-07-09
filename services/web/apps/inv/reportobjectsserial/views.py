@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 from django import forms
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.sa.models.useraccess import UserAccess
@@ -20,7 +21,7 @@ class ReportForm(forms.Form):
     sel = forms.ModelChoiceField(
         label=_("Managed Object Selector"),
         required=True,
-        queryset=ManagedObjectSelector.objects.order_by("name")
+        queryset=ManagedObjectSelector.objects.order_by("name"),
     )
 
 
@@ -32,41 +33,55 @@ class ReportFilterApplication(SimpleReport):
 
         qs = ManagedObject.objects
         if not request.user.is_superuser:
-            qs = ManagedObject.objects.filter(administrative_domain__in=UserAccess.get_domains(request.user))
+            qs = ManagedObject.objects.filter(
+                administrative_domain__in=UserAccess.get_domains(request.user)
+            )
 
         # Get all managed objects by selector
         mos_list = qs.filter(sel.Q)
 
-        columns = [_("Managed Objects"), _("Address"), _("Vendor"), _("Platform"),
-                   _("HW Revision"), _("SW Version"), _("Serial")]
+        columns = [
+            _("Managed Objects"),
+            _("Address"),
+            _("Vendor"),
+            _("Platform"),
+            _("HW Revision"),
+            _("SW Version"),
+            _("Serial"),
+        ]
         data = []
 
         for mo in mos_list:
-            q = Object._get_collection().count_documents({"data.management.managed_object": {"$in": [mo.id]}})
+            q = Object._get_collection().count_documents(
+                {"data.management.managed_object": {"$in": [mo.id]}}
+            )
             if q == 0:
-                data += [[mo.name,
-                          mo.address,
-                          mo.vendor or None,
-                          mo.platform.full_name if mo.platform else None,
-                          mo.get_attr("HW version") or None,
-                          mo.version.version if mo.version else None,
-                          mo.get_attr("Serial Number") or None,
-                          None
-                          ]]
+                data += [
+                    [
+                        mo.name,
+                        mo.address,
+                        mo.vendor or None,
+                        mo.platform.full_name if mo.platform else None,
+                        mo.get_attr("HW version") or None,
+                        mo.version.version if mo.version else None,
+                        mo.get_attr("Serial Number") or None,
+                        None,
+                    ]
+                ]
             else:
-                for x in Object._get_collection().find({"data.management.managed_object": {"$in": [mo.id]}}):
-                    data += [[x["name"],
-                              mo.address,
-                              mo.vendor or None,
-                              mo.platform.full_name if mo.platform else None,
-                              mo.get_attr("HW version") or None,
-                              mo.version.version if mo.version else None,
-                              x["data"]["asset"]["serial"]
-                              ]]
+                for x in Object._get_collection().find(
+                    {"data.management.managed_object": {"$in": [mo.id]}}
+                ):
+                    data += [
+                        [
+                            x["name"],
+                            mo.address,
+                            mo.vendor or None,
+                            mo.platform.full_name if mo.platform else None,
+                            mo.get_attr("HW version") or None,
+                            mo.version.version if mo.version else None,
+                            x["data"]["asset"]["serial"],
+                        ]
+                    ]
 
-        return self.from_dataset(
-            title=self.title,
-            columns=columns,
-            data=data,
-            enumerate=True
-        )
+        return self.from_dataset(title=self.title, columns=columns, data=data, enumerate=True)

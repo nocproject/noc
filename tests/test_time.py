@@ -8,6 +8,7 @@
 
 # Python modules
 import time
+
 # NOC modules
 from noc.core.backport.time import perf_counter
 

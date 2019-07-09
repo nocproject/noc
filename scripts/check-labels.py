@@ -179,7 +179,7 @@ def main():
     else:
         problems += check(labels)
     if problems:
-        print ("\n\n".join(problems))
+        print("\n\n".join(problems))
         sys.exit(ERR_FAIL)
     sys.exit(ERR_OK)
 

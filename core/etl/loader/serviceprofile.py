@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.sa.models.serviceprofile import ServiceProfile
@@ -17,11 +18,7 @@ class ServiceProfileLoader(BaseLoader):
     """
     Service Profile loader
     """
+
     name = "serviceprofile"
     model = ServiceProfile
-    fields = [
-        "id",
-        "name",
-        "description",
-        "card_title_template"
-    ]
+    fields = ["id", "name", "description", "card_title_template"]

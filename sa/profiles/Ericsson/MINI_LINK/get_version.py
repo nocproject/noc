@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,9 +20,8 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^Active SBL\s+: CXP: \S+ MINI-LINK "
-        r"(?P<platform>\S+) (?P<version>\S+)",
-        re.MULTILINE)
+        r"^Active SBL\s+: CXP: \S+ MINI-LINK " r"(?P<platform>\S+) (?P<version>\S+)", re.MULTILINE
+    )
 
     def execute(self):
         ver = self.cli_clean("show version", cached=True)
@@ -29,5 +29,5 @@ class Script(BaseScript):
         return {
             "vendor": "Ericsson",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

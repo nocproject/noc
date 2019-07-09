@@ -14,9 +14,7 @@ import re
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8000"
-    pattern_more = \
-        "^--More-- <Space> = next page, <CR> = one line, C = continuous, " \
-        "Q = quit"
+    pattern_more = "^--More-- <Space> = next page, <CR> = one line, C = continuous, " "Q = quit"
     command_more = "c"
     command_submit = "\r\n"
     username_submit = "\r"
@@ -28,7 +26,7 @@ class Profile(BaseProfile):
         r"^\s*VLAN ID\s*.+ (?P<vlan_id>\d+)\s*\n"
         r"^\s*Untagged Port\(s\)\s*.+ (?P<untagged>.+)\n"
         r"^\s*Tagged Port\(s\)\s*.+ (?P<tagged>.+)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def convert_interface_name(self, s):

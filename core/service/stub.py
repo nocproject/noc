@@ -10,8 +10,10 @@
 import logging
 import threading
 from collections import defaultdict
+
 # Third-party modules
 import tornado.ioloop
+
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from .rpc import RPCProxy

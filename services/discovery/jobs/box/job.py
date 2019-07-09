@@ -10,6 +10,7 @@
 # Python modules
 from __future__ import absolute_import
 import random
+
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from .resolver import ResolverCheck
@@ -58,18 +59,21 @@ class BoxDiscoveryJob(MODiscoveryJob):
     # Store context
     context_version = 1
 
-    TOPOLOGY_METHODS = dict((m.name, m) for m in [
-        OAMCheck,
-        LACPCheck,
-        UDLDCheck,
-        LLDPCheck,
-        BFDCheck,
-        CDPCheck,
-        FDPCheck,
-        HuaweiNDPCheck,
-        REPCheck,
-        STPCheck
-    ])
+    TOPOLOGY_METHODS = dict(
+        (m.name, m)
+        for m in [
+            OAMCheck,
+            LACPCheck,
+            UDLDCheck,
+            LLDPCheck,
+            BFDCheck,
+            CDPCheck,
+            FDPCheck,
+            HuaweiNDPCheck,
+            REPCheck,
+            STPCheck,
+        ]
+    )
 
     is_box = True
 
@@ -87,9 +91,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 SuggestCLICheck(self).run()
                 if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                     # Still suggest
-                    self.logger.info(
-                        "Cannot choose valid credentials. Stopping"
-                    )
+                    self.logger.info("Cannot choose valid credentials. Stopping")
                     return
             # Run remaining checks
             if has_cli and self.allow_sessions():
@@ -142,8 +144,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             check = self.TOPOLOGY_METHODS.get(m)
             if not check:
                 continue
-            if getattr(self.object.object_profile,
-                       "enable_box_discovery_%s" % check.name):
+            if getattr(self.object.object_profile, "enable_box_discovery_%s" % check.name):
                 check(self).run()
         if self.object.object_profile.enable_box_discovery_sla:
             SLACheck(self).run()
@@ -156,8 +157,10 @@ class BoxDiscoveryJob(MODiscoveryJob):
         return self.object.get_effective_box_discovery_running_policy()
 
     def can_run(self):
-        return (super(BoxDiscoveryJob, self).can_run() and
-                self.object.object_profile.enable_box_discovery)
+        return (
+            super(BoxDiscoveryJob, self).can_run()
+            and self.object.object_profile.enable_box_discovery
+        )
 
     def get_interval(self):
         if self.object:
@@ -191,7 +194,10 @@ class BoxDiscoveryJob(MODiscoveryJob):
             return True
         if mop.enable_box_discovery_vlan and mo.get_interface_discovery_policy() != "s":
             return True
-        if (mop.enable_box_discovery_vpn_confdb or mop.enable_box_discovery_address_confdb or
-                mop.enable_box_discovery_prefix_confdb):
+        if (
+            mop.enable_box_discovery_vpn_confdb
+            or mop.enable_box_discovery_address_confdb
+            or mop.enable_box_discovery_prefix_confdb
+        ):
             return True
         return False

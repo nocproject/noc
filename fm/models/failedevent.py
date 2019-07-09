@@ -18,7 +18,7 @@ from mongoengine.fields import DateTimeField, StringField, EmbeddedDocumentField
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import ForeignKeyField, RawDictField
+from noc.core.mongo.fields import ForeignKeyField, RawDictField
 from .eventlog import EventLog
 
 
@@ -41,7 +41,7 @@ class FailedEvent(Document):
     log = ListField(EmbeddedDocumentField(EventLog))
 
     def __str__(self):
-        return u"%s" % self.id
+        return "%s" % self.id
 
     def mark_as_new(self, message=None):
         """

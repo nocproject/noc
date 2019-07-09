@@ -24,27 +24,23 @@ class Script(BaseScript):
                 # vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1",
                 #                         cached=True)
                 plat = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-                plat = plat.split(' ')
+                plat = plat.split(" ")
                 platform = plat[1]
                 vendor = plat[0]
-                version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.1",
-                                        cached=True)
-                bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1",
-                                         cached=True)
-                hardware = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.1",
-                                         cached=True)
-                serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1",
-                                       cached=True)
+                version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.1", cached=True)
+                bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
+                hardware = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.1", cached=True)
+                serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1", cached=True)
                 return {
-                        "vendor": vendor,
-                        "platform": platform,
-                        "version": version,
-                        "attributes": {
-                            "Boot PROM": bootprom,
-                            "HW version": hardware,
-                            "Serial Number": serial
-                            }
-                        }
+                    "vendor": vendor,
+                    "platform": platform,
+                    "version": version,
+                    "attributes": {
+                        "Boot PROM": bootprom,
+                        "HW version": hardware,
+                        "Serial Number": serial,
+                    },
+                }
             except self.snmp.TimeOutError:
                 pass
 

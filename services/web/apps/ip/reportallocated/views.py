@@ -10,6 +10,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.db.models import Q
+
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
@@ -22,11 +23,9 @@ class ReportForm(forms.Form):
     """
     Report form
     """
-    vrf = forms.ModelChoiceField(
-        label=_("VRF"),
-        queryset=VRF.objects.all().order_by("name"))
-    afi = forms.ChoiceField(label=_("Address Family"),
-                            choices=[("4", _("IPv4")), ("6", _("IPv6"))])
+
+    vrf = forms.ModelChoiceField(label=_("VRF"), queryset=VRF.objects.all().order_by("name"))
+    afi = forms.ChoiceField(label=_("Address Family"), choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = forms.CharField(label=_("Prefix"))
 
     def clean_prefix(self):
@@ -64,17 +63,10 @@ class ReportAllocated(SimpleReport):
         cf = CustomField.table_fields("ip_prefix")
         cfn = dict((f.name, f) for f in cf)
         # Prepare columns
-        columns = [
-            "Prefix",
-            "State",
-            "VC"
-        ]
+        columns = ["Prefix", "State", "VC"]
         for f in cf:
             columns += [f.label]
-        columns += [
-            "Description",
-            TableColumn(_("Tags"), format="tags")
-        ]
+        columns += ["Description", TableColumn(_("Tags"), format="tags")]
         # Prepare query
         q = Q()
         for k in kwargs:
@@ -84,13 +76,10 @@ class ReportAllocated(SimpleReport):
         #
         return self.from_dataset(
             title=_(
-                "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
-                    "vrf": vrf.name,
-                    "afi": afi,
-                    "prefix": prefix.prefix
-                }
+                "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"
+                % {"vrf": vrf.name, "afi": afi, "prefix": prefix.prefix}
             ),
             columns=columns,
             data=[get_row(p) for p in prefix.children_set.filter(q).order_by("prefix")],
-            enumerate=True
+            enumerate=True,
         )

@@ -8,6 +8,7 @@
 
 # Third-party modules
 from pymongo import UpdateOne
+
 # NOC modules
 from noc.sla.models.slaprofile import SLAProfile
 from noc.core.migration.base import BaseMigration

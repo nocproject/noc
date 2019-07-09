@@ -9,11 +9,13 @@
 # Python modules
 from __future__ import absolute_import
 from functools import reduce
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -34,22 +36,20 @@ class UserAccess(NOCModel):
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
     # Legacy interface
     selector = models.ForeignKey(
-        ManagedObjectSelector,
-        null=True, blank=True, on_delete=models.CASCADE
+        ManagedObjectSelector, null=True, blank=True, on_delete=models.CASCADE
     )
     #
     administrative_domain = models.ForeignKey(
-        AdministrativeDomain,
-        null=True, blank=True, on_delete=models.CASCADE
+        AdministrativeDomain, null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __str__(self):
-        r = [u"user=%s" % self.user.username]
+        r = ["user=%s" % self.user.username]
         if self.selector:
-            r += [u"selector=%s" % self.selector.name]
+            r += ["selector=%s" % self.selector.name]
         if self.administrative_domain:
-            r += [u"domain=%s" % self.administrative_domain.name]
-        return u"(%s)" % u", ".join(r)
+            r += ["domain=%s" % self.administrative_domain.name]
+        return "(%s)" % ", ".join(r)
 
     @classmethod
     def Q(cls, user):
@@ -87,14 +87,10 @@ class UserAccess(NOCModel):
         if user.is_superuser:
             return [a.id for a in AdministrativeDomain.objects.all().only("id")]
         domains = set()
-        for a in UserAccess.objects.filter(
-                user=user,
-                administrative_domain__isnull=False
-        ):
+        for a in UserAccess.objects.filter(user=user, administrative_domain__isnull=False):
             domains.update(AdministrativeDomain.get_nested_ids(a.administrative_domain))
         for a in GroupAccess.objects.filter(
-                group__in=user.groups.all(),
-                administrative_domain__isnull=False
+            group__in=user.groups.all(), administrative_domain__isnull=False
         ):
             domains.update(AdministrativeDomain.get_nested_ids(a.administrative_domain))
         return list(domains)

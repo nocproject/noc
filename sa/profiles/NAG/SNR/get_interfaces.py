@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -27,23 +28,19 @@ class Script(BaseScript):
         r"^\s+(?P<ifname>[^\n]+)"
         r"(?P<other>.+?)\n"
         r"^\s+Encapsulation ",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_hw = re.compile(
         r"^\s+Hardware is (?P<hw_type>\S+)(, active is \S+)?"
         r"(,\s+address is (?P<mac>\S+))?\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    rx_alias = re.compile(
-        r"\s+alias name is (?P<alias>\S+)\s",
-        re.MULTILINE | re.IGNORECASE)
+    rx_alias = re.compile(r"\s+alias name is (?P<alias>\S+)\s", re.MULTILINE | re.IGNORECASE)
     rx_index = re.compile(r", index is (?P<ifindex>\d+)")
     rx_mtu = re.compile(r"MTU (?P<mtu>\d+) bytes")
     rx_pvid = re.compile(r"PVID is (?P<pvid>\d+)")
     rx_ip = re.compile(
-        r"^\s+IPv4 address is:\s*\n"
-        r"^\s+(?P<ip>\S+)\s+(?P<mask>\S+)",
-        re.MULTILINE
+        r"^\s+IPv4 address is:\s*\n" r"^\s+(?P<ip>\S+)\s+(?P<mask>\S+)", re.MULTILINE
     )
     rx_vlan = re.compile(
         r"^(?P<ifname>Ethernet\S+)\s*\n"
@@ -51,7 +48,7 @@ class Script(BaseScript):
         r"^Mode\s*:\s*(?P<mode>\S+)\s*\n"
         r"^Port VID\s*:\s*(?P<untagged_vlan>\d+)\s*\n"
         r"(^Trunk allowed Vlan\s*:\s*(?P<tagged_vlans>\S+)\s*\n)?",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     HW_TYPES = {
@@ -61,7 +58,7 @@ class Script(BaseScript):
         "SFP": "physical",
         "SFP+": "physical",
         "EtherChannel": "aggregated",
-        "EtherSVI": "SVI"
+        "EtherSVI": "SVI",
     }
 
     def execute(self):
@@ -84,13 +81,9 @@ class Script(BaseScript):
                 "type": self.HW_TYPES[match1.group("hw_type")],
                 "name": name,
                 "admin_status": a_stat,
-                "oper_status": o_stat
+                "oper_status": o_stat,
             }
-            sub = {
-                "name": name,
-                "admin_status": a_stat,
-                "oper_status": o_stat
-            }
+            sub = {"name": name, "admin_status": a_stat, "oper_status": o_stat}
             # LLDP protocol
             if name in lldp:
                 iface["enabled_protocols"] = ["LLDP"]
@@ -125,7 +118,7 @@ class Script(BaseScript):
                     continue
                 ip_address = "%s/%s" % (
                     match1.group("ip"),
-                    IPv4.netmask_to_len(match1.group("mask"))
+                    IPv4.netmask_to_len(match1.group("mask")),
                 )
                 sub["ipv4_addresses"] = [ip_address]
                 sub["enabled_afi"] = ["IPv4"]
@@ -139,10 +132,7 @@ class Script(BaseScript):
                 if ifname == i["name"]:
                     i["subinterfaces"][0]["untagged_vlan"] = untagged_vlan
                     if match.group("tagged_vlans"):
-                        tagged_vlans = match.group("tagged_vlans").replace(
-                            ";", ","
-                        )
-                        i["subinterfaces"][0]["tagged_vlans"] = \
-                            self.expand_rangelist(tagged_vlans)
+                        tagged_vlans = match.group("tagged_vlans").replace(";", ",")
+                        i["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(tagged_vlans)
                     break
         return [{"interfaces": interfaces}]

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import sys
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -18,7 +19,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--list", "-l",
+            "--list",
+            "-l",
             dest="one_column",
             action="store_true",
             help="Display one path per line",

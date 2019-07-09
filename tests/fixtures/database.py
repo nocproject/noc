@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.config import config
 
@@ -87,7 +88,8 @@ def _drop_pg_db():
         SELECT pg_terminate_backend(pid)
         FROM pg_stat_activity
         WHERE datname = %s
-    """, [config.pg.db]
+    """,
+        [config.pg.db],
     )
     # Drop
     cursor.execute("DROP DATABASE IF EXISTS %s" % config.pg.db)

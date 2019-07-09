@@ -20,7 +20,7 @@ import cachetools
 # NOC modules
 from .subscriberprofile import SubscriberProfile
 from noc.main.models.remotesystem import RemoteSystem
-from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.core.wf.decorator import workflow

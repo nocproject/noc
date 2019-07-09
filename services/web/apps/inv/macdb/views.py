@@ -9,8 +9,10 @@
 # Python modules
 import threading
 import re
+
 # Third-party modules
 from django.db.models import Q as d_Q
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
@@ -32,6 +34,7 @@ class MACApplication(ExtApplication):
     """
     MAC application
     """
+
     title = _("MacDB")
     menu = _("Mac DB")
     model = MACDB
@@ -62,35 +65,34 @@ class MACApplication(ExtApplication):
                 continue
             mo = mo[0]
             iface = self.field_description(mo, p["interface"])
-            current += [{
-                "last_changed": p["timestamp"],
-                "mac": str(MAC(int(p["mac"]))),
-                "vc_domain": str(mo.vc_domain),
-                "vc_domain__label": getattr(mo.vc_domain, "name", ""),
-                "vlan": p["vlan"],
-                "managed_object": str(mo),
-                "managed_object__label": str(mo),
-                "interface": str(iface),
-                "interface__label": str(iface),
-                "description": getattr(iface, "description", ""),
-                "pool": str(mo.pool),
-                "pool__label": getattr(mo.pool, "name", ""),
-                "object_profile": str(mo.object_profile),
-                "object_profile__label": getattr(mo.object_profile, "name", "")
-            }]
+            current += [
+                {
+                    "last_changed": p["timestamp"],
+                    "mac": str(MAC(int(p["mac"]))),
+                    "vc_domain": str(mo.vc_domain),
+                    "vc_domain__label": getattr(mo.vc_domain, "name", ""),
+                    "vlan": p["vlan"],
+                    "managed_object": str(mo),
+                    "managed_object__label": str(mo),
+                    "interface": str(iface),
+                    "interface__label": str(iface),
+                    "description": getattr(iface, "description", ""),
+                    "pool": str(mo.pool),
+                    "pool__label": getattr(mo.pool, "name", ""),
+                    "object_profile": str(mo.object_profile),
+                    "object_profile__label": getattr(mo.object_profile, "name", ""),
+                }
+            ]
         total = len(current)
         if total == int(limit):
             total = int(offset) + int(limit) * 2
         else:
             total = int(offset) + len(current)
-        return {"total": total,
-                "success": True,
-                "data": current}
+        return {"total": total, "success": True, "data": current}
 
     @view(method=["GET", "POST"], url="^$", access="read", api=True)
     def api_list(self, request):
-        q = dict((str(k), v[0] if len(v) == 1 else v)
-                 for k, v in request.GET.lists())
+        q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
         # find mac request select max(ts), managed_object, interface, vlan from mac
         # where like(MACNumToString(mac), 'A0:AB:1B%') group by managed_object, interface, vlan;
         query = q.get("__query")
@@ -105,9 +107,13 @@ class MACApplication(ExtApplication):
             out = self.api_macdb({"mac": mac}, limit=limit, offset=start)
         except ValueError:
             if self.mac_search_re.match(query):
-                out = self.api_macdb({"mac__like": "%s%%" % str(query.upper())}, limit=limit, offset=start)
+                out = self.api_macdb(
+                    {"mac__like": "%s%%" % str(query.upper())}, limit=limit, offset=start
+                )
             elif self.mac_search_re_inv.match(query):
-                out = self.api_macdb({"mac__like": "%%%s" % str(query.upper())}, limit=limit, offset=start)
+                out = self.api_macdb(
+                    {"mac__like": "%%%s" % str(query.upper())}, limit=limit, offset=start
+                )
             else:
                 # Try MO search
                 # @todo ManagedObject search
@@ -121,8 +127,7 @@ class MACApplication(ExtApplication):
         # out = self.api_get_maclog(request, mac)
         return self.response(out, status=self.OK)
 
-    @view(url="^(?P<mac>[0-9A-F:]+)/$", method=["GET"],
-          access="view", api=True)
+    @view(url="^(?P<mac>[0-9A-F:]+)/$", method=["GET"], access="view", api=True)
     def api_get_maclog(self, request, mac):
         """
         GET maclog
@@ -147,22 +152,24 @@ class MACApplication(ExtApplication):
                 iface = ":%s" % p["interface"]
             else:
                 iface = iface[0]
-            current += [{
-                "last_changed": p["timestamp"],
-                "mac": str(MAC(int(p["mac"]))),
-                "vc_domain": str(mo.vc_domain),
-                "vc_domain__label": mo.vc_domain.name,
-                "vlan": p["vlan"],
-                "managed_object": str(mo),
-                "managed_object__label": str(mo),
-                "interface": str(iface),
-                "interface__label": str(iface),
-                "description": getattr(iface, "description", ""),
-                "pool": str(mo.pool),
-                "pool__label": mo.pool.name,
-                "object_profile": str(mo.object_profile),
-                "object_profile__label": mo.object_profile.name
-            }]
+            current += [
+                {
+                    "last_changed": p["timestamp"],
+                    "mac": str(MAC(int(p["mac"]))),
+                    "vc_domain": str(mo.vc_domain),
+                    "vc_domain__label": mo.vc_domain.name,
+                    "vlan": p["vlan"],
+                    "managed_object": str(mo),
+                    "managed_object__label": str(mo),
+                    "interface": str(iface),
+                    "interface__label": str(iface),
+                    "description": getattr(iface, "description", ""),
+                    "pool": str(mo.pool),
+                    "pool__label": mo.pool.name,
+                    "object_profile": str(mo.object_profile),
+                    "object_profile__label": mo.object_profile.name,
+                }
+            ]
 
         history = []
         id_cache = {}
@@ -189,15 +196,17 @@ class MACApplication(ExtApplication):
                         c = ""
                         d_cache[id, i.interface_name] = ""
 
-            history += [{
-                "timestamp": str(i.timestamp),
-                "mac": i.mac,
-                "vc_domain": str(i.vc_domain_name),
-                "vlan": i.vlan,
-                "managed_object_name": str(i.managed_object_name),
-                "interface_name": str(i.interface_name),
-                "description": c,
-                "pool": str(i.pool_name),
-                "object_profile": str(i.object_profile_name)
-            }]
+            history += [
+                {
+                    "timestamp": str(i.timestamp),
+                    "mac": i.mac,
+                    "vc_domain": str(i.vc_domain_name),
+                    "vlan": i.vlan,
+                    "managed_object_name": str(i.managed_object_name),
+                    "interface_name": str(i.interface_name),
+                    "description": c,
+                    "pool": str(i.pool_name),
+                    "object_profile": str(i.object_profile_name),
+                }
+            ]
         return current

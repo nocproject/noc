@@ -29,7 +29,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.cache.decorator import cachedmethod
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField, RawDictField
 from .eventlog import EventLog
 from .eventclass import EventClass
 
@@ -71,7 +71,7 @@ class ActiveEvent(Document):
     expires = DateTimeField(required=False)
 
     def __str__(self):
-        return u"%s" % self.id
+        return "%s" % self.id
 
     @classmethod
     @cachedmethod(key="activeevent-%s", lock=lambda _: id_lock, ttl=900)

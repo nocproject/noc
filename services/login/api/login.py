@@ -2,18 +2,19 @@
 # ---------------------------------------------------------------------
 # Login API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.api import API, APIError, api
+from noc.core.service.api import API, api
 
 
 class LoginAPI(API):
     """
     Login API
     """
+
     name = "login"
 
     @api
@@ -32,10 +33,7 @@ class LoginAPI(API):
         """
         Change credentials
         """
-        if self.service.change_credentials(
-            self.handler,
-            credentials
-        ):
+        if self.service.change_credentials(self.handler, credentials):
             return True
         else:
             return False

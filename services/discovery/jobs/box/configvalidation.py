@@ -14,6 +14,7 @@ class ConfigValidationCheck(DiscoveryCheck):
     """
     Version discovery
     """
+
     name = "configvalidation"
     required_artefacts = ["config_acquired"]
 

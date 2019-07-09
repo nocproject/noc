@@ -5,7 +5,7 @@
 # Copyright (C) 2007-2014 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-'''
+"""
 $ ip -details link show
 
 
@@ -14,9 +14,10 @@ $ ip -details link show
     vlan protocol 802.1Q id 2102 <REORDER_HDR>
     bridge_slave addrgenmode eui64
 
-'''
+"""
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -30,15 +31,15 @@ class Script(BaseScript):
         r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
         r"    link\/ether (?P<mac>\S+) brd .*\n"
         r"    vlan protocol 802.1Q id (?P<vlan_number>\d+)\s",
-        re.IGNORECASE | re.DOTALL
+        re.IGNORECASE | re.DOTALL,
     )
 
     def execute(self):
 
-        r = [{'vlan_id': 1}]
+        r = [{"vlan_id": 1}]
         vlans = self.cli("ip -details link show")
 
         for match in self.rx_iface.finditer(vlans):
-            r += [{'vlan_id': match.group("vlan_number")}]
+            r += [{"vlan_id": match.group("vlan_number")}]
 
         return r

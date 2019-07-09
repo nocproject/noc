@@ -8,6 +8,7 @@
 
 # Third-party modules
 import ujson
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter
@@ -19,22 +20,22 @@ class JSONImportApplication(ExtApplication):
     """
     main.jsonimport application
     """
+
     title = _("JSON Import")
     menu = [_("Setup"), _("JSON Import")]
 
-    @view(url="^$", method=["POST"], access="launch",
-          validate={
-              "json": StringParameter(required=True)
-          },
-          api=True)
+    @view(
+        url="^$",
+        method=["POST"],
+        access="launch",
+        validate={"json": StringParameter(required=True)},
+        api=True,
+    )
     def api_import(self, request, json):
         try:
             jdata = ujson.loads(json)
         except Exception as e:
-            return {
-                "status": False,
-                "error": "Invalid JSON: %s" % e
-            }
+            return {"status": False, "error": "Invalid JSON: %s" % e}
         try:
             if isinstance(jdata, list):
                 for d in jdata:
@@ -46,10 +47,5 @@ class JSONImportApplication(ExtApplication):
                 c = Collection(jdata["$collection"])
                 c.update_item(jdata)
         except ValueError as e:
-            return {
-                "status": False,
-                "error": str(e)
-            }
-        return {
-            "status": True
-        }
+            return {"status": False, "error": str(e)}
+        return {"status": True}

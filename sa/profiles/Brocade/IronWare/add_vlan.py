@@ -15,6 +15,7 @@ class Script(BaseScript):
     """
     Brocade.IronWare.add_vlan
     """
+
     name = "Brocade.IronWare.add_vlan"
     interface = IAddVlan
 

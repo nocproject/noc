@@ -1216,5 +1216,5 @@ MIB = {
     "AIRESPACE-WIRELESS-MIB::bsnAPGroupsVlanMappingInterfaceName": "1.3.6.1.4.1.14179.2.10.3.1.2",
     "AIRESPACE-WIRELESS-MIB::bsnAPGroupsVlanMappingRowStatus": "1.3.6.1.4.1.14179.2.10.3.1.20",
     "AIRESPACE-WIRELESS-MIB::bsnWrasGroups": "1.3.6.1.4.1.14179.2.50",
-    "AIRESPACE-WIRELESS-MIB::bsnWrasCompliances": "1.3.6.1.4.1.14179.2.51"
+    "AIRESPACE-WIRELESS-MIB::bsnWrasCompliances": "1.3.6.1.4.1.14179.2.51",
 }

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -18,21 +19,25 @@ class Script(BaseScript):
     interface = IGetPortchannel
     cache = True
 
-    rx_portgroup = re.compile(r"^(?P<pc>\d+)\s+(?P<mode>\S+)\s+(?:\S+\s+)?\S+"
-                              r"\s+\S+\s*\n", re.MULTILINE)
-    rx_interface = re.compile(r"^\s+(?P<interface>\S+) is LAG member port, "
-                              r"LAG port:(?P<pc>\S+)", re.MULTILINE)
+    rx_portgroup = re.compile(
+        r"^(?P<pc>\d+)\s+(?P<mode>\S+)\s+(?:\S+\s+)?\S+" r"\s+\S+\s*\n", re.MULTILINE
+    )
+    rx_interface = re.compile(
+        r"^\s+(?P<interface>\S+) is LAG member port, " r"LAG port:(?P<pc>\S+)", re.MULTILINE
+    )
 
     def execute_cli(self):
         r = []
 
         cmd = self.cli("show port-group brief", cached=True)
         for match in self.rx_portgroup.finditer(cmd):
-            r += [{
-                "interface": "Port-Channel%s" % match.group("pc"),
-                "members": [],
-                "type": "L" if match.group("mode").lower() != "on" else "S"
-            }]
+            r += [
+                {
+                    "interface": "Port-Channel%s" % match.group("pc"),
+                    "members": [],
+                    "type": "L" if match.group("mode").lower() != "on" else "S",
+                }
+            ]
 
         cmd = self.cli("show interface | include LAG", cached=True)
         for match in self.rx_interface.finditer(cmd):

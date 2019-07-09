@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.forms.widgets import Input
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
+
 # Third-party modules
 import six
 import ujson
@@ -19,9 +20,7 @@ class AutoCompleteTags(Input):
     input_type = "text"
 
     class Media(object):
-        css = {
-            "all": ["/ui/pkg/jquery.tokeninput/jquery.tokeninput.css"]
-        }
+        css = {"all": ["/ui/pkg/jquery.tokeninput/jquery.tokeninput.css"]}
         js = ["/ui/pkg/jquery.tokeninput/jquery.tokeninput.js"]
 
     def render(self, name, value=None, attrs=None):
@@ -60,7 +59,11 @@ class AutoCompleteTags(Input):
                 });
             });
         </script>
-        """ % (attrs["id"], "/main/tag/ac_lookup/", initial)
+        """ % (
+            attrs["id"],
+            "/main/tag/ac_lookup/",
+            initial,
+        )
         return mark_safe("\n".join([html, js]))
 
 
@@ -70,7 +73,7 @@ def lookup(request, func):
         q = request.GET["query"]
         if len(q) > 2:  # Ignore requests shorter than 3 letters
             result = list(func(q))
-    return HttpResponse("\n".join(result), content_type='text/plain')
+    return HttpResponse("\n".join(result), content_type="text/plain")
 
 
 def tags_list(o):
@@ -78,6 +81,5 @@ def tags_list(o):
         tags = [x for x in o.tags.split(",") if x]
     else:
         tags = o.tags or []
-    s = (["<ul class='tags-list'>"] +
-         ["<li>%s</li>" % t for t in tags] + ["</ul>"])
+    s = ["<ul class='tags-list'>"] + ["<li>%s</li>" % t for t in tags] + ["</ul>"]
     return "".join(s)

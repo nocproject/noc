@@ -24,32 +24,39 @@ class Script(BaseScript):
             addr = self.snmp.get("1.3.6.1.4.1.14546.3.8.1.1.13.5.0")
             mask = self.snmp.get("1.3.6.1.4.1.14546.3.8.1.1.13.6.0")
         ip = IPv4(addr, mask)
-        iface = [{
-            "name": "mgmt",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "management",
-            "subinterfaces": [{
+        iface = [
+            {
                 "name": "mgmt",
-                "enabled_afi": ["IPv4"],
-                "ipv4_addresses": [ip],
                 "admin_status": True,
                 "oper_status": True,
-            }]
-        }]
+                "type": "management",
+                "subinterfaces": [
+                    {
+                        "name": "mgmt",
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip],
+                        "admin_status": True,
+                        "oper_status": True,
+                    }
+                ],
+            }
+        ]
         # Optical ports
-        iface += [{
-            "name": "Input 1",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "physical",
-            "subinterfaces": []
-        }, {
-            "name": "Input 2",
-            "admin_status": True,
-            "oper_status": True,
-            "type": "physical",
-            "subinterfaces": []
-        }]
+        iface += [
+            {
+                "name": "Input 1",
+                "admin_status": True,
+                "oper_status": True,
+                "type": "physical",
+                "subinterfaces": [],
+            },
+            {
+                "name": "Input 2",
+                "admin_status": True,
+                "oper_status": True,
+                "type": "physical",
+                "subinterfaces": [],
+            },
+        ]
 
         return [{"interfaces": iface}]

@@ -9,27 +9,40 @@
 # Python modules
 from __future__ import absolute_import
 from collections import defaultdict
+
 # Third-party modules
 import tornado.gen
 import ujson
 import six
+
 # NOC modules
 from noc.core.service.apiaccess import authenticated
-from noc.sa.interfaces.base import (DictParameter, DictListParameter, StringParameter,
-                                    StringListParameter, IntParameter, ListOfParameter, ListParameter)
+from noc.sa.interfaces.base import (
+    DictParameter,
+    DictListParameter,
+    StringParameter,
+    StringListParameter,
+    IntParameter,
+    ListOfParameter,
+    ListParameter,
+)
 from noc.pm.models.metrictype import MetricType
 from ..base import NBIAPI
 
 
-Request = DictParameter(attrs={
-    "bi_id": IntParameter(required=True),
-    "metrics": DictListParameter(attrs={
-        "metric_type": StringParameter(required=True),
-        "path": StringListParameter(required=True),
-        "values": ListOfParameter(ListParameter(), required=True)
-    }, required=True)
-
-})
+Request = DictParameter(
+    attrs={
+        "bi_id": IntParameter(required=True),
+        "metrics": DictListParameter(
+            attrs={
+                "metric_type": StringParameter(required=True),
+                "path": StringListParameter(required=True),
+                "values": ListOfParameter(ListParameter(), required=True),
+            },
+            required=True,
+        ),
+    }
+)
 
 
 class TelemetryAPI(NBIAPI):

@@ -15,7 +15,10 @@ import re
 class Script(BaseScript):
     name = "DLink.DGS3100.get_dom_status"
     interface = IGetDOMStatus
-    rx_line = re.compile(r"^\s+(?P<interface>\d+:\d+)\s+(?P<temp_c>\S+)\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(?P<optical_rx_dbm>\S+)\s+\S+", re.IGNORECASE | re.MULTILINE)
+    rx_line = re.compile(
+        r"^\s+(?P<interface>\d+:\d+)\s+(?P<temp_c>\S+)\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(?P<optical_rx_dbm>\S+)\s+\S+",
+        re.IGNORECASE | re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         if interface is None:
@@ -42,12 +45,14 @@ class Script(BaseScript):
             optical_tx_dbm = match.group("optical_tx_dbm")
             if optical_tx_dbm == "N/A" or optical_tx_dbm == "N/S":
                 optical_tx_dbm = None
-            r.append({
-                "interface": match.group("interface"),
-                "temp_c": temp_c,
-                "voltage_v": voltage_v,
-                "current_ma": current_ma,
-                "optical_rx_dbm": optical_rx_dbm,
-                "optical_tx_dbm": optical_tx_dbm
-            })
+            r.append(
+                {
+                    "interface": match.group("interface"),
+                    "temp_c": temp_c,
+                    "voltage_v": voltage_v,
+                    "current_ma": current_ma,
+                    "optical_rx_dbm": optical_rx_dbm,
+                    "optical_tx_dbm": optical_tx_dbm,
+                }
+            )
         return r

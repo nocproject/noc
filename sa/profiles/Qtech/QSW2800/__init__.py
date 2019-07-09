@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -17,16 +18,16 @@ class Profile(BaseProfile):
     name = "Qtech.QSW2800"
     pattern_more = [
         (r"^ --More-- $", " "),
-        (r"^Confirm to overwrite current startup-config configuration "
-            r"[Y/N]:", "\nY\n"),
-        (r"^Confirm to overwrite current startup-config configuration",
-            "\ny\n"),
+        (r"^Confirm to overwrite current startup-config configuration " r"[Y/N]:", "\nY\n"),
+        (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
     ]
     pattern_unprivileged_prompt = r"^\S+>"
-    pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
-                           r"(?:Ambiguous|Incomplete|.+Unknown) command)|" \
-                           r"Error input in the position market by"
+    pattern_syntax_error = (
+        r"% (?:Invalid input detected at '\^' marker|"
+        r"(?:Ambiguous|Incomplete|.+Unknown) command)|"
+        r"Error input in the position market by"
+    )
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure"
@@ -35,15 +36,13 @@ class Profile(BaseProfile):
     username_submit = "\r\n"
     password_submit = "\r\n"
     command_submit = "\r"
-    pattern_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" \
-        r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = (
+        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" r"(?:\(config[^\)]*\))?#"
+    )
 
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
     config_tokenizer = "indent"
-    config_tokenizer_settings = {
-        "line_comment": "!"
-    }
+    config_tokenizer_settings = {"line_comment": "!"}
     config_normalizer = "Qtech2800Normalizer"
     confdb_defaults = [
         ("hints", "interfaces", "defaults", "admin-status", True),
@@ -54,16 +53,10 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
     matchers = {
-        "is_new_metric": {
-             "caps": {
-                "$in": ["Qtech | OID | Memory Usage 11"]
-                    }
-        },
+        "is_new_metric": {"caps": {"$in": ["Qtech | OID | Memory Usage 11"]}},
         "is_support_mac_version": {
-            "$or": [
-                {"version": {"$gte": "6.3.100.12"}},
-                {"version": {"$lte": "6.0"}}]
-        }
+            "$or": [{"version": {"$gte": "6.3.100.12"}}, {"version": {"$lte": "6.0"}}]
+        },
     }
 
     @classmethod
@@ -99,7 +92,7 @@ class Profile(BaseProfile):
         "por": "aggregated",
         "l2o": "tunnel",
         "loo": "loopback",
-        "vpl": "other"
+        "vpl": "other",
     }
 
     @classmethod
@@ -117,10 +110,8 @@ class Profile(BaseProfile):
         :type block: str
         :return:
         """
-        k_v_splitter = re.compile(
-            r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
-        part_splitter = re.compile(
-            r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
+        k_v_splitter = re.compile(r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
+        part_splitter = re.compile(r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
         r = {}
         is_table = False
         is_part = False

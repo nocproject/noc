@@ -27,13 +27,14 @@ def do_var(parser, token):
         if len(t) < 3:
             raise ValueError
     except ValueError:
-        raise template.TemplateSyntaxError("%s tag requires at least 3 arguments" % (
-            token.contents.split()[0]))
+        raise template.TemplateSyntaxError(
+            "%s tag requires at least 3 arguments" % (token.contents.split()[0])
+        )
     tag, name, vartype = t[:3]
     if vartype not in VARTYPES:
-        raise template.TemplateSyntaxError("Invalid var type '%s'. Acceptable types are: %s" % (
-            vartype, ", ".join(VARTYPES)
-        ))
+        raise template.TemplateSyntaxError(
+            "Invalid var type '%s'. Acceptable types are: %s" % (vartype, ", ".join(VARTYPES))
+        )
     return VarNode(name, vartype)
 
 
@@ -80,11 +81,7 @@ class PythonNode(template.Node):
     def render(self, context):
         self.output = []
         # Prepare block context
-        ctx = {
-            "render": self.t_render,
-            "rendernl": self.t_rendernl,
-            "context": context
-        }
+        ctx = {"render": self.t_render, "rendernl": self.t_rendernl, "context": context}
         # Execute block
         exec(self.code, ctx)
         # Render output

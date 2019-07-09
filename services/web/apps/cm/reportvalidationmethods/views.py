@@ -26,12 +26,10 @@ class ReportvalidationmethodsApplication(SimpleReport):
             if v.is_interface():
                 scopes += ["INTERFACE"]
             r = [
-                SectionRow(
-                    "[%s] %s" % (", ".join(scopes), v.TITLE)
-                ),
+                SectionRow("[%s] %s" % (", ".join(scopes), v.TITLE)),
                 [_("Description"), v.DESCRIPTION],
                 [_("Handler"), "%s.%s" % (v.__module__, v.__name__)],
-                [_("Tags"), ", ".join(v.TAGS or [])]
+                [_("Tags"), ", ".join(v.TAGS or [])],
             ]
             if v.is_object():
                 ov[v.TITLE] = r
@@ -42,8 +40,4 @@ class ReportvalidationmethodsApplication(SimpleReport):
             r += ov[vn]
         for vn in sorted(iv):
             r += iv[vn]
-        return self.from_dataset(
-            title=self.title,
-            columns=["", ""],
-            data=r
-        )
+        return self.from_dataset(title=self.title, columns=["", ""], data=r)

@@ -9,14 +9,20 @@
 # Python modules
 from __future__ import absolute_import
 import socket
+
 # Third-party modules
 import tornado.gen
 import tornado.iostream
 from tornado.concurrent import TracebackFuture
+
 # NOC modules
 from noc.core.snmp.ber import BERDecoder, BEREncoder
-from noc.core.snmp.consts import (PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
-                                  PDU_GETBULK_REQUEST, PDU_RESPONSE)
+from noc.core.snmp.consts import (
+    PDU_GET_REQUEST,
+    PDU_GETNEXT_REQUEST,
+    PDU_GETBULK_REQUEST,
+    PDU_RESPONSE,
+)
 from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME
 from .base import SNMP
 
@@ -55,10 +61,7 @@ class BeefSNMP(SNMP):
         encoder = BEREncoder()
         while True:
             # Wait for SNMP request
-            request = yield self.server_iostream.read_bytes(
-                self.MAX_REQUEST_SIZE,
-                partial=True
-            )
+            request = yield self.server_iostream.read_bytes(self.MAX_REQUEST_SIZE, partial=True)
             pdu = decoder.parse_sequence(request)[0]
             self.logger.info("SNMP REQUEST: %r", pdu)
             version = pdu[0]
@@ -75,24 +78,26 @@ class BeefSNMP(SNMP):
                 # @todo: Unsupported PDU type
                 pass
             # Build response
-            resp = encoder.encode_sequence([
-                encoder.encode_int(version),
-                encoder.encode_octet_string(community),
-                encoder.encode_choice(
-                    PDU_RESPONSE,
-                    [
-                        encoder.encode_int(request_id),
-                        encoder.encode_int(err_status),
-                        encoder.encode_int(err_index),
-                        encoder.encode_sequence([
-                            encoder.encode_sequence([
-                                encoder.encode_oid(str(oid)),
-                                value
-                            ]) for oid, value in data
-                        ])
-                    ]
-                )
-            ])
+            resp = encoder.encode_sequence(
+                [
+                    encoder.encode_int(version),
+                    encoder.encode_octet_string(community),
+                    encoder.encode_choice(
+                        PDU_RESPONSE,
+                        [
+                            encoder.encode_int(request_id),
+                            encoder.encode_int(err_status),
+                            encoder.encode_int(err_index),
+                            encoder.encode_sequence(
+                                [
+                                    encoder.encode_sequence([encoder.encode_oid(str(oid)), value])
+                                    for oid, value in data
+                                ]
+                            ),
+                        ],
+                    ),
+                ]
+            )
             self.logger.info("RESPONSE = %r", data)
             yield self.server_iostream.write(resp)
 

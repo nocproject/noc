@@ -9,14 +9,13 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC models
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
-@on_delete_check(check=[
-    ("peer.Community", "type")
-])
+@on_delete_check(check=[("peer.Community", "type")])
 @six.python_2_unicode_compatible
 class CommunityType(NOCModel):
     class Meta(object):

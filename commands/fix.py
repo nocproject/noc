@@ -10,6 +10,7 @@
 from __future__ import print_function
 import argparse
 import os
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
@@ -26,11 +27,7 @@ class Command(BaseCommand):
         subparsers.add_parser("list")
         #
         apply_parser = subparsers.add_parser("apply")
-        apply_parser.add_argument(
-            "fixes",
-            nargs=argparse.REMAINDER,
-            help="Apply named fixes"
-        )
+        apply_parser.add_argument("fixes", nargs=argparse.REMAINDER, help="Apply named fixes")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -45,9 +42,8 @@ class Command(BaseCommand):
                 print(
                     "WARNING: %s is missed. "
                     "Create empty file "
-                    "or all fixes from %s will be ignored" % (
-                        os.path.join(d, "__init__.py"), d),
-                    file=self.stdout
+                    "or all fixes from %s will be ignored" % (os.path.join(d, "__init__.py"), d),
+                    file=self.stdout,
                 )
                 continue
             for f in files:
@@ -59,15 +55,14 @@ class Command(BaseCommand):
     def get_fix(self, name):
         for d in self.FIX_DIRS:
             if os.path.isfile(os.path.join(d, "%s.py" % name)):
-                return get_handler(
-                    "noc.%s.%s.fix" % (d.replace(os.sep, "."), name)
-                )
+                return get_handler("noc.%s.%s.fix" % (d.replace(os.sep, "."), name))
         return None
 
     def handle_apply(self, fixes=None, *args, **options):
         if not fixes:
             return
         import noc.lib.nosql  # noqa Connect to mongo
+
         for f in fixes:
             fix = self.get_fix(f)
             if not fix:

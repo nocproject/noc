@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseApplicator
 
@@ -16,6 +17,7 @@ class RebaseApplicator(BaseApplicator):
     """
     Rebase all scheduled tree locations
     """
+
     def apply(self):
         root = self.confdb.find("hints", "rebase")
         for node in root.iter_nodes():

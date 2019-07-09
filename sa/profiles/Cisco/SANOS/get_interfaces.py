@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -25,7 +26,8 @@ class Script(BaseScript):
         r"(?:^\s+MTU is (?P<mtu>\d+))?"
         r"(?:.+?\n)?"
         r"(?:^\s+Admin port mode is (?P<portmode>\S+))?",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def execute(self):
         interfaces = []
@@ -59,14 +61,9 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
-            sub = {
-                "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_afi": []
-            }
+            sub = {"name": ifname, "admin_status": a_stat, "oper_status": o_stat, "enabled_afi": []}
             if match.group("mac"):
                 iface["mac"] = match.group("mac")
                 sub["mac"] = match.group("mac")

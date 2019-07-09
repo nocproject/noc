@@ -9,6 +9,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -21,7 +22,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?>"
     pattern_more = [
         (r"^Press any key to continue or Esc to stop scrolling.\r\n", " "),
-        (r"^Press any key to continue", " ")  # Need more examples
+        (r"^Press any key to continue", " "),  # Need more examples
     ]
     # pattern_more = "^Press any key to continue or Esc to stop scrolling.\r\n"
     pattern_syntax_error = r"Illegal command name"
@@ -38,9 +39,11 @@ class Profile(BaseProfile):
     def convert_interface_name(self, s, board=0):
         if board and self.rx_iface_match.match(s):
             # appen boarn number to ifName
-            return "%s%s/%s" % (self.rx_iface_match.match(s).group(1),
-                                board if board else "",
-                                self.rx_iface_match.match(s).group(2))
+            return "%s%s/%s" % (
+                self.rx_iface_match.match(s).group(1),
+                board if board else "",
+                self.rx_iface_match.match(s).group(2),
+            )
         if s.startswith("ISKRATEL:"):
             # for SNMP ifDescr (ISKRATEL: atm 5/1, ISKRATEL: ethernet 5/1)
             _, s = s.split(":")
@@ -56,12 +59,14 @@ class Profile(BaseProfile):
             s = "mng0"
         return s
 
-    rx_board = re.compile(r"(?P<brd_num>\d+)\s*"
-                          r"(?P<brd_type>\S+)\s*"
-                          r"(?P<brd_req_lables>\S+)\s*"
-                          r"(?P<brd_act_label>\S+)\s*"
-                          r"(?P<brd_ser_num>\S+)\s*"
-                          r"(?P<brd_oper_status>.+)")
+    rx_board = re.compile(
+        r"(?P<brd_num>\d+)\s*"
+        r"(?P<brd_type>\S+)\s*"
+        r"(?P<brd_req_lables>\S+)\s*"
+        r"(?P<brd_act_label>\S+)\s*"
+        r"(?P<brd_ser_num>\S+)\s*"
+        r"(?P<brd_oper_status>.+)"
+    )
 
     def get_board(self, script):
         """

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -17,7 +18,9 @@ from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 class Script(BaseScript):
     name = "Cisco.IOS.get_dom_status"
     interface = IGetDOMStatus
-    rx_line = re.compile(r"^(?P<interface>\S+)\s+(?P<temp_c>\S+)(?:\s+(?P<voltage_v>\S+))?\s+(?P<current_ma>\S+)\s+(?P<optical_rx_dbm>\S+)\s+(?P<optical_tx_dbm>\S+)$")
+    rx_line = re.compile(
+        r"^(?P<interface>\S+)\s+(?P<temp_c>\S+)(?:\s+(?P<voltage_v>\S+))?\s+(?P<current_ma>\S+)\s+(?P<optical_rx_dbm>\S+)\s+(?P<optical_tx_dbm>\S+)$"
+    )
 
     def execute(self, interface=None):
         cmd = "show interfaces transceiver | i /"
@@ -48,12 +51,14 @@ class Script(BaseScript):
             optical_tx_dbm = match.group("optical_tx_dbm")
             if optical_tx_dbm == "N/A":
                 optical_tx_dbm = None
-            r += [{
-                "interface": match.group("interface"),
-                "temp_c": temp_c,
-                "voltage_v": voltage_v,
-                "current_ma": current_ma,
-                "optical_rx_dbm": optical_rx_dbm,
-                "optical_tx_dbm": optical_tx_dbm
-            }]
+            r += [
+                {
+                    "interface": match.group("interface"),
+                    "temp_c": temp_c,
+                    "voltage_v": voltage_v,
+                    "current_ma": current_ma,
+                    "optical_rx_dbm": optical_rx_dbm,
+                    "optical_tx_dbm": optical_tx_dbm,
+                }
+            ]
         return r

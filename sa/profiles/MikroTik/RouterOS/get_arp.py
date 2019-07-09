@@ -19,14 +19,7 @@ class Script(BaseScript):
         arp = []
         for n, f, r in self.cli_detail("/ip arp print detail without-paging"):
             if "mac-address" in r:
-                arp += [{
-                    "ip": r["address"],
-                    "mac": r["mac-address"],
-                    "interface": r["interface"]
-                }]
+                arp += [{"ip": r["address"], "mac": r["mac-address"], "interface": r["interface"]}]
             else:
-                arp += [{
-                    "ip": r["address"],
-                    "interface": r["interface"]
-                }]
+                arp += [{"ip": r["address"], "interface": r["interface"]}]
         return arp

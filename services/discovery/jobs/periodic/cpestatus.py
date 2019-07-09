@@ -8,8 +8,10 @@
 
 # Python modules
 import six
+
 # Third-party modules
 from pymongo import InsertOne, UpdateOne, UpdateMany
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.cpestatus import CPEStatus
@@ -19,11 +21,10 @@ class CPEStatusCheck(DiscoveryCheck):
     """
     Interface status discovery
     """
+
     name = "cpestatus"
     required_script = "get_cpe_status"
-    possible_capabilities = {
-        "Network | PON | OLT"
-    }
+    possible_capabilities = {"Network | PON | OLT"}
     UNKNOWN_STATUS = "unknown"
     ACTIVE_STATUS = "active"
 
@@ -56,7 +57,7 @@ class CPEStatusCheck(DiscoveryCheck):
             return True
         self.logger.info(
             "Object hasn't any of capabilities %s. Skipping",
-            ", ".join("'%s'" % c for c in self.possible_capabilities)
+            ", ".join("'%s'" % c for c in self.possible_capabilities),
         )
         return False
 
@@ -84,23 +85,11 @@ class CPEStatusCheck(DiscoveryCheck):
         :return: dict of global_id -> status
         """
         gids = list(data)
-        q = {
-            "managed_object": self.object.id
-        }
+        q = {"managed_object": self.object.id}
         if len(gids) == 1:
-            q = {
-                "$or": [
-                    q,
-                    {"global_id": gids[0]}
-                ]
-            }
+            q = {"$or": [q, {"global_id": gids[0]}]}
         elif len(gids) > 1:
-            q = {
-                "$or": [
-                    q,
-                    {"global_id": {"$in": gids}}
-                ]
-            }
+            q = {"$or": [q, {"global_id": {"$in": gids}}]}
         return dict((x["global_id"], x) for x in CPEStatus._get_collection().find(q))
 
     def apply_changes(self, current, last):
@@ -113,9 +102,7 @@ class CPEStatusCheck(DiscoveryCheck):
         self.logger.debug("Apply changes")
         bulk = []
         left = set(
-            global_id
-            for global_id in last
-            if last[global_id].get("status") != self.UNKNOWN_STATUS
+            global_id for global_id in last if last[global_id].get("status") != self.UNKNOWN_STATUS
         )
         for global_id in current:
             s = current[global_id]
@@ -125,46 +112,31 @@ class CPEStatusCheck(DiscoveryCheck):
                 diff, changes = self.get_difference(last[global_id], s)
                 if diff:
                     # Changed
-                    self.logger.info(
-                        "[%s] CPE status changed: %s",
-                        global_id,
-                        ", ".join(changes)
-                    )
-                    bulk += [UpdateOne({
-                        "global_id": global_id
-                    }, {
-                        "$set": diff
-                    })]
+                    self.logger.info("[%s] CPE status changed: %s", global_id, ", ".join(changes))
+                    bulk += [UpdateOne({"global_id": global_id}, {"$set": diff})]
                 if global_id in left:
                     left.remove(global_id)
             else:
                 # New
                 diff, changes = self.get_difference({}, s)
-                self.logger.info(
-                    "[%s] New CPE: %s",
-                    global_id,
-                    ", ".join(changes)
-                )
+                self.logger.info("[%s] New CPE: %s", global_id, ", ".join(changes))
                 bulk += [InsertOne(diff)]
         # Update missed statuses
         if left:
             if len(left) == 1:
-                bulk += [UpdateOne({
-                    "global_id": left.pop()
-                }, {
-                    "$set": {"status": self.UNKNOWN_STATUS}
-                })]
+                bulk += [
+                    UpdateOne({"global_id": left.pop()}, {"$set": {"status": self.UNKNOWN_STATUS}})
+                ]
             else:
-                bulk += [UpdateMany({
-                    "global_id": {"$in": list(left)}
-                }, {
-                    "$set": {"status": self.UNKNOWN_STATUS}
-                })]
+                bulk += [
+                    UpdateMany(
+                        {"global_id": {"$in": list(left)}},
+                        {"$set": {"status": self.UNKNOWN_STATUS}},
+                    )
+                ]
             for global_id in sorted(left):
                 self.logger.info(
-                    "[%s] CPE status missing. Changing status to %s",
-                    global_id,
-                    self.UNKNOWN_STATUS
+                    "[%s] CPE status missing. Changing status to %s", global_id, self.UNKNOWN_STATUS
                 )
         # Apply changes
         if bulk:
@@ -172,12 +144,11 @@ class CPEStatusCheck(DiscoveryCheck):
             self.logger.debug("Changes: %s", bulk)
             r = CPEStatus._get_collection().bulk_write(bulk)
             self.logger.info(
-                "%d bulk operations complete "
-                "inserted=%d, updated=%d, removed=%d",
+                "%d bulk operations complete " "inserted=%d, updated=%d, removed=%d",
                 len(bulk),
                 r.inserted_count,
                 r.modified_count,
-                r.deleted_count
+                r.deleted_count,
             )
         else:
             self.logger.info("Nothing changed")
@@ -192,9 +163,15 @@ class CPEStatusCheck(DiscoveryCheck):
         """
         r = {}
         changes = []
-        if active_only and old and old["managed_object"] != new["managed_object"]\
-                and new["status"] != self.ACTIVE_STATUS:
-            self.logger.info("[%s] Deny move to another manged_object when object is inactive", old["global_id"])
+        if (
+            active_only
+            and old
+            and old["managed_object"] != new["managed_object"]
+            and new["status"] != self.ACTIVE_STATUS
+        ):
+            self.logger.info(
+                "[%s] Deny move to another manged_object when object is inactive", old["global_id"]
+            )
             return r, changes
         for k in new:
             if new[k] is None or new[k] == "":

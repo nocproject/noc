@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,8 +20,8 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        "sysDescr = \"(?P<platform>\S+).+?(?P<version>\S+)\s\S+\s\S+\"$",
-        re.MULTILINE)
+        'sysDescr = "(?P<platform>\S+).+?(?P<version>\S+)\s\S+\s\S+"$', re.MULTILINE
+    )
 
     def execute(self):
         self.cli("SELGRP Status")
@@ -28,5 +29,5 @@ class Script(BaseScript):
         return {
             "vendor": "OneAccess",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

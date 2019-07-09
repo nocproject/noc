@@ -88,6 +88,7 @@ def scale(n):
     :param x: Scaling factor
     :return: Callable, performing scaling
     """
+
     def inner(v):
         return v * n
 
@@ -102,9 +103,11 @@ def fix_range(l_left, l_right, over_value=0):
     :param over_value: return if value over interval
     :return: Callable, performing scaling
     """
+
     def innner_fix_range(v):
         try:
             return v if l_right > float(v) > l_left else over_value
         except ValueError:
             return over_value
+
     return innner_fix_range

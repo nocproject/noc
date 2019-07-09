@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
@@ -19,12 +20,7 @@ class PrefixCard(BaseCard):
     default_template_name = "prefix"
     model = Prefix
 
-    SOURCES = {
-        "M": "Manual",
-        "i": "Interface",
-        "w": "Whois",
-        "n": "Neighbor"
-    }
+    SOURCES = {"M": "Manual", "i": "Interface", "w": "Whois", "n": "Neighbor"}
 
     def get_data(self):
         # Build upwards path

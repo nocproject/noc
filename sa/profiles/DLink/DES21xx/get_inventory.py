@@ -16,13 +16,18 @@ class Script(BaseScript):
     name = "DLink.DES21xx.get_inventory"
     cache = True
     interface = IGetInventory
-    rx_ver = re.compile(r"Product Name:(?P<platform>\S+).+Firmware Version:(?P<version>\S+)", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(
+        r"Product Name:(?P<platform>\S+).+Firmware Version:(?P<version>\S+)",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         match = self.re_search(self.rx_ver, self.cli("show switch"))
-        return [{
-            "type": "CHASSIS",
-            "number": "1",
-            "vendor": "DLINK",
-            "part_no": [match.group("platform")]
-        }]
+        return [
+            {
+                "type": "CHASSIS",
+                "number": "1",
+                "vendor": "DLINK",
+                "part_no": [match.group("platform")],
+            }
+        ]

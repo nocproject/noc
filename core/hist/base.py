@@ -8,6 +8,7 @@
 
 # Python modules
 import bisect
+
 # Third-party modules
 from atomiclong import AtomicLong
 
@@ -45,7 +46,11 @@ class Histogram(object):
         # Yield _sum
         sum_name = "%s_sum" % name
         yield "# TYPE %s untyped" % sum_name
-        yield "%s{%s} %s" % (sum_name, ",".join(ext_labels), float(self.total_sum.value) / self.scale)
+        yield "%s{%s} %s" % (
+            sum_name,
+            ",".join(ext_labels),
+            float(self.total_sum.value) / self.scale,
+        )
         # Yield _count
         count_name = "%s_count" % name
         yield "# TYPE %s untyped" % count_name

@@ -24,7 +24,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 
 DAL_NONE = -1
 DAL_RO = 0

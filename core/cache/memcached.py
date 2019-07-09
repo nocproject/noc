@@ -9,20 +9,19 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Third-party modules
 from six.moves import zip
 import pylibmc
 import pylibmc.pools
+
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
 from .base import BaseCache
 
 logger = logging.getLogger(__name__)
-ignorable_memcache_errors = (
-    pylibmc.ConnectionError,
-    pylibmc.ServerDown
-)
+ignorable_memcache_errors = (pylibmc.ConnectionError, pylibmc.ServerDown)
 
 
 class MemcachedCache(BaseCache):
@@ -35,14 +34,12 @@ class MemcachedCache(BaseCache):
         self.tpl_client = pylibmc.Client(
             [str(a) for a in config.memcached.addresses],
             binary=True,
-            behaviors={
-                "tcp_nodelay": True
-            }
+            behaviors={"tcp_nodelay": True},
         )
         logger.debug(
             "Starting memcached pool: hosts=%s, pool size=%d",
             ", ".join([str(a) for a in config.memcached.addresses]),
-            config.memcached.pool_size
+            config.memcached.pool_size,
         )
         self.pool = pylibmc.pools.ClientPool()
         self.pool.fill(self.tpl_client, config.memcached.pool_size)
@@ -110,19 +107,13 @@ class MemcachedCache(BaseCache):
         ttl = ttl or config.memcached.default_ttl
         with self.pool.reserve(block=True) as cache:
             try:
-                cache.set_multi(
-                    dict((self.make_key(k, version), data[k])
-                         for k in data),
-                    ttl
-                )
+                cache.set_multi(dict((self.make_key(k, version), data[k]) for k in data), ttl)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "memcache_set_many_failed")] += 1
 
     def delete_many(self, keys, version=None):
         with self.pool.reserve(block=True) as cache:
             try:
-                cache.delete_multi(
-                    [self.make_key(k, version) for k in keys]
-                )
+                cache.delete_multi([self.make_key(k, version) for k in keys])
             except ignorable_memcache_errors:
                 metrics["error", ("type", "memcache_delete_many_failed")] += 1

@@ -19,6 +19,7 @@ import datetime
 import os
 import six
 from six.moves.urllib.parse import urlparse
+
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -50,8 +51,7 @@ class DCSBase(object):
         self.resolvers = {}
         self.resolvers_lock = Lock()
         self.resolver_expiration_task = tornado.ioloop.PeriodicCallback(
-            self.expire_resolvers,
-            10000
+            self.expire_resolvers, 10000
         )
         self.health_check_service_id = None
         self.status = True
@@ -116,13 +116,9 @@ class DCSBase(object):
         raise tornado.gen.Return(resolver)
 
     @tornado.gen.coroutine
-    def resolve(self, name, hint=None, wait=True, timeout=None,
-                full_result=False, critical=False):
+    def resolve(self, name, hint=None, wait=True, timeout=None, full_result=False, critical=False):
         resolver = yield self.get_resolver(name, critical)
-        r = yield resolver.resolve(
-            hint=hint, wait=wait, timeout=timeout,
-            full_result=full_result
-        )
+        r = yield resolver.resolve(hint=hint, wait=wait, timeout=timeout, full_result=full_result)
         raise tornado.gen.Return(r)
 
     @tornado.gen.coroutine
@@ -135,8 +131,7 @@ class DCSBase(object):
                     r.stop()
                     del self.resolvers[svc]
 
-    def resolve_sync(self, name, hint=None, wait=True, timeout=None,
-                     full_result=False):
+    def resolve_sync(self, name, hint=None, wait=True, timeout=None, full_result=False):
         """
         Returns *hint* when service is active or new service
         instance,
@@ -150,9 +145,7 @@ class DCSBase(object):
         def _resolve():
             try:
                 r = yield self.resolve(
-                    name, hint=hint, wait=wait,
-                    timeout=timeout,
-                    full_result=full_result
+                    name, hint=hint, wait=wait, timeout=timeout, full_result=full_result
                 )
                 result.append(r)
             except tornado.gen.Return as e:
@@ -172,8 +165,9 @@ class DCSBase(object):
             return result[0]
 
     @tornado.gen.coroutine
-    def resolve_near(self, name, hint=None, wait=True, timeout=None,
-                     full_result=False, critical=False):
+    def resolve_near(
+        self, name, hint=None, wait=True, timeout=None, full_result=False, critical=False
+    ):
         """
         Synchronous call to resolve nearby service
         Commonly used for external services like databases
@@ -245,8 +239,8 @@ class ResolverBase(object):
                 self.logger.info(
                     "[%s] Set active services to: %s",
                     self.name,
-                    ", ".join("%s: %s" % (i, self.services[i])
-                              for i in self.services))
+                    ", ".join("%s: %s" % (i, self.services[i]) for i in self.services),
+                )
                 self.ready_event.set()
             else:
                 self.logger.info("[%s] No active services", self.name)
@@ -254,8 +248,7 @@ class ResolverBase(object):
             metrics["dcs_resolver_activeservices", ("name", self.name)] = len(self.services)
 
     @tornado.gen.coroutine
-    def resolve(self, hint=None, wait=True, timeout=None,
-                full_result=False):
+    def resolve(self, hint=None, wait=True, timeout=None, full_result=False):
         metrics["dcs_resolver_requests"] += 1
         if wait:
             # Wait until service catalog populated

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -25,16 +26,13 @@ class Script(BaseScript):
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\s*\n"
         r"^Software Version\.+ (?P<version>\S+)\s*\n"
         r"(^Bootloader Version\.+ (?P<bootprom>\S+)\s*\n)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
-        r = {
-            "vendor": "Alstec",
-            "platform": "7200",
-            "version": match.group("version")
-        }
+        r = {"vendor": "Alstec", "platform": "7200", "version": match.group("version")}
         if match.group("bootprom"):
             r["attributes"] = {}
             r["attributes"]["Boot PROM"] = match.group("bootprom")

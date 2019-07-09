@@ -16,6 +16,7 @@ class APIKeyApplication(ExtDocApplication):
     """
     APIKey application
     """
+
     title = "API Key"
     menu = [_("Setup"), _("API Keys")]
     model = APIKey

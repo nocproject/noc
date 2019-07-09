@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -21,25 +22,16 @@ class Script(BaseScript):
     CHECK_SNMP_GET = {
         "BRAS | PPPoE": mib["CISCO-PPPOE-MIB::cPppoeSystemCurrSessions", 0],
         "BRAS | L2TP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 2],
-        "BRAS | PPTP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 3]
+        "BRAS | PPTP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 3],
     }
 
     CAP_SLA_SYNTAX = "Cisco | IOS | Syntax | IP SLA"
 
-    SYNTAX_IP_SLA_APPLICATION = [
-        "show ip sla application",
-        "show ip sla monitor application"
-    ]
+    SYNTAX_IP_SLA_APPLICATION = ["show ip sla application", "show ip sla monitor application"]
 
-    SYNTAX_IP_SLA_RESPONDER = [
-        "show ip sla responder",
-        "show ip sla monitor responder"
-    ]
+    SYNTAX_IP_SLA_RESPONDER = ["show ip sla responder", "show ip sla monitor responder"]
 
-    SYNTAX_IP_SLA_CONFIGURATION = [
-        "show ip sla configuration",
-        "show ip sla monitor configuration"
-    ]
+    SYNTAX_IP_SLA_CONFIGURATION = ["show ip sla configuration", "show ip sla monitor configuration"]
 
     def has_lldp_snmp(self):
         """
@@ -86,7 +78,7 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show spanning-tree")
-        if ("No spanning tree instance exists" in r or "No spanning tree instances exist" in r):
+        if "No spanning tree instance exists" in r or "No spanning tree instances exist" in r:
             return False
         return True
 
@@ -119,29 +111,23 @@ class Script(BaseScript):
         return True
 
     rx_ip_sla_responder = re.compile(
-        r"IP SLA Monitor Responder is:\s*(?P<state>\S+)",
-        re.MULTILINE | re.IGNORECASE
+        r"IP SLA Monitor Responder is:\s*(?P<state>\S+)", re.MULTILINE | re.IGNORECASE
     )
 
     @false_on_cli_error
     def has_ip_sla_responder(self):
-        r = self.cli(
-            self.SYNTAX_IP_SLA_RESPONDER[self.capabilities[self.CAP_SLA_SYNTAX]]
-        )
+        r = self.cli(self.SYNTAX_IP_SLA_RESPONDER[self.capabilities[self.CAP_SLA_SYNTAX]])
         match = self.rx_ip_sla_responder.search(r)
         if match:
             return "enabled" in match.group("state").lower()
         else:
             return False
 
-    rx_ip_sla_probe_entry = re.compile(r"Entry Number: \d+",
-                                       re.IGNORECASE | re.MULTILINE)
+    rx_ip_sla_probe_entry = re.compile(r"Entry Number: \d+", re.IGNORECASE | re.MULTILINE)
 
     @false_on_cli_error
     def get_ip_sla_probes(self):
-        r = self.cli(
-            self.SYNTAX_IP_SLA_CONFIGURATION[self.capabilities[self.CAP_SLA_SYNTAX]]
-        )
+        r = self.cli(self.SYNTAX_IP_SLA_CONFIGURATION[self.capabilities[self.CAP_SLA_SYNTAX]])
         return sum(1 for _ in self.rx_ip_sla_probe_entry.finditer(r))
 
     @false_on_cli_error

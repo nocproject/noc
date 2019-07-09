@@ -8,6 +8,7 @@
 
 # Third-party modules
 import bson
+
 # NOC module
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.migration.base import BaseMigration
@@ -18,9 +19,13 @@ class Migration(BaseMigration):
         # Create default profile
         P_ID = "5ae04bcb45ce8300f385edb2"
         pcoll = self.mongo_db["asprofiles"]
-        pcoll.insert_one({"_id": bson.ObjectId(P_ID), "name": "default", "description": "Default Profile"})
+        pcoll.insert_one(
+            {"_id": bson.ObjectId(P_ID), "name": "default", "description": "Default Profile"}
+        )
         # Create AS.profile
-        self.db.add_column("peer_as", "profile", DocumentReferenceField("peer.ASProfile", null=True, blank=True))
+        self.db.add_column(
+            "peer_as", "profile", DocumentReferenceField("peer.ASProfile", null=True, blank=True)
+        )
         # Update profiles
         self.db.execute("UPDATE peer_as SET profile = %s", [P_ID])
         # Set profile not null

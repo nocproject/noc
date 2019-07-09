@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
@@ -15,28 +16,25 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces, MACAddressParameter
 
 
 class Script(BaseScript):
-    """
-    Cisco.SCOS.get_interfaces
-
-    """
     name = "Cisco.SCOS.get_interfaces"
     interface = IGetInterfaces
 
     rx_int = re.compile(
-        r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n"
-        r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
+        r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n" r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_stat = re.compile(
-        r"ifAdminStatus.\d+\s+=\s+(?P<a_stat>\d)\n"
-        r"ifOperStatus.\d+\s+=\s+(?P<o_stat>\d)\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
+        r"ifAdminStatus.\d+\s+=\s+(?P<a_stat>\d)\n" r"ifOperStatus.\d+\s+=\s+(?P<o_stat>\d)\n",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_mac = re.compile(
-        r"ifPhysAddress.\d+\s+=\s+"
-        r"(?P<mac>\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2})\s+\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
+        r"ifPhysAddress.\d+\s+=\s+" r"(?P<mac>\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2})\s+\n",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_ip = re.compile(
         r"ip address:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\n"
-        r"subnet mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\n", re.MULTILINE | re.IGNORECASE
+        r"subnet mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\n",
+        re.MULTILINE | re.IGNORECASE,
     )
 
     def execute(self):
@@ -46,7 +44,6 @@ class Script(BaseScript):
             c = self.cli("sh snmp MIB MIB-II interfaces")
         except self.CLISyntaxError:
             return {}
-        r = {}
         for l in c.split("\n\n"):
             ip_addr = []
             if l.startswith("ifName"):

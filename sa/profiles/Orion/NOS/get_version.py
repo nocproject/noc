@@ -25,6 +25,6 @@ class Script(BaseScript):
             "attributes": {
                 "Serial Number": v["serial"],
                 "Boot PROM": v["bootprom"],
-                "HW version": v["hardware"]
-            }
+                "HW version": v["hardware"],
+            },
         }

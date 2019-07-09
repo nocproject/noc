@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -20,7 +21,9 @@ class Script(BaseScript):
 
     rx_interface_status = re.compile(
         r"^\s*(?P<interface>\S+)\s+is\s+(?:administratively\s+)?\S+, "
-        r"line protocol is (?P<status>\S+)", re.MULTILINE)
+        r"line protocol is (?P<status>\S+)",
+        re.MULTILINE,
+    )
 
     def execute_cli(self, interface=None):
         r = []
@@ -32,8 +35,5 @@ class Script(BaseScript):
             iface = match.group("interface")
             if iface.startswith("Vlan") or iface.startswith("l2over"):
                 continue
-            r += [{
-                "interface": iface,
-                "status": match.group("status").lower() == "up"
-            }]
+            r += [{"interface": iface, "status": match.group("status").lower() == "up"}]
         return r

@@ -14,6 +14,7 @@ class LACPCheck(TopologyDiscoveryCheck):
     """
     CDP Topology discovery
     """
+
     name = "lacp"
     required_script = "get_lacp_neighbors"
     required_capabilities = ["Network | LACP"]

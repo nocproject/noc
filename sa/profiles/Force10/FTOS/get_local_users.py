@@ -5,15 +5,15 @@
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
-import re
-import datetime
 
-rx_line = re.compile(
-r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
+rx_line = re.compile(r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
 
 
 class Script(BaseScript):
@@ -33,9 +33,7 @@ class Script(BaseScript):
                         user_class = "superuser"
                     else:
                         user_class = privilege
-                r.append({
-                    "username": match.group("username"),
-                    "class": user_class,
-                    "is_active": True
-                    })
+                r.append(
+                    {"username": match.group("username"), "class": user_class, "is_active": True}
+                )
         return r

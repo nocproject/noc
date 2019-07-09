@@ -16,6 +16,7 @@ class TemplateApplication(ExtModelApplication):
     """
     Template application
     """
+
     title = _("Templates")
     menu = [_("Setup"), _("Templates")]
     model = Template

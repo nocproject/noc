@@ -17,10 +17,12 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.profile.get_hardware(self)
-        return [{
-            "type": "CHASSIS",
-            "vendor": "3COM",
-            "part_no": v["part_no"],
-            "revision": v["hardware"],
-            "serial": v["serial"]
-        }]
+        return [
+            {
+                "type": "CHASSIS",
+                "vendor": "3COM",
+                "part_no": v["part_no"],
+                "revision": v["hardware"],
+                "serial": v["serial"],
+            }
+        ]

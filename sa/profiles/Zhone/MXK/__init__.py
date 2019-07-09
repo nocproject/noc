@@ -16,6 +16,5 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_prompt = r"^(?P<hostname>\S+)\s*#"
     pattern_syntax_error = r"ERROR: Permission denied."
-    pattern_more = \
-        "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
+    pattern_more = "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
     command_more = "a"

@@ -8,8 +8,10 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 from mongoengine import Q
+
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.vc.models.vcdomain import VCDomain
@@ -17,8 +19,13 @@ from noc.vc.models.vcfilter import VCFilter
 from noc.vc.models.vc import VC
 from noc.inv.models.subinterface import SubInterface
 from noc.core.ip import IP
-from noc.sa.interfaces.base import (DictParameter, ModelParameter, ListOfParameter,
-                                    IntParameter, StringParameter)
+from noc.sa.interfaces.base import (
+    DictParameter,
+    ModelParameter,
+    ListOfParameter,
+    IntParameter,
+    StringParameter,
+)
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
 
@@ -27,6 +34,7 @@ class VCApplication(ExtModelApplication):
     """
     VC application
     """
+
     title = _("VC")
     menu = _("Virtual Circuits")
     model = VC
@@ -35,9 +43,7 @@ class VCApplication(ExtModelApplication):
     query_condition = "icontains"
     int_query_fields = ["l1", "l2"]
 
-    implied_permissions = {
-        "read": ["vc:vcdomain:lookup", "main:style:lookup"]
-    }
+    implied_permissions = {"read": ["vc:vcdomain:lookup", "main:style:lookup"]}
 
     def get_vc_domain_objects(self, vc_domain):
         return vc_domain.managedobject_set.all()
@@ -57,9 +63,7 @@ class VCApplication(ExtModelApplication):
         except KeyError:
             q[None] = [x]
 
-    @cachedmethod(
-        key="vc-interface-count-%s"
-    )
+    @cachedmethod(key="vc-interface-count-%s")
     def get_vc_interfaces_count(self, vc_id):
         vc = VC.get_by_id(vc_id)
         if not vc:
@@ -67,18 +71,16 @@ class VCApplication(ExtModelApplication):
         objects = vc.vc_domain.managedobject_set.values_list("id", flat=True)
         l1 = vc.l1
         n = SubInterface.objects.filter(
-            Q(managed_object__in=objects) &
-            (
-                Q(untagged_vlan=l1, enabled_afi=["BRIDGE"]) |
-                Q(tagged_vlans=l1, enabled_afi=["BRIDGE"]) |
-                Q(vlan_ids=l1)
+            Q(managed_object__in=objects)
+            & (
+                Q(untagged_vlan=l1, enabled_afi=["BRIDGE"])
+                | Q(tagged_vlans=l1, enabled_afi=["BRIDGE"])
+                | Q(vlan_ids=l1)
             )
         ).count()
         return n
 
-    @cachedmethod(
-        key="vc-prefixes-%s"
-    )
+    @cachedmethod(key="vc-prefixes-%s")
     def get_vc_prefixes(self, vc_id):
         vc = VC.get_by_id(vc_id)
         if not vc:
@@ -88,9 +90,9 @@ class VCApplication(ExtModelApplication):
         ipv6 = set()
         # @todo: Exact match on vlan_ids
         for si in SubInterface.objects.filter(
-            Q(managed_object__in=objects) &
-            Q(vlan_ids=vc.l1) &
-            (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
+            Q(managed_object__in=objects)
+            & Q(vlan_ids=vc.l1)
+            & (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
         ).only("enabled_afi", "ipv4_addresses", "ipv6_addresses"):
             if "IPv4" in si.enabled_afi:
                 ipv4.update([IP.prefix(ip).first for ip in si.ipv4_addresses])
@@ -114,43 +116,50 @@ class VCApplication(ExtModelApplication):
         return o.style.css_class_name if o.style else ""
 
     @view(
-        url="^find_free/$", method=["GET"], access="read", api=True,
-        validate={
-            "vc_domain": ModelParameter(VCDomain),
-            "vc_filter": ModelParameter(VCFilter)
-        }
+        url="^find_free/$",
+        method=["GET"],
+        access="read",
+        api=True,
+        validate={"vc_domain": ModelParameter(VCDomain), "vc_filter": ModelParameter(VCFilter)},
     )
     def api_find_free(self, request, vc_domain, vc_filter, **kwargs):
         return vc_domain.get_free_label(vc_filter)
 
     @view(
-        url="^bulk/import/", method=["POST"], access="import", api=True,
+        url="^bulk/import/",
+        method=["POST"],
+        access="import",
+        api=True,
         validate={
             "vc_domain": ModelParameter(VCDomain),
-            "items": ListOfParameter(element=DictParameter(attrs={
-                "l1": IntParameter(),
-                "l2": IntParameter(),
-                "name": StringParameter(),
-                "description": StringParameter(default="")
-            }))
-        }
+            "items": ListOfParameter(
+                element=DictParameter(
+                    attrs={
+                        "l1": IntParameter(),
+                        "l2": IntParameter(),
+                        "name": StringParameter(),
+                        "description": StringParameter(default=""),
+                    }
+                )
+            ),
+        },
     )
     def api_bulk_import(self, request, vc_domain, items):
         n = 0
         for i in items:
-            if not VC.objects.filter(vc_domain=vc_domain,
-                                     l1=i["l1"], l2=i["l2"]).exists():
+            if not VC.objects.filter(vc_domain=vc_domain, l1=i["l1"], l2=i["l2"]).exists():
                 # Add only not-existing
-                VC(vc_domain=vc_domain, l1=i["l1"], l2=i["l2"],
-                   name=i["name"], description=i["description"]).save()
+                VC(
+                    vc_domain=vc_domain,
+                    l1=i["l1"],
+                    l2=i["l2"],
+                    name=i["name"],
+                    description=i["description"],
+                ).save()
                 n += 1
-        return {
-            "status": True,
-            "imported": n
-        }
+        return {"status": True, "imported": n}
 
-    @view(url=r"^(?P<vc_id>\d+)/interfaces/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<vc_id>\d+)/interfaces/$", method=["GET"], access="read", api=True)
     def api_interfaces(self, request, vc_id):
         """
         Returns a dict of {untagged: ..., tagged: ...., l3: ...}
@@ -161,51 +170,52 @@ class VCApplication(ExtModelApplication):
         vc = self.get_object_or_404(VC, id=int(vc_id))
         l1 = vc.l1
         # Managed objects in VC domain
-        objects = set(vc.vc_domain.managedobject_set.values_list(
-            "id", flat=True))
+        objects = set(vc.vc_domain.managedobject_set.values_list("id", flat=True))
         # Find untagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
-            managed_object__in=objects,
-            untagged_vlan=l1,
-            enabled_afi="BRIDGE"
+            managed_object__in=objects, untagged_vlan=l1, enabled_afi="BRIDGE"
         ):
             si_objects[si.managed_object] += [{"name": si.name}]
-        untagged = [{
-            "managed_object_id": o.id,
-            "managed_object_name": o.name,
-            "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
-        } for o in si_objects]
+        untagged = [
+            {
+                "managed_object_id": o.id,
+                "managed_object_name": o.name,
+                "interfaces": sorted(si_objects[o], key=lambda x: x["name"]),
+            }
+            for o in si_objects
+        ]
         # Find tagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
-            managed_object__in=objects,
-            tagged_vlans=l1,
-            enabled_afi="BRIDGE"
+            managed_object__in=objects, tagged_vlans=l1, enabled_afi="BRIDGE"
         ):
             si_objects[si.managed_object] += [{"name": si.name}]
-        tagged = [{
-            "managed_object_id": o.id,
-            "managed_object_name": o.name,
-            "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
-        } for o in si_objects]
+        tagged = [
+            {
+                "managed_object_id": o.id,
+                "managed_object_name": o.name,
+                "interfaces": sorted(si_objects[o], key=lambda x: x["name"]),
+            }
+            for o in si_objects
+        ]
         # Find l3 interfaces
         si_objects = defaultdict(list)
-        for si in SubInterface.objects.filter(
-            managed_object__in=objects,
-            vlan_ids=l1
-        ):
-            si_objects[si.managed_object] += [{
-                "name": si.name,
-                "ipv4_addresses": si.ipv4_addresses,
-                "ipv6_addresses": si.ipv6_addresses
-            }]
+        for si in SubInterface.objects.filter(managed_object__in=objects, vlan_ids=l1):
+            si_objects[si.managed_object] += [
+                {
+                    "name": si.name,
+                    "ipv4_addresses": si.ipv4_addresses,
+                    "ipv6_addresses": si.ipv6_addresses,
+                }
+            ]
         l3 = [
             {
                 "managed_object_id": o.id,
                 "managed_object_name": o.name,
-                "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
-            } for o in si_objects
+                "interfaces": sorted(si_objects[o], key=lambda x: x["name"]),
+            }
+            for o in si_objects
         ]
         # Update caches
         ic = sum(len(x["interfaces"]) for x in untagged)
@@ -213,8 +223,7 @@ class VCApplication(ExtModelApplication):
         ic += sum(len(x["interfaces"]) for x in l3)
         #
         return {
-            "untagged": sorted(untagged,
-                               key=lambda x: x["managed_object_name"]),
+            "untagged": sorted(untagged, key=lambda x: x["managed_object_name"]),
             "tagged": sorted(tagged, key=lambda x: x["managed_object_name"]),
-            "l3": sorted(l3, key=lambda x: x["managed_object_name"])
+            "l3": sorted(l3, key=lambda x: x["managed_object_name"]),
         }

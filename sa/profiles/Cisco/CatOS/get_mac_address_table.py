@@ -5,14 +5,17 @@
 # Copyright (C) 2007-2010 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
-import noc.sa.profiles
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+
+# Python modules
 import re
 
-rx_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<mac>\S+)\s+(?:(?P<type>\S+)\s)?(?P<interfaces>(?:\d|\/|-|,)+)\s+\S+$")
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+
+rx_line = re.compile(
+    r"^(?P<vlan_id>\d{1,4})\s+(?P<mac>\S+)\s+(?:(?P<type>\S+)\s)?(?P<interfaces>(?:\d|\/|-|,)+)\s+\S+$"
+)
 
 
 class Script(BaseScript):
@@ -36,10 +39,12 @@ class Script(BaseScript):
         for l in vlans.split("\n"):
             match = rx_line.match(l.strip())
             if match:
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": "D"
-                })
+                r.append(
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": "D",
+                    }
+                )
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -17,8 +18,7 @@ class Script(BaseScript):
     name = "Linksys.SPS2xx.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S", re.MULTILINE)
 
     def execute(self):
         r = []
@@ -26,8 +26,8 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for vlan, name in self.snmp.join_tables(
-                        "1.3.6.1.2.1.17.7.1.4.2.1.3",
-                        "1.3.6.1.2.1.17.7.1.4.3.1.1"):
+                    "1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.3.1.1"
+                ):
                     r += [{"vlan_id": vlan, "name": name}]
                 return r
             except self.snmp.TimeOutError:
@@ -35,8 +35,5 @@ class Script(BaseScript):
 
         # Fallback to CLI
         for match in self.rx_vlan.finditer(self.cli("show vlan")):
-            r += [{
-                "vlan_id": int(match.group("vlan")),
-                "name": match.group("name")
-            }]
+            r += [{"vlan_id": int(match.group("vlan")), "name": match.group("name")}]
         return r

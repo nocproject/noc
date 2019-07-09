@@ -18,5 +18,5 @@ class Migration(BaseMigration):
         if self.db.execute("SELECT COUNT(*) FROM main_shard WHERE name=%s", [self.NAME])[0][0] == 0:
             self.db.execute(
                 "INSERT INTO main_shard(name, is_active, description) VALUES(%s, %s, %s)",
-                [self.NAME, True, "Default shard"]
+                [self.NAME, True, "Default shard"],
             )

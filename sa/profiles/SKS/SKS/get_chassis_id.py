@@ -17,8 +17,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_mac = re.compile(
-        r"^(?:System|Base ethernet) MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
+    rx_mac = re.compile(r"^(?:System|Base ethernet) MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
 
     def execute(self):
         try:
@@ -29,7 +28,4 @@ class Script(BaseScript):
         if not match:
             c = self.cli("show system unit 1 ", cached=True)
             match = self.rx_mac.search(c)
-        return {
-            "first_chassis_mac": match.group("mac"),
-            "last_chassis_mac": match.group("mac")
-        }
+        return {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}

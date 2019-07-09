@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -18,16 +19,11 @@ class Script(BaseScript):
     interface = IGetInventory
     cache = True
 
-    rx_snmp = re.compile(
-        r"^(?P<platform>\S+), FW \S+$")
+    rx_snmp = re.compile(r"^(?P<platform>\S+), FW \S+$")
 
-    rx_plat = re.compile(
-        r"^var devname='+(?P<platform>.+)+';$",
-        re.MULTILINE)
+    rx_plat = re.compile(r"^var devname='+(?P<platform>.+)+';$", re.MULTILINE)
 
-    rx_rev = re.compile(
-        r"^var hwmodel=\d+;var hwver=+(?P<revision>\d+)+;",
-        re.MULTILINE)
+    rx_rev = re.compile(r"^var hwmodel=\d+;var hwver=+(?P<revision>\d+)+;", re.MULTILINE)
 
     def execute(self):
         # Try SNMP first
@@ -35,12 +31,14 @@ class Script(BaseScript):
             try:
                 ver = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 match = self.rx_snmp.search(ver)
-                return [{
-                    "type": "CHASSIS",
-                    "number": "1",
-                    "vendor": "Alentis",
-                    "part_no": [match.group("platform")]
-                }]
+                return [
+                    {
+                        "type": "CHASSIS",
+                        "number": "1",
+                        "vendor": "Alentis",
+                        "part_no": [match.group("platform")],
+                    }
+                ]
             except self.snmp.TimeOutError:
                 pass
 
@@ -53,13 +51,15 @@ class Script(BaseScript):
 
         data = self.profile.var_data(self, "/setup_get.cgi")
 
-        return [{
-            "type": "CHASSIS",
-            "number": "1",
-            "builtin": False,
-            "vendor": "Alentis",
-            "part_no": [platform],
-            "revision": revision,
-            "serial": data["serialnum"],
-            "description": data["location"].encode('UTF8')
-        }]
+        return [
+            {
+                "type": "CHASSIS",
+                "number": "1",
+                "builtin": False,
+                "vendor": "Alentis",
+                "part_no": [platform],
+                "revision": revision,
+                "serial": data["serialnum"],
+                "description": data["location"].encode("UTF8"),
+            }
+        ]

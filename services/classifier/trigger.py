@@ -9,6 +9,7 @@
 # Python modules
 import re
 import logging
+
 # Python modules
 from noc.core.debug import error_report
 
@@ -29,9 +30,11 @@ class Trigger(object):
         """
         Check event matches trigger condition
         """
-        return (eval(self.condition, {}, {"event": event, "re": re}) and
-                (self.time_pattern.match(event.timestamp) if self.time_pattern else True) and
-                (self.selector.match(event.managed_object) if self.selector else True))
+        return (
+            eval(self.condition, {}, {"event": event, "re": re})
+            and (self.time_pattern.match(event.timestamp) if self.time_pattern else True)
+            and (self.selector.match(event.managed_object) if self.selector else True)
+        )
 
     def call(self, event):
         if not self.match(event):
@@ -44,7 +47,9 @@ class Trigger(object):
             for lang in self.notification_group.languages:
                 s = event.subject
                 b = event.body
-                subject[lang] = self.template.render_subject(LANG=lang, event=event, subject=s, body=b)
+                subject[lang] = self.template.render_subject(
+                    LANG=lang, event=event, subject=s, body=b
+                )
                 body[lang] = self.template.render_body(LANG=lang, event=event, subject=s, body=b)
             self.notification_group.notify(subject=subject, body=body)
         # Call Handler

@@ -8,8 +8,10 @@
 
 # Python modules
 import datetime
-# Django modules
+
+# Third-party modules
 from django import forms
+
 # NOC modules
 from noc.lib.app.application import Application, view, HasPerm
 from noc.lib.forms import NOCForm
@@ -36,10 +38,12 @@ class CheckpointAppplication(Application):
         if request.POST:
             form = form_class(request.POST)
             if form.is_valid():
-                Checkpoint.set_checkpoint(comment=form.cleaned_data["comment"],
-                                          user=request.user,
-                                          timestamp=datetime.datetime.now(),
-                                          private=form.cleaned_data.get("is_private", False))
+                Checkpoint.set_checkpoint(
+                    comment=form.cleaned_data["comment"],
+                    user=request.user,
+                    timestamp=datetime.datetime.now(),
+                    private=form.cleaned_data.get("is_private", False),
+                )
                 self.message_user(request, _("Checkpoint has been set"))
                 return self.close_popup(request)
         else:

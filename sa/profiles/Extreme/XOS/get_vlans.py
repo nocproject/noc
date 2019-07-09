@@ -26,8 +26,5 @@ class Script(BaseScript):
             if match:
                 name = match.group("name")
                 vlan_id = int(match.group("vlan_id"))
-                r.append({
-                    "vlan_id": vlan_id,
-                    "name": name
-                    })
+                r.append({"vlan_id": vlan_id, "name": name})
         return r

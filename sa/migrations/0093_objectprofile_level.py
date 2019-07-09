@@ -8,10 +8,13 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("sa_managedobjectprofile", "level", models.IntegerField("Level", default=25))
+        self.db.add_column(
+            "sa_managedobjectprofile", "level", models.IntegerField("Level", default=25)
+        )

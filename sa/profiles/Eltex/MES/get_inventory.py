@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -19,19 +20,14 @@ class Script(BaseScript):
     interface = IGetInventory
     cache = True
 
-    rx_hardware = re.compile(
-        r"^HW version+\s+(?P<hardware>\S+)$", re.MULTILINE)
-    rx_serial1 = re.compile(
-        r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
-    rx_serial2 = re.compile(
-        r"^\s+1\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
+    rx_hardware = re.compile(r"^HW version+\s+(?P<hardware>\S+)$", re.MULTILINE)
+    rx_serial1 = re.compile(r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
+    rx_serial2 = re.compile(r"^\s+1\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
     rx_serial3 = re.compile(
-        r"^\s+1\s+(?P<mac>\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n",
-        re.MULTILINE)
-    rx_platform = re.compile(
-        r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
-    rx_descr = re.compile(
-        r"^System (?:Description|Type):\s+(?P<descr>.+)$", re.MULTILINE)
+        r"^\s+1\s+(?P<mac>\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n", re.MULTILINE
+    )
+    rx_platform = re.compile(r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
+    rx_descr = re.compile(r"^System (?:Description|Type):\s+(?P<descr>.+)$", re.MULTILINE)
     rx_trans = re.compile(
         r"^\s*Transceiver information:\s*\n"
         r"^\s*Vendor name: (?P<vendor>.+?)\s*\n"
@@ -43,7 +39,7 @@ class Script(BaseScript):
         r"^\s*Compliance code: (?P<code>.+?)\s*\n"
         r"^\s*Laser wavelength: (?P<wavelength>.+?)\s*\n"
         r"^\s*Transfer distance: (?P<distance>.+?)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def get_chassis(self, plat, ver, ser):
@@ -80,11 +76,7 @@ class Script(BaseScript):
         else:
             serial = self.rx_serial2.search(ser)
 
-        r = {
-            "type": "CHASSIS",
-            "vendor": "ELTEX",
-            "part_no": [platform]
-        }
+        r = {"type": "CHASSIS", "vendor": "ELTEX", "part_no": [platform]}
         if serial:
             r["serial"] = serial.group("serial")
         if hardware:
@@ -96,10 +88,7 @@ class Script(BaseScript):
     def get_trans(self, ifname):
         v = self.cli("show fiber-ports optical-transceiver detailed interface %s" % ifname)
         match = self.rx_trans.search(v)
-        r = {
-            "type": "XCVR",
-            "vendor": match.group("vendor"),
-        }
+        r = {"type": "XCVR", "vendor": match.group("vendor")}
         if match.group("serial"):
             r["serial"] = match.group("serial")
         if match.group("revision"):

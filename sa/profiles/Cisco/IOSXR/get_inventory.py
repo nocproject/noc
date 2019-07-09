@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -20,7 +21,7 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\",? DESCR: \"(?P<descr>[^\"]+)\"\n"
         r"PID:\s+(?P<pid>\S*?)\s*,?\s+VID:\s+(?P<vid>\S*?)\s*,? SN: (?P<serial>\S+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
     rx_trans = re.compile(r"((?:100|1000|10G)BASE\S+)")
@@ -30,23 +31,24 @@ class Script(BaseScript):
         v = self.cli("admin show inventory")
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
-                match.group("name"), match.group("pid"),
-                match.group("descr"), len(objects)
+                match.group("name"), match.group("pid"), match.group("descr"), len(objects)
             )
             if not part_no:
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"
-                objects += [{
-                    "type": type,
-                    "number": number,
-                    "vendor": vendor,
-                    "serial": match.group("serial"),
-                    "description": match.group("descr"),
-                    "part_no": [part_no],
-                    "revision": match.group("vid"),
-                    "builtin": False
-                }]
+                objects += [
+                    {
+                        "type": type,
+                        "number": number,
+                        "vendor": vendor,
+                        "serial": match.group("serial"),
+                        "description": match.group("descr"),
+                        "part_no": [part_no],
+                        "revision": match.group("vid"),
+                        "builtin": False,
+                    }
+                ]
         # Reorder chassis
         if objects[-1]["type"] == "CHASSIS":
             objects = [objects[-1]] + objects[:-1]
@@ -67,8 +69,13 @@ class Script(BaseScript):
             return "MOD", number, pid
         elif (
             (
-                "LC" in descr or "Line Card" in descr or "Linecard" in descr or "Interface Module" in descr
-            ) and "module mau" not in name and not name.startswith("chassis")
+                "LC" in descr
+                or "Line Card" in descr
+                or "Linecard" in descr
+                or "Interface Module" in descr
+            )
+            and "module mau" not in name
+            and not name.startswith("chassis")
         ):
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid

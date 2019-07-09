@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Config parsing basevalidator
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 from __future__ import absolute_import
 import logging
 
-# Django modules
+# Third-party modules
 from django.template import Template, Context
 
 # NOC modules

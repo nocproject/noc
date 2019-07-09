@@ -11,16 +11,11 @@ import datetime
 
 # Third-party modules
 import six
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DateTimeField, ListField, IntField
 
 # NOC modules
-from noc.lib.nosql import (
-    Document,
-    PlainReferenceListField,
-    StringField,
-    DateTimeField,
-    ListField,
-    IntField,
-)
+from noc.core.mongo.fields import PlainReferenceListField
 from noc.core.model.decorator import on_delete, on_save
 
 
@@ -53,7 +48,7 @@ class L3Link(Document):
     l3_cost = IntField(default=1)
 
     def __str__(self):
-        return u"(%s)" % ", ".join([unicode(i) for i in self.subinterfaces])
+        return "(%s)" % ", ".join([unicode(i) for i in self.subinterfaces])
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.subinterfaces))

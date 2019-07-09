@@ -8,10 +8,13 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from six.moves.urllib.parse import unquote as urllib_unquote
 
-rx_url = re.compile(r"^(?P<scheme>[^:]+)://(?:(?P<user>[^:]+):(?P<password>[^@]+)@)(?P<host>[^/:]+)(?::(?P<port>\d+))?(?P<path>.*)$")
+rx_url = re.compile(
+    r"^(?P<scheme>[^:]+)://(?:(?P<user>[^:]+):(?P<password>[^@]+)@)(?P<host>[^/:]+)(?::(?P<port>\d+))?(?P<path>.*)$"
+)
 
 
 class InvalidURLException(Exception):

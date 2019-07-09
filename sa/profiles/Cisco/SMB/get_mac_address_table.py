@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -16,8 +17,10 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "Cisco.SMB.get_mac_address_table"
     interface = IGetMACAddressTable
-    rx_line = re.compile(r"^\s*(?P<vlan_id>\d{1,4})\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)\s*$")
-    ignored_interfaces = ("0")
+    rx_line = re.compile(
+        r"^\s*(?P<vlan_id>\d{1,4})\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)\s*$"
+    )
+    ignored_interfaces = "0"
 
     def is_ignored_interface(self, i):
         if i.lower() in self.ignored_interfaces:
@@ -47,23 +50,19 @@ class Script(BaseScript):
             match = self.rx_line.match(raw)
             if match:
                 mac = match.group("mac")
-                interfaces = [
-                    i.strip() for i in match.group("interfaces").split(",")
-                ]
-                interfaces = [
-                    i for i in interfaces
-                    if not self.is_ignored_interface(i)
-                ]
+                interfaces = [i.strip() for i in match.group("interfaces").split(",")]
+                interfaces = [i for i in interfaces if not self.is_ignored_interface(i)]
                 if not interfaces:
                     continue
-                m_type = {"dynamic": "D",
-                          "static": "S"}.get(match.group("type").lower())
+                m_type = {"dynamic": "D", "static": "S"}.get(match.group("type").lower())
                 if not m_type:
                     continue
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": mac,
-                    "interfaces": interfaces,
-                    "type": m_type,
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": mac,
+                        "interfaces": interfaces,
+                        "type": m_type,
+                    }
+                ]
         return r

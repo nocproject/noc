@@ -10,6 +10,7 @@
 import threading
 import time
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
@@ -22,22 +23,19 @@ id_lock = threading.Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ('sa.AdministrativeDomain', 'default_pool'),
-    ("sa.ManagedObject", "pool"),
-    ("sa.ManagedObjectSelector", "filter_pool")
-    # ("fm.EscalationItem", "administrative_domain")
-])
+@on_delete_check(
+    check=[
+        ("sa.AdministrativeDomain", "default_pool"),
+        ("sa.ManagedObject", "pool"),
+        ("sa.ManagedObjectSelector", "filter_pool")
+        # ("fm.EscalationItem", "administrative_domain")
+    ]
+)
 @six.python_2_unicode_compatible
 class Pool(Document):
-    meta = {
-        "collection": "noc.pools",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.pools", "strict": False, "auto_create_index": False}
 
-    name = StringField(unique=True, min_length=1, max_length=16,
-                       regex="^[0-9a-zA-Z]{1,16}$")
+    name = StringField(unique=True, min_length=1, max_length=16, regex="^[0-9a-zA-Z]{1,16}$")
     description = StringField()
     discovery_reschedule_limit = IntField(default=50)
     # Object id in BI

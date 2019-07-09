@@ -9,8 +9,10 @@
 # Python modules
 import re
 import sys
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.mib import mib
 
@@ -21,6 +23,7 @@ class OIDRule(object):
     """
     SNMP OID generator for SNMP_OIDS
     """
+
     name = "oid"
     default_type = "gauge"
 
@@ -71,10 +74,7 @@ class OIDRule(object):
         :param context:
         :return:
         """
-        return rx_rule_var.sub(
-            lambda x: str(context[x.group(1)]),
-            template
-        )
+        return rx_rule_var.sub(lambda x: str(context[x.group(1)]), template)
 
     def expand_oid(self, **kwargs):
         """
@@ -98,6 +98,7 @@ class OIDRule(object):
         :return:
         """
         import noc.core.script.metrics  # noqa
+
         m = sys.modules["noc.core.script.metrics"]
         lv = {}
         for n in dir(m):

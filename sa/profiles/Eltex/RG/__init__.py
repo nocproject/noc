@@ -19,9 +19,7 @@ class Profile(BaseProfile):
     command_exit = "exit"
     command_more = "\n"
 
-    PLATFORMS = {
-        "46": "RG-1404GF-W"
-    }
+    PLATFORMS = {"46": "RG-1404GF-W"}
 
     @classmethod
     def get_platforms(cls, name):

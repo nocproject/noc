@@ -12,12 +12,14 @@ import datetime
 import difflib
 import zlib
 import struct
+
 # Third-party modules
 import pymongo
 import gridfs
 import gridfs.errors
 import bsdiff4
 from bson import ObjectId
+
 # NOC modules
 from noc.lib.nosql import get_db
 from .revision import Revision
@@ -31,8 +33,7 @@ class GridVCS(object):
     DEFAULT_COMPRESS = "z"
 
     def __init__(self, repo):
-        self.fs = gridfs.GridFS(
-            get_db(), collection="noc.gridvcs.%s" % repo)
+        self.fs = gridfs.GridFS(get_db(), collection="noc.gridvcs.%s" % repo)
         self.files = self.fs._GridFS__files
 
     def get_delta(self, src, dst):
@@ -82,10 +83,10 @@ class GridVCS(object):
         d_len = len(delta)
 
         while pos < d_len:
-            p1, p2, p_len = struct.unpack(">lll", delta[pos:pos + 12])
+            p1, p2, p_len = struct.unpack(">lll", delta[pos : pos + 12])
             pos += 12
             r.append(src[last:p1])
-            r.append(delta[pos:pos + p_len])
+            r.append(delta[pos : pos + p_len])
             pos += p_len
             last = p2
         r.append(src[last:])
@@ -143,8 +144,12 @@ class GridVCS(object):
                 delta = self.compress(delta, self.DEFAULT_COMPRESS)
                 # Save delta
                 self.fs.put(
-                    delta, object=object, ts=f.ts, ft=dt,
-                    encoding=self.ENCODING, c=self.DEFAULT_COMPRESS
+                    delta,
+                    object=object,
+                    ts=f.ts,
+                    ft=dt,
+                    encoding=self.ENCODING,
+                    c=self.DEFAULT_COMPRESS,
                 )
                 # Remove old version
                 self.fs.delete(f._id)
@@ -155,9 +160,10 @@ class GridVCS(object):
         self.fs.put(
             self.compress(data, self.DEFAULT_COMPRESS),
             object=object,
-            ts=ts, ft=self.T_FILE,
+            ts=ts,
+            ft=self.T_FILE,
             encoding=self.ENCODING,
-            c=self.DEFAULT_COMPRESS
+            c=self.DEFAULT_COMPRESS,
         )
         return True
 
@@ -209,10 +215,7 @@ class GridVCS(object):
         :param revision: Revision id
         :return:
         """
-        r = self.files.find_one({
-            "object": object,
-            "_id": ObjectId(revision)
-        })
+        r = self.files.find_one({"object": object, "_id": ObjectId(revision)})
         if r:
             return Revision(r["_id"], r["ts"], r["ft"], r.get("c"), r["length"])
         else:
@@ -228,13 +231,7 @@ class GridVCS(object):
         """
         src = self.get(object, rev1)
         dst = self.get(object, rev2)
-        return "\n".join(
-            difflib.unified_diff(
-                src.splitlines(),
-                dst.splitlines(),
-                lineterm=""
-            )
-        )
+        return "\n".join(difflib.unified_diff(src.splitlines(), dst.splitlines(), lineterm=""))
 
     def ensure_collection(self):
         self.files.create_index([("object", 1), ("ft", 1)])

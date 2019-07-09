@@ -31,7 +31,7 @@ from mongoengine.fields import (
 from mongoengine.errors import SaveConditionError
 
 # NOC modules
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.aaa.models.user import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
@@ -135,9 +135,9 @@ class ActiveAlarm(Document):
     rca_neighbors = ListField(IntField())
 
     def __str__(self):
-        return u"%s" % self.id
+        return "%s" % self.id
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
             yield "alarm", self.id
 

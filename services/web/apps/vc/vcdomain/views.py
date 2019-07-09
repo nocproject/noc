@@ -16,6 +16,7 @@ class VCDomainApplication(ExtModelApplication):
     """
     VCDomain application
     """
+
     title = _("VC Domain")
     menu = [_("Setup"), _("VC Domains")]
     model = VCDomain

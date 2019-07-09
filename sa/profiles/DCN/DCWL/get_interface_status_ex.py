@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -27,7 +28,7 @@ class Script(BaseScript):
         "a": "54000",
         "b": "11000",
         "g": "54000",
-        "n": "300000"
+        "n": "300000",
     }
 
     @classmethod
@@ -53,7 +54,7 @@ class Script(BaseScript):
         c = self.cli("get interface all detail")
         ssid = None
         for vline in c.splitlines():
-            rr = vline.split(' ', 1)
+            rr = vline.split(" ", 1)
             if rr[0] == "name":
                 name = rr[1].strip()
             if rr[0] == "ssid":
@@ -69,7 +70,7 @@ class Script(BaseScript):
         for s in six.itervalues(res):
             v = self.cli("get bss %s detail" % s["bss"])
             for vline in v.splitlines():
-                rr = vline.split(' ', 1)
+                rr = vline.split(" ", 1)
                 if rr[0] == "status":
                     status = rr[1].strip()
                 if rr[0] == "radio":
@@ -98,12 +99,12 @@ class Script(BaseScript):
                     out_speed = w[1]["speed"]
                     full_duplex = True
                     r = {
-                        'interface': interface,
-                        'admin_status': admin_status,
-                        'oper_status': oper_status,
-                        'full_duplex': full_duplex,
-                        'in_speed': in_speed,
-                        'out_speed': out_speed
+                        "interface": interface,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "full_duplex": full_duplex,
+                        "in_speed": in_speed,
+                        "out_speed": out_speed,
                     }
                     result += [r]
         for o in six.iteritems(res):
@@ -126,12 +127,12 @@ class Script(BaseScript):
                     out_speed = w[1]["speed"]
                     full_duplex = True
                     r = {
-                        'interface': interface,
-                        'admin_status': admin_status,
-                        'oper_status': oper_status,
-                        'full_duplex': full_duplex,
-                        'in_speed': in_speed,
-                        'out_speed': out_speed
+                        "interface": interface,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "full_duplex": full_duplex,
+                        "in_speed": in_speed,
+                        "out_speed": out_speed,
                     }
                     result += [r]
         return result

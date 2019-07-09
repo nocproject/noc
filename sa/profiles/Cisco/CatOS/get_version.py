@@ -11,8 +11,13 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
-rx_platform = re.compile(r"^Hardware\s+Version:\s+(?:\d|\.)+\s+Model:\s+(?P<platform>\S+)\s+Serial\s+#:\s+\S+$", re.MULTILINE | re.DOTALL)
-rx_version = re.compile(r"^\S+\s+Software,\s+Version\s+\S+:\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
+rx_platform = re.compile(
+    r"^Hardware\s+Version:\s+(?:\d|\.)+\s+Model:\s+(?P<platform>\S+)\s+Serial\s+#:\s+\S+$",
+    re.MULTILINE | re.DOTALL,
+)
+rx_version = re.compile(
+    r"^\S+\s+Software,\s+Version\s+\S+:\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL
+)
 
 
 class Script(BaseScript):
@@ -24,8 +29,4 @@ class Script(BaseScript):
         v = self.cli("show version")
         platform = rx_platform.search(v).group("platform")
         version = rx_version.search(v).group("version")
-        return {
-            "vendor": "Cisco",
-            "platform": platform,
-            "version": version
-        }
+        return {"vendor": "Cisco", "platform": platform, "version": version}

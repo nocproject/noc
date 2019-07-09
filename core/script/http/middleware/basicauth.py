@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseMiddleware
 
@@ -16,6 +17,7 @@ class BasicAuthMiddeware(BaseMiddleware):
     """
     Append HTTP Basic authorisation headers
     """
+
     name = "basicauth"
 
     def __init__(self, http, user=None, password=None):
@@ -27,7 +29,7 @@ class BasicAuthMiddeware(BaseMiddleware):
         user = self.user or self.http.script.credentials.get("user")
         password = self.password or self.http.script.credentials.get("password")
         if user and password:
-            headers["Authorization"] = "Basic %s" % (
-                "%s:%s" % (user, password)
-            ).encode("base64").strip()
+            headers["Authorization"] = (
+                "Basic %s" % ("%s:%s" % (user, password)).encode("base64").strip()
+            )
         return url, body, headers

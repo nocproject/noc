@@ -15,5 +15,7 @@ class Migration(BaseMigration):
     depends_on = [("main", "0055_default_pool")]
 
     def migrate(self):
-        self.db.add_column("sa_managedobject", "pool", DocumentReferenceField("self", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject", "pool", DocumentReferenceField("self", null=True, blank=True)
+        )
         self.db.create_index("sa_managedobject", ["pool"], unique=False)

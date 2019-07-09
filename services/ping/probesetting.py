@@ -11,10 +11,7 @@ import cachetools
 
 tp_cache = {}
 
-POLICY_MAP = {
-    "f": 0,
-    "a": 1
-}
+POLICY_MAP = {"f": 0, "a": 1}
 
 
 class ProbeSetting(object):
@@ -34,13 +31,27 @@ class ProbeSetting(object):
         "time_expr",
         "time_cond",
         "bi_id",
-        "task"
+        "task",
     ]
 
-    def __init__(self, id, address, name, interval, status=None,
-                 policy="f", size=64, count=3, timeout=1000,
-                 report_rtt=False, report_attempts=False,
-                 time_expr=None, bi_id=None, *args, **kwargs):
+    def __init__(
+        self,
+        id,
+        address,
+        name,
+        interval,
+        status=None,
+        policy="f",
+        size=64,
+        count=3,
+        timeout=1000,
+        report_rtt=False,
+        report_attempts=False,
+        time_expr=None,
+        bi_id=None,
+        *args,
+        **kwargs
+    ):
         self.id = id
         self.address = address
         self.name = name
@@ -58,10 +69,19 @@ class ProbeSetting(object):
         self.task = None
         self.bi_id = bi_id
 
-    def update(self, interval, report_rtt, report_attempts=False,
-               policy="f", size=64, count=3, timeout=1000,
-               time_expr=None,
-               *args, **kwargs):
+    def update(
+        self,
+        interval,
+        report_rtt,
+        report_attempts=False,
+        policy="f",
+        size=64,
+        count=3,
+        timeout=1000,
+        time_expr=None,
+        *args,
+        **kwargs
+    ):
         self.interval = interval
         self.policy = POLICY_MAP.get(policy, 0)
         self.size = max(size, 64)
@@ -74,14 +94,14 @@ class ProbeSetting(object):
 
     def is_differ(self, data):
         return (
-            self.interval != data["interval"] or
-            self.policy != POLICY_MAP.get(data.get("policy", "f"), 0) or
-            self.size != max(data.get("size", 64), 64) or
-            self.count != max(data.get("count", 3), 1) or
-            self.timeout != max(data.get("timeout", 1000), 1) or
-            self.report_rtt != data.get("report_rtt", False) or
-            self.report_attempts != data.get("report_attempts", False) or
-            self.time_expr != data.get("time_expr")
+            self.interval != data["interval"]
+            or self.policy != POLICY_MAP.get(data.get("policy", "f"), 0)
+            or self.size != max(data.get("size", 64), 64)
+            or self.count != max(data.get("count", 3), 1)
+            or self.timeout != max(data.get("timeout", 1000), 1)
+            or self.report_rtt != data.get("report_rtt", False)
+            or self.report_attempts != data.get("report_attempts", False)
+            or self.time_expr != data.get("time_expr")
         )
 
     @classmethod

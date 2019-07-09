@@ -35,6 +35,7 @@ class Capability(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.capabilities",
+        "json_unique_fields": ["name", "uuid"],
     }
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)

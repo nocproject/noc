@@ -16,6 +16,7 @@ class AllocationGroupApplication(ExtDocApplication):
     """
     AllocationGroup application
     """
+
     title = "AllocationGroup"
     menu = [_("Setup"), _("Allocation Groups")]
     model = AllocationGroup

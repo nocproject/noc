@@ -17,10 +17,7 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         r = []
         # Only one way: SNMP.
-        for i, n, s in self.snmp.join([
-            "1.3.6.1.2.1.2.2.1.2",
-            "1.3.6.1.2.1.2.2.1.8"
-        ]):
-            if n[:3] == 'eth' or n[:3] == 'gre':
+        for i, n, s in self.snmp.join(["1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.2.2.1.8"]):
+            if n[:3] == "eth" or n[:3] == "gre":
                 r += [{"interface": n, "status": int(s) == 1}]
         return r

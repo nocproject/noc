@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetipv6neighbor import IGetIPv6Neighbor
@@ -22,7 +23,8 @@ class Script(BaseScript):
         r"\d+\s+"
         r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
         r"(?P<state>\S+)\s+"
-        r"(?P<interface>\S+)\s*$")
+        r"(?P<interface>\S+)\s*$"
+    )
 
     s_map = {
         "INCMP": "incomplete",
@@ -31,7 +33,7 @@ class Script(BaseScript):
         "DELAY": "delay",
         "PROBE": "probe",
         "DELETE": "incomplete",
-        "GLEAN": "incomplete"
+        "GLEAN": "incomplete",
     }
 
     def execute(self, vrf=None):

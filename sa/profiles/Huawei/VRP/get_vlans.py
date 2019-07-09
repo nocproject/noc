@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -30,10 +31,7 @@ class Script(BaseScript):
             # dot1qVlanStaticName
             for oid, v in self.snmp.getnext(mib["Q-BRIDGE-MIB::dot1qVlanStaticName"]):
                 o = oid.split(".")[-1]
-                result += [{
-                    "vlan_id": int(oids[o]),
-                    "name":v.strip().rstrip('\x00')
-                }]
+                result += [{"vlan_id": int(oids[o]), "name": v.strip().rstrip("\x00")}]
         else:
             tmp_vlan = []
             # dot1qVlanStaticName
@@ -41,14 +39,12 @@ class Script(BaseScript):
                 vlan_id = int(oid.split(".")[-1])
                 if vlan_id in tmp_vlan:
                     break
-                result += [{
-                    "vlan_id": vlan_id,
-                    "name": v.strip().rstrip('\x00')
-                }]
+                result += [{"vlan_id": vlan_id, "name": v.strip().rstrip("\x00")}]
                 tmp_vlan += [vlan_id]
         if result:
             return sorted(
-                result, cmp=lambda x, y: (x["vlan_id"] > y["vlan_id"]) - (x["vlan_id"] < y["vlan_id"])
+                result,
+                cmp=lambda x, y: (x["vlan_id"] > y["vlan_id"]) - (x["vlan_id"] < y["vlan_id"]),
             )
         else:
             raise self.NotSupportedError()
@@ -56,21 +52,24 @@ class Script(BaseScript):
     def execute_cli(self):
         # Try CLI
         rx_vlan_line_vrp5 = re.compile(
-            r"^(?P<vlan_id>\d{1,4})\s*?.*?",
-            re.IGNORECASE | re.DOTALL | re.MULTILINE)
+            r"^(?P<vlan_id>\d{1,4})\s*?.*?", re.IGNORECASE | re.DOTALL | re.MULTILINE
+        )
         rx_vlan_line_vrp3 = re.compile(
             r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?"
             r"(?:Name|Description):\s+(?P<name>.*?)\n"
-            r".*?(\n\n|$)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
+            r".*?(\n\n|$)",
+            re.IGNORECASE | re.DOTALL | re.MULTILINE,
+        )
 
         if self.is_kernelgte_5:
             vlans = self.cli("display vlan", cached=True)
-            return [{
-                "vlan_id": int(match.group("vlan_id"))
-            } for match in rx_vlan_line_vrp5.finditer(vlans)]
+            return [
+                {"vlan_id": int(match.group("vlan_id"))}
+                for match in rx_vlan_line_vrp5.finditer(vlans)
+            ]
         else:
             vlans = self.cli("display vlan all", cached=True)
-            return [{
-                "vlan_id": int(match.group("vlan_id")),
-                "name": match.group("name")
-            } for match in rx_vlan_line_vrp3.finditer(vlans)]
+            return [
+                {"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}
+                for match in rx_vlan_line_vrp3.finditer(vlans)
+            ]

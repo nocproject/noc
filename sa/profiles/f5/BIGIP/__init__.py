@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^---\(less \d+%\)---", " "),
         (r"^\(END\)", "q"),
-        (r"Display all \d+ items\? \(y/n\) ", "y")
+        (r"Display all \d+ items\? \(y/n\) ", "y"),
     ]
     command_exit = "quit"
 
@@ -57,5 +57,4 @@ class Profile(BaseProfile):
                     data += [s]
 
     def setup_script(self, script):
-        self.add_script_method(
-            script, "parse_blocks", self.parse_blocks)
+        self.add_script_method(script, "parse_blocks", self.parse_blocks)

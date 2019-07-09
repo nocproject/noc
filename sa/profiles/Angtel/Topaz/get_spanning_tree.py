@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -17,11 +18,10 @@ class Script(BaseScript):
     name = "Angtel.Topaz.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_mode = re.compile(
-        r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
+    rx_mode = re.compile(r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
     rx_mstp = re.compile(
-        r"^\s*Name: (?P<region>\S+)\s*\n"
-        r"^\s*Revision: (?P<revision>\d+)", re.MULTILINE)
+        r"^\s*Name: (?P<region>\S+)\s*\n" r"^\s*Revision: (?P<revision>\d+)", re.MULTILINE
+    )
     rx_inst = re.compile(
         r"MST (?P<id>\d+) Vlans Mapped: (?P<vlans>.+?)\n"
         r"^\s*CST Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
@@ -31,10 +31,14 @@ class Script(BaseScript):
         r"^\s*.+\n"
         r"(^\s*.+\n)?"
         r"^\s*Bridge ID\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
-        r"^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+        r"^\s*Address\s+(?P<bridge_id>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_inst1 = re.compile(
         r"^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
-        r"^\s*Address\s+(?P<root_id>\S+)\s*\n", re.MULTILINE)
+        r"^\s*Address\s+(?P<root_id>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_vlans = re.compile(r"^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port = re.compile(
         r"^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
@@ -46,7 +50,8 @@ class Script(BaseScript):
         r"(?P<designated_bridge_id>\S+)\s*\n"
         r"^\s*Designated port id: (?P<designated_port_id>\S+)\s+"
         r"Designated path cost: \d+\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute_cli(self):
         try:
@@ -76,8 +81,7 @@ class Script(BaseScript):
                         if match:
                             iface = match.groupdict()
                             iface["point_to_point"] = "Type: P2P" in port
-                            iface["priority"] = \
-                                match.group("port_id").split(".")[0]
+                            iface["priority"] = match.group("port_id").split(".")[0]
                             iface["edge"] = False
                             inst["interfaces"] += [iface]
                     stp["instances"] += [inst]
@@ -103,8 +107,7 @@ class Script(BaseScript):
                 if match:
                     iface = match.groupdict()
                     iface["point_to_point"] = "Type: P2P" in port
-                    iface["priority"] = \
-                        match.group("port_id").split(".")[0]
+                    iface["priority"] = match.group("port_id").split(".")[0]
                     iface["edge"] = False
                     inst["interfaces"] += [iface]
             stp["instances"] = [inst]

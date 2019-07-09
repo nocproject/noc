@@ -9,6 +9,7 @@
 # Python modules
 import functools
 import types
+
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -17,6 +18,7 @@ import tornado.httpserver
 import tornado.web
 import pytest
 import ujson
+
 # NOC modules
 from noc.core.http.client import fetch
 
@@ -38,8 +40,9 @@ class APIHandler(object):
     @tornado.gen.coroutine
     def fetch(self, url, method="GET", headers=None, body=None):
         url = "%s%s" % (self.base_url, url)
-        code, headers, body = yield fetch(url=url, method=method, headers=headers, body=body,
-                                          io_loop=self.io_loop)
+        code, headers, body = yield fetch(
+            url=url, method=method, headers=headers, body=body, io_loop=self.io_loop
+        )
         raise tornado.gen.Return((code, headers, body))
 
 
@@ -59,8 +62,9 @@ def gen_test(f):
         @functools.wraps(coro)
         def post_coroutine(self, *args, **kwargs):
             try:
-                return self.io_loop.run_sync(functools.partial(coro, self, *args, **kwargs),
-                                             timeout=15)
+                return self.io_loop.run_sync(
+                    functools.partial(coro, self, *args, **kwargs), timeout=15
+                )
             except tornado.gen.TimeoutError as e:
                 self._test_generator.throw(e)
                 raise
@@ -100,6 +104,7 @@ class WebAPITest(BaseAPITest):
 
     def get_handlers(self):
         from noc.services.web.service import WebService
+
         ws = WebService()
         ws.setup_test_logging()
         ws.on_activate()

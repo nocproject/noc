@@ -84,5 +84,5 @@ MIB = {
     "BRIDGE-MIB::dot1dStaticStatus": "1.3.6.1.2.1.17.5.1.1.4",
     "BRIDGE-MIB::dot1dConformance": "1.3.6.1.2.1.17.8",
     "BRIDGE-MIB::dot1dGroups": "1.3.6.1.2.1.17.8.1",
-    "BRIDGE-MIB::dot1dCompliances": "1.3.6.1.2.1.17.8.2"
+    "BRIDGE-MIB::dot1dCompliances": "1.3.6.1.2.1.17.8.2",
 }

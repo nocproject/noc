@@ -9,6 +9,7 @@
 # Third-party Modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.ip.models.vrf import VRF
@@ -21,11 +22,9 @@ class ReportForm(forms.Form):
     """
     Report form
     """
-    vrf = forms.ModelChoiceField(
-        label=_("VRF"),
-        queryset=VRF.objects.all().order_by("name"))
-    afi = forms.ChoiceField(label=_("Address Family"),
-                            choices=[("4", _("IPv4")), ("6", _("IPv6"))])
+
+    vrf = forms.ModelChoiceField(label=_("VRF"), queryset=VRF.objects.all().order_by("name"))
+    afi = forms.ChoiceField(label=_("Address Family"), choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = forms.CharField(label=_("Prefix"))
 
     def clean_prefix(self):
@@ -64,23 +63,17 @@ class ExpandedReport(SimpleReport):
 
         cf = CustomField.table_fields("ip_prefix")
         # Prepare columns
-        columns = [
-            "Prefix",
-            "State",
-            "VC"
-        ]
+        columns = ["Prefix", "State", "VC"]
         for f in cf:
             columns += [f.label]
-        columns += [
-            "Description",
-            TableColumn(_("Tags"), format="tags")
-        ]
+        columns += ["Description", TableColumn(_("Tags"), format="tags")]
         data = get_info(prefix)
-        return self.from_dataset(title=_(
-            "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
-                "vrf": vrf.name,
-                "afi": afi,
-                "prefix": prefix.prefix
-            }),
+        return self.from_dataset(
+            title=_(
+                "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"
+                % {"vrf": vrf.name, "afi": afi, "prefix": prefix.prefix}
+            ),
             columns=columns,
-            data=data, enumerate=True)
+            data=data,
+            enumerate=True,
+        )

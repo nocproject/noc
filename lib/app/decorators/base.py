@@ -11,6 +11,7 @@ class BaseAppDecorator(object):
     """
     Basic application decorator to inject new methods via .add_view
     """
+
     def __init__(self, cls):
         self.cls = cls
         self.contribute_to_class()

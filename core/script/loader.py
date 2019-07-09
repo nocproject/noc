@@ -13,6 +13,7 @@ import glob
 import threading
 import os
 import re
+
 # NOC modules
 from noc.core.loader.base import BaseLoader
 from noc.core.profile.loader import GENERIC_PROFILE
@@ -23,9 +24,7 @@ from .base import BaseScript
 class ScriptLoader(BaseLoader):
     name = "script"
 
-    rx_requires = re.compile(
-        "^\s+requires\s*=\s*\[([^\]]*)\]", re.DOTALL | re.MULTILINE
-    )
+    rx_requires = re.compile("^\s+requires\s*=\s*\[([^\]]*)\]", re.DOTALL | re.MULTILINE)
 
     protected_names = {"profile", "__init__"}
 
@@ -52,15 +51,12 @@ class ScriptLoader(BaseLoader):
                 try:
                     vendor, system, sn = name.split(".")
                 except Exception as e:
-                    self.logger.error("Error in script name \"%s\": %s", name, e)
+                    self.logger.error('Error in script name "%s": %s', name, e)
                     return None
                 is_generic = False
                 for p in config.get_customized_paths("", prefer_custom=True):
                     if os.path.exists(
-                            os.path.join(
-                                p, "sa", "profiles", vendor, system,
-                                "%s.py" % sn
-                            )
+                        os.path.join(p, "sa", "profiles", vendor, system, "%s.py" % sn)
                     ):
                         if p:
                             # Custom script
@@ -79,9 +75,7 @@ class ScriptLoader(BaseLoader):
                 # Fix generic's module
                 if script and is_generic:
                     # Create subclass with proper name
-                    script = type("Script", (script,), {
-                        "name": name
-                    })
+                    script = type("Script", (script,), {"name": name})
                     script.__module__ = "noc.sa.profiles.%s" % name
                 self.scripts[name] = script
             return script
@@ -117,11 +111,7 @@ class ScriptLoader(BaseLoader):
                 # Scan for requires = [..]
                 match = self.rx_requires.search(data)
                 if match:
-                    generics[gn] = [
-                        s.strip()[1:-1]
-                        for s in match.group(1).split(",")
-                        if s.strip()
-                    ]
+                    generics[gn] = [s.strip()[1:-1] for s in match.group(1).split(",") if s.strip()]
                     ns.add("%s.%s" % (GENERIC_PROFILE, gn))
         # Load custom scripts, Load common scripts
         profiles = set()
@@ -141,8 +131,7 @@ class ScriptLoader(BaseLoader):
                 if fgn in ns:
                     # Generic overriden with common script
                     continue
-                if any(1 for r in generics[g]
-                       if "%s.%s" % (p, r) not in ns):
+                if any(1 for r in generics[g] if "%s.%s" % (p, r) not in ns):
                     continue  # Unsatisfied dependency
                 # Add generic script
                 ns.add(fgn)

@@ -9,10 +9,12 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
+
 # NOC modules
 from noc.fm.models.outage import Outage
 
@@ -23,7 +25,7 @@ class ObjectStatus(Document):
         "collection": "noc.cache.object_status",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object"]
+        "indexes": ["object"],
     }
     # Object id
     object = IntField(required=True)
@@ -34,13 +36,11 @@ class ObjectStatus(Document):
     last = DateTimeField()
 
     def __str__(self):
-        return u"%s: %s" % (self.object, self.status)
+        return "%s: %s" % (self.object, self.status)
 
     @classmethod
     def get_status(cls, object):
-        d = ObjectStatus._get_collection().find_one({
-            "object": object.id
-        })
+        d = ObjectStatus._get_collection().find_one({"object": object.id})
         if d:
             return d["status"]
         else:
@@ -53,9 +53,7 @@ class ObjectStatus(Document):
         :param object: Managed Object id
         :return: last status, last update or None
         """
-        d = ObjectStatus._get_collection().find_one({
-            "object": object.id
-        })
+        d = ObjectStatus._get_collection().find_one({"object": object.id})
         if d:
             return d["status"], d.get("last")
         else:
@@ -89,14 +87,9 @@ class ObjectStatus(Document):
         # Update naively
         # Must work in most cases
         # find_and_modify returns old document or None for upsert
-        r = coll.find_and_modify({
-            "object": object.id
-        }, update={
-            "$set": {
-                "status": status,
-                "last": ts
-            }
-        }, upsert=True)
+        r = coll.find_and_modify(
+            {"object": object.id}, update={"$set": {"status": status, "last": ts}}, upsert=True
+        )
         if not r:
             # Setting status for first time
             # Work complete
@@ -104,12 +97,7 @@ class ObjectStatus(Document):
         if r["last"] > ts:
             # Oops, out-of-order update
             # Restore correct state
-            coll.update({
-                "object": object.id
-            }, {
-                "status": r["status"],
-                "last": r["last"]
-            })
+            coll.update({"object": object.id}, {"status": r["status"], "last": r["last"]})
             return False
         if r["status"] != status:
             # Status changed

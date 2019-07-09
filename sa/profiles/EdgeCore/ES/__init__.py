@@ -10,6 +10,7 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -24,7 +25,7 @@ class Profile(BaseProfile):
         (r"---?More---?", " "),
         (r"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", " "),
         (r"Are you sure to delete non-active file", "Y\n\n"),
-        (r"Startup configuration file name", "\n\n\n")
+        (r"Startup configuration file name", "\n\n\n"),
     ]
     config_volatile = ["\x08+"]
     rogue_chars = ["\r"]
@@ -36,9 +37,7 @@ class Profile(BaseProfile):
     config_tokenizer = "indent"
     config_tokenizer_settings = {
         "line_comment": "!",
-        "rewrite": [
-            (re.compile("^queue mode"), " queue mode")
-        ]
+        "rewrite": [(re.compile("^queue mode"), " queue mode")],
     }
     config_normalizer = "ESNormalizer"
     confdb_defaults = [
@@ -46,12 +45,11 @@ class Profile(BaseProfile):
         ("hints", "protocols", "lldp", "status", True),
         ("hints", "protocols", "spanning-tree", "status", False),
         ("hints", "protocols", "spanning-tree", "priority", "32768"),
-        ("hints", "protocols", "loop-detect", "status", True)
+        ("hints", "protocols", "loop-detect", "status", True),
     ]
 
     rx_if_snmp_eth = re.compile(
-        r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$",
-        re.IGNORECASE
+        r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$", re.IGNORECASE
     )
 
     def convert_interface_name(self, s):
@@ -72,8 +70,7 @@ class Profile(BaseProfile):
             return "Eth %s" % s[9:].strip()
         match = self.rx_if_snmp_eth.match(s)
         if match:
-            return "Eth %s/%s" % (match.group("unit"),
-                                  match.group("port"))
+            return "Eth %s/%s" % (match.group("unit"), match.group("port"))
         s = s.replace("  ", " ")
         return s.replace("/ ", "/")
 
@@ -92,21 +89,22 @@ class Profile(BaseProfile):
             if not line or "===" in line:
                 continue
             line = line.strip()
-            if (line.startswith("LoopBack") or line.startswith("MEth") or
-                    line.startswith("Ethernet") or
-                    line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or
-                    line.startswith("Vlanif") or line.startswith("NULL")):
+            if (
+                line.startswith("LoopBack")
+                or line.startswith("MEth")
+                or line.startswith("Ethernet")
+                or line.startswith("GigabitEthernet")
+                or line.startswith("XGigabitEthernet")
+                or line.startswith("Vlanif")
+                or line.startswith("NULL")
+            ):
                 current_iface = line
                 continue
             v, k = line.split(" ", 1)
             r[current_iface][k.strip()] = v.strip()
         return r
 
-    _IF_TYPES = {
-        "eth": "physical",
-        "vla": "SVI",
-        "tru": "aggregated"
-    }
+    _IF_TYPES = {"eth": "physical", "vla": "SVI", "tru": "aggregated"}
 
     @classmethod
     def get_interface_type(cls, name):

@@ -17,13 +17,7 @@ class InteractionLog(document.Document):
         "collection": "noc.log.sa.interaction",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            ("object", "-timestamp"),
-            {
-                "fields": ["expire"],
-                "expireAfterSeconds": 0
-            }
-        ]
+        "indexes": [("object", "-timestamp"), {"fields": ["expire"], "expireAfterSeconds": 0}],
     }
 
     OP_COMMAND = 0

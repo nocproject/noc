@@ -25,5 +25,6 @@ class Migration(BaseMigration):
             UPDATE %s
             SET tmp_tags = string_to_array(regexp_replace(tags, ',$', ''), ',')
             WHERE tags != ''
-            """ % m
+            """
+                % m
             )

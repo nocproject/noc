@@ -11,6 +11,7 @@ import logging
 import inspect
 import threading
 import os
+
 # NOC modules
 from noc.config import config
 from noc.core.log import PrefixLoggerAdapter
@@ -44,10 +45,10 @@ class BaseLoader(object):
             for n in dir(sm):
                 o = getattr(sm, n)
                 if (
-                    inspect.isclass(o) and
-                    issubclass(o, base_cls) and
-                    o.__module__ == sm.__name__ and
-                    self.is_valid_class(o, name)
+                    inspect.isclass(o)
+                    and issubclass(o, base_cls)
+                    and o.__module__ == sm.__name__
+                    and self.is_valid_class(o, name)
                 ):
                     return o
         except ImportError as e:

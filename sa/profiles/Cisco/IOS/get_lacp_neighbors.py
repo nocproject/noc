@@ -2,17 +2,16 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -21,10 +20,13 @@ class Script(BaseScript):
     split_group_re = re.compile(r"\nChannel group\s+(\d+)")
     split_group2_re = re.compile(r"\nChannel group\s+(\d+)\s+neighbors")
     split_port_re = re.compile(r"Port:")
-    split_info_re = re.compile(r"----.+Channel group\s*=\s*(?P<chan_group>\d+)\s.+"
-                               r"Port-channel\s*=\s*(?P<port_chan>\S+)\s.+"
-                               r"Local information:(?P<local_info>.+)"
-                               r"Partner's information:(?P<part_info>.+)\n", re.IGNORECASE | re.DOTALL)
+    split_info_re = re.compile(
+        r"----.+Channel group\s*=\s*(?P<chan_group>\d+)\s.+"
+        r"Port-channel\s*=\s*(?P<port_chan>\S+)\s.+"
+        r"Local information:(?P<local_info>.+)"
+        r"Partner's information:(?P<part_info>.+)\n",
+        re.IGNORECASE | re.DOTALL,
+    )
 
     def execute(self):
         r = []
@@ -34,7 +36,6 @@ class Script(BaseScript):
             v = self.cli("show lacp internal")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        first_line = True
         port = {}
         for block in self.split_group_re.split(v):
             table = False
@@ -46,7 +47,6 @@ class Script(BaseScript):
                     port[l_l[0]] = int(l_l[6][2:], 16)
                 if l_l[0] == "Port":
                     table = True
-
         try:
             v = self.cli("show lacp neighbor detail")
         except self.CLISyntaxError:
@@ -63,12 +63,14 @@ class Script(BaseScript):
                     continue
                 l_l = l.split()
                 if l_l[0] in port:
-                    bundle += [{
-                        "interface": l_l[0],
-                        "local_port_id": port[l_l[0]],
-                        "remote_system_id": l_l[1].split(",")[1],
-                        "remote_port_id": int(l_l[2], 16)
-                    }]
+                    bundle += [
+                        {
+                            "interface": l_l[0],
+                            "local_port_id": port[l_l[0]],
+                            "remote_system_id": l_l[1].split(",")[1],
+                            "remote_port_id": int(l_l[2], 16),
+                        }
+                    ]
 
             pass
             """
@@ -88,12 +90,14 @@ class Script(BaseScript):
                     "remote_port_id": part_info[6]
                 }]
             """
-            r += [{
-                "lag_id": chan_num,
-                "interface": "Port-Channel" + chan_num,
-                "system_id": sys_id,
-                "bundle": bundle
-            }]
+            r += [
+                {
+                    "lag_id": chan_num,
+                    "interface": "Port-Channel" + chan_num,
+                    "system_id": sys_id,
+                    "bundle": bundle,
+                }
+            ]
             is_block = False
         "show lacp internal detail"
         "Local information:"

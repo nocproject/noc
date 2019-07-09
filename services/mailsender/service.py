@@ -15,8 +15,10 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
+
 # Third-party modules
 import pytz
+
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -32,20 +34,16 @@ class MailSenderService(Service):
 
     def on_activate(self):
         self.tz = pytz.timezone(config.timezone)
-        self.subscribe(
-            topic=self.name,
-            channel="sender",
-            handler=self.on_message
-        )
+        self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(
             "[%s] Receiving message: %s (%s) [%s, attempt %d]",
-            message.id, subject, address,
-            datetime.datetime.fromtimestamp(
-                message.timestamp / 1000000000.0
-            ),
-            message.attempts
+            message.id,
+            subject,
+            address,
+            datetime.datetime.fromtimestamp(message.timestamp / 1000000000.0),
+            message.attempts,
         )
         return self.send_mail(message.id, address, subject, body, attachments)
 
@@ -68,19 +66,13 @@ class MailSenderService(Service):
         message["To"] = address
         message["Date"] = md
         message["Subject"] = Header(subject, "utf-8")
-        message.attach(
-            MIMEText(body, _charset="utf-8")
-        )
+        message.attach(MIMEText(body, _charset="utf-8"))
         for a in attachments:
             part = MIMEBase("application", "octet-stream")
             part.set_payload(a["data"])
             if "transfer-encoding" in a:
                 part.add_header("Content-Transfer-Encoding", a["transfer-encoding"])
-            part.add_header(
-                "Content-Disposition",
-                "attachment",
-                filename=a["filename"]
-            )
+            part.add_header("Content-Disposition", "attachment", filename=a["filename"])
             message.attach(part)
         msg = message.as_string()
         self.logger.debug("Message: %s", msg)
@@ -89,11 +81,11 @@ class MailSenderService(Service):
         self.logger.debug(
             "[%s] Connecting %s:%s",
             message_id,
-            config.mailsender.smtp_server, config.mailsender.smtp_port
+            config.mailsender.smtp_server,
+            config.mailsender.smtp_port,
         )
         try:
-            smtp.connect(config.mailsender.smtp_server,
-                         config.mailsender.smtp_port)
+            smtp.connect(config.mailsender.smtp_server, config.mailsender.smtp_port)
         except socket.error as e:
             self.logger.error("[%s] SMTP error: %s", message_id, e)
             return False
@@ -108,56 +100,47 @@ class MailSenderService(Service):
             smtp.ehlo(config.mailsender.helo_hostname)
         # Authenticate when necessary
         if config.mailsender.smtp_user and config.mailsender.smtp_password:
-            self.logger.debug(
-                "[%s] Authenticating as %s",
-                message_id,
-                config.mailsender.smtp_user
-            )
+            self.logger.debug("[%s] Authenticating as %s", message_id, config.mailsender.smtp_user)
             try:
-                smtp.login(
-                    config.mailsender.smtp_user,
-                    config.mailsender.smtp_password
-                )
+                smtp.login(config.mailsender.smtp_user, config.mailsender.smtp_password)
             except smtplib.SMTPAuthenticationError as e:
-                self.logger.error(
-                    "[%s] SMTP Authentication error: %s",
-                    message_id, e
-                )
-                metrics['smtp_response', ('code', e.smtp_code)] += 1
+                self.logger.error("[%s] SMTP Authentication error: %s", message_id, e)
+                metrics["smtp_response", ("code", e.smtp_code)] += 1
                 return False
         # Send mail
         try:
             smtp.ehlo_or_helo_if_needed()
             esmtp_opts = []
             if smtp.does_esmtp:
-                if smtp.has_extn('size'):
+                if smtp.has_extn("size"):
                     esmtp_opts.append("size=%d" % len(msg))
             # MAIL FROM
             code, resp = smtp.mail(from_address, esmtp_opts)
             if code != 250:
                 smtp.rset()
-                self.logger.error("[%s] MAIL FROM '%s' failed: %s %s",
-                                  message_id, from_address, code, resp)
-                metrics['smtp_response', ('code', code)] += 1
+                self.logger.error(
+                    "[%s] MAIL FROM '%s' failed: %s %s", message_id, from_address, code, resp
+                )
+                metrics["smtp_response", ("code", code)] += 1
                 return False
             # RCPT TO
             code, resp = smtp.rcpt(address, [])
             if code not in (250, 251):
                 smtp.rset()
-                self.logger.error("[%s] RCPT TO '%s' failed: %s %s",
-                                  message_id, address, code, resp)
-                metrics['smtp_response', ('code', code)] += 1
+                self.logger.error(
+                    "[%s] RCPT TO '%s' failed: %s %s", message_id, address, code, resp
+                )
+                metrics["smtp_response", ("code", code)] += 1
                 return False
             # Data
             code, resp = smtp.data(msg)
             if code != 250:
                 smtp.rset()
-                self.logger.error("[%s] DATA failed: %s %s",
-                                  message_id, code, resp)
-                metrics['smtp_response', ('code', code)] += 1
+                self.logger.error("[%s] DATA failed: %s %s", message_id, code, resp)
+                metrics["smtp_response", ("code", code)] += 1
                 return False
             self.logger.info("[%s] Message sent: %s", message_id, resp)
-            metrics['smtp_response', ('code', code)] += 1
+            metrics["smtp_response", ("code", code)] += 1
         except smtplib.SMTPException as e:
             self.logger.error("[%s] SMTP Error: %s", message_id, e)
             smtp.rset()
@@ -165,10 +148,7 @@ class MailSenderService(Service):
         try:
             smtp.quit()
         except smtplib.SMTPException as e:
-            self.logger.error(
-                "[%s] Failed to quit properly: %s",
-                message_id, e
-            )
+            self.logger.error("[%s] Failed to quit properly: %s", message_id, e)
         return True
 
 

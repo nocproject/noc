@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -23,8 +24,10 @@ class Profile(BaseProfile):
     pattern_more = " --More-- "
     command_more = " "
     command_exit = "exit"
-    config_volatile = [r"radius(-| accounting-server )encrypt-key \S+\n",
-                       r"tacacs(-server | accounting-server )encrypt-key \S+\n"]
+    config_volatile = [
+        r"radius(-| accounting-server )encrypt-key \S+\n",
+        r"tacacs(-server | accounting-server )encrypt-key \S+\n",
+    ]
 
     rx_ver = re.compile(
         r"^Product name\s*:\s*(?P<platform>.+)\s*\n"
@@ -36,7 +39,8 @@ class Profile(BaseProfile):
         r"\n"
         r"^System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
         r"^Serial number\s*:\s*(?P<serial>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     rx_ver2 = re.compile(
         r"^Product Name\s*:\s*(?P<platform>.+)\s*\n"
@@ -50,7 +54,8 @@ class Profile(BaseProfile):
         r"\s*\n"
         r"^System MacAddress:\s*(?P<mac>\S+)\s*\n"
         r"^Serial number:\s*(?P<serial>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def get_version(self, script):
         c = script.cli("show version", cached=True)

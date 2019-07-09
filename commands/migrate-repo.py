@@ -4,7 +4,7 @@
 # migrate-repo
 # Migrate HG repo to GridVCS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,8 +14,10 @@ import os
 import sys
 import subprocess
 import datetime
-# Django modules
+
+# Third-party modules
 from django.db import connection
+
 # NOC modules
 from noc.config import config
 from noc.core.gridvcs.manager import GridVCS
@@ -25,8 +27,9 @@ REPO = config.path.repo
 
 
 def get_hg_revisions(path):
-    p = subprocess.Popen([HG, "log", "--template", "{rev} {date}\n", path],
-                         stdout=subprocess.PIPE, cwd=REPO)
+    p = subprocess.Popen(
+        [HG, "log", "--template", "{rev} {date}\n", path], stdout=subprocess.PIPE, cwd=REPO
+    )
     s = []
     for line in p.stdout:
         line = line.strip()
@@ -41,14 +44,12 @@ def get_hg_revisions(path):
 
 
 def get_hg_revision(path, revision):
-    p = subprocess.Popen([HG, "cat", "-r", revision, path],
-                         stdout=subprocess.PIPE, cwd=REPO)
+    p = subprocess.Popen([HG, "cat", "-r", revision, path], stdout=subprocess.PIPE, cwd=REPO)
     return p.stdout.read()
 
 
 def get_hg_files():
-    p = subprocess.Popen([HG, "locate"],
-                         stdout=subprocess.PIPE, cwd=REPO)
+    p = subprocess.Popen([HG, "locate"], stdout=subprocess.PIPE, cwd=REPO)
     return [l.strip() for l in p.stdout.readlines()]
 
 

@@ -8,11 +8,20 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("sa_managedobjectprofile", "clear_links_on_platform_change", models.BooleanField(default=False))
-        self.db.add_column("sa_managedobjectprofile", "clear_links_on_serial_change", models.BooleanField(default=False))
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "clear_links_on_platform_change",
+            models.BooleanField(default=False),
+        )
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "clear_links_on_serial_change",
+            models.BooleanField(default=False),
+        )

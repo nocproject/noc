@@ -21,12 +21,9 @@ class Script(BaseScript):
         r"^\s*(?P<unit>\d+)\s+(?P<platform>D\S+)\s+H/W:(?P<hardware>\S+)\s*\n"
         r"^\s+Bootloader:(?P<bootprom>\S+)\s*\n"
         r"^\s+Runtime:(?P<version>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    rx_serial = re.compile(
-        r"^\s*(?P<unit>\d+)\s+(?P<serial>\S+)\s+ok\s+\S+\s*\n",
-        re.MULTILINE
-    )
+    rx_serial = re.compile(r"^\s*(?P<unit>\d+)\s+(?P<serial>\S+)\s+ok\s+\S+\s*\n", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show version", cached=True)
@@ -37,8 +34,8 @@ class Script(BaseScript):
             "version": match.group("version"),
             "attributes": {
                 "Boot PROM": match.group("bootprom"),
-                "HW version": match.group("hardware")
-            }
+                "HW version": match.group("hardware"),
+            },
         }
         v = self.cli("show unit %s | include ok" % match.group("unit"), cached=True)
         match = self.rx_serial.search(v)

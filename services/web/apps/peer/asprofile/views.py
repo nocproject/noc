@@ -16,6 +16,7 @@ class ASProfileApplication(ExtDocApplication):
     """
     ASProfile application
     """
+
     title = "AS Profile"
     menu = [_("Setup"), _("AS Profiles")]
     model = ASProfile

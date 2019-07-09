@@ -16,6 +16,7 @@ class PrefixAccessApplication(ExtModelApplication):
     """
     PrefixAccess application
     """
+
     title = _("Prefix Access")
     menu = [_("Setup"), _("Prefix Access")]
     model = PrefixAccess

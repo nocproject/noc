@@ -8,6 +8,7 @@
 
 # Python modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -17,11 +18,7 @@ class Script(BaseScript):
     name = "Axis.VAPIX.get_local_users"
     interface = IGetLocalUsers
 
-    axpairs = {
-        "axadmin": "superuser",
-        "axoper": "operator",
-        "axview": "view"
-    }
+    axpairs = {"axadmin": "superuser", "axoper": "operator", "axview": "view"}
 
     def adduser(self, section, userclass):
         users = self.axconfig.get(section).split(",")

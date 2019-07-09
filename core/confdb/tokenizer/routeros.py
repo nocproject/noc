@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import re
+
 # NOC modules
 from noc.lib.validators import is_int
 from .line import LineTokenizer
@@ -16,14 +17,14 @@ from .line import LineTokenizer
 
 class RouterOSTokenizer(LineTokenizer):
     name = "routeros"
-    rx_param = re.compile("([^= ]+=\"[^\"]+\"|[^= ]+=\S+|\S+)")
+    rx_param = re.compile('([^= ]+="[^"]+"|[^= ]+=\S+|\S+)')
 
     def iter_context(self, context, tokens):
         for token in tokens:
             if "=" not in token:
                 continue
             k, v = token.split("=", 1)
-            if v.startswith("\"") and v.endswith("\""):
+            if v.startswith('"') and v.endswith('"'):
                 v = v[1:-1]
             yield context + (k, v)
 
@@ -52,7 +53,12 @@ class RouterOSTokenizer(LineTokenizer):
                 continue
             if tokens[0] == "set" and len(tokens) > 1:
                 # Process set instruction
-                if tokens[1] == "[" and len(tokens) > 4 and tokens[2] == "find" and tokens[4] == "]":
+                if (
+                    tokens[1] == "["
+                    and len(tokens) > 4
+                    and tokens[2] == "find"
+                    and tokens[4] == "]"
+                ):
                     # set [ find key=value ] ...
                     item = tokens[3].split("=", 1)[1]
                     for ct in self.iter_context(context + (item,), tokens[5:]):

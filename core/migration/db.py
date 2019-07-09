@@ -9,6 +9,7 @@
 # Python modules
 import logging
 import datetime
+
 # Third-party modules
 import six
 from django.db.models import AutoField
@@ -23,6 +24,7 @@ class DB(object):
     """
     PostgreSQL database migration operations
     """
+
     MAX_NAME_LENGTH = 63
 
     def __init__(self):
@@ -33,18 +35,17 @@ class DB(object):
         return connection.ops.quote_name(name)
 
     def has_table(self, table_name):
-        return bool(self.execute("SELECT COUNT(*) FROM pg_class WHERE relname=%s", [table_name])[0][0])
+        return bool(
+            self.execute("SELECT COUNT(*) FROM pg_class WHERE relname=%s", [table_name])[0][0]
+        )
 
     def create_table(self, table_name, fields):
         assert len(table_name) <= self.MAX_NAME_LENGTH, "Too long table name"
-        columns = [
-            self.column_sql(table_name, field_name, field)
-            for field_name, field in fields
-        ]
-        self.execute("CREATE TABLE %s (%s)" % (
-            self.quote_name(table_name),
-            ", ".join(col for col in columns if col)
-        ))
+        columns = [self.column_sql(table_name, field_name, field) for field_name, field in fields]
+        self.execute(
+            "CREATE TABLE %s (%s)"
+            % (self.quote_name(table_name), ", ".join(col for col in columns if col))
+        )
         self.execute_deferred_sql()
 
     def delete_table(self, table_name, cascade=True):
@@ -57,7 +58,7 @@ class DB(object):
     def add_column(self, table_name, name, field):
         sql = "ALTER TABLE %s ADD COLUMN %s;" % (
             self.quote_name(table_name),
-            self.column_sql(table_name, name, field)
+            self.column_sql(table_name, name, field),
         )
         self.execute(sql)
         self.execute_deferred_sql()
@@ -65,7 +66,7 @@ class DB(object):
     def delete_column(self, table_name, field_name):
         sql = "ALTER TABLE %s DROP COLUMN %s CASCADE;" % (
             self.quote_name(table_name),
-            self.quote_name(field_name)
+            self.quote_name(field_name),
         )
         self.execute(sql)
 
@@ -75,7 +76,7 @@ class DB(object):
         sql = "ALTER TABLE %s RENAME COLUMN %s TO %s;" % (
             self.quote_name(table_name),
             self.quote_name(old),
-            self.quote_name(new)
+            self.quote_name(new),
         )
         self.execute(sql)
 
@@ -99,32 +100,42 @@ class DB(object):
         if not column_names:
             return
         # Generate index name
-        idx_table_name = table_name.replace("\"", "").replace(".", "_")
+        idx_table_name = table_name.replace('"', "").replace(".", "_")
         index_unique_name = ""
 
         if len(column_names) > 1:
             index_unique_name = "_%x" % abs(hash((table_name, ",".join(column_names))))
 
         # If the index name is too long, truncate it
-        index_name = ("%s_%s%s" % (idx_table_name, column_names[0], index_unique_name)).replace("\"", "").replace(".", "_")
+        index_name = (
+            ("%s_%s%s" % (idx_table_name, column_names[0], index_unique_name))
+            .replace('"', "")
+            .replace(".", "_")
+        )
         if len(index_name) > 63:
             part = "_%s%s" % (column_names[0], index_unique_name)
-            index_name = "%s%s" % (idx_table_name[:self.MAX_NAME_LENGTH - len(part)], part)
+            index_name = "%s%s" % (idx_table_name[: self.MAX_NAME_LENGTH - len(part)], part)
         #
         sql = "CREATE %sINDEX %s ON %s (%s);" % (
             "UNIQUE " if unique else "",
             self.quote_name(index_name),
             self.quote_name(table_name),
-            ",".join(self.quote_name(field) for field in column_names)
+            ",".join(self.quote_name(field) for field in column_names),
         )
         self.execute(sql)
 
-    def mock_model(self, model_name, db_table,
-                   pk_field_name="id", pk_field_type=AutoField,
-                   pk_field_args=None, pk_field_kwargs=None):
+    def mock_model(
+        self,
+        model_name,
+        db_table,
+        pk_field_name="id",
+        pk_field_type=AutoField,
+        pk_field_args=None,
+        pk_field_kwargs=None,
+    ):
         pk_field_args = pk_field_args or []
         pk_field_kwargs = pk_field_kwargs or {}
-        
+
         class MockOptions(object):
             def __init__(self):
                 self.db_table = db_table
@@ -190,8 +201,11 @@ class DB(object):
                     default = default.replace("%", "%%")
                 sql += ["DEFAULT %s" % default]
                 params += [default]
-            elif (not field.null and field.blank) or (field.get_default() == ''):
-                if field.empty_strings_allowed and connection.features.interprets_empty_strings_as_nulls:
+            elif (not field.null and field.blank) or (field.get_default() == ""):
+                if (
+                    field.empty_strings_allowed
+                    and connection.features.interprets_empty_strings_as_nulls
+                ):
                     sql += [" DEFAULT ''"]
         # FOREIGN KEY
         if field.remote_field:
@@ -200,7 +214,7 @@ class DB(object):
                     table_name,
                     field.column,
                     field.remote_field.model._meta.db_table,
-                    field.remote_field.model._meta.get_field(field.remote_field.field_name).column
+                    field.remote_field.model._meta.get_field(field.remote_field.field_name).column,
                 )
             ]
         # Indexes
@@ -213,14 +227,18 @@ class DB(object):
         """
         Generates a full SQL statement to add a foreign key constraint
         """
-        constraint_name = '%s_refs_%s_%x' % (from_column_name, to_column_name, abs(hash((from_table_name, to_table_name))))
-        return 'ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)%s;' % (
+        constraint_name = "%s_refs_%s_%x" % (
+            from_column_name,
+            to_column_name,
+            abs(hash((from_table_name, to_table_name))),
+        )
+        return "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)%s;" % (
             self.quote_name(from_table_name),
             self.quote_name(truncate_name(constraint_name, connection.ops.max_name_length())),
             self.quote_name(from_column_name),
             self.quote_name(to_table_name),
             self.quote_name(to_column_name),
-            connection.ops.deferrable_sql() # Django knows this
+            connection.ops.deferrable_sql(),  # Django knows this
         )
 
     def execute_deferred_sql(self):
@@ -236,6 +254,7 @@ class DB(object):
         :param field:
         :return:
         """
+
         def qn(name):
             if name.startswith('"') and name.endswith('"'):
                 return name  # Quoting once is enough.
@@ -246,13 +265,14 @@ class DB(object):
         if field.db_index and not field.unique:
             i_name = "%s_%s" % (
                 model._meta.db_table,
-                BaseDatabaseSchemaEditor._digest(field.column)
+                BaseDatabaseSchemaEditor._digest(field.column),
             )
             return [
-                "CREATE INDEX %s ON %s(%s)" % (
+                "CREATE INDEX %s ON %s(%s)"
+                % (
                     qn(truncate_name(i_name, max_name_length)),
                     qn(model._meta.db_table),
-                    qn(field.column)
+                    qn(field.column),
                 )
             ]
         return []

@@ -17,9 +17,5 @@ class Script(BaseScript):
 
     def execute(self):
         data = self.profile.var_data(self, "/setup_get.cgi")
-        r = [{
-            "username": data["uname"],
-            "class": "superuser",
-            "is_active": True
-            }]
+        r = [{"username": data["uname"], "class": "superuser", "is_active": True}]
         return r

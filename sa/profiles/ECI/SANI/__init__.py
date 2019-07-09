@@ -16,7 +16,5 @@ class Profile(BaseProfile):
     pattern_username = r"^login : "
     pattern_password = r"^password : "
     pattern_prompt = r"^( >>|\S+ >(?: \S+ >)?)"
-    pattern_more = [
-        (r"press <SPACE> to continue or <ENTER> to quit", "               \n"),
-    ]
+    pattern_more = [(r"press <SPACE> to continue or <ENTER> to quit", "               \n")]
     command_exit = "logout"

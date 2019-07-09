@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -17,8 +18,9 @@ class Script(BaseScript):
     name = "Dell.Powerconnect62xx.get_mac_address_table"
     interface = IGetMACAddressTable
     rx_line = re.compile(
-        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+"
-        r"(?P<type>\S+)\s*$", re.MULTILINE)
+        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+" r"(?P<type>\S+)\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show bridge address-table"
@@ -34,13 +36,12 @@ class Script(BaseScript):
             interface = match.group("interface")
             if interface == "cpu":
                 continue
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": r_mac,
-                "interfaces": [interface],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S"
-                }[match.group("type").lower()]
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": r_mac,
+                    "interfaces": [interface],
+                    "type": {"dynamic": "D", "static": "S"}[match.group("type").lower()],
+                }
+            ]
         return r

@@ -89,5 +89,5 @@ MIB = {
     "IEEE8023-LAG-MIB::dot3adTablesLastChanged": "1.2.840.10006.300.43.1.3",
     "IEEE8023-LAG-MIB::dot3adAggConformance": "1.2.840.10006.300.43.2",
     "IEEE8023-LAG-MIB::dot3adAggGroups": "1.2.840.10006.300.43.2.1",
-    "IEEE8023-LAG-MIB::dot3adAggCompliances": "1.2.840.10006.300.43.2.2"
+    "IEEE8023-LAG-MIB::dot3adAggCompliances": "1.2.840.10006.300.43.2.2",
 }

@@ -18,6 +18,7 @@ class VersionCheck(DiscoveryCheck):
     """
     Version discovery
     """
+
     name = "version"
     required_script = "get_version"
 
@@ -29,8 +30,7 @@ class VersionCheck(DiscoveryCheck):
         vendor = Vendor.ensure_vendor(result["vendor"])
         if not self.object.vendor or vendor.id != self.object.vendor.id:
             if self.object.vendor:
-                self.logger.info("Vendor changed: %s -> %s",
-                                 self.object.vendor.name, vendor.name)
+                self.logger.info("Vendor changed: %s -> %s", self.object.vendor.name, vendor.name)
             else:
                 self.logger.info("Set vendor: %s", vendor.name)
             self.object.vendor = vendor
@@ -38,26 +38,25 @@ class VersionCheck(DiscoveryCheck):
         # Sync platform
         strict_platform = self.object.object_profile.new_platform_creation_policy != "C"
         platform = Platform.ensure_platform(
-            vendor,
-            result["platform"],
-            strict=strict_platform,
-            tags=[self.object.profile.name]
+            vendor, result["platform"], strict=strict_platform, tags=[self.object.profile.name]
         )
         if strict_platform and platform is None:
             # Denied to create platform, stop
             if self.object.object_profile.new_platform_creation_policy == "A":
                 self.set_problem(
                     alarm_class="NOC | Managed Object | New Platform",
-                    message="New platform (%s: %s) creation is denied by policy" % (vendor, result["platform"]),
-                    fatal=True
+                    message="New platform (%s: %s) creation is denied by policy"
+                    % (vendor, result["platform"]),
+                    fatal=True,
                 )
             else:
                 self.job.set_fatal_error()
             return
         if not self.object.platform or platform.id != self.object.platform.id:
             if self.object.platform:
-                self.logger.info("Platform changed: %s -> %s",
-                                 self.object.platform.name, platform.name)
+                self.logger.info(
+                    "Platform changed: %s -> %s", self.object.platform.name, platform.name
+                )
             else:
                 self.logger.info("Set platform: %s", platform.name)
             self.object.platform = platform
@@ -71,9 +70,9 @@ class VersionCheck(DiscoveryCheck):
         version = Firmware.ensure_firmware(self.object.profile, vendor, result["version"])
         if not self.object.version or version.id != self.object.version.id:
             if self.object.version:
-                self.logger.info("Version changed: %s -> %s",
-                                 self.object.version.version,
-                                 version.version)
+                self.logger.info(
+                    "Version changed: %s -> %s", self.object.version.version, version.version
+                )
             else:
                 self.logger.info("Set version: %s", version.version)
             self.object.version = version
@@ -87,8 +86,7 @@ class VersionCheck(DiscoveryCheck):
             if not image:
                 image = None
             if self.object.version:
-                self.logger.info("Image changed: %s -> %s",
-                                 self.object.software_image, image)
+                self.logger.info("Image changed: %s -> %s", self.object.software_image, image)
             else:
                 self.logger.info("Set image: %s", image)
             self.object.software_image = image
@@ -109,7 +107,7 @@ class VersionCheck(DiscoveryCheck):
                     self.set_problem(
                         alarm_class="NOC | Managed Object | Denied Firmware",
                         message="Firmware version is denied to use by policy",
-                        fatal=dfp == "S"
+                        fatal=dfp == "S",
                     )
                 elif dfp == "s":
                     self.job.set_fatal_error()

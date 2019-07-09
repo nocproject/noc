@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -18,7 +19,9 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s*(?P<mac>\S+)\s*(?P<interfaces>\S+)\s*"
-        r"(?P<type>\S+)\s*(?P<test>\d+)", re.IGNORECASE)
+        r"(?P<type>\S+)\s*(?P<test>\d+)",
+        re.IGNORECASE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show switch fdb"
@@ -34,10 +37,12 @@ class Script(BaseScript):
         for l in vlans.split("\n"):
             match = self.rx_line.match(l.strip())
             if match:
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": match.group("type")
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": match.group("type"),
+                    }
+                ]
         return r

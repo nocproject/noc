@@ -17,13 +17,12 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_line = re.compile(
-        r"^\s*(?P<ip>\d+\S+\d+)\s+(?P<mac>([0-9A-F]{2}-){5}[0-9A-F]{2})\s+",
-        re.MULTILINE
+        r"^\s*(?P<ip>\d+\S+\d+)\s+(?P<mac>([0-9A-F]{2}-){5}[0-9A-F]{2})\s+", re.MULTILINE
     )
 
     def execute_cli(self, interface=None):
         r = []
         v = self.cli("show arp")
         for match in self.rx_line.finditer(v):
-            r += [{'ip': match.group("ip"), 'mac': match.group("mac")}]
+            r += [{"ip": match.group("ip"), "mac": match.group("mac")}]
         return r

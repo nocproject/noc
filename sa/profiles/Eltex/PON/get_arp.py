@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -19,8 +20,9 @@ class Script(BaseScript):
     cache = True
 
     rx_line = re.compile(
-        r"^\s*\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>(\S+ \d+|\S+))"
-        r"\s+\S+$", re.MULTILINE)
+        r"^\s*\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>(\S+ \d+|\S+))" r"\s+\S+$",
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
@@ -51,15 +53,9 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(arp):
             mac = match.group("mac")
             if mac.lower() == "00:00:00:00:00:00":
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": None,
-                    "interface": None
-                })
+                r.append({"ip": match.group("ip"), "mac": None, "interface": None})
             else:
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": mac,
-                    "interface": match.group("interface")
-                })
+                r.append(
+                    {"ip": match.group("ip"), "mac": mac, "interface": match.group("interface")}
+                )
         return r

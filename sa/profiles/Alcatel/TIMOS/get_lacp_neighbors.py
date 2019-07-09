@@ -2,17 +2,16 @@
 # ----------------------------------------------------------------------
 # Alcatel.TIMOS.get_lacp_neighbors
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -52,15 +51,20 @@ class Script(BaseScript):
                     is_table_body = False
                 if is_table_body:
                     row = l.split()
-                    bundle += [{
-                        "interface": row[0],
-                        "local_port_id": row[1],
-                        "remote_system_id": m["Partner system ID"].strip(),
-                        "remote_port_id": row[2]
-                    }]
-            r += [{"lag_id": lag["interface"].split("-")[1],
-                   "interface": lag["interface"],
-                   "system_id": v_s,
-                   "bundle": bundle
-                   }]
+                    bundle += [
+                        {
+                            "interface": row[0],
+                            "local_port_id": row[1],
+                            "remote_system_id": m["Partner system ID"].strip(),
+                            "remote_port_id": row[2],
+                        }
+                    ]
+            r += [
+                {
+                    "lag_id": lag["interface"].split("-")[1],
+                    "interface": lag["interface"],
+                    "system_id": v_s,
+                    "bundle": bundle,
+                }
+            ]
         return r

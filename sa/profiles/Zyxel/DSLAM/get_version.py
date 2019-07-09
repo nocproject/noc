@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -27,7 +28,8 @@ class Script(BaseScript):
         r".+?\n"
         r"^\s*Hardware version: (?P<hardware>\S+)\s*\n"
         r"^\s*Serial number: (?P<serial>\S+)\s*\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         match = self.rx_ver.search(self.cli("sys info show"))
@@ -38,6 +40,6 @@ class Script(BaseScript):
             "attributes": {
                 "Boot PROM": match.group("bootprom"),
                 "HW version": match.group("hardware"),
-                "Serial Number": match.group("serial")
-            }
+                "Serial Number": match.group("serial"),
+            },
         }

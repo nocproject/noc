@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_ipv6_neighbor
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetipv6neighbor import IGetIPv6Neighbor
@@ -24,7 +22,7 @@ class Script(BaseScript):
         "REACH": "reachable",
         "stale": "stale",
         "noarp": "delay",
-        "PROBE": "probe"
+        "PROBE": "probe",
     }
 
     def execute(self, vrf=None):
@@ -41,16 +39,7 @@ class Script(BaseScript):
             if found:
                 continue
             if mac == "--":
-                r += [{
-                    "ip": ip,
-                    "interface": ifname,
-                    "state": self.s_map[state]
-                }]
+                r += [{"ip": ip, "interface": ifname, "state": self.s_map[state]}]
             else:
-                r += [{
-                    "ip": ip,
-                    "mac": mac,
-                    "interface": ifname,
-                    "state": self.s_map[state]
-                }]
+                r += [{"ip": ip, "mac": mac, "interface": ifname, "state": self.s_map[state]}]
         return r

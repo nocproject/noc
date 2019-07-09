@@ -24,6 +24,7 @@ def bin_quote(s):
     >>> bin_quote("A")
     'A'
     """
+
     def qc(c):
         if c == "\\":
             return "\\\\"

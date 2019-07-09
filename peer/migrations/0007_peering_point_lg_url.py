@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -15,5 +16,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
-            "peer_peeringpoint", "lg_rcmd", models.CharField("LG RCMD Url", max_length=128, blank=True, null=True)
+            "peer_peeringpoint",
+            "lg_rcmd",
+            models.CharField("LG RCMD Url", max_length=128, blank=True, null=True),
         )

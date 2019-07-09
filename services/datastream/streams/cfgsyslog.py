@@ -19,14 +19,33 @@ class CfgSyslogDataStream(DataStream):
     @classmethod
     def get_object(cls, id):
         mo = ManagedObject.objects.filter(id=id).values_list(
-            "id", "bi_id", "is_managed", "pool", "address", "syslog_source_ip", "syslog_source_type",
-            "event_processing_policy", "object_profile__event_processing_policy",
-            "syslog_archive_policy", "object_profile__syslog_archive_policy")[:1]
+            "id",
+            "bi_id",
+            "is_managed",
+            "pool",
+            "address",
+            "syslog_source_ip",
+            "syslog_source_type",
+            "event_processing_policy",
+            "object_profile__event_processing_policy",
+            "syslog_archive_policy",
+            "object_profile__syslog_archive_policy",
+        )[:1]
         if not mo:
             raise KeyError()
-        (mo_id, bi_id, is_managed, pool, address, syslog_source_ip, syslog_source_type,
-         event_processing_policy, mop_event_processing_policy,
-         syslog_archive_policy, mop_syslog_archive_policy) = mo[0]
+        (
+            mo_id,
+            bi_id,
+            is_managed,
+            pool,
+            address,
+            syslog_source_ip,
+            syslog_source_type,
+            event_processing_policy,
+            mop_event_processing_policy,
+            syslog_archive_policy,
+            mop_syslog_archive_policy,
+        ) = mo[0]
         # Check if object capable to receive syslog events
         if not is_managed or str(syslog_source_type) == "d":
             raise KeyError()
@@ -34,12 +53,14 @@ class CfgSyslogDataStream(DataStream):
         event_processing_policy = str(event_processing_policy)
         mop_event_processing_policy = str(mop_event_processing_policy)
         effective_epp = event_processing_policy == "E" or (
-            event_processing_policy == "P" and mop_event_processing_policy == "E")
+            event_processing_policy == "P" and mop_event_processing_policy == "E"
+        )
         # Get effective event archiving policy
         syslog_archive_policy = str(syslog_archive_policy)
         mop_syslog_archive_policy = str(mop_syslog_archive_policy)
         effective_sap = syslog_archive_policy == "E" or (
-            syslog_archive_policy == "P" and mop_syslog_archive_policy == "E")
+            syslog_archive_policy == "P" and mop_syslog_archive_policy == "E"
+        )
         # Check syslog events may be processed
         if not effective_epp and not effective_sap:
             raise KeyError()
@@ -50,7 +71,7 @@ class CfgSyslogDataStream(DataStream):
             "pool": str(Pool.get_by_id(pool).name),
             "addresses": [],
             "process_events": effective_epp,
-            "archive_events": effective_sap
+            "archive_events": effective_sap,
         }
         if syslog_source_type == "m" and address:
             # Managed Object's address
@@ -76,31 +97,25 @@ class CfgSyslogDataStream(DataStream):
     def _get_loopback_addresses(cls, mo_id):
         from noc.inv.models.interface import Interface
         from noc.inv.models.subinterface import SubInterface
+
         # Get all loopbacks
         if_ids = []
-        for d in Interface._get_collection().find({
-            "managed_object": int(mo_id),
-            "type": "loopback"
-        }, {
-            "_id": 1
-        }):
+        for d in Interface._get_collection().find(
+            {"managed_object": int(mo_id), "type": "loopback"}, {"_id": 1}
+        ):
             if_ids += [d["_id"]]
         if not if_ids:
             return []
         # Get loopback's addresses
         r = []
-        for d in SubInterface._get_collection().find({
-            "managed_object": int(mo_id),
-            "interface": {
-                "$in": if_ids
+        for d in SubInterface._get_collection().find(
+            {
+                "managed_object": int(mo_id),
+                "interface": {"$in": if_ids},
+                "ipv4_addresses": {"$exists": True},
             },
-            "ipv4_addresses": {
-                "$exists": True
-            }
-        }, {
-            "_id": 0,
-            "ipv4_addresses": 1
-        }):
+            {"_id": 0, "ipv4_addresses": 1},
+        ):
             for a in d.get("ipv4_addresses", []):
                 r += [str(a).split("/")[0]]
         return r
@@ -108,27 +123,19 @@ class CfgSyslogDataStream(DataStream):
     @classmethod
     def _get_all_addresses(cls, mo_id):
         from noc.inv.models.subinterface import SubInterface
+
         r = []
-        for d in SubInterface._get_collection().find({
-            "managed_object": int(mo_id),
-            "ipv4_addresses": {
-                "$exists": True
-            }
-        }, {
-            "ipv4_addresses"
-        }):
+        for d in SubInterface._get_collection().find(
+            {"managed_object": int(mo_id), "ipv4_addresses": {"$exists": True}}, {"ipv4_addresses"}
+        ):
             for a in d.get("ipv4_addresses", []):
                 r += [str(a).split("/")[0]]
         return r
 
     @classmethod
     def get_meta(cls, data):
-        return {
-            "pool": data.get("pool")
-        }
+        return {"pool": data.get("pool")}
 
     @classmethod
     def filter_pool(cls, name):
-        return {
-            "%s.pool" % cls.F_META: name
-        }
+        return {"%s.pool" % cls.F_META: name}

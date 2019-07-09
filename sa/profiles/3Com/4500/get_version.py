@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,16 +19,11 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_version_3Com = re.compile(
-        r"^Switch \S+ \S+ Software Version (?P<version>.+)$", re.MULTILINE)
-    rx_bootprom = re.compile(
-        r"^Bootrom Version is\s+(?P<bootprom>\S+)$", re.MULTILINE)
-    rx_hardware = re.compile(
-        r"^.*Hardware Version is (?P<hardware>\S+)\s?$", re.MULTILINE)
-    rx_platform = re.compile(
-        r"^Switch (?P<platform>\S+ \S+) Software Version.*$", re.MULTILINE)
-    rx_serial = re.compile(
-        r"^.*Product serial number:\s+(?P<serial>\S+)$", re.MULTILINE)
+    rx_version_3Com = re.compile(r"^Switch \S+ \S+ Software Version (?P<version>.+)$", re.MULTILINE)
+    rx_bootprom = re.compile(r"^Bootrom Version is\s+(?P<bootprom>\S+)$", re.MULTILINE)
+    rx_hardware = re.compile(r"^.*Hardware Version is (?P<hardware>\S+)\s?$", re.MULTILINE)
+    rx_platform = re.compile(r"^Switch (?P<platform>\S+ \S+) Software Version.*$", re.MULTILINE)
+    rx_serial = re.compile(r"^.*Product serial number:\s+(?P<serial>\S+)$", re.MULTILINE)
 
     def execute_cli(self):
         plat = self.cli("display version", cached=True)
@@ -40,12 +36,12 @@ class Script(BaseScript):
         serial = self.rx_serial.search(serial)
 
         return {
-            "vendor": '3Com',
+            "vendor": "3Com",
             "platform": platform.group("platform"),
             "version": version.group("version"),
             "attributes": {
                 "Boot PROM": bootprom.group("bootprom"),
                 "HW version": hardware.group("hardware"),
-                "Serial Number": serial.group("serial")
-            }
+                "Serial Number": serial.group("serial"),
+            },
         }

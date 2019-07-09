@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -23,10 +24,13 @@ class Script(BaseScript):
         r"Lost = \d+%\s*\n"
         r"^\s*Approximate round trip times in milli-seconds:\s*\n"
         r"^\s*Minimum =\s+(?P<min>\d+)ms, Maximum =\s+(?P<max>\d+)ms, "
-        r"Average =\s+(?P<avg>\d+)ms", re.MULTILINE)
+        r"Average =\s+(?P<avg>\d+)ms",
+        re.MULTILINE,
+    )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None, *args, **kwargs):
+    def execute(
+        self, address, count=None, source_address=None, size=None, df=None, *args, **kwargs
+    ):
         cmd = "ping %s" % address
         match = self.rx_result.search(self.cli(cmd))
         if match:
@@ -35,10 +39,7 @@ class Script(BaseScript):
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
-            return {
-                "success": 0,
-                "count": 3
-            }
+            return {"success": 0, "count": 3}

@@ -11,8 +11,10 @@
 from threading import Thread
 import operator
 import time
+
 # Third-party modules
 import tornado.gen
+
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.debug import error_report

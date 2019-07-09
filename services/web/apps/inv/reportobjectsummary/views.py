@@ -18,16 +18,11 @@ class ReportObjectSummaryApplication(SimpleReport):
 
     def get_data(self, **kwargs):
         self.model_name = {}  # oid -> name
-        data = list(Object._get_collection().aggregate([
-            {
-                "$group": {
-                    "_id": "$model",
-                    "total": {
-                        "$sum": 1
-                    }
-                }
-            }
-        ]))
+        data = list(
+            Object._get_collection().aggregate(
+                [{"$group": {"_id": "$model", "total": {"$sum": 1}}}]
+            )
+        )
         oms = [x["_id"] for x in data if x["_id"]]
         c = ObjectModel._get_collection()
         om_names = {}
@@ -36,28 +31,16 @@ class ReportObjectSummaryApplication(SimpleReport):
             om_names.update(
                 dict(
                     (x["_id"], x["name"])
-                    for x in c.find({
-                        "_id": {
-                            "$in": chunk
-                        }
-                    }, {
-                        "_id": 1,
-                        "name": 1
-                    })
+                    for x in c.find({"_id": {"$in": chunk}}, {"_id": 1, "name": 1})
                 )
             )
-        data = sorted((
-            [om_names[x["_id"]], x["total"]]
-            for x in data
-            if x["_id"] in om_names
-        ), key=lambda x: -x[1])
+        data = sorted(
+            ([om_names[x["_id"]], x["total"]] for x in data if x["_id"] in om_names),
+            key=lambda x: -x[1],
+        )
         return self.from_dataset(
             title=self.title,
-            columns=[
-                "Model",
-                TableColumn("Count", format="numeric",
-                            align="right", total="sum")
-            ],
+            columns=["Model", TableColumn("Count", format="numeric", align="right", total="sum")],
             data=data,
-            enumerate=True
+            enumerate=True,
         )

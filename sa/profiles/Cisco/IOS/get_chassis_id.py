@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,10 +20,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_small_cat = re.compile(
-        r"^Base [Ee]thernet MAC Address\s*:\s*(?P<id>\S+)",
-        re.MULTILINE
-    )
+    rx_small_cat = re.compile(r"^Base [Ee]thernet MAC Address\s*:\s*(?P<id>\S+)", re.MULTILINE)
 
     def execute_small_cat(self):
         """
@@ -38,14 +36,10 @@ class Script(BaseScript):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
         base = match.group("id")
-        return [{
-            "first_chassis_mac": base,
-            "last_chassis_mac": base
-        }]
+        return [{"first_chassis_mac": base, "last_chassis_mac": base}]
 
     rx_cat4000 = re.compile(
-        r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
-        re.MULTILINE | re.DOTALL
+        r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)", re.MULTILINE | re.DOTALL
     )
 
     def execute_cat4000(self):
@@ -60,15 +54,10 @@ class Script(BaseScript):
         match = self.re_search(self.rx_cat4000, v)
         base = match.group("id")
         count = int(match.group("count"))
-        return [{
-            "first_chassis_mac": base,
-            "last_chassis_mac": MAC(base).shift(count - 1)
-        }]
+        return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
 
     rx_cat6000 = re.compile(
-        r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+"
-        r"(?P<to_id>\S+)",
-        re.MULTILINE
+        r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+" r"(?P<to_id>\S+)", re.MULTILINE
     )
 
     def execute_cat6000(self):
@@ -78,14 +67,12 @@ class Script(BaseScript):
         """
         v = self.cli("show catalyst6000 chassis-mac-addresses")
         match = self.re_search(self.rx_cat6000, v)
-        return [{
-            "first_chassis_mac": match.group("from_id"),
-            "last_chassis_mac": match.group("to_id")
-        }]
+        return [
+            {"first_chassis_mac": match.group("from_id"), "last_chassis_mac": match.group("to_id")}
+        ]
 
     rx_iosxe = re.compile(
-        r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s+"
-        r"MAC Address block size\s*:\s*(?P<count>\d+)"
+        r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s+" r"MAC Address block size\s*:\s*(?P<count>\d+)"
     )
 
     def execute_IOSXE(self):
@@ -96,24 +83,18 @@ class Script(BaseScript):
         v = self.cli("show diag chassis eeprom detail")
         macs = []
         for f, t in [
-            (mac, MAC(mac).shift(int(count) - 1))
-            for mac, count in self.rx_iosxe.findall(v)
+            (mac, MAC(mac).shift(int(count) - 1)) for mac, count in self.rx_iosxe.findall(v)
         ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
                 macs += [[f, t]]
-        return [
-            {
-                "first_chassis_mac": f,
-                "last_chassis_mac": t
-            } for f, t in macs
-        ]
+        return [{"first_chassis_mac": f, "last_chassis_mac": t} for f, t in macs]
 
     rx_c3900 = re.compile(
         r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s*\n"
         r"MAC Address block size\s*:\s*(?P<count>\d+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_c3900(self):
@@ -125,23 +106,15 @@ class Script(BaseScript):
         v = self.cli("show diag")
         macs = []
         for f, t in [
-            (mac, MAC(mac).shift(int(count) - 1))
-            for mac, count in self.rx_iosxe.findall(v)
+            (mac, MAC(mac).shift(int(count) - 1)) for mac, count in self.rx_iosxe.findall(v)
         ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
                 macs += [[f, t]]
-        return [
-            {
-                "first_chassis_mac": f,
-                "last_chassis_mac": t
-            } for f, t in macs
-        ]
+        return [{"first_chassis_mac": f, "last_chassis_mac": t} for f, t in macs]
 
-    rx_7200 = re.compile(
-        r"MAC Pool Size\s+(?P<count>\d+)\s+MAC Addr Base\s+(?P<mac>\S+)"
-    )
+    rx_7200 = re.compile(r"MAC Pool Size\s+(?P<count>\d+)\s+MAC Addr Base\s+(?P<mac>\S+)")
 
     def execute_7200(self):
         """
@@ -151,19 +124,13 @@ class Script(BaseScript):
         v = self.cli("show c%s | i MAC" % self.version["platform"])
         macs = []
         for f, t in [
-            (mac, MAC(mac).shift(int(count) - 1))
-            for count, mac in self.rx_7200.findall(v)
+            (mac, MAC(mac).shift(int(count) - 1)) for count, mac in self.rx_7200.findall(v)
         ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
                 macs += [[f, t]]
-        return [
-            {
-                "first_chassis_mac": f,
-                "last_chassis_mac": t
-            } for f, t in macs
-        ]
+        return [{"first_chassis_mac": f, "last_chassis_mac": t} for f, t in macs]
 
     def execute_cli(self):
         if self.is_platform_7200:

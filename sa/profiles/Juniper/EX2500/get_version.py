@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,12 +20,8 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_platform = re.compile(
-        r"Juniper Networks (?P<platform>\S+) .+ Switch"
-    )
-    rx_version = re.compile(
-        r"Software Version (?P<version>\S+), Boot Version (?P<bootprom>\S+),"
-    )
+    rx_platform = re.compile(r"Juniper Networks (?P<platform>\S+) .+ Switch")
+    rx_version = re.compile(r"Software Version (?P<version>\S+), Boot Version (?P<bootprom>\S+),")
     rx_serial = re.compile(r"Serial Number:\s+(?P<serial>\S+)")
     rx_hardware = re.compile(r"Hardware Revision:\s+(?P<hardware>\S+)")
 
@@ -37,9 +34,7 @@ class Script(BaseScript):
             "vendor": "Juniper",
             "platform": platform,
             "version": match.group("version"),
-            "attributes": {
-                "Boot PROM": match.group("bootprom"),
-            }
+            "attributes": {"Boot PROM": match.group("bootprom")},
         }
         match = self.rx_serial.search(v)
         if match:

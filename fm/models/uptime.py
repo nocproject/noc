@@ -43,7 +43,7 @@ class Uptime(Document):
     WPREC = 0.1  # Wrap precision
 
     def __str__(self):
-        return u"%d" % self.object
+        return "%d" % self.object
 
     @classmethod
     def is_reboot(cls, old_uptime, new_uptime):

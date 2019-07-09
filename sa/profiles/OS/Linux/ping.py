@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -19,13 +20,14 @@ class Script(BaseScript):
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),+( |\+\d+ errors, )+\d+% packet loss",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
     rx_stat = re.compile(
         r"^\S+ min/avg/max(/mdev | )= (?P<min>\d+\.\d+)/(?P<avg>\d+\.\d+)/(?P<max>\d+\.\d+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping -q"
         if count:
             cmd += " -c %d" % int(count)
@@ -40,15 +42,8 @@ class Script(BaseScript):
         cmd += " %s" % address
         ping = self.cli(cmd)
         result = self.rx_result.search(ping)
-        r = {
-            "success": result.group("success"),
-            "count": result.group("count"),
-            }
+        r = {"success": result.group("success"), "count": result.group("count")}
         stat = self.rx_stat.search(ping)
         if stat:
-            r.update({
-                    "min": stat.group("min"),
-                    "avg": stat.group("avg"),
-                    "max": stat.group("max"),
-                    })
+            r.update({"min": stat.group("min"), "avg": stat.group("avg"), "max": stat.group("max")})
         return r

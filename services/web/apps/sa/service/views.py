@@ -8,6 +8,7 @@
 
 # Third-party modules
 from mongoengine.queryset import Q
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sa.models.service import Service
@@ -19,6 +20,7 @@ class ServiceApplication(ExtDocApplication):
     """
     Service application
     """
+
     title = "Services"
     menu = [_("Services")]
     model = Service

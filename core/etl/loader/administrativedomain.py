@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -17,14 +18,8 @@ class AdminitstrativeDomainLoader(BaseLoader):
     """
     Administrative Domain loader
     """
+
     name = "administrativedomain"
     model = AdministrativeDomain
-    fields = [
-        "id",
-        "name",
-        "parent",
-        "default_pool"
-    ]
-    mapped_fields = {
-        "parent": "administrativedomain"
-    }
+    fields = ["id", "name", "parent", "default_pool"]
+    mapped_fields = {"parent": "administrativedomain"}

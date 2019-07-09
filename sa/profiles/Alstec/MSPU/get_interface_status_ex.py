@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError

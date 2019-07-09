@@ -13,6 +13,7 @@ import glob
 import os
 import threading
 import warnings
+
 # NOC modules
 from noc.core.loader.base import BaseLoader
 from noc.config import config
@@ -46,8 +47,9 @@ class ProfileLoader(BaseLoader):
                     return None
                 for p in config.get_customized_paths("", prefer_custom=True):
                     path = os.path.join(p, "sa", "profiles", *name.split("."))
-                    if os.path.exists(os.path.join(path, "__init__.py")) \
-                            or os.path.exists(os.path.join(path, "profile.py")):
+                    if os.path.exists(os.path.join(path, "__init__.py")) or os.path.exists(
+                        os.path.join(path, "profile.py")
+                    ):
                         if p:
                             # Custom script
                             base_name = os.path.basename(os.path.dirname(p))
@@ -60,8 +62,9 @@ class ProfileLoader(BaseLoader):
                             if profile:
                                 if not profile.__module__.endswith(".profile"):
                                     warnings.warn(
-                                        "%s profile: __init__.py should be moved to profile.py" % name,
-                                        DeprecationWarning
+                                        "%s profile: __init__.py should be moved to profile.py"
+                                        % name,
+                                        DeprecationWarning,
                                     )
                                 profile.initialize()
                                 break

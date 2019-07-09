@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -20,18 +21,19 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+)\s+\S+$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "display mac-address"
 
         if mac is not None:
             mac = self.profile.convert_mac(mac)
-            mac = mac.replace(':', '')
-            mac = mac[0:4] + '-' + mac[4:8] + '-' + mac[8:]
+            mac = mac.replace(":", "")
+            mac = mac[0:4] + "-" + mac[4:8] + "-" + mac[8:]
             cmd += " %s" % mac
         if interface is not None:
-            interface = interface.replace('Po ', 'Bridge-Aggregation')
+            interface = interface.replace("Po ", "Bridge-Aggregation")
             cmd += " interface %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
@@ -101,21 +103,20 @@ class Script(BaseScript):
         """
         # Fallback to CLI
         for match in self.rx_line.finditer(self.cli(cmd)):
-                iface = match.group("interfaces")
-                iface = iface.replace('GigabitEthernet', 'Gi ')
-                iface = iface.replace('Bridge-Aggregation', 'Po ')
-                if iface == '0':
-                    continue
-                r += [{
+            iface = match.group("interfaces")
+            iface = iface.replace("GigabitEthernet", "Gi ")
+            iface = iface.replace("Bridge-Aggregation", "Po ")
+            if iface == "0":
+                continue
+            r += [
+                {
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [iface],
-                    "type": {
-                        "learned": "D",
-                        "static": "S",
-                        "permanent": "S",
-                        "self": "S"
-                    }[match.group("type").lower()],
-                }]
+                    "type": {"learned": "D", "static": "S", "permanent": "S", "self": "S"}[
+                        match.group("type").lower()
+                    ],
+                }
+            ]
 
         return r

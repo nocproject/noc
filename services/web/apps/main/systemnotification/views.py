@@ -16,6 +16,7 @@ class SystemNotificationApplication(ExtModelApplication):
     """
     SystemNotification application
     """
+
     title = _("System Notifications")
     menu = [_("Setup"), _("System Notifications")]
     model = SystemNotification

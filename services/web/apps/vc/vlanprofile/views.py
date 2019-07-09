@@ -16,6 +16,7 @@ class VLANProfileApplication(ExtDocApplication):
     """
     VLANProfile application
     """
+
     title = "VLAN Profile"
     menu = [_("Setup"), _("VLAN Profiles")]
     model = VLANProfile

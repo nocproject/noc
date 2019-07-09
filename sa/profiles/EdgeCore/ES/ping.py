@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -19,12 +20,9 @@ class Script(BaseScript):
     rx_rtt = re.compile(
         r"Minimum = (?P<min>\d+) ms, Maximum = (?P<max>\d+) ms, Average = (?P<avg>\d+) ms"
     )
-    rx_count = re.compile(
-        r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received"
-    )
+    rx_count = re.compile(r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received")
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None, vrf=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         cmd = "ping %s" % address
         if count:
             cmd += " count %d" % int(count)

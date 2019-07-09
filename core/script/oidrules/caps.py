@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .loader import load_rule
 
@@ -18,6 +19,7 @@ class CapabilityRule(object):
 
     oids is the list of (Capability, OIDRule)
     """
+
     name = "caps"
 
     def __init__(self, oids):
@@ -36,6 +38,4 @@ class CapabilityRule(object):
             raise ValueError("oids is required")
         if not isinstance(data["oids"], list):
             raise ValueError("oids must be list")
-        return CapabilityRule(
-            oids=[load_rule(d) for d in data["oids"]]
-        )
+        return CapabilityRule(oids=[load_rule(d) for d in data["oids"]])

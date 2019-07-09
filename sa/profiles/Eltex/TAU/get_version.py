@@ -5,10 +5,11 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-'''
-'''
+"""
+"""
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,9 +20,12 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(r"^(?P<platform>\S.+)\n"
-                        r"System version:\s+#(?P<sysver>\S+)\n"
-                        r"\S.+\nFirmware\sversion:\s+(?P<fwver>\S+)", re.MULTILINE)
+    rx_ver = re.compile(
+        r"^(?P<platform>\S.+)\n"
+        r"System version:\s+#(?P<sysver>\S+)\n"
+        r"\S.+\nFirmware\sversion:\s+(?P<fwver>\S+)",
+        re.MULTILINE,
+    )
 
     def execute(self):
         c = self.cli("system info")
@@ -39,7 +43,5 @@ class Script(BaseScript):
             "vendor": "Eltex",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "FW version": fwversion
-            }
+            "attributes": {"FW version": fwversion},
         }

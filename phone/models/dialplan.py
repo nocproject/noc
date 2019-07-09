@@ -10,28 +10,23 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("phone.PhoneRange", "dialplan"),
-    ("phone.PhoneNumber", "dialplan")
-])
+@on_delete_check(check=[("phone.PhoneRange", "dialplan"), ("phone.PhoneNumber", "dialplan")])
 @six.python_2_unicode_compatible
 class DialPlan(Document):
-    meta = {
-        "collection": "noc.dialplans",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.dialplans", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
@@ -44,8 +39,7 @@ class DialPlan(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return DialPlan.objects.filter(id=id).first()
 

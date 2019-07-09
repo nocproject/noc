@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -22,24 +24,32 @@ class Migration(BaseMigration):
         new_coll = self.mongo_db["pyrules"]
         #  Create handler fields
         self.db.add_column(
-            "sa_managedobject", "config_filter_handler",
-            models.CharField("Config Filter pyRule", max_length=256, null=True, blank=True)
+            "sa_managedobject",
+            "config_filter_handler",
+            models.CharField("Config Filter pyRule", max_length=256, null=True, blank=True),
         )
         self.db.add_column(
-            "sa_managedobject", "config_diff_filter_handler",
-            models.CharField("Config Diff Filter Handler", max_length=256, null=True, blank=True)
+            "sa_managedobject",
+            "config_diff_filter_handler",
+            models.CharField("Config Diff Filter Handler", max_length=256, null=True, blank=True),
         )
         self.db.add_column(
-            "sa_managedobject", "config_validation_handler",
-            models.CharField("Config Validation Handler", max_length=256, null=True, blank=True)
+            "sa_managedobject",
+            "config_validation_handler",
+            models.CharField("Config Validation Handler", max_length=256, null=True, blank=True),
         )
         # Migrate existing pyrules
-        for old_field, new_field in [("config_filter_rule_id", "config_filter_handler"), ("config_diff_filter_rule_id",
-                                                                                          "config_diff_filter_handler"),
-                                     ("config_validation_rule_id", "config_validation_handler")]:
-            for row in self.db.execute("""
+        for old_field, new_field in [
+            ("config_filter_rule_id", "config_filter_handler"),
+            ("config_diff_filter_rule_id", "config_diff_filter_handler"),
+            ("config_validation_rule_id", "config_validation_handler"),
+        ]:
+            for row in self.db.execute(
+                """
                     SELECT DISTINCT %s
-                    FROM sa_managedobject WHERE %s IS NOT NULL""" % (old_field, old_field)):
+                    FROM sa_managedobject WHERE %s IS NOT NULL"""
+                % (old_field, old_field)
+            ):
                 pyrule_id = row[0]
                 if not pyrule_id:
                     continue
@@ -49,6 +59,8 @@ class Migration(BaseMigration):
                     UPDATE sa_managedobject
                     SET %s = %%s
                     WHERE %s = %%s
-                    """ % (new_field, old_field), [handler, pyrule_id]
+                    """
+                    % (new_field, old_field),
+                    [handler, pyrule_id],
                 )
             self.db.delete_column("sa_managedobject", old_field)

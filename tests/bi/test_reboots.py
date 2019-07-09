@@ -9,6 +9,7 @@
 # Third-party modules
 import pytest
 from six.moves import zip_longest
+
 # NOC modules
 from noc.bi.models.reboots import Reboots
 
@@ -28,7 +29,7 @@ FIELDS = [
     ("segment", "UInt64"),
     ("container", "UInt64"),
     ("x", "Float64"),
-    ("y", "Float64")
+    ("y", "Float64"),
 ]
 
 SQL = """CREATE TABLE IF NOT EXISTS reboots (
@@ -68,7 +69,7 @@ def test_field_db_type(name, db_type):
 
 
 @pytest.mark.parametrize("order,fields", list(zip_longest(MODEL._fields_order, FIELDS)))
-def test_field_db_type(order, fields):
+def test_field_order(order, fields):
     assert fields is not None
     name, db_type = fields
     assert order == name

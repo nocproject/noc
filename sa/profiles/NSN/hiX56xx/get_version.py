@@ -17,8 +17,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(
-        r"System version\s+:\s+(?P<platform>\S+)/(?P<version>\S+)")
+    rx_ver = re.compile(r"System version\s+:\s+(?P<platform>\S+)/(?P<version>\S+)")
 
     def execute(self):
         v = self.cli("show system-version", cached=True)
@@ -26,6 +25,6 @@ class Script(BaseScript):
         r = {
             "vendor": "NSN",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }
         return r

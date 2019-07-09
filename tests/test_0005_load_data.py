@@ -11,6 +11,7 @@ import pytest
 from fs import open_fs
 import ujson
 from django.db import models
+
 # NOC modules
 from noc.config import config
 from noc.models import get_model, is_document

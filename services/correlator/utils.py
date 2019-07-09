@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
@@ -22,16 +23,11 @@ def linked_object(object, interface):
     try:
         cn = object.get_profile().convert_interface_name(interface)
     except Exception as e:
-        logger.error("Cannot convert interface name '%s': %s",
-                     interface, e)
+        logger.error("Cannot convert interface name '%s': %s", interface, e)
         return None
-    iface = Interface.objects.filter(
-        managed_object=object.id,
-        name=cn
-    ).first()
+    iface = Interface.objects.filter(managed_object=object.id, name=cn).first()
     if not iface:
-        logger.debug("Interface %s@%s is not found",
-                     object.name, cn)
+        logger.debug("Interface %s@%s is not found", object.name, cn)
         return None
     link = Link.objects.filter(interfaces=iface.id).first()
     if not link:

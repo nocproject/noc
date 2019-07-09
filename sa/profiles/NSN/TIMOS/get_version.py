@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,10 +19,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_sys = re.compile(r"System Type\s+:\s+(?P<platform>.+?)$",
-                        re.MULTILINE | re.DOTALL)
-    rx_ver = re.compile(r"System Version\s+:\s+(?P<version>.+?)$",
-                        re.MULTILINE | re.DOTALL)
+    rx_sys = re.compile(r"System Type\s+:\s+(?P<platform>.+?)$", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(r"System Version\s+:\s+(?P<version>.+?)$", re.MULTILINE | re.DOTALL)
 
     def execute_cli(self):
         v = self.cli("show system information")
@@ -30,5 +29,5 @@ class Script(BaseScript):
         return {
             "vendor": "NSN",
             "platform": match_sys.group("platform"),
-            "version": match_ver.group("version")
+            "version": match_ver.group("version"),
         }

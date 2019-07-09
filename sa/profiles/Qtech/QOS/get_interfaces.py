@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -31,13 +32,13 @@ class Script(BaseScript):
         r"^Operational Trunk Allowed VLANs:\s*(?P<op_vlans>.*)\n"
         r"^Administrative Trunk Untagged VLANs:.*\n"
         r"^Operational Trunk Untagged VLANs:\s*(?P<op_untagged>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ip_iface = re.compile(
-        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
-        r"assigned\s+primary\s*\n", re.MULTILINE)
-    rx_vlans_ip = re.compile(
-        r"^\s*(?P<iface>\d+)\s+(?P<vlan_id>\d+|none)", re.MULTILINE)
+        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+" r"assigned\s+primary\s*\n",
+        re.MULTILINE,
+    )
+    rx_vlans_ip = re.compile(r"^\s*(?P<iface>\d+)\s+(?P<vlan_id>\d+|none)", re.MULTILINE)
 
     def execute(self):
         interfaces = []
@@ -46,14 +47,8 @@ class Script(BaseScript):
             port_no = port.group("port")
             c = self.cli("show interface port-list %s switchport" % port_no)
             match = self.rx_vlan.search(c)
-            iface = {
-                "name": "P%s" % port_no,
-                "type": "physical"
-            }
-            sub = {
-                "name": "P%s" % port_no,
-                "enabled_afi": ["BRIDGE"],
-            }
+            iface = {"name": "P%s" % port_no, "type": "physical"}
+            sub = {"name": "P%s" % port_no, "enabled_afi": ["BRIDGE"]}
             if match.group("op_mode") in ["trunk", "hybrid"]:
                 sub["untagged_vlan"] = int(match.group("trunk_native_vlan"))
                 sub["tagged_vlans"] = ranges_to_list(match.group("op_vlans"))
@@ -73,16 +68,12 @@ class Script(BaseScript):
                 "type": "SVI",
                 "mac": mac,
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": "ip%s" % ifname,
-                    "mac": mac,
-                    "enabled_afi": ['IPv4']
-                }]
+                "subinterfaces": [{"name": "ip%s" % ifname, "mac": mac, "enabled_afi": ["IPv4"]}],
             }
             addr = match.group("ip")
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
-            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
             interfaces += [i]
         v = self.cli("show interface ip vlan")
         for match in self.rx_vlans_ip.finditer(v):

@@ -6,6 +6,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
 from .base import VLANIDParameter, BooleanParameter

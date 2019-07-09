@@ -9,6 +9,7 @@
 # Python modules
 import hashlib
 import datetime
+
 # Third-party modules
 import ujson
 import bson
@@ -17,6 +18,7 @@ import pymongo
 import six
 import dateutil.parser
 import re
+
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.nosql import get_db
@@ -31,6 +33,7 @@ class DataStream(object):
     data: stream data (serialized JSON)
     hash: Object hash
     """
+
     name = None
 
     F_ID = "_id"
@@ -99,14 +102,11 @@ class DataStream(object):
         :param id:
         :return:
         """
-        return {
-            "id": str(id),
-            "$deleted": True
-        }
+        return {"id": str(id), "$deleted": True}
 
     @staticmethod
     def get_hash(data):
-        return hashlib.sha256(ujson.dumps(data)).hexdigest()[:DataStream.HASH_LEN]
+        return hashlib.sha256(ujson.dumps(data)).hexdigest()[: DataStream.HASH_LEN]
 
     @classmethod
     def update_object(cls, id, delete=False):
@@ -139,22 +139,12 @@ class DataStream(object):
         metrics["ds_%s_changed" % cls.name] += 1
         changeid = bson.ObjectId()
         data["change_id"] = str(changeid)
-        op = {
-            "$set": {
-                cls.F_CHANGEID: changeid,
-                cls.F_HASH: hash,
-                cls.F_DATA: ujson.dumps(data)
-            }
-        }
+        op = {"$set": {cls.F_CHANGEID: changeid, cls.F_HASH: hash, cls.F_DATA: ujson.dumps(data)}}
         if meta:
             op["$set"][cls.F_META] = meta
         elif "$deleted" not in data:
-            op["$unset"] = {
-                cls.F_META: ""
-            }
-        coll.update_one({
-            cls.F_ID: id
-        }, op, upsert=True)
+            op["$unset"] = {cls.F_META: ""}
+        coll.update_one({cls.F_ID: id}, op, upsert=True)
         return True
 
     @classmethod
@@ -220,18 +210,12 @@ class DataStream(object):
         if filters:
             q.update(cls.compile_filters(filters))
         if change_id:
-            q[cls.F_CHANGEID] = {
-                "$gt": cls.clean_change_id(change_id)
-            }
+            q[cls.F_CHANGEID] = {"$gt": cls.clean_change_id(change_id)}
         coll = cls.get_collection()
-        for doc in coll.find(q, {
-            cls.F_ID: 1,
-            cls.F_CHANGEID: 1,
-            cls.F_DATA: 1
-        }).sort([
-            (cls.F_CHANGEID, pymongo.ASCENDING)
-        ]).limit(
-            limit=limit or cls.DEFAULT_LIMIT
+        for doc in (
+            coll.find(q, {cls.F_ID: 1, cls.F_CHANGEID: 1, cls.F_DATA: 1})
+            .sort([(cls.F_CHANGEID, pymongo.ASCENDING)])
+            .limit(limit=limit or cls.DEFAULT_LIMIT)
         ):
             yield doc[cls.F_ID], doc[cls.F_CHANGEID], doc[cls.F_DATA]
 
@@ -310,7 +294,7 @@ class DataStream(object):
             raise ValueError("Missed opening bracket")
         if not expr.endswith(")"):
             raise ValueError("Missed closing bracket")
-        return [expr[:i1]] + [x.strip() for x in expr[i1 + 1:-1].split(",")]
+        return [expr[:i1]] + [x.strip() for x in expr[i1 + 1 : -1].split(",")]
 
     @classmethod
     def compile_filters(cls, exprs):
@@ -342,15 +326,9 @@ class DataStream(object):
         """
         ids = [cls.clean_id(id1)] + [cls.clean_id(x) for x in args]
         if len(ids) == 1:
-            return {
-                cls.F_ID: ids[0]
-            }
+            return {cls.F_ID: ids[0]}
         else:
-            return {
-                cls.F_ID: {
-                    "$in": ids
-                }
-            }
+            return {cls.F_ID: {"$in": ids}}
 
     @classmethod
     def filter_shard(cls, instance, n_instances):
@@ -370,8 +348,4 @@ class DataStream(object):
             raise ValueError("Invalid instance")
         if instance >= n_instances:
             raise ValueError("Invalid instance")
-        return {
-            "_id": {
-                "$mod": [n_instances, instance]
-            }
-        }
+        return {"_id": {"$mod": [n_instances, instance]}}

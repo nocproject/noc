@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.db import models, connection
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.ip.models.afi import AFI_CHOICES
@@ -35,8 +37,7 @@ class VCBindFilter(NOCModel):
     vc_filter = models.ForeignKey(VCFilter, verbose_name="VC Filter", on_delete=models.CASCADE)
 
     def __str__(self):
-        return u"%s %s %s %s" % (
-            self.vc_domain, self.vrf, self.prefix, self.vc_filter)
+        return "%s %s %s %s" % (self.vc_domain, self.vrf, self.prefix, self.vc_filter)
 
     @classmethod
     def get_vcs(cls, vrf, afi, prefix):
@@ -46,7 +47,8 @@ class VCBindFilter(NOCModel):
         if hasattr(prefix, "prefix"):
             prefix = prefix.prefix
         c = connection.cursor()
-        c.execute("""
+        c.execute(
+            """
             SELECT v.id,v.l1,vf.id
             FROM
                 vc_vcdomain d JOIN vc_vcbindfilter f ON (d.id=f.vc_domain_id)
@@ -56,7 +58,9 @@ class VCBindFilter(NOCModel):
                     f.vrf_id=%s
                 AND f.afi=%s
                 AND f.prefix>>=%s
-        """, [vrf.id, afi, prefix])
+        """,
+            [vrf.id, afi, prefix],
+        )
         vcs = set()  # vc.id
         F = {}  # id -> filter
         for vc_id, l1, vf_id in c.fetchall():

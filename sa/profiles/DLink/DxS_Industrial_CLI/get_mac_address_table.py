@@ -30,13 +30,12 @@ class Script(BaseScript):
         for i in t:
             if i[3] == "CPU":
                 continue
-            r += [{
-                "vlan_id": i[0],
-                "mac": i[1],
-                "interfaces": [i[3]],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S"
-                }[i[2].lower()]
-            }]
+            r += [
+                {
+                    "vlan_id": i[0],
+                    "mac": i[1],
+                    "interfaces": [i[3]],
+                    "type": {"dynamic": "D", "static": "S"}[i[2].lower()],
+                }
+            ]
         return r

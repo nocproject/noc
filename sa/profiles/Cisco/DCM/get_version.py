@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,10 +21,14 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
-        version = ''
+        version = ""
         data = self.cli("cat /app/bin/versions")
         match = rx_version.search(data)
         if match:
             version = match.group("ver")
 
-        return {"vendor": "Cisco", "platform": "DCM D9902", "version": version if version else "Unknown"}
+        return {
+            "vendor": "Cisco",
+            "platform": "DCM D9902",
+            "version": version if version else "Unknown",
+        }

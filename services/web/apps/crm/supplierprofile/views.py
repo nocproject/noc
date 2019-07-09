@@ -16,6 +16,7 @@ class SupplierProfileApplication(ExtDocApplication):
     """
     SupplierProfile application
     """
+
     title = _("Supplier Profile")
     menu = [_("Setup"), _("Supplier Profiles")]
     model = SupplierProfile

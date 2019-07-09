@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -18,9 +19,9 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_first = re.compile(
-        r"^\s*(?P<lacp>L?)\s+(?P<port>\d+)\s+\S+\s+(?:up|down)\s+\S+\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")
-    rx_next = re.compile(
-        r"^\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")
+        r"^\s*(?P<lacp>L?)\s+(?P<port>\d+)\s+\S+\s+(?:up|down)\s+\S+\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$"
+    )
+    rx_next = re.compile(r"^\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")
 
     def execute(self):
         r = []
@@ -31,11 +32,13 @@ class Script(BaseScript):
         for l in v.splitlines():
             match = self.rx_first.match(l)
             if match:
-                r += [{
-                    "interface": "Po %s" % match.group("port"),
-                    "type": "L" if match.group("lacp") == "L" else "S",
-                    "members": [match.group("interface")]
-                }]
+                r += [
+                    {
+                        "interface": "Po %s" % match.group("port"),
+                        "type": "L" if match.group("lacp") == "L" else "S",
+                        "members": [match.group("interface")],
+                    }
+                ]
                 continue
             match = self.rx_next.match(l)
             if match:

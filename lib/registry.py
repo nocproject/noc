@@ -16,6 +16,7 @@ class Registry(object):
     """
     Abstract module loader/registry
     """
+
     name = "Registry"  # Registry name
     subdir = "directory"  # Restrict to directory
     classname = "Class"  # Auto-register class
@@ -51,6 +52,7 @@ class Registry(object):
         logging.info("Loading %s" % self.name)
         if self.apps is None:
             from django.conf import settings
+
             apps = [a for a in settings.INSTALLED_APPS if a.startswith("noc.")]
         else:
             apps = self.apps
@@ -68,8 +70,7 @@ class Registry(object):
                         # Create missed __init__.py for local/
                         c = dirpath.split(os.sep)
                         for i in range(1, len(c) + 1):
-                            i_path = os.path.join(os.sep.join(c[:i]),
-                                                  "__init__.py")
+                            i_path = os.path.join(os.sep.join(c[:i]), "__init__.py")
                             if not os.path.exists(i_path):
                                 open(i_path, "w").close()  # Create file
                     else:

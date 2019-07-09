@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -23,10 +24,10 @@ class Script(BaseScript):
         r"\d+% packet loss\n"
         r"round-trip \(msec\) min/avg/max = "
         r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None, vrf=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         cmd = "ping %s" % address
         if count:
             cmd += " count %d" % int(count)

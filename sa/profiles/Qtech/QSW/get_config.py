@@ -51,5 +51,7 @@ class Script(BaseScript):
         config = self.cli("show running-config")
         config = self.strip_first_lines(config, 1)
         # Fix Qtech BUG:
-        config = config.replace("\n\n                                                                          ", "\n")
+        config = config.replace(
+            "\n\n                                                                          ", "\n"
+        )
         return self.cleaned_config(config)

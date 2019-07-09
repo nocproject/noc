@@ -9,9 +9,11 @@
 # Python modules
 from __future__ import absolute_import
 import math
+
 # Third-party modules
 import networkx as nx
 import numpy as np
+
 # NOC modules
 from noc.config import config
 from .base import LayoutBase
@@ -37,9 +39,7 @@ class TreeLayout(LayoutBase):
                 # Detect fattest node
                 top += [
                     sorted(
-                        cc,
-                        key=lambda x: G.node[x].get("level", self.DEFAULT_LEVEL),
-                        reverse=True
+                        cc, key=lambda x: G.node[x].get("level", self.DEFAULT_LEVEL), reverse=True
                     )[0]
                 ]
         # Calculate tree width
@@ -61,8 +61,7 @@ class TreeLayout(LayoutBase):
         :param uplink: Exclude uplink direction for recursive descent
         :returns: Tree width
         """
-        downlinks = [n for n in nx.all_neighbors(G, node)
-                     if n != uplink]
+        downlinks = [n for n in nx.all_neighbors(G, node) if n != uplink]
         w = 0
         for d in downlinks:
             w += TreeLayout.get_tree_width(G, d, node)
@@ -89,16 +88,9 @@ class TreeLayout(LayoutBase):
         x = x0 + root["tree_width"] // 2
         if downlinks and root["tree_width"] % 2 == 0 and x > total_w // 2:
             x -= 1
-        pos = {
-            node: np.array([
-                x * cls.TREE_DX + offset,
-                level * cls.TREE_DY
-            ])
-        }
+        pos = {node: np.array([x * cls.TREE_DX + offset, level * cls.TREE_DY])}
         dl = min(math.ceil(root["tree_width"] / cls.CHILDREN_PER_LEVEL), cls.MAX_LEVELS)
         for d in downlinks:
-            pos.update(
-                cls.get_tree_pos(G, d, x0, total_w, level + dl, offset)
-            )
+            pos.update(cls.get_tree_pos(G, d, x0, total_w, level + dl, offset))
             x0 += G.node[d]["tree_width"]
         return pos

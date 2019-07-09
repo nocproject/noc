@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .job import Job
 
@@ -44,8 +45,7 @@ class PeriodicJob(Job):
             self.remove_job()
             return
         # Schedule next run
-        ts = self.get_next_timestamp(interval,
-                                     self.attrs[self.ATTR_OFFSET])
+        ts = self.get_next_timestamp(interval, self.attrs[self.ATTR_OFFSET])
         # Store context
         if self.context_version:
             ctx = self.context or None
@@ -60,5 +60,5 @@ class PeriodicJob(Job):
             duration=self.duration,
             context_version=self.context_version,
             context=ctx,
-            context_key=ctx_key
+            context_key=ctx_key,
         )

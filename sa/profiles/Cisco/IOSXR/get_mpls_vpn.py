@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
@@ -43,7 +45,7 @@ class Script(BaseScript):
                     "name": match.group("name"),
                     "type": "VRF",
                     "status": True,
-                    "interfaces": []
+                    "interfaces": [],
                 }
                 # Add RD when exists
                 rd = match.group("rd")

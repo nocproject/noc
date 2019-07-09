@@ -9,6 +9,7 @@
 # Third-party modules
 from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals
+
 # NOC models
 from noc.models import is_document
 
@@ -35,13 +36,7 @@ def _apply_document_effective_groups(sender, document=None, *args, **kwargs):
 
 def resourcegroup(cls):
     if is_document(cls):
-        mongo_signals.pre_save.connect(
-            _apply_document_effective_groups,
-            sender=cls
-        )
+        mongo_signals.pre_save.connect(_apply_document_effective_groups, sender=cls)
     else:
-        django_signals.pre_save.connect(
-            _apply_model_effective_groups,
-            sender=cls
-        )
+        django_signals.pre_save.connect(_apply_model_effective_groups, sender=cls)
     return cls

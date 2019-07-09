@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -22,20 +23,21 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"^\s*SW version\s+(?P<version>\S+).*\n"
         r"^\s*Boot version\s+(?P<bootprom>\S+).*\n"
-        r"^\s*HW version\s+(?P<hardware>\S+).*\n", re.MULTILINE)
-    rx_platform = re.compile(
-        r"^\s*System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
-    rx_serial = re.compile(
-        r"^\s*Serial number : (?P<serial>\S+)")
+        r"^\s*HW version\s+(?P<hardware>\S+).*\n",
+        re.MULTILINE,
+    )
+    rx_platform = re.compile(r"^\s*System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
+    rx_serial = re.compile(r"^\s*Serial number : (?P<serial>\S+)")
 
     rx_ver2 = re.compile(
-        r"^(?P<platform>S(?:KS|WA)\-\S+) Series Software, Version (?P<version>\S+)",
-        re.MULTILINE
+        r"^(?P<platform>S(?:KS|WA)\-\S+) Series Software, Version (?P<version>\S+)", re.MULTILINE
     )
     rx_rs = re.compile(
         r"^ROM: System Bootstrap, Version (?P<bootprom>\S+),\s*"
         r"hardware version:\s*(?P<hardware>\S+)\s*\n"
-        r"^Serial num:\s*(?P<serial>\w+),?", re.MULTILINE)
+        r"^Serial num:\s*(?P<serial>\w+),?",
+        re.MULTILINE,
+    )
 
     def execute(self):
         v = self.cli("show version", cached=True)
@@ -46,8 +48,8 @@ class Script(BaseScript):
                 "version": match.group("version"),
                 "attributes": {
                     "Boot PROM": match.group("bootprom"),
-                    "HW version": match.group("hardware")
-                }
+                    "HW version": match.group("hardware"),
+                },
             }
             v = self.cli("show system", cached=True)
             match = self.rx_platform.search(v)
@@ -67,13 +69,13 @@ class Script(BaseScript):
                 r = {
                     "vendor": "SKS",
                     "platform": match.group("platform"),
-                    "version": match.group("version")
+                    "version": match.group("version"),
                 }
                 match = self.rx_rs.search(v)
                 r["attributes"] = {
                     "Boot PROM": match.group("bootprom"),
                     "HW version": match.group("hardware"),
-                    "Serial Number": match.group("serial")
+                    "Serial Number": match.group("serial"),
                 }
             else:
                 t = parse_table(v)
@@ -81,10 +83,7 @@ class Script(BaseScript):
                     r = {
                         "vendor": "SKS",
                         "version": i[1],
-                        "attributes": {
-                            "Boot PROM": i[2],
-                            "HW version": i[3]
-                        }
+                        "attributes": {"Boot PROM": i[2], "HW version": i[3]},
                     }
                     break
                 v = self.cli("show system", cached=True)

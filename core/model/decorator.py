@@ -24,18 +24,14 @@ def _get_field_snapshot(sender, instance):
         n = getattr(field, "raw_name", field.attname)
         return getattr(instance, n)
 
-    return dict(
-        (f.name, g(f))
-        for f in sender._meta.local_fields
-    )
+    return dict((f.name, g(f)) for f in sender._meta.local_fields)
 
 
 def _on_model_save_handler(sender, instance, *args, **kwargs):
     if hasattr(instance, "initial_data"):
         ns = _get_field_snapshot(sender, instance)
         instance.changed_fields = set(
-            f for f in instance.initial_data
-            if instance.initial_data[f] != ns.get(f)
+            f for f in instance.initial_data if instance.initial_data[f] != ns.get(f)
         )
     else:
         instance.changed_fields = set()
@@ -64,17 +60,11 @@ def on_save(cls):
         if is_document(cls):
             from mongoengine import signals as mongo_signals
 
-            mongo_signals.post_save.connect(
-                _on_document_save_handler,
-                sender=cls
-            )
+            mongo_signals.post_save.connect(_on_document_save_handler, sender=cls)
         else:
             from django.db.models import signals as django_signals
 
-            django_signals.post_save.connect(
-                _on_model_save_handler,
-                sender=cls
-            )
+            django_signals.post_save.connect(_on_model_save_handler, sender=cls)
     return cls
 
 
@@ -103,17 +93,11 @@ def on_delete(cls):
         if is_document(cls):
             from mongoengine import signals as mongo_signals
 
-            mongo_signals.pre_delete.connect(
-                _on_document_delete_handler,
-                sender=cls
-            )
+            mongo_signals.pre_delete.connect(_on_document_delete_handler, sender=cls)
         else:
             from django.db.models import signals as django_signals
 
-            django_signals.pre_delete.connect(
-                _on_model_delete_handler,
-                sender=cls
-            )
+            django_signals.pre_delete.connect(_on_model_delete_handler, sender=cls)
     return cls
 
 
@@ -136,10 +120,7 @@ def on_init(cls):
     """
     from django.db.models import signals as django_signals
 
-    django_signals.post_init.connect(
-        _on_init_handler,
-        sender=cls
-    )
+    django_signals.post_init.connect(_on_init_handler, sender=cls)
     return cls
 
 
@@ -172,6 +153,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
 
     :return:
     """
+
     def on_delete_handler(sender, instance=None, *args, **kwargs):
         if not instance:
             # If mongo document instance
@@ -180,11 +162,8 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
         for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
                 raise ValueError(
-                    "Referred from model %s: %s (id=%s)" % (
-                        model_id,
-                        unicode(ro),
-                        ro.id
-                    ))
+                    "Referred from model %s: %s (id=%s)" % (model_id, unicode(ro), ro.id)
+                )
         # Clean related
         for model, model_id, field in iter_models("clean"):
             for ro in iter_related(instance, model, field):
@@ -217,18 +196,15 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
             if is_document(cls):
                 from mongoengine import signals as mongo_signals
 
-                mongo_signals.pre_delete.connect(
-                    on_delete_handler,
-                    sender=cls,
-                    weak=False
-                )
+                mongo_signals.pre_delete.connect(on_delete_handler, sender=cls, weak=False)
                 setup["is_document"] = True
             else:
                 from django.db.models import signals as django_signals
+
                 django_signals.pre_delete.connect(
                     on_delete_handler,
                     sender=cls,
-                    weak=False  # Cannot use weak reference due to lost of internal scope
+                    weak=False,  # Cannot use weak reference due to lost of internal scope
                 )
 
         cls._on_delete = cfg
@@ -238,9 +214,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
         "check": check or [],
         "clean": clean or [],
         "delete": delete or [],
-        "ignore": ignore or []
+        "ignore": ignore or [],
     }
-    setup = {
-        "is_document": False
-    }
+    setup = {"is_document": False}
     return decorator

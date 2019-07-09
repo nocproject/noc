@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.main.models.crontab import CronTab
@@ -27,8 +28,5 @@ class CronJob(PeriodicJob):
             self.remove_job()
             return
         self.scheduler.set_next_run(
-            self.attrs[self.ATTR_ID],
-            status=status,
-            ts=ts,
-            duration=self.duration
+            self.attrs[self.ATTR_ID], status=status, ts=ts, duration=self.duration
         )

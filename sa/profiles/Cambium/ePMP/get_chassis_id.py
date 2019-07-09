@@ -29,5 +29,5 @@ class Script(BaseScript):
         if r["cambiumConnectedAPMACAddress"]:
             return {
                 "first_chassis_mac": r["cambiumConnectedAPMACAddress"],
-                "last_chassis_mac": r["cambiumConnectedAPMACAddress"]
+                "last_chassis_mac": r["cambiumConnectedAPMACAddress"],
             }

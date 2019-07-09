@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import os
 import inspect
 import re
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.fm.models.activeevent import ActiveEvent
@@ -22,8 +23,7 @@ from noc.fm.models.utils import get_alarm, get_event, get_severity
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
-from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
-                                    DateTimeParameter)
+from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
 from noc.lib.escape import json_escape
 from noc.core.translation import ugettext as _
 
@@ -32,25 +32,23 @@ class EventApplication(ExtApplication):
     """
     fm.event application
     """
+
     title = _("Events")
     menu = _("Events")
     icon = "icon_find"
 
-    model_map = {
-        "A": ActiveEvent,
-        "F": FailedEvent,
-        "S": ArchivedEvent
-    }
+    model_map = {"A": ActiveEvent, "F": FailedEvent, "S": ArchivedEvent}
 
     clean_fields = {
         "managed_object": ModelParameter(ManagedObject),
-        "timestamp": DateTimeParameter()
+        "timestamp": DateTimeParameter(),
     }
     ignored_params = ["status", "_dc"]
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         from .plugins.base import EventPlugin
+
         # Load plugins
         self.plugins = {}
         for f in os.listdir("services/web/apps/fm/event/plugins/"):
@@ -60,9 +58,11 @@ class EventApplication(ExtApplication):
             m = __import__(mn, {}, {}, "*")
             for on in dir(m):
                 o = getattr(m, on)
-                if (inspect.isclass(o) and
-                        issubclass(o, EventPlugin) and
-                        o.__module__.startswith(mn)):
+                if (
+                    inspect.isclass(o)
+                    and issubclass(o, EventPlugin)
+                    and o.__module__.startswith(mn)
+                ):
                     assert o.name
                     self.plugins[o.name] = o(self)
 
@@ -72,9 +72,13 @@ class EventApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (
-            self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param,
-            self.only_param
+            self.limit_param,
+            self.page_param,
+            self.start_param,
+            self.format_param,
+            self.sort_param,
+            self.query_param,
+            self.only_param,
         ):
             if p in q:
                 del q[p]
@@ -88,7 +92,9 @@ class EventApplication(ExtApplication):
             q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
             q.pop("administrative_domain")
         if "managedobjectselector" in q:
-            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
+            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list(
+                "object"
+            )
             if "managed_object__in" in q:
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
@@ -104,9 +110,7 @@ class EventApplication(ExtApplication):
             duration = o.duration
             n_alarms = len(o.alarms)
             if n_alarms:
-                row_class = AlarmSeverity.get_severity_css_class_name(
-                    get_severity(o.alarms)
-                )
+                row_class = AlarmSeverity.get_severity_css_class_name(get_severity(o.alarms))
         else:
             subject = None
             repeats = None
@@ -126,7 +130,7 @@ class EventApplication(ExtApplication):
             "repeats": repeats,
             "duration": duration,
             "alarms": n_alarms,
-            "row_class": row_class
+            "row_class": row_class,
         }
         if fields:
             d = dict((k, d[k]) for k in fields)
@@ -146,18 +150,25 @@ class EventApplication(ExtApplication):
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True,
-          access="launch")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True, access="launch")
     def api_event(self, request, id):
         event = get_event(id)
         if not event:
             return self.response_not_found()
         d = self.instance_to_dict(event)
-        dd = dict((v, None) for v in (
-            "body", "symptoms", "probable_causes",
-            "recommended_actions", "log",
-            "vars", "resolved_vars", "raw_vars"
-        ))
+        dd = dict(
+            (v, None)
+            for v in (
+                "body",
+                "symptoms",
+                "probable_causes",
+                "recommended_actions",
+                "log",
+                "vars",
+                "resolved_vars",
+                "raw_vars",
+            )
+        )
         if event.status in ("A", "S"):
             dd["body"] = event.body
             dd["symptoms"] = event.event_class.symptoms
@@ -198,8 +209,9 @@ class EventApplication(ExtApplication):
                     "timestamp": self.to_json(l.timestamp),
                     "from_status": l.from_status,
                     "to_status": l.to_status,
-                    "message": l.message
-                } for l in event.log
+                    "message": l.message,
+                }
+                for l in event.log
             ]
         #
         d.update(dd)
@@ -216,15 +228,17 @@ class EventApplication(ExtApplication):
                     role = "C"
                 else:
                     role = ""
-                alarms += [{
-                    "id": str(a.id),
-                    "status": a.status,
-                    "alarm_class": str(a.alarm_class.id),
-                    "alarm_class__label": a.alarm_class.name,
-                    "subject": a.subject,
-                    "role": role,
-                    "timestamp": self.to_json(a.timestamp)
-                }]
+                alarms += [
+                    {
+                        "id": str(a.id),
+                        "status": a.status,
+                        "alarm_class": str(a.alarm_class.id),
+                        "alarm_class__label": a.alarm_class.name,
+                        "subject": a.subject,
+                        "role": role,
+                        "timestamp": self.to_json(a.timestamp),
+                    }
+                ]
             d["alarms"] = alarms
         # Apply plugins
         if event.status in ("A", "S") and event.event_class.plugins:
@@ -242,13 +256,16 @@ class EventApplication(ExtApplication):
         elif event.status == "F":
             # Enable traceback plugin for failed events
             d["traceback"] = event.traceback
-            d["plugins"] = [
-                ("NOC.fm.event.plugins.Traceback", {})
-            ]
+            d["plugins"] = [("NOC.fm.event.plugins.Traceback", {})]
         return d
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
-          access="launch", validate={"msg": UnicodeParameter()})
+    @view(
+        url=r"^(?P<id>[a-z0-9]{24})/post/",
+        method=["POST"],
+        api=True,
+        access="launch",
+        validate={"msg": UnicodeParameter()},
+    )
     def api_post(self, request, id, msg):
         event = get_event(id)
         if not event:
@@ -258,8 +275,7 @@ class EventApplication(ExtApplication):
 
     rx_parse_log = re.compile("^Classified as '(.+?)'.+$")
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True,
-          access="launch")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True, access="launch")
     def api_json(self, request, id):
         event = get_event(id)
         if not event:
@@ -273,24 +289,22 @@ class EventApplication(ExtApplication):
                     e_class = match.group(1)
         r = ["["]
         r += ["    {"]
-        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile.name)]
+        r += ['        "profile": "%s",' % json_escape(event.managed_object.profile.name)]
         if e_class:
-            r += ["        \"event_class__name\": \"%s\"," % e_class]
-        r += ["        \"raw_vars\": {"]
+            r += ['        "event_class__name": "%s",' % e_class]
+        r += ['        "raw_vars": {']
         rr = []
         for k in event.raw_vars:
             if k in ("collector", "severity", "facility"):
                 continue
-            rr += ["            \"%s\": \"%s\"" % (
-                json_escape(k), json_escape(str(event.raw_vars[k])))]
+            rr += ['            "%s": "%s"' % (json_escape(k), json_escape(str(event.raw_vars[k])))]
         r += [",\n".join(rr)]
         r += ["        }"]
         r += ["    }"]
         r += ["]"]
         return "\n".join(r)
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$",
-          method=["POST"], api=True, access="launch")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="launch")
     def api_reclassify(self, request, id):
         event = get_event(id)
         if not event:
@@ -298,7 +312,6 @@ class EventApplication(ExtApplication):
         if event.status == "N":
             return False
         event.mark_as_new(
-            "Event reclassification has been requested "
-            "by user %s" % request.user.username
+            "Event reclassification has been requested " "by user %s" % request.user.username
         )
         return True

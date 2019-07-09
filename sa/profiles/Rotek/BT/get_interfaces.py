@@ -36,33 +36,41 @@ class Script(BaseScript):
                     else:
                         oper_status = False
                     # print repr("%s\n" % admin_status)
-                    interfaces += [{
-                        "type": "physical",
-                        "name": name,
-                        "mac": mac,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "subinterfaces": [{
+                    interfaces += [
+                        {
+                            "type": "physical",
                             "name": name,
                             "mac": mac,
-                            "snmp_ifindex": ifindex,
                             "admin_status": admin_status,
                             "oper_status": oper_status,
-                            "enabled_afi": ["BRIDGE"]
-                        }]
-                    }]
+                            "subinterfaces": [
+                                {
+                                    "name": name,
+                                    "mac": mac,
+                                    "snmp_ifindex": ifindex,
+                                    "admin_status": admin_status,
+                                    "oper_status": oper_status,
+                                    "enabled_afi": ["BRIDGE"],
+                                }
+                            ],
+                        }
+                    ]
             except self.snmp.TimeOutError:
                 pass
-        interfaces += [{
-            "type": "physical",
-            "name": "st",
-            "admin_status": True,
-            "oper_status": True,
-            "subinterfaces": [{
+        interfaces += [
+            {
+                "type": "physical",
                 "name": "st",
                 "admin_status": True,
                 "oper_status": True,
-                "enabled_afi": ["BRIDGE"]
-            }]
-        }]
+                "subinterfaces": [
+                    {
+                        "name": "st",
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
+            }
+        ]
         return [{"interfaces": interfaces}]

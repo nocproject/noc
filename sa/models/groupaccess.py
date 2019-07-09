@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.group import Group
@@ -29,16 +31,17 @@ class GroupAccess(NOCModel):
         ordering = ["group"]
 
     group = models.ForeignKey(Group, verbose_name=_("Group"), on_delete=models.CASCADE)
-    selector = models.ForeignKey(ManagedObjectSelector, null=True, blank=True, on_delete=models.CASCADE)
+    selector = models.ForeignKey(
+        ManagedObjectSelector, null=True, blank=True, on_delete=models.CASCADE
+    )
     administrative_domain = models.ForeignKey(
-        AdministrativeDomain,
-        null=True, blank=True, on_delete=models.CASCADE
+        AdministrativeDomain, null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __str__(self):
-        r = [u"group=%s" % self.group.name]
+        r = ["group=%s" % self.group.name]
         if self.selector:
-            r += [u"selector=%s" % self.selector.name]
+            r += ["selector=%s" % self.selector.name]
         if self.administrative_domain:
-            r += [u"domain=%s" % self.administrative_domain.name]
-        return u"(%s)" % u", ".join(r)
+            r += ["domain=%s" % self.administrative_domain.name]
+        return "(%s)" % ", ".join(r)

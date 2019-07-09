@@ -10,13 +10,18 @@
 from __future__ import absolute_import
 import inspect
 import os
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.lib.validators import is_objectid
-from noc.sa.interfaces.base import (StringParameter, ObjectIdParameter,
-                                    UnicodeParameter, ListOfParameter)
+from noc.sa.interfaces.base import (
+    StringParameter,
+    ObjectIdParameter,
+    UnicodeParameter,
+    ListOfParameter,
+)
 from noc.core.translation import ugettext as _
 
 
@@ -24,6 +29,7 @@ class InvApplication(ExtApplication):
     """
     inv.inv application
     """
+
     title = _("Inventory")
     menu = _("Inventory")
 
@@ -37,30 +43,23 @@ class InvApplication(ExtApplication):
         ExtApplication.__init__(self, *args, **kwargs)
         # Load plugins
         from .plugins.base import InvPlugin
+
         self.plugins = {}
         for f in os.listdir("services/web/apps/inv/inv/plugins/"):
-            if (not f.endswith(".py") or
-                    f == "base.py" or
-                    f.startswith("_")):
+            if not f.endswith(".py") or f == "base.py" or f.startswith("_"):
                 continue
             mn = "noc.services.web.apps.inv.inv.plugins.%s" % f[:-3]
             m = __import__(mn, {}, {}, "*")
             for on in dir(m):
                 o = getattr(m, on)
-                if (inspect.isclass(o) and
-                        issubclass(o, InvPlugin) and
-                        o.__module__.startswith(mn)):
+                if inspect.isclass(o) and issubclass(o, InvPlugin) and o.__module__.startswith(mn):
                     assert o.name
                     self.plugins[o.name] = o(self)
 
     def get_plugin_data(self, name):
-        return {
-            "name": name,
-            "xtype": self.plugins[name].js
-        }
+        return {"name": name, "xtype": self.plugins[name].js}
 
-    @view("^node/$", method=["GET"],
-          access="read", api=True)
+    @view("^node/$", method=["GET"], access="read", api=True)
     def api_node(self, request):
         children = []
         if request.GET and "node" in request.GET:
@@ -69,22 +68,21 @@ class InvApplication(ExtApplication):
                 container = Object.get_by_id(container)
                 if not container:
                     return self.response_not_found()
-                children = [
-                    (o.name, o)
-                    for o in Object.objects.filter(container=container.id)
-                ]
+                children = [(o.name, o) for o in Object.objects.filter(container=container.id)]
                 # Collect inner connections
-                children += [
-                    (name, o) for name, o, _ in container.get_inner_connections()
-                ]
+                children += [(name, o) for name, o, _ in container.get_inner_connections()]
             elif container == "root":
                 cmodels = [
                     d["_id"]
-                    for d in ObjectModel._get_collection().find({"data.container.container": True}, {"_id": 1})
+                    for d in ObjectModel._get_collection().find(
+                        {"data.container.container": True}, {"_id": 1}
+                    )
                 ]
                 children = [
                     (o.name, o)
-                    for o in Object.objects.filter(__raw__={"container": None, "model": {"$in": cmodels}})
+                    for o in Object.objects.filter(
+                        __raw__={"container": None, "model": {"$in": cmodels}}
+                    )
                 ]
 
             else:
@@ -99,10 +97,9 @@ class InvApplication(ExtApplication):
                 "name": name,
                 "plugins": [],
                 "can_add": bool(o.get_data("container", "container")),
-                "can_delete": str(o.model.uuid) not in self.UNDELETABLE
+                "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
             }
-            if (o.get_data("container", "container") or
-                    o.has_inner_connections()):
+            if o.get_data("container", "container") or o.has_inner_connections():
                 # n["expanded"] = Object.objects.filter(container=o.id).count() == 1
                 n["expanded"] = False
             else:
@@ -125,7 +122,7 @@ class InvApplication(ExtApplication):
                 self.get_plugin_data("data"),
                 self.get_plugin_data("comment"),
                 self.get_plugin_data("file"),
-                self.get_plugin_data("log")
+                self.get_plugin_data("log"),
             ]
             # Process disabled plugins
             n["plugins"] = [p for p in n["plugins"] if p["name"] not in disabled_plugins]
@@ -133,17 +130,18 @@ class InvApplication(ExtApplication):
         return r
 
     @view(
-        "^add_group/$", method=["POST"], access="create_group",
+        "^add_group/$",
+        method=["POST"],
+        access="create_group",
         api=True,
         validate={
             "container": ObjectIdParameter(required=False),
             "type": ObjectIdParameter(),
             "name": UnicodeParameter(),
-            "serial": UnicodeParameter(required=False)
-        }
+            "serial": UnicodeParameter(required=False),
+        },
     )
-    def api_add_group(self, request, type, name, container=None,
-                      serial=None):
+    def api_add_group(self, request, type, name, container=None, serial=None):
         if is_objectid(container):
             c = Object.get_by_id(container)
             if not c:
@@ -160,16 +158,15 @@ class InvApplication(ExtApplication):
         if serial and m.get_data("asset", "part_no0"):
             o.set_data("asset", "serial", serial)
         o.save()
-        o.log("Created", user=request.user.username,
-              system="WEB", op="CREATE")
+        o.log("Created", user=request.user.username, system="WEB", op="CREATE")
         return str(o.id)
 
     @view(
-        "^remove_group/$", method=["DELETE"], access="remove_group",
+        "^remove_group/$",
+        method=["DELETE"],
+        access="remove_group",
         api=True,
-        validate={
-            "container": ObjectIdParameter(required=True)
-        }
+        validate={"container": ObjectIdParameter(required=True)},
     )
     def api_remove_group(self, request, container=None):
         c = self.get_object_or_404(Object, id=container)
@@ -177,12 +174,15 @@ class InvApplication(ExtApplication):
         return True
 
     @view(
-        "^insert/$", method=["POST"], access="reorder", api=True,
+        "^insert/$",
+        method=["POST"],
+        access="reorder",
+        api=True,
         validate={
             "container": ObjectIdParameter(required=False),
             "objects": ListOfParameter(element=ObjectIdParameter()),
-            "position": StringParameter()
-        }
+            "position": StringParameter(),
+        },
     )
     def api_insert(self, request, container, objects, position):
         """
@@ -205,18 +205,11 @@ class InvApplication(ExtApplication):
                 x.put_into(cc)
         return True
 
-    @view("^(?P<id>[0-9a-f]{24})/path/$", method=["GET"],
-          access="read", api=True)
+    @view("^(?P<id>[0-9a-f]{24})/path/$", method=["GET"], access="read", api=True)
     def api_get_path(self, request, id):
         o = self.get_object_or_404(Object, id=id)
-        path = [{
-            "id": str(o.id),
-            "name": o.name
-        }]
+        path = [{"id": str(o.id), "name": o.name}]
         while o.container:
             o = o.container
-            path.insert(0, {
-                "id": str(o.id),
-                "name": o.name
-            })
+            path.insert(0, {"id": str(o.id), "name": o.name})
         return path

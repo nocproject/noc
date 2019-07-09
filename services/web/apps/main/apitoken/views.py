@@ -17,29 +17,23 @@ class APITokenApplication(ExtApplication):
     """
     APIToken Application
     """
+
     @view("^(?P<type>[^/]+)/$", method=["GET"], access=PermitLogged(), api=True)
     def api_get_token(self, request, type):
         token = APIToken.objects.filter(type=type, user=request.user.id).first()
         if token:
-            return {
-                "type": token.type,
-                "token": token.token
-            }
+            return {"type": token.type, "token": token.token}
         else:
             self.response_not_found()
 
     @view(
-        "^(?P<type>[^/]+)/$", method=["POST"], access=PermitLogged(),
-        validate={
-            "token": StringParameter()
-        }, api=True
+        "^(?P<type>[^/]+)/$",
+        method=["POST"],
+        access=PermitLogged(),
+        validate={"token": StringParameter()},
+        api=True,
     )
     def api_set_token(self, request, type, token=None):
-        APIToken._get_collection().update({
-            "type": type,
-            "user": request.user.id
-        }, {
-            "$set": {
-                "token": token
-            }
-        }, upsert=True)
+        APIToken._get_collection().update(
+            {"type": type, "user": request.user.id}, {"$set": {"token": token}}, upsert=True
+        )

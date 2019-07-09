@@ -6,6 +6,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,9 +20,9 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^Board type: (?P<platform>.+), firmware version (?P<version>\S+)",
-        re.MULTILINE | re.DOTALL)
-    rx_html_ver = re.compile(r"Version ID:\s+(?P<version>\S+)",
-                             re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
+    rx_html_ver = re.compile(r"Version ID:\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         if self.access_profile.scheme in [self.TELNET, self.SSH]:
@@ -31,7 +32,7 @@ class Script(BaseScript):
                 "vendor": "Audiocodes",
                 "platform": match.group("platform"),
                 "version": match.group("version"),
-                }
+            }
         elif self.access_profile.scheme == self.HTTP:
             v = self.http.get("/SoftwareVersion")
             v = strip_html_tags(v)
@@ -40,6 +41,6 @@ class Script(BaseScript):
                 "vendor": "Audiocodes",
                 "platform": "Mediant2000",
                 "version": match.group("version"),
-                }
+            }
         else:
             raise Exception("Unsupported access scheme")

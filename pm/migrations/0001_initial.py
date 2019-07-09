@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -18,47 +19,50 @@ class Migration(BaseMigration):
     def migrate(self):
         # Adding model 'TimeSeries'
         self.db.create_table(
-            'pm_timeseries', (
-                ('id', models.AutoField(primary_key=True)),
-                ('name', models.CharField("Name", unique=True, max_length=128)),
-                ('is_enabled', models.BooleanField("Is Enabled?", default=True)),
-            )
+            "pm_timeseries",
+            (
+                ("id", models.AutoField(primary_key=True)),
+                ("name", models.CharField("Name", unique=True, max_length=128)),
+                ("is_enabled", models.BooleanField("Is Enabled?", default=True)),
+            ),
         )
 
-        TimeSeries = self.db.mock_model(
-            model_name='TimeSeries',
-            db_table='pm_timeseries'
-        )
+        TimeSeries = self.db.mock_model(model_name="TimeSeries", db_table="pm_timeseries")
         # Adding model 'TimeSeriesData'
         self.db.create_table(
-            'pm_timeseriesdata', (
-                ('id', models.AutoField(primary_key=True)),
-                ('time_series', models.ForeignKey(TimeSeries, verbose_name="Time Series", on_delete=models.CASCADE)),
-                ('timestamp', models.IntegerField("Timestamp")),
-                ('value', models.FloatField("Value", null=True, blank=True)),
-            )
+            "pm_timeseriesdata",
+            (
+                ("id", models.AutoField(primary_key=True)),
+                (
+                    "time_series",
+                    models.ForeignKey(
+                        TimeSeries, verbose_name="Time Series", on_delete=models.CASCADE
+                    ),
+                ),
+                ("timestamp", models.IntegerField("Timestamp")),
+                ("value", models.FloatField("Value", null=True, blank=True)),
+            ),
         )
-        self.db.create_index('pm_timeseriesdata', ['timestamp'], unique=False)
+        self.db.create_index("pm_timeseriesdata", ["timestamp"], unique=False)
 
         #
         self.db.create_table(
-            'pm_chart', (
-                ('id', models.AutoField(primary_key=True)),
-                ('name', models.CharField("Name", unique=True, max_length=128)),
-            )
+            "pm_chart",
+            (
+                ("id", models.AutoField(primary_key=True)),
+                ("name", models.CharField("Name", unique=True, max_length=128)),
+            ),
         )
 
-        Chart = self.db.mock_model(
-            model_name='Chart',
-            db_table='pm_chart'
-        )
+        Chart = self.db.mock_model(model_name="Chart", db_table="pm_chart")
         #
         self.db.create_table(
-            'pm_chart_time_series', (
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('chart', models.ForeignKey(Chart, null=False, on_delete=models.CASCADE)),
-                ('timeseries', models.ForeignKey(TimeSeries, null=False, on_delete=models.CASCADE))
-            )
+            "pm_chart_time_series",
+            (
+                ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
+                ("chart", models.ForeignKey(Chart, null=False, on_delete=models.CASCADE)),
+                ("timeseries", models.ForeignKey(TimeSeries, null=False, on_delete=models.CASCADE)),
+            ),
         )
         #
         self.db.execute(SP_CREATE)

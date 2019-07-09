@@ -71,9 +71,9 @@ class Script(BaseScript):
                                     "oper_status": o_stat,
                                     "mac": mac,
                                     "ifindex": i,
-                                    "enabled_afi": ["BRIDGE"]
+                                    "enabled_afi": ["BRIDGE"],
                                 }
-                            ]
+                            ],
                         }
                     ]
                 return [{"interfaces": interfaces}]

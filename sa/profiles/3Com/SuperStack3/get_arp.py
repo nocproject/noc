@@ -17,7 +17,9 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<interface>\S+)\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
-        r"(?P<mac>\S+)\s+\S+\s*$", re.MULTILINE)
+        r"(?P<mac>\S+)\s+\S+\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
@@ -33,9 +35,5 @@ class Script(BaseScript):
                 continue
             if not interface.startswith("1:"):
                 interface = "1:" + interface
-            r += [{
-                "interface": interface,
-                "ip": match.group("ip"),
-                "mac": mac
-            }]
+            r += [{"interface": interface, "ip": match.group("ip"), "mac": mac}]
         return r

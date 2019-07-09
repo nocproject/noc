@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,14 +20,11 @@ class Script(BaseScript):
     cache = True
 
     rx_mac = re.compile(
-        r"^MAC Address:\s+(?P<mac1>\S+).*"
-        r"^Management Port MAC Address:\s+(?P<mac2>\S+)",
-        re.MULTILINE | re.DOTALL)
+        r"^MAC Address:\s+(?P<mac1>\S+).*" r"^Management Port MAC Address:\s+(?P<mac2>\S+)",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         v = self.cli("show sys-info", cached=True)
         match = self.rx_mac.search(v)
-        return {
-            "first_chassis_mac": match.group("mac1"),
-            "last_chassis_mac": match.group("mac2")
-        }
+        return {"first_chassis_mac": match.group("mac1"), "last_chassis_mac": match.group("mac2")}

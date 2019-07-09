@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
 from six.moves import zip_longest
@@ -17,8 +18,16 @@ rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
-def parse_table(s, allow_wrap=False, allow_extend=False, expand_columns=False,
-                max_width=0, footer=None, n_row_delim="", expand_tabs=True):
+def parse_table(
+    s,
+    allow_wrap=False,
+    allow_extend=False,
+    expand_columns=False,
+    max_width=0,
+    footer=None,
+    n_row_delim="",
+    expand_tabs=True,
+):
     """
     Parse string containing table an return a list of table rows.
     Each row is a list of cells.
@@ -73,11 +82,13 @@ def parse_table(s, allow_wrap=False, allow_extend=False, expand_columns=False,
                 dashes = len(match.group(2))
                 columns += [(x + spaces, x + spaces + dashes)]
                 x += match.end()
-                line = line[match.end():]
+                line = line[match.end() :]
             if max_width and columns[-1][-1] < max_width:
                 columns[-1] = (columns[-1][0], max_width)
             if expand_columns:
-                columns = [(cc[0], nc[0] - 1) for cc, nc in zip(columns, columns[1:])] + [columns[-1]]
+                columns = [(cc[0], nc[0] - 1) for cc, nc in zip(columns, columns[1:])] + [
+                    columns[-1]
+                ]
         elif columns:  # Fetch cells
             if allow_extend:
                 # Find which spaces between column not empty
@@ -89,14 +100,18 @@ def parse_table(s, allow_wrap=False, allow_extend=False, expand_columns=False,
                         # Enlarge column
                         columns[i] = (f, t + shift)
                         # Shift rest
-                        columns[i + 1:] = [(v[0] + shift, v[1] + shift) for v in columns[i + 1:]]
+                        columns[i + 1 :] = [(v[0] + shift, v[1] + shift) for v in columns[i + 1 :]]
                         break
             if allow_wrap:
                 row = [line[f:t] for f, t in columns]
                 if r and not row[0].strip():
                     # first column is empty
                     for i, x in enumerate(row):
-                        if x.strip() and not r[-1][i].endswith(n_row_delim) and not x.startswith(n_row_delim):
+                        if (
+                            x.strip()
+                            and not r[-1][i].endswith(n_row_delim)
+                            and not x.startswith(n_row_delim)
+                        ):
                             r[-1][i] += "%s%s" % (n_row_delim, x)
                         else:
                             r[-1][i] += x
@@ -118,8 +133,7 @@ rx_html_tags = re.compile("</?[^>+]+>", re.MULTILINE | re.DOTALL)
 
 def strip_html_tags(s):
     t = rx_html_tags.sub("", s)
-    for k, v in [("&nbsp;", " "), ("&lt;", "<"), ("&gt;", ">"),
-                 ("&amp;", "&")]:
+    for k, v in [("&nbsp;", " "), ("&lt;", "<"), ("&gt;", ">"), ("&amp;", "&")]:
         t = t.replace(k, v)
     return t
 
@@ -134,15 +148,12 @@ def xml_to_table(s, root, row):
     [{'a': '1', 'b': '2'}, {'a': '3', 'b': '4'}]
     """
     # Detect root element
-    match = re.search(r"<%s>(.*)</%s>" % (root, root), s,
-                      re.DOTALL | re.IGNORECASE)
+    match = re.search(r"<%s>(.*)</%s>" % (root, root), s, re.DOTALL | re.IGNORECASE)
     if not match:
         return []
     s = match.group(1)
-    row_re = re.compile(r"<%s>(.*?)</%s>" % (row, row),
-                        re.DOTALL | re.IGNORECASE)
-    item_re = re.compile(r"<([^\]+])>(.*?)</\1>",
-                         re.DOTALL | re.IGNORECASE)
+    row_re = re.compile(r"<%s>(.*?)</%s>" % (row, row), re.DOTALL | re.IGNORECASE)
+    item_re = re.compile(r"<([^\]+])>(.*?)</\1>", re.DOTALL | re.IGNORECASE)
     r = []
     for m in [x for x in row_re.split(s) if x]:
         data = item_re.findall(m)
@@ -251,7 +262,7 @@ def replace_re_group(expr, group, pattern):
         if idx == -1:
             return r + expr  # No more groups found
         r += expr[:idx]
-        expr = expr[idx + lg:]
+        expr = expr[idx + lg :]
         level = 1  # Level of parenthesis nesting
         while expr:
             c = expr[0]
@@ -310,11 +321,13 @@ def split_alnum(s):
     >>> split_alnum("ge-1/0/1.15")
     ['ge-', 1, '/', 0, '/', 1, '.', 15]
     """
+
     def convert(x):
         try:
             return int(x)
         except ValueError:
             return x
+
     r = []
     digit = None
     for c in s:
@@ -441,7 +454,7 @@ def format_table(widths, data, sep=" ", hsep=" "):
         # Header line
         mask % tuple(data[0]),
         # Header separator
-        hsep.join("-" * w for w in widths)
+        hsep.join("-" * w for w in widths),
     ]
     out += [mask % tuple(row) for row in data[1:]]
     return "\n".join(out)
@@ -490,10 +503,7 @@ def ch_escape(s):
     return s.replace("\n", "\\n").replace("\t", "\\t").replace("\\", "\\\\")
 
 
-ESC_REPLACEMENTS = {
-    re.escape('\n'): ' ',
-    re.escape('\t'): '        '
-}
+ESC_REPLACEMENTS = {re.escape("\n"): " ", re.escape("\t"): "        "}
 
 rx_escape = re.compile("|".join(ESC_REPLACEMENTS))
 
@@ -515,13 +525,13 @@ def parse_table_header(v):
     head = []
     empty_header = None
     header = {}
-    for num, lines in enumerate(zip_longest(*v, fillvalue='-')):
+    for num, lines in enumerate(zip_longest(*v, fillvalue="-")):
         #
         if empty_header is None:
-            empty_header = (' ',) * len(lines)
+            empty_header = (" ",) * len(lines)
             head += [lines]
             continue
-        if set(head[-1]) == {' '} and lines != empty_header:
+        if set(head[-1]) == {" "} and lines != empty_header:
             head = array(head)
             # Transpone list header string
             header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])

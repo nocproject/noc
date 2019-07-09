@@ -16,14 +16,11 @@ class Script(BaseScript):
     name = "DLink.DGS3100.get_vlans"
     interface = IGetVlans
     rx_vlan = re.compile(
-        r"^\s*VID\s+:\s+(?P<vlanid>\S+).+VLAN Name\s+:\s+(?P<vlanname>\S+)$",
-        re.MULTILINE)
+        r"^\s*VID\s+:\s+(?P<vlanid>\S+).+VLAN Name\s+:\s+(?P<vlanname>\S+)$", re.MULTILINE
+    )
 
     def execute(self):
         r = []
         for match in self.rx_vlan.finditer(self.cli("show vlan")):
-            r += [{
-                "vlan_id": int(match.group('vlanid')),
-                "name": match.group('vlanname')
-            }]
+            r += [{"vlan_id": int(match.group("vlanid")), "name": match.group("vlanname")}]
         return r

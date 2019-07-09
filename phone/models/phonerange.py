@@ -25,7 +25,7 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_save, on_delete, on_delete_check

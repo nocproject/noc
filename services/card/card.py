@@ -11,11 +11,13 @@ import os
 import inspect
 from threading import Lock
 import operator
+
 # Third-party modules
 import tornado.web
 from jinja2 import Template
 import ujson
 import cachetools
+
 # NOC modules
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
@@ -52,9 +54,7 @@ class CardRequestHandler(UIHandler):
     def get_current_user(self):
         user = None
         with ErrorReport():
-            user = self.get_user_by_name(
-                self.request.headers.get("Remote-User")
-            )
+            user = self.get_user_by_name(self.request.headers.get("Remote-User"))
         return user
 
     def get(self, card_type, card_id, *args, **kwargs):
@@ -94,13 +94,15 @@ class CardRequestHandler(UIHandler):
                     pass
 
             self.write(
-                self.get_card_template().render({
-                    "card_data": data,
-                    "card_title": str(card.object),
-                    "hashed": self.hashed,
-                    "card_js": card.card_js,
-                    "card_css": card.card_css
-                })
+                self.get_card_template().render(
+                    {
+                        "card_data": data,
+                        "card_title": str(card.object),
+                        "hashed": self.hashed,
+                        "card_js": card.card_js,
+                        "card_css": card.card_css,
+                    }
+                )
             )
 
     def get_card_template(self):
@@ -126,18 +128,14 @@ class CardRequestHandler(UIHandler):
             for f in os.listdir(p):
                 if not f.endswith(".py"):
                     continue
-                mn = "%s.%s.%s" % (
-                    basename,
-                    cls.CARDS_PREFIX.replace(os.path.sep, "."),
-                    f[:-3]
-                )
+                mn = "%s.%s.%s" % (basename, cls.CARDS_PREFIX.replace(os.path.sep, "."), f[:-3])
                 m = __import__(mn, {}, {}, "*")
                 for d in dir(m):
                     c = getattr(m, d)
                     if (
-                            inspect.isclass(c) and
-                            issubclass(c, BaseCard) and
-                            c.__module__ == m.__name__ and
-                            getattr(c, "name", None)
+                        inspect.isclass(c)
+                        and issubclass(c, BaseCard)
+                        and c.__module__ == m.__name__
+                        and getattr(c, "name", None)
                     ):
                         cls.CARDS[c.name] = c

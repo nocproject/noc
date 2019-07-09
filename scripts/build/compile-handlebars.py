@@ -24,18 +24,23 @@ def compile_template(src):
     name = parts[-1][:-4]
     print("%s -> %s" % (src, dst))
     tmp = dst + ".tmp"
-    subprocess.check_call([
-        "handlebars",
-        "-m",  # Minify
-        "-n", "NOC.templates.%s_%s" % (module, app),
-        "-e", "hbs",
-        "-f", tmp,
-        src
-    ])
+    subprocess.check_call(
+        [
+            "handlebars",
+            "-m",  # Minify
+            "-n",
+            "NOC.templates.%s_%s" % (module, app),
+            "-e",
+            "hbs",
+            "-f",
+            tmp,
+            src,
+        ]
+    )
     with open(tmp) as f:
         data = f.read()
     os.unlink(tmp)
-    data += "Ext.define(\"NOC.%s.%s.templates.%s\", {});" % (module, app, name)
+    data += 'Ext.define("NOC.%s.%s.templates.%s", {});' % (module, app, name)
     with open(dst, "w") as f:
         f.write(data)
 

@@ -9,8 +9,10 @@
 # Python modules
 import logging
 from noc.config import config
+
 if config.features.pypy:
     from psycopg2cffi import compat
+
     compat.register()
 
 DEBUG = False
@@ -26,16 +28,14 @@ ALLOWED_HOSTS = ["*"]
 DATABASES = {
     "default": {
         "ENGINE": "noc.core.model.db",
-        #"ENGINE": "django.db.backends.postgresql_psycopg2",
+        # "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": config.pg.db,
         "USER": config.pg.user,
         "PASSWORD": config.pg.password,
         "HOST": config.pg.addresses[0].host,
         "PORT": config.pg.addresses[0].port,
         "AUTOCOMMIT": True,
-        "OPTIONS": {
-            "connect_timeout": config.pg.connect_timeout
-        }
+        "OPTIONS": {"connect_timeout": config.pg.connect_timeout},
     }
 }
 ATOMIC_REQUESTS = False
@@ -74,21 +74,21 @@ SECRET_KEY = config.secret_key
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
     "django.template.loaders.filesystem.Loader",
-    "django.template.loaders.app_directories.Loader"
+    "django.template.loaders.app_directories.Loader",
 ]
 #
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
-    "noc.core.middleware.context.messages"
+    "noc.core.middleware.context.messages",
 )
 #
 MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "noc.core.middleware.remoteuser.remote_user_middleware",
     "noc.core.middleware.tls.tls_middleware",
-    "noc.core.middleware.extformat.ext_format_middleware"
+    "noc.core.middleware.extformat.ext_format_middleware",
 ]
 
 ROOT_URLCONF = "noc.urls"
@@ -97,7 +97,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "APP_DIRS": False,
-        "DIRS": [".", "templates"]
+        "DIRS": [".", "templates"],
     }
 ]
 
@@ -106,7 +106,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don"t forget to use absolute paths, not relative paths.
     ".",
-    "templates"
+    "templates",
 )
 
 INSTALLED_APPS = [
@@ -131,18 +131,14 @@ INSTALLED_APPS = [
     "noc.support",
     "noc.bi",
     "noc.sla",
-    "noc.phone"
+    "noc.phone",
 ]
 
 FORCE_SCRIPT_NAME = ""
 
 # Available languages
 _ = lambda s: s  # noqa. _ should be a lambda not a function
-LANGUAGES = [
-    ("en", _("English")),
-    ("ru", _("Russian")),
-    ("pt_BR", _("Portuguese (BRAZIL)"))
-]
+LANGUAGES = [("en", _("English")), ("ru", _("Russian")), ("pt_BR", _("Portuguese (BRAZIL)"))]
 
 LOCALE_PATHS = ["locale"]
 # Do not enforce lowercase tags

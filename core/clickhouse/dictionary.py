@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import os
+
 # Third-party modules
 import six
+
 # NOC modules
 from .fields import BaseField
 
@@ -32,15 +34,12 @@ class DictionaryBase(type):
         for k in attrs:
             if isinstance(attrs[k], BaseField):
                 attrs[k].contribute_to_class(cls, k)
-        cls._fields_order = sorted(
-            cls._fields, key=lambda x: cls._fields[x].field_number
-        )
+        cls._fields_order = sorted(cls._fields, key=lambda x: cls._fields[x].field_number)
         return cls
 
 
 class DictionaryMeta(object):
-    def __init__(self, name=None, layout=None,
-                 lifetime_min=None, lifetime_max=None):
+    def __init__(self, name=None, layout=None, lifetime_min=None, lifetime_max=None):
         self.name = name
         self.layout = layout
         self.lifetime_min = lifetime_min
@@ -88,7 +87,8 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "        </layout>",
             "        <source>",
             "            <http>",
-            "                <url>http://{{ range $index, $element := service \"datasource~_agent\"}}{{if eq $index 0}}{{.Address}}:{{.Port}}{{end}}{{else}}127.0.0.1:65535{{ end }}/api_datasource/ch_%s.tsv</url>" % cls._meta.name,
+            '                <url>http://{{ range $index, $element := service "datasource~_agent"}}{{if eq $index 0}}{{.Address}}:{{.Port}}{{end}}{{else}}127.0.0.1:65535{{ end }}/api_datasource/ch_%s.tsv</url>'
+            % cls._meta.name,
             "                <format>TabSeparated</format>",
             "            </http>",
             "        </source>",
@@ -100,7 +100,7 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "                 <name>id</name>",
             "                 <type>String</type>",
             "                 <hierarchical>false</hierarchical>",
-            "             </attribute>"
+            "             </attribute>",
         ]
         for f in cls._fields_order:
             ff = cls._fields[f]
@@ -111,13 +111,9 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
                 "                 <type>%s</type>" % ff.db_type,
                 "                 <null_value>Unknown</null_value>",
                 "                 <hierarchical>%s</hierarchical>" % ("true" if hier else "false"),
-                "             </attribute>"
+                "             </attribute>",
             ]
-        x += [
-            "        </structure>",
-            "    </dictionary>",
-            "</dictionaries>"
-        ]
+        x += ["        </structure>", "    </dictionary>", "</dictionaries>"]
         return "\n".join(x)
 
     @classmethod
@@ -152,7 +148,12 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         # @todo: !!!
         raise NotImplementedError()
         for d in cls.get_collection().find({}):
-            out.write("%s\t%s\n" % (
-                str(d["id"]),
-                "\t".join(str(d.get(f, "")).replace("\n", "").replace("\t", "") for f in cls._fields)
-            ))
+            out.write(
+                "%s\t%s\n"
+                % (
+                    str(d["id"]),
+                    "\t".join(
+                        str(d.get(f, "")).replace("\n", "").replace("\t", "") for f in cls._fields
+                    ),
+                )
+            )

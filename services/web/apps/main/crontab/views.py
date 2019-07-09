@@ -16,6 +16,7 @@ class CronTabApplication(ExtDocApplication):
     """
     CronTab application
     """
+
     title = "CronTab"
     menu = [_("Setup"), _("CronTabs")]
     model = CronTab

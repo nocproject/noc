@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -21,13 +22,8 @@ class Profile(BaseProfile):
     command_super = "enable"
     command_submit = "\r"
     command_disable_pager = "terminal length 0"
-    pattern_more = [
-        (r"--More--", " ")
-    ]
-    rogue_chars = [
-        re.compile(r"\x1b\[19D\r\x00Terayon CMTS#"),
-        "\r"
-    ]
+    pattern_more = [(r"--More--", " ")]
+    rogue_chars = [re.compile(r"\x1b\[19D\r\x00Terayon CMTS#"), "\r"]
 
     def setup_session(self, script):
         script.cli("\r")

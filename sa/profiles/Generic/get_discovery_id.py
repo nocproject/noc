@@ -15,6 +15,7 @@ class Script(BaseScript):
     """
     Retrieve data for topology discovery
     """
+
     name = "Generic.get_discovery_id"
     interface = IGetDiscoveryID
     requires = []
@@ -22,8 +23,7 @@ class Script(BaseScript):
     def execute(self):
         data = {}
         with self.cached():
-            x_list = (self.CLISyntaxError, self.NotSupportedError,
-                      self.UnexpectedResultError)
+            x_list = (self.CLISyntaxError, self.NotSupportedError, self.UnexpectedResultError)
             # Get Chassis Id
             if "get_chassis_id" in self.scripts:
                 with self.ignored_exceptions(x_list):

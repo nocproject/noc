@@ -12,11 +12,16 @@ import re
 import heapq
 import itertools
 import logging
+
 # NOC modules
 from django.db.models import Q as d_Q
 from noc.sa.models.managedobject import ManagedObject
-from .report_objectstat import (AttributeIsolator,
-                                CapabilitiesIsolator, StatusIsolator, ProblemIsolator)
+from .report_objectstat import (
+    AttributeIsolator,
+    CapabilitiesIsolator,
+    StatusIsolator,
+    ProblemIsolator,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +57,11 @@ class BaseReportColumn(object):
     Base report column class.
     Column is dataseries: ((id1: value1), (id2: value2)) - id - index sorted by asc
     """
+
     MAX_ITERATOR = 500000
     name = None  # ColumnName
     fields = None  # RowFields List
-    unknown_value = (None, )  # Fill this if empty value
+    unknown_value = (None,)  # Fill this if empty value
     builtin_sorted = False  # Column index builtin sorted
     multiple_series = False  # Extract return dict columns dataseries
     # {"Series1_name": dataseries1, "Series2_name": dataseries2}
@@ -96,7 +102,7 @@ class BaseReportColumn(object):
         else:
             # Supported builtin sorted.
             for v in self.extract():
-                if v[0] < prev_id:   # Todo
+                if v[0] < prev_id:  # Todo
                     print("Detect unordered stream")
                     raise StopIteration("Detect unordered stream")
                 yield v
@@ -183,6 +189,7 @@ class LongestIter(object):
         ).order_by("object").scalar("object", "hostname").no_cache()
     hostname = LongestIter(did)
     """
+
     def __init__(self, it):
         self._iterator = it
         self._end_iterator = False
@@ -221,6 +228,7 @@ class ReportModelFilter(object):
     """
     Getting statictics info for ManagedObject
     """
+
     decode_re = re.compile(r"(\d+)(\S+)(\d+)")
 
     model = ManagedObject  # Set on base class
@@ -228,10 +236,12 @@ class ReportModelFilter(object):
     def __init__(self):
         self.formulas = """2is1.3hs0, 2is1.3hs0.5is1, 2is1.3hs0.5is2,
                 2is1.3hs0.5is2.4hs0, 2is1.3hs0.5is2.4hs1, 2is1.3hs0.5is2.4hs1.5hs1"""
-        self.f_map = {"is": StatusIsolator(),
-                      "hs": CapabilitiesIsolator(),
-                      "a": AttributeIsolator(),
-                      "isp": ProblemIsolator()}
+        self.f_map = {
+            "is": StatusIsolator(),
+            "hs": CapabilitiesIsolator(),
+            "a": AttributeIsolator(),
+            "isp": ProblemIsolator(),
+        }
         self.logger = logger
 
     def decode(self, formula):

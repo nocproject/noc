@@ -8,13 +8,26 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, DictParameter, DictListParameter, StringListParameter,
-                   InterfaceNameParameter,
-                   MACAddressParameter, VLANIDParameter, VLANStackParameter,
-                   RDParameter, IPParameter, IPv4PrefixParameter, IPv6PrefixParameter,
-                   StringParameter, BooleanParameter, IntParameter)
+from .base import (
+    ListOfParameter,
+    DictParameter,
+    DictListParameter,
+    StringListParameter,
+    InterfaceNameParameter,
+    MACAddressParameter,
+    VLANIDParameter,
+    VLANStackParameter,
+    RDParameter,
+    IPParameter,
+    IPv4PrefixParameter,
+    IPv6PrefixParameter,
+    StringParameter,
+    BooleanParameter,
+    IntParameter,
+)
 
 
 class IGetInterfaces(BaseInterface):
@@ -291,125 +304,218 @@ class IGetInterfaces(BaseInterface):
             vci = port vci
 
     """
-    returns = DictListParameter(attrs={
-        # Name of the forwarding instance
-        "forwarding_instance": StringParameter(default="default"),
-        "virtual_router": StringParameter(required=False),
-        "type": StringParameter(choices=["ip", "bridge", "VRF",
-                                         "VPLS", "VLL"], default="ip"),
-        "rd": RDParameter(required=False),
-        # Refer IGetMPLSVPN.vpn_id for details
-        "vpn_id": StringParameter(required=False),
-        "interfaces": DictListParameter(attrs={
-            "name": InterfaceNameParameter(),
-            "type": StringParameter(choices=[
-                "physical",
-                "SVI",
-                "aggregated",
-                "loopback",
-                "management",
-                "null",
-                "tunnel",
-                "other",
-                "template",
-                "dry",  # Dry contact
-                "unknown"
-            ]),
-            "admin_status": BooleanParameter(default=False),
-            "oper_status": BooleanParameter(default=False),
-            "aggregated_interface": InterfaceNameParameter(required=False),  # Not empty for portchannel members
-            # L2 protocols enabled on interface
-            "enabled_protocols": StringListParameter(choices=[
-                "LACP", "LLDP", "CDP", "UDLD", "CTP", "GVRP", "VTP", "STP",
-                "BFD", "OAM", "NDP",
-                "DRY_NO",  # Dry contact, Normal Open
-                "DRY_NC",  # Dry contact, Normal Closed
-                "DRY_PULSE",  # Dry contact, pulse mode
-            ], required=False),
-            "description": StringParameter(required=False),
-            "mac": MACAddressParameter(required=False),
-            "snmp_ifindex": IntParameter(required=False),
-            "subinterfaces": ListOfParameter(element=DictParameter(attrs={
-                "name": InterfaceNameParameter(),
-                "admin_status": BooleanParameter(default=False),
-                "oper_status": BooleanParameter(default=False),
-                "mtu": IntParameter(required=False),
-                "description": StringParameter(required=False),
-                "mac": MACAddressParameter(required=False),
-                "vlan_ids": VLANStackParameter(required=False),
-                # Enabled address families
-                "enabled_afi": StringListParameter(choices=[
-                    "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE", "ES", "ATM", "iSCSI"
-                ], required=False),  # @todo: make required
-                "ipv4_addresses": ListOfParameter(
-                    element=IPv4PrefixParameter(),
-                    required=False
-                ),  # enabled_afi = [... IPv4 ...]
-                "ipv6_addresses": ListOfParameter(
-                    element=IPv6PrefixParameter(),
-                    required=False
-                ),  # enabled_afi = [... IPv6 ...]
-                "iso_addresses": StringListParameter(required=False),  # enabled_afi = [... ISO ...]
-                "vpi": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
-                "vci": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
-                # Enabled L3 protocols
-                "enabled_protocols": StringListParameter(choices=[
-                    "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
-                    "BGP",
-                    "LDP", "RSVP",
-                    "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
-                ], required=False),
-                "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
-                "tagged_vlans": ListOfParameter(element=VLANIDParameter(), required=False),  # enabled_afi = [BRIDGE]
-                # Input VLAN tag processing, enabled_afi = [ES]
-                "input_vlan_map": DictListParameter(attrs={
-                    # VLAN stack depth to match
-                    "stack": IntParameter(min_value=0, max_value=2, default=0),
-                    # outer VLAN list to match (stack == 2)
-                    "outer_vlans": ListOfParameter(element=VLANIDParameter(), required=False),
-                    # inner VLAN list to match (stack in (1, 2))
-                    "inner_vlans": ListOfParameter(element=VLANIDParameter(), required=False),
-                    # Tag rewrite operations list
-                    "rewrite": DictListParameter(attrs={
-                        # refer to noc.core.vlanmap documentation
-                        "op": StringParameter(choices=["pop", "push", "swap", "drop"]),
-                        "vlan": VLANIDParameter(required=False)
-                    }, required=False)
-                }, required=False),
-                # Output VLAN tag processing, enabled_afi = [ES]
-                "output_vlan_map": DictListParameter(attrs={
-                    # VLAN stack depth to match
-                    "stack": IntParameter(min_value=0, max_value=2, default=0),
-                    # outer VLAN list to match (stack == 2)
-                    "outer_vlans": ListOfParameter(element=VLANIDParameter(), required=False),
-                    # inner VLAN list to match (stack in (1, 2))
-                    "inner_vlans": ListOfParameter(element=VLANIDParameter(), required=False),
-                    # Tag rewrite operations list
-                    "rewrite": DictListParameter(attrs={
-                        # refer to noc.core.vlanmap documentation
-                        "op": StringParameter(choices=["pop", "push", "swap", "drop"]),
-                        "vlan": VLANIDParameter(required=False)
-                    }, required=False)
-                }, required=False),
-                # Dynamic vlans, enabled_afi = [ES or BRIDGE]
-                "dynamic_vlans": DictListParameter(attrs={
-                    "vlan": VLANIDParameter(),
-                    "service": StringParameter(choices=[
-                        "voice",
-                        "mvr"
-                    ])
-                }, required=False),
-                "ip_unnumbered_subinterface": InterfaceNameParameter(required=False),
-                "snmp_ifindex": IntParameter(required=False),
-                # Tunnel services
-                "tunnel": DictParameter(required=False, attrs={
-                    "type": StringParameter(choices=[
-                        "GRE", "IPIP", "IPsec", "PPTP", "L2TP", "PPPOE", "PPP",
-                        "SSTP", "EOIP", "SLIP"
-                    ]),
-                    "local_address": IPParameter(required=False),
-                    "remote_address": IPParameter(required=False)
-                })
-            }))
-        })
-    })
+
+    returns = DictListParameter(
+        attrs={
+            # Name of the forwarding instance
+            "forwarding_instance": StringParameter(default="default"),
+            "virtual_router": StringParameter(required=False),
+            "type": StringParameter(choices=["ip", "bridge", "VRF", "VPLS", "VLL"], default="ip"),
+            "rd": RDParameter(required=False),
+            # Refer IGetMPLSVPN.vpn_id for details
+            "vpn_id": StringParameter(required=False),
+            "interfaces": DictListParameter(
+                attrs={
+                    "name": InterfaceNameParameter(),
+                    "type": StringParameter(
+                        choices=[
+                            "physical",
+                            "SVI",
+                            "aggregated",
+                            "loopback",
+                            "management",
+                            "null",
+                            "tunnel",
+                            "other",
+                            "template",
+                            "dry",  # Dry contact
+                            "unknown",
+                        ]
+                    ),
+                    "admin_status": BooleanParameter(default=False),
+                    "oper_status": BooleanParameter(default=False),
+                    "aggregated_interface": InterfaceNameParameter(
+                        required=False
+                    ),  # Not empty for portchannel members
+                    # L2 protocols enabled on interface
+                    "enabled_protocols": StringListParameter(
+                        choices=[
+                            "LACP",
+                            "LLDP",
+                            "CDP",
+                            "UDLD",
+                            "CTP",
+                            "GVRP",
+                            "VTP",
+                            "STP",
+                            "BFD",
+                            "OAM",
+                            "NDP",
+                            "DRY_NO",  # Dry contact, Normal Open
+                            "DRY_NC",  # Dry contact, Normal Closed
+                            "DRY_PULSE",  # Dry contact, pulse mode
+                        ],
+                        required=False,
+                    ),
+                    "description": StringParameter(required=False),
+                    "mac": MACAddressParameter(required=False),
+                    "snmp_ifindex": IntParameter(required=False),
+                    "subinterfaces": ListOfParameter(
+                        element=DictParameter(
+                            attrs={
+                                "name": InterfaceNameParameter(),
+                                "admin_status": BooleanParameter(default=False),
+                                "oper_status": BooleanParameter(default=False),
+                                "mtu": IntParameter(required=False),
+                                "description": StringParameter(required=False),
+                                "mac": MACAddressParameter(required=False),
+                                "vlan_ids": VLANStackParameter(required=False),
+                                # Enabled address families
+                                "enabled_afi": StringListParameter(
+                                    choices=[
+                                        "IPv4",
+                                        "IPv6",
+                                        "ISO",
+                                        "MPLS",
+                                        "BRIDGE",
+                                        "ES",
+                                        "ATM",
+                                        "iSCSI",
+                                    ],
+                                    required=False,
+                                ),  # @todo: make required
+                                "ipv4_addresses": ListOfParameter(
+                                    element=IPv4PrefixParameter(), required=False
+                                ),  # enabled_afi = [... IPv4 ...]
+                                "ipv6_addresses": ListOfParameter(
+                                    element=IPv6PrefixParameter(), required=False
+                                ),  # enabled_afi = [... IPv6 ...]
+                                "iso_addresses": StringListParameter(
+                                    required=False
+                                ),  # enabled_afi = [... ISO ...]
+                                "vpi": IntParameter(
+                                    required=False
+                                ),  # enabled afi = [ ... ATM ... ]
+                                "vci": IntParameter(
+                                    required=False
+                                ),  # enabled afi = [ ... ATM ... ]
+                                # Enabled L3 protocols
+                                "enabled_protocols": StringListParameter(
+                                    choices=[
+                                        "ISIS",
+                                        "OSPF",
+                                        "RIP",
+                                        "EIGRP",
+                                        "OSPFv3",
+                                        "BGP",
+                                        "LDP",
+                                        "RSVP",
+                                        "PIM",
+                                        "DVMRP",
+                                        "IGMP",
+                                        "VRRP",
+                                        "SRRP",
+                                    ],
+                                    required=False,
+                                ),
+                                "untagged_vlan": VLANIDParameter(
+                                    required=False
+                                ),  # enabled_afi = [BRIDGE]
+                                "tagged_vlans": ListOfParameter(
+                                    element=VLANIDParameter(), required=False
+                                ),  # enabled_afi = [BRIDGE]
+                                # Input VLAN tag processing, enabled_afi = [ES]
+                                "input_vlan_map": DictListParameter(
+                                    attrs={
+                                        # VLAN stack depth to match
+                                        "stack": IntParameter(min_value=0, max_value=2, default=0),
+                                        # outer VLAN list to match (stack == 2)
+                                        "outer_vlans": ListOfParameter(
+                                            element=VLANIDParameter(), required=False
+                                        ),
+                                        # inner VLAN list to match (stack in (1, 2))
+                                        "inner_vlans": ListOfParameter(
+                                            element=VLANIDParameter(), required=False
+                                        ),
+                                        # Tag rewrite operations list
+                                        "rewrite": DictListParameter(
+                                            attrs={
+                                                # refer to noc.core.vlanmap documentation
+                                                "op": StringParameter(
+                                                    choices=["pop", "push", "swap", "drop"]
+                                                ),
+                                                "vlan": VLANIDParameter(required=False),
+                                            },
+                                            required=False,
+                                        ),
+                                    },
+                                    required=False,
+                                ),
+                                # Output VLAN tag processing, enabled_afi = [ES]
+                                "output_vlan_map": DictListParameter(
+                                    attrs={
+                                        # VLAN stack depth to match
+                                        "stack": IntParameter(min_value=0, max_value=2, default=0),
+                                        # outer VLAN list to match (stack == 2)
+                                        "outer_vlans": ListOfParameter(
+                                            element=VLANIDParameter(), required=False
+                                        ),
+                                        # inner VLAN list to match (stack in (1, 2))
+                                        "inner_vlans": ListOfParameter(
+                                            element=VLANIDParameter(), required=False
+                                        ),
+                                        # Tag rewrite operations list
+                                        "rewrite": DictListParameter(
+                                            attrs={
+                                                # refer to noc.core.vlanmap documentation
+                                                "op": StringParameter(
+                                                    choices=["pop", "push", "swap", "drop"]
+                                                ),
+                                                "vlan": VLANIDParameter(required=False),
+                                            },
+                                            required=False,
+                                        ),
+                                    },
+                                    required=False,
+                                ),
+                                # Dynamic vlans, enabled_afi = [ES or BRIDGE]
+                                "dynamic_vlans": DictListParameter(
+                                    attrs={
+                                        "vlan": VLANIDParameter(),
+                                        "service": StringParameter(choices=["voice", "mvr"]),
+                                    },
+                                    required=False,
+                                ),
+                                "ip_unnumbered_subinterface": InterfaceNameParameter(
+                                    required=False
+                                ),
+                                "snmp_ifindex": IntParameter(required=False),
+                                # Tunnel services
+                                "tunnel": DictParameter(
+                                    required=False,
+                                    attrs={
+                                        "type": StringParameter(
+                                            choices=[
+                                                "GRE",
+                                                "IPIP",
+                                                "IPsec",
+                                                "PPTP",
+                                                "L2TP",
+                                                "PPPOE",
+                                                "PPP",
+                                                "SSTP",
+                                                "EOIP",
+                                                "SLIP",
+                                            ]
+                                        ),
+                                        "local_address": IPParameter(required=False),
+                                        "remote_address": IPParameter(required=False),
+                                    },
+                                ),
+                            }
+                        )
+                    ),
+                }
+            ),
+        }
+    )

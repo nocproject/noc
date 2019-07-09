@@ -31,5 +31,5 @@ MIB = {
     "ENTITY-STATE-MIB::entStateStandby": "1.3.6.1.2.1.131.1.1.1.6",
     "ENTITY-STATE-MIB::entStateConformance": "1.3.6.1.2.1.131.2",
     "ENTITY-STATE-MIB::entStateCompliances": "1.3.6.1.2.1.131.2.1",
-    "ENTITY-STATE-MIB::entStateGroups": "1.3.6.1.2.1.131.2.2"
+    "ENTITY-STATE-MIB::entStateGroups": "1.3.6.1.2.1.131.2.2",
 }

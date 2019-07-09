@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
@@ -21,7 +22,8 @@ class Script(BaseScript):
         r"^(?P<interface>1/\d+)\s+(?P<mac>\S+)\s+(?P<oui>\S+)\s+"
         r"(?P<caps_R>Disabled|Enabled)\s+(?P<caps_U>Disabled|Enabled)\s+"
         r"(?P<caps_L>Disabled|Enabled)\s+(?P<caps_V>Disabled|Enabled)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self, **kwargs):
         r = []
@@ -45,9 +47,5 @@ class Script(BaseScript):
                 caps += ["L"]
             if match.group("caps_V") == "Enabled":
                 caps += ["V"]
-            r += [{
-                "interface": iface,
-                "remote_mac": mac,
-                "caps": caps
-            }]
+            r += [{"interface": iface, "remote_mac": mac, "caps": caps}]
         return r

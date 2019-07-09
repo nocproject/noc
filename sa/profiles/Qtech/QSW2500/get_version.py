@@ -26,6 +26,6 @@ class Script(BaseScript):
             "attributes": {
                 "Boot PROM": match.group("bootprom"),
                 "HW version": match.group("hardware"),
-                "Serial Number": match.group("serial")
-            }
+                "Serial Number": match.group("serial"),
+            },
         }

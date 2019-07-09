@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -20,16 +21,14 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
         r"(packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_stat = re.compile(
-        r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)\s.",
-        re.MULTILINE)
-    rx_count = re.compile(
-        r"^\d+ bytes from \d\S+\d+: seq=(\d+) ttl=\d+ time=\S+ ms",
-        re.MULTILINE)
+        r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)\s.", re.MULTILINE
+    )
+    rx_count = re.compile(r"^\d+ bytes from \d\S+\d+: seq=(\d+) ttl=\d+ time=\S+ ms", re.MULTILINE)
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         if count is None:
             count = 5
         cmd = "ping %s -c %d" % (address, int(count))
@@ -54,15 +53,8 @@ class Script(BaseScript):
             result = self.rx_count.findall(ping)
             return {"success": len(result), "count": count}
 
-        r = {
-            "success": result.group("success"),
-            "count": result.group("count"),
-        }
+        r = {"success": result.group("success"), "count": result.group("count")}
         stat = self.rx_stat.search(ping)
         if stat:
-            r.update({
-                "min": stat.group("min"),
-                "avg": stat.group("avg"),
-                "max": stat.group("max"),
-            })
+            r.update({"min": stat.group("min"), "avg": stat.group("avg"), "max": stat.group("max")})
         return r

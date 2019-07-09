@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -25,12 +26,11 @@ class Script(BaseScript):
         r"^\s+Address is (?P<mac>\S+)\s*\n"
         r"^\s+Description: (?P<descr>.*)\s*\n"
         r"^\s+index (?P<snmp_ifindex>\d+) mtu (?P<mtu>\d+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_port_vlan = re.compile(r"(?P<ifname>port\d+\.\d+\.\d+)\((?P<type>u|t)\)")
     rx_ip = re.compile(
-        r"^(?P<ifname>vlan\d+)\s+(?P<ip>\S+)\s+admin (?P<admin_status>up|down).+\n",
-        re.MULTILINE
+        r"^(?P<ifname>vlan\d+)\s+(?P<ip>\S+)\s+admin (?P<admin_status>up|down).+\n", re.MULTILINE
     )
 
     def execute_cli(self):
@@ -45,16 +45,18 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_status") == "UP",
                 "oper_status": match.group("oper_status") == "UP",
                 "snmp_ifindex": match.group("snmp_ifindex"),
-                "subinterfaces": [{
-                    "name": match.group("ifname"),
-                    "mac": match.group("mac"),
-                    "description": match.group("descr"),
-                    "admin_status": match.group("admin_status") == "UP",
-                    "oper_status": match.group("oper_status") == "UP",
-                    "enabled_afi": ["BRIDGE"],
-                    "mtu": match.group("mtu"),
-                    "tagged_vlans": []
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("ifname"),
+                        "mac": match.group("mac"),
+                        "description": match.group("descr"),
+                        "admin_status": match.group("admin_status") == "UP",
+                        "oper_status": match.group("oper_status") == "UP",
+                        "enabled_afi": ["BRIDGE"],
+                        "mtu": match.group("mtu"),
+                        "tagged_vlans": [],
+                    }
+                ],
             }
             ifaces += [i]
 
@@ -80,13 +82,15 @@ class Script(BaseScript):
                 "type": "SVI",
                 "admin_status": match.group("admin_status") == "up",
                 "oper_status": True,
-                "subinterfaces": [{
-                    "name": match.group("ifname"),
-                    "admin_status": match.group("admin_status") == "up",
-                    "oper_status": True,
-                    "ipv4_addresses": [match.group("ip")],
-                    "enabled_afi": ["IPv4"]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("ifname"),
+                        "admin_status": match.group("admin_status") == "up",
+                        "oper_status": True,
+                        "ipv4_addresses": [match.group("ip")],
+                        "enabled_afi": ["IPv4"],
+                    }
+                ],
             }
             i["subinterfaces"][0]["vlan_ids"] = int(match.group("ifname")[4:])
             ifaces += [i]

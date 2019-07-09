@@ -22,8 +22,7 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                oid = self.snmp.get("1.3.6.1.2.1.1.1.0",
-                                    cached=True)
+                oid = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 platform = oid.split(",")[0].strip()
                 version = oid.split(",")[1].strip()
                 result = {
@@ -46,12 +45,7 @@ class Script(BaseScript):
         res = line[1].strip().split(".", 2)
         hwversion = "%s.%s" % (res[0], res[1])
         version = res[2].strip()
-        result = {
-            "vendor": "Rotek",
-            "version": version,
-            "attributes": {
-                "HW version": hwversion}
-        }
+        result = {"vendor": "Rotek", "version": version, "attributes": {"HW version": hwversion}}
         with self.profile.shell(self):
             v = self.cli("cat /etc/product", cached=True)
             for line in v.splitlines():

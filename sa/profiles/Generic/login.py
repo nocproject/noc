@@ -16,6 +16,7 @@ class Script(BaseScript):
     """
     Try to log in
     """
+
     name = "Generic.login"
     interface = ILogin
     requires = []
@@ -23,11 +24,8 @@ class Script(BaseScript):
     def execute(self):
         try:
             self.cli("")
-            return {"result": True,
-                    "message": ""}
+            return {"result": True, "message": ""}
         except NOCError as e:
-            return {"result": False,
-                    "message": "Error: %s (%s)" % (e.default_msg, e.message)}
+            return {"result": False, "message": "Error: %s (%s)" % (e.default_msg, e.message)}
         except Exception as e:
-            return {"result": False,
-                    "message": "Exception: %s" % repr(e)}
+            return {"result": False, "message": "Exception: %s" % repr(e)}
