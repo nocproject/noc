@@ -211,6 +211,8 @@ Test code:
   stage: test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - mv .dockerignore .dockerignore.prod
+    - cp .dockerignore.tests .dockerignore
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - >
@@ -227,6 +229,7 @@ Test code:
       tests
   after_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - mv .dockerignore.prod .dockerignore
     - >
       docker-compose
       -f .docker/docker-compose.yml
