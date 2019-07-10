@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,11 +10,13 @@
 import logging
 import datetime
 import csv
-import StringIO
+
 # Third-party modules
+from six import StringIO
 from django.http import HttpResponse
 from pymongo import ReadPreference
 import xlsxwriter
+
 # NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.app.extapplication import ExtApplication, view
@@ -26,14 +28,23 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.platform import Platform
 
 logger = logging.getLogger(__name__)
 
 
 def get_column_width(name):
-    excel_column_format = {"ID": 6, "OBJECT1_NAME": 38, "OBJECT2_NAME": 38,
-                           "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
-                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    excel_column_format = {
+        "ID": 6,
+        "OBJECT1_NAME": 38,
+        "OBJECT2_NAME": 38,
+        "OBJECT_STATUS": 10,
+        "OBJECT_PROFILE": 17,
+        "OBJECT_PLATFORM": 25,
+        "AVAIL": 6,
+        "ADMIN_DOMAIN": 25,
+        "PHYS_INTERFACE_COUNT": 5,
+    }
     if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
         return 8
     elif name.startswith("ADM_PATH"):
@@ -45,6 +56,7 @@ def get_column_width(name):
 
 class ReportLinksDetail(object):
     """Report for MO links detail"""
+
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
         self.out = self.load(mo_ids)
@@ -53,18 +65,39 @@ class ReportLinksDetail(object):
     def load(mo_ids):
         # match = {"links.mo": {"$in": mo_ids}}
         match = {"int.managed_object": {"$in": mo_ids}}
-        group = {"_id": "$_id",
-                 "links": {"$push": {"iface_n": "$int.name",
-                                     "iface_id": "$int._id",
-                                     "dis_method": "$discovery_method",
-                                     "last_seen": "$last_seen",
-                                     "mo": "$int.managed_object"}}}
-        value = get_db()["noc.links"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-            {"$unwind": "$interfaces"},
-            {"$lookup": {"from": "noc.interfaces", "localField": "interfaces", "foreignField": "_id", "as": "int"}},
-            {"$match": match},
-            {"$group": group}
-        ])
+        group = {
+            "_id": "$_id",
+            "links": {
+                "$push": {
+                    "iface_n": "$int.name",
+                    "iface_id": "$int._id",
+                    "iface_descr": "$int.description",
+                    "iface_speed": "$int.in_speed",
+                    "dis_method": "$discovery_method",
+                    "last_seen": "$last_seen",
+                    "mo": "$int.managed_object",
+                }
+            },
+        }
+        value = (
+            get_db()["noc.links"]
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .aggregate(
+                [
+                    {"$unwind": "$interfaces"},
+                    {
+                        "$lookup": {
+                            "from": "noc.interfaces",
+                            "localField": "interfaces",
+                            "foreignField": "_id",
+                            "as": "int",
+                        }
+                    },
+                    {"$match": match},
+                    {"$group": group},
+                ]
+            )
+        )
 
         return dict((v["_id"], v["links"]) for v in value if v["_id"])
 
@@ -74,26 +107,42 @@ class ReportLinksDetail(object):
 
 class ReportLinkDetailApplication(ExtApplication):
     menu = _("Reports") + "|" + _("Link Detail")
-    title = _("Object Detail")
+    title = _("Link Detail")
 
     SEGMENT_PATH_DEPTH = 7
     CONTAINER_PATH_DEPTH = 7
 
-    @view("^download/$", method=["GET"], access="launch", api=True,
-          validate={
-              "administrative_domain": StringParameter(required=False),
-              "pool": StringParameter(required=False),
-              "segment": StringParameter(required=False),
-              "selector": StringParameter(required=False),
-              "ids": StringParameter(required=False),
-              "is_managed": BooleanParameter(required=False),
-              "avail_status": BooleanParameter(required=False),
-              "columns": StringParameter(required=False),
-              "o_format": StringParameter(choices=["csv", "xlsx"])})
-    def api_report(self, request, o_format, is_managed=None,
-                   administrative_domain=None, selector=None, pool=None,
-                   segment=None, avail_status=False, columns=None, ids=None,
-                   enable_autowidth=False):
+    @view(
+        "^download/$",
+        method=["GET"],
+        access="launch",
+        api=True,
+        validate={
+            "administrative_domain": StringParameter(required=False),
+            "pool": StringParameter(required=False),
+            "segment": StringParameter(required=False),
+            "selector": StringParameter(required=False),
+            "ids": StringParameter(required=False),
+            "is_managed": BooleanParameter(required=False),
+            "avail_status": BooleanParameter(required=False),
+            "columns": StringParameter(required=False),
+            "o_format": StringParameter(choices=["csv", "xlsx"]),
+        },
+    )
+    def api_report(
+        self,
+        request,
+        o_format,
+        is_managed=None,
+        administrative_domain=None,
+        selector=None,
+        pool=None,
+        segment=None,
+        avail_status=False,
+        columns=None,
+        ids=None,
+        enable_autowidth=False,
+    ):
         def row(row):
             def qe(v):
                 if v is None:
@@ -115,28 +164,50 @@ class ReportLinkDetailApplication(ExtApplication):
         type_columns = ["Up/10G", "Up/1G", "Up/100M", "Down/-", "-"]
 
         cols = [
-            "admin_domain",
+            "object1_admin_domain",
             # "id",
             "object1_name",
             "object1_address",
+            "object1_platform",
+            "object1_segment",
+            "object1_tags",
             "object1_iface",
+            "object1_descr",
+            "object1_speed",
+            "object2_admin_domain",
             "object2_name",
             "object2_address",
+            "object2_platform",
+            "object2_segment",
+            "object2_tags",
             "object2_iface",
+            "object2_descr",
+            "object2_speed",
             "link_proto",
-            "last_seen"
+            "last_seen",
         ]
 
         header_row = [
-            "ADMIN_DOMAIN",
+            "OBJECT1_ADMIN_DOMAIN",
             "OBJECT1_NAME",
             "OBJECT1_ADDRESS",
+            "OBJECT1_PLATFORM",
+            "OBJECT1_SEGMENT",
+            "OBJECT1_TAGS",
             "OBJECT1_IFACE",
+            "OBJECT1_DESCR",
+            "OBJECT1_SPEED",
+            "OBJECT2_ADMIN_DOMAIN",
             "OBJECT2_NAME",
             "OBJECT2_ADDRESS",
+            "OBJECT2_PLATFORM",
+            "OBJECT2_SEGMENT",
+            "OBJECT2_TAGS",
             "OBJECT2_IFACE",
+            "OBJECT2_DESCR",
+            "OBJECT2_SPEED",
             "LINK_PROTO",
-            "LAST_SEEN"
+            "LAST_SEEN",
         ]
 
         if columns:
@@ -148,11 +219,9 @@ class ReportLinkDetailApplication(ExtApplication):
                     continue
         else:
             cmap = list(range(len(cols)))
-
         r = [translate_row(header_row, cmap)]
         if "interface_type_count" in columns.split(","):
             r[-1].extend(type_columns)
-
         # self.logger.info(r)
         # self.logger.info("---------------------------------")
         # print("-----------%s------------%s" % (administrative_domain, columns))
@@ -182,46 +251,78 @@ class ReportLinkDetailApplication(ExtApplication):
         mos_id = list(mos.values_list("id", flat=True))
 
         rld = ReportLinksDetail(mos_id)
-        mo_resolv = dict((mo[0], mo[1:]) for mo in ManagedObject.objects.filter().values_list(
-            "id", "administrative_domain__name", "name", "address"))
+        mo_resolv = dict(
+            (mo[0], mo[1:])
+            for mo in ManagedObject.objects.filter().values_list(
+                "id",
+                "administrative_domain__name",
+                "name",
+                "address",
+                "segment",
+                "platform",
+                "tags",
+            )
+        )
 
         for link in rld.out:
             if len(rld.out[link]) != 2:
                 # Multilink or bad link
                 continue
             s1, s2 = rld.out[link]
-            r += [translate_row(row([
-                mo_resolv[s1["mo"][0]][0],
-                mo_resolv[s1["mo"][0]][1],
-                mo_resolv[s1["mo"][0]][2],
-                s1["iface_n"][0],
-                mo_resolv[s2["mo"][0]][1],
-                mo_resolv[s2["mo"][0]][2],
-                s2["iface_n"][0],
-                s1.get("dis_method", ""),
-                s1.get("last_seen", "")
-            ]), cmap)]
-
+            seg1, seg2 = None, None
+            if "object1_segment" in columns.split(",") or "object2_segment" in columns.split(","):
+                seg1, seg2 = mo_resolv[s1["mo"][0]][3], mo_resolv[s2["mo"][0]][3]
+            plat1, plat2 = None, None
+            if "object1_platform" in columns.split(",") or "object2_platform" in columns.split(","):
+                plat1, plat2 = mo_resolv[s1["mo"][0]][4], mo_resolv[s2["mo"][0]][4]
+            r += [
+                translate_row(
+                    row(
+                        [
+                            mo_resolv[s1["mo"][0]][0],
+                            mo_resolv[s1["mo"][0]][1],
+                            mo_resolv[s1["mo"][0]][2],
+                            "" if not plat1 else Platform.get_by_id(plat1),
+                            "" if not seg1 else NetworkSegment.get_by_id(seg1),
+                            ";".join(mo_resolv[s1["mo"][0]][5]),
+                            s1["iface_n"][0],
+                            s1.get("iface_descr")[0] if s1.get("iface_descr") else "",
+                            s1.get("iface_speed")[0] if s1.get("iface_speed") else 0,
+                            mo_resolv[s2["mo"][0]][0],
+                            mo_resolv[s2["mo"][0]][1],
+                            mo_resolv[s2["mo"][0]][2],
+                            "" if not plat2 else Platform.get_by_id(plat2),
+                            "" if not seg2 else NetworkSegment.get_by_id(seg2),
+                            ";".join(mo_resolv[s2["mo"][0]][5]),
+                            s2["iface_n"][0],
+                            s2.get("iface_descr")[0] if s2.get("iface_descr") else "",
+                            s2.get("iface_speed")[0] if s2.get("iface_speed") else 0,
+                            s2.get("dis_method", ""),
+                            s2.get("last_seen", ""),
+                        ]
+                    ),
+                    cmap,
+                )
+            ]
         filename = "links_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % filename
-            writer = csv.writer(response, dialect='excel', delimiter=';')
+            response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
+            writer = csv.writer(response, dialect="excel", delimiter=",", quoting=csv.QUOTE_MINIMAL)
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            # with tempfile.NamedTemporaryFile(mode="wb") as f:
-            #    wb = xlsxwriter.Workbook(f.name)
-            response = StringIO.StringIO()
+            response = StringIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Objects")
             max_column_data_length = {}
             for rn, x in enumerate(r):
                 for cn, c in enumerate(x):
-                    if rn and (r[0][cn] not in max_column_data_length
-                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                    if rn and (
+                        r[0][cn] not in max_column_data_length
+                        or len(str(c)) > max_column_data_length[r[0][cn]]
+                    ):
                         max_column_data_length[r[0][cn]] = len(str(c))
                     ws.write(rn, cn, c, cf1)
             # for
@@ -235,11 +336,9 @@ class ReportLinkDetailApplication(ExtApplication):
                 ws.set_column(cn, cn, width=width)
             wb.close()
             response.seek(0)
-            response = HttpResponse(response.getvalue(),
-                                    content_type="application/vnd.ms-excel")
+            response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
             # response = HttpResponse(
             #     content_type="application/x-ms-excel")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
+            response["Content-Disposition"] = 'attachment; filename="%s.xlsx"' % filename
             response.close()
             return response
