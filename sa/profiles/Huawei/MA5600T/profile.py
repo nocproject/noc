@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -35,11 +36,10 @@ class Profile(BaseProfile):
         (r"\{ groupindex\<K\>\|<cr> \}\:", "\n"),
         (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n"),
         # The ONT automatic loading policy will be deleted
-        (r"\s*Are you sure to proceed\(y/n\)\[[yn]\]", "y\n")
+        (r"\s*Are you sure to proceed\(y/n\)\[[yn]\]", "y\n"),
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
-    pattern_prompt = \
-        r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
     pattern_operation_error = "Configuration console time out, please retry to log on"
     # Found on MA5616, V800R015C10
@@ -54,34 +54,29 @@ class Profile(BaseProfile):
     command_exit = "quit\ny\n"
     rogue_chars = ["\xff", "\r"]
     config_tokenizer = "indent"
-    config_tokenizer_settings = {
-        "line_comment": "#"
-    }
+    config_tokenizer_settings = {"line_comment": "#"}
 
-    matchers = {
-        "is_gpon_uplink": {
-            "platform": {
-                "$in": ["MA5626G"]
-            }
-        }
-    }
+    matchers = {"is_gpon_uplink": {"platform": {"$in": ["MA5626G"]}}}
 
     rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
     rx_ports = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
         r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_splitter = re.compile(r"\s*\-+\n")
 
     @staticmethod
     def get_board_type(name):
-        if "GP" in name or "XGB" in name:
+        if "EP" in name or "GP" in name or "XGB" in name:
             return "GPON"
         elif "ETH" in name or "X2C" in name or "GIC" in name or "X1C" in name:
             return "Ethernet"
-        elif "CU" in name:
+        elif "CU" in name or "IPMB" in name:
             return "Control"
-        return "unknown"
+        elif "AD" in name or "CS" in name:
+            return "ADSL"
+        return None
 
     def get_board(self, script):
         r = []
@@ -96,7 +91,7 @@ class Profile(BaseProfile):
             if board:
                 name, status = board.split(None, 2)[:2]
                 board_type = self.get_board_type(name)
-                r += [{"num": num, "name": name, "status": status, "type": board_type}]
+                r += [{"num": int(num), "name": name, "status": status, "type": board_type}]
             slots += 1
         return slots, r
 
@@ -120,7 +115,11 @@ class Profile(BaseProfile):
         for match in self.rx_ports.finditer(v):
             i += 1
             t = match.group("type")
-            s[match.group("port")] = match.group("state").lower() in ["online", "activated", "registered"]
+            s[match.group("port")] = match.group("state").lower() in [
+                "online",
+                "activated",
+                "registered",
+            ]
         return {"n": i, "t": t, "s": s}
 
     def fill_ports(self, script):
@@ -145,6 +144,21 @@ class Profile(BaseProfile):
             return self.rx_port_name.findall(interface)[0][1]
         return interface
 
+    INTERFACE_TYPES = {
+        "meth": "management",
+        "null": "null",
+        "loop": "loopback",
+        "vlan": "SVI",
+        "seri": "physical",
+        "adsl": "physical",
+        "gpon": "physical",
+        "vdsl": "physical",
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:4].lower())
+
     @staticmethod
     def update_dict(s, d):
         for k in d:
@@ -158,7 +172,7 @@ class Profile(BaseProfile):
         for line in table.splitlines():
             # parse table row
             if len(line) - len(line.lstrip()) - 2:
-                line = line[len(line) - len(str.lstrip(line)) - 2:]
+                line = line[len(line) - len(str.lstrip(line)) - 2 :]
             i = 0
             field = {}
             for num in sorted(header):
