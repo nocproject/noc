@@ -56,7 +56,7 @@ Ext.define("NOC.inv.reportlinkdetail.Application", {
             }
         ],
         storeData: [
-            ["admin_domain", __("Admin. Domain"), true],
+            ["object1_admin_domain", __("Admin. Domain"), true],
             ["object1_name", __("Object1 Name"), true],
             ["object1_address", __("IP1"), true],
             ["object1_platform", __("Object1 Platform"), false],
