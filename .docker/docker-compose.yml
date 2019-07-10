@@ -92,6 +92,14 @@ services:
         condition: service_started
       nsqd:
         condition: service_started
+      telnetd:
+        condition: service_started
+      sshd:
+        condition: service_started
+      dropbear:
+        condition: service_started
+      snmpd:
+        condition: service_started
     command: >
       sh -c "set -xe
       && /usr/bin/python ./scripts/deploy/install-packages requirements/collections.json
@@ -115,6 +123,14 @@ services:
       clickhouse:
         condition: service_started
       nsqd:
+        condition: service_started
+      telnetd:
+        condition: service_started
+      sshd:
+        condition: service_started
+      dropbear:
+        condition: service_started
+      snmpd:
         condition: service_started
     command: >
       sh -c "
@@ -164,3 +180,19 @@ services:
 
   redis:
     image: redis:5-alpine
+
+  sshd:
+    image: "registry.getnoc.com/infrastructure/tests/testsshd:master"
+    command: /usr/sbin/sshd -D -e -4
+
+  dropbear:
+    image: "registry.getnoc.com/infrastructure/tests/testdropbear:master"
+    command: /usr/sbin/dropbear -F -E
+
+  telnetd:
+    image: "registry.getnoc.com/infrastructure/tests/testtelnetd:master"
+    command: /usr/sbin/telnetd -F
+
+  snmpd:
+    image: "registry.getnoc.com/infrastructure/tests/testsnmpd:master"
+    command: "/usr/sbin/snmpd -f -Lo: -d -a udp:161"

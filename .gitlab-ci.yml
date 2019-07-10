@@ -11,7 +11,7 @@ check labels:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA))
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA)
     - python ./scripts/check-labels.py $FLIST
   only:
     - merge_requests
@@ -23,7 +23,7 @@ flake8:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -42,7 +42,7 @@ black:
   image: registry.getnoc.com/infrastructure/black:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -63,7 +63,7 @@ xenon:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - x=0
     - >
       if [ ! -z "$FLIST" ];
@@ -85,7 +85,7 @@ pylint:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -104,7 +104,7 @@ pylint3k:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -123,7 +123,7 @@ bandit:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -154,7 +154,7 @@ futurize:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - /bin/future.sh "$FLIST"
   only:
     - merge_requests
@@ -165,7 +165,7 @@ futurize stage2:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - /bin/future2.sh "$FLIST"
   only:
     - merge_requests
@@ -212,6 +212,7 @@ Test code:
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
   script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - >
       docker-compose
       -f .docker/docker-compose.yml
@@ -245,6 +246,7 @@ Test python 3:
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
   script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     # see docker/docker-compose.yml for complete list of migrations
     - >
       docker-compose
