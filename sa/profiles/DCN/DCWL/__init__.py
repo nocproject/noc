@@ -17,20 +17,28 @@ class Profile(BaseProfile):
     command_more = "\n"
     command_submit = "\n"
     command_exit = "exit"
+    pattern_syntax_error = r"Invalid command\."
+
+    matchers = {"is_wl8200": {"platform": {"$regex": "WL8200.+"}}}
 
     class shell(object):
         """Switch context manager to use with "with" statement"""
 
         def __init__(self, script):
             self.script = script
+            self.on_session = False
 
         def __enter__(self):
             """Enter switch context"""
-            self.script.cli("shell")
+            try:
+                self.script.cli("shell")
+                self.on_session = True
+            except self.script.CLISyntaxError:
+                pass
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             """Leave switch context"""
-            if exc_type is None:
+            if exc_type is None and self.on_session:
                 self.script.cli("exit\r")
 
     INTERFACE_TYPES = {
