@@ -14,6 +14,7 @@ import cachetools
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.profile.checker import ProfileChecker
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+from noc.sa.models.profile import Profile
 
 rules_lock = threading.Lock()
 
@@ -37,7 +38,7 @@ class ProfileCheck(DiscoveryCheck):
             self.logger.info("Profile is correct: %s", profile)
         else:
             self.logger.info(
-                "Profile change detected: %s -> %s. " "Fixing database, resetting platform info",
+                "Profile change detected: %s -> %s. Fixing database, resetting platform info",
                 self.object.profile.name,
                 profile.name,
             )
@@ -81,7 +82,9 @@ class ProfileCheck(DiscoveryCheck):
             return profile
         # Report problem
         self.set_problem(
-            alarm_class="Discovery | Guess | Profile", message=checker.get_error(), fatal=False
+            alarm_class="Discovery | Guess | Profile",
+            message=checker.get_error(),
+            fatal=self.object.profile.id == Profile.get_generic_profile_id(),
         )
         self.logger.debug("Result %s" % self.job.problems)
         return None
