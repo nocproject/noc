@@ -164,7 +164,7 @@ class ReportLinkDetailApplication(ExtApplication):
         type_columns = ["Up/10G", "Up/1G", "Up/100M", "Down/-", "-"]
 
         cols = [
-            "admin_domain",
+            "object1_admin_domain",
             # "id",
             "object1_name",
             "object1_address",
@@ -188,7 +188,7 @@ class ReportLinkDetailApplication(ExtApplication):
         ]
 
         header_row = [
-            "ADMIN_DOMAIN",
+            "OBJECT1_ADMIN_DOMAIN",
             "OBJECT1_NAME",
             "OBJECT1_ADDRESS",
             "OBJECT1_PLATFORM",
@@ -308,7 +308,7 @@ class ReportLinkDetailApplication(ExtApplication):
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
             response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
-            writer = csv.writer(response, dialect="excel", delimiter=";")
+            writer = csv.writer(response, dialect="excel", delimiter=",", quoting=csv.QUOTE_MINIMAL)
             writer.writerows(r)
             return response
         elif o_format == "xlsx":

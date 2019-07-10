@@ -187,12 +187,10 @@ class ReportMetricsDetailApplication(ExtApplication):
             from_date = datetime.datetime.now() - datetime.timedelta(days=1)
         else:
             from_date = datetime.datetime.strptime(from_date, "%d.%m.%Y")
-
         if not to_date or from_date == to_date:
             to_date = from_date + datetime.timedelta(days=1)
         else:
             to_date = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
-
         # interval = (to_date - from_date).days
         ts_from_date = time.mktime(from_date.timetuple())
         ts_to_date = time.mktime(to_date.timetuple())
@@ -314,7 +312,6 @@ class ReportMetricsDetailApplication(ExtApplication):
                     str(NetworkSegment.get_by_id(row[5])) if row[5] else "",
                 ]
             )
-
         url = report_map[reporttype].get("url", "")
         report_metric = self.metric_source[reporttype](
             tuple(sorted(moss)), from_date, to_date, columns=None
@@ -344,11 +341,11 @@ class ReportMetricsDetailApplication(ExtApplication):
                 # res += [url % d_url, interval]
                 res.insert(columns_order.index("interface_load_url"), url % d_url)
             r += [res]
-
+        filename = "metrics_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = 'attachment; filename="metrics.csv"'
-            writer = csv.writer(response)
+            response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
+            writer = csv.writer(response, dialect="excel", delimiter=",", quoting=csv.QUOTE_MINIMAL)
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
@@ -376,6 +373,6 @@ class ReportMetricsDetailApplication(ExtApplication):
             wb.close()
             response.seek(0)
             response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
-            response["Content-Disposition"] = 'attachment; filename="metrics.xlsx"'
+            response["Content-Disposition"] = 'attachment; filename="%s.xlsx"' % filename
             response.close()
             return response
