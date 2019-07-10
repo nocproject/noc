@@ -85,14 +85,14 @@ class ReportLatestChangesApplication(SimpleReport):
                 n_map = {
                     x[0]: x[1:]
                     for x in ManagedObject.objects.filter(id__in=list(seen_ids)).values_list(
-                        "id", "name", "profile"
+                        "id", "name", "address", "profile"
                     )
                 }
             elif repo == "dns":
                 n_map = {
                     x[0]: x[1:]
                     for x in DNSZone.objects.filter(id__in=list(seen_ids)).values_list(
-                        "id", "name", "profile"
+                        "id", "name", "address", "profile"
                     )
                 }
             for d in data:
@@ -102,7 +102,13 @@ class ReportLatestChangesApplication(SimpleReport):
                 ]
         return self.from_dataset(
             title="%s: %s in %d days" % (self.title, repo, days),
-            columns=["ID", "Name", "Profile", TableColumn(_("Last Changed"), format="datetime")],
+            columns=[
+                "ID",
+                "Name",
+                "Address",
+                "Profile",
+                TableColumn(_("Last Changed"), format="datetime"),
+            ],
             data=result,
             enumerate=True,
         )
