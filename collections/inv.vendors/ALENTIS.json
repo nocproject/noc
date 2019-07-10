@@ -1,0 +1,8 @@
+{
+    "name": "Alentis",
+    "uuid": "d0051177-74b7-430d-9d33-dfd2ad2aa91b",
+    "full_name": "Alentis Electronics",
+    "code": ["ALENTIS"],
+    "site": "http://www.netping.ru",
+    "$collection": "inv.vendors"
+}

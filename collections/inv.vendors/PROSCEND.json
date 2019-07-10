@@ -1,0 +1,8 @@
+{
+    "name": "Proscend",
+    "uuid": "82467bb1-31c9-4553-b1e6-efe911040458",
+    "full_name": "Proscend Communications",
+    "code": ["PROSCEND"],
+    "site": "https://www.proscend.com",
+    "$collection": "inv.vendors"
+}

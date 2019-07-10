@@ -1,0 +1,8 @@
+{
+    "name": "Alstec",
+    "uuid": "ebbc01ea-a069-46e7-9af3-3ecb2f6e27c1",
+    "full_name": "ALSTEC",
+    "code": ["ALSTEC"],
+    "site": "http://www.alstec.ru",
+    "$collection": "inv.vendors"
+}

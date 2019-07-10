@@ -1,0 +1,8 @@
+{
+    "name": "Bradbury",
+    "uuid": "c9a81ba1-7958-4ad5-9dbc-f15ef574e33d",
+    "full_name": "Bradbury Lab.",
+    "code": ["BRADBURY"],
+    "site": "https://bradburylab.com/",
+    "$collection": "inv.vendors"
+}

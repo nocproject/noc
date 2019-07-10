@@ -1,0 +1,8 @@
+{
+    "name": "NextIO",
+    "uuid": "7e51190a-9587-4a5b-a89f-69326d6d3835",
+    "full_name": "NextIO",
+    "code": ["NEXTIO"],
+    "site": "https://en.wikipedia.org/wiki/NextIO",
+    "$collection": "inv.vendors"
+}

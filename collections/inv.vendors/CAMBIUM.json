@@ -1,0 +1,8 @@
+{
+    "name": "Cambium",
+    "uuid": "aaded206-4569-43ec-9602-c0078a2bf66b",
+    "full_name": "Cambium Networks",
+    "code": ["CAMBIUM"],
+    "site": "https://www.cambiumnetworks.com/",
+    "$collection": "inv.vendors"
+}

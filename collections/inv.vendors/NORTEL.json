@@ -1,0 +1,8 @@
+{
+    "name": "Nortel",
+    "uuid": "173742b0-7409-4a6e-acb7-cd6cb037621c",
+    "full_name": "Nortel",
+    "code": ["NORTEL"],
+    "site": "https://en.wikipedia.org/wiki/Nortel",
+    "$collection": "inv.vendors"
+}
