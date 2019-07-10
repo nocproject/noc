@@ -9,11 +9,13 @@
 # Python modules
 from __future__ import print_function
 import argparse
+import os
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
+from noc.core.fileutils import safe_rewrite
 
 
 class Command(BaseCommand):
@@ -52,6 +54,12 @@ class Command(BaseCommand):
         subparsers.add_parser("compress", help="Apply compression")
         # stats command
         subparsers.add_parser("stats", help="Show stats")
+        # mirror command
+        sp_mirr = subparsers.add_parser("mirror", help="Mirror repo")
+        sp_mirr.add_argument(
+            "--split", action="store_true", default=False, help="Add pool name to path"
+        )
+        sp_mirr.add_argument("--path", help="Path to folder", default="/tmp/cfg_mirror")
 
     def out(self, msg):
         if not self.verbose_level:
@@ -110,6 +118,29 @@ class Command(BaseCommand):
         self.print("Revisions: %d (%.2f rev/object)" % (rev_count, float(rev_count) / obj_count))
         self.print("Chunks   : %d" % chunks_count)
         self.print("Size     : %d (%d bytes/object)" % (ssize, int(ssize / obj_count)))
+
+    def handle_mirror(self, split=False, path=None, *args, **options):
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.main.models.pool import Pool
+
+        mirror = os.path.realpath(path)
+        self.print("Mirroring to %s" % path)
+        if self.repo == "config":
+            for o_id, address, pool in self.progress(
+                ManagedObject.objects.filter().values_list("id", "address", "pool")
+            ):
+                pool = Pool.get_by_id(pool)
+                data = self.vcs.get(self.clean_id(o_id))
+                if data:
+                    if split:
+                        mpath = os.path.realpath(os.path.join(mirror, str(pool), str(address)))
+                    else:
+                        mpath = os.path.realpath(os.path.join(mirror, str(address)))
+                    if mpath.startswith(mirror):
+                        safe_rewrite(mpath, data)
+                    else:
+                        self.print("    !!! mirror path violation for" % address)
+        self.print("Done")
 
 
 if __name__ == "__main__":
