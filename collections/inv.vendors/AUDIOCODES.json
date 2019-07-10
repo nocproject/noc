@@ -1,0 +1,8 @@
+{
+    "name": "Audiocodes",
+    "uuid": "ad9f4479-1635-4335-af9a-0478b13f396d",
+    "full_name": "AudioCodes",
+    "code": ["AUDIOCODES"],
+    "site": "https://www.audiocodes.com/",
+    "$collection": "inv.vendors"
+}

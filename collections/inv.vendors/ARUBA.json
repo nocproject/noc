@@ -1,0 +1,8 @@
+{
+    "name": "Aruba",
+    "uuid": "d554852d-ed23-4698-b9b9-08bbce594208",
+    "full_name": "Aruba",
+    "code": ["ARUBA"],
+    "site": "https://www.arubanetworks.com/",
+    "$collection": "inv.vendors"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Ubiquiti",
+    "uuid": "cba09f1a-e651-484a-afc2-45fdd84ea095",
+    "full_name": "Ubiquiti Networks",
+    "code": ["UBIQUITI"],
+    "site": "https://www.ui.com",
+    "$collection": "inv.vendors"
+}

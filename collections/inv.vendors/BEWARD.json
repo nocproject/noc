@@ -1,0 +1,8 @@
+{
+    "name": "Beward",
+    "uuid": "0cae9e70-c15c-415e-9e8a-da505308aaa8",
+    "full_name": "BEWARD",
+    "code": ["BEWARD"],
+    "site": "https://www.beward.ru/",
+    "$collection": "inv.vendors"
+}

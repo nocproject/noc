@@ -1,0 +1,8 @@
+{
+    "name": "Ruckus",
+    "uuid": "11fb1584-1ff7-4a69-b58c-46831651c616",
+    "full_name": "Ruckus",
+    "code": ["RUCKUS"],
+    "site": "https://www.commscope.com",
+    "$collection": "inv.vendors"
+}

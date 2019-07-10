@@ -1,0 +1,8 @@
+{
+    "name": "Axis",
+    "uuid": "86c8a2f3-8b96-4e61-b633-c4328591eeef",
+    "full_name": "Axis Communications",
+    "code": ["AXIS"],
+    "site": "https://www.axis.com/",
+    "$collection": "inv.vendors"
+}

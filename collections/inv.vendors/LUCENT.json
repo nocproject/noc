@@ -1,0 +1,8 @@
+{
+    "name": "Lucent",
+    "uuid": "a45221ed-7554-4bad-9e73-4c2b5506550d",
+    "full_name": "Lucent Technologies",
+    "code": ["LUCENT"],
+    "site": "https://www.nokia.com",
+    "$collection": "inv.vendors"
+}
