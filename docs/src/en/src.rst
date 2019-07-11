@@ -7,4 +7,4 @@ Source Code Reference
 .. toctree::
     :titlesonly:
 
-    /src/noc
+    /src/noc/index
