@@ -17,7 +17,9 @@ services:
     environment:
       NOC_SRC_PATH: /noc
     working_dir: /noc
-    command: sh -c "mkdir -p docs/src/en/src build/docs/en && sphinx-build -a -E -j auto -b html docs/src/en build/docs/en"
+    command: > 
+      sh -c "mkdir -p docs/src/en/src build/docs/en 
+             && sphinx-build -a -E -j auto -b html docs/src/en build/docs/en"
 
   html-en-inc:
     image: "registry.getnoc.com/infrastructure/docs:master"
