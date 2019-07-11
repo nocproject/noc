@@ -8,8 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
-from ..box.prefix import (PrefixCheck as BasePrefixCheck,
-                          DiscoveredPrefix, SRC_WHOIS_ROUTE)
+from ..box.prefix import PrefixCheck as BasePrefixCheck, DiscoveredPrefix, SRC_WHOIS_ROUTE
 
 
 class PrefixCheck(BasePrefixCheck):
@@ -17,10 +16,7 @@ class PrefixCheck(BasePrefixCheck):
         # vpn_id, prefix => DiscoveredPrefix
         prefixes = {}
         #
-        prefixes = self.apply_prefixes(
-            prefixes,
-            self.get_whois_route_prefixes()
-        )
+        prefixes = self.apply_prefixes(prefixes, self.get_whois_route_prefixes())
         return prefixes
 
     def get_whois_route_prefixes(self):
@@ -41,7 +37,7 @@ class PrefixCheck(BasePrefixCheck):
                 source=SRC_WHOIS_ROUTE,
                 subinterface=None,
                 vlan=None,
-                asn=self.object
+                asn=self.object,
             )
             for prefix, description in prefixes
         ]

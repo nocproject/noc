@@ -9,16 +9,19 @@
 # Python modules
 from __future__ import absolute_import
 import sys
+
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 import six
+
 # NOC modules
 from .loader import get_dcs_url, get_dcs_class
 
 
-def resolve(name, hint=None, wait=True, timeout=None,
-            full_result=False, near=False, critical=False):
+def resolve(
+    name, hint=None, wait=True, timeout=None, full_result=False, near=False, critical=False
+):
     """
     Returns *hint* when service is active or new service
     instance,
@@ -30,22 +33,27 @@ def resolve(name, hint=None, wait=True, timeout=None,
     :param near:
     :return:
     """
+
     @tornado.gen.coroutine
     def _resolve():
         try:
             if near:
                 r = yield dcs.resolve_near(
-                    name, hint=hint, wait=wait,
+                    name,
+                    hint=hint,
+                    wait=wait,
                     timeout=timeout,
                     full_result=full_result,
-                    critical=critical
+                    critical=critical,
                 )
             else:
                 r = yield dcs.resolve(
-                    name, hint=hint, wait=wait,
+                    name,
+                    hint=hint,
+                    wait=wait,
                     timeout=timeout,
                     full_result=full_result,
-                    critical=critical
+                    critical=critical,
                 )
             result.append(r)
         except tornado.gen.Return as e:

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import operator
+
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
@@ -27,33 +28,26 @@ class SegmentCard(BaseCard):
         if self.current_user.is_superuser:
             return NetworkSegment.objects.get(id=id)
         else:
-            return NetworkSegment.objects.get(
-                id=id,
-                adm_domains__in=self.get_user_domains()
-            )
+            return NetworkSegment.objects.get(id=id, adm_domains__in=self.get_user_domains())
 
     def get_data(self):
         # Calculate contained objects
         summary = {
             "service": SummaryItem.items_to_dict(self.object.total_services),
-            "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
+            "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers),
         }
         objects = []
         for mo in self.object.managed_objects.filter(is_managed=True):
             ss = ServiceSummary.get_object_summary(mo)
-            objects += [{
-                "id": mo.id,
-                "name": mo.name,
-                "object": mo,
-                "summary": ss
-            }]
+            objects += [{"id": mo.id, "name": mo.name, "object": mo, "summary": ss}]
         # Update object statuses
         mos = [o["id"] for o in objects]
-        alarms = set(d["managed_object"] for d in ActiveAlarm._get_collection().find({
-            "managed_object": {
-                "$in": mos
-            }
-        }, {"_id": 0, "managed_object": 1}))
+        alarms = set(
+            d["managed_object"]
+            for d in ActiveAlarm._get_collection().find(
+                {"managed_object": {"$in": mos}}, {"_id": 0, "managed_object": 1}
+            )
+        )
         o_status = ObjectStatus.get_statuses(mos)
         for o in objects:
             if o["id"] in o_status:
@@ -66,15 +60,17 @@ class SegmentCard(BaseCard):
         # Calculate children
         children = []
         for ns in NetworkSegment.objects.filter(parent=self.object.id):
-            children += [{
-                "id": ns.id,
-                "name": ns.name,
-                "object": ns,
-                "summary": {
-                    "service": SummaryItem.items_to_dict(ns.total_services),
-                    "subscriber": SummaryItem.items_to_dict(ns.total_subscribers),
+            children += [
+                {
+                    "id": ns.id,
+                    "name": ns.name,
+                    "object": ns,
+                    "summary": {
+                        "service": SummaryItem.items_to_dict(ns.total_services),
+                        "subscriber": SummaryItem.items_to_dict(ns.total_subscribers),
+                    },
                 }
-            }]
+            ]
         # Calculate VLANs
         vlans = []
         if self.object.vlan_border:
@@ -86,5 +82,5 @@ class SegmentCard(BaseCard):
             "children": sorted(children, key=operator.itemgetter("name")),
             "parent": self.object.parent,
             "summary": summary,
-            "vlans": vlans
+            "vlans": vlans,
         }

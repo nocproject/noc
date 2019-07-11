@@ -16,10 +16,9 @@ class FirmwareApplication(ExtDocApplication):
     """
     Firmware application
     """
+
     title = _("Firmware")
     menu = [_("Setup"), _("Firmware")]
     model = Firmware
-    query_fields = [
-        "version__icontains"
-    ]
+    query_fields = ["version__icontains"]
     default_ordering = ["full_name"]

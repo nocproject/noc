@@ -9,20 +9,21 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
-@on_delete_check(check=[
-    ("main.CustomField", "enum_group"),
-    ("main.CustomFieldEnumValue", "enum_group")
-])
+@on_delete_check(
+    check=[("main.CustomField", "enum_group"), ("main.CustomFieldEnumValue", "enum_group")]
+)
 @six.python_2_unicode_compatible
 class CustomFieldEnumGroup(NOCModel):
     """
     Enumeration groups for custom fields
     """
+
     class Meta(object):
         verbose_name = "Enum Group"
         verbose_name_plural = "Enum Groups"

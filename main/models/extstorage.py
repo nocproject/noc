@@ -9,6 +9,7 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
@@ -16,24 +17,23 @@ from mongoengine.fields import StringField
 from fs import open_fs
 from fs.errors import FSError
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("sa.ManagedObjectProfile", "config_mirror_storage"),
-    ("sa.ManagedObjectProfile", "beef_storage"),
-    ("sa.ManagedObjectProfile", "config_download_storage")
-])
+@on_delete_check(
+    check=[
+        ("sa.ManagedObjectProfile", "config_mirror_storage"),
+        ("sa.ManagedObjectProfile", "beef_storage"),
+        ("sa.ManagedObjectProfile", "config_download_storage"),
+    ]
+)
 @six.python_2_unicode_compatible
 class ExtStorage(Document):
-    meta = {
-        "collection": "extstorages",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "extstorages", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     url = StringField()
@@ -44,7 +44,7 @@ class ExtStorage(Document):
             ("config_upload", "Config Upload"),
             ("beef", "Beef"),
             ("beef_test", "Beef Test"),
-            ("beef_test_config", "Beef Test Config")
+            ("beef_test_config", "Beef Test Config"),
         ]
     )
 

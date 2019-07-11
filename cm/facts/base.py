@@ -22,9 +22,9 @@ class BaseFact(object):
         self.managed_object = None
 
     def dump(self):
-        print ("- %s:" % self.__class__.__name__)
+        print("- %s:" % self.__class__.__name__)
         for a in self.iter_attrs():
-            print ("    %s: %s" % (a, getattr(self, a)))
+            print("    %s: %s" % (a, getattr(self, a)))
 
     @property
     def cls(self):

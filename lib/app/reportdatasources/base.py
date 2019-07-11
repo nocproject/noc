@@ -103,7 +103,7 @@ class BaseReportColumn(object):
             # Supported builtin sorted.
             for v in self.extract():
                 if v[0] < prev_id:  # Todo
-                    print ("Detect unordered stream")
+                    print("Detect unordered stream")
                     raise StopIteration("Detect unordered stream")
                 yield v
                 prev_id = v[0]

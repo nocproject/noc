@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from builtins import range, object
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
@@ -23,21 +25,23 @@ from .vcfilter import VCFilter
 
 @on_save
 @on_delete
-@on_delete_check(check=[
-    ("inv.Interface", "vc_domain"),
-    ("sa.ManagedObject", "vc_domain"),
-    ("sa.ManagedObjectSelector", "filter_vc_domain"),
-    ("vc.VC", "vc_domain"),
-    ("vc.VCBindFilter", "vc_domain"),
-    ("vc.VCDomainProvisioningConfig", "vc_domain"),
-], ignore=[
-    ("inv.MACDB", "vc_domain")
-])
+@on_delete_check(
+    check=[
+        ("inv.Interface", "vc_domain"),
+        ("sa.ManagedObject", "vc_domain"),
+        ("sa.ManagedObjectSelector", "filter_vc_domain"),
+        ("vc.VC", "vc_domain"),
+        ("vc.VCBindFilter", "vc_domain"),
+        ("vc.VCDomainProvisioningConfig", "vc_domain"),
+    ],
+    ignore=[("inv.MACDB", "vc_domain")],
+)
 @six.python_2_unicode_compatible
 class VCDomain(NOCModel):
     """
     Virtual circuit domain, allows to separate unique VC spaces
     """
+
     class Meta(object):
         verbose_name = "VC Domain"
         verbose_name_plural = "VC Domains"
@@ -47,14 +51,10 @@ class VCDomain(NOCModel):
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", blank=True, null=True)
     type = models.ForeignKey(VCType, verbose_name="Type", on_delete=models.CASCADE)
-    enable_provisioning = models.BooleanField(
-        "Enable Provisioning", default=False)
-    enable_vc_bind_filter = models.BooleanField(
-        "Enable VC Bind filter", default=False)
+    enable_provisioning = models.BooleanField("Enable Provisioning", default=False)
+    enable_vc_bind_filter = models.BooleanField("Enable VC Bind filter", default=False)
     style = models.ForeignKey(
-        Style,
-        verbose_name="Style",
-        blank=True, null=True, on_delete=models.CASCADE
+        Style, verbose_name="Style", blank=True, null=True, on_delete=models.CASCADE
     )
 
     def __str__(self):

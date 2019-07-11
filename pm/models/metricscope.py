@@ -10,13 +10,19 @@
 from __future__ import absolute_import, print_function
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField, ListField, EmbeddedDocumentField, UUIDField,
-    BooleanField)
+    StringField,
+    ListField,
+    EmbeddedDocumentField,
+    UUIDField,
+    BooleanField,
+)
 import cachetools
+
 # NOC Modules
 from noc.config import config
 from noc.lib.prettyjson import to_json
@@ -36,10 +42,7 @@ class KeyField(EmbeddedDocument):
         return self.field_name
 
     def to_json(self):
-        return {
-            "field_name": self.field_name,
-            "model": self.model
-        }
+        return {"field_name": self.field_name, "model": self.model}
 
     @property
     def field_type(self):
@@ -57,18 +60,13 @@ class PathItem(EmbeddedDocument):
         return self.name
 
     def to_json(self):
-        v = {
-            "name": self.name,
-            "is_required": bool(self.is_required)
-        }
+        v = {"name": self.name, "is_required": bool(self.is_required)}
         if self.default_value:
             v["default_value"] = self.default_value
         return v
 
 
-@on_delete_check(check=[
-    ("pm.MetricType", "scope")
-])
+@on_delete_check(check=[("pm.MetricType", "scope")])
 @six.python_2_unicode_compatible
 class MetricScope(Document):
     meta = {
@@ -76,7 +74,7 @@ class MetricScope(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "pm.metricscopes",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name"],
     }
 
     name = StringField(unique=True)
@@ -93,8 +91,7 @@ class MetricScope(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return MetricScope.objects.filter(id=id).first()
 
@@ -107,7 +104,7 @@ class MetricScope(Document):
             "table_name": self.table_name,
             "description": self.description,
             "key_fields": [kf.to_json() for kf in self.key_fields],
-            "path": [p.to_json() for p in self.path]
+            "path": [p.to_json() for p in self.path],
         }
         return r
 
@@ -115,10 +112,15 @@ class MetricScope(Document):
         return to_json(
             self.json_data,
             order=[
-                "name", "$collection",
-                "uuid", "table_name",
+                "name",
+                "$collection",
+                "uuid",
+                "table_name",
                 "description",
-                "key_fields", "path"])
+                "key_fields",
+                "path",
+            ],
+        )
 
     def get_json_path(self):
         return "%s.json" % self.name
@@ -151,7 +153,7 @@ class MetricScope(Document):
         r = [
             "CREATE TABLE IF NOT EXISTS %s (" % self._get_raw_db_table(),
             ",\n".join("  %s %s" % (n, t) for n, t in self.iter_fields()),
-            ") ENGINE = MergeTree(date, (%s), 8192)" % ", ".join(pk)
+            ") ENGINE = MergeTree(date, (%s), 8192)" % ", ".join(pk),
         ]
         return "\n".join(r)
 
@@ -160,14 +162,18 @@ class MetricScope(Document):
         Get CREATE TABLE for Distributed engine
         :return:
         """
-        return "CREATE TABLE IF NOT EXISTS %s " \
-               "AS %s " \
-               "ENGINE = Distributed(%s, %s, %s)" % (
-                   self.table_name,
-                   self._get_raw_db_table(),
-                   config.clickhouse.cluster,
-                   config.clickhouse.db, self._get_raw_db_table()
-               )
+        return (
+            "CREATE TABLE IF NOT EXISTS %s "
+            "AS %s "
+            "ENGINE = Distributed(%s, %s, %s)"
+            % (
+                self.table_name,
+                self._get_raw_db_table(),
+                config.clickhouse.cluster,
+                config.clickhouse.db,
+                self._get_raw_db_table(),
+            )
+        )
 
     def _get_raw_db_table(self):
         if config.clickhouse.cluster:
@@ -194,23 +200,23 @@ class MetricScope(Document):
                   database=%s
                   AND table=%s
                 """,
-                [config.clickhouse.db, table_name]
+                [config.clickhouse.db, table_name],
             ):
                 existing[name] = type
             after = None
             for f, t in self.iter_fields():
                 if f not in existing:
                     ch.execute(
-                        post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s" % (
-                            table_name,
-                            f, t,
-                            after)
+                        post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s" % (table_name, f, t, after)
                     )
                     c = True
                 after = f
                 if f in existing and existing[f] != t:
                     print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], t))
-                    print("Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s" % (table_name, f, t))
+                    print(
+                        "Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s"
+                        % (table_name, f, t)
+                    )
             return c
 
         changed = False

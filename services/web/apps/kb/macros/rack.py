@@ -10,8 +10,10 @@
 from __future__ import absolute_import
 import re
 import xml.parsers.expat
+
 # Third-party modules
 from django.utils.html import escape
+
 # NOC modules
 from .base import BaseMacro
 
@@ -22,7 +24,9 @@ def unroll_link(s):
     match = rx_link.match(s)
     if match:
         return "<a href='%s'>%s</a>" % (
-            match.group(2), escape(match.group(1)).replace(r"\n", "<br/>"))
+            match.group(2),
+            escape(match.group(1)).replace(r"\n", "<br/>"),
+        )
     else:
         return s
 
@@ -69,10 +73,11 @@ class RackSet(object):
     #
     def render_html(self):
         if len(self.racks) == 0:  # Empty rackset
-            return u""
+            return ""
         # return "<div>%s</div>"%"\n".join([r.render_html() for r in self.racks])
         self.height = max(
-            [r.height for r in self.racks])  # RackSet height is a maximal height of the racks
+            [r.height for r in self.racks]
+        )  # RackSet height is a maximal height of the racks
         # Fill RackSet matrix
         # RSM is a hash: row -> column -> {"colspan","rowspan","style","text"}
         rsm = {}
@@ -88,8 +93,11 @@ class RackSet(object):
                 for i in range(self.height, rh, -1):
                     rsm[i][j * 2] = None
                     rsm[i][j * 2 + 1] = None
-                rsm[self.height][j * 2] = {"colspan": 2, "rowspan": self.height - rh,
-                                           "class": "emptytop"}
+                rsm[self.height][j * 2] = {
+                    "colspan": 2,
+                    "rowspan": self.height - rh,
+                    "class": "emptytop",
+                }
         # Place allocations
         for j in range(len(self.racks)):
             for position, height, is_empty, allocation in self.compile_allocations(self.racks[j]):
@@ -144,7 +152,7 @@ class RackSet(object):
         if self.label in ["both", "bottom"]:
             out += rack_labels
         out += ["</table>"]
-        return u"\n".join(out)
+        return "\n".join(out)
 
 
 #
@@ -164,8 +172,20 @@ class Rack(object):
 # Rendered to HTML by Rack.render_html
 #
 class Allocation(object):
-    def __init__(self, rack, id, position, height, reserved=False, model="", asset_no="", serial="",
-                 hostname="", description="", href=""):
+    def __init__(
+        self,
+        rack,
+        id,
+        position,
+        height,
+        reserved=False,
+        model="",
+        asset_no="",
+        serial="",
+        hostname="",
+        description="",
+        href="",
+    ):
         self.rack = rack
         self.id = id
         self.position = position
@@ -215,8 +235,18 @@ class Allocation(object):
 
 
 class Slot(object):
-    def __init__(self, allocation, id=None, model="", hostname="", description="", reserved=False,
-                 asset_no="", serial="", href=""):
+    def __init__(
+        self,
+        allocation,
+        id=None,
+        model="",
+        hostname="",
+        description="",
+        reserved=False,
+        asset_no="",
+        serial="",
+        href="",
+    ):
         self.allocation = allocation
         self.id = id
         self.model = model
@@ -263,7 +293,7 @@ class XMLParser(object):
         self.last_rack = None
         self.last_allocation = None
         if not text.startswith("<?"):
-            text = u"<?xml version='1.0' encoding='utf-8' ?>\n" + text  # Add missed XML prolog
+            text = "<?xml version='1.0' encoding='utf-8' ?>\n" + text  # Add missed XML prolog
         self.parser.Parse(unicode(text).encode("utf-8"))
 
     #
@@ -292,7 +322,7 @@ class XMLParser(object):
                 asset_no=attrs.get("assetno", ""),
                 serial=attrs.get("serial", ""),
                 href=attrs.get("href", ""),
-                description=attrs.get("description", "")
+                description=attrs.get("description", ""),
             )
         elif name == "slot":
             Slot(
@@ -304,7 +334,7 @@ class XMLParser(object):
                 asset_no=attrs.get("assetno", ""),
                 serial=attrs.get("serial", ""),
                 href=attrs.get("href", ""),
-                reserved=int(attrs.get("reserved", 0))
+                reserved=int(attrs.get("reserved", 0)),
             )
 
     def end_element(self, name):
@@ -318,6 +348,7 @@ class RackMacro(BaseMacro):
     """
     rack macro. XML contained in macro text
     """
+
     name = "rack"
 
     @classmethod

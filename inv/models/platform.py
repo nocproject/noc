@@ -24,7 +24,7 @@ import cachetools
 from bson.int64 import Int64
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField, DateField
+from noc.core.mongo.fields import PlainReferenceField, DateField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync, new_bi_id
 from noc.lib.prettyjson import to_json

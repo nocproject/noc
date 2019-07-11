@@ -8,10 +8,12 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 from tornado.tcpclient import TCPClient
 import tornado.gen
 import tornado.ioloop
+
 # NOC modules
 from noc.lib.validators import is_fqdn
 
@@ -25,7 +27,7 @@ VERISIGN_MAP = {
     "domain name": "domain",
     "name server": "nserver",
     "creation date": "created",
-    "registry expiry date": "paid-till"
+    "registry expiry date": "paid-till",
 }
 
 

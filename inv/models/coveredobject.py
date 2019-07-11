@@ -17,7 +17,7 @@ from mongoengine.fields import IntField
 # NOC modules
 from .coverage import Coverage
 from noc.inv.models.object import Object
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 
 
 @six.python_2_unicode_compatible
@@ -37,4 +37,4 @@ class CoveredObject(Document):
     object = PlainReferenceField(Object)
 
     def __str__(self):
-        return u"%s %s" % (self.coverage.name, self.object.name or self.object.id)
+        return "%s %s" % (self.coverage.name, self.object.name or self.object.id)

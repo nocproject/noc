@@ -8,6 +8,7 @@
 
 # Third-party modules
 from mongoengine.queryset import Q
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -19,40 +20,31 @@ class PhoneRangeApplication(ExtDocApplication):
     """
     PhoneRange application
     """
+
     title = "Phone Range"
     menu = [_("Phone Ranges")]
     model = PhoneRange
     parent_model = PhoneRange
     parent_field = "parent"
-    query_fields = [
-        "name__icontains",
-        "description__icontains",
-        "from_number__startswith"
-    ]
+    query_fields = ["name__icontains", "description__icontains", "from_number__startswith"]
     resource_group_fields = [
         "static_service_groups",
         "effective_service_groups",
         "static_client_groups",
-        "effective_client_groups"
+        "effective_client_groups",
     ]
 
     def field_total_numbers(self, o):
         return o.total_numbers
 
     def instance_to_lookup(self, o, fields=None):
-        return {
-            "id": str(o.id),
-            "label": unicode(o),
-            "has_children": o.has_children
-        }
+        return {"id": str(o.id), "label": unicode(o), "has_children": o.has_children}
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         def sg_to_list(items):
             return [
-                {
-                    "group": str(x),
-                    "group__label": unicode(ResourceGroup.get_by_id(x))
-                } for x in items
+                {"group": str(x), "group__label": unicode(ResourceGroup.get_by_id(x))}
+                for x in items
             ]
 
         data = super(PhoneRangeApplication, self).instance_to_dict(o, fields, nocustom)
@@ -74,17 +66,15 @@ class PhoneRangeApplication(ExtDocApplication):
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
 
-    @view("^(?P<id>[0-9a-f]{24})/get_path/$",
-          access="read", api=True)
+    @view("^(?P<id>[0-9a-f]{24})/get_path/$", access="read", api=True)
     def api_get_path(self, request, id):
         o = self.get_object_or_404(PhoneRange, id=id)
         path = [PhoneRange.get_by_id(r) for r in o.get_path()]
         return {
-            "data": [{
-                "id": str(p.id),
-                "level": path.index(p) + 1,
-                "label": unicode(p.name)
-            } for p in path]
+            "data": [
+                {"id": str(p.id), "level": path.index(p) + 1, "label": unicode(p.name)}
+                for p in path
+            ]
         }
 
     def get_Q(self, request, query):

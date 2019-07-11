@@ -8,6 +8,7 @@
 
 import logging
 import six
+
 # NOC modules
 from noc.main.models.datasourcecache import DataSourceCache
 from noc.core.perf import metrics
@@ -38,8 +39,7 @@ class BaseDataSource(object):
             # Try to get cached data
             data = DataSourceCache.get_data(self.name)
             if not data:
-                data = ["\t".join(str(x) for x in self.clean(row))
-                        for row in self.extract()]
+                data = ["\t".join(str(x) for x in self.clean(row)) for row in self.extract()]
                 data += [""]
                 data = "\n".join(data)
                 DataSourceCache.set_data(self.name, data, self.ttl)

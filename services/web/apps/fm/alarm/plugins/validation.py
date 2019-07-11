@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from django.template import Template, Context
+
 # NOC modules
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.errortype import ErrorType
@@ -20,14 +22,11 @@ class ValidationPlugin(AlarmPlugin):
     name = "validation"
 
     def get_data(self, alarm, config):
-        r = {
-            "plugins": [("NOC.fm.alarm.plugins.Validation", {})],
-            "validation_errors": []
-        }
+        r = {"plugins": [("NOC.fm.alarm.plugins.Validation", {})], "validation_errors": []}
         t_cache = {}
-        for f in ObjectFact.objects.filter(
-                object=alarm.managed_object.id,
-                cls="error").order_by("introduced"):
+        for f in ObjectFact.objects.filter(object=alarm.managed_object.id, cls="error").order_by(
+            "introduced"
+        ):
             etn = f.attrs.get("type")
             if etn:
                 et = t_cache.get(etn)
@@ -40,13 +39,15 @@ class ValidationPlugin(AlarmPlugin):
                 subject = etn
                 body = etn
 
-            r["validation_errors"] += [{
-                "uuid": str(f.uuid),
-                "introduced": f.introduced.isoformat(),
-                "changed": f.changed.isoformat(),
-                "subject": subject,
-                "body": body,
-                "cls": etn,
-                "attrs": f.attrs
-            }]
+            r["validation_errors"] += [
+                {
+                    "uuid": str(f.uuid),
+                    "introduced": f.introduced.isoformat(),
+                    "changed": f.changed.isoformat(),
+                    "subject": subject,
+                    "body": body,
+                    "cls": etn,
+                    "attrs": f.attrs,
+                }
+            ]
         return r

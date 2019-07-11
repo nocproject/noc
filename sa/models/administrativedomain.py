@@ -97,7 +97,7 @@ class AdministrativeDomain(NOCModel):
             return ad[0]
         return None
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_administrativedomain:
             yield "administrativedomain", self.id
 

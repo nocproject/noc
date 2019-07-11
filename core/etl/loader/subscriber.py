@@ -8,10 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Python modules
 import operator
+
 # Third-party modules
 import cachetools
+
 # NOC modules
 from .base import BaseLoader
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -22,6 +25,7 @@ class SubscriberLoader(BaseLoader):
     """
     Administrative division loader
     """
+
     name = "subscriber"
     model = Subscriber
     fields = [
@@ -31,7 +35,7 @@ class SubscriberLoader(BaseLoader):
         "profile",
         "address",
         "tech_contact_person",
-        "tech_contact_phone"
+        "tech_contact_phone",
     ]
 
     _profile_cache = {}

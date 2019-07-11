@@ -9,6 +9,7 @@
 # Python modules
 import logging
 import time
+
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
@@ -45,12 +46,8 @@ class SyslogServer(UDPServer):
                 priority = int(data[1:idx])
             except ValueError:
                 pass
-            data = data[idx + 1:].strip()
+            data = data[idx + 1 :].strip()
         # Get timestamp
         ts = int(time.time())
         #
-        self.service.register_message(
-            cfg, ts, data,
-            facility=priority >> 3,
-            severity=priority & 7
-        )
+        self.service.register_message(cfg, ts, data, facility=priority >> 3, severity=priority & 7)

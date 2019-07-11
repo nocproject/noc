@@ -12,6 +12,7 @@ from django.db import models
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 import six
 from bson import ObjectId
+
 # NOC Modules
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
@@ -55,6 +56,7 @@ class MACField(models.Field):
     """
     MACField maps to the PostgreSQL MACADDR field
     """
+
     def db_type(self, connection):
         return "MACADDR"
 
@@ -82,6 +84,7 @@ class TextArrayField(models.Field):
     """
     Text Array field maps to PostgreSQL TEXT[] type
     """
+
     def db_type(self, connection):
         return "TEXT[]"
 
@@ -100,7 +103,7 @@ class TextArrayField(models.Field):
         if self.has_default():
             r = []
             for v in self.default:
-                r += ["\"%s\"" % v.replace("\\", "\\\\").replace("\"", "\"\"")]
+                r += ['"%s"' % v.replace("\\", "\\\\").replace('"', '""')]
             return "{%s}" % ",".join(r)
         return ""
 
@@ -109,6 +112,7 @@ class InetArrayField(models.Field):
     """
     INETArrayField maps to PostgreSQL INET[] type
     """
+
     def db_type(self, connection):
         return "INET[]"
 
@@ -131,6 +135,7 @@ class PickledField(models.Field):
     """
     Pickled object
     """
+
     def db_type(self, connection):
         return "BYTEA"
 
@@ -150,6 +155,7 @@ class AutoCompleteTagsField(models.Field):
     """
     Autocomplete tags fields
     """
+
     def db_type(self, connection):
         return "TEXT"
 
@@ -217,14 +223,13 @@ class DocumentReferenceDescriptor(object):
 
     def __set__(self, instance, value):
         if instance is None:
-            raise AttributeError(
-                "%s must be accessed via instance" % self.field.name)
+            raise AttributeError("%s must be accessed via instance" % self.field.name)
         # If null=True, we can assign null here, but otherwise the value needs
         # to be an instance of the related class.
         if value is None and self.field.null is False:
             raise ValueError(
-                "Cannot assign None: \"%s.%s\" does not allow null values." % (
-                    instance._meta.object_name, self.field.name)
+                'Cannot assign None: "%s.%s" does not allow null values.'
+                % (instance._meta.object_name, self.field.name)
             )
         elif value is None or isinstance(value, six.string_types):
             self._reset_cache(instance)
@@ -237,9 +242,9 @@ class DocumentReferenceDescriptor(object):
             value = str(value.id)
         else:
             raise ValueError(
-                "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
-                    value, instance._meta.object_name,
-                    self.field.name, self.field.document))
+                'Cannot assign "%r": "%s.%s" must be a "%s" instance.'
+                % (value, instance._meta.object_name, self.field.name, self.field.document)
+            )
         instance.__dict__[self.name] = value
 
 
@@ -294,14 +299,14 @@ class CachedForeignKeyDescriptor(object):
 class CachedForeignKey(models.ForeignKey):
     def contribute_to_class(self, cls, name, *args, **kwargs):
         super(CachedForeignKey, self).contribute_to_class(cls, name, *args, **kwargs)
-        setattr(cls, self.get_cache_name(),
-                CachedForeignKeyDescriptor(self))
+        setattr(cls, self.get_cache_name(), CachedForeignKeyDescriptor(self))
 
 
 class ObjectIDArrayField(models.Field):
     """
     ObjectIDArrayField maps to PostgreSQL CHAR[] type
     """
+
     def db_type(self, connection):
         return "CHAR(24)[]"
 

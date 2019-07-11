@@ -9,20 +9,22 @@
 # Python modules
 import string
 import six
+
 # Third-party modules
 import tornado.web
 from noc.config import config
 
 if hasattr(string, "maketrans"):
-    TR = string.maketrans(".-\"", "___")
+    TR = string.maketrans('.-"', "___")
 else:
-    TR = str.maketrans(".-\"", "___")
+    TR = str.maketrans('.-"', "___")
 
 
 class MetricsHandler(tornado.web.RequestHandler):
     """
     Prometheus compatible metrics endpoint
     """
+
     def initialize(self, service):
         self.service = service
 
@@ -30,10 +32,7 @@ class MetricsHandler(tornado.web.RequestHandler):
         """
         :return: list
         """
-        labels = {
-            "service": self.service.name,
-            "node": config.node,
-        }
+        labels = {"service": self.service.name, "node": config.node}
         if self.service.pooled:
             labels["pool"] = config.pool
         if hasattr(self.service, "slot_number"):
@@ -41,7 +40,7 @@ class MetricsHandler(tornado.web.RequestHandler):
         out = []
         mdata = self.service.get_mon_data()
         for key in mdata:
-            if key == 'pid':
+            if key == "pid":
                 continue
             metric_name = key
             local_labels = {}
@@ -59,7 +58,9 @@ class MetricsHandler(tornado.web.RequestHandler):
             if hasattr(value, "iter_prom_metrics"):
                 out += list(value.iter_prom_metrics(cleared_name, local_labels))
             else:
-                out_labels = ",".join(['%s="%s"' % (i.lower(), local_labels[i]) for i in local_labels])
+                out_labels = ",".join(
+                    ['%s="%s"' % (i.lower(), local_labels[i]) for i in local_labels]
+                )
                 out += ["# TYPE %s untyped" % cleared_name]
                 out += ["%s{%s} %s" % (cleared_name, out_labels, value)]
         self.add_header("Content-Type", "text/plain; version=0.0.4")

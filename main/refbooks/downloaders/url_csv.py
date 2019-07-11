@@ -10,8 +10,10 @@
 # Python modules
 import csv
 import gzip
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.main.refbooks.downloaders import Downloader as DownloaderBase
 from noc.core.http.client import fetch_sync
@@ -22,6 +24,7 @@ class Downloader(DownloaderBase):
     Download reference book from CSV file
     First line of CSV file is field names
     """
+
     name = "CSV"
 
     @classmethod
@@ -29,13 +32,8 @@ class Downloader(DownloaderBase):
         out = []
         # Fetch data into StringIO wrapper
         url = ref_book.download_url
-        url = url.replace(
-            "http://update.nocproject.org/db/",
-            "https://cdn.nocproject.org/refbook/"
-        )
-        code, headers, body = fetch_sync(
-            url, follow_redirects=True, allow_proxy=True
-        )
+        url = url.replace("http://update.nocproject.org/db/", "https://cdn.nocproject.org/refbook/")
+        code, headers, body = fetch_sync(url, follow_redirects=True, allow_proxy=True)
         if code != 200:
             raise IOError("Invalid HTTP response: %s" % code)
 

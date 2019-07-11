@@ -24,7 +24,7 @@ from mongoengine.fields import (
 )
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from .profile import Profile
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
@@ -37,7 +37,7 @@ class PlatformMatch(EmbeddedDocument):
     version_re = StringField()
 
     def __str__(self):
-        return u"%s - %s" % (self.platform_re, self.version_re)
+        return "%s - %s" % (self.platform_re, self.version_re)
 
     @property
     def json_data(self):

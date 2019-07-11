@@ -8,10 +8,18 @@
 
 # Python modules
 import time
+
 # Third-party modules
 import pytest
+
 # NOC modules
-from noc.core.quantile.base import Stream, LowBiasedStream, HighBiasedStream, TargetedStream, Summary
+from noc.core.quantile.base import (
+    Stream,
+    LowBiasedStream,
+    HighBiasedStream,
+    TargetedStream,
+    Summary,
+)
 
 # Default quantiles
 Q_DEFAULT_EPS = 0.05
@@ -42,39 +50,34 @@ def test_stream_f():
         stream.f(0, 100)
 
 
-@pytest.mark.parametrize("r,n,expected", [
-    (0, 100, 0.0),
-    (50, 100, 5.0),
-    (100, 100, 10.0)
-])
+@pytest.mark.parametrize("r,n,expected", [(0, 100, 0.0), (50, 100, 5.0), (100, 100, 10.0)])
 def test_low_biased_f(r, n, expected):
     stream = LowBiasedStream(100, Q_DEFAULT_EPS)
     assert pytest.approx(stream.f(r, n), expected)
 
 
-@pytest.mark.parametrize("r,n,expected", [
-    (0, 100, 10.0),
-    (50, 100, 5.0),
-    (100, 100, 0.0)
-])
+@pytest.mark.parametrize("r,n,expected", [(0, 100, 10.0), (50, 100, 5.0), (100, 100, 0.0)])
 def test_high_biased_f(r, n, expected):
     stream = HighBiasedStream(100, Q_DEFAULT_EPS)
     assert pytest.approx(stream.f(r, n), expected)
 
 
-@pytest.mark.parametrize("r,n,expected", [
-    (0, 100, 4.0),
-    (45, 100, 2.2),
-    (50, 100, 2.0),
-    (55, 100, 2.2),
-    (88, 100, 2.4),
-    (90, 100, 2.0),
-    (92, 100, 2.044444),
-    (94, 100, 2.088889),
-    (95, 100, 2.0),
-    (96, 100, 2.021053),
-    (100, 100, 2.105263)
-])
+@pytest.mark.parametrize(
+    "r,n,expected",
+    [
+        (0, 100, 4.0),
+        (45, 100, 2.2),
+        (50, 100, 2.0),
+        (55, 100, 2.2),
+        (88, 100, 2.4),
+        (90, 100, 2.0),
+        (92, 100, 2.044444),
+        (94, 100, 2.088889),
+        (95, 100, 2.0),
+        (96, 100, 2.021053),
+        (100, 100, 2.105263),
+    ],
+)
 def test_targeted_f(r, n, expected):
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
     assert pytest.approx(stream.f(r, n), expected)
@@ -96,25 +99,28 @@ def test_targeted_f_extremums():
     assert len(extremums) == len(Q_DEFAULT_TARGET)
 
 
-@pytest.mark.parametrize("seq,expected", [
-    # Empty samples
-    (seq_empty(), [0.0, 0.0, 0.0]),
-    # Single sample
-    (seq_const(0, 1), [0.0, 0.0, 0.0]),
-    (seq_const(1.0, 1), [1.0, 1.0, 1.0]),
-    # Test unmerged
-    (seq_const(0.0, 50), [0.0, 0.0, 0.0]),
-    (seq_const(1.0, 50), [1.0, 1.0, 1.0]),
-    (seq_linear(0.0, 1.0, 51), [0.5, 0.9, 0.96]),
-    (seq_linear(1.0, 0.0, 51), [0.5, 0.9, 0.96]),
-    (seq_const(0.0, 99), [0.0, 0.0, 0.0]),
-    (seq_const(1.0, 99), [1.0, 1.0, 1.0]),
-    # Test merged
-    (seq_const(0.0, 500), [0.0, 0.0, 0.0]),
-    (seq_const(1.0, 500), [1.0, 1.0, 1.0]),
-    (seq_linear(0.0, 1.0, 501), [0.5, 0.9, 0.95]),
-    (seq_linear(1.0, 0.0, 501), [0.5, 0.9, 0.95])
-])
+@pytest.mark.parametrize(
+    "seq,expected",
+    [
+        # Empty samples
+        (seq_empty(), [0.0, 0.0, 0.0]),
+        # Single sample
+        (seq_const(0, 1), [0.0, 0.0, 0.0]),
+        (seq_const(1.0, 1), [1.0, 1.0, 1.0]),
+        # Test unmerged
+        (seq_const(0.0, 50), [0.0, 0.0, 0.0]),
+        (seq_const(1.0, 50), [1.0, 1.0, 1.0]),
+        (seq_linear(0.0, 1.0, 51), [0.5, 0.9, 0.96]),
+        (seq_linear(1.0, 0.0, 51), [0.5, 0.9, 0.96]),
+        (seq_const(0.0, 99), [0.0, 0.0, 0.0]),
+        (seq_const(1.0, 99), [1.0, 1.0, 1.0]),
+        # Test merged
+        (seq_const(0.0, 500), [0.0, 0.0, 0.0]),
+        (seq_const(1.0, 500), [1.0, 1.0, 1.0]),
+        (seq_linear(0.0, 1.0, 501), [0.5, 0.9, 0.95]),
+        (seq_linear(1.0, 0.0, 501), [0.5, 0.9, 0.95]),
+    ],
+)
 def test_targeted_quantile(seq, expected):
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
     for sample in seq:
@@ -125,18 +131,21 @@ def test_targeted_quantile(seq, expected):
         assert pytest.approx(stream.query(quantile), value)
 
 
-@pytest.mark.parametrize("seq", [
-    # Empty
-    seq_empty(),
-    # Single-value
-    seq_const(0.0, 1),
-    seq_const(1.0, 1),
-    #
-    seq_const(0.0, 1000),
-    seq_const(1.0, 1000),
-    seq_linear(0.0, 1.0, 1000),
-    seq_linear(1.0, 0.0, 1000),
-])
+@pytest.mark.parametrize(
+    "seq",
+    [
+        # Empty
+        seq_empty(),
+        # Single-value
+        seq_const(0.0, 1),
+        seq_const(1.0, 1),
+        #
+        seq_const(0.0, 1000),
+        seq_const(1.0, 1000),
+        seq_linear(0.0, 1.0, 1000),
+        seq_linear(1.0, 0.0, 1000),
+    ],
+)
 def test_low_biased_merged_width(seq):
     stream = LowBiasedStream(100, Q_DEFAULT_EPS)
     n = 0
@@ -147,18 +156,21 @@ def test_low_biased_merged_width(seq):
     assert stream.merged_width == n
 
 
-@pytest.mark.parametrize("seq", [
-    # Empty
-    seq_empty(),
-    # Single-value
-    seq_const(0.0, 1),
-    seq_const(1.0, 1),
-    #
-    seq_const(0.0, 1000),
-    seq_const(1.0, 1000),
-    seq_linear(0.0, 1.0, 1000),
-    seq_linear(1.0, 0.0, 1000),
-])
+@pytest.mark.parametrize(
+    "seq",
+    [
+        # Empty
+        seq_empty(),
+        # Single-value
+        seq_const(0.0, 1),
+        seq_const(1.0, 1),
+        #
+        seq_const(0.0, 1000),
+        seq_const(1.0, 1000),
+        seq_linear(0.0, 1.0, 1000),
+        seq_linear(1.0, 0.0, 1000),
+    ],
+)
 def test_high_biased_merged_width(seq):
     stream = HighBiasedStream(100, Q_DEFAULT_EPS)
     n = 0
@@ -169,18 +181,21 @@ def test_high_biased_merged_width(seq):
     assert stream.merged_width == n
 
 
-@pytest.mark.parametrize("seq", [
-    # Empty
-    seq_empty(),
-    # Single-value
-    seq_const(0.0, 1),
-    seq_const(1.0, 1),
-    #
-    seq_const(0.0, 1000),
-    seq_const(1.0, 1000),
-    seq_linear(0.0, 1.0, 1000),
-    seq_linear(1.0, 0.0, 1000),
-])
+@pytest.mark.parametrize(
+    "seq",
+    [
+        # Empty
+        seq_empty(),
+        # Single-value
+        seq_const(0.0, 1),
+        seq_const(1.0, 1),
+        #
+        seq_const(0.0, 1000),
+        seq_const(1.0, 1000),
+        seq_linear(0.0, 1.0, 1000),
+        seq_linear(1.0, 0.0, 1000),
+    ],
+)
 def test_targeted_merged_width(seq):
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
     n = 0

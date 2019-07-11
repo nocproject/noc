@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -18,19 +19,12 @@ class ResourceGroupLoader(BaseLoader):
     """
     Resource group loader
     """
+
     name = "resourcegroup"
     model = ResourceGroup
-    fields = [
-        "id",
-        "name",
-        "technology",
-        "parent",
-        "description"
-    ]
+    fields = ["id", "name", "technology", "parent", "description"]
 
-    mapped_fields = {
-        "parent": "resourcegroup"
-    }
+    mapped_fields = {"parent": "resourcegroup"}
 
     def clean(self, row):
         """

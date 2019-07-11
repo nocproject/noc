@@ -17,10 +17,8 @@ class ReportOverlappedOIDsApplication(SimpleReport):
 
     def get_data(self, **kwargs):
         data = [
-            (o.oid, o.name, ", ".join(o.aliases))
-            for o in MIBData.objects.filter(aliases__ne=[])
+            (o.oid, o.name, ", ".join(o.aliases)) for o in MIBData.objects.filter(aliases__ne=[])
         ]
-        return self.from_dataset(title=self.title,
-                                 columns=["OID", "Chosen Name", "Aliases"],
-                                 data=data,
-                                 enumerate=True)
+        return self.from_dataset(
+            title=self.title, columns=["OID", "Chosen Name", "Aliases"], data=data, enumerate=True
+        )

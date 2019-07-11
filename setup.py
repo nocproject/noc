@@ -12,6 +12,7 @@ import distutils.command.sdist
 from distutils.command.install import INSTALL_SCHEMES
 import subprocess
 import os
+
 # Third-party modules
 import six
 
@@ -42,7 +43,9 @@ def get_manifest():
     if not MANIFEST:
         if os.path.exists(".hg"):
             # Rebuild MANIFEST file every time mercurial repo found
-            proc = subprocess.Popen(["hg", "locate"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen(
+                ["hg", "locate"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
             stdout, stderr = proc.communicate()
             mf = stdout.splitlines()
             if os.path.exists(".hgsub"):
@@ -52,16 +55,18 @@ def get_manifest():
                             continue
                         sr, r = l.split("=", 1)
                         sr = sr.strip()
-                        proc = subprocess.Popen(["hg", "-R", sr, "locate"], stdout=subprocess.PIPE,
-                                                stderr=subprocess.PIPE)
+                        proc = subprocess.Popen(
+                            ["hg", "-R", sr, "locate"],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                        )
                         stdout, stderr = proc.communicate()
                         mf += [sr + "/" + x for x in stdout.splitlines()]
             mf += ["MANIFEST"]
             with open("MANIFEST", "w") as f:
                 f.write("\n".join(mf))
         with open("MANIFEST") as f:
-            MANIFEST = [n for n in f.read().splitlines() if
-                        not n.startswith(".hg")]
+            MANIFEST = [n for n in f.read().splitlines() if not n.startswith(".hg")]
     return MANIFEST
 
 
@@ -70,8 +75,11 @@ def get_packages():
     Return list of packages
     :return:
     """
-    return [""] + [f[:-12].replace(os.sep, ".") for f in get_manifest() if
-                   f.endswith("__init__.py") and f != "__init__.py"]
+    return [""] + [
+        f[:-12].replace(os.sep, ".")
+        for f in get_manifest()
+        if f.endswith("__init__.py") and f != "__init__.py"
+    ]
 
 
 def get_data():
@@ -93,8 +101,10 @@ class noc_sdist(distutils.command.sdist.sdist):
     """
     Get file list for sdist from MANIFEST
     """
+
     def get_file_list(self):
         self.filelist.files = get_manifest()
+
 
 #
 # Monkeypatch distutils to install noc to the desired location
@@ -123,9 +133,5 @@ configuration management, DNS provisioning, peering management, RPSL and BGP fil
     packages=get_packages(),
     data_files=get_data(),
     provides=["noc"],
-    requires=[
-        "psycopg2 (>= 2.0.5)",
-        "pycrypto (>= 2.3)",
-        "pymongo (>= 1.1)"
-    ]
+    requires=["psycopg2 (>= 2.0.5)", "pycrypto (>= 2.3)", "pymongo (>= 1.1)"],
 )

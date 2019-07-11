@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.confdb.tokenizer.curly import CurlyTokenizer
 
@@ -65,7 +66,7 @@ TOKENS1 = [
     ("services", "isis"),
     ("services", "isis", "interface", "ge-0/0/0.0"),
     ("services", "isis", "interface", "ge-0/0/0.1"),
-    ("services", "isis", "interface", "ge-0/0/1.0")
+    ("services", "isis", "interface", "ge-0/0/1.0"),
 ]
 
 CFG2 = """snmp {
@@ -98,14 +99,17 @@ TOKENS2 = [
     ("snmp", "community", "TTT"),
     ("snmp", "community", "TTT", "authorization", "read-only"),
     ("snmp", "community", "TTT", "clients"),
-    ("snmp", "community", "TTT", "clients", "10.10.10.0/26")
+    ("snmp", "community", "TTT", "clients", "10.10.10.0/26"),
 ]
 
 
-@pytest.mark.parametrize("input,config,expected", [
-    (CFG1, {"line_comment": "#", "explicit_eol": ";"}, TOKENS1),
-    (CFG2, {"line_comment": "#", "explicit_eol": ";", "string_quote": "\""}, TOKENS2),
-])
+@pytest.mark.parametrize(
+    "input,config,expected",
+    [
+        (CFG1, {"line_comment": "#", "explicit_eol": ";"}, TOKENS1),
+        (CFG2, {"line_comment": "#", "explicit_eol": ";", "string_quote": '"'}, TOKENS2),
+    ],
+)
 def test_tokenizer(input, config, expected):
     tokenizer = CurlyTokenizer(input, **config)
     assert list(tokenizer) == expected

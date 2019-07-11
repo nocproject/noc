@@ -14,9 +14,11 @@ import itertools
 import operator
 from threading import Lock
 from functools import reduce
+
 # Third-party modules
 import six
 from six.moves import zip
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
@@ -27,10 +29,18 @@ from noc.config import config
 from noc.core.span import Span
 from noc.core.matcher import match
 from noc.core.backport.time import perf_counter
-from .context import (ConfigurationContextManager, CacheContextManager,
-                      IgnoredExceptionsContextManager)
-from .error import (ScriptError, CLISyntaxError, CLIOperationError,
-                    NotSupportedError, UnexpectedResultError)
+from .context import (
+    ConfigurationContextManager,
+    CacheContextManager,
+    IgnoredExceptionsContextManager,
+)
+from .error import (
+    ScriptError,
+    CLISyntaxError,
+    CLIOperationError,
+    NotSupportedError,
+    UnexpectedResultError,
+)
 from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
 from .http.base import HTTP
@@ -40,11 +50,12 @@ class BaseScriptMetaclass(type):
     """
     Process @match decorators
     """
+
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         n._execute_chain = sorted(
             (v for v in six.itervalues(attrs) if hasattr(v, "_seq")),
-            key=operator.attrgetter("_seq")
+            key=operator.attrgetter("_seq"),
         )
         return n
 
@@ -53,6 +64,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     """
     Service Activation script base class
     """
+
     # Script name in form of <vendor>.<system>.<name>
     name = None
     # Default script timeout
@@ -101,36 +113,52 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     UnexpectedResultError = UnexpectedResultError
 
     hexbin = {
-        "0": "0000", "1": "0001", "2": "0010", "3": "0011",
-        "4": "0100", "5": "0101", "6": "0110", "7": "0111",
-        "8": "1000", "9": "1001", "a": "1010", "b": "1011",
-        "c": "1100", "d": "1101", "e": "1110", "f": "1111"
+        "0": "0000",
+        "1": "0001",
+        "2": "0010",
+        "3": "0011",
+        "4": "0100",
+        "5": "0101",
+        "6": "0110",
+        "7": "0111",
+        "8": "1000",
+        "9": "1001",
+        "a": "1010",
+        "b": "1011",
+        "c": "1100",
+        "d": "1101",
+        "e": "1110",
+        "f": "1111",
     }
 
     cli_protocols = {
         "telnet": "noc.core.script.cli.telnet.TelnetCLI",
         "ssh": "noc.core.script.cli.ssh.SSHCLI",
-        "beef": "noc.core.script.cli.beef.BeefCLI"
+        "beef": "noc.core.script.cli.beef.BeefCLI",
     }
 
-    mml_protocols = {
-        "telnet": "noc.core.script.mml.telnet.TelnetMML"
-    }
+    mml_protocols = {"telnet": "noc.core.script.mml.telnet.TelnetMML"}
 
-    rtsp_protocols = {
-        "tcp": "noc.core.script.rtsp.base.RTSPBase"
-    }
+    rtsp_protocols = {"tcp": "noc.core.script.rtsp.base.RTSPBase"}
     # Override access preferences for script
     # S - always try SNMP first
     # C - always try CLI first
     # None - use default preferences
     always_prefer = None
 
-    def __init__(self, service, credentials,
-                 args=None, capabilities=None,
-                 version=None, parent=None, timeout=None,
-                 name=None,
-                 session=None, session_idle_timeout=None):
+    def __init__(
+        self,
+        service,
+        credentials,
+        args=None,
+        capabilities=None,
+        version=None,
+        parent=None,
+        timeout=None,
+        name=None,
+        session=None,
+        session_idle_timeout=None,
+    ):
         self.service = service
         self.tos = config.activator.tos
         self.pool = config.pool
@@ -138,15 +166,12 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         self._motd = None
         name = name or self.name
         self.logger = PrefixLoggerAdapter(
-            self.base_logger,
-            "%s] [%s" % (self.name, credentials.get("address", "-"))
+            self.base_logger, "%s] [%s" % (self.name, credentials.get("address", "-"))
         )
         if self.parent:
             self.profile = self.parent.profile
         else:
-            self.profile = profile_loader.get_profile(
-                ".".join(name.split(".")[:2])
-            )()
+            self.profile = profile_loader.get_profile(".".join(name.split(".")[:2]))()
         self.credentials = credentials or {}
         self.version = version or {}
         self.capabilities = capabilities or {}
@@ -191,14 +216,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         self.cli_fsm_tracked_data = {}
         #
         if not parent and version and not name.endswith(".get_version"):
-            self.logger.debug("Filling get_version cache with %s",
-                              version)
+            self.logger.debug("Filling get_version cache with %s", version)
             s = name.split(".")
-            self.set_cache(
-                "%s.%s.get_version" % (s[0], s[1]),
-                {},
-                version
-            )
+            self.set_cache("%s.%s.get_version" % (s[0], s[1]), {}, version)
         # Fill matchers
         if not self.name.endswith(".get_version"):
             self.apply_matchers()
@@ -215,11 +235,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         Process matchers and apply is_XXX properties
         :return:
         """
+
         def get_matchers(c, matchers):
-            return dict(
-                (m, match(c, matchers[m]))
-                for m in matchers
-            )
+            return dict((m, match(c, matchers[m])) for m in matchers)
 
         # Match context
         # @todo: Add capabilities
@@ -250,11 +268,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         """
         Run script
         """
-        with Span(server="activator", service=self.name,
-                  in_label=self.credentials.get("address")):
+        with Span(server="activator", service=self.name, in_label=self.credentials.get("address")):
             self.start_time = perf_counter()
-            self.logger.debug("Running. Input arguments: %s, timeout %s",
-                              self.args, self.timeout)
+            self.logger.debug("Running. Input arguments: %s, timeout %s", self.args, self.timeout)
             # Use cached result when available
             cache_hit = False
             if self.cache and self.parent:
@@ -329,7 +345,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             elif o == "regex":
                 c += [lambda self, x, f=f, v=re.compile(v): v.search(x[f]) is not None]
             elif o == "iregex":
-                c += [lambda self, x, f=f, v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
+                c += [
+                    lambda self, x, f=f, v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None
+                ]
             elif o == "isempty":  # Empty string or null
                 c += [lambda self, x, f=f, v=v: not x[f] if v else x[f]]
             elif f == "version":
@@ -347,11 +365,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 raise Exception("Invalid lookup operation: %s" % o)
         # Combine expressions into single lambda
         return reduce(
-            lambda x, y: lambda self, v, x=x, y=y: (
-                x(self, v) and y(self, v)
-            ),
+            lambda x, y: lambda self, v, x=x, y=y: (x(self, v) and y(self, v)),
             c,
-            lambda self, x: True
+            lambda self, x: True,
         )
 
     @classmethod
@@ -359,11 +375,14 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         """
         execute method decorator
         """
+
         def wrap(f):
             # Append to the execute chain
             if hasattr(f, "_match"):
                 old_filter = f._match
-                f._match = lambda self, v, old_filter=old_filter, new_filter=new_filter: new_filter(self, v) or old_filter(self, v)
+                f._match = lambda self, v, old_filter=old_filter, new_filter=new_filter: new_filter(
+                    self, v
+                ) or old_filter(self, v)
             else:
                 f._match = new_filter
             f._seq = next(cls._x_seq)
@@ -380,10 +399,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         """
         if not self.version:
             self.version = self.scripts.get_version()
-        return self.compile_match_filter(*args, **kwargs)(
-            self,
-            self.version
-        )
+        return self.compile_match_filter(*args, **kwargs)(self, self.version)
 
     def execute(self, **kwargs):
         """
@@ -394,7 +410,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             # Deprecated @match chain
             self.logger.info(
                 "WARNING: Using deprecated @BaseScript.match() decorator. "
-                "Consider porting to the new matcher API")
+                "Consider porting to the new matcher API"
+            )
             # Get version information
             if not self.version:
                 self.version = self.scripts.get_version()
@@ -407,13 +424,10 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         else:
             # New SNMP/CLI API
             return self.call_method(
-                cli_handler=self.execute_cli,
-                snmp_handler=self.execute_snmp,
-                **kwargs
+                cli_handler=self.execute_cli, snmp_handler=self.execute_snmp, **kwargs
             )
 
-    def call_method(self, cli_handler=None, snmp_handler=None,
-                    fallback_handler=None, **kwargs):
+    def call_method(self, cli_handler=None, snmp_handler=None, fallback_handler=None, **kwargs):
         """
         Call function depending on access_preference
         :param cli_handler: String or callable to call on CLI access method
@@ -452,7 +466,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                         self.partial_result.update(r.result)
                     else:
                         self.partial_result = r.result
-                    self.logger.debug("Partial result: %r. Passing to next method", self.partial_result)
+                    self.logger.debug(
+                        "Partial result: %r. Passing to next method", self.partial_result
+                    )
                 else:
                     return r
             except self.snmp.TimeOutError:
@@ -461,8 +477,12 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                     self.logger.info("Last S method break by timeout.")
                     raise self.snmp.TimeOutError
             except NotImplementedError:
-                self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
-        raise self.NotSupportedError("Access preference '%s' is not supported" % access_preference[:-1])
+                self.logger.debug(
+                    "Access method '%s' is not implemented. Passing to next method", m
+                )
+        raise self.NotSupportedError(
+            "Access preference '%s' is not supported" % access_preference[:-1]
+        )
 
     def execute_cli(self, **kwargs):
         """
@@ -543,13 +563,13 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                     raise ValueError(x)
                 prefix = match.group(1)
                 # Detect range boundaries
-                start = int(f[len(prefix):])
+                start = int(f[len(prefix) :])
                 if is_int(t):
                     stop = int(t)  # Just integer
                 else:
                     if not t.startswith(prefix):
                         raise ValueError(x)
-                    stop = int(t[len(prefix):])  # Prefixed
+                    stop = int(t[len(prefix) :])  # Prefixed
                 if start > stop:
                     raise ValueError(x)
                 for i in range(start, stop + 1):
@@ -726,10 +746,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         :return: Boolean string
         :rtype: str
         """
-        return "".join(
-            self.hexbin[c] for c in
-            "".join("%02x" % ord(d) for d in s)
-        )
+        return "".join(self.hexbin[c] for c in "".join("%02x" % ord(d) for d in s))
 
     def push_prompt_pattern(self, pattern):
         self.get_cli_stream().push_prompt_pattern(pattern)
@@ -749,9 +766,20 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     def get_timeout(self):
         return self.TIMEOUT
 
-    def cli(self, cmd, command_submit=None, bulk_lines=None,
-            list_re=None, cached=False, file=None, ignore_errors=False,
-            nowait=False, obj_parser=None, cmd_next=None, cmd_stop=None):
+    def cli(
+        self,
+        cmd,
+        command_submit=None,
+        bulk_lines=None,
+        list_re=None,
+        cached=False,
+        file=None,
+        ignore_errors=False,
+        nowait=False,
+        obj_parser=None,
+        cmd_next=None,
+        cmd_stop=None,
+    ):
         """
         Execute CLI command and return result. Initiate cli session
         when necessary
@@ -769,6 +797,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         if list_re is regular expression object, return a list of dicts (group name -> value),
             one dict per matched line
         """
+
         def format_result(result):
             if list_re:
                 x = []
@@ -792,15 +821,21 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         stream = self.get_cli_stream()
         if self.to_track:
             self.cli_tracked_command = cmd
-        r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
-                           cmd_next=cmd_next, cmd_stop=cmd_stop,
-                           ignore_errors=ignore_errors)
+        r = stream.execute(
+            cmd + command_submit,
+            obj_parser=obj_parser,
+            cmd_next=cmd_next,
+            cmd_stop=cmd_stop,
+            ignore_errors=ignore_errors,
+        )
         if isinstance(r, six.string_types):
             # Check for syntax errors
             if not ignore_errors:
                 # Then check for operation error
-                if (self.profile.rx_pattern_operation_error and
-                        self.profile.rx_pattern_operation_error.search(r)):
+                if (
+                    self.profile.rx_pattern_operation_error
+                    and self.profile.rx_pattern_operation_error.search(r)
+                ):
                     raise self.CLIOperationError(r)
             # Echo cancelation
             if r[:4096].lstrip().startswith(cmd):
@@ -810,7 +845,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                     r = self.strip_first_lines(r.lstrip())
                 else:
                     # Some switches, like ProCurve do not send \n after the echo
-                    r = r[len(cmd):]
+                    r = r[len(cmd) :]
             # Store cli cache when necessary
             if cached:
                 self.root.cli_cache[cmd] = r
@@ -835,16 +870,12 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                     self.logger.debug("Using cached session's CLI")
                     self.cli_stream.set_script(self)
                 else:
-                    self.logger.debug(
-                        "Script cannot reuse existing CLI session, starting new one"
-                    )
+                    self.logger.debug("Script cannot reuse existing CLI session, starting new one")
                     self.close_cli_stream()
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
-            self.cli_stream = get_handler(
-                self.cli_protocols[protocol]
-            )(self, tos=self.tos)
+            self.cli_stream = get_handler(self.cli_protocols[protocol])(self, tos=self.tos)
             # Store to the sessions
             if self.session:
                 with self.session_lock:
@@ -856,10 +887,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 self.logger.debug("Disable paging")
                 self.to_disable_pager = False
                 if isinstance(self.profile.command_disable_pager, six.string_types):
-                    self.cli(
-                        self.profile.command_disable_pager,
-                        ignore_errors=True
-                    )
+                    self.cli(self.profile.command_disable_pager, ignore_errors=True)
                 elif isinstance(self.profile.command_disable_pager, list):
                     for cmd in self.profile.command_disable_pager:
                         self.cli(cmd, ignore_errors=True)
@@ -914,16 +942,12 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                     self.logger.debug("Using cached session's MML")
                     self.mml_stream.set_script(self)
                 else:
-                    self.logger.debug(
-                        "Script cannot reuse existing MML session, starting new one"
-                    )
+                    self.logger.debug("Script cannot reuse existing MML session, starting new one")
                     self.close_mml_stream()
         if not self.mml_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s MML", protocol)
-            self.mml_stream = get_handler(
-                self.mml_protocols[protocol]
-            )(self, tos=self.tos)
+            self.mml_stream = get_handler(self.mml_protocols[protocol])(self, tos=self.tos)
             # Store to the sessions
             if self.session:
                 with self.session_lock:
@@ -967,16 +991,12 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                     self.logger.debug("Using cached session's RTSP")
                     self.rtsp_stream.set_script(self)
                 else:
-                    self.logger.debug(
-                        "Script cannot reuse existing RTSP session, starting new one"
-                    )
+                    self.logger.debug("Script cannot reuse existing RTSP session, starting new one")
                     self.close_rtsp_stream()
         if not self.rtsp_stream:
             protocol = "tcp"
             self.logger.debug("Open %s RTSP", protocol)
-            self.rtsp_stream = get_handler(
-                self.rtsp_protocols[protocol]
-            )(self, tos=self.tos)
+            self.rtsp_stream = get_handler(self.rtsp_protocols[protocol])(self, tos=self.tos)
             # Store to the sessions
             if self.session:
                 with self.session_lock:
@@ -1166,6 +1186,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 self._beef = None
                 return None
             from .beef import Beef
+
             beef = Beef.load(beef_storage_url, beef_path)
             self._beef = beef
         return self._beef
@@ -1180,6 +1201,7 @@ class ScriptsHub(object):
     Object representing Script.scripts structure.
     Returns initialized child script which can be used ans callable
     """
+
     class _CallWrapper(object):
         def __init__(self, script_class, parent):
             self.parent = parent
@@ -1193,7 +1215,7 @@ class ScriptsHub(object):
                 credentials=self.parent.credentials,
                 capabilities=self.parent.capabilities,
                 version=self.parent.version,
-                timeout=self.parent.timeout
+                timeout=self.parent.timeout,
             ).run()
 
     def __init__(self, script):
@@ -1205,9 +1227,7 @@ class ScriptsHub(object):
         else:
             from .loader import loader as script_loader
 
-            sc = script_loader.get_script(
-                "%s.%s" % (self._script.profile.name, item)
-            )
+            sc = script_loader.get_script("%s.%s" % (self._script.profile.name, item))
             if sc:
                 return self._CallWrapper(sc, self._script)
             else:
@@ -1218,6 +1238,7 @@ class ScriptsHub(object):
         Check object has script name
         """
         from .loader import loader as script_loader
+
         if "." not in item:
             # Normalize to full name
             item = "%s.%s" % (self._script.profile.name, item)

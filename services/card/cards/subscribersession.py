@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseCard
 from noc.inv.models.interface import Interface
@@ -20,12 +21,8 @@ class SubscriberSessionCard(BaseCard):
     model = Interface
 
     def get_data(self):
-        macs = self.object.managed_object.scripts.get_mac_address_table(
-            interface=self.object.name
-        )
+        macs = self.object.managed_object.scripts.get_mac_address_table(interface=self.object.name)
         if macs:
             for m in macs:
                 m["mac_vendor"] = MACVendor.get_vendor(m["mac"]) or ""
-        return {
-            "macs": macs
-        }
+        return {"macs": macs}

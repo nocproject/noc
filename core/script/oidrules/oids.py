@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .oid import OIDRule
 
@@ -16,6 +17,7 @@ class OIDsRule(object):
     """
     Multiple items for single metric
     """
+
     name = "oids"
 
     def __init__(self, oids):
@@ -32,6 +34,4 @@ class OIDsRule(object):
             raise ValueError("oids is required")
         if not isinstance(data["oids"], list):
             raise ValueError("oids must be list")
-        return OIDsRule(
-            oids=[OIDRule.from_json(d) for d in data["oids"]]
-        )
+        return OIDsRule(oids=[OIDRule.from_json(d) for d in data["oids"]])

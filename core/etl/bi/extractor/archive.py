@@ -2,20 +2,22 @@
 # ----------------------------------------------------------------------
 # ArchivingExtractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import, print_function
 from collections import defaultdict
+
 # Third-party modules
 import bisect
 import pymongo
 from pymongo.errors import BulkWriteError
 from jinja2 import Template
+
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from .base import BaseExtractor
 
 
@@ -66,14 +68,18 @@ class ArchivingExtractor(BaseExtractor):
         :rtype: dict
         """
         coll = self.archive_db.get_collection(collection_name)
-        start_document = coll.find_one(sort=([("clear_timestamp", pymongo.ASCENDING)]),
-                                       projection={"clear_timestamp": 1})
-        end_document = coll.find_one(sort=([("clear_timestamp", pymongo.DESCENDING)]),
-                                     projection={"clear_timestamp": 1})
-        return {"name": self.name,
-                "first_record_ts": start_document["clear_timestamp"],  # Timestamp on first record
-                "last_record_ts": end_document["clear_timestamp"],  # Timestamp on last record
-                "record_count": coll.count({"clear_timestamp": {"$exists": True}})}   # Record count
+        start_document = coll.find_one(
+            sort=([("clear_timestamp", pymongo.ASCENDING)]), projection={"clear_timestamp": 1}
+        )
+        end_document = coll.find_one(
+            sort=([("clear_timestamp", pymongo.DESCENDING)]), projection={"clear_timestamp": 1}
+        )
+        return {
+            "name": self.name,
+            "first_record_ts": start_document["clear_timestamp"],  # Timestamp on first record
+            "last_record_ts": end_document["clear_timestamp"],  # Timestamp on last record
+            "record_count": coll.count({"clear_timestamp": {"$exists": True}}),
+        }  # Record count
 
     def fill_meta(self):
         for collection_name in self.iter_archived_collections():
@@ -99,6 +105,7 @@ class ArchivingExtractor(BaseExtractor):
         Move data to archive collection
         :return:
         """
+
         def spool(collection_name):
             coll = db[collection_name]
             try:
@@ -115,9 +122,7 @@ class ArchivingExtractor(BaseExtractor):
         data = defaultdict(list)
         # Collect data and spool full batches
         for d in self.iter_archived_items():
-            cname = str(tpl.render({
-                "doc": d
-            }))
+            cname = str(tpl.render({"doc": d}))
             data[cname] += [d]
             if len(data[cname]) >= self.archive_batch_limit:
                 result = spool(cname)

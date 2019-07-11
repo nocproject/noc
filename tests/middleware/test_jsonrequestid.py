@@ -8,17 +8,21 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.script.http.base import HTTP
 from noc.core.script.http.middleware.loader import loader
 
 
-@pytest.mark.parametrize("body,config,request_id,expected", [
-    ({}, {}, 123, {"request_id": 123}),
-    ({"x": 1}, {}, 123, {"request_id": 123, "x": 1}),
-    ({}, {"request_id_param": "rid"}, 456, {"rid": 456}),
-    ({"a": "b"}, {"request_id_param": "rid"}, 456, {"rid": 456, "a": "b"})
-])
+@pytest.mark.parametrize(
+    "body,config,request_id,expected",
+    [
+        ({}, {}, 123, {"request_id": 123}),
+        ({"x": 1}, {}, 123, {"request_id": 123, "x": 1}),
+        ({}, {"request_id_param": "rid"}, 456, {"rid": 456}),
+        ({"a": "b"}, {"request_id_param": "rid"}, 456, {"rid": 456, "a": "b"}),
+    ],
+)
 def test_jsonsession(body, config, request_id, expected):
     http = HTTP(None)
     http.request_id = request_id

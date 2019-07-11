@@ -8,9 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
-from noc.core.error import (ERR_MML_UNKNOWN, ERR_MML_CONNECTION_REFUSED,
-                            ERR_MML_AUTH_FAILED, ERR_MML_BAD_RESPONSE)
+from noc.core.error import (
+    ERR_MML_UNKNOWN,
+    ERR_MML_CONNECTION_REFUSED,
+    ERR_MML_AUTH_FAILED,
+    ERR_MML_BAD_RESPONSE,
+)
 from ..cli.error import CLIError
 
 

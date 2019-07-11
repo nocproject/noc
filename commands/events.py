@@ -12,11 +12,13 @@ import re
 import datetime
 import time
 import hashlib
+
 # Third-party modules
 from six.moves.html_entities import name2codepoint
 from bson import ObjectId
 from pymongo import DeleteMany
 from pymongo.errors import DocumentTooLarge
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
@@ -49,34 +51,32 @@ class Command(BaseCommand):
     help = "Manage events"
 
     def add_arguments(self, parser):
-        parser.add_argument("-s", "--selector", dest="selector",
-                            help="Selector name"),
-        parser.add_argument("-o", "--object", dest="object",
-                            help="Managed Object's name"),
-        parser.add_argument("-p", "--profile", dest="profile",
-                            help="Object's profile"),
-        parser.add_argument("-e", "--event", dest="event",
-                            help="Event ID"),
-        parser.add_argument("-c", "--class", dest="class",
-                            help="Event class name"),
-        parser.add_argument("-T", "--trap", dest="trap",
-                            help="SNMP Trap OID or name"),
-        parser.add_argument("-S", "--syslog", dest="syslog",
-                            help="SYSLOG Message RE"),
-        parser.add_argument("-d", "--suppress-duplicated", dest="suppress",
-                            action="store_true",
-                            help="Suppress duplicated subjects"),
-        parser.add_argument("-l", "--limit", dest="limit", default=0, type=int,
-                            help="Limit action to N records")
+        parser.add_argument("-s", "--selector", dest="selector", help="Selector name"),
+        parser.add_argument("-o", "--object", dest="object", help="Managed Object's name"),
+        parser.add_argument("-p", "--profile", dest="profile", help="Object's profile"),
+        parser.add_argument("-e", "--event", dest="event", help="Event ID"),
+        parser.add_argument("-c", "--class", dest="class", help="Event class name"),
+        parser.add_argument("-T", "--trap", dest="trap", help="SNMP Trap OID or name"),
+        parser.add_argument("-S", "--syslog", dest="syslog", help="SYSLOG Message RE"),
+        parser.add_argument(
+            "-d",
+            "--suppress-duplicated",
+            dest="suppress",
+            action="store_true",
+            help="Suppress duplicated subjects",
+        ),
+        parser.add_argument(
+            "-l", "--limit", dest="limit", default=0, type=int, help="Limit action to N records"
+        )
         subparsers = parser.add_subparsers(dest="cmd")
         subparsers.add_parser("show")
         subparsers.add_parser("json")
         subparsers.add_parser("reclassify")
         clean = subparsers.add_parser("clean")
-        clean.add_argument("--before", dest="before",
-                           help="Clear events before date")
-        clean.add_argument("--force", default=False,
-                           action="store_true", help="Really events remove")
+        clean.add_argument("--before", dest="before", help="Clear events before date")
+        clean.add_argument(
+            "--force", default=False, action="store_true", help="Really events remove"
+        )
 
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
     rx_float = re.compile(r"\d+\.\d+")
@@ -129,16 +129,20 @@ class Command(BaseCommand):
                 if not e.managed_object.profile == Profile[profile]:
                     continue
             if trap_oid:
-                if ("source" in e.raw_vars and
-                    e.raw_vars["source"] == "SNMP Trap" and
-                    "1.3.6.1.6.3.1.1.4.1.0" in e.raw_vars and
-                        e.raw_vars["1.3.6.1.6.3.1.1.4.1.0"] == trap_oid):
+                if (
+                    "source" in e.raw_vars
+                    and e.raw_vars["source"] == "SNMP Trap"
+                    and "1.3.6.1.6.3.1.1.4.1.0" in e.raw_vars
+                    and e.raw_vars["1.3.6.1.6.3.1.1.4.1.0"] == trap_oid
+                ):
                     yield e
             elif syslog_re:
-                if ("source" in e.raw_vars and
-                    e.raw_vars["source"] == "syslog" and
-                    "message" in e.raw_vars and
-                        syslog_re.search(e.raw_vars["message"])):
+                if (
+                    "source" in e.raw_vars
+                    and e.raw_vars["source"] == "syslog"
+                    and "message" in e.raw_vars
+                    and syslog_re.search(e.raw_vars["message"])
+                ):
                     yield e
             else:
                 yield e
@@ -186,8 +190,8 @@ class Command(BaseCommand):
                 if spool:
                     print(spool + ",")
                 s = ["    {"]
-                s += ["        \"profile\": \"%s\"," % json_escape(e.managed_object.profile.name)]
-                s += ["        \"raw_vars\": {"]
+                s += ['        "profile": "%s",' % json_escape(e.managed_object.profile.name)]
+                s += ['        "raw_vars": {']
                 x = []
                 vars = e.raw_vars
                 keys = []
@@ -200,16 +204,15 @@ class Command(BaseCommand):
                 for k in keys:
                     if k in ("collector",):
                         continue
-                    x += ["            \"%s\": \"%s\"" % (json_escape(k),
-                                                          json_escape(vars[k]))]
+                    x += ['            "%s": "%s"' % (json_escape(k), json_escape(vars[k]))]
                 s += [",\n".join(x)]
                 s += ["        }"]
                 s += ["    }"]
                 spool = "\n".join(s)
             else:
-                self.stdout.write("%s, %s, %s, %s\n" % (e.id, e.managed_object.name,
-                                                        e.event_class.name,
-                                                        subject))
+                self.stdout.write(
+                    "%s, %s, %s, %s\n" % (e.id, e.managed_object.name, e.event_class.name, subject)
+                )
             if limit:
                 limit -= 1
                 if not limit:
@@ -246,24 +249,29 @@ class Command(BaseCommand):
         ae = ActiveEvent._get_collection()
         event_ts = ae.find_one({"timestamp": {"$lte": before}}, limit=1, sort=[("timestamp", 1)])
         event_ts = event_ts["timestamp"]
-        print("[%s] Cleaned before %s ... \n" % (
-            "events", before
-        ), end="")
+        print("[%s] Cleaned before %s ... \n" % ("events", before), end="")
         bulk = []
         window = CLEAN_WINDOW
         while event_ts < before:
             refer_event_ids = []
             for e in [aa, ah]:
-                for ee in e.find({"timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW}},
-                                 {"opening_event": 1, "closing_event": 1}):
+                for ee in e.find(
+                    {"timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW}},
+                    {"opening_event": 1, "closing_event": 1},
+                ):
                     if "opening_event" in ee:
                         refer_event_ids += [ee["opening_event"]]
                     if "closing_event" in ee:
                         refer_event_ids += [ee["closing_event"]]
             try:
-                clear_qs = {"timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW},
-                            "_id": {"$nin": refer_event_ids}}
-                self.print("Interval: %s, %s; Count: %d" % (event_ts, event_ts + CLEAN_WINDOW, ae.count(clear_qs)))
+                clear_qs = {
+                    "timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW},
+                    "_id": {"$nin": refer_event_ids},
+                }
+                self.print(
+                    "Interval: %s, %s; Count: %d"
+                    % (event_ts, event_ts + CLEAN_WINDOW, ae.count(clear_qs))
+                )
                 bulk += [DeleteMany(clear_qs)]
                 event_ts += window
                 if window != CLEAN_WINDOW:

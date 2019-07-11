@@ -8,9 +8,11 @@
 
 # Python module
 import bson
+
 # Third-party modules
 from django.db.models import Q as d_Q
 from mongoengine.queryset.visitor import Q as m_Q
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
@@ -25,6 +27,7 @@ class ObjectListApplication(ExtApplication):
     """
     ManagedObject application
     """
+
     model = ManagedObject
     # Default filter by is_managed
     managed_filter = True
@@ -72,20 +75,19 @@ class ObjectListApplication(ExtApplication):
             del nq["ids"]
 
         if "administrative_domain" in nq:
-            ad = AdministrativeDomain.get_nested_ids(
-                int(nq["administrative_domain"])
-            )
+            ad = AdministrativeDomain.get_nested_ids(int(nq["administrative_domain"]))
             if ad:
                 del nq["administrative_domain"]
                 nq["administrative_domain__in"] = ad
 
         if "selector" in nq:
-            s = self.get_object_or_404(ManagedObjectSelector,
-                                       id=int(q["selector"]))
+            s = self.get_object_or_404(ManagedObjectSelector, id=int(q["selector"]))
             if s:
                 if ids:
                     # nq["id__in"] = set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
-                    ids = ids.intersection(set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True)))
+                    ids = ids.intersection(
+                        set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
+                    )
                 else:
                     ids = set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
             del nq["selector"]
@@ -134,10 +136,9 @@ class ObjectListApplication(ExtApplication):
                     cond = {"$gte": int(l)}
                 else:
                     cond = {"$lte": int(r), "$gte": int(l)}
-                cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id,
-                                                          "value": cond}}})
+                cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id, "value": cond}}})
             elif c_query in ("false", "true"):
-                cq = (m_Q(caps__match={"capability": c_id, "value": c_query == "true"}))
+                cq = m_Q(caps__match={"capability": c_id, "value": c_query == "true"})
             elif c_query == "exists":
                 c_in += [c_id]
                 continue
@@ -147,18 +148,29 @@ class ObjectListApplication(ExtApplication):
             else:
                 try:
                     c_query = int(c_query)
-                    cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id,
-                                                              "value": int(c_query)}}})
+                    cq = m_Q(
+                        __raw__={
+                            "caps": {"$elemMatch": {"capability": c_id, "value": int(c_query)}}
+                        }
+                    )
                 except ValueError:
-                    cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id,
-                                                              "value": {"$regex": c_query}}}})
+                    cq = m_Q(
+                        __raw__={
+                            "caps": {
+                                "$elemMatch": {"capability": c_id, "value": {"$regex": c_query}}
+                            }
+                        }
+                    )
             mq &= cq
         if c_in:
             mq &= m_Q(caps__capability__in=c_in)
         if c_nin:
             mq &= m_Q(caps__capability__nin=c_nin)
         if mq:
-            c_ids = set(el["_id"] for el in ObjectCapabilities.objects(mq).values_list('object').as_pymongo())
+            c_ids = set(
+                el["_id"]
+                for el in ObjectCapabilities.objects(mq).values_list("object").as_pymongo()
+            )
             self.logger.info("Caps objects count: %d" % len(c_ids))
             ids = ids.intersection(c_ids) if ids else c_ids
 
@@ -196,10 +208,17 @@ class ObjectListApplication(ExtApplication):
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 
-    @view(method=["POST"], url="^iplist/$",
-          access="launch", api=True,
-          validate={
-              "query": DictParameter(attrs={"addresses": ListOfParameter(element=IPv4Parameter(), convert=True)})})
+    @view(
+        method=["POST"],
+        url="^iplist/$",
+        access="launch",
+        api=True,
+        validate={
+            "query": DictParameter(
+                attrs={"addresses": ListOfParameter(element=IPv4Parameter(), convert=True)}
+            )
+        },
+    )
     def api_action_ip_list(self, request, query):
         # @todo Required user vault implementation
         return self.render_json({"status": True})

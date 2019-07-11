@@ -10,13 +10,19 @@
 from threading import Lock
 import operator
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, ListField,
-                                EmbeddedDocumentField, BooleanField,
-                                DateTimeField)
+from mongoengine.fields import (
+    StringField,
+    ListField,
+    EmbeddedDocumentField,
+    BooleanField,
+    DateTimeField,
+)
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
@@ -30,6 +36,7 @@ class EnvItem(EmbeddedDocument):
     """
     Environment item
     """
+
     key = StringField()
     value = StringField()
 
@@ -37,41 +44,39 @@ class EnvItem(EmbeddedDocument):
         return self.key
 
 
-@on_delete_check(check=[
-    ("crm.Subscriber", "remote_system"),
-    ("crm.SubscriberProfile", "remote_system"),
-    ("crm.Supplier", "remote_system"),
-    ("crm.SupplierProfile", "remote_system"),
-    ("fm.TTSystem", "remote_system"),
-    ("inv.AllocationGroup", "remote_system"),
-    ("inv.InterfaceProfile", "remote_system"),
-    ("inv.NetworkSegment", "remote_system"),
-    ("inv.NetworkSegmentProfile", "remote_system"),
-    ("inv.ResourceGroup", "remote_system"),
-    ("ip.AddressProfile", "remote_system"),
-    ("ip.PrefixProfile", "remote_system"),
-    ("sa.ManagedObject", "remote_system"),
-    ("sa.AdministrativeDomain", "remote_system"),
-    ("sa.ManagedObjectProfile", "remote_system"),
-    ("sa.AuthProfile", "remote_system"),
-    ("sa.ServiceProfile", "remote_system"),
-    ("inv.ResourceGroup", "remote_system"),
-    ("sa.Service", "remote_system"),
-    ("vc.VLAN", "remote_system"),
-    ("vc.VLANProfile", "remote_system"),
-    ("vc.VPN", "remote_system"),
-    ("vc.VPNProfile", "remote_system"),
-    ("wf.State", "remote_system"),
-    ("wf.Transition", "remote_system"),
-    ("wf.Workflow", "remote_system")
-])
+@on_delete_check(
+    check=[
+        ("crm.Subscriber", "remote_system"),
+        ("crm.SubscriberProfile", "remote_system"),
+        ("crm.Supplier", "remote_system"),
+        ("crm.SupplierProfile", "remote_system"),
+        ("fm.TTSystem", "remote_system"),
+        ("inv.AllocationGroup", "remote_system"),
+        ("inv.InterfaceProfile", "remote_system"),
+        ("inv.NetworkSegment", "remote_system"),
+        ("inv.NetworkSegmentProfile", "remote_system"),
+        ("inv.ResourceGroup", "remote_system"),
+        ("ip.AddressProfile", "remote_system"),
+        ("ip.PrefixProfile", "remote_system"),
+        ("sa.ManagedObject", "remote_system"),
+        ("sa.AdministrativeDomain", "remote_system"),
+        ("sa.ManagedObjectProfile", "remote_system"),
+        ("sa.AuthProfile", "remote_system"),
+        ("sa.ServiceProfile", "remote_system"),
+        ("inv.ResourceGroup", "remote_system"),
+        ("sa.Service", "remote_system"),
+        ("vc.VLAN", "remote_system"),
+        ("vc.VLANProfile", "remote_system"),
+        ("vc.VPN", "remote_system"),
+        ("vc.VPNProfile", "remote_system"),
+        ("wf.State", "remote_system"),
+        ("wf.Transition", "remote_system"),
+        ("wf.Workflow", "remote_system"),
+    ]
+)
 @six.python_2_unicode_compatible
 class RemoteSystem(Document):
-    meta = {
-        "collection": "noc.remotesystem",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.remotesystem", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
@@ -107,22 +112,19 @@ class RemoteSystem(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return RemoteSystem.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return RemoteSystem.objects.filter(name=name).first()
 
     @property
     def config(self):
         if not hasattr(self, "_config"):
-            self._config = dict((e.key, e.value)
-                                for e in self.environment)
+            self._config = dict((e.key, e.value) for e in self.environment)
         return self._config
 
     def get_handler(self):

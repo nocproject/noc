@@ -30,5 +30,5 @@ MIB = {
     "ENTITY-SENSOR-MIB::entPhySensorValueUpdateRate": "1.3.6.1.2.1.99.1.1.1.8",
     "ENTITY-SENSOR-MIB::entitySensorConformance": "1.3.6.1.2.1.99.3",
     "ENTITY-SENSOR-MIB::entitySensorCompliances": "1.3.6.1.2.1.99.3.1",
-    "ENTITY-SENSOR-MIB::entitySensorGroups": "1.3.6.1.2.1.99.3.2"
+    "ENTITY-SENSOR-MIB::entitySensorGroups": "1.3.6.1.2.1.99.3.2",
 }

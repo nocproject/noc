@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.clickhouse.connect import connection
@@ -16,17 +17,8 @@ from noc.core.clickhouse.ensure import ensure_bi_models, ensure_pm_scopes
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--host",
-            dest="host",
-            help="ClickHouse address"
-        )
-        parser.add_argument(
-            "--port",
-            dest="port",
-            type=int,
-            help="ClickHouse port"
-        )
+        parser.add_argument("--host", dest="host", help="ClickHouse address")
+        parser.add_argument("--port", dest="port", type=int, help="ClickHouse port")
 
     def handle(self, host=None, port=None, *args, **options):
         self.host = host or None
@@ -58,7 +50,9 @@ class Command(BaseCommand):
 
     def create_dictionaries_db(self):
         self.print("Ensuring Dictionary database")
-        self.connect.execute(post="CREATE DATABASE IF NOT EXISTS dictionaries ENGINE = Dictionary", nodb=True)
+        self.connect.execute(
+            post="CREATE DATABASE IF NOT EXISTS dictionaries ENGINE = Dictionary", nodb=True
+        )
 
 
 if __name__ == "__main__":

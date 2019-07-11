@@ -695,9 +695,9 @@ class BaseLoader(object):
 
     def check_diff(self):
         def dump(cmd, row):
-            print ("%s %s" % (cmd, ",".join(row)))
+            print("%s %s" % (cmd, ",".join(row)))
 
-        print ("--- %s.%s" % (self.chain.system.name, self.name))
+        print("--- %s.%s" % (self.chain.system.name, self.name))
         ns = self.get_new_state()
         if not ns:
             return

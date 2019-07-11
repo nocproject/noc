@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 
@@ -31,7 +32,7 @@ class BaseRemoteSystem(object):
         "link",
         "subscriber",
         "serviceprofile",
-        "service"
+        "service",
     ]
 
     def __init__(self, remote_system):
@@ -55,8 +56,7 @@ class BaseRemoteSystem(object):
                 self.logger.info("Skipping extractor %s", en)
                 continue
             if en not in self.extractors:
-                self.logger.info(
-                    "Extractor %s is not implemented. Skipping", en)
+                self.logger.info("Extractor %s is not implemented. Skipping", en)
                 continue
             # @todo: Config
             xc = self.extractors[en](self)

@@ -16,10 +16,9 @@ class ProfileApplication(ExtDocApplication):
     """
     Profile application
     """
+
     title = "Profile"
     menu = [_("Setup"), _("Profiles")]
     model = Profile
-    query_fields = [
-        "name__icontains", "description__icontains"
-    ]
+    query_fields = ["name__icontains", "description__icontains"]
     default_ordering = ["name"]

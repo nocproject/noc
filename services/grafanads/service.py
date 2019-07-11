@@ -20,7 +20,7 @@ class GrafanaDSService(UIService):
     def get_handlers(self):
         return super(GrafanaDSService, self).get_handlers() + [
             ("^/api/grafanads/annotations", AnnotationsHandler, {"service": self}),
-            ("^/api/grafanads/", CheckHandler)
+            ("^/api/grafanads/", CheckHandler),
         ]
 
 

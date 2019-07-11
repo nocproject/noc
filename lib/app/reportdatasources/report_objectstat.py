@@ -16,7 +16,7 @@ from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q as m_Q
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.profile import Profile

@@ -19,7 +19,7 @@ import cachetools
 
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 

@@ -10,15 +10,28 @@
 from __future__ import absolute_import
 import operator
 import datetime
+
 # NOC modules
 from .base import BaseCard
 from noc.core.clickhouse.connect import connection
 
 
 class Span(object):
-    def __init__(self, ts, id, parent, server, service, client,
-                 duration, sample, error_code, error_text,
-                 in_label, out_label):
+    def __init__(
+        self,
+        ts,
+        id,
+        parent,
+        server,
+        service,
+        client,
+        duration,
+        sample,
+        error_code,
+        error_text,
+        in_label,
+        out_label,
+    ):
         self.ts = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
         self.id = int(id)
         self.parent = int(parent) if parent else None
@@ -28,9 +41,9 @@ class Span(object):
         self.duration = int(duration)
         self.sample = int(sample)
         self.error_code = error_code
-        self.error_text = error_text.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
-        self.in_label = in_label.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
-        self.out_label = out_label.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
+        self.error_text = error_text.replace("\\r", "<br>").replace("\\n", "<br>").replace("\\", "")
+        self.in_label = in_label.replace("\\r", "<br>").replace("\\n", "<br>").replace("\\", "")
+        self.out_label = out_label.replace("\\r", "<br>").replace("\\n", "<br>").replace("\\", "")
         self.children = []
         self.level = 0
         self.left = 0
@@ -48,13 +61,16 @@ class SpanCard(BaseCard):
         ch = connection()
         data = [
             Span(*r)
-            for r in ch.execute("""
+            for r in ch.execute(
+                """
               SELECT
                 ts, id, parent, server, service, client,
                 duration, sample, error_code,
                 error_text, in_label, out_label
               FROM span
-              WHERE ctx = %s""", [int(self.id)])
+              WHERE ctx = %s""",
+                [int(self.id)],
+            )
         ]
         # Build hierarchy
         smap = dict((s.id, s) for s in data)
@@ -77,11 +93,7 @@ class SpanCard(BaseCard):
         # Flatten
         spans = self.flatten_spans(root)
         #
-        return {
-            "context": int(self.id),
-            "root": root,
-            "spans": spans
-        }
+        return {"context": int(self.id), "root": root, "spans": spans}
 
     def flatten_spans(self, span, level=0):
         span.level = level

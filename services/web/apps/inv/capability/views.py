@@ -8,6 +8,7 @@
 
 import itertools
 from collections import defaultdict
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.capability import Capability
@@ -19,6 +20,7 @@ class CapabilityApplication(ExtDocApplication):
     """
     Capability application
     """
+
     title = _("Capability")
     menu = [_("Setup"), _("Capabilities")]
     model = Capability
@@ -46,18 +48,27 @@ class CapabilityApplication(ExtDocApplication):
         """
         root_c = {"text": "root", "children": []}
 
-        caps_s = sorted(Capability.objects.filter().only("id", "name", "type"),
-                        key=lambda x: (x.name.split("|")[0], x.name.count("|"), x.name))
-        caps_d = {tuple(k): list(g) for (k, g) in
-                  itertools.groupby(caps_s, key=lambda x: x.name.split("|")[:-1])}
+        caps_s = sorted(
+            Capability.objects.filter().only("id", "name", "type"),
+            key=lambda x: (x.name.split("|")[0], x.name.count("|"), x.name),
+        )
+        caps_d = {
+            tuple(k): list(g)
+            for (k, g) in itertools.groupby(caps_s, key=lambda x: x.name.split("|")[:-1])
+        }
 
         context = defaultdict(list)
         for e in caps_d:
-            children = [{"text": f.name.split()[-1].strip(),
-                         "type": f.type,
-                         "id": str(f.id),
-                         "leaf": True,
-                         "checked": False} for f in caps_d[e]]
+            children = [
+                {
+                    "text": f.name.split()[-1].strip(),
+                    "type": f.type,
+                    "id": str(f.id),
+                    "leaf": True,
+                    "checked": False,
+                }
+                for f in caps_d[e]
+            ]
             if not e:
                 self.logger.warning("Not e: %s, children: %s" % (caps_d[e], children))
                 # @todo Update inside list

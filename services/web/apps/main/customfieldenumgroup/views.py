@@ -18,6 +18,7 @@ class CustomFieldEnumGroupApplication(ExtModelApplication):
     """
     CustomFieldEnumGroup application
     """
+
     title = _("Enum Groups")
     menu = [_("Setup"), _("Enum Groups")]
     model = CustomFieldEnumGroup

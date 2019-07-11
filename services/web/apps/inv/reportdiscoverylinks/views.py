@@ -8,9 +8,10 @@
 
 # Third-party modules
 from pymongo import ReadPreference
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
@@ -21,29 +22,29 @@ from noc.core.profile.loader import GENERIC_PROFILE
 
 class ReportFilterApplication(SimpleReport):
     title = _("Discovery Links Summary")
-    predefined_reports = {
-        "default": PredefinedReport(
-            _("Discovery Links Summary"), {}
-        )
-    }
+    predefined_reports = {"default": PredefinedReport(_("Discovery Links Summary"), {})}
 
     def get_data(self, request, **kwargs):
         data = []
 
-        value = get_db()["noc.links"].with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
-            [
-                {"$unwind": "$interfaces"},
-                {
-                    "$lookup": {
-                        "from": "noc.interfaces",
-                        "localField": "interfaces",
-                        "foreignField": "_id",
-                        "as": "int"
-                    }
-                },
-                {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}
-            ])
+        value = (
+            get_db()["noc.links"]
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .aggregate(
+                [
+                    {"$unwind": "$interfaces"},
+                    {
+                        "$lookup": {
+                            "from": "noc.interfaces",
+                            "localField": "interfaces",
+                            "foreignField": "_id",
+                            "as": "int",
+                        }
+                    },
+                    {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}},
+                ]
+            )
+        )
         count = {0: set([]), 1: set([]), 2: set([]), 3: set([])}
         ap = AuthProfile.objects.filter(name__startswith="TG")
         for v in value:
@@ -60,22 +61,29 @@ class ReportFilterApplication(SimpleReport):
                 continue
             data += [SectionRow(name=p.name)]
             smos = set(
-                ManagedObject.objects.filter(
-                    pool=p, is_managed=True).exclude(
-                    profile=Profile.get_by_name(GENERIC_PROFILE)).exclude(
-                    auth_profile__in=ap
-                ).values_list('id', flat=True))
+                ManagedObject.objects.filter(pool=p, is_managed=True)
+                .exclude(profile=Profile.get_by_name(GENERIC_PROFILE))
+                .exclude(auth_profile__in=ap)
+                .values_list("id", flat=True)
+            )
             all_p = 100.0 / len(smos) if len(smos) else 1.0
             data += [("All polling", len(smos))]
             for c in count:
                 if c == 3:
-                    data += [("More 3", len(count[c].intersection(smos)), "%.2f %%" %
-                              round(len(count[c].intersection(smos)) * all_p, 2))]
+                    data += [
+                        (
+                            "More 3",
+                            len(count[c].intersection(smos)),
+                            "%.2f %%" % round(len(count[c].intersection(smos)) * all_p, 2),
+                        )
+                    ]
                     continue
                 data += [
                     (
-                        c, len(count[c].intersection(smos)),
-                        "%.2f %%" % round(len(count[c].intersection(smos)) * all_p), 2
+                        c,
+                        len(count[c].intersection(smos)),
+                        "%.2f %%" % round(len(count[c].intersection(smos)) * all_p),
+                        2,
                     )
                 ]
 
@@ -86,7 +94,6 @@ class ReportFilterApplication(SimpleReport):
 
         return self.from_dataset(
             title=self.title,
-            columns=[
-                _("Links count"), _("MO Count"), _("Percent at All")
-            ],
-            data=data)
+            columns=[_("Links count"), _("MO Count"), _("Percent at All")],
+            data=data,
+        )

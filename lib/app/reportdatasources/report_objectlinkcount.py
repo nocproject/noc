@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportObjectLinkCount datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from .base import BaseReportColumn
 
 

@@ -67,7 +67,7 @@ class URL(object):
     def __str__(self):
         s = self.url
         if self.name:
-            s += u", name='%s'" % self.name
+            s += ", name='%s'" % self.name
         return s
 
 

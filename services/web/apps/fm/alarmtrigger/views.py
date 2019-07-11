@@ -16,6 +16,7 @@ class AlarmTriggerApplication(ExtModelApplication):
     """
     AlarmTrigger application
     """
+
     title = _("Alarm Triggers")
     menu = [_("Setup"), _("Alarm Triggers")]
     model = AlarmTrigger

@@ -9,17 +9,24 @@
 # Python modules
 from __future__ import absolute_import
 import operator
+
 # Third-party modules
 import tornado.gen
 import ujson
 import dateutil.parser
 import six
 from six.moves import zip
+
 # NOC modules
 from noc.config import config
 from noc.core.service.apiaccess import authenticated
-from noc.sa.interfaces.base import (DictParameter, DictListParameter, DateTimeShiftParameter,
-                                    StringParameter, StringListParameter)
+from noc.sa.interfaces.base import (
+    DictParameter,
+    DictListParameter,
+    DateTimeShiftParameter,
+    StringParameter,
+    StringListParameter,
+)
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.metrictype import MetricType
 from noc.core.clickhouse.connect import ClickhouseClient
@@ -28,15 +35,20 @@ from noc.sa.models.profile import Profile
 from ..base import NBIAPI
 
 
-Request = DictParameter(attrs={
-    "from": DateTimeShiftParameter(required=True),
-    "to": DateTimeShiftParameter(required=True),
-    "metrics": DictListParameter(attrs={
-        "object": StringParameter(required=True),
-        "interfaces": StringListParameter(required=False),
-        "metric_types": StringListParameter(required=True)
-    }, required=True)
-})
+Request = DictParameter(
+    attrs={
+        "from": DateTimeShiftParameter(required=True),
+        "to": DateTimeShiftParameter(required=True),
+        "metrics": DictListParameter(
+            attrs={
+                "object": StringParameter(required=True),
+                "interfaces": StringListParameter(required=False),
+                "metric_types": StringListParameter(required=True),
+            },
+            required=True,
+        ),
+    }
+)
 
 S_INTERFACE = "interface"
 
@@ -89,7 +101,7 @@ class ObjectMetricsAPI(NBIAPI):
         id_to_bi = {}
         profiles = {}  # object id -> profile
         for mo_id, bi_id, profile_id in ManagedObject.objects.filter(
-                id__in=list(objects)
+            id__in=list(objects)
         ).values_list("id", "bi_id", "profile"):
             id_to_bi[str(mo_id)] = bi_id
             profiles[str(mo_id)] = Profile.get_by_id(profile_id).get_profile()
@@ -97,7 +109,9 @@ class ObjectMetricsAPI(NBIAPI):
         scopes = {}  # table_name -> ([fields, ..], [where, ..])
         for mc in req["metrics"]:
             profile = profiles[mc["object"]]
-            ifaces = tuple(sorted(profile.convert_interface_name(i) for i in mc.get("interfaces", [])))
+            ifaces = tuple(
+                sorted(profile.convert_interface_name(i) for i in mc.get("interfaces", []))
+            )
             for mn in mc["metric_types"]:
                 mt = MetricType.get_by_name(mn)
                 if not mt:
@@ -119,8 +133,11 @@ class ObjectMetricsAPI(NBIAPI):
             date_q = "date = '%s'" % from_date
         else:
             date_q = "date >= '%s' AND date <= '%s'" % (from_date, to_date)
-        date_q = "%s AND ts >= '%s' AND ts <= '%s'" % (date_q, from_ts.replace(tzinfo=None).isoformat(),
-                                                       to_ts.replace(tzinfo=None).isoformat())
+        date_q = "%s AND ts >= '%s' AND ts <= '%s'" % (
+            date_q,
+            from_ts.replace(tzinfo=None).isoformat(),
+            to_ts.replace(tzinfo=None).isoformat(),
+        )
         connect = ClickhouseClient()
         scope_data = {}
         for table in scopes:
@@ -134,12 +151,16 @@ class ObjectMetricsAPI(NBIAPI):
                 elif len(wx[1]) == 1:
                     qx += ["(managed_object = %d AND path[4] = '%s')" % (wx[0], wx[1][0])]
                 else:
-                    qx += ["(managed_object = %d AND path[4] IN (%s))" % (
-                        wx[0], ", ".join("'%s'" % x for x in wx[1])
-                    )]
+                    qx += [
+                        "(managed_object = %d AND path[4] IN (%s))"
+                        % (wx[0], ", ".join("'%s'" % x for x in wx[1]))
+                    ]
             fields = ["ts", "managed_object", "path"] + sorted(scopes[table][0])
             query = "SELECT %s FROM %s WHERE %s AND (%s)" % (
-                ", ".join(fields), table, date_q, " OR ".join(qx)
+                ", ".join(fields),
+                table,
+                date_q,
+                " OR ".join(qx),
             )
             # Execute
             self.logger.info("%s", query)
@@ -190,29 +211,20 @@ class ObjectMetricsAPI(NBIAPI):
                     # Clean data type
                     points = sorted(
                         ((p[0].replace(" ", "T"), mt.clean_value(p[1])) for p in points),
-                        key=operator.itemgetter(0)
+                        key=operator.itemgetter(0),
                     )
                     #
-                    r = {
-                        "object": mc["object"],
-                        "metric_type": mn,
-                        "path": path,
-                        "values": points
-                    }
+                    r = {"object": mc["object"], "metric_type": mn, "path": path, "values": points}
                     if iface is not None:
                         r["interface"] = iface
                     result += [r]
         # Return response
-        return 200, {
-            "from": req["from"],
-            "to": req["to"],
-            "metrics": result
-        }
+        return 200, {"from": req["from"], "to": req["to"], "metrics": result}
 
     @staticmethod
     def clear_path(path):
         def q(item):
-            if len(item) >= 2 and item[0] == item[-1] and item[0] in ("'", "\""):
+            if len(item) >= 2 and item[0] == item[-1] and item[0] in ("'", '"'):
                 item = item[1:-1]
             return item
 

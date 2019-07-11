@@ -46,4 +46,4 @@ class ValidationPolicySettings(Document):
     policies = ListField(EmbeddedDocumentField(ValidationPolicyItem))
 
     def __str__(self):
-        return u"%s: %s" % (self.model_id, self.object_id)
+        return "%s: %s" % (self.model_id, self.object_id)

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import AlarmPlugin
 
@@ -18,6 +19,6 @@ class ThresholdsPlugin(AlarmPlugin):
     def get_data(self, alarm, config):
         r = {
             "plugins": [("NOC.fm.alarm.plugins.Thresholds", {})],
-            "thresholds": alarm.vars.get("thresholds", [])
+            "thresholds": alarm.vars.get("thresholds", []),
         }
         return r

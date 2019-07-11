@@ -18,6 +18,7 @@ class VLANCheck(PolicyDiscoveryCheck):
     """
     VLAN discovery
     """
+
     name = "vlan"
     required_script = "get_vlans"
     # @todo: required_capabilities = ?
@@ -33,8 +34,7 @@ class VLANCheck(PolicyDiscoveryCheck):
         self.logger.info("Checking VLANs")
         if not self.object.segment.profile.enable_vlan:
             self.logger.info(
-                "VLAN discovery is disabled for segment '%s'. Skipping",
-                self.object.segment.name
+                "VLAN discovery is disabled for segment '%s'. Skipping", self.object.segment.name
             )
             return
         # Get effective border segment
@@ -72,18 +72,16 @@ class VLANCheck(PolicyDiscoveryCheck):
         else:
             # Get from database
             metrics["vlan_db_get"] += 1
-            vlan = VLAN.objects.filter(segment=segment.id,
-                                       vlan=vlan_id).first()
+            vlan = VLAN.objects.filter(segment=segment.id, vlan=vlan_id).first()
         # Create VLAN when necessary
         if not vlan:
-            self.logger.info("[%s] Creating VLAN %s(%s)",
-                             segment.name, vlan_id, name)
+            self.logger.info("[%s] Creating VLAN %s(%s)", segment.name, vlan_id, name)
             vlan = VLAN(
                 name=name,
                 profile=segment.profile.default_vlan_profile,
                 vlan=vlan_id,
                 segment=segment,
-                description=description
+                description=description,
             )
             vlan.save()
             metrics["vlan_created"] += 1
@@ -123,8 +121,7 @@ class VLANCheck(PolicyDiscoveryCheck):
             return []
         else:
             self.logger.info(
-                "[%s] VLAN discovery is disabled. Not collecting VLANs",
-                self.object.segment.name
+                "[%s] VLAN discovery is disabled. Not collecting VLANs", self.object.segment.name
             )
             return []
 
@@ -152,14 +149,12 @@ class VLANCheck(PolicyDiscoveryCheck):
                     segment_vlans[segment][vlan] = (
                         # @todo: Smarter merge
                         segment_vlans[segment][vlan][0] or name,
-                        segment_vlans[segment][vlan][1] or description
+                        segment_vlans[segment][vlan][1] or description,
                     )
                 else:
                     segment_vlans[segment][vlan] = (name, description)
             else:
-                segment_vlans[segment] = {
-                    vlan: (name, description)
-                }
+                segment_vlans[segment] = {vlan: (name, description)}
         return segment_vlans
 
     def get_vlan_cache(self, segments):
@@ -169,13 +164,12 @@ class VLANCheck(PolicyDiscoveryCheck):
         :return: (segment, vlan id) -> VLAN instance
         """
         metrics["vlan_segment_fetch"] += 1
-        self.logger.info("Bulk fetching vlans from segments: %s",
-                         ",".join(s.name for s in segments))
+        self.logger.info(
+            "Bulk fetching vlans from segments: %s", ",".join(s.name for s in segments)
+        )
         return dict(
             ((v.segment, v.vlan), v)
-            for v in VLAN.objects.filter(
-                segment__in=[s.id for s in segments]
-            )
+            for v in VLAN.objects.filter(segment__in=[s.id for s in segments])
         )
 
     def ensure_vlans(self, vlans):
@@ -200,7 +194,7 @@ class VLANCheck(PolicyDiscoveryCheck):
                     vlan,
                     segment_vlans[segment][vlan][0],
                     segment_vlans[segment][vlan][1],
-                    cache
+                    cache,
                 )
                 for vlan in segment_vlans[segment]
             ]
@@ -235,8 +229,8 @@ class VLANCheck(PolicyDiscoveryCheck):
         return self.object.scripts.get_vlans()
 
     def get_data_from_confdb(self):
-        r = [{
-            "vlan_id": d["vlan"],
-            "name": d.get("name", "VLAN %s" % d["vlan"])
-        } for d in self.confdb.query(self.VLAN_QUERY)]
+        r = [
+            {"vlan_id": d["vlan"], "name": d.get("name", "VLAN %s" % d["vlan"])}
+            for d in self.confdb.query(self.VLAN_QUERY)
+        ]
         return IGetVlans().clean_result(r)

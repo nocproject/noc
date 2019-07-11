@@ -71,5 +71,5 @@ MIB = {
     "CISCO-VLAN-MEMBERSHIP-MIB::vmVmpsChange": "1.3.6.1.4.1.9.9.68.2.0.1",
     "CISCO-VLAN-MEMBERSHIP-MIB::vmMIBConformance": "1.3.6.1.4.1.9.9.68.3",
     "CISCO-VLAN-MEMBERSHIP-MIB::vmMIBCompliances": "1.3.6.1.4.1.9.9.68.3.1",
-    "CISCO-VLAN-MEMBERSHIP-MIB::vmMIBGroups": "1.3.6.1.4.1.9.9.68.3.2"
+    "CISCO-VLAN-MEMBERSHIP-MIB::vmMIBGroups": "1.3.6.1.4.1.9.9.68.3.2",
 }

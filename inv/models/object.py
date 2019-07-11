@@ -21,7 +21,7 @@ import six
 
 # NOC modules
 from noc.gis.models.layer import Layer
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.core.middleware.tls import get_user
 from noc.core.gridvcs.manager import GridVCSField
@@ -243,7 +243,7 @@ class Object(Document):
         """
         c = self.get_p2p_connection(name)[0]
         if c:
-            self.log(u"'%s' disconnected" % name, system="CORE", op="DISCONNECT")
+            self.log("'%s' disconnected" % name, system="CORE", op="DISCONNECT")
             c.delete()
 
     def connect_p2p(self, name, remote_object, remote_name, data, reconnect=False):
@@ -298,13 +298,11 @@ class Object(Document):
             data=data,
         ).save()
         self.log(
-            u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
-            system="CORE",
-            op="CONNECT",
+            "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
         # Disconnect from container on o-connection
         if lc.direction == "o" and self.container:
-            self.log(u"Remove from %s" % self.container, system="CORE", op="REMOVE")
+            self.log("Remove from %s" % self.container, system="CORE", op="REMOVE")
             self.container = None
             self.save()
         return c
@@ -347,9 +345,7 @@ class Object(Document):
             layer=layer,
         ).save()
         self.log(
-            u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
-            system="CORE",
-            op="CONNECT",
+            "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
 
     def put_into(self, container):

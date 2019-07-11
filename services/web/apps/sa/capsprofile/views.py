@@ -16,6 +16,7 @@ class CapsProfileApplication(ExtDocApplication):
     """
     CapsProfile application
     """
+
     title = "Caps Profile"
     menu = [_("Setup"), _("Caps Profiles")]
     model = CapsProfile

@@ -11,10 +11,12 @@ from __future__ import absolute_import
 import socket
 import datetime
 import re
+
 # Third-party modules
 import tornado.ioloop
 import tornado.iostream
 import tornado.gen
+
 # NOC modules
 from noc.config import config
 from noc.core.log import PrefixLoggerAdapter
@@ -62,7 +64,9 @@ class MMLBase(object):
         self.tos = tos
         self.rx_mml_end = re.compile(self.script.profile.pattern_mml_end, re.MULTILINE)
         if self.script.profile.pattern_mml_continue:
-            self.rx_mml_continue = re.compile(self.script.profile.pattern_mml_continue, re.MULTILINE)
+            self.rx_mml_continue = re.compile(
+                self.script.profile.pattern_mml_continue, re.MULTILINE
+            )
         else:
             self.rx_mml_continue = None
 
@@ -82,15 +86,11 @@ class MMLBase(object):
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:
             return
-        self.logger.debug("Setting close timeout to %ss",
-                          session_timeout)
+        self.logger.debug("Setting close timeout to %ss", session_timeout)
         # Cannot call call_later directly due to
         # thread-safety problems
         # See tornado issue #1773
-        tornado.ioloop.IOLoop.instance().add_callback(
-            self._set_close_timeout,
-            session_timeout
-        )
+        tornado.ioloop.IOLoop.instance().add_callback(self._set_close_timeout, session_timeout)
 
     def _set_close_timeout(self, session_timeout):
         """
@@ -99,31 +99,23 @@ class MMLBase(object):
         :return:
         """
         self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
-            session_timeout,
-            self.close
+            session_timeout, self.close
         )
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if self.tos:
-            s.setsockopt(
-                socket.IPPROTO_IP, socket.IP_TOS, self.tos
-            )
+            s.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, self.tos)
         if self.HAS_TCP_NODELAY:
             s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         if self.HAS_TCP_KEEPALIVE:
-            s.setsockopt(
-                socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1
-            )
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
             if self.HAS_TCP_KEEPIDLE:
-                s.setsockopt(socket.SOL_TCP,
-                             socket.TCP_KEEPIDLE, self.KEEP_IDLE)
+                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, self.KEEP_IDLE)
             if self.HAS_TCP_KEEPINTVL:
-                s.setsockopt(socket.SOL_TCP,
-                             socket.TCP_KEEPINTVL, self.KEEP_INTVL)
+                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPINTVL, self.KEEP_INTVL)
             if self.HAS_TCP_KEEPCNT:
-                s.setsockopt(socket.SOL_TCP,
-                             socket.TCP_KEEPCNT, self.KEEP_CNT)
+                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
 
     def set_timeout(self, timeout):
@@ -155,7 +147,7 @@ class MMLBase(object):
             self.iostream = self.create_iostream()
             address = (
                 self.script.credentials.get("address"),
-                self.script.credentials.get("cli_port", self.default_port)
+                self.script.credentials.get("cli_port", self.default_port),
             )
             self.logger.debug("Connecting %s", address)
             try:
@@ -205,7 +197,7 @@ class MMLBase(object):
                 match = self.rx_mml_continue.search(r, offset)
                 if match:
                     self.logger.debug("Continuing in the next block")
-                    result += [r[:match.start()]]
+                    result += [r[: match.start()]]
                     continue
             result += [r]
             break
@@ -229,8 +221,9 @@ class MMLBase(object):
         if not self.ioloop:
             self.logger.debug("Creating IOLoop")
             self.ioloop = tornado.ioloop.IOLoop()
-        with Span(server=self.script.credentials.get("address"),
-                  service=self.name, in_label=self.command) as s:
+        with Span(
+            server=self.script.credentials.get("address"), service=self.name, in_label=self.command
+        ) as s:
             self.ioloop.run_sync(self.submit)
             if self.error:
                 if s:
@@ -244,13 +237,9 @@ class MMLBase(object):
         connect_retries = self.CONNECT_RETRIES
         while True:
             try:
-                f = self.iostream.read_bytes(self.BUFFER_SIZE,
-                                             partial=True)
+                f = self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
                 if self.current_timeout:
-                    r = yield tornado.gen.with_timeout(
-                        self.current_timeout,
-                        f
-                    )
+                    r = yield tornado.gen.with_timeout(self.current_timeout, f)
                 else:
                     r = yield f
             except tornado.iostream.StreamClosedError:
@@ -259,7 +248,8 @@ class MMLBase(object):
                 if not self.is_started and connect_retries:
                     self.logger.info(
                         "Connection reset. %d retries left. Waiting %d seconds",
-                        connect_retries, self.CONNECT_TIMEOUT
+                        connect_retries,
+                        self.CONNECT_TIMEOUT,
                     )
                     while connect_retries:
                         yield tornado.gen.sleep(self.CONNECT_TIMEOUT)
@@ -267,7 +257,7 @@ class MMLBase(object):
                         self.iostream = self.create_iostream()
                         address = (
                             self.script.credentials.get("address"),
-                            self.script.credentials.get("cli_port", self.default_port)
+                            self.script.credentials.get("cli_port", self.default_port),
                         )
                         self.logger.debug("Connecting %s", address)
                         try:
@@ -288,7 +278,7 @@ class MMLBase(object):
             match = self.rx_mml_end.search(self.buffer, offset)
             if match:
                 self.logger.debug("End of the block")
-                r = self.buffer[:match.start()]
+                r = self.buffer[: match.start()]
                 self.buffer = self.buffer[match.end()]
                 raise tornado.gen.Return(r)
 

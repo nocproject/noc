@@ -16,6 +16,7 @@ class MetricScopeApplication(ExtDocApplication):
     """
     MetricScope application
     """
+
     title = "MetricScope"
     menu = [_("Setup"), _("Metric Scopes")]
     model = MetricScope

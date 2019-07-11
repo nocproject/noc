@@ -29,7 +29,7 @@ class Service(BaseFact):
         self.port = port
 
     def __str__(self):
-        return u"Service %s" % self.name
+        return "Service %s" % self.name
 
     @property
     def name(self):

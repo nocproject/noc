@@ -16,6 +16,7 @@ class TagApplication(ExtDocApplication):
     """
     Tag application
     """
+
     title = _("Tag")
     # menu = [_("Setup"), _("Tag")]
     model = Tag
@@ -37,5 +38,5 @@ class TagApplication(ExtDocApplication):
         return {
             "data": [{"id": t.tag, "label": t.tag} for t in tags],
             "total": tags.count(),
-            "success": True
+            "success": True,
         }

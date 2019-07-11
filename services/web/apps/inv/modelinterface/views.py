@@ -16,6 +16,7 @@ class ModelInterfaceApplication(ExtDocApplication):
     """
     ModelInterface application
     """
+
     title = _("Model Interface")
     menu = [_("Setup"), _("Model Interfaces")]
     model = ModelInterface

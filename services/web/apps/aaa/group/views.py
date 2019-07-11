@@ -7,9 +7,11 @@
 # ---------------------------------------------------------------------
 
 import threading
+
 # Third-party modules
 from django.http import HttpResponse
 from django.conf import settings
+
 # NOC modules
 from noc.lib.app.site import site
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
@@ -36,10 +38,7 @@ class GroupsApplication(ExtModelApplication):
     custom_m2m_fields = {"permissions": Permission}
 
     @classmethod
-    @cachedmethod(
-        key="apps_permissions_list",
-        lock=lambda _: apps_lock
-    )
+    @cachedmethod(key="apps_permissions_list", lock=lambda _: apps_lock)
     def apps_permissions_list(cls):
         r = []
         apps = list(site.apps)
@@ -52,9 +51,14 @@ class GroupsApplication(ExtModelApplication):
                 a = site.apps[app]
                 if app_perms:
                     for p in app_perms:
-                        r += [{
-                            "module": m.MODULE_NAME, "title": str(a.title),
-                            "name": p, "status": False}]
+                        r += [
+                            {
+                                "module": m.MODULE_NAME,
+                                "title": str(a.title),
+                                "name": p,
+                                "status": False,
+                            }
+                        ]
         return r
 
     @view(method=["GET"], url=r"^(?P<id>\d+)/?$", access="read", api=True)
@@ -69,8 +73,7 @@ class GroupsApplication(ExtModelApplication):
         only = request.GET.get(self.only_param)
         if only:
             only = only.split(",")
-        return self.response(self.instance_to_dict_get(o, fields=only),
-                             status=self.OK)
+        return self.response(self.instance_to_dict_get(o, fields=only), status=self.OK)
 
     def instance_to_dict_get(self, o, fields=None):
         r = super(GroupsApplication, self).instance_to_dict(o, fields)
@@ -83,7 +86,6 @@ class GroupsApplication(ExtModelApplication):
         return r
 
     def update_m2m(self, o, name, values):
-        print("Update m2m", values)
         if values is None:
             return  # Do not touch
         if name == "permissions":
@@ -96,5 +98,6 @@ class GroupsApplication(ExtModelApplication):
         """
         Returns dict available permissions
         """
-        return self.response({"data": {"permissions": self.apps_permissions_list()}},
-                             status=self.OK)
+        return self.response(
+            {"data": {"permissions": self.apps_permissions_list()}}, status=self.OK
+        )

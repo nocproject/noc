@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .oid import OIDRule
 
@@ -19,10 +20,20 @@ class CapabilityListRule(OIDRule):
     separator: String separator, comma by default
     strip: Strip resulting item, remove spaces from both sides
     """
+
     name = "caplist"
 
-    def __init__(self, oid, type=None, scale=1, capability=None,
-                 separator=",", strip=True, default=None, path=None):
+    def __init__(
+        self,
+        oid,
+        type=None,
+        scale=1,
+        capability=None,
+        separator=",",
+        strip=True,
+        default=None,
+        path=None,
+    ):
         super(CapabilityListRule, self).__init__(oid, type=type, scale=scale)
         self.capability = capability
         self.separator = separator

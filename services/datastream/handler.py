@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import tornado.gen
 import tornado.web
+
 # NOC modules
 from noc.core.service.apiaccess import APIAccessRequestHandler, authenticated
 
@@ -54,8 +56,9 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         while True:
             r = []
             try:
-                for item_id, change_id, data in self.datastream.iter_data(limit=limit, filters=filters,
-                                                                          change_id=change_id):
+                for item_id, change_id, data in self.datastream.iter_data(
+                    limit=limit, filters=filters, change_id=change_id
+                ):
                     if not first_change:
                         first_change = change_id
                     last_change = change_id

@@ -16,6 +16,7 @@ class AlarmSeverityApplication(ExtDocApplication):
     """
     AlarmSeverity application
     """
+
     title = _("Alarm Severity")
     menu = [_("Setup"), _("Alarm Severities")]
     model = AlarmSeverity

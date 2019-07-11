@@ -8,9 +8,11 @@
 
 # Python modules
 import argparse
+
 # Third-party modules
 import yaml
 import ujson
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.main.models.remotesystem import RemoteSystem
@@ -23,68 +25,39 @@ class Command(BaseCommand):
     CONTROL_MESSAGE = """Summary of %s changes: %d, overload control number: %d\n"""
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--system",
-            action="append",
-            help="System to extract"
-        )
+        parser.add_argument("--system", action="append", help="System to extract")
         subparsers = parser.add_subparsers(dest="cmd")
         # load command
         load_parser = subparsers.add_parser("load")
+        load_parser.add_argument("system", help="Remote system name")
         load_parser.add_argument(
-            "system",
-            help="Remote system name"
-        )
-        load_parser.add_argument(
-            "loaders",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
+            "loaders", nargs=argparse.REMAINDER, help="List of extractor names"
         )
         # check command
         check_parser = subparsers.add_parser("check")
-        check_parser.add_argument(
-            "system",
-            help="Remote system name"
-        )
+        check_parser.add_argument("system", help="Remote system name")
         # diff command
         diff_parser = subparsers.add_parser("diff")
+        diff_parser.add_argument("system", help="Remote system name")
         diff_parser.add_argument(
-            "system",
-            help="Remote system name"
-        )
-        diff_parser.add_argument(
-            "--summary",
-            action="store_true",
-            default=False,
-            help="Show only summary"
+            "--summary", action="store_true", default=False, help="Show only summary"
         )
         diff_parser.add_argument(
             "--control-default",
             action="store",
             type=int,
             default=0,
-            help="Default control number in summary object"
+            help="Default control number in summary object",
         )
         diff_parser.add_argument(
-            "--control-dict",
-            type=str,
-            help="Dictionary of control numbers in summary object"
+            "--control-dict", type=str, help="Dictionary of control numbers in summary object"
         )
-        diff_parser.add_argument(
-            "diffs",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
-        )
+        diff_parser.add_argument("diffs", nargs=argparse.REMAINDER, help="List of extractor names")
         # extract command
         extract_parser = subparsers.add_parser("extract")
+        extract_parser.add_argument("system", help="Remote system name")
         extract_parser.add_argument(
-            "system",
-            help="Remote system name"
-        )
-        extract_parser.add_argument(
-            "extractors",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
+            "extractors", nargs=argparse.REMAINDER, help="List of extractor names"
         )
 
     def get_config(self):
@@ -120,8 +93,7 @@ class Command(BaseCommand):
 
         diffs = set(options.get("diffs", []))
         if summary:
-            self.stdout.write(self.SUMMARY_MASK % (
-                "Loader", "New", "Updated", "Deleted"))
+            self.stdout.write(self.SUMMARY_MASK % ("Loader", "New", "Updated", "Deleted"))
         control_dict = {}
         if options["control_dict"]:
             try:
@@ -137,12 +109,15 @@ class Command(BaseCommand):
             if summary:
                 i, u, d = l.check_diff_summary()
                 control_num = control_dict.get(l.name, options["control_default"])
-                self.stdout.write(self.SUMMARY_MASK % (
-                    l.name, i, u, d))
+                self.stdout.write(self.SUMMARY_MASK % (l.name, i, u, d))
                 if control_num:
                     if sum([i, u, d]) >= control_num:
-                        self.stdout.write(self.CONTROL_MESSAGE % (l.name, sum([i, u, d]), control_num))
-                        self.stderr.write(self.CONTROL_MESSAGE % (l.name, sum([i, u, d]), control_num))
+                        self.stdout.write(
+                            self.CONTROL_MESSAGE % (l.name, sum([i, u, d]), control_num)
+                        )
+                        self.stderr.write(
+                            self.CONTROL_MESSAGE % (l.name, sum([i, u, d]), control_num)
+                        )
                         n_errors = 1
                         break
             else:

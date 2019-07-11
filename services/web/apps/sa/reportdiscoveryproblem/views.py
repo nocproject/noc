@@ -9,10 +9,11 @@
 # Third-party modules
 import six
 from django import forms
+from pymongo import ReadPreference
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from noc.lib.nosql import get_db
-from pymongo import ReadPreference
+from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
@@ -26,6 +27,7 @@ from noc.core.translation import ugettext as _
 
 class ReportDiscoveryProblem(object):
     """Report for MO links detail"""
+
     def __init__(self, mos, avail_only=False, match=None):
         """
 
@@ -53,12 +55,23 @@ class ReportDiscoveryProblem(object):
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         pipeline = [
             {"$match": {"key": {"$in": self.mo_ids}, "jcls": discovery}},
-            {"$project": {
-                "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
-                "st": True,
-                "key": True}},
-            {"$lookup": {"from": "noc.joblog", "localField": "j_id", "foreignField": "_id", "as": "job"}},
-            {"$project": {"job.problems": True, "st": True, "key": True}}]
+            {
+                "$project": {
+                    "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
+                    "st": True,
+                    "key": True,
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "noc.joblog",
+                    "localField": "j_id",
+                    "foreignField": "_id",
+                    "as": "job",
+                }
+            },
+            {"$project": {"job.problems": True, "st": True, "key": True}},
+        ]
         if self.match:
             # @todo check match
             pipeline += [{"$match": self.match}]
@@ -68,8 +81,11 @@ class ReportDiscoveryProblem(object):
 
     def __iter__(self):
         for p in self.mos_pools:
-            r = get_db()[self.coll_name % p.name].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED
-                                                               ).aggregate(self.pipelines.get(p.name, self.pipeline()))
+            r = (
+                get_db()[self.coll_name % p.name]
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(self.pipelines.get(p.name, self.pipeline()))
+            )
             for x in r:
                 # @todo Append info for MO
                 yield x
@@ -79,61 +95,55 @@ class ReportForm(forms.Form):
     pool = forms.ChoiceField(
         label=_("Managed Objects Pool"),
         required=False,
-        choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+        choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+    )
     obj_profile = forms.ModelChoiceField(
         label=_("Managed Objects Profile"),
         required=False,
-        queryset=ManagedObjectProfile.objects.order_by("name"))
+        queryset=ManagedObjectProfile.objects.order_by("name"),
+    )
     selector = forms.ModelChoiceField(
         label=_("Managed Objects Selector"),
         required=False,
-        queryset=ManagedObjectSelector.objects.order_by("name"))
-    avail_status = forms.BooleanField(
-        label=_("Filter by Ping status"),
-        required=False
+        queryset=ManagedObjectSelector.objects.order_by("name"),
     )
-    profile_check_only = forms.BooleanField(
-        label=_("Profile check only"),
-        required=False
-    )
-    failed_scripts_only = forms.BooleanField(
-        label=_("Failed discovery only"),
-        required=False
-    )
-    filter_pending_links = forms.BooleanField(
-        label=_("Filter Pending links"),
-        required=False
-    )
-    filter_none_objects = forms.BooleanField(
-        label=_("Filter None problems"),
-        required=False
-    )
-    filter_view_other = forms.BooleanField(
-        label=_("Show other problems"),
-        required=False
-    )
+    avail_status = forms.BooleanField(label=_("Filter by Ping status"), required=False)
+    profile_check_only = forms.BooleanField(label=_("Profile check only"), required=False)
+    failed_scripts_only = forms.BooleanField(label=_("Failed discovery only"), required=False)
+    filter_pending_links = forms.BooleanField(label=_("Filter Pending links"), required=False)
+    filter_none_objects = forms.BooleanField(label=_("Filter None problems"), required=False)
+    filter_view_other = forms.BooleanField(label=_("Show other problems"), required=False)
 
 
 class ReportFilterApplication(SimpleReport):
     title = _("Discovery Problem")
     form = ReportForm
     try:
-        default_selector = ManagedObjectSelector.get_objects_from_expression("@Problem Discovery Report")
+        default_selector = ManagedObjectSelector.get_objects_from_expression(
+            "@Problem Discovery Report"
+        )
     except ManagedObjectSelector.DoesNotExist:
         default_selector = None
     predefined_reports = {
         "default": PredefinedReport(
-            _("Problem Discovery 2(default)"), {
-                "selector": default_selector
-            }
+            _("Problem Discovery 2(default)"), {"selector": default_selector}
         )
     }
 
-    def get_data(self, request, pool=None, obj_profile=None, selector=None,
-                 avail_status=None, profile_check_only=None,
-                 failed_scripts_only=None, filter_pending_links=None,
-                 filter_none_objects=None, filter_view_other=None,
-                 **kwargs):
+    def get_data(
+        self,
+        request,
+        pool=None,
+        obj_profile=None,
+        selector=None,
+        avail_status=None,
+        profile_check_only=None,
+        failed_scripts_only=None,
+        filter_pending_links=None,
+        filter_none_objects=None,
+        filter_view_other=None,
+        **kwargs
+    ):
         data = []
         match = None
         code_map = {
@@ -143,7 +153,7 @@ class ReportFilterApplication(SimpleReport):
             "10001": "Authentication failed",
             "10002": "No super command defined",
             "10003": "No super privileges",
-            "10004": "SSH Protocol error"
+            "10004": "SSH Protocol error",
         }
 
         if pool:
@@ -162,19 +172,28 @@ class ReportFilterApplication(SimpleReport):
             mos = mos.filter(object_profile=obj_profile)
         if filter_view_other:
             mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
-            mos = mos.filter(profile=Profile.objects.get(name=GENERIC_PROFILE)).exclude(object_profile__in=mnp_in)
+            mos = mos.filter(profile=Profile.objects.get(name=GENERIC_PROFILE)).exclude(
+                object_profile__in=mnp_in
+            )
 
         if profile_check_only:
-            match = {"$or": [{"job.problems.suggest_cli": {"$exists": True}},
-                             {"job.problems.suggest_snmp": {"$exists": True}},
-                             {"job.problems.profile.": {"$regex": "Cannot detect profile"}},
-                             {"job.problems.version.": {"$regex": "Remote error code 1000[1234]"}}]}
+            match = {
+                "$or": [
+                    {"job.problems.suggest_cli": {"$exists": True}},
+                    {"job.problems.suggest_snmp": {"$exists": True}},
+                    {"job.problems.profile.": {"$regex": "Cannot detect profile"}},
+                    {"job.problems.version.": {"$regex": "Remote error code 1000[1234]"}},
+                ]
+            }
 
         elif failed_scripts_only:
-            match = {"$and": [
-                {"job.problems": {"$exists": "true", "$ne": {}}},
-                {"job.problems.suggest_snmp": {"$exists": False}},
-                {"job.problems.suggest_cli": {"$exists": False}}]}
+            match = {
+                "$and": [
+                    {"job.problems": {"$exists": "true", "$ne": {}}},
+                    {"job.problems.suggest_snmp": {"$exists": False}},
+                    {"job.problems.suggest_cli": {"$exists": False}},
+                ]
+            }
         elif filter_view_other:
             match = {"job.problems.suggest_snmp": {"$exists": False}}
 
@@ -196,22 +215,30 @@ class ReportFilterApplication(SimpleReport):
                 if isinstance(problem, six.string_types):
                     problem = problem.replace("\n", " ").replace("\r", " ")
 
-                data += [(
-                    mo.name,
-                    mo.address,
-                    mo.profile.name,
-                    mo.administrative_domain.name,
-                    _("Yes") if mo.get_status() else _("No"),
-                    discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
-                    method,
-                    problem
-                )]
+                data += [
+                    (
+                        mo.name,
+                        mo.address,
+                        mo.profile.name,
+                        mo.administrative_domain.name,
+                        _("Yes") if mo.get_status() else _("No"),
+                        discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
+                        method,
+                        problem,
+                    )
+                ]
 
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Profile"),
-                _("Administrative Domain"), _("Avail"), _("Last successful discovery"),
-                _("Discovery"), _("Error")
+                _("Managed Object"),
+                _("Address"),
+                _("Profile"),
+                _("Administrative Domain"),
+                _("Avail"),
+                _("Last successful discovery"),
+                _("Discovery"),
+                _("Error"),
             ],
-            data=data)
+            data=data,
+        )

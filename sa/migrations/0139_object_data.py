@@ -25,10 +25,10 @@ class Migration(BaseMigration):
         for d in uc.find():
             bulk += [InsertOne({"_id": d["_id"], "uplinks": d.get("uplinks", [])})]
         if bulk:
-            print ("Commiting changes to database")
+            print("Commiting changes to database")
             try:
                 dc.bulk_write(bulk)
-                print ("Database has been synced")
+                print("Database has been synced")
             except BulkWriteError as e:
-                print (("Bulk write error: '%s'", e.details))
-                print ("Stopping check")
+                print(("Bulk write error: '%s'", e.details))
+                print("Stopping check")

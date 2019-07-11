@@ -8,6 +8,7 @@
 
 # Python modules
 import six
+
 # NOC modules
 from noc.lib.datasource import datasource_registry
 
@@ -47,8 +48,7 @@ class Rule(object):
                 if v.default:
                     if v.default.startswith("="):
                         # Expression
-                        self.d_defaults[v.name] = compile(
-                            v.default[1:], "<string>", "eval")
+                        self.d_defaults[v.name] = compile(v.default[1:], "<string>", "eval")
                     else:
                         # Constant
                         self.c_defaults[v.name] = v.default
@@ -56,12 +56,14 @@ class Rule(object):
             self.datasources = {}  # name -> ds class
             for ds in self.alarm_class.datasources:
                 self.datasources[ds.name] = eval(
-                    "lambda vars: datasource_registry['%s'](%s)" % (
+                    "lambda vars: datasource_registry['%s'](%s)"
+                    % (
                         ds.datasource,
-                        ", ".join(["%s=vars['%s']" % (k, v)
-                                   for k, v in six.iteritems(ds.search)])
+                        ", ".join(["%s=vars['%s']" % (k, v) for k, v in six.iteritems(ds.search)]),
                     ),
-                    {"datasource_registry": datasource_registry}, {})
+                    {"datasource_registry": datasource_registry},
+                    {},
+                )
 
     def get_vars(self, e):
         """
@@ -81,10 +83,7 @@ class Rule(object):
             # Calculate dynamic defaults
             ds_vars = vars.copy()
             ds_vars["managed_object"] = e.managed_object
-            context = dict(
-                (k, v(ds_vars))
-                for k, v in six.iteritems(self.datasources)
-            )
+            context = dict((k, v(ds_vars)) for k, v in six.iteritems(self.datasources))
             context.update(vars)
             for k, v in six.iteritems(self.d_defaults):
                 x = eval(v, {}, context)

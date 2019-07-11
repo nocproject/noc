@@ -84,14 +84,14 @@ class AddressRange(NOCModel):
     )
 
     def __str__(self):
-        return u"%s (IPv%s): %s -- %s" % (
+        return "%s (IPv%s): %s -- %s" % (
             self.vrf.name,
             self.afi,
             self.from_address,
             self.to_address,
         )
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:
             return
 

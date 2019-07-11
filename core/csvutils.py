@@ -8,10 +8,12 @@
 
 # Python modules
 import csv
+
 # Third-party modules
 import six
 from six.moves import zip
-# Django modules
+
+# Third-party modules
 from django.db import models
 
 
@@ -142,8 +144,11 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     header = next(reader)
     left = field_names.copy()
     u_fields = [h for h in header if h in unique_fields]
-    ut_fields = [fs for fs in model._meta.unique_together
-                 if len(fs) == len([ff for ff in fs if ff in header])]
+    ut_fields = [
+        fs
+        for fs in model._meta.unique_together
+        if len(fs) == len([ff for ff in fs if ff in header])
+    ]
     # Check field names
     for h in header:
         if h not in field_names:
@@ -181,11 +186,17 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                         try:
                             id = int(v)
                         except ValueError:
-                            return None, "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count)
+                            return (
+                                None,
+                                "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count),
+                            )
                         try:
                             ro = rel.objects.get(**{"id": id})
                         except rel.DoesNotExist:
-                            return None, "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count)
+                            return (
+                                None,
+                                "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count),
+                            )
                     vars[h] = ro
                 elif h in booleans:
                     # Convert booleans
@@ -213,9 +224,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Find by composite unique keys
             for fs in ut_fields:
                 try:
-                    o = model.objects.get(
-                        **dict([(f, vars[f]) for f in fs if f in vars])
-                    )
+                    o = model.objects.get(**dict([(f, vars[f]) for f in fs if f in vars]))
                     break
                 except model.DoesNotExist:
                     pass
@@ -223,8 +232,10 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Object exists, behave according the resolution order
             if resolution == IR_FAIL:
                 # Fail
-                return None, "Failed to save line %d: Object %s is already exists" % (
-                    count, repr(vars))
+                return (
+                    None,
+                    "Failed to save line %d: Object %s is already exists" % (count, repr(vars)),
+                )
             elif resolution == IR_SKIP:
                 # Skip line
                 count -= 1

@@ -15,6 +15,7 @@ class UptimeCheck(DiscoveryCheck):
     """
     Uptime discovery
     """
+
     name = "uptime"
     required_script = "get_uptime"
 

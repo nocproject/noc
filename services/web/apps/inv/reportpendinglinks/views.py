@@ -9,13 +9,15 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # Third-party modules
 import six
 from django import forms
+
 # NOC modules
 from noc.core.cache.base import cache
 from noc.lib.app.simplereport import SimpleReport, SectionRow
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from pymongo import ReadPreference
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobject import ManagedObjectProfile
@@ -43,40 +45,63 @@ class ReportPendingLinks(object):
         problems = defaultdict(dict)  # id -> problem
         rg = re.compile(
             r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
-            re.IGNORECASE
+            re.IGNORECASE,
         )
-        mos_job = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id for mo_id in ids]
+        mos_job = [
+            "discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id
+            for mo_id in ids
+        ]
         n = 0
         ignored_ifaces = []
-        while mos_job[(0 + n):(10000 + n)]:
-            job_logs = get_db()["noc.joblog"].with_options(
-                read_preference=ReadPreference.SECONDARY_PREFERRED
-            ).aggregate([{"$match": {"$and": [
-                {"_id": {"$in": mos_job[(0 + n):(10000 + n)]}},
-                {"problems.lldp": {"$exists": True}}]}},
-                {"$project": {"_id": 1, "problems.lldp": 1}}])
+        while mos_job[(0 + n) : (10000 + n)]:
+            job_logs = (
+                get_db()["noc.joblog"]
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(
+                    [
+                        {
+                            "$match": {
+                                "$and": [
+                                    {"_id": {"$in": mos_job[(0 + n) : (10000 + n)]}},
+                                    {"problems.lldp": {"$exists": True}},
+                                ]
+                            }
+                        },
+                        {"$project": {"_id": 1, "problems.lldp": 1}},
+                    ]
+                )
+            )
 
             for discovery in job_logs:
-                if "RPC Error:" in discovery["problems"]["lldp"]\
-                        or "Unhandled exception" in discovery["problems"]["lldp"]:
+                if (
+                    "RPC Error:" in discovery["problems"]["lldp"]
+                    or "Unhandled exception" in discovery["problems"]["lldp"]
+                ):
                     continue
                 mo_id = discovery["_id"].split("-")[2]
                 mo = ManagedObject.get_by_id(mo_id)
                 # log.debug("%s", discovery["problems"]["lldp"])
                 # print(discovery["problems"]["lldp"])
                 if ignore_profiles:
-                    ignored_ifaces += [(mo_id, iface.name) for iface in
-                                       Interface.objects.filter(managed_object=mo,
-                                                                # name__in=discovery["problems"]["lldp"].keys(),
-                                                                profile__in=ignore_profiles)]
+                    ignored_ifaces += [
+                        (mo_id, iface.name)
+                        for iface in Interface.objects.filter(
+                            managed_object=mo,
+                            # name__in=discovery["problems"]["lldp"].keys(),
+                            profile__in=ignore_profiles,
+                        )
+                    ]
                 for iface in discovery["problems"]["lldp"]:
                     if (mo_id, iface) in ignored_ifaces:
                         continue
                     # print iface
                     if "is not found" in discovery["problems"]["lldp"][iface]:
-                        problems[mo_id] = {iface: {
-                            "problem": "Remote object is not found",
-                            "remote_id": discovery["problems"]["lldp"][iface]}}
+                        problems[mo_id] = {
+                            iface: {
+                                "problem": "Remote object is not found",
+                                "remote_id": discovery["problems"]["lldp"][iface],
+                            }
+                        }
                     if "Pending link:" in discovery["problems"]["lldp"][iface]:
                         pend_str = rg.match(discovery["problems"]["lldp"][iface])
                         try:
@@ -86,12 +111,15 @@ class ReportPendingLinks(object):
                         # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
                         problems[mo_id][iface] = {
                             "problem": "Not found iface on remote",
-                            "remote_id": "%s; %s ;%s" % (rmo.name, rmo.profile.name, pend_str.group("remote_iface")),
-                            "remote_iface": pend_str.group("remote_iface")}
+                            "remote_id": "%s; %s ;%s"
+                            % (rmo.name, rmo.profile.name, pend_str.group("remote_iface")),
+                            "remote_iface": pend_str.group("remote_iface"),
+                        }
                         problems[rmo.id][pend_str.group("remote_iface")] = {
                             "problem": "Not found local iface on remote",
                             "remote_id": "%s; %s; %s" % (mo.name, mo.profile.name, iface),
-                            "remote_iface": pend_str.group("remote_iface")}
+                            "remote_iface": pend_str.group("remote_iface"),
+                        }
                         # print(discovery["problems"]["lldp"])
 
             n += 10000
@@ -107,20 +135,27 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             pool = forms.ChoiceField(
                 label=_("Managed Objects Pools"),
                 required=True,
-                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+            )
             obj_profile = forms.ModelChoiceField(
                 label=_("Managed Objects Profile"),
                 required=False,
-                queryset=ManagedObjectProfile.objects.order_by("name"))
+                queryset=ManagedObjectProfile.objects.order_by("name"),
+            )
+
         return ReportForm
 
     def get_data(self, request, pool=None, obj_profile=None, filter_ignore_iface=True, **kwargs):
 
-        rn = re.compile(r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
-                        re.IGNORECASE)
-        problem = {"Not found iface on remote": "->",
-                   "Not found local iface on remote": "<-",
-                   "Remote object is not found": "X"}
+        rn = re.compile(
+            r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
+            re.IGNORECASE,
+        )
+        problem = {
+            "Not found iface on remote": "->",
+            "Not found local iface on remote": "<-",
+            "Remote object is not found": "X",
+        }
         data = []
         # MAC, hostname, count
         not_found = defaultdict(int)
@@ -137,21 +172,23 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         mos_id = dict((mo.id, mo) for mo in mos)
         report = ReportPendingLinks(
             list(six.iterkeys(mos_id)),
-            ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I"))
+            ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")),
         )
         problems = report.out
         for mo_id in problems:
             mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
             for iface in problems[mo_id]:
-                data += [(
-                    mo.name,
-                    mo.address,
-                    mo.profile.name,
-                    mo.administrative_domain.name,
-                    iface,
-                    problem[problems[mo_id][iface]["problem"]],
-                    problems[mo_id][iface]["remote_id"]
-                )]
+                data += [
+                    (
+                        mo.name,
+                        mo.address,
+                        mo.profile.name,
+                        mo.administrative_domain.name,
+                        iface,
+                        problem[problems[mo_id][iface]["problem"]],
+                        problems[mo_id][iface]["remote_id"],
+                    )
+                ]
                 if problems[mo_id][iface]["problem"] == "Remote object is not found":
                     match = rn.findall(problems[mo_id][iface]["remote_id"])
                     if match:
@@ -171,8 +208,14 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Profile"), _("Administrative domain"),
-                _("Interface"), _("Direction"), _("Remote Object")
+                _("Managed Object"),
+                _("Address"),
+                _("Profile"),
+                _("Administrative domain"),
+                _("Interface"),
+                _("Direction"),
+                _("Remote Object")
                 # _("Discovery"), _("Error")
             ],
-            data=data)
+            data=data,
+        )

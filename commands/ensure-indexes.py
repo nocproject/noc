@@ -8,19 +8,20 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.models import get_model, iter_model_id, is_document
 from noc.core.datastream.loader import loader as ds_loader
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
+from noc.core.mongo.connection import connect, get_db
 from noc.config import config
 
 
 class Command(BaseCommand):
     def handle(self, host=None, port=None, *args, **options):
-        from noc.lib.nosql import get_db
-
+        connect()
         db = get_db()
         collections = set(db.list_collection_names())
         for model_id in iter_model_id():
@@ -38,7 +39,7 @@ class Command(BaseCommand):
                     db[old_name].rename(new_name)
                     break
             # Ensure only documents with auto_create_index == False
-            if model._meta.get('auto_create_index', True):
+            if model._meta.get("auto_create_index", True):
                 continue
             # Index model
             self.index_model(model_id, model)
@@ -84,16 +85,14 @@ class Command(BaseCommand):
                     du = xi.get("unique", False)
                     if du != x_unique[fields]:
                         # Uniqueness mismatch
-                        self.print("[%s] Dropping mismatched index %s" % (
-                            model_id, x_name[fields]))
+                        self.print("[%s] Dropping mismatched index %s" % (model_id, x_name[fields]))
                         coll.drop_index(x_name[fields])
                     elif du and x_unique[fields]:
                         # Remove unique index from left
                         left_unique.remove(fields)
             # Delete state unique indexes
             for fields in left_unique:
-                self.print("[%s] Dropping stale unique index %s" % (
-                    model_id, x_name[fields]))
+                self.print("[%s] Dropping stale unique index %s" % (model_id, x_name[fields]))
                 coll.drop_index(x_name[fields])
         # Apply indexes
         model.ensure_indexes()
@@ -112,6 +111,7 @@ class Command(BaseCommand):
 
     def index_cache(self):
         from noc.core.cache.base import cache
+
         if not hasattr(cache, "ensure_indexes"):
             return
         self.print("[%s] Indexing cache" % cache.__class__.__name__)
@@ -119,6 +119,7 @@ class Command(BaseCommand):
 
     def index_datasource_cache(self):
         from noc.main.models.datasourcecache import DataSourceCache
+
         self.print("[DataSource] Indexing cache")
         DataSourceCache.ensure_indexes()
 

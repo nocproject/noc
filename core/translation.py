@@ -28,10 +28,7 @@ def set_translation(service, lang):
             with open(mo_path) as f:
                 _ugettext = gettext.GNUTranslations(f).ugettext
         else:
-            logger.info(
-                "No translation for language '%s'. Using 'en' instead",
-                lang
-            )
+            logger.info("No translation for language '%s'. Using 'en' instead", lang)
 
 
 def _ugettext(x):

@@ -12,9 +12,11 @@ import operator
 import logging
 import cachetools
 import sre_parse
+
 # Third-party modules
 import esm
 import bitarray
+
 # NOC modules
 from noc.services.classifier.rulelookup import RuleLookup
 from noc.core.perf import metrics
@@ -42,8 +44,7 @@ class XRuleLookup(RuleLookup):
         # Collect keyword -> {rules} bindings
         for rule in rules:
             for p in rule.rule.patterns:
-                if p.key_re in ("source", "^source$",
-                                "profile", "^profile$"):
+                if p.key_re in ("source", "^source$", "profile", "^profile$"):
                     continue
                 # Split to keywords
                 for pattern in (p.key_re, p.value_re):

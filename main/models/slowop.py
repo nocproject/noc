@@ -11,10 +11,12 @@ import datetime
 import logging
 import concurrent.futures
 import time
+
 # Third-party modules
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, FloatField, StringField
+
 # NOC modules
 from noc.core.debug import error_report
 
@@ -26,12 +28,7 @@ class SlowOp(Document):
         "collection": "noc.slowops",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            {
-                "fields": ["expire"],
-                "expireAfterSeconds": 0
-            }
-        ]
+        "indexes": [{"fields": ["expire"], "expireAfterSeconds": 0}],
     }
     STATUS_RUNNING = "R"
     STATUS_COMPLETE = "C"
@@ -43,8 +40,7 @@ class SlowOp(Document):
     expire = DateTimeField()
     app_id = StringField()
     user = StringField()
-    status = StringField(choices=[STATUS_RUNNING, STATUS_COMPLETE,
-                                  STATUS_FAILED])
+    status = StringField(choices=[STATUS_RUNNING, STATUS_COMPLETE, STATUS_FAILED])
     duration = FloatField()
     pickled_result = StringField()
     pool = concurrent.futures.ThreadPoolExecutor(100)
@@ -74,8 +70,7 @@ class SlowOp(Document):
         try:
             future.result(cls.SLOW_TIMEOUT)
         except concurrent.futures.TimeoutError:
-            logger.debug("Continuing slow operation %s (app=%s, user=%s)",
-                         fn, app_id, user)
+            logger.debug("Continuing slow operation %s (app=%s, user=%s)", fn, app_id, user)
             # Save slow op
             now = datetime.datetime.now()
             so = SlowOp(
@@ -83,7 +78,7 @@ class SlowOp(Document):
                 expire=now + cls.SLOW_TTL,
                 status=cls.STATUS_RUNNING,
                 app_id=app_id,
-                user=user
+                user=user,
             )
             so.save()
             future.add_done_callback(on_complete)

@@ -14,12 +14,14 @@ import zlib
 import datetime
 import types
 import operator
+
 # Third-party modules
 import bson
 import cachetools
 import six
 from six import StringIO
 from pymongo import UpdateOne
+
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
@@ -29,12 +31,14 @@ from noc.core.debug import error_report
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.core.service.error import RPCError, RPCRemoteError
 from noc.core.error import (
-    ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND,
-    ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR,
-    ERR_CLI_CONNECTION_REFUSED
+    ERR_CLI_AUTH_FAILED,
+    ERR_CLI_NO_SUPER_COMMAND,
+    ERR_CLI_LOW_PRIVILEGES,
+    ERR_CLI_SSH_PROTOCOL_ERROR,
+    ERR_CLI_CONNECTION_REFUSED,
 )
 from noc.core.span import Span
 from noc.core.error import ERR_UNKNOWN
@@ -56,11 +60,7 @@ class MODiscoveryJob(PeriodicJob):
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
         self.out_buffer = StringIO()
-        self.logger = PrefixLoggerAdapter(
-            self.logger,
-            "",
-            target=self.out_buffer
-        )
+        self.logger = PrefixLoggerAdapter(self.logger, "", target=self.out_buffer)
         self.check_timings = []
         self.problems = []
         self.caps = None
@@ -71,17 +71,15 @@ class MODiscoveryJob(PeriodicJob):
 
     def schedule_next(self, status):
         if self.check_timings:
-            self.logger.info("Timings: %s", ", ".join(
-                "%s = %.2fms" % (n, t * 1000) for n, t in self.check_timings
-            ))
+            self.logger.info(
+                "Timings: %s",
+                ", ".join("%s = %.2fms" % (n, t * 1000) for n, t in self.check_timings),
+            )
         super(MODiscoveryJob, self).schedule_next(status)
         # Update alarm statuses
         self.update_alarms()
         # Write job log
-        key = "discovery-%s-%s" % (
-            self.attrs[self.ATTR_CLASS],
-            self.attrs[self.ATTR_KEY]
-        )
+        key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
         for p in self.problems:
             if p["check"] in problems and p["path"]:
@@ -91,14 +89,16 @@ class MODiscoveryJob(PeriodicJob):
                 problems[p["check"]][p["path"]] += "; %s" % p["message"]
             else:
                 problems[p["check"]] = {p["path"]: p["message"]}
-        get_db()["noc.joblog"].update({
-            "_id": key
-        }, {
-            "$set": {
-                "log": bson.Binary(zlib.compress(self.out_buffer.getvalue())),
-                "problems": problems
-            }
-        }, upsert=True)
+        get_db()["noc.joblog"].update(
+            {"_id": key},
+            {
+                "$set": {
+                    "log": bson.Binary(zlib.compress(self.out_buffer.getvalue())),
+                    "problems": problems,
+                }
+            },
+            upsert=True,
+        )
 
     def get_running_policy(self):
         raise NotImplementedError
@@ -122,8 +122,7 @@ class MODiscoveryJob(PeriodicJob):
         yield
         self.check_timings += [(name, perf_counter() - t)]
 
-    def set_problem(self, check=None, alarm_class=None, path=None,
-                    message=None, fatal=False):
+    def set_problem(self, check=None, alarm_class=None, path=None, message=None, fatal=False):
         """
         Set discovery problem
         :param check: Check name
@@ -134,14 +133,16 @@ class MODiscoveryJob(PeriodicJob):
             must be disabled
         :return:
         """
-        self.problems += [{
-            "check": check,
-            "alarm_class": alarm_class,
-            # in MongoDB Key must be string
-            "path": str(path) if path else "",
-            "message": message,
-            "fatal": fatal
-        }]
+        self.problems += [
+            {
+                "check": check,
+                "alarm_class": alarm_class,
+                # in MongoDB Key must be string
+                "path": str(path) if path else "",
+                "message": message,
+                "fatal": fatal,
+            }
+        ]
         if fatal:
             self.has_fatal_error = True
 
@@ -182,8 +183,7 @@ class MODiscoveryJob(PeriodicJob):
 
         now = datetime.datetime.now()
         umbrella = ActiveAlarm.objects.filter(
-            alarm_class=umbrella_cls.id,
-            managed_object=self.object.id
+            alarm_class=umbrella_cls.id, managed_object=self.object.id
         ).first()
         u_sev = sum(d.get("severity", 0) for d in details)
         if not umbrella and not details:
@@ -195,21 +195,21 @@ class MODiscoveryJob(PeriodicJob):
                 timestamp=now,
                 managed_object=self.object.id,
                 alarm_class=umbrella_cls.id,
-                severity=u_sev
+                severity=u_sev,
             )
             umbrella.save()
-            self.logger.info("Opening umbrella alarm %s (%s)",
-                             umbrella.id, umbrella_cls.name)
+            self.logger.info("Opening umbrella alarm %s (%s)", umbrella.id, umbrella_cls.name)
         elif umbrella and not details:
             # Close existing umbrella
-            self.logger.info("Clearing umbrella alarm %s (%s)",
-                             umbrella.id, umbrella_cls.name)
+            self.logger.info("Clearing umbrella alarm %s (%s)", umbrella.id, umbrella_cls.name)
             umbrella.clear_alarm("Closing umbrella")
         elif umbrella and details and u_sev != umbrella.severity:
             self.logger.info(
                 "Change umbrella alarm %s severity %s -> %s (%s)",
-                umbrella.id, umbrella.severity, u_sev,
-                umbrella_cls.name
+                umbrella.id,
+                umbrella.severity,
+                u_sev,
+                umbrella_cls.name,
             )
             umbrella.change_severity(severity=u_sev)
         # Get existing details for umbrella
@@ -233,13 +233,12 @@ class MODiscoveryJob(PeriodicJob):
                     "Change detail alarm %s severity %s -> %s",
                     active_details[d_key].id,
                     active_details[d_key].severity,
-                    d_sev
+                    d_sev,
                 )
                 active_details[d_key].change_severity(severity=d_sev)
             elif d_key not in active_details:
                 # Create alarm
-                self.logger.info("Create detail alarm to path %s",
-                                 d_key)
+                self.logger.info("Create detail alarm to path %s", d_key)
                 v = d.get("vars", {})
                 v["path"] = d_path
                 da = ActiveAlarm(
@@ -248,15 +247,15 @@ class MODiscoveryJob(PeriodicJob):
                     alarm_class=d["alarm_class"],
                     severity=d_sev,
                     vars=v,
-                    root=umbrella.id
+                    root=umbrella.id,
                 )
                 da.save()
-                self.logger.info("Opening detail alarm %s %s (%s)",
-                                 da.id, d_path, da.alarm_class.name)
+                self.logger.info(
+                    "Opening detail alarm %s %s (%s)", da.id, d_path, da.alarm_class.name
+                )
         # Close details when necessary
         for d in set(active_details) - seen:
-            self.logger.info("Clearing detail alarm %s",
-                             active_details[d].id)
+            self.logger.info("Clearing detail alarm %s", active_details[d].id)
             active_details[d].clear_alarm("Closing")
 
     def update_alarms(self):
@@ -283,19 +282,18 @@ class MODiscoveryJob(PeriodicJob):
                     continue
                 ac = AlarmClass.get_by_name(p["alarm_class"])
                 if not ac:
-                    self.logger.info("Unknown alarm class %s. Skipping",
-                                     p["alarm_class"])
+                    self.logger.info("Unknown alarm class %s. Skipping", p["alarm_class"])
                     continue
-                details += [{
-                    "alarm_class": ac,
-                    "path": p["path"],
-                    "severity": AlarmSeverity.severity_for_weight(
-                        fatal_weight if p["fatal"] else weight),
-                    "vars": {
+                details += [
+                    {
+                        "alarm_class": ac,
                         "path": p["path"],
-                        "message": p["message"]
+                        "severity": AlarmSeverity.severity_for_weight(
+                            fatal_weight if p["fatal"] else weight
+                        ),
+                        "vars": {"path": p["path"], "message": p["message"]},
                     }
-                }]
+                ]
         else:
             # Clean up all open alarms as they has been disabled
             details = []
@@ -356,7 +354,7 @@ class DiscoveryCheck(object):
         ERR_CLI_NO_SUPER_COMMAND,
         ERR_CLI_LOW_PRIVILEGES,
         ERR_CLI_CONNECTION_REFUSED,
-        ERR_CLI_SSH_PROTOCOL_ERROR
+        ERR_CLI_SSH_PROTOCOL_ERROR,
     }
     # Error -> Alarm class mappings
     error_map = {
@@ -364,16 +362,14 @@ class DiscoveryCheck(object):
         ERR_CLI_NO_SUPER_COMMAND: "Discovery | Error | No Super",
         ERR_CLI_LOW_PRIVILEGES: "Discovery | Error | Low Privileges",
         ERR_CLI_CONNECTION_REFUSED: "Discovery | Error | Connection Refused",
-        ERR_CLI_SSH_PROTOCOL_ERROR: "Discovery | Error | SSH Protocol"
+        ERR_CLI_SSH_PROTOCOL_ERROR: "Discovery | Error | SSH Protocol",
     }
 
     def __init__(self, job):
         self.service = job.service
         self.job = job
         self.object = self.job.object
-        self.logger = self.job.logger.get_logger(
-            "[%s" % self.name
-        )
+        self.logger = self.job.logger.get_logger("[%s" % self.name)
         self.if_name_cache = {}  # mo, name -> Interface
         self.if_mac_cache = {}  # mo, mac -> Interface
         self.if_ip_cache = {}
@@ -390,8 +386,7 @@ class DiscoveryCheck(object):
         return self.job.has_fatal_error
 
     def has_required_script(self):
-        return (not self.required_script or
-                self.required_script in self.object.scripts)
+        return not self.required_script or self.required_script in self.object.scripts
 
     def get_caps(self):
         return self.job.get_caps()
@@ -414,18 +409,11 @@ class DiscoveryCheck(object):
         caps = self.get_caps()
         for cn in self.required_capabilities:
             if cn not in caps:
-                self.logger.info(
-                    "Object hasn't required capability '%s'. "
-                    "Skipping",
-                    cn
-                )
+                self.logger.info("Object hasn't required capability '%s'. " "Skipping", cn)
                 return False
             v = caps[cn]
             if not v:
-                self.logger.info(
-                    "Capability '%s' is disabled. Skipping",
-                    cn
-                )
+                self.logger.info("Capability '%s' is disabled. Skipping", cn)
                 return False
         return True
 
@@ -450,8 +438,7 @@ class DiscoveryCheck(object):
         with Span(server="discovery", service=self.name) as span, self.job.check_timer(self.name):
             # Check required scripts
             if not self.has_required_script():
-                self.logger.info("%s script is not supported. Skipping",
-                                 self.required_script)
+                self.logger.info("%s script is not supported. Skipping", self.required_script)
                 return
             # Check required capabilities
             if not self.has_required_capabilities():
@@ -460,9 +447,7 @@ class DiscoveryCheck(object):
             try:
                 self.handler()
             except RPCRemoteError as e:
-                self.logger.error(
-                    "RPC Remote error (%s): %s",
-                    e.remote_code, e)
+                self.logger.error("RPC Remote error (%s): %s", e.remote_code, e)
                 if e.remote_code:
                     message = "Remote error code %s" % e.remote_code
                 else:
@@ -470,7 +455,7 @@ class DiscoveryCheck(object):
                 self.set_problem(
                     alarm_class=self.error_map.get(e.remote_code),
                     message=message,
-                    fatal=e.remote_code in self.fatal_errors
+                    fatal=e.remote_code in self.fatal_errors,
                 )
                 span.error_code = e.remote_code
                 span.error_text = str(e)
@@ -478,7 +463,7 @@ class DiscoveryCheck(object):
                 self.set_problem(
                     alarm_class=self.error_map.get(e.default_code),
                     message="RPC Error: %s" % e,
-                    fatal=e.default_code in self.fatal_errors
+                    fatal=e.default_code in self.fatal_errors,
                 )
                 self.logger.error("Terminated due RPC error: %s", e)
                 span.error_code = e.default_code
@@ -486,7 +471,7 @@ class DiscoveryCheck(object):
             except Exception as e:
                 self.set_problem(
                     alarm_class="Discovery | Error | Unhandled Exception",
-                    message="Unhandled exception: %s" % e
+                    message="Unhandled exception: %s" % e,
                 )
                 error_report(logger=self.logger)
                 span.error_code = ERR_UNKNOWN
@@ -495,8 +480,7 @@ class DiscoveryCheck(object):
     def handler(self):
         pass
 
-    def update_if_changed(self, obj, values, ignore_empty=None,
-                          wait=True, bulk=None):
+    def update_if_changed(self, obj, values, ignore_empty=None, wait=True, bulk=None):
         """
         Update fields if changed.
         :param obj: Document instance
@@ -521,13 +505,9 @@ class DiscoveryCheck(object):
                     changes += [(k, v)]
         if changes:
             if bulk is not None:
-                op = {
-                    "$set": dict(changes)
-                }
+                op = {"$set": dict(changes)}
                 id_field = obj._fields[Interface._meta["id_field"]].db_field
-                bulk += [UpdateOne({
-                    id_field: obj.pk
-                }, op)]
+                bulk += [UpdateOne({id_field: obj.pk}, op)]
             else:
                 kwargs = {}
                 if not wait:
@@ -542,8 +522,7 @@ class DiscoveryCheck(object):
         :type msg: str
         """
         if changes:
-            self.logger.info("%s: %s" % (
-                msg, ", ".join("%s = %s" % (k, v) for k, v in changes)))
+            self.logger.info("%s: %s" % (msg, ", ".join("%s = %s" % (k, v) for k, v in changes)))
 
     def get_interface_by_name(self, name, mo=None):
         """
@@ -554,10 +533,7 @@ class DiscoveryCheck(object):
         self.logger.debug("Searching port by name: %s:%s", mo.name, name)
         key = (mo, name)
         if key not in self.if_name_cache:
-            i = Interface.objects.filter(
-                managed_object=mo,
-                name=name
-            ).first()
+            i = Interface.objects.filter(managed_object=mo, name=name).first()
             self.if_name_cache[key] = i
         return self.if_name_cache[key]
 
@@ -569,11 +545,7 @@ class DiscoveryCheck(object):
         self.logger.debug("Searching port by MAC: %s:%s", mo.name, mac)
         key = (mo, mac)
         if key not in self.if_mac_cache:
-            i = Interface.objects.filter(
-                managed_object=mo,
-                mac=mac,
-                type="physical"
-            )[:2]
+            i = Interface.objects.filter(managed_object=mo, mac=mac, type="physical")[:2]
             if len(i) == 1:
                 i = i[0]
             else:
@@ -589,11 +561,13 @@ class DiscoveryCheck(object):
         self.logger.debug("Searching port by IP: %s:%s", mo.name, ip)
         key = (mo, ip)
         if key not in self.if_ip_cache:
-            li = list(Interface.objects.filter(
-                managed_object=self.object.id,
-                ipv4_addresses__startswith="%s/" % ip,
-                type="physical"
-            ))
+            li = list(
+                Interface.objects.filter(
+                    managed_object=self.object.id,
+                    ipv4_addresses__startswith="%s/" % ip,
+                    type="physical",
+                )
+            )
             if len(li) == 1:
                 li = li[0]
             else:
@@ -614,8 +588,7 @@ class DiscoveryCheck(object):
         """
         key = (str(interface.id), name)
         if key not in self.sub_cache:
-            si = SubInterface.objects.filter(
-                interface=interface.id, name=name).first()
+            si = SubInterface.objects.filter(interface=interface.id, name=name).first()
             self.sub_cache[key] = si
         return self.sub_cache[key]
 
@@ -631,8 +604,7 @@ class DiscoveryCheck(object):
         """
         self.logger.info("Cleaning links")
         for i in Interface.objects.filter(
-            managed_object=self.object.id,
-            type__in=["physical", "aggregated"]
+            managed_object=self.object.id, type__in=["physical", "aggregated"]
         ):
             link = i.link
             if link:
@@ -642,8 +614,7 @@ class DiscoveryCheck(object):
                 except ValueError as e:
                     self.logger.info("Failed to unlink: %s", e)
 
-    def set_problem(self, alarm_class=None, path=None,
-                    message=None, fatal=False):
+    def set_problem(self, alarm_class=None, path=None, message=None, fatal=False):
         """
         Set discovery problem
         :param alarm_class: Alarm class instance or name
@@ -655,11 +626,7 @@ class DiscoveryCheck(object):
         """
         self.logger.info("Set path: %s" % path)
         self.job.set_problem(
-            check=self.name,
-            alarm_class=alarm_class,
-            path=path,
-            message=message,
-            fatal=fatal
+            check=self.name, alarm_class=alarm_class, path=path, message=message, fatal=fatal
         )
 
     def set_artefact(self, name, value=None):
@@ -699,8 +666,9 @@ class DiscoveryCheck(object):
         if not obj.object_profile.neighbor_cache_ttl:
             # Disabled cache
             return
-        keys = ["mo-neighbors-%s-%s" % (x, obj.id)
-                for x in obj.segment.profile.get_topology_methods()]
+        keys = [
+            "mo-neighbors-%s-%s" % (x, obj.id) for x in obj.segment.profile.get_topology_methods()
+        ]
         if keys:
             self.logger.info("Invalidating neighor cache: %s" % ", ".join(keys))
             cache.delete_many(keys, TopologyDiscoveryCheck.NEIGHBOR_CACHE_VERSION)
@@ -738,10 +706,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.logger.info("Checking %s topology", self.name)
         # Check object has interfaces
         if not self.has_capability("DB | Interfaces"):
-            self.logger.info(
-                "No interfaces has been discovered. "
-                "Skipping topology check"
-            )
+            self.logger.info("No interfaces has been discovered. " "Skipping topology check")
             return
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
@@ -754,57 +719,51 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             remote_object = self.get_neighbor(ro)
             if not remote_object:
                 problems[li] = "Remote object '%s' is not found" % str(ro)
-                self.logger.info(
-                    "Remote object '%s' is not found. Skipping",
-                    str(ro)
-                )
+                self.logger.info("Remote object '%s' is not found. Skipping", str(ro))
                 continue
             # Resolve remote interface name
-            remote_interface = self.get_remote_interface(
-                remote_object,
-                ri
-            )
+            remote_interface = self.get_remote_interface(remote_object, ri)
             if not remote_interface:
-                problems[li] = "Cannot resolve remote interface %s:%r. Skipping" % (remote_object.name, ri)
+                problems[li] = "Cannot resolve remote interface %s:%r. Skipping" % (
+                    remote_object.name,
+                    ri,
+                )
                 self.logger.info(
-                    "Cannot resolve remote interface %s:%r. Skipping",
-                    remote_object.name, ri
+                    "Cannot resolve remote interface %s:%r. Skipping", remote_object.name, ri
                 )
                 continue
             else:
-                self.logger.debug(
-                    "Resolve remote interface as %s:%r",
-                    remote_object.name, ri
-                )
+                self.logger.debug("Resolve remote interface as %s:%r", remote_object.name, ri)
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
                 if remote_interface in loops and loops[remote_interface] == li:
                     self.logger.info(
                         "Loop link detected: %s:%s - %s:%s",
-                        self.object.name, li,
-                        self.object.name, remote_interface)
-                    self.confirm_link(
-                        self.object, li,
-                        remote_object, remote_interface
+                        self.object.name,
+                        li,
+                        self.object.name,
+                        remote_interface,
                     )
+                    self.confirm_link(self.object, li, remote_object, remote_interface)
                 continue
             # Submitting candidates
             self.logger.info(
                 "Link candidate: %s:%s - %s:%s",
-                self.object.name, li,
-                remote_object.name, remote_interface
+                self.object.name,
+                li,
+                remote_object.name,
+                remote_interface,
             )
             candidates[remote_object].add((li, remote_interface))
 
         # Checking candidates from remote side
         for remote_object in candidates:
-            if (self.required_script and
-                    self.required_script not in remote_object.scripts):
+            if self.required_script and self.required_script not in remote_object.scripts:
                 self.logger.info(
-                    "Remote object '%s' does not support %s script. "
-                    "Cannot confirm links",
-                    remote_object.name, self.required_script
+                    "Remote object '%s' does not support %s script. " "Cannot confirm links",
+                    remote_object.name,
+                    self.required_script,
                 )
                 continue
             try:
@@ -812,14 +771,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_neighbors = self.cached_neighbors(remote_object, rn_key, self.iter_neighbors)
             except Exception as e:
                 self.logger.error(
-                    "Cannot get neighbors from candidate %s: %s",
-                    remote_object.name,
-                    e
+                    "Cannot get neighbors from candidate %s: %s", remote_object.name, e
                 )
                 self.set_problem(
                     path=list(candidates[remote_object])[0][0],
-                    message="Cannot get neighbors from candidate %s: %s" % (
-                        remote_object.name, e)
+                    message="Cannot get neighbors from candidate %s: %s" % (remote_object.name, e),
                 )
                 continue
             confirmed = set()
@@ -828,62 +784,37 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 if not ro or ro.id != self.object.id:
                     self.logger.debug("Candidates check %s %s %s %s" % (li, ro_id, ro, ri))
                     continue  # To other objects
-                remote_interface = self.get_remote_interface(
-                    self.object,
-                    ri
-                )
+                remote_interface = self.get_remote_interface(self.object, ri)
                 if remote_interface:
-                    self.logger.debug(
-                        "Resolve local interface as %s:%r",
-                        self.object.name, ri
-                    )
+                    self.logger.debug("Resolve local interface as %s:%r", self.object.name, ri)
                     confirmed.add((remote_interface, li))
                 self.logger.debug(
-                    "Candidates: %s, Confirmed: %s",
-                    candidates[remote_object],
-                    confirmed
+                    "Candidates: %s, Confirmed: %s", candidates[remote_object], confirmed
                 )
             for l, r in candidates[remote_object] - confirmed:
                 problems[l] = "Pending link: %s - %s:%s" % (l, remote_object, r)
                 li = self.clean_interface(self.object, l)
                 if not li:
-                    self.logger.info(
-                        "Cannot clean interface %s:%s. Skipping",
-                        self.object, l)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", self.object, l)
                     continue
                 ri = self.clean_interface(remote_object, r)
                 if not ri:
-                    self.logger.info(
-                        "Cannot clean interface %s:%s. Skipping",
-                        remote_object, r)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", remote_object, r)
                     continue
-                self.reject_link(
-                    self.object, li,
-                    remote_object, ri
-                )
+                self.reject_link(self.object, li, remote_object, ri)
             for l, r in candidates[remote_object] & confirmed:
                 li = self.clean_interface(self.object, l)
                 if not li:
-                    self.logger.info(
-                        "Cannot clean interface %s:%s. Skipping",
-                        self.object, l)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", self.object, l)
                     continue
                 ri = self.clean_interface(remote_object, r)
                 if not ri:
-                    self.logger.info(
-                        "Cannot clean interface %s:%s. Skipping",
-                        remote_object, r)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", remote_object, r)
                     continue
-                self.confirm_link(
-                    self.object, li,
-                    remote_object, ri
-                )
+                self.confirm_link(self.object, li, remote_object, ri)
         if problems:
             for i in problems:
-                self.set_problem(
-                    path=i,
-                    message=problems[i]
-                )
+                self.set_problem(path=i, message=problems[i])
 
     def cached_neighbors(self, mo, key, iter_neighbors):
         """
@@ -908,13 +839,16 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             neighbors = iter_neighbors(mo)
             if isinstance(neighbors, types.GeneratorType):
                 neighbors = list(iter_neighbors(mo))
-            cache.set(key, neighbors, ttl=ttl,
-                      version=self.NEIGHBOR_CACHE_VERSION)
+            cache.set(key, neighbors, ttl=ttl, version=self.NEIGHBOR_CACHE_VERSION)
             if self.interface_aliases:
-                alias_cache = {(mo.id, n[0]): self.interface_aliases[(mo.id, n[0])] for n in neighbors
-                               if (mo.id, n[0]) in self.interface_aliases}
-                cache.set("%s-aliases" % key, alias_cache, ttl=ttl,
-                          version=self.NEIGHBOR_CACHE_VERSION)
+                alias_cache = {
+                    (mo.id, n[0]): self.interface_aliases[(mo.id, n[0])]
+                    for n in neighbors
+                    if (mo.id, n[0]) in self.interface_aliases
+                }
+                cache.set(
+                    "%s-aliases" % key, alias_cache, ttl=ttl, version=self.NEIGHBOR_CACHE_VERSION
+                )
             metrics["neighbor_cache_misses"] += 1
         else:
             alias_cache = cache.get("%s-aliases" % key, version=self.NEIGHBOR_CACHE_VERSION)
@@ -943,8 +877,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             elif "." not in hostname:
                 # Sometimes, domain part is truncated.
                 # Try to resolve anyway
-                m = list(DiscoveryID.objects.filter(
-                    hostname__startswith=hostname + "."))
+                m = list(DiscoveryID.objects.filter(hostname__startswith=hostname + "."))
                 if len(m) == 1:
                     n = m[0].object  # Exact match
             self.neighbor_hostname_cache[hostname] = n
@@ -991,9 +924,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         May return aliases name which can be finally resolved
         during clean interface
         """
-        return remote_object.get_profile().convert_interface_name(
-            remote_interface
-        )
+        return remote_object.get_profile().convert_interface_name(remote_interface)
 
     def clean_interface(self, object, interface):
         """
@@ -1011,59 +942,71 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return None
         return interface
 
-    def confirm_link(self, local_object, local_interface,
-                     remote_object, remote_interface):
+    def confirm_link(self, local_object, local_interface, remote_object, remote_interface):
         self.logger.info(
             "Confirm link: %s:%s -- %s:%s",
-            local_object, local_interface,
-            remote_object, remote_interface
+            local_object,
+            local_interface,
+            remote_object,
+            remote_interface,
         )
         # Get interfaces
-        li = self.get_interface_by_name(mo=local_object,
-                                        name=local_interface)
+        li = self.get_interface_by_name(mo=local_object, name=local_interface)
         if not li:
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "Interface %s:%s is not discovered",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
-                local_object.name, local_interface
+                "Not linking: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
+                local_object.name,
+                local_interface,
             )
             return
-        ri = self.get_interface_by_name(mo=remote_object,
-                                        name=remote_interface)
+        ri = self.get_interface_by_name(mo=remote_object, name=remote_interface)
         if not ri:
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "Interface %s:%s is not discovered",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
-                remote_object.name, remote_interface
+                "Not linking: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
+                remote_object.name,
+                remote_interface,
             )
             return
         # Check LAGs
-        if li.type == "aggregated" and ri.type != "aggregated" and not li.profile.allow_lag_mismatch:
+        if (
+            li.type == "aggregated"
+            and ri.type != "aggregated"
+            and not li.profile.allow_lag_mismatch
+        ):
             self.logger.error(
                 "Cannot connect aggregated interface %s:%s to non-aggregated %s:%s",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
             )
             return
-        if ri.type == "aggregated" and li.type != "aggregated" and not ri.profile.allow_lag_mismatch:
+        if (
+            ri.type == "aggregated"
+            and li.type != "aggregated"
+            and not ri.profile.allow_lag_mismatch
+        ):
             self.logger.error(
                 "Cannot connect aggregated interface %s:%s to non-aggregated %s:%s",
-                remote_object.name, remote_interface,
-                local_object.name, local_interface
+                remote_object.name,
+                remote_interface,
+                local_object.name,
+                local_interface,
             )
             return
         if ri.type == "aggregated" and li.type == "aggregated":
             lic = li.lag_members.count()
             ric = ri.lag_members.count()
             if lic != ric:
-                self.logger.error(
-                    "Cannot connect. LAG size mismatch: %s vs %s",
-                    lic, ric
-                )
+                self.logger.error("Cannot connect. LAG size mismatch: %s vs %s", lic, ric)
                 return
         # Get existing links
         llink = li.link
@@ -1072,14 +1015,15 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         if llink and rlink and llink.id == rlink.id:
             self.logger.info(
                 "Already linked: %s:%s -- %s:%s via %s",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
-                llink.discovery_method
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
+                llink.discovery_method,
             )
-            if (
-                llink.discovery_method != self.name and
-                (llink.discovery_method is None or
-                 self.is_preferable_over(local_object, remote_object, llink))
+            if llink.discovery_method != self.name and (
+                llink.discovery_method is None
+                or self.is_preferable_over(local_object, remote_object, llink)
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)
@@ -1093,30 +1037,38 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             if self.is_preferable_over(local_object, remote_object, llink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
-                    llink, self.name, llink.discovery_method
+                    llink,
+                    self.name,
+                    llink.discovery_method,
                 )
             else:
                 self.logger.info(
-                    "Not linking: %s:%s -- %s:%s. "
-                    "'%s' method is preferable over '%s'",
-                    local_object.name, local_interface,
-                    remote_object.name, remote_interface,
-                    llink.discovery_method, self.name
+                    "Not linking: %s:%s -- %s:%s. " "'%s' method is preferable over '%s'",
+                    local_object.name,
+                    local_interface,
+                    remote_object.name,
+                    remote_interface,
+                    llink.discovery_method,
+                    self.name,
                 )
                 return
         if rlink:
             if self.is_preferable_over(local_object, remote_object, rlink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
-                    rlink, self.name, rlink.discovery_method
+                    rlink,
+                    self.name,
+                    rlink.discovery_method,
                 )
             else:
                 self.logger.info(
-                    "Not linking: %s:%s -- %s:%s. "
-                    "'%s' method is preferable over '%s'",
-                    local_object.name, local_interface,
-                    remote_object.name, remote_interface,
-                    rlink.discovery_method, self.name
+                    "Not linking: %s:%s -- %s:%s. " "'%s' method is preferable over '%s'",
+                    local_object.name,
+                    local_interface,
+                    remote_object.name,
+                    remote_interface,
+                    rlink.discovery_method,
+                    self.name,
                 )
                 return
         # Get interface discovery policies
@@ -1127,17 +1079,15 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # * C - Link will be attached to cloud
         lpolicy = li.profile.discovery_policy
         rpolicy = ri.profile.discovery_policy
-        self.logger.info(
-            "Interface linking policy: %s/%s",
-            lpolicy, rpolicy
-        )
+        self.logger.info("Interface linking policy: %s/%s", lpolicy, rpolicy)
         # Check if either policy set to ignore
         if lpolicy == "I" or rpolicy == "I":
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "'Ignore' interface discovery policy set",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
+                "Not linking: %s:%s -- %s:%s. " "'Ignore' interface discovery policy set",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
             )
             return
         # Check if either side has *Create new* policy and
@@ -1147,17 +1097,20 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 "Not linking: %s:%s -- %s:%s. "
                 "'Create new' interface discovery policy set and "
                 "interface is already linked",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
             )
             return
         # Do not allow merging clouds
         if lpolicy == "C" and rpolicy == "C":
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "Cloud merging is forbidden",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
+                "Not linking: %s:%s -- %s:%s. " "Cloud merging is forbidden",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
             )
             return
         # Get currently linked ends policies
@@ -1174,10 +1127,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # *Create new* policy blocks other side relinking
         if lrpolicy == "O" or rrpolicy == "O":
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "Blocked by 'Create new' policy on existing link",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
+                "Not linking: %s:%s -- %s:%s. " "Blocked by 'Create new' policy on existing link",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
             )
             return
         #
@@ -1187,31 +1141,31 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 try:
                     li.unlink()
                 except ValueError as e:
-                    self.logger.info(
-                        "Failed to unlink %s: %s" % (llink, e)
-                    )
+                    self.logger.info("Failed to unlink %s: %s" % (llink, e))
                     return
             if rlink:
                 try:
                     ri.unlink()
                 except ValueError as e:
-                    self.logger.info(
-                        "Failed to unlink %s: %s" % (llink, e)
-                    )
+                    self.logger.info("Failed to unlink %s: %s" % (llink, e))
                     return
             self.logger.info(
                 "Linking: %s:%s -- %s:%s",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
             )
             try:
                 li.link_ptp(ri, method=self.name)
             except ValueError as e:
                 self.logger.info(
                     "Cannot link %s:%s -- %s:%s: %s",
-                    local_object.name, local_interface,
-                    remote_object.name, remote_interface,
-                    e
+                    local_object.name,
+                    local_interface,
+                    remote_object.name,
+                    remote_interface,
+                    e,
                 )
             return
         #
@@ -1222,8 +1176,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "Not linking: %s:%s -- %s:%s. "
                         "Already linked. "
                         "Connecting to cloud is forbidden by policy",
-                        local_object.name, local_interface,
-                        remote_object.name, remote_interface
+                        local_object.name,
+                        local_interface,
+                        remote_object.name,
+                        remote_interface,
                     )
                     return
                 else:
@@ -1231,10 +1187,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     try:
                         ri.unlink()
                     except ValueError as e:
-                        self.logger.error(
-                            "Failed to unlink %s: %s",
-                            ri, e
-                        )
+                        self.logger.error("Failed to unlink %s: %s", ri, e)
                         return
             if llink:
                 # Attach to existing cloud
@@ -1247,9 +1200,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 except ValueError as e:
                     self.logger.info(
                         "Cannot link %s:%s -- %s:%s: %s",
-                        local_object.name, local_interface,
-                        remote_object.name, remote_interface,
-                        e
+                        local_object.name,
+                        local_interface,
+                        remote_object.name,
+                        remote_interface,
+                        e,
                     )
                 return
         if rpolicy == "C":
@@ -1259,8 +1214,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "Not linking: %s:%s -- %s:%s. "
                         "Already linked. "
                         "Connecting to cloud is forbidden by policy",
-                        local_object.name, local_interface,
-                        remote_object.name, remote_interface
+                        local_object.name,
+                        local_interface,
+                        remote_object.name,
+                        remote_interface,
                     )
                     return
                 else:
@@ -1277,47 +1234,53 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 except ValueError as e:
                     self.logger.info(
                         "Cannot link %s:%s -- %s:%s: %s",
-                        local_object.name, local_interface,
-                        remote_object.name, remote_interface,
-                        e
+                        local_object.name,
+                        local_interface,
+                        remote_object.name,
+                        remote_interface,
+                        e,
                     )
                 return
         #
         self.logger.info(
-            "Not linking: %s:%s -- %s:%s. "
-            "Link creating not allowed",
-            local_object.name, local_interface,
-            remote_object.name, remote_interface
+            "Not linking: %s:%s -- %s:%s. " "Link creating not allowed",
+            local_object.name,
+            local_interface,
+            remote_object.name,
+            remote_interface,
         )
 
-    def reject_link(self, local_object, local_interface,
-                    remote_object, remote_interface):
+    def reject_link(self, local_object, local_interface, remote_object, remote_interface):
         self.logger.info(
             "Reject link: %s:%s -- %s:%s",
-            local_object, local_interface,
-            remote_object, remote_interface
+            local_object,
+            local_interface,
+            remote_object,
+            remote_interface,
         )
         # Get interfaces
-        li = self.get_interface_by_name(mo=local_object,
-                                        name=local_interface)
+        li = self.get_interface_by_name(mo=local_object, name=local_interface)
         if not li:
             self.logger.info(
-                "Cannot unlink: %s:%s -- %s:%s. "
-                "Interface %s:%s is not discovered",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
-                local_object.name, local_interface
+                "Cannot unlink: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
+                local_object.name,
+                local_interface,
             )
             return
-        ri = self.get_interface_by_name(mo=remote_object,
-                                        name=remote_interface)
+        ri = self.get_interface_by_name(mo=remote_object, name=remote_interface)
         if not ri:
             self.logger.info(
-                "Cannot unlink: %s:%s -- %s:%s. "
-                "Interface %s:%s is not discovered",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
-                remote_object.name, remote_interface
+                "Cannot unlink: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
+                remote_object.name,
+                remote_interface,
             )
             return
         # Get existing links
@@ -1328,24 +1291,28 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             if llink.discovery_method == self.name:
                 self.logger.info(
                     "Unlinking: %s:%s -- %s:%s. ",
-                    local_object.name, local_interface,
-                    remote_object.name, remote_interface
+                    local_object.name,
+                    local_interface,
+                    remote_object.name,
+                    remote_interface,
                 )
                 llink.delete()
             else:
                 self.logger.info(
-                    "Cannot unlink: %s:%s -- %s:%s. "
-                    "Created by other discovery method (%s)",
-                    local_object.name, local_interface,
-                    remote_object.name, remote_interface,
-                    llink.discovery_method
+                    "Cannot unlink: %s:%s -- %s:%s. " "Created by other discovery method (%s)",
+                    local_object.name,
+                    local_interface,
+                    remote_object.name,
+                    remote_interface,
+                    llink.discovery_method,
                 )
         else:
             self.logger.info(
-                "Cannot unlink: %s:%s -- %s:%s. "
-                "Not linked yet",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
+                "Cannot unlink: %s:%s -- %s:%s. " "Not linked yet",
+                local_object.name,
+                local_interface,
+                remote_object.name,
+                remote_interface,
             )
 
     def is_preferable_over(self, mo1, mo2, link):
@@ -1385,7 +1352,7 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         "s": ["script"],
         "S": ["script", "confdb"],
         "C": ["confdb", "script"],
-        "c": ["confdb"]
+        "c": ["confdb"],
     }
 
     def get_policy(self):
@@ -1456,5 +1423,6 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         return True
 
     def has_required_script(self):
-        return (super(PolicyDiscoveryCheck, self).has_required_script() or
-                self.get_policy() != ["script"])
+        return super(PolicyDiscoveryCheck, self).has_required_script() or self.get_policy() != [
+            "script"
+        ]

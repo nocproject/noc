@@ -9,6 +9,7 @@
 # Python modules
 import datetime
 import logging
+
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.sa.models.managedobject import ManagedObject
@@ -31,9 +32,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         segments = set(self.object.get_nested_ids())
         # Get managed objects and id <-> bi_id mappings
         bi_map = {}  # bi_id -> mo
-        for mo in ManagedObject.objects.filter(
-                segment__in=[str(x) for x in segments]
-        ):
+        for mo in ManagedObject.objects.filter(segment__in=[str(x) for x in segments]):
             bi_map[str(mo.bi_id)] = mo
         if not bi_map:
             self.logger.info("Empty segment tree. Skipping")
@@ -49,8 +48,11 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
           AND ts >= toDateTime('%s')
           AND managed_object IN (%s)
         GROUP BY ts, managed_object, mac
-        """ % (t0.date().isoformat(), t0.isoformat(sep=" "),
-               ", ".join(bi_map))
+        """ % (
+            t0.date().isoformat(),
+            t0.isoformat(sep=" "),
+            ", ".join(bi_map),
+        )
         ch = connection()
         # Fill FIB
         mtable = []  # mo_id, mac, iface, ts
@@ -96,20 +98,21 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
                 else:
                     coverage[mo] |= fib[mo][iface]
             if mo not in uplinks:
-                self.logger.info(
-                    "[%s] Cannot detect uplinks. Topology may be imprecise",
-                    mo.name
-                )
+                self.logger.info("[%s] Cannot detect uplinks. Topology may be imprecise", mo.name)
         # Dump FIB
         if self.logger.isEnabledFor(logging.DEBUG):
             for mo in fib:
                 self.logger.debug("%s:", mo.name)
                 if mo in uplinks:
-                    self.logger.debug("  * %s: %s", uplinks[mo], ", ".join(x.name for x in up_fib[mo]))
+                    self.logger.debug(
+                        "  * %s: %s", uplinks[mo], ", ".join(x.name for x in up_fib[mo])
+                    )
                 else:
                     self.logger.debug("    Warning: No uplinks. Topology may be imprecise")
                 for iface in fib[mo]:
-                    self.logger.debug("    %s: %s", iface, ", ".join(x.name for x in fib[mo][iface]))
+                    self.logger.debug(
+                        "    %s: %s", iface, ", ".join(x.name for x in fib[mo][iface])
+                    )
         # Build topology
         for mo in fib:
             for iface in fib[mo]:
@@ -129,7 +132,9 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
                         else:
                             self.logger.info(
                                 "[%s] No uplinks. Cannot link to %s:%s. Topology may be imprecise",
-                                ro.name, mo.name, iface
+                                ro.name,
+                                mo.name,
+                                iface,
                             )
 
     def is_uplink(self, mo, if_fib, segments):

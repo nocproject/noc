@@ -10,12 +10,14 @@
 import logging
 import datetime
 import csv
+
 # Third-party modules
 from six import StringIO
 from django.http import HttpResponse
 from pymongo import ReadPreference
 from bson import ObjectId
 import xlsxwriter
+
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -32,8 +34,16 @@ logger = logging.getLogger(__name__)
 
 
 def get_column_width(name):
-    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
-                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    excel_column_format = {
+        "ID": 6,
+        "OBJECT_NAME": 38,
+        "OBJECT_STATUS": 10,
+        "OBJECT_PROFILE": 17,
+        "OBJECT_PLATFORM": 25,
+        "AVAIL": 6,
+        "ADMIN_DOMAIN": 25,
+        "PHYS_INTERFACE_COUNT": 5,
+    }
     if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
         return 8
     elif name.startswith("ADM_PATH"):
@@ -52,26 +62,32 @@ class ReportInterfaceStatus(object):
 
     @staticmethod
     def load(mo_ids, zero, def_profile, interface_profile):
-        match = {"managed_object": {"$in": mo_ids},
-                 "type": {"$in": ["physical"]},
-                 "admin_status": True}
+        match = {
+            "managed_object": {"$in": mo_ids},
+            "type": {"$in": ["physical"]},
+            "admin_status": True,
+        }
 
         if interface_profile:
-            match["profile"] = {
-                "$in": [ObjectId(str(interface_profile))]
-            }
+            match["profile"] = {"$in": [ObjectId(str(interface_profile))]}
 
         if zero:
             match["oper_status"] = True
 
         if def_profile and interface_profile is None:
             def_prof = [pr.id for pr in InterfaceProfile.objects.filter(name__contains="default")]
-            match["profile"] = {
-                "$nin": def_prof
-            }
-        lookup = {"from": "noc.subinterfaces", "localField": "_id", "foreignField": "interface", "as": "subs"}
-        result = Interface._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED). \
-            aggregate([{"$match": match}, {"$lookup": lookup}])
+            match["profile"] = {"$nin": def_prof}
+        lookup = {
+            "from": "noc.subinterfaces",
+            "localField": "_id",
+            "foreignField": "interface",
+            "as": "subs",
+        }
+        result = (
+            Interface._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .aggregate([{"$match": match}, {"$lookup": lookup}])
+        )
         return result
 
     def __getitem__(self, item):
@@ -82,19 +98,33 @@ class ReportInterfaceStatusApplication(ExtApplication):
     menu = _("Reports") + "|" + _("Interface Status")
     title = _("Interface Status")
 
-    @view("^download/$", method=["GET"], access="launch", api=True,
-          validate={
-              "administrative_domain": StringParameter(required=False),
-              "interface_profile": StringParameter(required=False),
-              "selector": StringParameter(required=False),
-              "zero": StringParameter(required=False),
-              "def_profile": StringParameter(required=False),
-              "columns": StringParameter(required=False),
-              "o_format": StringParameter(choices=["csv", "xlsx"])})
-    def api_report(self, request, o_format, administrative_domain=None, selector=None,
-                   interface_profile=None, zero=None, def_profile=None, columns=None,
-                   enable_autowidth=False):
-
+    @view(
+        "^download/$",
+        method=["GET"],
+        access="launch",
+        api=True,
+        validate={
+            "administrative_domain": StringParameter(required=False),
+            "interface_profile": StringParameter(required=False),
+            "selector": StringParameter(required=False),
+            "zero": StringParameter(required=False),
+            "def_profile": StringParameter(required=False),
+            "columns": StringParameter(required=False),
+            "o_format": StringParameter(choices=["csv", "xlsx"]),
+        },
+    )
+    def api_report(
+        self,
+        request,
+        o_format,
+        administrative_domain=None,
+        selector=None,
+        interface_profile=None,
+        zero=None,
+        def_profile=None,
+        columns=None,
+        enable_autowidth=False,
+    ):
         def humanize_speed(speed):
             if not speed:
                 return "-"
@@ -136,7 +166,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
             "object_port_speed",
             "object_port_duplex",
             "object_port_untagged_vlan",
-            "object_port_tagged_vlans"
+            "object_port_tagged_vlans",
         ]
 
         header_row = [
@@ -151,8 +181,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
             "PORT_SPEED",
             "PORT_DUPLEX",
             "PORT_UNTAGGED_VLAN",
-            "PORT_TAGGED_VLANS"
-
+            "PORT_TAGGED_VLANS",
         ]
 
         if columns:
@@ -168,15 +197,17 @@ class ReportInterfaceStatusApplication(ExtApplication):
         r = [translate_row(header_row, cmap)]
         mo = {}
         if_p = {}
-        DUPLEX = {
-            True: "Full",
-            False: "Half"
-        }
+        DUPLEX = {True: "Full", False: "Half"}
 
         for ifp in InterfaceProfile.objects.filter():
             if_p[ifp.id] = {"name": ifp.name}
         mos = ManagedObject.objects.filter(is_managed=True)
-        if request.user.is_superuser and not administrative_domain and not selector and not interface_profile:
+        if (
+            request.user.is_superuser
+            and not administrative_domain
+            and not selector
+            and not interface_profile
+        ):
             mos = ManagedObject.objects.filter(is_managed=True)
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
@@ -196,7 +227,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
                 "address": o.address,
                 "vendor": o.vendor,
                 "version": o.version,
-                "platform": o.platform
+                "platform": o.platform,
             }
 
         mos_id = list(mos.values_list("id", flat=True))
@@ -208,28 +239,39 @@ class ReportInterfaceStatusApplication(ExtApplication):
             if i["subs"]:
                 untag = i["subs"][0].get("untagged_vlan", "")
                 tagged = list_to_ranges(i["subs"][0].get("tagged_vlans", []))
-            r += [translate_row(row([
-                mo[i['managed_object']]['name'],
-                mo[i['managed_object']]['address'],
-                "%s %s" % (str(mo[i['managed_object']]['vendor']),
-                           str(mo[i['managed_object']]['platform'])),
-                str(mo[i['managed_object']]['version']),
-                i['name'],
-                if_p[i["profile"]]["name"],
-                "UP" if i['admin_status'] is True else "Down",
-                "UP" if "oper_status" in i and i['oper_status'] is True else "Down",
-                humanize_speed(i['in_speed']) if "in_speed" in i else "-",
-                DUPLEX.get(i['full_duplex']) if "full_duplex" in i and "in_speed" in i else "-",
-                untag,
-                tagged
-            ]), cmap)]
+            r += [
+                translate_row(
+                    row(
+                        [
+                            mo[i["managed_object"]]["name"],
+                            mo[i["managed_object"]]["address"],
+                            "%s %s"
+                            % (
+                                str(mo[i["managed_object"]]["vendor"]),
+                                str(mo[i["managed_object"]]["platform"]),
+                            ),
+                            str(mo[i["managed_object"]]["version"]),
+                            i["name"],
+                            if_p[i["profile"]]["name"],
+                            "UP" if i["admin_status"] is True else "Down",
+                            "UP" if "oper_status" in i and i["oper_status"] is True else "Down",
+                            humanize_speed(i["in_speed"]) if "in_speed" in i else "-",
+                            DUPLEX.get(i["full_duplex"])
+                            if "full_duplex" in i and "in_speed" in i
+                            else "-",
+                            untag,
+                            tagged,
+                        ]
+                    ),
+                    cmap,
+                )
+            ]
 
         filename = "interface_status_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % filename
-            writer = csv.writer(response, dialect='excel', delimiter=';')
+            response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
+            writer = csv.writer(response, dialect="excel", delimiter=";")
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
@@ -240,8 +282,10 @@ class ReportInterfaceStatusApplication(ExtApplication):
             max_column_data_length = {}
             for rn, x in enumerate(r):
                 for cn, c in enumerate(x):
-                    if rn and (r[0][cn] not in max_column_data_length
-                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                    if rn and (
+                        r[0][cn] not in max_column_data_length
+                        or len(str(c)) > max_column_data_length[r[0][cn]]
+                    ):
                         max_column_data_length[r[0][cn]] = len(str(c))
                     ws.write(rn, cn, c, cf1)
             ws.autofilter(0, 0, rn, cn)
@@ -257,7 +301,6 @@ class ReportInterfaceStatusApplication(ExtApplication):
             response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
             # response = HttpResponse(
             #     content_type="application/x-ms-excel")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
+            response["Content-Disposition"] = 'attachment; filename="%s.xlsx"' % filename
             response.close()
             return response

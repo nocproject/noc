@@ -14,6 +14,7 @@ class BFDCheck(TopologyDiscoveryCheck):
     """
     BFD Topology discovery
     """
+
     name = "bfd"
     required_script = "get_bfd_sessions"
     required_capabilities = ["Network | BFD"]

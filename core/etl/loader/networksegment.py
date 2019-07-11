@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.inv.models.networksegment import NetworkSegment
@@ -17,20 +18,15 @@ class NetworkSegmentLoader(BaseLoader):
     """
     Network Segment loader
     """
+
     name = "networksegment"
     model = NetworkSegment
-    fields = [
-        "id",
-        "parent",
-        "name",
-        "sibling",
-        "profile"
-    ]
+    fields = ["id", "parent", "name", "sibling", "profile"]
 
     mapped_fields = {
         "parent": "networksegment",
         "sibling": "networksegment",
-        "profile": "networksegmentprofile"
+        "profile": "networksegmentprofile",
     }
 
     def purge(self):

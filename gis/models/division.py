@@ -22,7 +22,7 @@ from mongoengine.fields import (
 )
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 
 

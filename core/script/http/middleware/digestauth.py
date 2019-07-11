@@ -10,9 +10,11 @@
 from __future__ import absolute_import
 import hashlib
 import os
+
 # Third-party modules
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib.request import parse_http_list, parse_keqv_list
+
 # NOC modules
 from .base import BaseMiddleware
 from noc.core.http.client import fetch_sync
@@ -22,6 +24,7 @@ class DigestAuthMiddeware(BaseMiddleware):
     """
     Append HTTP Digest authorisation headers
     """
+
     name = "digestauth"
 
     def __init__(self, http):
@@ -42,8 +45,8 @@ class DigestAuthMiddeware(BaseMiddleware):
         :param method: GET/POST
         :return:
         """
-        A1 = '%s:%s:%s' % (self.user, realm, self.password)
-        A2 = '%s:%s' % (self.method, uri)
+        A1 = "%s:%s:%s" % (self.user, realm, self.password)
+        A2 = "%s:%s" % (self.method, uri)
 
         HA1 = hashlib.md5(A1).hexdigest()
         HA2 = hashlib.md5(A2).hexdigest()
@@ -64,8 +67,8 @@ class DigestAuthMiddeware(BaseMiddleware):
         qop = digest_response["qop"]
         realm = digest_response["realm"]
         nonce = digest_response["nonce"]
-        algorithm = digest_response.get('algorithm')
-        opaque = digest_response.get('opaque')
+        algorithm = digest_response.get("algorithm")
+        opaque = digest_response.get("opaque")
 
         HA1, HA2 = self.get_digest(uri, realm)
 
@@ -73,25 +76,28 @@ class DigestAuthMiddeware(BaseMiddleware):
             self.request_id += 1
         else:
             self.request_id = 1
-        ncvalue = '%08x' % self.request_id
+        ncvalue = "%08x" % self.request_id
 
-        s = nonce.encode('utf-8')
+        s = nonce.encode("utf-8")
         # s += time.ctime().encode('utf-8')
         s += os.urandom(8)
-        cnonce = (hashlib.sha1(s).hexdigest()[:16])
+        cnonce = hashlib.sha1(s).hexdigest()[:16]
 
         if not qop:
             respdig = hashlib.md5("%s:%s:%s" % (HA1, nonce, HA2)).hexdigest()
-        elif qop == 'auth' or 'auth' in qop.split(','):
-            noncebit = "%s:%s:%s:%s:%s" % (
-                nonce, ncvalue, cnonce, 'auth', HA2
-            )
+        elif qop == "auth" or "auth" in qop.split(","):
+            noncebit = "%s:%s:%s:%s:%s" % (nonce, ncvalue, cnonce, "auth", HA2)
             respdig = hashlib.md5("%s:%s" % (HA1, noncebit)).hexdigest()
         else:
             respdig = None
 
-        base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' \
-               'response="%s"' % (self.user, realm, nonce, uri, respdig)
+        base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' 'response="%s"' % (
+            self.user,
+            realm,
+            nonce,
+            uri,
+            respdig,
+        )
 
         if opaque:
             base += ', opaque="%s"' % opaque
@@ -100,13 +106,12 @@ class DigestAuthMiddeware(BaseMiddleware):
         # if entdig:
         #     base += ', digest="%s"' % entdig
         if qop:
-            base += ', qop="auth", nc=%s, cnonce="%s"' % (
-                '%08x' % self.request_id, cnonce)
+            base += ', qop="auth", nc=%s, cnonce="%s"' % ("%08x" % self.request_id, cnonce)
         self.last_nonce = nonce
         self.last_realm = realm
         self.last_opaque = opaque
 
-        return 'Digest %s' % (str(base))
+        return "Digest %s" % (str(base))
 
     def process_request(self, url, body, headers):
         if not headers:
@@ -118,9 +123,11 @@ class DigestAuthMiddeware(BaseMiddleware):
             request_timeout=60,
             follow_redirects=True,
             allow_proxy=False,
-            validate_cert=False
+            validate_cert=False,
         )
-        if "WWW-Authenticate" in resp_headers and resp_headers["WWW-Authenticate"].startswith("Digest"):
+        if "WWW-Authenticate" in resp_headers and resp_headers["WWW-Authenticate"].startswith(
+            "Digest"
+        ):
             items = parse_http_list(resp_headers["WWW-Authenticate"][7:])
             digest_response = parse_keqv_list(items)
             headers["Authorization"] = self.build_digest_header(url, self.method, digest_response)

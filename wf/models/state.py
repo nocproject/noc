@@ -11,15 +11,23 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField, ListField,
-                                ReferenceField, LongField, IntField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ListField,
+    ReferenceField,
+    LongField,
+    IntField,
+)
 import cachetools
+
 # NOC modules
 from .workflow import Workflow
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
@@ -34,32 +42,29 @@ STATE_JOB = "noc.core.wf.transition.state_job"
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("wf.Transition", "from_state"),
-    ("wf.Transition", "to_state"),
-    ("crm.Subscriber", "state"),
-    ("crm.Supplier", "state"),
-    ("ip.Address", "state"),
-    ("ip.Prefix", "state"),
-    ("ip.VRF", "state"),
-    ("phone.PhoneNumber", "state"),
-    ("phone.PhoneRange", "state"),
-    ("vc.VLAN", "state"),
-    ("vc.VPN", "state")
-])
+@on_delete_check(
+    check=[
+        ("wf.Transition", "from_state"),
+        ("wf.Transition", "to_state"),
+        ("crm.Subscriber", "state"),
+        ("crm.Supplier", "state"),
+        ("ip.Address", "state"),
+        ("ip.Prefix", "state"),
+        ("ip.VRF", "state"),
+        ("phone.PhoneNumber", "state"),
+        ("phone.PhoneRange", "state"),
+        ("vc.VLAN", "state"),
+        ("vc.VPN", "state"),
+    ]
+)
 @on_save
 @six.python_2_unicode_compatible
 class State(Document):
     meta = {
         "collection": "states",
-        "indexes": [
-            {
-                "fields": ["workflow", "name"],
-                "unique": True
-            }
-        ],
+        "indexes": [{"fields": ["workflow", "name"], "unique": True}],
         "strict": False,
-        "auto_create_index": False
+        "auto_create_index": False,
     }
     workflow = PlainReferenceField(Workflow)
     name = StringField()
@@ -101,7 +106,7 @@ class State(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
-        return u"%s: %s" % (self.workflow.name, self.name)
+        return "%s: %s" % (self.workflow.name, self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -114,8 +119,10 @@ class State(Document):
         return State.objects.filter(bi_id=id).first()
 
     def on_save(self):
-        if ((hasattr(self, "_changed_fields") and "is_default" in self._changed_fields) or
-                not hasattr(self, "_changed_field")) and self.is_default:
+        if (
+            (hasattr(self, "_changed_fields") and "is_default" in self._changed_fields)
+            or not hasattr(self, "_changed_field")
+        ) and self.is_default:
             # New default
             self.workflow.set_default_state(self)
 
@@ -127,8 +134,7 @@ class State(Document):
         """
         # Process on enter handlers
         if self.on_enter_handlers:
-            logger.debug("[%s|%s] Running on_enter_handlers",
-                         obj, obj.state.name)
+            logger.debug("[%s|%s] Running on_enter_handlers", obj, obj.state.name)
             for hn in self.on_enter_handlers:
                 try:
                     h = get_handler(str(hn))
@@ -136,16 +142,13 @@ class State(Document):
                     logger.error("Error import on_enter handler: %s" % e)
                     h = None
                 if h:
-                    logger.debug("[%s|%s] Running %s",
-                                 obj, self.name, hn)
+                    logger.debug("[%s|%s] Running %s", obj, self.name, hn)
                     h(obj)  # @todo: Catch exceptions
                 else:
-                    logger.debug("[%s|%s] Invalid handler %s, skipping",
-                                 obj, self.name, hn)
+                    logger.debug("[%s|%s] Invalid handler %s, skipping", obj, self.name, hn)
         # Run Job handler when necessary
         if self.job_handler:
-            logger.debug("[%s|%s] Running job handler %s",
-                         obj.self.name, self.job_handler)
+            logger.debug("[%s|%s] Running job handler %s", obj, self.name, self.job_handler)
             try:
                 h = get_handler(self.job_handler)
             except ImportError as e:
@@ -153,14 +156,12 @@ class State(Document):
                 h = None
             if h:
                 call_later(
-                    STATE_JOB,
-                    handler=self.job_handler,
-                    model=get_model_id(obj),
-                    object=str(obj.pk)
+                    STATE_JOB, handler=self.job_handler, model=get_model_id(obj), object=str(obj.pk)
                 )
             else:
-                logger.debug("[%s|%s] Invalid job handler %s, skipping",
-                             obj, self.name, self.job_handler)
+                logger.debug(
+                    "[%s|%s] Invalid job handler %s, skipping", obj, self.name, self.job_handler
+                )
 
     def on_leave_state(self, obj):
         """
@@ -169,8 +170,7 @@ class State(Document):
         :return:
         """
         if self.on_leave_handlers:
-            logger.debug("[%s|%s] Running on_leave_handlers",
-                         obj, self.name)
+            logger.debug("[%s|%s] Running on_leave_handlers", obj, self.name)
             for hn in self.on_leave_handlers:
                 try:
                     h = get_handler(str(hn))
@@ -178,12 +178,10 @@ class State(Document):
                     logger.error("Error import on_leave_state handler: %s" % e)
                     h = None
                 if h:
-                    logger.debug("[%s|%s] Running %s",
-                                 obj, self.name, hn)
+                    logger.debug("[%s|%s] Running %s", obj, self.name, hn)
                     h(obj)  # @todo: Catch exceptions
                 else:
-                    logger.debug("[%s|%s] Invalid handler %s, skipping",
-                                 obj, self.name, hn)
+                    logger.debug("[%s|%s] Invalid handler %s, skipping", obj, self.name, hn)
 
     def fire_transition(self, transition, obj):
         """
@@ -211,10 +209,8 @@ class State(Document):
         """
         from .transition import Transition
 
-        t = Transition.objects.filter(from_state=self.id,
-                                      event=event).first()
+        t = Transition.objects.filter(from_state=self.id, event=event).first()
         if t:
             self.fire_transition(t, obj)
         else:
-            logger.debug("[%s|%s] No event handler for '%s'. Skipping",
-                         obj, self.name, event)
+            logger.debug("[%s|%s] No event handler for '%s'. Skipping", obj, self.name, event)

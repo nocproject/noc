@@ -8,10 +8,12 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
 from django import template
 from django.utils.safestring import SafeString
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 
@@ -117,8 +119,7 @@ class NOCTableNode(template.Node):
             for a in [a.strip() for a in t[6:-1].split() if a.strip()]:
                 if "=" in a:
                     k, v = [x.strip() for x in a.split("=", 1)]
-                    if ((v[0] == "'" and v[-1] == "'") or
-                            (v[0] == '"' and v[-1] == '"')):
+                    if (v[0] == "'" and v[-1] == "'") or (v[0] == '"' and v[-1] == '"'):
                         v = v[1:-1]
                 else:
                     k, v = a, None

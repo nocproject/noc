@@ -9,11 +9,13 @@
 # Python modules
 import os.path
 from collections import defaultdict
+
 # Third-party modules
 import pytest
 from fs import open_fs
 import yaml
 import cachetools
+
 # NOC modules
 from noc.config import config
 from noc.core.scheduler.job import Job
@@ -71,14 +73,14 @@ class BeefCallWrapper(object):
             "beef_storage_url": self.object._beef_storage,
             "beef_path": self.object._beef_path,
             "access-preference": "CS",
-            "snmp_ro": "public"
+            "snmp_ro": "public",
         }
         # Build version
         if self.object.vendor and self.object.platform and self.object.version:
             version = {
                 "vendor": self.object.vendor.code,
                 "platform": self.object.platform.name,
-                "version": self.object.version.version
+                "version": self.object.version.version,
             }
             if self.object.software_image:
                 version["image"] = self.object.software_image
@@ -92,7 +94,7 @@ class BeefCallWrapper(object):
             version=version,
             timeout=3600,
             name=script_name,
-            args=kwargs
+            args=kwargs,
         )
         return scr.run()
 
@@ -107,7 +109,7 @@ def get_discovery_configs():
             data = yaml.safe_load(fs.getbytes(path))
             name = os.path.basename(os.path.dirname(path))
             m = m + 1
-            address = "10.%d.%d.%d" % ((m >> 16) & 0xff, (m >> 8) & 0xff, m & 0xff)
+            address = "10.%d.%d.%d" % ((m >> 16) & 0xFF, (m >> 8) & 0xFF, m & 0xFF)
             beef_path = os.path.join(os.path.dirname(path), "beef.json.bz2")
             r += [(name, address, pool_name, url, beef_path, data)]
     return r
@@ -134,40 +136,28 @@ def get_root_ad():
 
 @cachetools.cached(_ad_cache)
 def get_ad(name):
-    ad = AdministrativeDomain(
-        name=name,
-        parent=get_root_ad()
-    )
+    ad = AdministrativeDomain(name=name, parent=get_root_ad())
     ad.save()
     return ad
 
 
 @cachetools.cached(_segmentprofile_cache)
 def get_segment_profile():
-    nsp = NetworkSegmentProfile(
-        name="discovery test"
-    )
+    nsp = NetworkSegmentProfile(name="discovery test")
     nsp.save()
     return nsp
 
 
 @cachetools.cached(_root_segment_cache)
 def get_root_segment():
-    ns = NetworkSegment(
-        name="Discovery Tests",
-        profile=get_segment_profile()
-    )
+    ns = NetworkSegment(name="Discovery Tests", profile=get_segment_profile())
     ns.save()
     return ns
 
 
 @cachetools.cached(_segment_cache)
 def get_segment(name):
-    ns = NetworkSegment(
-        name=name,
-        parent=get_root_segment(),
-        profile=get_segment_profile()
-    )
+    ns = NetworkSegment(name=name, parent=get_root_segment(), profile=get_segment_profile())
     ns.save()
     return ns
 
@@ -186,7 +176,7 @@ def get_managedobjectprofile():
         enable_box_discovery_caps=True,
         enable_box_discovery_id=True,
         enable_box_discovery_interface=True,
-        cli_session_policy="D"  # Must be disabled, overrides BeefCaller
+        cli_session_policy="D",  # Must be disabled, overrides BeefCaller
     )
     mop.save()
     return mop
@@ -215,8 +205,7 @@ def get_discovery_object_name(x):
     return None
 
 
-@pytest.fixture(scope="module", params=get_discovery_configs(),
-                ids=get_discovery_object_name)
+@pytest.fixture(scope="module", params=get_discovery_configs(), ids=get_discovery_object_name)
 def discovery_object(request):
     global _configs
     name, address, pool_name, beef_storage_url, beef_path, data = request.param
@@ -230,7 +219,7 @@ def discovery_object(request):
         profile=get_profile(beef.box.profile),
         object_profile=get_managedobjectprofile(),
         scheme=BEEF,
-        address=name
+        address=name,
     )
     mo.save()
     # Store beef path
@@ -246,14 +235,10 @@ def discovery_object(request):
 # @todo: Прогнать profile check, проверить совпадение профииля
 # @todo: Прогнать капсы, сверить ожидаемые
 
+
 def run_job(jcls, mo, checks):
-    scheduler = Scheduler("discovery", pool=mo.pool.name,
-                          service=get_service(mo.pool))
-    job_args = {
-        Job.ATTR_ID: "fakeid",
-        Job.ATTR_KEY: mo.id,
-        "_checks": checks
-    }
+    scheduler = Scheduler("discovery", pool=mo.pool.name, service=get_service(mo.pool))
+    job_args = {Job.ATTR_ID: "fakeid", Job.ATTR_KEY: mo.id, "_checks": checks}
     job = jcls(scheduler, job_args)
     # Inject beef managed object
     job.dereference()

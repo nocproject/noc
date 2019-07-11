@@ -15,12 +15,14 @@ import inspect
 import datetime
 import dateutil.parser
 import operator
+
 # Third-party modules
 import six
 from six.moves import zip
 import bson
 from pymongo import ReadPreference
 from mongoengine.errors import DoesNotExist
+
 # NOC modules
 from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
@@ -37,8 +39,12 @@ from noc.sa.models.selectorcache import SelectorCache
 from noc.gis.utils.addr.ru import normalize_division
 from noc.aaa.models.user import User
 from noc.sa.models.useraccess import UserAccess
-from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
-                                    DateTimeParameter, StringParameter)
+from noc.sa.interfaces.base import (
+    ModelParameter,
+    UnicodeParameter,
+    DateTimeParameter,
+    StringParameter,
+)
 from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.serviceprofile import ServiceProfile
@@ -51,7 +57,10 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 def get_advanced_field(id):
     if "|" in id:
         return id.split("|")
-    for model, field in ((ServiceProfile, "total_services"), (SubscriberProfile, "total_subscribers")):
+    for model, field in (
+        (ServiceProfile, "total_services"),
+        (SubscriberProfile, "total_subscribers"),
+    ):
         if model.get_by_id(id):
             return field, id
     return "total_services"
@@ -61,34 +70,29 @@ class AlarmApplication(ExtApplication):
     """
     fm.alarm application
     """
+
     title = _("Alarm")
     menu = _("Alarms")
     glyph = "exclamation-triangle"
 
-    implied_permissions = {
-        "launch": ["sa:managedobject:alarm"]
-    }
+    implied_permissions = {"launch": ["sa:managedobject:alarm"]}
 
-    model_map = {
-        "A": ActiveAlarm,
-        "C": ArchivedAlarm
-    }
+    model_map = {"A": ActiveAlarm, "C": ArchivedAlarm}
 
     clean_fields = {
         "managed_object": ModelParameter(ManagedObject),
-        "timestamp": DateTimeParameter()
+        "timestamp": DateTimeParameter(),
     }
 
     ignored_params = ["status", "_dc"]
 
-    diagnostic_plugin = AlarmPlugin(
-        name="diagnostic",
-        config={}
-    )
+    diagnostic_plugin = AlarmPlugin(name="diagnostic", config={})
 
-    advanced_filter_params = {"service_profile": "total_services",
-                              "subscribers_profile": "total_subscribers",
-                              "profile": get_advanced_field}
+    advanced_filter_params = {
+        "service_profile": "total_services",
+        "subscribers_profile": "total_subscribers",
+        "profile": get_advanced_field,
+    }
 
     DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
 
@@ -97,20 +101,21 @@ class AlarmApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         from .plugins.base import AlarmPlugin
+
         # Load plugins
         self.plugins = {}
         for f in os.listdir("services/web/apps/fm/alarm/plugins/"):
-            if (not f.endswith(".py") or
-                    f == "base.py" or
-                    f.startswith("_")):
+            if not f.endswith(".py") or f == "base.py" or f.startswith("_"):
                 continue
             mn = "noc.services.web.apps.fm.alarm.plugins.%s" % f[:-3]
             m = __import__(mn, {}, {}, "*")
             for on in dir(m):
                 o = getattr(m, on)
-                if (inspect.isclass(o) and
-                        issubclass(o, AlarmPlugin) and
-                        o.__module__.startswith(mn)):
+                if (
+                    inspect.isclass(o)
+                    and issubclass(o, AlarmPlugin)
+                    and o.__module__.startswith(mn)
+                ):
                     assert o.name
                     self.plugins[o.name] = o(self)
 
@@ -121,8 +126,14 @@ class AlarmApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (
-                self.limit_param, self.page_param, self.start_param,
-                self.format_param, self.sort_param, self.query_param, self.only_param):
+            self.limit_param,
+            self.page_param,
+            self.start_param,
+            self.format_param,
+            self.sort_param,
+            self.query_param,
+            self.only_param,
+        ):
             if p in q:
                 del q[p]
         # Extract IN
@@ -163,22 +174,26 @@ class AlarmApplication(ExtApplication):
             q["managed_object__in"] = Maintenance.currently_affected()
         del q["maintenance"]
         if "administrative_domain" in q:
-            if q["administrative_domain"] != '_root_':
+            if q["administrative_domain"] != "_root_":
                 q["adm_path"] = int(q["administrative_domain"])
             q.pop("administrative_domain")
         if "segment" in q:
-            if q["segment"] != '_root_':
+            if q["segment"] != "_root_":
                 q["segment_path"] = bson.ObjectId(q["segment"])
             q.pop("segment")
         if "managedobjectselector" in q:
-            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
+            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list(
+                "object"
+            )
             if "managed_object__in" in q:
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
                 q["managed_object__in"] = s
             q.pop("managedobjectselector")
         if "cleared_after" in q:
-            q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(seconds=int(q["cleared_after"]))
+            q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(
+                seconds=int(q["cleared_after"])
+            )
             q.pop("cleared_after")
         #
         if "wait_tt" in q:
@@ -192,8 +207,12 @@ class AlarmApplication(ExtApplication):
             if c != "0":
                 q["root__exists"] = False
         if status == "C":
-            if ("timestamp__gte" not in q and "timestamp__lte" not in q and
-                    "escalation_tt__contains" not in q and "managed_object" not in q):
+            if (
+                "timestamp__gte" not in q
+                and "timestamp__lte" not in q
+                and "escalation_tt__contains" not in q
+                and "managed_object" not in q
+            ):
                 q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
         return q
 
@@ -241,8 +260,7 @@ class AlarmApplication(ExtApplication):
                     cond = {"$gte": int(l)}
                 else:
                     cond = {"$lte": int(r), "$gte": int(l)}
-                q["__raw__"] = {field: {"$elemMatch": {"profile": c_id,
-                                                       "summary": cond}}}
+                q["__raw__"] = {field: {"$elemMatch": {"profile": c_id, "summary": cond}}}
             elif c_query == "exists":
                 c_in += [c_id]
                 continue
@@ -252,11 +270,13 @@ class AlarmApplication(ExtApplication):
             else:
                 try:
                     c_query = int(c_query)
-                    q["__raw__"] = {field: {"$elemMatch": {"profile": c_id,
-                                                           "summary": int(c_query)}}}
+                    q["__raw__"] = {
+                        field: {"$elemMatch": {"profile": c_id, "summary": int(c_query)}}
+                    }
                 except ValueError:
-                    q["__raw__"] = {field: {"$elemMatch": {"profile": c_id,
-                                                           "summary": {"$regex": c_query}}}}
+                    q["__raw__"] = {
+                        field: {"$elemMatch": {"profile": c_id, "summary": {"$regex": c_query}}}
+                    }
         if c_in:
             q["%s__profile__in" % field] = c_in
         if c_nin:
@@ -266,8 +286,10 @@ class AlarmApplication(ExtApplication):
 
     def instance_to_dict(self, o, fields=None):
         s = AlarmSeverity.get_severity(o.severity)
-        n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
-                    ArchivedEvent.objects.filter(alarms=o.id).count())
+        n_events = (
+            ActiveEvent.objects.filter(alarms=o.id).count()
+            + ArchivedEvent.objects.filter(alarms=o.id).count()
+        )
 
         d = {
             "id": str(o.id),
@@ -288,21 +310,31 @@ class AlarmApplication(ExtApplication):
             "row_class": s.style.css_class_name,
             "segment__label": o.managed_object.segment.name,
             "segment": str(o.managed_object.segment.id),
-            "location_1": self.location(o.managed_object.container.id)[0] if o.managed_object.container else "",
-            "location_2": self.location(o.managed_object.container.id)[1] if o.managed_object.container else "",
+            "location_1": self.location(o.managed_object.container.id)[0]
+            if o.managed_object.container
+            else "",
+            "location_2": self.location(o.managed_object.container.id)[1]
+            if o.managed_object.container
+            else "",
             "escalation_tt": o.escalation_tt,
             "escalation_error": o.escalation_error,
             "platform": o.managed_object.platform.name if o.managed_object.platform else "",
             "address": o.managed_object.address,
             "ack_ts": self.to_json(o.ack_ts),
             "ack_user": o.ack_user,
-            "summary": self.f_glyph_summary({
-                "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
-                "service": SummaryItem.items_to_dict(o.total_services)
-            }),
+            "summary": self.f_glyph_summary(
+                {
+                    "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
+                    "service": SummaryItem.items_to_dict(o.total_services),
+                }
+            ),
             "total_objects": sum(x.summary for x in o.total_objects),
-            "total_subscribers": self.f_summary({"subscriber": SummaryItem.items_to_dict(o.total_subscribers)}),
-            "total_services": self.f_summary({"service": SummaryItem.items_to_dict(o.total_services)})
+            "total_subscribers": self.f_summary(
+                {"subscriber": SummaryItem.items_to_dict(o.total_subscribers)}
+            ),
+            "total_services": self.f_summary(
+                {"service": SummaryItem.items_to_dict(o.total_services)}
+            ),
         }
         if fields:
             d = dict((k, d[k]) for k in fields)
@@ -320,15 +352,15 @@ class AlarmApplication(ExtApplication):
             return model.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all()
         else:
             return model.objects.filter(
-                adm_path__in=UserAccess.get_domains(request.user), read_preference=ReadPreference.SECONDARY_PREFERRED
+                adm_path__in=UserAccess.get_domains(request.user),
+                read_preference=ReadPreference.SECONDARY_PREFERRED,
             )
 
     @view(url=r"^$", access="launch", method=["GET"], api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True,
-          access="launch")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True, access="launch")
     def api_alarm(self, request, id):
         alarm = get_alarm(id)
         if not alarm:
@@ -341,10 +373,7 @@ class AlarmApplication(ExtApplication):
         d["recommended_actions"] = alarm.alarm_class.recommended_actions
         d["vars"] = sorted(alarm.vars.items())
         d["status"] = alarm.status
-        d["status__label"] = {
-            "A": "Active",
-            "C": "Cleared"
-        }[alarm.status]
+        d["status__label"] = {"A": "Active", "C": "Cleared"}[alarm.status]
         # Managed object properties
         mo = alarm.managed_object
         d["managed_object_address"] = mo.address
@@ -353,7 +382,9 @@ class AlarmApplication(ExtApplication):
         d["managed_object_version"] = mo.version.version if mo.version else ""
         d["segment"] = mo.segment.name
         d["segment_id"] = str(mo.segment.id)
-        d["segment_path"] = " | ".join(NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment))
+        d["segment_path"] = " | ".join(
+            NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment)
+        )
         if mo.container:
             cp = []
             c = mo.container.id
@@ -378,32 +409,32 @@ class AlarmApplication(ExtApplication):
                     "timestamp": self.to_json(l.timestamp),
                     "from_status": l.from_status,
                     "to_status": l.to_status,
-                    "message": l.message
-                } for l in alarm.log
+                    "message": l.message,
+                }
+                for l in alarm.log
             ]
         # Events
         events = []
         for ec in ActiveEvent, ArchivedEvent:
             for e in ec.objects.filter(alarms=alarm.id):
-                events += [{
-                    "id": str(e.id),
-                    "event_class": str(e.event_class.id),
-                    "event_class__label": e.event_class.name,
-                    "timestamp": self.to_json(e.timestamp),
-                    "status": e.status,
-                    "managed_object": e.managed_object.id,
-                    "managed_object__label": e.managed_object.name,
-                    "subject": e.subject
-                }]
+                events += [
+                    {
+                        "id": str(e.id),
+                        "event_class": str(e.event_class.id),
+                        "event_class__label": e.event_class.name,
+                        "timestamp": self.to_json(e.timestamp),
+                        "status": e.status,
+                        "managed_object": e.managed_object.id,
+                        "managed_object__label": e.managed_object.name,
+                        "subject": e.subject,
+                    }
+                ]
         if events:
             d["events"] = events
         # Alarms
         children = self.get_nested_alarms(alarm)
         if children:
-            d["alarms"] = {
-                "expanded": True,
-                "children": children
-            }
+            d["alarms"] = {"expanded": True, "children": children}
         # Subscribers
         if alarm.status == "A":
             d["subscribers"] = self.get_alarm_subscribers(alarm)
@@ -434,11 +465,9 @@ class AlarmApplication(ExtApplication):
         for u in alarm.subscribers:
             try:
                 u = User.objects.get(id=u)
-                subscribers += [{
-                    "id": u.id,
-                    "name": " ".join([u.first_name, u.last_name]),
-                    "login": u.username
-                }]
+                subscribers += [
+                    {"id": u.id, "name": " ".join([u.first_name, u.last_name]), "login": u.username}
+                ]
             except User.DoesNotExist:
                 pass
         return subscribers
@@ -462,7 +491,7 @@ class AlarmApplication(ExtApplication):
                     "managed_object__label": a.managed_object.name,
                     "timestamp": self.to_json(a.timestamp),
                     "iconCls": "icon_error",
-                    "row_class": s.style.css_class_name
+                    "row_class": s.style.css_class_name,
                 }
                 nc = self.get_nested_alarms(a)
                 if nc:
@@ -473,8 +502,13 @@ class AlarmApplication(ExtApplication):
                 children += [c]
         return children
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
-          access="launch", validate={"msg": UnicodeParameter()})
+    @view(
+        url=r"^(?P<id>[a-z0-9]{24})/post/",
+        method=["POST"],
+        api=True,
+        access="launch",
+        validate={"msg": UnicodeParameter()},
+    )
     def api_post(self, request, id, msg):
         alarm = get_alarm(id)
         if not alarm:
@@ -482,8 +516,9 @@ class AlarmApplication(ExtApplication):
         alarm.log_message("%s: %s" % (request.user.username, msg))
         return True
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/acknowledge/", method=["POST"],
-          api=True, access="acknowledge")
+    @view(
+        url=r"^(?P<id>[a-z0-9]{24})/acknowledge/", method=["POST"], api=True, access="acknowledge"
+    )
     def api_acknowledge(self, request, id):
         alarm = get_alarm(id)
         if not alarm:
@@ -491,17 +526,13 @@ class AlarmApplication(ExtApplication):
         if alarm.status != "A":
             return self.response_not_found()
         if alarm.ack_ts:
-            return {
-                "status": False,
-                "message": "Already acknowledged by %s" % alarm.ack_user
-            }
+            return {"status": False, "message": "Already acknowledged by %s" % alarm.ack_user}
         alarm.acknowledge(request.user)
-        return {
-            "status": True
-        }
+        return {"status": True}
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/unacknowledge/", method=["POST"],
-          api=True, access="acknowledge")
+    @view(
+        url=r"^(?P<id>[a-z0-9]{24})/unacknowledge/", method=["POST"], api=True, access="acknowledge"
+    )
     def api_unacknowledge(self, request, id):
         alarm = get_alarm(id)
         if not alarm:
@@ -509,17 +540,11 @@ class AlarmApplication(ExtApplication):
         if alarm.status != "A":
             return self.response_not_found()
         if not alarm.ack_ts:
-            return {
-                "status": False,
-                "message": "Already unacknowledged"
-            }
+            return {"status": False, "message": "Already unacknowledged"}
         alarm.unacknowledge(request.user)
-        return {
-            "status": True
-        }
+        return {"status": True}
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/subscribe/", method=["POST"],
-          api=True, access="launch")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/subscribe/", method=["POST"], api=True, access="launch")
     def api_subscribe(self, request, id):
         alarm = get_alarm(id)
         if not alarm:
@@ -530,8 +555,7 @@ class AlarmApplication(ExtApplication):
         else:
             return []
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/unsubscribe/", method=["POST"],
-          api=True, access="launch")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/unsubscribe/", method=["POST"], api=True, access="launch")
     def api_unsubscribe(self, request, id):
         alarm = get_alarm(id)
         if not alarm:
@@ -542,17 +566,20 @@ class AlarmApplication(ExtApplication):
         else:
             return []
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/clear/", method=["POST"],
-          api=True, access="launch")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/clear/", method=["POST"], api=True, access="launch")
     def api_clear(self, request, id):
         alarm = get_alarm(id)
         if alarm.status == "A":
             alarm.clear_alarm("Cleared by %s" % request.user)
         return True
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/set_root/", method=["POST"],
-          api=True, access="launch",
-          validate={"root": StringParameter()})
+    @view(
+        url=r"^(?P<id>[a-z0-9]{24})/set_root/",
+        method=["POST"],
+        api=True,
+        access="launch",
+        validate={"root": StringParameter()},
+    )
     def api_set_root(self, request, id, root):
         alarm = get_alarm(id)
         r = get_alarm(root)
@@ -561,8 +588,7 @@ class AlarmApplication(ExtApplication):
         alarm.set_root(r)
         return True
 
-    @view(url="notification/$", method=["GET"],
-          api=True, access="launch")
+    @view(url="notification/$", method=["GET"], api=True, access="launch")
     def api_notification(self, request):
         delta = request.GET.get("delta")
         n = 0
@@ -571,33 +597,20 @@ class AlarmApplication(ExtApplication):
         if delta:
             dt = datetime.timedelta(seconds=int(delta))
             t0 = datetime.datetime.now() - dt
-            r = list(ActiveAlarm._get_collection().aggregate([
-                {
-                    "$match": {
-                        "timestamp": {
-                            "$gt": t0
-                        }
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": "$item",
-                        "severity": {
-                            "$max": "$severity"
-                        }
-                    }
-                }
-            ]))
+            r = list(
+                ActiveAlarm._get_collection().aggregate(
+                    [
+                        {"$match": {"timestamp": {"$gt": t0}}},
+                        {"$group": {"_id": "$item", "severity": {"$max": "$severity"}}},
+                    ]
+                )
+            )
             if r:
                 s = AlarmSeverity.get_severity(r[0]["severity"])
                 if s and s.sound and s.volume:
                     sound = "/ui/pkg/nocsound/%s.mp3" % s.sound
                     volume = float(s.volume) / 100.0
-        return {
-            "new_alarms": n,
-            "sound": sound,
-            "volume": volume
-        }
+        return {"new_alarms": n, "sound": sound, "volume": volume}
 
     @classmethod
     def f_glyph_summary(cls, s, collapse=False):
@@ -619,16 +632,14 @@ class AlarmApplication(ExtApplication):
                     if collapse and c < 2:
                         badge = ""
                     else:
-                        badge = "<span class=\"x-display-tag\">%s</span>" % c
+                        badge = '<span class="x-display-tag">%s</span>' % c
                     order = getattr(pv, "display_order", 100)
-                    v += [(
-                        (order, -c),
-                        "<i class=\"%s\" title=\"%s\"></i>%s" % (
-                            pv.glyph,
-                            pv.name,
-                            badge
+                    v += [
+                        (
+                            (order, -c),
+                            '<i class="%s" title="%s"></i>%s' % (pv.glyph, pv.name, badge),
                         )
-                    )]
+                    ]
             return "<span class='x-summary'>%s</span>" % "".join(
                 i[1] for i in sorted(v, key=operator.itemgetter(0))
             )
@@ -638,22 +649,23 @@ class AlarmApplication(ExtApplication):
         r = []
         if "subscriber" in s:
             from noc.crm.models.subscriberprofile import SubscriberProfile
+
             r += [get_summary(s["subscriber"], SubscriberProfile)]
         if "service" in s:
             from noc.sa.models.serviceprofile import ServiceProfile
+
             r += [get_summary(s["service"], ServiceProfile)]
         r = [x for x in r if x]
         return "".join(r)
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/escalate/", method=["GET"],
-          api=True, access="escalate")
+    @view(url=r"^(?P<id>[a-z0-9]{24})/escalate/", method=["GET"], api=True, access="escalate")
     def api_escalation_alarm(self, request, id):
         alarm = get_alarm(id)
         if alarm.status == "A":
             AlarmEscalation.watch_escalations(alarm)
-            return {'status': True}
+            return {"status": True}
         else:
-            return {'status': False, 'error': 'The alarm is not active at the moment'}
+            return {"status": False, "error": "The alarm is not active at the moment"}
 
     def location(self, id):
         """
@@ -666,7 +678,7 @@ class AlarmApplication(ExtApplication):
             last = 0.0
 
             while last < len(seq):
-                out.append(seq[int(last):int(last + avg)])
+                out.append(seq[int(last) : int(last + avg)])
                 last += avg
             return out
 
@@ -680,7 +692,7 @@ class AlarmApplication(ExtApplication):
                 if None in adr:
                     location += [adr[1].title().strip()]
                 else:
-                    location += [' '.join(adr).title().strip()]
+                    location += [" ".join(adr).title().strip()]
             res = chunkIt(location, 2)
             location_1 = ", ".join(res[0])
             location_2 = ", ".join(res[1])
@@ -705,12 +717,15 @@ class AlarmApplication(ExtApplication):
             for p, c in sorted(six.iteritems(d), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
-                    v += [{"profile": str(pv.id),
-                           "glyph": pv.glyph,
-                           "display_order": pv.display_order,
-                           "profile__label": pv.name,
-                           "summary": c}
-                          ]
+                    v += [
+                        {
+                            "profile": str(pv.id),
+                            "glyph": pv.glyph,
+                            "display_order": pv.display_order,
+                            "profile__label": pv.name,
+                            "summary": c,
+                        }
+                    ]
             return v
 
         if not isinstance(s, dict):
@@ -718,9 +733,11 @@ class AlarmApplication(ExtApplication):
         r = []
         if "subscriber" in s:
             from noc.crm.models.subscriberprofile import SubscriberProfile
+
             r += get_summary(s["subscriber"], SubscriberProfile)
         if "service" in s:
             from noc.sa.models.serviceprofile import ServiceProfile
+
             r += get_summary(s["service"], ServiceProfile)
         r = [x for x in r if x]
         return r
@@ -737,18 +754,25 @@ class AlarmApplication(ExtApplication):
             pipeline = [
                 {"$match": {"affected_objects.object": {"$in": mos}}},
                 {"$unwind": "$affected_objects"},
-                {"$project": {"_id": 0,
-                              "managed_object": "$affected_objects.object",
-                              "interval": ["$start", "$stop"]}},
-                {"$group": {"_id": "$managed_object",
-                            "intervals": {"$push": "$interval"}}}]
-            mtc = {x["_id"]: x["intervals"] for x in Maintenance._get_collection().aggregate(pipeline)}
+                {
+                    "$project": {
+                        "_id": 0,
+                        "managed_object": "$affected_objects.object",
+                        "interval": ["$start", "$stop"],
+                    }
+                },
+                {"$group": {"_id": "$managed_object", "intervals": {"$push": "$interval"}}},
+            ]
+            mtc = {
+                x["_id"]: x["intervals"] for x in Maintenance._get_collection().aggregate(pipeline)
+            }
             for x in data:
                 if x["managed_object"] in mtc:
                     left, right = list(zip(*mtc[x["managed_object"]]))
-                    x["isInMaintenance"] = (
-                        bisect.bisect(right, dateutil.parser.parse(x["timestamp"]).replace(tzinfo=None)) !=
-                        bisect.bisect(left, dateutil.parser.parse(x["clear_timestamp"]).replace(tzinfo=None))
+                    x["isInMaintenance"] = bisect.bisect(
+                        right, dateutil.parser.parse(x["timestamp"]).replace(tzinfo=None)
+                    ) != bisect.bisect(
+                        left, dateutil.parser.parse(x["clear_timestamp"]).replace(tzinfo=None)
                     )
                 else:
                     x["isInMaintenance"] = False
@@ -757,11 +781,20 @@ class AlarmApplication(ExtApplication):
     @view(url=r"profile_lookup/$", access="launch", method=["GET"], api=True)
     def api_profile_lookup(self, request):
         r = []
-        for model, short_type, field_id in ((ServiceProfile, _("Service"), "total_services"),
-                                            (SubscriberProfile, _("Subscribers"), "total_subscribers")):
+        for model, short_type, field_id in (
+            (ServiceProfile, _("Service"), "total_services"),
+            (SubscriberProfile, _("Subscribers"), "total_subscribers"),
+        ):
             # "%s|%s" % (field_id,
-            r += [{"id": str(o.id), "type": short_type, "display_order": o.display_order,
-                   "icon": o.glyph, "label": o.name}
-                  for o in model.objects.all()
-                  if getattr(o, "show_in_summary", True)]
+            r += [
+                {
+                    "id": str(o.id),
+                    "type": short_type,
+                    "display_order": o.display_order,
+                    "icon": o.glyph,
+                    "label": o.name,
+                }
+                for o in model.objects.all()
+                if getattr(o, "show_in_summary", True)
+            ]
         return r

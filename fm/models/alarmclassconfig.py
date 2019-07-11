@@ -15,7 +15,7 @@ from mongoengine.document import Document
 from mongoengine.fields import IntField
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from .alarmclass import AlarmClass
 
 

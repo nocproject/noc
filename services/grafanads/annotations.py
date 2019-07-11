@@ -9,12 +9,14 @@
 # Python modules
 import operator
 from time import mktime
+
 # Third-party modules
 import tornado.web
 import tornado.gen
 import ujson
 import dateutil.parser
 from dateutil import tz
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
@@ -30,7 +32,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
     def post(self, *args, **kwargs):
         try:
             req = ujson.loads(self.request.body)
-        except ValueError as e:
+        except ValueError:
             raise tornado.web.HTTPError(400, "Bad request")
         #
         f = dateutil.parser.parse(req["range"]["from"], ignoretz=False)
@@ -45,9 +47,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
         # Annotation to return in reply
         ra = req.get("annotation")
         #
-        result = yield self.service.get_executor("db").submit(
-            self.get_annotations, f, t, ra
-        )
+        result = yield self.service.get_executor("db").submit(self.get_annotations, f, t, ra)
         self.write(result)
 
     def get_annotations(self, f, t, annotation):
@@ -63,51 +63,45 @@ class AnnotationsHandler(tornado.web.RequestHandler):
     def get_alarms(self, mo, f, t, annotation):
         r = []
         for ac in (ActiveAlarm, ArchivedAlarm):
-            q = {
-                "managed_object": mo.id
-            }
+            q = {"managed_object": mo.id}
             if ac.status == "A":
-                q["timestamp"] = {
-                    "$gte": f,
-                    "$lte": t
-                }
+                q["timestamp"] = {"$gte": f, "$lte": t}
             else:
                 q["$or"] = [
-                    {
-                        "timestamp": {
-                            "$gte": f,
-                            "$lte": t
-                        }
-                    },
-                    {
-                        "clear_timestamp": {
-                            "$gte": f,
-                            "$lte": t
-                        }
-                    }
+                    {"timestamp": {"$gte": f, "$lte": t}},
+                    {"clear_timestamp": {"$gte": f, "$lte": t}},
                 ]
             c = ac._get_collection()
-            for d in c.find(q, {
-                "_id": 1,
-                "managed_object": 1,
-                "alarm_class": 1,
-                "timestamp": 1,
-                "clear_timestamp": 1
-            }):
+            for d in c.find(
+                q,
+                {
+                    "_id": 1,
+                    "managed_object": 1,
+                    "alarm_class": 1,
+                    "timestamp": 1,
+                    "clear_timestamp": 1,
+                },
+            ):
                 if f <= d["timestamp"] <= t:
-                    r += [{
-                        "annotation": annotation,
-                        "time": mktime(d["timestamp"].timetuple()) * 1000 + d["timestamp"].microsecond / 1000,
-                        "title": AlarmClass.get_by_id(d["alarm_class"]).name
-                        # "tags": X,
-                        # "text": X
-                    }]
+                    r += [
+                        {
+                            "annotation": annotation,
+                            "time": mktime(d["timestamp"].timetuple()) * 1000
+                            + d["timestamp"].microsecond / 1000,
+                            "title": AlarmClass.get_by_id(d["alarm_class"]).name
+                            # "tags": X,
+                            # "text": X
+                        }
+                    ]
                 if "clear_timestamp" in d and f <= d["clear_timestamp"] <= t:
-                    r += [{
-                        "annotation": annotation,
-                        "time": mktime(d["timestamp"].timetuple()) * 1000 + d["timestamp"].microsecond / 1000,
-                        "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name
-                        # "tags": X,
-                        # "text": X
-                    }]
+                    r += [
+                        {
+                            "annotation": annotation,
+                            "time": mktime(d["timestamp"].timetuple()) * 1000
+                            + d["timestamp"].microsecond / 1000,
+                            "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name
+                            # "tags": X,
+                            # "text": X
+                        }
+                    ]
         return r

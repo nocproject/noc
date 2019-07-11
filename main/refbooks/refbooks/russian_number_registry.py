@@ -27,5 +27,5 @@ class RussianNumberPlan(RefBook):
         Field(name="До"),
         Field(name="Емкость"),
         Field(name="Оператор", search_method="starting"),
-        Field(name="Регион")
+        Field(name="Регион"),
     ]

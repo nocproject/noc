@@ -14,6 +14,7 @@ import os
 from collections import defaultdict
 import datetime
 import operator
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.services.classifier.ruleset import RuleSet
@@ -28,29 +29,12 @@ from noc.core.perf import metrics
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--profile",
-            default="Generic.Host",
-            help="Object profile"
-        )
-        parser.add_argument(
-            "--format",
-            default="syslog",
-            help="Input format"
-        )
-        parser.add_argument(
-            "--progress",
-            action="store_true",
-            help="Display progress"
-        )
-        parser.add_argument(
-            "paths",
-            nargs=argparse.REMAINDER,
-            help="List of input file paths"
-        )
+        parser.add_argument("--profile", default="Generic.Host", help="Object profile")
+        parser.add_argument("--format", default="syslog", help="Input format")
+        parser.add_argument("--progress", action="store_true", help="Display progress")
+        parser.add_argument("paths", nargs=argparse.REMAINDER, help="List of input file paths")
 
-    def handle(self, paths, profile, format, progress=False,
-               *args, **options):
+    def handle(self, paths, profile, format, progress=False, *args, **options):
         assert profile_loader.get_profile(profile), "Invalid profile: %s" % profile
         t0 = time.time()
         ruleset = RuleSet()
@@ -59,10 +43,7 @@ class Command(BaseCommand):
         reader = getattr(self, "read_%s" % format, None)
         assert reader, "Invalid format %s" % format
         self.managed_object = ManagedObject(
-            id=1,
-            name="test",
-            address="127.0.0.1",
-            profile_name=profile
+            id=1, name="test", address="127.0.0.1", profile_name=profile
         )
         t0 = time.time()
         stats = defaultdict(int)
@@ -81,15 +62,13 @@ class Command(BaseCommand):
                     if progress and total % 1000 == 0:
                         self.print("%d records processed" % total)
         dt = time.time() - t0
-        self.print("%d events processed in %.2fms (%.fevents/sec)" % (
-            total, dt * 1000, float(total) / dt
-        ))
+        self.print(
+            "%d events processed in %.2fms (%.fevents/sec)" % (total, dt * 1000, float(total) / dt)
+        )
         if stats:
             # Prepare statistics
             s_data = sorted(
-                [(k, stats[k]) for k in stats],
-                key=operator.itemgetter(1),
-                reverse=True
+                [(k, stats[k]) for k in stats], key=operator.itemgetter(1), reverse=True
             )
             s_total = sum(stats[k] for k in stats if not self.is_ignored(k))
             data = [["Events", "%", "Event class"]]
@@ -116,11 +95,8 @@ class Command(BaseCommand):
                 start_timestamp=now,
                 managed_object=self.managed_object,
                 source="syslog",
-                raw_vars={
-                    "collector": "default",
-                    "message": line[:-1]
-                },
-                repeats=1
+                raw_vars={"collector": "default", "message": line[:-1]},
+                repeats=1,
             )
 
 

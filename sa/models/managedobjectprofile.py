@@ -569,11 +569,13 @@ class ManagedObjectProfile(NOCModel):
         else:
             return None
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
 
         for mo in ManagedObject.objects.filter(object_profile=self):
-            for c in mo.iter_changed_datastream():
+            for c in mo.iter_changed_datastream(
+                changed_fields={"managed_object_profile"}.union(changed_fields)
+            ):
                 yield c
 
     def iter_pools(self):

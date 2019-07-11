@@ -209,11 +209,11 @@ class InterfaceClassificationRule(Document):
         Stringified match expression
         """
         if not len(self.match):
-            return u"any"
+            return "any"
         elif len(self.match) == 1:
             return unicode(self.match[0])
         else:
-            return u" AND ".join(u"(%s)" % unicode(m) for m in self.match)
+            return " AND ".join("(%s)" % unicode(m) for m in self.match)
 
     @classmethod
     def get_classificator_code(cls):
@@ -262,7 +262,7 @@ class InterfaceClassificationRule(Document):
         # Hack to retrieve reference
         handlers = {}
         # Compile code
-        exec (
+        exec(
             code,
             {
                 "re": re,

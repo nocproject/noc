@@ -9,14 +9,19 @@
 # Python modules
 from __future__ import absolute_import
 from collections import defaultdict
+
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.lib.geo import distance, bearing, bearing_sym
 from noc.gis.map import map
-from noc.sa.interfaces.base import (DocumentParameter, FloatParameter,
-                                    DictListParameter, IntParameter,
-                                    BooleanParameter)
+from noc.sa.interfaces.base import (
+    DocumentParameter,
+    FloatParameter,
+    DictListParameter,
+    IntParameter,
+    BooleanParameter,
+)
 from .base import InvPlugin
 
 
@@ -35,7 +40,7 @@ class ConduitsPlugin(InvPlugin):
             "api_plugin_%s_get_neighbors" % self.name,
             self.api_get_neighbors,
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/get_neighbors/$" % self.name,
-            method=["GET"]
+            method=["GET"],
         )
         self.add_view(
             "api_plugin_%s_create_ducts" % self.name,
@@ -43,18 +48,22 @@ class ConduitsPlugin(InvPlugin):
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/$" % self.name,
             method=["POST"],
             validate={
-                "ducts": DictListParameter(attrs={
-                    "target": DocumentParameter(Object),
-                    "project_distance": FloatParameter(),
-                    "conduits": DictListParameter(attrs={
-                        "id": DocumentParameter(Object, required=False),
-                        "n": IntParameter(),
-                        "x": IntParameter(),
-                        "y": IntParameter(),
-                        "status": BooleanParameter()
-                    })
-                })
-            }
+                "ducts": DictListParameter(
+                    attrs={
+                        "target": DocumentParameter(Object),
+                        "project_distance": FloatParameter(),
+                        "conduits": DictListParameter(
+                            attrs={
+                                "id": DocumentParameter(Object, required=False),
+                                "n": IntParameter(),
+                                "x": IntParameter(),
+                                "y": IntParameter(),
+                                "status": BooleanParameter(),
+                            }
+                        ),
+                    }
+                )
+            },
         )
         #
         self.conduits_model = ObjectModel.objects.filter(name=self.CONDUITS_MODEL).first()
@@ -67,14 +76,16 @@ class ConduitsPlugin(InvPlugin):
             conduit, _ = c.p2p_get_other(object)
             for cc, t, _ in conduit.get_genderless_connections("conduits"):
                 if t != object:
-                    conduits[t] += [{
-                        "id": str(conduit.id),
-                        "n": int(conduit.name),
-                        "x": cc.data["plan"]["x"],
-                        "y": cc.data["plan"]["y"],
-                        "d": 100,  # remote.data.get("...."),
-                        "status": True  # remote.data....
-                    }]
+                    conduits[t] += [
+                        {
+                            "id": str(conduit.id),
+                            "n": int(conduit.name),
+                            "x": cc.data["plan"]["x"],
+                            "y": cc.data["plan"]["y"],
+                            "d": 100,  # remote.data.get("...."),
+                            "status": True,  # remote.data....
+                        }
+                    ]
         # Get neighbor ducts
         for c, remote, _ in object.get_genderless_connections("ducts"):
             map_distance = None
@@ -85,23 +96,21 @@ class ConduitsPlugin(InvPlugin):
                 br = bearing(object.point, remote.point)
                 sbr = bearing_sym(object.data, remote.data)
             cd = conduits[remote]
-            ducts += [{
-                "connection_id": str(c.id),
-                "target_id": str(remote.id),
-                "target_name": remote.name,
-                "target_model_name": remote.model.name,
-                "map_distance": map_distance,
-                "project_distance": c.data.get("project_distance"),
-                "n_conduits": len(cd),
-                "conduits": cd,
-                "bearing": br,
-                "s_bearing": sbr
-            }]
-        return {
-            "id": str(object.id),
-            "name": object.name,
-            "ducts": ducts
-        }
+            ducts += [
+                {
+                    "connection_id": str(c.id),
+                    "target_id": str(remote.id),
+                    "target_name": remote.name,
+                    "target_model_name": remote.model.name,
+                    "map_distance": map_distance,
+                    "project_distance": c.data.get("project_distance"),
+                    "n_conduits": len(cd),
+                    "conduits": cd,
+                    "bearing": br,
+                    "s_bearing": sbr,
+                }
+            ]
+        return {"id": str(object.id), "name": object.name, "ducts": ducts}
 
     def is_single_connection(self, o):
         return o.model.name in self.SINGLE_CONNECTION_MODELS
@@ -111,8 +120,7 @@ class ConduitsPlugin(InvPlugin):
         if not o.point:
             return []
         layers = list(map.get_conduits_layers())
-        connected = set(
-            str(ro.id) for _, ro, _ in o.get_genderless_connections("ducts"))
+        connected = set(str(ro.id) for _, ro, _ in o.get_genderless_connections("ducts"))
         if self.is_single_connection(o) and connected:
             # Connection limits exceed
             return []
@@ -121,26 +129,27 @@ class ConduitsPlugin(InvPlugin):
             id__ne=id,
             layer__in=layers,
             point__near=o.point,
-            point__max_distance=self.MAX_CONDUIT_LENGTH
+            point__max_distance=self.MAX_CONDUIT_LENGTH,
         ):
             #  )).distance(o.point).order_by("distance"):
             # Check object has no connection with this one
             if ro in connected:
                 continue
             # Exclude already connected cable entries
-            if (self.is_single_connection(ro) and
-                    len(ro.get_genderless_connections("ducts"))):
+            if self.is_single_connection(ro) and len(ro.get_genderless_connections("ducts")):
                 continue
             # Feed data
             d = distance(o.point, ro.point)
             sbr = bearing_sym(o.point, ro.point)
-            r += [{
-                "id": str(ro.id),
-                "label": "%s (%s, %dm)" % (ro.name, sbr, d),
-                "s_bearing": sbr,
-                "map_distance": d,
-                "name": ro.name
-            }]
+            r += [
+                {
+                    "id": str(ro.id),
+                    "label": "%s (%s, %dm)" % (ro.name, sbr, d),
+                    "s_bearing": sbr,
+                    "map_distance": d,
+                    "name": ro.name,
+                }
+            ]
         return r
 
     def api_create_ducts(self, request, id, ducts=None):
@@ -159,11 +168,11 @@ class ConduitsPlugin(InvPlugin):
             if target not in left:
                 # New record
                 o.connect_genderless(
-                    "ducts", target, "ducts",
-                    data={
-                        "project_distance": cd["project_distance"]
-                    },
-                    type="ducts"
+                    "ducts",
+                    target,
+                    "ducts",
+                    data={"project_distance": cd["project_distance"]},
+                    type="ducts",
                 )
             else:
                 c = conns[target]
@@ -178,36 +187,31 @@ class ConduitsPlugin(InvPlugin):
             for cc in cd["conduits"]:
                 if "id" not in cc or cc["id"] not in left_conduits:
                     # Create new conduit
-                    conduit = Object(
-                        name=str(cc["n"]),
-                        model=self.conduits_model
-                    )
+                    conduit = Object(name=str(cc["n"]), model=self.conduits_model)
                     conduit.save()
                     # Connect to both manholes
                     o.connect_genderless(
-                        "conduits", conduit, "conduits",
+                        "conduits",
+                        conduit,
+                        "conduits",
                         data={
                             # Conduit position
-                            "plan": {
-                                "x": cc["x"],
-                                "y": cc["y"]
-                            }
+                            "plan": {"x": cc["x"], "y": cc["y"]}
                         },
                         type="conduits",
-                        layer="conduits"
+                        layer="conduits",
                     )
                     target.connect_genderless(
-                        "conduits", conduit, "conduits",
+                        "conduits",
+                        conduit,
+                        "conduits",
                         data={
                             # @todo: Mirror position
                             # Conduit position
-                            "plan": {
-                                "x": cc["x"],
-                                "y": cc["y"]
-                            }
+                            "plan": {"x": cc["x"], "y": cc["y"]}
                         },
                         type="conduits",
-                        layer="conduits"
+                        layer="conduits",
                     )
                 else:
                     # Change.

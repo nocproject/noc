@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 from noc.config import config
+
 DEFAULT_MERGE_TREE_GRANULARITY = config.clickhouse.default_merge_tree_granularity
 
 
@@ -16,8 +17,7 @@ class BaseEngine(object):
 
 
 class MergeTree(BaseEngine):
-    def __init__(self, date_field, primary_keys,
-                 granularity=DEFAULT_MERGE_TREE_GRANULARITY):
+    def __init__(self, date_field, primary_keys, granularity=DEFAULT_MERGE_TREE_GRANULARITY):
         self.date_field = date_field
         self.primary_keys = primary_keys
         self.granularity = granularity
@@ -26,13 +26,12 @@ class MergeTree(BaseEngine):
         return "MergeTree(%s, (%s), %s)" % (
             self.date_field,
             ", ".join(self.primary_keys),
-            self.granularity
+            self.granularity,
         )
 
 
 class AggregatingMergeTree(BaseEngine):
-    def __init__(self, date_field, primary_keys,
-                 granularity=DEFAULT_MERGE_TREE_GRANULARITY):
+    def __init__(self, date_field, primary_keys, granularity=DEFAULT_MERGE_TREE_GRANULARITY):
         self.date_field = date_field
         self.primary_keys = primary_keys
         self.granularity = granularity
@@ -41,5 +40,5 @@ class AggregatingMergeTree(BaseEngine):
         return "AggregateMergeTree(%s, (%s), %s)" % (
             self.date_field,
             ", ".join(self.primary_keys),
-            self.granularity
+            self.granularity,
         )

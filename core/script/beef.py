@@ -11,6 +11,7 @@ import os
 from collections import namedtuple
 import bisect
 import itertools
+
 # Third-party modules
 import ujson
 import six
@@ -63,29 +64,29 @@ class Beef(object):
             profile=self.get_or_die(box, "profile"),
             vendor=self.get_or_die(box, "vendor"),
             platform=self.get_or_die(box, "platform"),
-            version=self.get_or_die(box, "version")
+            version=self.get_or_die(box, "version"),
         )
         self.changed = self.get_or_die(data, "changed")
         self.description = data.get("description") or ""
         self.cli_fsm = [
             CLIFSM(
                 state=self.get_or_die(d, "state"),
-                reply=[str(n) for n in self.get_or_die(d, "reply")]
-            ) for d in self.get_or_die(data, "cli_fsm")
+                reply=[str(n) for n in self.get_or_die(d, "reply")],
+            )
+            for d in self.get_or_die(data, "cli_fsm")
         ]
         self.cli = [
             CLI(
                 names=[n for n in self.get_or_die(d, "names")],
                 request=str(self.get_or_die(d, "request")),
-                reply=[str(n) for n in self.get_or_die(d, "reply")]
-            ) for d in self.get_or_die(data, "cli")
+                reply=[str(n) for n in self.get_or_die(d, "reply")],
+            )
+            for d in self.get_or_die(data, "cli")
         ]
         self.mib_encoding = self.get_or_die(data, "mib_encoding")
         self.mib = [
-            MIB(
-                oid=self.get_or_die(d, "oid"),
-                value=self.get_or_die(d, "value")
-            ) for d in self.get_or_die(data, "mib")
+            MIB(oid=self.get_or_die(d, "oid"), value=self.get_or_die(d, "value"))
+            for d in self.get_or_die(data, "mib")
         ]
         self._mib_decoder = getattr(self, "mib_decode_%s" % self.mib_encoding)
         self.cli_encoding = self.get_or_die(data, "cli_encoding")
@@ -100,30 +101,41 @@ class Beef(object):
                 "profile": self.box.profile,
                 "vendor": self.box.vendor,
                 "platform": self.box.platform,
-                "version": self.box.version
+                "version": self.box.version,
             },
             "changed": self.changed,
             "description": self.description,
             "cli_encoding": self.cli_encoding,
-            "cli_fsm": [{
-                "state": d.state,
-                "reply": d.reply if not decode else [self._cli_decoder(reply) for reply in d.reply]
-            } for d in self.cli_fsm],
-            "cli": [{
-                "names": d.names,
-                "request": d.request,
-                "reply": d.reply if not decode else [self._cli_decoder(reply) for reply in d.reply]
-            } for d in self.cli],
+            "cli_fsm": [
+                {
+                    "state": d.state,
+                    "reply": d.reply
+                    if not decode
+                    else [self._cli_decoder(reply) for reply in d.reply],
+                }
+                for d in self.cli_fsm
+            ],
+            "cli": [
+                {
+                    "names": d.names,
+                    "request": d.request,
+                    "reply": d.reply
+                    if not decode
+                    else [self._cli_decoder(reply) for reply in d.reply],
+                }
+                for d in self.cli
+            ],
             "mib_encoding": self.mib_encoding,
-            "mib": [{
-                "oid": d.oid,
-                "value": d.value if not decode else self._mib_decoder(d.value)
-            } for d in self.mib]
+            "mib": [
+                {"oid": d.oid, "value": d.value if not decode else self._mib_decoder(d.value)}
+                for d in self.mib
+            ],
         }
 
     @staticmethod
     def compress_gzip(data):
         import gzip
+
         f = six.StringIO()
         with gzip.GzipFile(mode="wb", compresslevel=9, fileobj=f) as z:
             z.write(data)
@@ -132,11 +144,13 @@ class Beef(object):
     @staticmethod
     def compress_bz2(data):
         import bz2
+
         return bz2.compress(data)
 
     @staticmethod
     def decompress_gzip(data):
         import gzip
+
         f = six.StringIO(data)
         with gzip.GzipFile(mode="rb", compresslevel=9, fileobj=f) as z:
             return z.read()
@@ -144,6 +158,7 @@ class Beef(object):
     @staticmethod
     def decompress_bz2(data):
         import bz2
+
         return bz2.decompress(data)
 
     def save(self, storage, path):
@@ -187,6 +202,7 @@ class Beef(object):
             # Load from URL
             from fs import open_fs
             from fs.errors import FSError
+
             try:
                 with open_fs(storage) as fs:
                     data = fs.getbytes(unicode(path))
@@ -263,9 +279,7 @@ class Beef(object):
 
     def get_mib_oid_values(self):
         if self.mib_oid_values is None:
-            self.mib_oid_values = dict(
-                (m.oid, m.value) for m in self.mib
-            )
+            self.mib_oid_values = dict((m.oid, m.value) for m in self.mib)
         return self.mib_oid_values
 
     def get_mib_value(self, oid):
@@ -285,9 +299,7 @@ class Beef(object):
         :return:
         """
         if self.mib_oids is None:
-            self.mib_oids = sorted(
-                (tuple(int(c) for c in m.oid.split(".")) for m in self.mib)
-            )
+            self.mib_oids = sorted((tuple(int(c) for c in m.oid.split(".")) for m in self.mib))
         return self.mib_oids
 
     def iter_mib_oids(self, oid):

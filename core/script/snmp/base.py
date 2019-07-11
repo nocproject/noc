@@ -8,13 +8,14 @@
 
 # Python modules
 import weakref
+
 # Third-party modules
 import six
 import tornado.ioloop
 import tornado.gen
+
 # NOC modules
-from noc.core.ioloop.snmp import (snmp_get, snmp_count, snmp_getnext,
-                                  snmp_set)
+from noc.core.ioloop.snmp import snmp_get, snmp_count, snmp_getnext, snmp_set
 from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.log import PrefixLoggerAdapter
@@ -76,10 +77,7 @@ class SNMP(object):
     def get_socket(self):
         if not self.socket:
             self.logger.debug("Create UDP socket")
-            self.socket = UDPSocket(
-                ioloop=self.get_ioloop(),
-                tos=self.script.tos
-            )
+            self.socket = UDPSocket(ioloop=self.get_ioloop(), tos=self.script.tos)
         return self.socket
 
     def _get_snmp_version(self, version=None):
@@ -101,6 +99,7 @@ class SNMP(object):
         :param raw_varbinds: Return value in BER encoding
         :returns: eigther result scalar or dict of name -> value
         """
+
         @tornado.gen.coroutine
         def run():
             try:
@@ -112,7 +111,7 @@ class SNMP(object):
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
                     version=version,
-                    raw_varbinds=raw_varbinds
+                    raw_varbinds=raw_varbinds,
                 )
                 self.timeouts = self.timeouts_limit
             except SNMPError as e:
@@ -136,6 +135,7 @@ class SNMP(object):
         :param oid: string or list of oids
         :returns: eigther result scalar or dict of name -> value
         """
+
         @tornado.gen.coroutine
         def run():
             try:
@@ -145,7 +145,7 @@ class SNMP(object):
                     community=str(self.script.credentials["snmp_rw"]),
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
-                    udp_socket=self.get_socket()
+                    udp_socket=self.get_socket(),
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -169,6 +169,7 @@ class SNMP(object):
         :param oid: OID
         :param filter: Callable accepting oid and value and returning boolean
         """
+
         @tornado.gen.coroutine
         def run():
             try:
@@ -181,7 +182,7 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
-                    version=version
+                    version=version,
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -194,11 +195,20 @@ class SNMP(object):
         r, self.result = self.result, None
         return r
 
-    def getnext(self, oid, community_suffix=None,
-                filter=None, cached=False,
-                only_first=False, bulk=None,
-                max_repetitions=None, version=None,
-                max_retries=0, timeout=10, raw_varbinds=False):
+    def getnext(
+        self,
+        oid,
+        community_suffix=None,
+        filter=None,
+        cached=False,
+        only_first=False,
+        bulk=None,
+        max_repetitions=None,
+        version=None,
+        max_retries=0,
+        timeout=10,
+        raw_varbinds=False,
+    ):
         @tornado.gen.coroutine
         def run():
             try:
@@ -216,7 +226,7 @@ class SNMP(object):
                     version=version,
                     max_retries=max_retries,
                     timeout=timeout,
-                    raw_varbinds=raw_varbinds
+                    raw_varbinds=raw_varbinds,
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -234,28 +244,32 @@ class SNMP(object):
         GETNEXT wrapper. Returns a hash of <index> -> <value>
         """
         r = {}
-        for o, v in self.getnext(oid, community_suffix=community_suffix,
-                                 cached=cached):
+        for o, v in self.getnext(oid, community_suffix=community_suffix, cached=cached):
             r[int(o.split(".")[-1])] = v
         return r
 
-    def join_tables(self, oid1, oid2, community_suffix=None,
-                    cached=False):
+    def join_tables(self, oid1, oid2, community_suffix=None, cached=False):
         """
         Generator returning a rows of two snmp tables joined by index
         """
-        t1 = self.get_table(oid1, community_suffix=community_suffix,
-                            cached=cached)
-        t2 = self.get_table(oid2, community_suffix=community_suffix,
-                            cached=cached)
+        t1 = self.get_table(oid1, community_suffix=community_suffix, cached=cached)
+        t2 = self.get_table(oid2, community_suffix=community_suffix, cached=cached)
         for k1, v1 in six.iteritems(t1):
             try:
                 yield v1, t2[k1]
             except KeyError:
                 pass
 
-    def get_tables(self, oids, community_suffix=None, bulk=False,
-                   min_index=None, max_index=None, cached=False, max_retries=0):
+    def get_tables(
+        self,
+        oids,
+        community_suffix=None,
+        bulk=False,
+        min_index=None,
+        max_index=None,
+        cached=False,
+        max_retries=0,
+    ):
         """
         Query list of SNMP tables referenced by oids and yields
         tuples of (key, value1, ..., valueN)
@@ -269,10 +283,16 @@ class SNMP(object):
         :param max_retries:
         :return:
         """
+
         def gen_table(oid):
             line = len(oid) + 1
-            for o, v in self.getnext(oid, community_suffix=community_suffix,
-                                     cached=cached, bulk=bulk, max_retries=max_retries):
+            for o, v in self.getnext(
+                oid,
+                community_suffix=community_suffix,
+                cached=cached,
+                bulk=bulk,
+                max_retries=max_retries,
+            ):
                 yield tuple([int(x) for x in o[line:].split(".")]), v
 
         # Retrieve tables
@@ -298,11 +318,7 @@ class SNMP(object):
 
         Yield records of (<index>, <value1>, ..., <valueN>)
         """
-        tables = [
-            self.get_table(o, community_suffix=community_suffix,
-                           cached=cached)
-            for o in oids
-        ]
+        tables = [self.get_table(o, community_suffix=community_suffix, cached=cached) for o in oids]
         if join == "left":
             lt = tables[1:]
             for k in sorted(tables[0]):
@@ -335,21 +351,12 @@ class SNMP(object):
             chunk, oids = oids[:chunk_size], oids[chunk_size:]
             chunk = dict((x, x) for x in chunk)
             try:
-                results.update(
-                    self.get(chunk)
-                )
+                results.update(self.get(chunk))
             except self.TimeOutError as e:
-                self.logger.error(
-                    "Failed to get SNMP OIDs %s: %s",
-                    oids, e
-                )
+                self.logger.error("Failed to get SNMP OIDs %s: %s", oids, e)
             except self.FatalTimeoutError:
-                self.logger.error(
-                    "Fatal timeout error on: %s", oids
-                )
+                self.logger.error("Fatal timeout error on: %s", oids)
                 break
             except self.SNMPError as e:
-                self.logger.error(
-                    "SNMP error code %s", e.code
-                )
+                self.logger.error("SNMP error code %s", e.code)
         return results

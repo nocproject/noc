@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -44,7 +45,7 @@ class ManagedObjectDataStream(DataStream):
             "bi_id": mo.bi_id,
             "name": qs(mo.name),
             "profile": qs(mo.profile.name),
-            "is_managed": mo.is_managed
+            "is_managed": mo.is_managed,
         }
         if mo.address:
             r["address"] = mo.address
@@ -71,10 +72,7 @@ class ManagedObjectDataStream(DataStream):
     @staticmethod
     def _apply_remote_system(mo, r):
         if mo.remote_system:
-            r["remote_system"] = {
-                "id": str(mo.remote_system.id),
-                "name": qs(mo.remote_system.name)
-            }
+            r["remote_system"] = {"id": str(mo.remote_system.id), "name": qs(mo.remote_system.name)}
             r["remote_id"] = mo.remote_id
 
     @staticmethod
@@ -90,14 +88,11 @@ class ManagedObjectDataStream(DataStream):
     def _apply_segment(mo, r):
         if not mo.segment:
             return
-        r["segment"] = {
-            "id": str(mo.segment.id),
-            "name": qs(mo.segment.name)
-        }
+        r["segment"] = {"id": str(mo.segment.id), "name": qs(mo.segment.name)}
         if mo.segment.remote_system and mo.segment.remote_id:
             r["segment"]["remote_system"] = {
                 "id": str(mo.segment.remote_system.id),
-                "name": qs(mo.segment.remote_system.name)
+                "name": qs(mo.segment.remote_system.name),
             }
             r["segment"]["remote_id"] = mo.segment.remote_id
 
@@ -107,26 +102,23 @@ class ManagedObjectDataStream(DataStream):
             return
         r["administrative_domain"] = {
             "id": str(mo.administrative_domain.id),
-            "name": qs(mo.administrative_domain.name)
+            "name": qs(mo.administrative_domain.name),
         }
         if mo.administrative_domain.remote_system and mo.administrative_domain.remote_id:
             r["administrative_domain"]["remote_system"] = {
                 "id": str(mo.administrative_domain.remote_system.id),
-                "name": qs(mo.administrative_domain.remote_system.name)
+                "name": qs(mo.administrative_domain.remote_system.name),
             }
             r["administrative_domain"]["remote_id"] = mo.administrative_domain.remote_id
 
     @staticmethod
     def _apply_object_profile(mo, r):
         # Object profile
-        r["object_profile"] = {
-            "id": str(mo.object_profile.id),
-            "name": qs(mo.object_profile.name)
-        }
+        r["object_profile"] = {"id": str(mo.object_profile.id), "name": qs(mo.object_profile.name)}
         if mo.object_profile.remote_system and mo.object_profile.remote_id:
             r["object_profile"]["remote_system"] = {
                 "id": str(mo.object_profile.remote_system.id),
-                "name": qs(mo.object_profile.remote_system.name)
+                "name": qs(mo.object_profile.remote_system.name),
             }
             r["object_profile"]["remote_id"] = mo.object_profile.remote_id
 
@@ -138,10 +130,7 @@ class ManagedObjectDataStream(DataStream):
             return
         caps = []
         for cname in sorted(cdata):
-            caps += [{
-                "name": cname,
-                "value": str(cdata[cname])
-            }]
+            caps += [{"name": cname, "value": str(cdata[cname])}]
         r["capabilities"] = caps
 
     @staticmethod
@@ -151,7 +140,7 @@ class ManagedObjectDataStream(DataStream):
         # Get interfaces
         interfaces = sorted(
             Interface._get_collection().find({"managed_object": mo.id}),
-            key=lambda x: split_alnum(x["name"])
+            key=lambda x: split_alnum(x["name"]),
         )
         # Populate cache
         for i in interfaces:
@@ -167,13 +156,9 @@ class ManagedObjectDataStream(DataStream):
                 links[li] += [l]
         # Populate cache with linked interfaces
         if links:
-            for i in Interface._get_collection().find({
-                "_id": {"$in": list(links)}
-            }, {
-                "_id": 1,
-                "managed_object": 1,
-                "name": 1
-            }):
+            for i in Interface._get_collection().find(
+                {"_id": {"$in": list(links)}}, {"_id": 1, "managed_object": 1, "name": 1}
+            ):
                 ifcache[i["_id"]] = (i["managed_object"], i["name"])
         # Populate
         r["interfaces"] = [
@@ -187,7 +172,7 @@ class ManagedObjectDataStream(DataStream):
             "name": qs(iface["name"]),
             "type": iface["type"],
             "description": qs(iface.get("description")),
-            "enabled_protocols": iface.get("enabled_protocols") or []
+            "enabled_protocols": iface.get("enabled_protocols") or [],
         }
         if iface.get("ifindex"):
             r["snmp_ifindex"] = iface["ifindex"]
@@ -215,7 +200,7 @@ class ManagedObjectDataStream(DataStream):
             "name": qs(sub["name"]),
             "description": qs(sub.get("description")),
             "enabled_afi": sub.get("enabled_afi") or [],
-            "enabled_protocols": sub.get("enabled_protocols") or []
+            "enabled_protocols": sub.get("enabled_protocols") or [],
         }
         if sub.get("ifindex"):
             r["snmp_ifindex"] = sub["ifindex"]
@@ -247,19 +232,18 @@ class ManagedObjectDataStream(DataStream):
                 ro, rname = ifcache[i]
                 if ro == iface["managed_object"]:
                     continue
-                r += [{
-                    "object": str(ro),
-                    "interface": qs(rname),
-                    "method": link.get("discovery_method") or ""
-                }]
+                r += [
+                    {
+                        "object": str(ro),
+                        "interface": qs(rname),
+                        "method": link.get("discovery_method") or "",
+                    }
+                ]
         return r
 
     @staticmethod
     def _get_interface_profile(profile):
-        return {
-            "id": str(profile.id),
-            "name": qs(profile.name)
-        }
+        return {"id": str(profile.id), "name": qs(profile.name)}
 
     @staticmethod
     def _apply_chassis_id(mo, r):
@@ -282,13 +266,11 @@ class ManagedObjectDataStream(DataStream):
     def _apply_resource_groups(mo, r):
         if mo.effective_service_groups:
             r["service_groups"] = ManagedObjectDataStream._get_resource_groups(
-                mo.effective_service_groups,
-                mo.static_service_groups
+                mo.effective_service_groups, mo.static_service_groups
             )
         if mo.effective_client_groups:
             r["client_groups"] = ManagedObjectDataStream._get_resource_groups(
-                mo.effective_client_groups,
-                mo.static_client_groups
+                mo.effective_client_groups, mo.static_client_groups
             )
 
     @staticmethod
@@ -298,12 +280,14 @@ class ManagedObjectDataStream(DataStream):
             rg = ResourceGroup.get_by_id(g)
             if not rg:
                 continue
-            r += [{
-                "id": str(g),
-                "name": qs(rg.name),
-                "technology": qs(rg.technology.name),
-                "static": g in static_groups
-            }]
+            r += [
+                {
+                    "id": str(g),
+                    "name": qs(rg.name),
+                    "technology": qs(rg.technology.name),
+                    "static": g in static_groups,
+                }
+            ]
         return r
 
     @staticmethod
@@ -323,33 +307,34 @@ class ManagedObjectDataStream(DataStream):
             "model": {
                 "id": str(o.model.id),
                 "name": str(o.model.name),
-                "vendor": {
-                    "id": str(o.model.vendor.id),
-                    "name": str(o.model.vendor.name)
-                },
-                "tags": [str(t) for t in o.model.tags or []]
+                "vendor": {"id": str(o.model.vendor.id), "name": str(o.model.vendor.name)},
+                "tags": [str(t) for t in o.model.tags or []],
             },
             "serial": o.get_data("asset", "serial") or "",
             "revision": rev,
             "data": o.data or {},
-            "slots": []
+            "slots": [],
         }
         for n in o.model.connections:
             if n.direction == "i":
                 c, r_object, _ = o.get_p2p_connection(n.name)
-                r["slots"] += [{
-                    "name": n.name,
-                    "direction": n.direction,
-                    "protocols": [str(p) for p in n.protocols]
-                }]
+                r["slots"] += [
+                    {
+                        "name": n.name,
+                        "direction": n.direction,
+                        "protocols": [str(p) for p in n.protocols],
+                    }
+                ]
                 if c:
                     r["slots"][-1]["asset"] = ManagedObjectDataStream._get_asset(r_object)
             elif n.direction == "s":
-                r["slots"] += [{
-                    "name": n.name,
-                    "direction": n.direction,
-                    "protocols": [str(p) for p in n.protocols]
-                }]
+                r["slots"] += [
+                    {
+                        "name": n.name,
+                        "direction": n.direction,
+                        "protocols": [str(p) for p in n.protocols],
+                    }
+                ]
         return r
 
     @classmethod
@@ -357,23 +342,17 @@ class ManagedObjectDataStream(DataStream):
         return {
             "pool": data.get("pool"),
             "service_groups": [g["id"] for g in data.get("service_groups", [])],
-            "client_groups": [g["id"] for g in data.get("client_groups", [])]
+            "client_groups": [g["id"] for g in data.get("client_groups", [])],
         }
 
     @classmethod
     def filter_pool(cls, name):
-        return {
-            "%s.pool" % cls.F_META: name
-        }
+        return {"%s.pool" % cls.F_META: name}
 
     @classmethod
     def filter_service_group(cls, name):
-        return {
-            "%s.service_groups" % cls.F_META: name
-        }
+        return {"%s.service_groups" % cls.F_META: name}
 
     @classmethod
     def filter_client_group(cls, name):
-        return {
-            "%s.client_groups" % cls.F_META: name
-        }
+        return {"%s.client_groups" % cls.F_META: name}

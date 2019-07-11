@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import EventPlugin
 
@@ -19,7 +20,5 @@ class TracebackPlugin(EventPlugin):
         r = {}
         if "traceback" in event.raw_vars:
             r["traceback"] = event.raw_vars["traceback"]
-            r["plugins"] = [
-                ("NOC.fm.event.plugins.Traceback", {})
-            ]
+            r["plugins"] = [("NOC.fm.event.plugins.Traceback", {})]
         return r

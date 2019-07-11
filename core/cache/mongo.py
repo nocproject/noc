@@ -9,12 +9,14 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # Third-party modules
 import bson
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
+
 # NOC modules
 from .base import BaseCache
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.config import config
 
 
@@ -36,17 +38,12 @@ class MongoCache(BaseCache):
         Create all necessary indexes. Called by ensure-index
         :return:
         """
-        cls.get_collection().create_index(
-            cls.EXPIRES_FIELD,
-            expireAfterSeconds=0
-        )
+        cls.get_collection().create_index(cls.EXPIRES_FIELD, expireAfterSeconds=0)
 
     def get(self, key, default=None, version=None):
         k = self.make_key(key, version)
         now = datetime.datetime.now()
-        d = self.get_collection().find_one({
-            self.KEY_FIELD: k
-        })
+        d = self.get_collection().find_one({self.KEY_FIELD: k})
         if d and d[self.EXPIRES_FIELD] > now:
             # Found, not expired
             return loads(d[self.VALUE_FIELD])
@@ -64,18 +61,17 @@ class MongoCache(BaseCache):
         k = self.make_key(key, version)
         ttl = ttl or config.memcached.default_ttl
         expires = datetime.datetime.now() + datetime.timedelta(seconds=ttl)
-        self.get_collection().update_one({
-            self.KEY_FIELD: k
-        }, {
-            "$set": {
-                self.VALUE_FIELD: bson.Binary(
-                    dumps(value, HIGHEST_PROTOCOL)),
-                self.EXPIRES_FIELD: expires
-            }
-        }, upsert=True)
+        self.get_collection().update_one(
+            {self.KEY_FIELD: k},
+            {
+                "$set": {
+                    self.VALUE_FIELD: bson.Binary(dumps(value, HIGHEST_PROTOCOL)),
+                    self.EXPIRES_FIELD: expires,
+                }
+            },
+            upsert=True,
+        )
 
     def delete(self, key, version=None):
         k = self.make_key(key, version)
-        self.get_collection().delete_one({
-            self.KEY_FIELD: k
-        })
+        self.get_collection().delete_one({self.KEY_FIELD: k})

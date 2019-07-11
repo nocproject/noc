@@ -12,17 +12,28 @@ import os
 import argparse
 import pprint
 import re
+
 # Third-party modules
 from fs import open_fs
 import ujson
 import yaml
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
 from noc.core.span import get_spans, Span
 from noc.core.script.loader import loader
 from noc.core.script.beef import Beef
-from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF, TELNET, SSH, HTTP, HTTPS
+from noc.core.script.scheme import (
+    CLI_PROTOCOLS,
+    HTTP_PROTOCOLS,
+    PROTOCOLS,
+    BEEF,
+    TELNET,
+    SSH,
+    HTTP,
+    HTTPS,
+)
 
 
 class Command(BaseCommand):
@@ -34,55 +45,41 @@ class Command(BaseCommand):
             action="store_true",
             dest="pretty",
             default=False,
-            help="Pretty-print output"
+            help="Pretty-print output",
         )
         out_group.add_argument(
-            "--yaml",
-            action="store_true",
-            dest="yaml_o",
-            default=False,
-            help="YAML output"
+            "--yaml", action="store_true", dest="yaml_o", default=False, help="YAML output"
         )
         parser.add_argument(
-            "--without-snmp",
-            action="store_false",
-            dest="use_snmp",
-            help="Disable SNMP"
+            "--without-snmp", action="store_false", dest="use_snmp", help="Disable SNMP"
         )
         parser.add_argument(
-            "--access-preference",
-            dest="access_preference",
-            help="Alter access method preference"
+            "--access-preference", dest="access_preference", help="Alter access method preference"
         )
+        parser.add_argument("--update-spec", help="Append all issued commands to spec")
         parser.add_argument(
-            "--update-spec",
-            help="Append all issued commands to spec"
+            "-o", dest="beef_output", type=unicode, help="Save script output to beef"
         )
+        parser.add_argument("script", nargs=1, help="Script name")
+        parser.add_argument("object_name", nargs=1, help="Object name")
         parser.add_argument(
-            "-o",
-            dest="beef_output",
-            type=unicode,
-            help="Save script output to beef"
-        )
-        parser.add_argument(
-            "script",
-            nargs=1,
-            help="Script name"
-        )
-        parser.add_argument(
-            "object_name",
-            nargs=1,
-            help="Object name"
-        )
-        parser.add_argument(
-            "arguments",
-            nargs=argparse.REMAINDER,
-            help="Arguments passed to script"
+            "arguments", nargs=argparse.REMAINDER, help="Arguments passed to script"
         )
 
-    def handle(self, script, object_name, arguments, pretty,
-               yaml_o, use_snmp, access_preference, update_spec,
-               beef_output, *args, **options):
+    def handle(
+        self,
+        script,
+        object_name,
+        arguments,
+        pretty,
+        yaml_o,
+        use_snmp,
+        access_preference,
+        update_spec,
+        beef_output,
+        *args,
+        **options
+    ):
         # Get object
         obj = self.get_object(object_name[0])
         # Build credentials
@@ -112,7 +109,7 @@ class Command(BaseCommand):
                 "vendor": obj.vendor.name if obj.vendor else None,
                 "platform": obj.platform.name if obj.platform else None,
                 "version": obj.version.version if obj.version else None,
-                "image": obj.image if obj.image else None
+                "image": obj.software_image if obj.software_image else None,
             }
         else:
             version = None
@@ -125,7 +122,7 @@ class Command(BaseCommand):
             args=args,
             version=version,
             timeout=3600,
-            name=script
+            name=script,
         )
         span_sample = 1 if update_spec or beef_output else 0
         with Span(sample=span_sample):
@@ -134,6 +131,7 @@ class Command(BaseCommand):
             pprint.pprint(result)
         elif yaml_o:
             import sys
+
             yaml.dump(result, sys.stdout)
         else:
             self.stdout.write("%s\n" % result)
@@ -149,7 +147,7 @@ class Command(BaseCommand):
                 args={"spec": spec.get_spec_request()},
                 version=version,
                 timeout=3600,
-                name="%s.%s" % (obj.profile.name, "get_beef")
+                name="%s.%s" % (obj.profile.name, "get_beef"),
             )
             bdata = beef_scr.run()
             beef = Beef.from_json(bdata)
@@ -188,7 +186,7 @@ class Command(BaseCommand):
             "super_password": creds.super_password,
             "path": obj.remote_path,
             "raise_privileges": obj.to_raise_privileges,
-            "access_preference": obj.get_access_preference()
+            "access_preference": obj.get_access_preference(),
         }
         if creds.snmp_ro:
             credentials["snmp_version"] = "v2c"
@@ -202,9 +200,9 @@ class Command(BaseCommand):
             if obj.port:
                 credentials["http_port"] = obj.port
         if (
-            obj.scheme == BEEF and
-            obj.object_profile.beef_storage and
-            obj.object_profile.beef_path_template
+            obj.scheme == BEEF
+            and obj.object_profile.beef_storage
+            and obj.object_profile.beef_path_template
         ):
             beef_path = obj.object_profile.beef_path_template.render_subject(object=obj)
             if beef_path:
@@ -212,14 +210,13 @@ class Command(BaseCommand):
                 credentials["beef_path"] = beef_path
         return credentials
 
-    rx_arg = re.compile(
-        r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$"
-    )
+    rx_arg = re.compile(r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$")
 
     def get_script_args(self, arguments):
         """
         Parse arguments and return script's
         """
+
         def read_file(path):
             if not os.path.exists(path):
                 self.die("Cannot open file '%s'" % path)
@@ -283,7 +280,7 @@ class Command(BaseCommand):
                 author="NOC",
                 profile=Profile.get_by_name(script.profile.name),
                 changes=[],
-                answers=[]
+                answers=[],
             )
             changed = True
         # Fetch commands from spans
@@ -299,10 +296,7 @@ class Command(BaseCommand):
         s_name = "cli_%s" % script.name.rsplit(".", 1)[-1]
         names = set()
         for ans in spec.answers:
-            if (
-                (ans.name == s_name or ans.name.startswith(s_name + ".")) and
-                    ans.type == "cli"
-            ):
+            if (ans.name == s_name or ans.name.startswith(s_name + ".")) and ans.type == "cli":
                 names.add(ans.name)
                 if ans.value in commands:
                     # Already recorded
@@ -318,11 +312,7 @@ class Command(BaseCommand):
             #
             ntpl = "%s.%%d" % s_name
             for nn, cmd in enumerate(sorted(commands)):
-                spec.answers += [SpecAnswer(
-                    name=ntpl % (nn + 1),
-                    type="cli",
-                    value=cmd
-                )]
+                spec.answers += [SpecAnswer(name=ntpl % (nn + 1), type="cli", value=cmd)]
             changed = True
         if not save:
             return spec
@@ -369,12 +359,9 @@ class JSONObject(object):
     def __init__(self, path):
         with open(path) as f:
             data = ujson.load(f)
-        self.scheme = {
-            "telnet": TELNET,
-            "ssh": SSH,
-            "http": HTTP,
-            "https": HTTPS,
-        }.get(data.get("scheme", "telnet"), TELNET)
+        self.scheme = {"telnet": TELNET, "ssh": SSH, "http": HTTP, "https": HTTPS}.get(
+            data.get("scheme", "telnet"), TELNET
+        )
         self.profile = ProfileStub(data.get("profile"))
         self.address = data["address"]
         self.port = data.get("port")
@@ -387,15 +374,18 @@ class JSONObject(object):
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
         self.version = VersionStub(data["version"]) if "version" in data else None
-        self.image = data["image"] if "image" in data else None
+        self.software_image = data["image"] if "image" in data else None
 
     @property
     def credentials(self):
         from noc.sa.models.managedobject import Credentials
-        return Credentials(**dict(
-            (k, self.creds.get(k))
-            for k in ("user", "password", "super_password", "snmp_ro", "snmp_rw")
-        ))
+
+        return Credentials(
+            **dict(
+                (k, self.creds.get(k))
+                for k in ("user", "password", "super_password", "snmp_ro", "snmp_rw")
+            )
+        )
 
     def get_caps(self):
         return self.caps

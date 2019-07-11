@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from ..cli.telnet import TelnetIOStream
 from .base import MMLBase

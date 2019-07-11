@@ -19,7 +19,7 @@ import cachetools
 
 # NOC modules
 from noc.config import config
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.core.datastream.decorator import datastream
 from noc.core.bi.decorator import bi_sync
@@ -96,7 +96,7 @@ class ResourceGroup(Document):
     def get_by_bi_id(cls, id):
         return ResourceGroup.objects.filter(bi_id=id).first()
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_resourcegroup:
             yield "resourcegroup", self.id
 

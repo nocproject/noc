@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # ModelMapping model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
+
+# NOC modules
 from noc.inv.models.objectmodel import ObjectModel
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 
 
 class ModelMapping(Document):

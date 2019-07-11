@@ -16,6 +16,7 @@ class FirmwarePolicyApplication(ExtDocApplication):
     """
     FirmwarePolicy application
     """
+
     title = _("Firmware Policy")
     menu = [_("Setup"), _("Firmware Policy")]
     model = FirmwarePolicy

@@ -34,14 +34,14 @@ def fix():
             macs += [m for m in range(int(first), int(last) + 1)]
         bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"macs": macs}})]
         if len(bulk) == BATCH_SIZE:
-            print ("Commiting changes to database")
+            print("Commiting changes to database")
             try:
                 collection.bulk_write(bulk)
                 bulk = []
-                print ("Database has been synced")
+                print("Database has been synced")
             except BulkWriteError as e:
-                print ("Bulk write error: '%s'", e.details)
-                print ("Stopping check")
+                print("Bulk write error: '%s'", e.details)
+                print("Stopping check")
                 bulk = []
     if bulk:
         collection.bulk_write(bulk)

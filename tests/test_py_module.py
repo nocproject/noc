@@ -10,6 +10,7 @@
 import subprocess
 import os
 import ast
+
 # Third-party modules
 import pytest
 import cachetools
@@ -27,7 +28,7 @@ ALLOW_XFAIL = {
     "noc.scripts.paste",
     "noc.scripts.migrate-ignored-interfaces",
     "noc.gis.parsers.address.fias",
-    "noc.gis.tile"
+    "noc.gis.tile",
 }
 
 

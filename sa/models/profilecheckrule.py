@@ -16,7 +16,7 @@ from mongoengine.fields import StringField, UUIDField, ObjectIdField, IntField
 from mongoengine.errors import ValidationError
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.sa.models.profile import Profile
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json

@@ -8,6 +8,7 @@
 
 # Third-party modules
 import pytest
+
 # NOC modules
 from noc.core.confdb.tokenizer.routeros import RouterOSTokenizer
 
@@ -52,13 +53,11 @@ TOKENS1 = [
     ("/ip", "dhcp-client", "0", "interface", "WAN"),
     ("/system", "identity", "name", "rb"),
     ("/system", "logging", "action", "0", "memory-lines", "100"),
-    ("/system", "logging", "action", "1", "disk-lines-per-file", "100")
+    ("/system", "logging", "action", "1", "disk-lines-per-file", "100"),
 ]
 
 
-@pytest.mark.parametrize("input,config,expected", [
-    (CFG1, {}, TOKENS1),
-])
+@pytest.mark.parametrize("input,config,expected", [(CFG1, {}, TOKENS1)])
 def test_tokenizer(input, config, expected):
     tokenizer = RouterOSTokenizer(input, **config)
     assert list(tokenizer) == expected

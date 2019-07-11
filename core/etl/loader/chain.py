@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import cachetools
+
 # NOC modules
 from .loader import loader as loader_loader
 
@@ -19,9 +21,7 @@ class LoaderChain(object):
         self.system = system
         self.loaders = {}  # name -> loader
         self.lseq = []
-        self.cache = cachetools.LRUCache(
-            maxsize=1000
-        )
+        self.cache = cachetools.LRUCache(maxsize=1000)
         self.cache.__missing__ = self.get_cached
 
     def get_loader(self, name):

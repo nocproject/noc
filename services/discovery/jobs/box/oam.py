@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
@@ -16,6 +17,7 @@ class OAMCheck(TopologyDiscoveryCheck):
     """
     OAM Topology discovery
     """
+
     name = "oam"
     required_script = "get_oam_status"
     required_capabilities = ["Network | OAM"]
@@ -34,8 +36,4 @@ class OAMCheck(TopologyDiscoveryCheck):
                 # Try to find interface by mac
                 remote_interface = self.get_interface_by_mac(mac=rmac)
                 if remote_interface:
-                    yield (
-                        local_interface,
-                        remote_interface.managed_object,
-                        remote_interface.name
-                    )
+                    yield (local_interface, remote_interface.managed_object, remote_interface.name)

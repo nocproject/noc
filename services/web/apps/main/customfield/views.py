@@ -16,6 +16,7 @@ class CustomFieldApplication(ExtModelApplication):
     """
     CustomField application
     """
+
     title = _("Custom Fields")
     menu = [_("Setup"), _("Custom Fields")]
     model = CustomField

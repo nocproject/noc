@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import logging
 import inspect
 import threading
+
 # NOC modules
 from .base import BaseLoader
 
@@ -38,9 +39,9 @@ class LoaderLoader(object):
                     for n in dir(sm):
                         o = getattr(sm, n)
                         if (
-                            inspect.isclass(o) and
-                            issubclass(o, BaseLoader) and
-                            o.__module__ == sm.__name__
+                            inspect.isclass(o)
+                            and issubclass(o, BaseLoader)
+                            and o.__module__ == sm.__name__
                         ):
                             loader = o
                             break

@@ -11,17 +11,26 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
+
 # Third-party modules
 import six
 from builtins import str
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, ReferenceField, LongField,
-                                ListField, BooleanField, IntField, EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    ReferenceField,
+    LongField,
+    ListField,
+    BooleanField,
+    IntField,
+    EmbeddedDocumentField,
+)
 import cachetools
+
 # NOC modules
 from .workflow import Workflow
 from .state import State
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
@@ -50,7 +59,7 @@ class Transition(Document):
         "collection": "transitions",
         "indexes": ["from_state", "to_state"],
         "strict": False,
-        "auto_create_index": False
+        "auto_create_index": False,
     }
     workflow = PlainReferenceField(Workflow)
     from_state = PlainReferenceField(State)
@@ -84,8 +93,12 @@ class Transition(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return u"%s: %s -> %s [%s]" % (self.workflow.name, self.from_state.name,
-                                       self.to_state.name, self.label)
+        return "%s: %s -> %s [%s]" % (
+            self.workflow.name,
+            self.from_state.name,
+            self.to_state.name,
+            self.label,
+        )
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -111,8 +124,7 @@ class Transition(Document):
         :return:
         """
         if self.handlers:
-            logger.debug("[%s|%s|%s] Running transition handlers",
-                         obj, obj.state.name, self.label)
+            logger.debug("[%s|%s|%s] Running transition handlers", obj, obj.state.name, self.label)
             for hn in self.handlers:
                 try:
                     h = get_handler(str(hn))
@@ -123,4 +135,10 @@ class Transition(Document):
                     logger.debug("[%s|%s|%s] Running %s", obj, obj.state.name, self.label, hn)
                     h(obj)  # @todo: Catch exceptions
                 else:
-                    logger.debug("[%s|%s|%s] Invalid handler %s, skipping", obj, obj.state.name, self.label, hn)
+                    logger.debug(
+                        "[%s|%s|%s] Invalid handler %s, skipping",
+                        obj,
+                        obj.state.name,
+                        self.label,
+                        hn,
+                    )

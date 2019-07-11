@@ -16,16 +16,14 @@ class VendorApplication(ExtDocApplication):
     """
     Vendor application
     """
+
     title = _("Vendor")
     menu = [_("Setup"), _("Vendors")]
     model = Vendor
-    query_fields = [
-        "name__icontains", "code__icontains", "site__icontains"
-    ]
+    query_fields = ["name__icontains", "code__icontains", "site__icontains"]
     default_ordering = ["name"]
 
-    @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
-          access="read", api=True)
+    @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"], access="read", api=True)
     def api_json(self, request, id):
         vendor = self.get_object_or_404(Vendor, id=id)
         return vendor.to_json()

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.inv.models.technology import Technology
 from .base import BaseCard
@@ -19,6 +20,4 @@ class TechnologyCard(BaseCard):
     model = Technology
 
     def get_data(self):
-        return {
-            "object": self.object
-        }
+        return {"object": self.object}

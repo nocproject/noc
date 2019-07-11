@@ -15,9 +15,7 @@ from noc.services.activator.api.activator import ActivatorAPI
 class ActivatorService(Service):
     name = "activator"
     pooled = True
-    api = [
-        ActivatorAPI
-    ]
+    api = [ActivatorAPI]
     process_name = "noc-%(name).10s-%(pool).5s"
     use_telemetry = True
 

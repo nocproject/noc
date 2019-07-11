@@ -1272,5 +1272,5 @@ MIB = {
     "HUAWEI-XPON-MIB::hwXponDeviceOntNniLineTestEntry": "1.3.6.1.4.1.2011.6.128.1.1.6.3.1",
     "HUAWEI-XPON-MIB::hwXponOntNniLineTestFrameLength": "1.3.6.1.4.1.2011.6.128.1.1.6.3.1.1",
     "HUAWEI-XPON-MIB::hwXponOntNniLineTestFramesTxNum": "1.3.6.1.4.1.2011.6.128.1.1.6.3.1.2",
-    "HUAWEI-XPON-MIB::hwXponOntNniLineTestFramesRxNum": "1.3.6.1.4.1.2011.6.128.1.1.6.3.1.3"
+    "HUAWEI-XPON-MIB::hwXponOntNniLineTestFramesRxNum": "1.3.6.1.4.1.2011.6.128.1.1.6.3.1.3",
 }

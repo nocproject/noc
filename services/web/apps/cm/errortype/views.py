@@ -16,6 +16,7 @@ class ErrorTypeApplication(ExtDocApplication):
     """
     ErrorType application
     """
+
     title = _("Error Type")
     menu = [_("Setup"), _("Error Types")]
     model = ErrorType

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import os
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.settings import INSTALLED_APPS
@@ -49,7 +50,7 @@ class Command(BaseCommand):
         for nl, l in enumerate(data.splitlines()):
             if "@todo:" in l:
                 idx = l.index("@todo:")
-                todo = l[idx + 6:].strip()
+                todo = l[idx + 6 :].strip()
                 print("%50s:%5d: %s" % (path, nl, todo))
                 n += 1
         return n

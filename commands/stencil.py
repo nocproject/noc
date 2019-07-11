@@ -10,8 +10,10 @@
 from __future__ import print_function
 import sys
 from collections import defaultdict
+
 # Third-party modules
 from jinja2 import Template
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.stencil import stencil_registry
@@ -24,10 +26,7 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         #
         html_parser = subparsers.add_parser("htmlindex")
-        html_parser.add_argument(
-            "-o", "--out",
-            help="Output file"
-        )
+        html_parser.add_argument("-o", "--out", help="Output file")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -39,9 +38,7 @@ class Command(BaseCommand):
             stencils[coll] += [stencil_registry.get(stencil_id)]
         with open(self.INDEX_TEMPLATE_PATH) as f:
             tpl = Template(f.read())
-        r = tpl.render({
-            "stencils": stencils
-        })
+        r = tpl.render({"stencils": stencils})
         if out:
             with open(out, "w") as f:
                 f.write(r)

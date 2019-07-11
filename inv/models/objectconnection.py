@@ -21,7 +21,7 @@ import geojson
 
 # NOC modules
 from noc.inv.models.object import Object
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.gis.models.layer import Layer
 
 
@@ -59,7 +59,7 @@ class ObjectConnection(Document):
     line = LineStringField(auto_index=True)
 
     def __str__(self):
-        return u"<%s>" % ", ".join(unicode(c) for c in self.connection)
+        return "<%s>" % ", ".join(unicode(c) for c in self.connection)
 
     def clean(self):
         self.set_line()

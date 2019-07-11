@@ -13,11 +13,13 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_init
 from noc.config import config
 from noc.core.model.fields import INETField
 from noc.core.datastream.decorator import datastream
 
 
+@on_init
 @datastream
 @six.python_2_unicode_compatible
 class DNSServer(NOCModel):
@@ -42,12 +44,12 @@ class DNSServer(NOCModel):
     def __str__(self):
         return self.name
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:
             return
         for zp in self.masters.all():
-            for ds, id in zp.iter_changed_datastream():
+            for ds, id in zp.iter_changed_datastream(changed_fields=changed_fields):
                 yield ds, id
         for zp in self.slaves.all():
-            for ds, id in zp.iter_changed_datastream():
+            for ds, id in zp.iter_changed_datastream(changed_fields=changed_fields):
                 yield ds, id

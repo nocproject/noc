@@ -9,19 +9,19 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.model.base import NOCModel
 
 
-@on_delete_check(check=[
-    ("vc.VCDomain", "type")
-])
+@on_delete_check(check=[("vc.VCDomain", "type")])
 @six.python_2_unicode_compatible
 class VCType(NOCModel):
     """
     VC Type
     """
+
     class Meta(object):
         verbose_name = "VC Type"
         verbose_name_plural = "VC Types"

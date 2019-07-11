@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField
 
 
 class Vendor(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "vendor"
         layout = "flat"
 

@@ -18,9 +18,7 @@ class UserState(Document):
         "collection": "noc.userstate",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            ("user_id", "key")
-        ]
+        "indexes": [("user_id", "key")],
     }
     user_id = IntField()
     key = StringField()

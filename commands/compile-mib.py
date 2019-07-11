@@ -11,9 +11,11 @@ import sys
 import os
 import gzip
 import argparse
+
 # Third-party modules
 import ujson
 from mongoengine.errors import DoesNotExist
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
@@ -26,8 +28,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("-o", "--output", dest="output", default=""),
         parser.add_argument("-l", "--list", dest="list", default=""),
-        parser.add_argument("-b", "--bump", dest="bump", action="store_true",
-                            default=False)
+        parser.add_argument("-b", "--bump", dest="bump", action="store_true", default=False)
         parser.add_argument("args", nargs=argparse.REMAINDER)
 
     def handle(self, *args, **options):
@@ -68,25 +69,28 @@ class Command(BaseCommand):
             out = sys.stdout
 
         # Prepare MIB data
-        mib_data = sorted(
-            [
-                {
-                    "oid": d.oid,
-                    "name": d.name,
-                    "description": d.description,
-                    "syntax": d.syntax
-                } for d in MIBData.objects.filter(mib=mib.id)
-            ] +
-            [
-                {
-                    "oid": d.oid,
-                    "name": next((a for a in d.aliases
-                                  if a.startswith(mib.name + "::"))),
-                    "description": d.description,
-                    "syntax": d.syntax
-                } for d in MIBData.objects.filter(
-                    aliases__startswith="%s::" % mib.name)
-            ], key=lambda x: x["oid"]
+        mib_data = list(
+            sorted(
+                [
+                    {
+                        "oid": dd.oid,
+                        "name": dd.name,
+                        "description": dd.description,
+                        "syntax": dd.syntax,
+                    }
+                    for dd in MIBData.objects.filter(mib=mib.id)
+                ]
+                + [
+                    {
+                        "oid": dd.oid,
+                        "name": next((a for a in dd.aliases if a.startswith(mib.name + "::"))),
+                        "description": dd.description,
+                        "syntax": dd.syntax,
+                    }
+                    for dd in MIBData.objects.filter(aliases__startswith="%s::" % mib.name)
+                ],
+                key=lambda x: x["oid"],
+            )
         )
         # Prepare MIB
         if mib.last_updated:
@@ -103,7 +107,7 @@ class Command(BaseCommand):
             "version": version,
             "depends_on": mib.depends_on,
             "typedefs": mib.typedefs,
-            "data": mib_data
+            "data": mib_data,
         }
         # Serialize
         out.write(ujson.dumps(data))

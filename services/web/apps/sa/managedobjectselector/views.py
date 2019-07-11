@@ -10,7 +10,9 @@
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.models.managedobjectselector import (
-    ManagedObjectSelector, ManagedObjectSelectorByAttribute)
+    ManagedObjectSelector,
+    ManagedObjectSelectorByAttribute,
+)
 from noc.core.translation import ugettext as _
 
 
@@ -18,6 +20,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
     """
     ManagedObjectSelector application
     """
+
     title = _("Managed Object Selector")
     menu = [_("Setup"), _("Managed Object Selector")]
     model = ManagedObjectSelector
@@ -32,8 +35,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
             del q["id__referred"]
         return super(ManagedObjectSelectorApplication, self).cleaned_query(q)
 
-    @view(url="(?P<id>\d+)/objects/", method=["GET"],
-          access="read", api=True)
+    @view(url="(?P<id>\d+)/objects/", method=["GET"], access="read", api=True)
     def api_test(self, request, id):
         o = self.get_object_or_404(ManagedObjectSelector, id=int(id))
         return [
@@ -46,6 +48,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
                 "administrative_domain": unicode(mo.administrative_domain),
                 "address": mo.address,
                 "description": mo.description,
-                "tags": mo.tags
-            } for mo in o.managed_objects
+                "tags": mo.tags,
+            }
+            for mo in o.managed_objects
         ]

@@ -16,6 +16,7 @@ class DialPlanApplication(ExtDocApplication):
     """
     DialPlan application
     """
+
     title = "DialPlan"
     menu = [_("Setup"), _("DialPlan")]
     model = DialPlan

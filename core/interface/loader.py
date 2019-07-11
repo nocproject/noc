@@ -15,6 +15,7 @@ import inspect
 import threading
 import os
 import re
+
 # NOC modules
 from .base import BaseInterface
 from noc.config import config
@@ -45,9 +46,7 @@ class InterfaceLoader(object):
                 return None
             imname = name.lower()
             for p in config.get_customized_paths("", prefer_custom=True):
-                if os.path.exists(
-                        os.path.join(
-                            p, "sa", "interfaces", "%s.py" % imname)):
+                if os.path.exists(os.path.join(p, "sa", "interfaces", "%s.py" % imname)):
                     if p:
                         # Custom script
                         base_name = os.path.basename(os.path.dirname(config.path.custom_path))
@@ -65,9 +64,9 @@ class InterfaceLoader(object):
                 for n in dir(sm):
                     o = getattr(sm, n)
                     if (
-                        inspect.isclass(o) and
-                        issubclass(o, BaseInterface) and
-                        o.__module__ == sm.__name__
+                        inspect.isclass(o)
+                        and issubclass(o, BaseInterface)
+                        and o.__module__ == sm.__name__
                     ):
                         self.interfaces[name] = o
                         return o

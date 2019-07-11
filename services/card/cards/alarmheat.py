@@ -10,9 +10,11 @@
 from __future__ import absolute_import
 import operator
 from collections import defaultdict
+
 # Third-party modules
 import cachetools
 import geojson
+
 # NOC modules
 from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
@@ -25,14 +27,11 @@ from noc.config import config
 
 class AlarmHeatCard(BaseCard):
     name = "alarmheat"
-    card_css = [
-        "/ui/pkg/leaflet/leaflet.css",
-        "/ui/card/css/alarmheat.css"
-    ]
+    card_css = ["/ui/pkg/leaflet/leaflet.css", "/ui/card/css/alarmheat.css"]
     card_js = [
         "/ui/pkg/leaflet/leaflet.js",
         "/ui/pkg/leaflet.heat/leaflet-heat.js",
-        "/ui/card/js/alarmheat.js"
+        "/ui/card/js/alarmheat.js",
     ]
 
     default_template_name = "alarmheat"
@@ -45,15 +44,13 @@ class AlarmHeatCard(BaseCard):
             "maintenance": 0,
             "lon": self.current_user.heatmap_lon or 0,
             "lat": self.current_user.heatmap_lat or 0,
-            "zoom": self.current_user.heatmap_zoom or 0
+            "zoom": self.current_user.heatmap_zoom or 0,
         }
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_layer_cache"))
     def get_pop_layers(cls):
-        return list(
-            Layer.objects.filter(code__startswith="pop_")
-        )
+        return list(Layer.objects.filter(code__startswith="pop_"))
 
     def get_ajax_data(self, **kwargs):
         def update_dict(d, s):
@@ -91,23 +88,22 @@ class AlarmHeatCard(BaseCard):
             if not mo:
                 continue
             if mo.x and mo.y:
-                w = ServiceSummary.get_weight({
-                    "subscriber": s_sub,
-                    "service": s_service
-                })
+                w = ServiceSummary.get_weight({"subscriber": s_sub, "service": s_service})
                 # @todo: Should we add the object's weight to summary?
                 # @todo: Check west/south hemisphere
                 if active_layers and west <= mo.x <= east and south <= mo.y <= north:
                     t_data[mo.x, mo.y] += [(mo, w)]
             else:
                 w = 0
-            alarms += [{
-                "alarm_id": str(a.id),
-                "managed_object": mo.name,
-                "x": mo.x,
-                "y": mo.y,
-                "w": max(w, 1)
-            }]
+            alarms += [
+                {
+                    "alarm_id": str(a.id),
+                    "managed_object": mo.name,
+                    "x": mo.x,
+                    "y": mo.y,
+                    "w": max(w, 1),
+                }
+            ]
             if s_service:
                 update_dict(services, s_service)
             if s_sub:
@@ -118,29 +114,18 @@ class AlarmHeatCard(BaseCard):
         o_data = {}
         if t_data and active_layers:
             # Create lines
-            bbox = geojson.Polygon([[
-                [west, north],
-                [east, north],
-                [east, south],
-                [west, south],
-                [west, north]
-            ]])
+            bbox = geojson.Polygon(
+                [[[west, north], [east, north], [east, south], [west, south], [west, north]]]
+            )
             lines = []
-            for d in ObjectConnection._get_collection().find({
-                "type": "pop_link",
-                "layer": {
-                    "$in": [l.id for l in active_layers]
+            for d in ObjectConnection._get_collection().find(
+                {
+                    "type": "pop_link",
+                    "layer": {"$in": [l.id for l in active_layers]},
+                    "line": {"$geoIntersects": {"$geometry": bbox}},
                 },
-                "line": {
-                    "$geoIntersects": {
-                        "$geometry": bbox
-                    }
-                }
-            }, {
-                "_id": 0,
-                "connection": 1,
-                "line": 1
-            }):
+                {"_id": 0, "connection": 1, "line": 1},
+            ):
                 for c in d["line"]["coordinates"]:
                     if tuple(c) in t_data:
                         for c in d["line"]["coordinates"]:
@@ -158,33 +143,22 @@ class AlarmHeatCard(BaseCard):
                 for mo, w in o_data[x, y]:
                     if mo not in mos:
                         mos[mo] = w
-                mos = sorted(
-                    mos,
-                    key=lambda z: mos[z],
-                    reverse=True
-                )[:self.TOOLTIP_LIMIT]
+                mos = sorted(mos, key=lambda z: mos[z], reverse=True)[: self.TOOLTIP_LIMIT]
                 points += [
                     geojson.Feature(
-                        geometry=geojson.Point(
-                            coordinates=[x, y]
-                        ),
+                        geometry=geojson.Point(coordinates=[x, y]),
                         properties={
                             "alarms": len(t_data[x, y]),
-                            "objects": [{
-                                "id": mo.id,
-                                "name": mo.name,
-                                "address": mo.address
-                            } for mo in mos]
-                        }
+                            "objects": [
+                                {"id": mo.id, "name": mo.name, "address": mo.address} for mo in mos
+                            ],
+                        },
                     )
                 ]
             points = geojson.FeatureCollection(features=points)
         return {
             "alarms": alarms,
-            "summary": self.f_glyph_summary({
-                "service": services,
-                "subscriber": subscribers
-            }),
+            "summary": self.f_glyph_summary({"service": services, "subscriber": subscribers}),
             "links": links,
-            "pops": points
+            "pops": points,
         }

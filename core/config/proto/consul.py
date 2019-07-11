@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
+
 # NOC modules
 from .base import BaseProtocol
 from noc.core.consul import ConsulClient
@@ -22,6 +24,7 @@ class ConsulProtocol(BaseProtocol):
     URL:
         consul:///<ip1>:<port>/<path>?token=<token>
     """
+
     DEFAULT_CONSUL_PORT = 8500
     REQUEST_TIMEOUT = 30
     CONNECT_TIMEOUT = 30
@@ -39,11 +42,7 @@ class ConsulProtocol(BaseProtocol):
 
     @tornado.gen.coroutine
     def load_async(self):
-        consul = ConsulClient(
-            host=self.host,
-            port=self.port,
-            token=self.token
-        )
+        consul = ConsulClient(host=self.host, port=self.port, token=self.token)
         # Convert to dict
         data = {}
         if self.path.endswith("/"):

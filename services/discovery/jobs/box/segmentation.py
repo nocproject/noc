@@ -9,9 +9,11 @@
 # Python modules
 import operator
 import threading
+
 # Third-party modules
 import cachetools
 import jinja2
+
 # NOC modules
 from noc.inv.models.networksegment import NetworkSegment
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -23,6 +25,7 @@ class SegmentationCheck(DiscoveryCheck):
     """
     Version discovery
     """
+
     name = "segmentation"
     required_artefacts = ["seen_objects"]
     tpl_cache = cachetools.TTLCache(100, 300)
@@ -56,25 +59,21 @@ class SegmentationCheck(DiscoveryCheck):
                     new_segment = self.object.segment
                 elif sp == "c":
                     new_segment = self.get_segment(
-                        object=self.object,
-                        interface=iface,
-                        remote_object=mo
+                        object=self.object, interface=iface, remote_object=mo
                     )
                 else:
                     continue
                 if not new_segment:
-                    self.logger.debug(
-                        "[%s|%s] No target segment. Skipping",
-                        mo.name,
-                        mo.address
-                    )
+                    self.logger.debug("[%s|%s] No target segment. Skipping", mo.name, mo.address)
                     continue
                 if new_segment != mo.segment:
                     if max_level and mo.object_profile.level > max_level:
                         self.logger.info(
                             "[%s|%s] Object level too high (%s > %s). Skipping",
-                            mo.name, mo.address,
-                            mo.object_profile.level, max_level
+                            mo.name,
+                            mo.address,
+                            mo.object_profile.level,
+                            max_level,
                         )
                         continue
                     if mo.allow_autosegmentation:
@@ -83,20 +82,17 @@ class SegmentationCheck(DiscoveryCheck):
                             mo.name,
                             mo.address,
                             mo.segment.name,
-                            new_segment.name
+                            new_segment.name,
                         )
                         mo.segment = new_segment
                         mo.save()
                     else:
                         self.logger.info(
-                            "[%s|%s] Autosegmentation is disabled, skipping",
-                            mo.name,
-                            mo.address
+                            "[%s|%s] Autosegmentation is disabled, skipping", mo.name, mo.address
                         )
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("tpl_cache"),
-                             lock=lambda _: tpl_lock)
+    @cachetools.cachedmethod(operator.attrgetter("tpl_cache"), lock=lambda _: tpl_lock)
     def get_template(self, tpl):
         return jinja2.Template(tpl)
 
@@ -107,10 +103,7 @@ class SegmentationCheck(DiscoveryCheck):
 
     @cachetools.cachedmethod(operator.attrgetter("seg_cache"))
     def ensure_segment(self, name):
-        ns = NetworkSegment.objects.filter(
-            parent=self.object.segment.id,
-            name=name
-        ).first()
+        ns = NetworkSegment.objects.filter(parent=self.object.segment.id, name=name).first()
         if not ns:
             root = self.object.segment
             if root.profile:
@@ -122,7 +115,7 @@ class SegmentationCheck(DiscoveryCheck):
                 parent=self.object.segment,
                 name=name,
                 profile=profile,
-                description="Autocreated by segmentation"
+                description="Autocreated by segmentation",
             )
             ns.save()
         return ns

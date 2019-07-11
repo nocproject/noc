@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from ..node import Node
 from .base import BaseMarshaller
@@ -30,9 +31,7 @@ class MongoMarshaller(BaseMarshaller):
             else:
                 yield path + [n.token]
 
-        return {
-            "config": [{"t": x} for x in iter_line(node, [])]
-        }
+        return {"config": [{"t": x} for x in iter_line(node, [])]}
 
     @classmethod
     def unmarshall(cls, data):

@@ -11,6 +11,7 @@ from __future__ import print_function
 import argparse
 import gzip
 import os
+
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
@@ -24,26 +25,12 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # load command
         load_parser = subparsers.add_parser("load")
+        load_parser.add_argument("--fields", help="Data fields: <table>.<field1>.<fieldN>")
         load_parser.add_argument(
-            "--fields",
-            help="Data fields: <table>.<field1>.<fieldN>"
+            "--chunk", type=int, default=config.nsqd.ch_chunk_size, help="Size on chunk"
         )
-        load_parser.add_argument(
-            "--chunk",
-            type=int,
-            default=config.nsqd.ch_chunk_size,
-            help="Size on chunk"
-        )
-        load_parser.add_argument(
-            "--rm",
-            action="store_true",
-            help="Remove file after uploading"
-        )
-        load_parser.add_argument(
-            "input",
-            nargs=argparse.REMAINDER,
-            help="Input files"
-        )
+        load_parser.add_argument("--rm", action="store_true", help="Remove file after uploading")
+        load_parser.add_argument("input", nargs=argparse.REMAINDER, help="Input files")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)

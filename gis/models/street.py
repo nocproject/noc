@@ -15,7 +15,7 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, BooleanField, DateTimeField
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from .division import Division
 

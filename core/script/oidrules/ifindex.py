@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .oid import OIDRule
 
@@ -16,6 +17,7 @@ class InterfaceRule(OIDRule):
     """
     Expand {{ifIndex}}
     """
+
     name = "ifindex"
 
     def iter_oids(self, script, cfg):

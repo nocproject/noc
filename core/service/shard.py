@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import random
 from collections import defaultdict
+
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from .pub import pub
@@ -34,7 +35,7 @@ class BaseSharder(object):
         for topic in self.records:
             data = self.records[topic]
             while data:
-                chunk, data = data[:self.chunk], data[self.chunk:]
+                chunk, data = data[: self.chunk], data[self.chunk :]
                 yield topic, "%s\n%s\n" % (self.fields, "\n".join(chunk))
         self.records = defaultdict(list)
 
@@ -63,9 +64,7 @@ class ShardingSharder(BaseSharder):
 
     DEFAULT_SHARDING_KEY = "managed_object"
 
-    SHARDING_KEYS = {
-        "span": "ctx"
-    }
+    SHARDING_KEYS = {"span": "ctx"}
 
     def __init__(self, fields, chunk=None):
         super(ShardingSharder, self).__init__(fields, chunk=chunk)
@@ -90,8 +89,7 @@ class ShardingSharder(BaseSharder):
         f = ""
         tl = len(topo) - 1
         for sn, shard in enumerate(topo):
-            channels = ["chwriter-%s-%s" % (sn + 1, r + 1)
-                        for r in range(shard.replicas)]
+            channels = ["chwriter-%s-%s" % (sn + 1, r + 1) for r in range(shard.replicas)]
             self.total_weight += shard.weight
             w += shard.weight
             if not f:

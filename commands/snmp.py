@@ -8,10 +8,12 @@
 
 # Python modules
 import argparse
+
 # Third-party modules
 from tornado.ioloop import IOLoop
 import tornado.gen
 import tornado.queues
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
@@ -25,55 +27,20 @@ class Command(BaseCommand):
     DEFAULT_COMMUNITY = "public"
 
     def add_arguments(self, parser):
+        parser.add_argument("--in", action="append", dest="input", help="File with addresses")
         parser.add_argument(
-            "--in",
-            action="append",
-            dest="input",
-            help="File with addresses"
+            "--jobs", action="store", type=int, default=100, dest="jobs", help="Concurrent jobs"
         )
-        parser.add_argument(
-            "--jobs",
-            action="store",
-            type=int,
-            default=100,
-            dest="jobs",
-            help="Concurrent jobs"
-        )
-        parser.add_argument(
-            "--community",
-            action="append",
-            help="SNMP community"
-        )
-        parser.add_argument(
-            "--oid",
-            default=self.DEFAULT_OID,
-            help="SNMP GET OID"
-        )
-        parser.add_argument(
-            "--timeout",
-            type=int,
-            default=5,
-            help="SNMP GET timeout"
-        )
-        parser.add_argument(
-            "addresses",
-            nargs=argparse.REMAINDER,
-            help="Object name"
-        )
-        parser.add_argument(
-            "--convert",
-            type=bool,
-            default=False,
-            help="convert mac address"
-        )
-        parser.add_argument(
-            "--version",
-            type=int,
-            help="version snmp check"
-        )
+        parser.add_argument("--community", action="append", help="SNMP community")
+        parser.add_argument("--oid", default=self.DEFAULT_OID, help="SNMP GET OID")
+        parser.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
+        parser.add_argument("addresses", nargs=argparse.REMAINDER, help="Object name")
+        parser.add_argument("--convert", type=bool, default=False, help="convert mac address")
+        parser.add_argument("--version", type=int, help="version snmp check")
 
-    def handle(self, input, addresses, jobs, community, oid, timeout, convert, version,
-               *args, **options):
+    def handle(
+        self, input, addresses, jobs, community, oid, timeout, convert, version, *args, **options
+    ):
         self.addresses = set()
         # Direct addresses
         for a in addresses:
@@ -100,8 +67,7 @@ class Command(BaseCommand):
         self.version = version
         self.queue = tornado.queues.Queue(self.jobs)
         for i in range(self.jobs):
-            self.ioloop.spawn_callback(self.poll_worker,
-                                       community, oid, timeout, version)
+            self.ioloop.spawn_callback(self.poll_worker, community, oid, timeout, version)
         self.ioloop.run_sync(self.poll_task)
 
     @tornado.gen.coroutine
@@ -121,11 +87,7 @@ class Command(BaseCommand):
                     t0 = perf_counter()
                     try:
                         r = yield snmp_get(
-                            address=a,
-                            oids=oid,
-                            community=c,
-                            version=version,
-                            timeout=timeout
+                            address=a, oids=oid, community=c, version=version, timeout=timeout
                         )
                         s = "OK"
                         dt = perf_counter() - t0
@@ -147,9 +109,7 @@ class Command(BaseCommand):
                         r = MACAddressParameter().clean(r)
                     except ValueError:
                         pass
-                self.stdout.write(
-                    "%s,%s,%s,%s,%r\n" % (a, s, dt, mc, r)
-                )
+                self.stdout.write("%s,%s,%s,%s,%r\n" % (a, s, dt, mc, r))
             self.queue.task_done()
             if not a:
                 break

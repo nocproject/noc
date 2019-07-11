@@ -10,8 +10,10 @@
 import logging
 import socket
 from collections import defaultdict
+
 # Third-party modules
 from six.moves.urllib.error import URLError
+
 # NOC modules
 from noc.config import config
 from noc.core.fileutils import urlopen
@@ -35,10 +37,10 @@ class WhoisCacheLoader(object):
     PER_AS_DELAY = 10
 
     def __init__(
-            self,
-            use_ripe=config.peer.enable_ripe,
-            use_arin=config.peer.enable_arin,
-            use_radb=config.peer.enable_radb,
+        self,
+        use_ripe=config.peer.enable_ripe,
+        use_arin=config.peer.enable_arin,
+        use_radb=config.peer.enable_radb,
     ):
         self._url_cache = {}  # URL -> data
         self.status = True
@@ -103,8 +105,7 @@ class WhoisCacheLoader(object):
             return self._url_cache[url]
         return urlopen(url, auto_deflate=True)
 
-    def update_from_rpsl(self, url, r, key_field, values_field,
-                         forward, parser):
+    def update_from_rpsl(self, url, r, key_field, values_field, forward, parser):
         """
         Fetch RPSL file, parse and return a set of pairs (key, value),
         where key and value fields set by key_field and values_field parameters
@@ -117,9 +118,12 @@ class WhoisCacheLoader(object):
         :return: Number of parsed items
         """
         if forward:
+
             def u(k, v):
                 r[k] += [v]
+
         else:
+
             def u(k, v):
                 r[v] += [k]
 
@@ -153,23 +157,16 @@ class WhoisCacheLoader(object):
         if self.use_ripe:
             logger.info("Processing RIPE as-set -> members")
             v = self.update_from_rpsl(
-                self.RIPE_AS_SET_MEMBERS, r,
-                "as-set", "members", True,
-                self.parse_rpsl)
+                self.RIPE_AS_SET_MEMBERS, r, "as-set", "members", True, self.parse_rpsl
+            )
             logger.info("Processed RIPE as-set -> members: %d records" % v)
         if self.use_arin:
             logger.info("Processing ARIN as-set -> members")
-            v = self.update_from_rpsl(
-                self.ARIN, r,
-                "as-set", "members", True,
-                self.parse_rpsl)
+            v = self.update_from_rpsl(self.ARIN, r, "as-set", "members", True, self.parse_rpsl)
             logger.info("Processed ARIN as-set -> members: %d records" % v)
         if self.use_radb:
             logger.info("Processing RADb as-set -> members")
-            v = self.update_from_rpsl(
-                self.RADB, r,
-                "as-set", "members", True,
-                self.parse_rpsl)
+            v = self.update_from_rpsl(self.RADB, r, "as-set", "members", True, self.parse_rpsl)
             logger.info("Processed RADb as-set -> members: %d records" % v)
         if r:
             # Upload to database
@@ -195,7 +192,7 @@ class WhoisCacheLoader(object):
         if discoverable_as:
             logger.info(
                 "Collecting prefix discovery information for AS: %s",
-                ", ".join(a for a in discoverable_as)
+                ", ".join(a for a in discoverable_as),
             )
 
             def parser(f, fields=None):
@@ -203,10 +200,12 @@ class WhoisCacheLoader(object):
                     if obj and "route" in obj and "origin" in obj:
                         origin = obj["origin"][0]
                         if origin in discoverable_as:
-                            as_routes[origin] += [(
-                                obj["route"][0],
-                                "\n".join(obj["descr"]) if "descr" in obj else None
-                            )]
+                            as_routes[origin] += [
+                                (
+                                    obj["route"][0],
+                                    "\n".join(obj["descr"]) if "descr" in obj else None,
+                                )
+                            ]
                     yield obj
 
         else:
@@ -215,27 +214,26 @@ class WhoisCacheLoader(object):
         r = defaultdict(list)
         if self.use_ripe:
             logger.info("Processing RIPE origin -> route")
-            v = self.update_from_rpsl(self.RIPE_ROUTE_ORIGIN, r,
-                                      "route", "origin", False, parser)
+            v = self.update_from_rpsl(self.RIPE_ROUTE_ORIGIN, r, "route", "origin", False, parser)
             logger.info("Processed RIPE origin -> route: %d records" % v)
         if self.use_arin:
             logger.info("Processing ARIN origin -> route")
-            v = self.update_from_rpsl(self.ARIN, r,
-                                      "route", "origin", False, parser)
+            v = self.update_from_rpsl(self.ARIN, r, "route", "origin", False, parser)
             logger.info("Processed ARIN origin -> route: %d records" % v)
         if self.use_radb:
             logger.info("Processing RADb origin -> route")
-            v = self.update_from_rpsl(self.RADB, r,
-                                      "route", "origin", False, parser)
+            v = self.update_from_rpsl(self.RADB, r, "route", "origin", False, parser)
             logger.info("Processed RADb origin -> route: %d records" % v)
         if r:
             import noc.lib.nosql  # noqa Connect to MongoDB
+
             # Upload to database
             logger.info("Updating noc.whois.origin.route collection")
             count = WhoisOriginRoute.upload(r)
             logger.info("%d records written into noc.whois.origin.route collection" % count)
         if as_routes:
             import noc.lib.nosql  # noqa Connect to MongoDB
+
             delay = 0
             for a in as_routes:
                 logger.info("[%s] Sending %d prefixes to AS discovery", a, len(as_routes[a]))
@@ -244,9 +242,7 @@ class WhoisCacheLoader(object):
                     self.JCLS_WHOIS_PREFIX,
                     key=AS.get_by_asn(int(a[2:])).id,
                     delta=delay,
-                    data={
-                        "whois_route": as_routes[a]
-                    }
+                    data={"whois_route": as_routes[a]},
                 )
                 delay += self.PER_AS_DELAY
 

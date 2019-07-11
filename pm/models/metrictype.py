@@ -11,16 +11,17 @@ from __future__ import absolute_import
 import os
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
-                                LongField)
+from mongoengine.fields import StringField, UUIDField, ObjectIdField, LongField
 import cachetools
+
 # NOC Modules
 from .metricscope import MetricScope
 from noc.inv.models.capability import Capability
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
@@ -41,10 +42,8 @@ class MetricType(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "pm.metrictypes",
-        "json_depends_on": [
-            "pm.metricscopes"
-        ],
-        "json_unique_fields": ["name"]
+        "json_depends_on": ["pm.metricscopes"],
+        "json_unique_fields": ["name"],
     }
 
     # Metric type name, i.e. Interface | Load | In
@@ -68,7 +67,7 @@ class MetricType(Document):
             ("Int64", "Int64"),
             ("Float32", "Float32"),
             ("Float64", "Float64"),
-            ("String", "String")
+            ("String", "String"),
         ]
     )
     # Text description
@@ -100,7 +99,7 @@ class MetricType(Document):
             "field_name": self.field_name,
             "field_type": self.field_type,
             "description": self.description,
-            "measure": self.measure
+            "measure": self.measure,
         }
         if self.required_capability:
             r["required_capability__name"] = self.required_capability.name
@@ -110,9 +109,17 @@ class MetricType(Document):
         return to_json(
             self.json_data,
             order=[
-                "name", "$collection",
-                "uuid", "scope__name", "field_name", "field_type",
-                "description", "measure", "vector_tag"])
+                "name",
+                "$collection",
+                "uuid",
+                "scope__name",
+                "field_name",
+                "field_type",
+                "description",
+                "measure",
+                "vector_tag",
+            ],
+        )
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
@@ -135,9 +142,7 @@ class MetricType(Document):
 
     def on_save(self):
         call_later(
-            "noc.core.clickhouse.ensure.ensure_all_pm_scopes",
-            scheduler="scheduler",
-            delay=30
+            "noc.core.clickhouse.ensure.ensure_all_pm_scopes", scheduler="scheduler", delay=30
         )
 
     def clean_value(self, value):

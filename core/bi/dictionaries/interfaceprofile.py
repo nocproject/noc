@@ -12,7 +12,7 @@ from noc.core.clickhouse.fields import StringField, UInt8Field
 
 
 class InterfaceProfile(Dictionary):
-    class Meta:
+    class Meta(object):
         name = "interfaceprofile"
         layout = "flat"
 

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import InvPlugin
 
@@ -28,8 +29,8 @@ class LogPlugin(InvPlugin):
                     "system": x.system,
                     "managed_object": x.managed_object,
                     "op": x.op,
-                    "message": x.message
+                    "message": x.message,
                 }
                 for x in o.get_log()
-            ]
+            ],
         }

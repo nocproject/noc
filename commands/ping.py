@@ -8,10 +8,12 @@
 
 # Python modules
 import argparse
+
 # Third-party modules
 from tornado.ioloop import IOLoop
 import tornado.gen
 import tornado.queues
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
@@ -21,25 +23,11 @@ from noc.config import config
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument("--in", action="append", dest="input", help="File with addresses")
         parser.add_argument(
-            "--in",
-            action="append",
-            dest="input",
-            help="File with addresses"
+            "--jobs", action="store", type=int, default=100, dest="jobs", help="Concurrent jobs"
         )
-        parser.add_argument(
-            "--jobs",
-            action="store",
-            type=int,
-            default=100,
-            dest="jobs",
-            help="Concurrent jobs"
-        )
-        parser.add_argument(
-            "addresses",
-            nargs=argparse.REMAINDER,
-            help="Object name"
-        )
+        parser.add_argument("addresses", nargs=argparse.REMAINDER, help="Object name")
 
     def handle(self, input, addresses, jobs, *args, **options):
         self.addresses = set()
@@ -61,6 +49,7 @@ class Command(BaseCommand):
         # Ping
         if config.features.use_uvlib:
             from tornaduv import UVLoop
+
             self.stderr.write("Using libuv\n")
             tornado.ioloop.IOLoop.configure(UVLoop)
         self.ioloop = IOLoop.current()
@@ -84,11 +73,7 @@ class Command(BaseCommand):
         while True:
             a = yield self.queue.get()
             if a:
-                rtt, attempts = yield self.ping.ping_check_rtt(
-                    a,
-                    count=1,
-                    timeout=1000
-                )
+                rtt, attempts = yield self.ping.ping_check_rtt(a, count=1, timeout=1000)
                 if rtt:
                     self.stdout.write("%s %.2fms\n" % (a, rtt * 1000))
                 else:

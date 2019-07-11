@@ -16,6 +16,7 @@ from django.db import models
 
 # NOC modules
 from noc.config import config
+from noc.core.model.decorator import on_init
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
@@ -32,6 +33,7 @@ from .vrf import VRF
 from .addressprofile import AddressProfile
 
 
+@on_init
 @datastream
 @full_text_search
 @workflow
@@ -119,9 +121,9 @@ class Address(NOCModel):
     csv_ignored_fields = ["prefix"]
 
     def __str__(self):
-        return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
+        return "%s(%s): %s" % (self.vrf.name, self.afi, self.address)
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:
             return
 
@@ -131,12 +133,12 @@ class Address(NOCModel):
             # Touch forward zone
             fz = DNSZone.get_zone(self.fqdn)
             if fz:
-                for ds, id in fz.iter_changed_datastream():
+                for ds, id in fz.iter_changed_datastream(changed_fields=changed_fields):
                     yield ds, id
             # Touch reverse zone
             rz = DNSZone.get_zone(self.address)
             if rz:
-                for ds, id in rz.iter_changed_datastream():
+                for ds, id in rz.iter_changed_datastream(changed_fields=changed_fields):
                     yield ds, id
 
     @classmethod

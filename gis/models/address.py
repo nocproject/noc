@@ -15,7 +15,7 @@ from mongoengine.fields import StringField, IntField, DictField, BooleanField
 from mongoengine.signals import post_save
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from .street import Street
 from .building import Building
 
@@ -162,7 +162,7 @@ class Address(Document):
 
 
 #
-RU_SHORT_AFTER = {u"б-р", u"проезд", u"пер", u"ш"}
+RU_SHORT_AFTER = {"б-р", "проезд", "пер", "ш"}
 
 # Signals
 post_save.connect(Address.update_primary, sender=Address)

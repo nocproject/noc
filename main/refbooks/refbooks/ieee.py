@@ -13,7 +13,9 @@ from noc.main.refbooks.refbooks import RefBook, Field
 # IEEE OUI Refbook
 class IEEEOUI(RefBook):
     name = "IEEE OUI"
-    description = "IEEE Assigned Organizational Units IDs. Used as first three octets of MAC Address"
+    description = (
+        "IEEE Assigned Organizational Units IDs. Used as first three octets of MAC Address"
+    )
     downloader = "CSV"
     download_url = "https://cdn.nocproject.org/refbook/ieee_oui.csv"
     refresh_interval = 90

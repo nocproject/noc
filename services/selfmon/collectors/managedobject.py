@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.main.models.pool import Pool
 from .base import BaseCollector
@@ -31,4 +32,7 @@ class ManagedObjectCollector(BaseCollector):
                 continue
             yield ("inventory_managedobject_managed", ("pool", pool.name)), pool_managed
             yield ("inventory_managedobject_unmanaged", ("pool", pool.name)), pool_unmanaged
-            yield ("inventory_managedobject_total", ("pool", pool.name)), pool_managed + pool_unmanaged
+            yield (
+                "inventory_managedobject_total",
+                ("pool", pool.name),
+            ), pool_managed + pool_unmanaged

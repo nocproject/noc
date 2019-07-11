@@ -10,6 +10,7 @@
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
+
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -28,7 +29,7 @@ class SchedulerService(Service):
             "scheduler",
             reset_running=True,
             max_threads=config.scheduler.max_threads,
-            ioloop=self.ioloop
+            ioloop=self.ioloop,
         )
         self.scheduler.run()
 

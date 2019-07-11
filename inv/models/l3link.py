@@ -48,7 +48,7 @@ class L3Link(Document):
     l3_cost = IntField(default=1)
 
     def __str__(self):
-        return u"(%s)" % ", ".join([unicode(i) for i in self.subinterfaces])
+        return "(%s)" % ", ".join([unicode(i) for i in self.subinterfaces])
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.subinterfaces))

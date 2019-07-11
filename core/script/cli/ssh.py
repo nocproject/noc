@@ -9,12 +9,14 @@
 # Python modules
 from __future__ import absolute_import
 import os
+
 # Third-party modules modules
 import six
 from tornado.iostream import IOStream
 import tornado.gen
 import libssh2
 import _libssh2
+
 # NOC modules
 from .base import CLI
 from .error import CLIAuthFailed, CLISSHProtocolError
@@ -44,11 +46,9 @@ class SSHIOStream(IOStream):
         try:
             self.session.startup(self.socket)
             host_hash = self.session.hostkey_hash(2)  # SHA1
-            self.logger.debug("Connected. Host fingerprint is %s",
-                              host_hash.encode("hex"))
+            self.logger.debug("Connected. Host fingerprint is %s", host_hash.encode("hex"))
             auth_methods = self.session.userauth_list(user).split(",")
-            self.logger.debug("Supported authentication methods: %s",
-                              ", ".join(auth_methods))
+            self.logger.debug("Supported authentication methods: %s", ", ".join(auth_methods))
             # Try to authenticate
             authenticated = False
             for method in auth_methods:
@@ -120,27 +120,15 @@ class SSHIOStream(IOStream):
         Public key authentication
         """
         self.logger.debug("Trying publickey authentication")
-        pub_path = os.path.join(
-            self.SSH_KEY_PREFIX,
-            self.script.pool,
-            "id_rsa.pub"
-        )
-        priv_path = os.path.join(
-            self.SSH_KEY_PREFIX,
-            self.script.pool,
-            "id_rsa"
-        )
-        self.logger.debug("public_key=%s private_key=%s",
-                          pub_path, priv_path)
+        pub_path = os.path.join(self.SSH_KEY_PREFIX, self.script.pool, "id_rsa.pub")
+        priv_path = os.path.join(self.SSH_KEY_PREFIX, self.script.pool, "id_rsa")
+        self.logger.debug("public_key=%s private_key=%s", pub_path, priv_path)
         user = self.script.credentials["user"]
         if user is None:
             user = ""
         try:
             self.session.userauth_publickey_fromfile(
-                user,
-                publickey=pub_path,
-                privatekey=priv_path,
-                passphrase=""
+                user, publickey=pub_path, privatekey=priv_path, passphrase=""
             )
             return True
         except _libssh2.Error:

@@ -18,8 +18,7 @@ class VCDS(DataSource):
         self._vc = None
         self._vc_domain = self.find_vc_domain(managed_object)
         if self._vc_domain:
-            r = list(VC.objects.filter(
-                vc_domain=self._vc_domain, l1=l1, l2=l2))
+            r = list(VC.objects.filter(vc_domain=self._vc_domain, l1=l1, l2=l2))
             if r:
                 self._vc = r[0]
 

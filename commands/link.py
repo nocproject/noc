@@ -10,6 +10,7 @@
 from __future__ import print_function
 import argparse
 from collections import defaultdict
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.inv.models.interface import Interface
@@ -22,27 +23,21 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # show command
-        show_parser = subparsers.add_parser("show",
-                                            help="Show link")
-        show_parser.add_argument("-m", "--show-method",
-                                 dest="show_method",
-                                 action="store_true",
-                                 help="Show discovery method")
-        show_parser.add_argument("args",
-                                 nargs=argparse.REMAINDER,
-                                 help="Show discovery method")
+        show_parser = subparsers.add_parser("show", help="Show link")
+        show_parser.add_argument(
+            "-m",
+            "--show-method",
+            dest="show_method",
+            action="store_true",
+            help="Show discovery method",
+        )
+        show_parser.add_argument("args", nargs=argparse.REMAINDER, help="Show discovery method")
         # add command
-        add_parser = subparsers.add_parser("add",
-                                           help="Add link")
-        add_parser.add_argument("args",
-                                nargs=argparse.REMAINDER,
-                                help="Show discovery method")
+        add_parser = subparsers.add_parser("add", help="Add link")
+        add_parser.add_argument("args", nargs=argparse.REMAINDER, help="Show discovery method")
         # remove command
-        remove_parser = subparsers.add_parser("remove",
-                                              help="Remove link")
-        remove_parser.add_argument("args",
-                                   nargs=argparse.REMAINDER,
-                                   help="Show discovery method")
+        remove_parser = subparsers.add_parser("remove", help="Remove link")
+        remove_parser.add_argument("args", nargs=argparse.REMAINDER, help="Show discovery method")
 
     def handle(self, *args, **options):
         print(args)
@@ -89,8 +84,7 @@ class Command(BaseCommand):
         :return:
         """
         if len(args) != 2:
-            raise CommandError(
-                "Usage: ./noc link --add <iface1> <iface2>")
+            raise CommandError("Usage: ./noc link --add <iface1> <iface2>")
         i1 = Interface.get_interface(args[0])
         if not i1:
             raise CommandError("Invalid interface: %s" % args[0])

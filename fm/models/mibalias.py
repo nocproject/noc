@@ -36,7 +36,7 @@ class MIBAlias(Document):
     cache = None
 
     def __str__(self):
-        return u"%s -> %s" % (self.rewrite_mib, self.to_mib)
+        return "%s -> %s" % (self.rewrite_mib, self.to_mib)
 
     @classmethod
     def rewrite(cls, name):

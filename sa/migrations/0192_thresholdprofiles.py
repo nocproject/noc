@@ -18,7 +18,7 @@ from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 
 
 class Migration(BaseMigration):

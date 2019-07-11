@@ -10,8 +10,10 @@
 from __future__ import print_function
 import sys
 import argparse
+
 # Third-party modules modules
 from django.apps import apps
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject  # noqa
 from noc.core.management.base import BaseCommand
@@ -23,17 +25,15 @@ class Command(BaseCommand):
     help = "Export model to CSV"
 
     def add_arguments(self, parser):
-        parser.add_argument("-t", "--template",
-                            dest="template",
-                            action="store_true",
-                            default=False,
-                            help="dump only header row"
-                            ),
         parser.add_argument(
-            "args",
-            nargs=argparse.REMAINDER,
-            help="List of extractor names"
-        )
+            "-t",
+            "--template",
+            dest="template",
+            action="store_true",
+            default=False,
+            help="dump only header row",
+        ),
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
 
     def _usage(self):
         print("Usage:")
@@ -67,9 +67,11 @@ class Command(BaseCommand):
         m = apps.get_model(app, model)
         if not m:
             return self._usage()
-        print(csv_export(m,
-                         queryset=self.get_queryset(m, args[1:]),
-                         first_row_only=options.get("template")),)
+        print(
+            csv_export(
+                m, queryset=self.get_queryset(m, args[1:]), first_row_only=options.get("template")
+            )
+        )
 
 
 if __name__ == "__main__":

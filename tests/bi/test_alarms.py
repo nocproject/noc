@@ -9,6 +9,7 @@
 # Third-party modules
 import pytest
 from six.moves import zip_longest
+
 # NOC modules
 from noc.bi.models.alarms import Alarms
 
@@ -49,7 +50,7 @@ FIELDS = [
     ("subscribers.profile", "String"),
     ("subscribers.summary", "UInt32"),
     ("ack_user", "String"),
-    ("ack_ts", "DateTime")
+    ("ack_ts", "DateTime"),
 ]
 
 SQL = """CREATE TABLE IF NOT EXISTS alarms (
@@ -98,6 +99,7 @@ def test_fields_test():
 def test_sql():
     assert MODEL.get_create_sql() == SQL
 
+
 @pytest.mark.parametrize("name,db_type", FIELDS)
 def test_field_name(name, db_type):
     assert name in MODEL._fields
@@ -109,7 +111,7 @@ def test_field_db_type(name, db_type):
 
 
 @pytest.mark.parametrize("order,fields", list(zip_longest(MODEL._fields_order, FIELDS)))
-def test_field_db_type(order, fields):
+def test_field_order(order, fields):
     assert fields is not None
     name, db_type = fields
     assert order == name

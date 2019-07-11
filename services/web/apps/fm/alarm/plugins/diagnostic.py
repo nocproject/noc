@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
 from .base import AlarmPlugin
@@ -21,9 +22,6 @@ class DiagnosticPlugin(AlarmPlugin):
         if d:
             for x in d:
                 x["timestamp"] = x["timestamp"].isoformat()
-            return {
-                "plugins": [("NOC.fm.alarm.plugins.Diagnostic", {})],
-                "diagnostic": d
-            }
+            return {"plugins": [("NOC.fm.alarm.plugins.Diagnostic", {})], "diagnostic": d}
         else:
             return {}

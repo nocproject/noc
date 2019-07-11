@@ -17,7 +17,7 @@ from mongoengine.fields import StringField, IntField
 # NOC modules
 from .coverage import Coverage
 from noc.gis.models.building import Building
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 
 
 @six.python_2_unicode_compatible
@@ -40,4 +40,4 @@ class CoveredBuilding(Document):
     homes = IntField()
 
     def __str__(self):
-        return u"%s %s" % (self.coverage.name, self.building.primary_address.display_ru())
+        return "%s %s" % (self.coverage.name, self.building.primary_address.display_ru())

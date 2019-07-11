@@ -8,8 +8,7 @@
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view, PermitLogged
-from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
-                                    DictParameter, ModelParameter)
+from noc.sa.interfaces.base import StringParameter, ListOfParameter, DictParameter, ModelParameter
 from noc.settings import LANGUAGES
 from noc.main.models.timepattern import TimePattern
 from noc.aaa.models.usercontact import UserContact
@@ -21,10 +20,9 @@ class UserProfileApplication(ExtApplication):
     """
     main.userprofile application
     """
+
     title = _("User Profile")
-    implied_permissions = {
-        "launch": ["main:timepattern:lookup"]
-    }
+    implied_permissions = {"launch": ["main:timepattern:lookup"]}
 
     @view(url="^$", method=["GET"], access=PermitLogged(), api=True)
     def api_get(self, request):
@@ -35,38 +33,38 @@ class UserProfileApplication(ExtApplication):
                 "time_pattern": c.time_pattern.id,
                 "time_pattern__label": c.time_pattern.name,
                 "notification_method": c.notification_method,
-                "params": c.params
+                "params": c.params,
             }
             for c in UserContact.objects.filter(user=user)
         ]
         return {
             "username": user.username,
-            "name": (" ".join(
-                [x for x in (user.first_name, user.last_name) if x]
-            )).strip(),
+            "name": (" ".join([x for x in (user.first_name, user.last_name) if x])).strip(),
             "email": user.email,
             "preferred_language": language or "en",
             "contacts": contacts,
-            "groups": [g.name for g in user.groups.all().order_by("name")]
+            "groups": [g.name for g in user.groups.all().order_by("name")],
         }
 
     @view(
-        url="^$", method=["POST"], access=PermitLogged(), api=True,
+        url="^$",
+        method=["POST"],
+        access=PermitLogged(),
+        api=True,
         validate={
-            "preferred_language": StringParameter(
-                choices=[x[0] for x in LANGUAGES]
-            ),
+            "preferred_language": StringParameter(choices=[x[0] for x in LANGUAGES]),
             "contacts": ListOfParameter(
-                element=DictParameter(attrs={
-                    "time_pattern": ModelParameter(TimePattern),
-                    "notification_method": StringParameter(
-                        choices=[x[0] for x in
-                                 USER_NOTIFICATION_METHOD_CHOICES]
-                    ),
-                    "params": StringParameter()
-                })
-            )
-        }
+                element=DictParameter(
+                    attrs={
+                        "time_pattern": ModelParameter(TimePattern),
+                        "notification_method": StringParameter(
+                            choices=[x[0] for x in USER_NOTIFICATION_METHOD_CHOICES]
+                        ),
+                        "params": StringParameter(),
+                    }
+                )
+            ),
+        },
     )
     def api_save(self, request, preferred_language, contacts):
         user = request.user
@@ -79,6 +77,6 @@ class UserProfileApplication(ExtApplication):
                 user=user,
                 time_pattern=c["time_pattern"],
                 notification_method=c["notification_method"],
-                params=c["params"]
+                params=c["params"],
             ).save()
         return True

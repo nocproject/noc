@@ -148,7 +148,7 @@ class Prefix(NOCModel):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
-        return u"%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
+        return "%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

@@ -16,6 +16,7 @@ class MIBPreferenceApplication(ExtDocApplication):
     """
     MIBPreference application
     """
+
     title = _("MIB Preference")
     menu = [_("Setup"), _("MIB Preference")]
     model = MIBPreference

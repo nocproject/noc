@@ -16,6 +16,7 @@ class HandlerApplication(ExtDocApplication):
     """
     Handler application
     """
+
     title = "Handler"
     menu = [_("Setup"), _("Handlers")]
     model = Handler

@@ -9,16 +9,18 @@
 # Python modules
 from collections import defaultdict
 import zlib
-# Django modules
+
+# Third-party modules
 from django.http import HttpResponse
+
 # Third-party modules
 import ujson
 from mongoengine.queryset import Q as MQ
+
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobject import (ManagedObject,
-                                         ManagedObjectAttribute)
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -39,26 +41,28 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.lib.text import split_alnum
-from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter, BooleanParameter
+from noc.sa.interfaces.base import (
+    ListOfParameter,
+    ModelParameter,
+    StringParameter,
+    BooleanParameter,
+)
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.core.defer import call_later
 from noc.core.translation import ugettext as _
 
 
-@handler_field(
-    "config_filter_handler",
-    "config_diff_filter_handler",
-    "config_validation_handler"
-)
+@handler_field("config_filter_handler", "config_diff_filter_handler", "config_validation_handler")
 class ManagedObjectApplication(ExtModelApplication):
     """
     ManagedObject application
     """
+
     title = _("Managed Objects")
     menu = _("Managed Objects")
     model = ManagedObject
@@ -70,42 +74,70 @@ class ManagedObjectApplication(ExtModelApplication):
     cfg = RepoInline("config", access="config")
 
     extra_permissions = ["alarm", "change_interface"]
-    implied_permissions = {
-        "read": [
-            "inv:networksegment:lookup",
-            "main:handler:lookup"
-        ]
-    }
-    diverged_permissions = {
-        "config": "read",
-        "console": "script"
-    }
+    implied_permissions = {"read": ["inv:networksegment:lookup", "main:handler:lookup"]}
+    diverged_permissions = {"config": "read", "console": "script"}
     order_map = {
         "address": " cast_test_to_inet(address) ",
         "-address": " cast_test_to_inet(address) ",
-        "profile": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("profile", pk, i) for i, pk in enumerate(
-            Profile.objects.filter().order_by("name").values_list("id"))]),
-        "-profile": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("profile", pk, i) for i, pk in enumerate(
-            Profile.objects.filter().order_by("-name").values_list("id"))]),
-        "platform": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("platform", pk, i) for i, pk in enumerate(
-            Platform.objects.filter().order_by("name").values_list("id"))]),
-        "-platform": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("platform", pk, i) for i, pk in enumerate(
-            Platform.objects.filter().order_by("-name").values_list("id"))]),
-        "version": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("version", pk, i) for i, pk in enumerate(
-            Firmware.objects.filter().order_by("version").values_list("id"))]),
-        "-version": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("version", pk, i) for i, pk in enumerate(
-            Firmware.objects.filter().order_by("-version").values_list("id"))])
+        "profile": "CASE %s END"
+        % " ".join(
+            [
+                "WHEN %s='%s' THEN %s" % ("profile", pk, i)
+                for i, pk in enumerate(Profile.objects.filter().order_by("name").values_list("id"))
+            ]
+        ),
+        "-profile": "CASE %s END"
+        % " ".join(
+            [
+                "WHEN %s='%s' THEN %s" % ("profile", pk, i)
+                for i, pk in enumerate(Profile.objects.filter().order_by("-name").values_list("id"))
+            ]
+        ),
+        "platform": "CASE %s END"
+        % " ".join(
+            [
+                "WHEN %s='%s' THEN %s" % ("platform", pk, i)
+                for i, pk in enumerate(Platform.objects.filter().order_by("name").values_list("id"))
+            ]
+        ),
+        "-platform": "CASE %s END"
+        % " ".join(
+            [
+                "WHEN %s='%s' THEN %s" % ("platform", pk, i)
+                for i, pk in enumerate(
+                    Platform.objects.filter().order_by("-name").values_list("id")
+                )
+            ]
+        ),
+        "version": "CASE %s END"
+        % " ".join(
+            [
+                "WHEN %s='%s' THEN %s" % ("version", pk, i)
+                for i, pk in enumerate(
+                    Firmware.objects.filter().order_by("version").values_list("id")
+                )
+            ]
+        ),
+        "-version": "CASE %s END"
+        % " ".join(
+            [
+                "WHEN %s='%s' THEN %s" % ("version", pk, i)
+                for i, pk in enumerate(
+                    Firmware.objects.filter().order_by("-version").values_list("id")
+                )
+            ]
+        ),
     }
     resource_group_fields = [
         "static_service_groups",
         "effective_service_groups",
         "static_client_groups",
-        "effective_client_groups"
+        "effective_client_groups",
     ]
 
     DISCOVERY_JOBS = [
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
-        ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob")
+        ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
     ]
 
     def field_row_class(self, o):
@@ -121,24 +153,12 @@ class ManagedObjectApplication(ExtModelApplication):
         if not mo_ids:
             return data
         # Collect interface counts
-        r = Interface._get_collection().aggregate([
-            {
-                "$match": {
-                    "managed_object": {
-                        "$in": mo_ids
-                    },
-                    "type": "physical"
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$managed_object",
-                    "total": {
-                        "$sum": 1
-                    }
-                }
-            }
-        ])
+        r = Interface._get_collection().aggregate(
+            [
+                {"$match": {"managed_object": {"$in": mo_ids}, "type": "physical"}},
+                {"$group": {"_id": "$managed_object", "total": {"$sum": 1}}},
+            ]
+        )
         ifcount = dict((x["_id"], x["total"]) for x in r)
         # Apply interface counts
         for x in data:
@@ -155,26 +175,13 @@ class ManagedObjectApplication(ExtModelApplication):
         if not mo_ids:
             return data
         # Collect interface counts
-        r = Link._get_collection().aggregate([
-            {
-                "$match": {
-                    "linked_objects": {
-                        "$in": mo_ids
-                    }
-                }
-            },
-            {
-                "$unwind": "$linked_objects"
-            },
-            {
-                "$group": {
-                    "_id": "$linked_objects",
-                    "total": {
-                        "$sum": 1
-                    }
-                }
-            }
-        ])
+        r = Link._get_collection().aggregate(
+            [
+                {"$match": {"linked_objects": {"$in": mo_ids}}},
+                {"$unwind": "$linked_objects"},
+                {"$group": {"_id": "$linked_objects", "total": {"$sum": 1}}},
+            ]
+        )
         links_count = dict((x["_id"], x["total"]) for x in r)
         # Apply interface counts
         for x in data:
@@ -184,10 +191,7 @@ class ManagedObjectApplication(ExtModelApplication):
     def instance_to_dict(self, o, fields=None):
         def sg_to_list(items):
             return [
-                {
-                    "group": x,
-                    "group__label": unicode(ResourceGroup.get_by_id(x))
-                } for x in items
+                {"group": x, "group__label": unicode(ResourceGroup.get_by_id(x))} for x in items
             ]
 
         data = super(ManagedObjectApplication, self).instance_to_dict(o, fields)
@@ -208,16 +212,13 @@ class ManagedObjectApplication(ExtModelApplication):
 
     def cleaned_query(self, q):
         if "administrative_domain" in q:
-            ad = AdministrativeDomain.get_nested_ids(
-                int(q["administrative_domain"])
-            )
+            ad = AdministrativeDomain.get_nested_ids(int(q["administrative_domain"]))
             if ad:
                 del q["administrative_domain"]
         else:
             ad = None
         if "selector" in q:
-            s = self.get_object_or_404(ManagedObjectSelector,
-                                       id=int(q["selector"]))
+            s = self.get_object_or_404(ManagedObjectSelector, id=int(q["selector"]))
             del q["selector"]
         else:
             s = None
@@ -242,8 +243,7 @@ class ManagedObjectApplication(ExtModelApplication):
         qs = qs.exclude(name__startswith="wiping-")
         return qs
 
-    @view(url=r"^(?P<id>\d+)/links/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<id>\d+)/links/$", method=["GET"], access="read", api=True)
     def api_links(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -259,25 +259,30 @@ class ManagedObjectApplication(ExtModelApplication):
                 else:
                     r += [i]
             for li, ri in zip(ifaces, r):
-                result += [{
-                    "link_id": str(link.id),
-                    "local_interface": str(li.id),
-                    "local_interface__label": li.name,
-                    "remote_object": ri.managed_object.id,
-                    "remote_object__label": ri.managed_object.name,
-                    "remote_platform": ri.managed_object.platform.name if ri.managed_object.platform else "",
-                    "remote_interface": str(ri.id),
-                    "remote_interface__label": ri.name,
-                    "discovery_method": link.discovery_method,
-                    "local_description": li.description,
-                    "remote_description": ri.description,
-                    "first_discovered": link.first_discovered.isoformat() if link.first_discovered else None,
-                    "last_seen": link.last_seen.isoformat() if link.last_seen else None
-                }]
+                result += [
+                    {
+                        "link_id": str(link.id),
+                        "local_interface": str(li.id),
+                        "local_interface__label": li.name,
+                        "remote_object": ri.managed_object.id,
+                        "remote_object__label": ri.managed_object.name,
+                        "remote_platform": ri.managed_object.platform.name
+                        if ri.managed_object.platform
+                        else "",
+                        "remote_interface": str(ri.id),
+                        "remote_interface__label": ri.name,
+                        "discovery_method": link.discovery_method,
+                        "local_description": li.description,
+                        "remote_description": ri.description,
+                        "first_discovered": link.first_discovered.isoformat()
+                        if link.first_discovered
+                        else None,
+                        "last_seen": link.last_seen.isoformat() if link.last_seen else None,
+                    }
+                ]
         return result
 
-    @view(url=r"^(?P<id>\d+)/discovery/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<id>\d+)/discovery/$", method=["GET"], access="read", api=True)
     def api_discovery(self, request, id):
         from noc.core.scheduler.job import Job
 
@@ -290,41 +295,39 @@ class ManagedObjectApplication(ExtModelApplication):
             if "+" in m:
                 m = m.split("+")[0]
             link_count[m] += 1
-        r = [{
-            "name": "ping",
-            "enable_profile": o.object_profile.enable_ping,
-            "status": o.get_status(),
-            "last_run": None,
-            "last_status": None,
-            "next_run": None,
-            "jcls": None
-        }]
+        r = [
+            {
+                "name": "ping",
+                "enable_profile": o.object_profile.enable_ping,
+                "status": o.get_status(),
+                "last_run": None,
+                "last_status": None,
+                "next_run": None,
+                "jcls": None,
+            }
+        ]
 
         for name, jcls in self.DISCOVERY_JOBS:
-            job = Job.get_job_data(
-                "discovery",
-                jcls=jcls,
-                key=o.id,
-                pool=o.pool.name
-            ) or {}
+            job = Job.get_job_data("discovery", jcls=jcls, key=o.id, pool=o.pool.name) or {}
             d = {
                 "name": name,
-                "enable_profile": getattr(o.object_profile,
-                                          "enable_%s_discovery" % name),
+                "enable_profile": getattr(o.object_profile, "enable_%s_discovery" % name),
                 "status": job.get(Job.ATTR_STATUS),
                 "last_run": self.to_json(job.get(Job.ATTR_LAST)),
                 "last_status": job.get(Job.ATTR_LAST_STATUS),
                 "next_run": self.to_json(job.get(Job.ATTR_TS)),
-                "jcls": jcls
+                "jcls": jcls,
             }
             r += [d]
         return r
 
-    @view(url=r"^actions/set_managed/$", method=["POST"],
-          access="create", api=True,
-          validate={
-              "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
-    })
+    @view(
+        url=r"^actions/set_managed/$",
+        method=["POST"],
+        access="create",
+        api=True,
+        validate={"ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)},
+    )
     def api_action_set_managed(self, request, ids):
         for o in ids:
             if not o.has_access(request.user):
@@ -333,11 +336,13 @@ class ManagedObjectApplication(ExtModelApplication):
             o.save()
         return "Selected objects set to managed state"
 
-    @view(url=r"^actions/set_unmanaged/$", method=["POST"],
-          access="create", api=True,
-          validate={
-              "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
-    })
+    @view(
+        url=r"^actions/set_unmanaged/$",
+        method=["POST"],
+        access="create",
+        api=True,
+        validate={"ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)},
+    )
     def api_action_set_unmanaged(self, request, ids):
         for o in ids:
             if not o.has_access(request.user):
@@ -346,8 +351,7 @@ class ManagedObjectApplication(ExtModelApplication):
             o.save()
         return "Selected objects set to unmanaged state"
 
-    @view(url=r"^(?P<id>\d+)/discovery/run/$", method=["POST"],
-          access="change_discovery", api=True)
+    @view(url=r"^(?P<id>\d+)/discovery/run/$", method=["POST"], access="change_discovery", api=True)
     def api_run_discovery(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -356,21 +360,14 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if not getattr(o.object_profile,
-                           "enable_%s_discovery" % name):
+            if not getattr(o.object_profile, "enable_%s_discovery" % name):
                 continue  # Disabled by profile
-            Job.submit(
-                "discovery",
-                jcls,
-                key=o.id,
-                pool=o.pool.name
-            )
-        return {
-            "success": True
-        }
+            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name)
+        return {"success": True}
 
-    @view(url=r"^(?P<id>\d+)/discovery/stop/$", method=["POST"],
-          access="change_discovery", api=True)
+    @view(
+        url=r"^(?P<id>\d+)/discovery/stop/$", method=["POST"], access="change_discovery", api=True
+    )
     def api_stop_discovery(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -379,27 +376,19 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if not getattr(o.object_profile,
-                           "enable_%s_discovery" % name):
+            if not getattr(o.object_profile, "enable_%s_discovery" % name):
                 continue  # Disabled by profile
-            Job.remove(
-                "discovery",
-                jcls,
-                key=o.id,
-                pool=o.pool.name
-            )
-        return {
-            "success": True
-        }
+            Job.remove("discovery", jcls, key=o.id, pool=o.pool.name)
+        return {"success": True}
 
-    @view(url=r"^(?P<id>\d+)/interface/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<id>\d+)/interface/$", method=["GET"], access="read", api=True)
     def api_interface(self, request, id):
         """
         GET interfaces
         :param managed_object:
         :return:
         """
+
         def sorted_iname(s):
             return sorted(s, key=lambda x: split_alnum(x["name"]))
 
@@ -429,19 +418,14 @@ class ManagedObjectApplication(ExtModelApplication):
                 label = "%s:%s" % (o.managed_object.name, o.name)
             elif link.is_lag:
                 # unresolved LAG
-                o = [ii for ii in link.other(i)
-                     if ii.managed_object.id != i.managed_object.id]
-                label = "LAG %s: %s" % (o[0].managed_object.name,
-                                        ", ".join(ii.name for ii in o))
+                o = [ii for ii in link.other(i) if ii.managed_object.id != i.managed_object.id]
+                label = "LAG %s: %s" % (o[0].managed_object.name, ", ".join(ii.name for ii in o))
             else:
                 # Broadcast
                 label = ", ".join(
-                    "%s:%s" % (ii.managed_object.name, ii.name)
-                    for ii in link.other(i))
-            return {
-                "id": str(link.id),
-                "label": label
-            }
+                    "%s:%s" % (ii.managed_object.name, ii.name) for ii in link.other(i)
+                )
+            return {"id": str(link.id), "label": label}
 
         # Get object
         o = self.get_object_or_404(ManagedObject, id=int(id))
@@ -459,8 +443,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "status": i.status,
                 "mac": i.mac,
                 "ifindex": i.ifindex,
-                "lag": (i.aggregated_interface.name
-                        if i.aggregated_interface else ""),
+                "lag": (i.aggregated_interface.name if i.aggregated_interface else ""),
                 "link": get_link(i),
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": unicode(i.profile) if i.profile else None,
@@ -471,9 +454,9 @@ class ManagedObjectApplication(ExtModelApplication):
                 "state__label": unicode(i.state if i.state else default_state),
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
-                "row_class": get_style(i)
-            } for i in Interface.objects.filter(
-                managed_object=o.id, type="physical")
+                "row_class": get_style(i),
+            }
+            for i in Interface.objects.filter(managed_object=o.id, type="physical")
         ]
         # LAG
         lag = [
@@ -483,11 +466,15 @@ class ManagedObjectApplication(ExtModelApplication):
                 "description": i.description,
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": unicode(i.profile) if i.profile else None,
-                "members": [j.name for j in Interface.objects.filter(
-                    managed_object=o.id, aggregated_interface=i.id)],
-                "row_class": get_style(i)
-            } for i in Interface.objects.filter(managed_object=o.id,
-                                                type="aggregated")
+                "members": [
+                    j.name
+                    for j in Interface.objects.filter(
+                        managed_object=o.id, aggregated_interface=i.id
+                    )
+                ],
+                "row_class": get_style(i),
+            }
+            for i in Interface.objects.filter(managed_object=o.id, type="aggregated")
         ]
         # L2 interfaces
         l2 = [
@@ -495,10 +482,9 @@ class ManagedObjectApplication(ExtModelApplication):
                 "name": i.name,
                 "description": i.description,
                 "untagged_vlan": i.untagged_vlan,
-                "tagged_vlans": i.tagged_vlans
-            } for i in
-            SubInterface.objects.filter(managed_object=o.id,
-                                        enabled_afi="BRIDGE")
+                "tagged_vlans": i.tagged_vlans,
+            }
+            for i in SubInterface.objects.filter(managed_object=o.id, enabled_afi="BRIDGE")
         ]
         # L3 interfaces
         q = MQ(enabled_afi="IPv4") | MQ(enabled_afi="IPv6")
@@ -511,23 +497,24 @@ class ManagedObjectApplication(ExtModelApplication):
                 "enabled_protocols": i.enabled_protocols,
                 "vlan": i.vlan_ids,
                 "vrf": i.forwarding_instance.name if i.forwarding_instance else "",
-                "mac": i.mac
-            } for i in SubInterface.objects.filter(managed_object=o.id).filter(q)
+                "mac": i.mac,
+            }
+            for i in SubInterface.objects.filter(managed_object=o.id).filter(q)
         ]
         return {
             "l1": sorted_iname(l1),
             "lag": sorted_iname(lag),
             "l2": sorted_iname(l2),
-            "l3": sorted_iname(l3)
+            "l3": sorted_iname(l3),
         }
 
-    @view(url=r"^(?P<id>\d+)/interface/$", method=["POST"],
-          access="change_interface", api=True)
+    @view(url=r"^(?P<id>\d+)/interface/$", method=["POST"], access="change_interface", api=True)
     def api_set_interface(self, request, id):
         def get_or_none(c, v):
             if not v:
                 return None
             return c.objects.get(id=v)
+
         o = self.get_object_or_404(ManagedObject, id=int(id))
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
@@ -553,9 +540,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 i.vc_domain = get_or_none(VCDomain, d["vc_domain"])
             #
             i.save()
-        return {
-            "success": True
-        }
+        return {"success": True}
 
     @view(method=["DELETE"], url=r"^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):
@@ -568,10 +553,9 @@ class ManagedObjectApplication(ExtModelApplication):
         try:
             o = self.queryset(request).get(id=int(id))
         except self.model.DoesNotExist:
-            return self.render_json({
-                "status": False,
-                "message": "Not found"
-            }, status=self.NOT_FOUND)
+            return self.render_json(
+                {"status": False, "message": "Not found"}, status=self.NOT_FOUND
+            )
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         # Run sa.wipe_managed_object job instead
@@ -579,17 +563,16 @@ class ManagedObjectApplication(ExtModelApplication):
         o.is_managed = False
         o.description = "Wiping! Do not touch!"
         o.save()
-        call_later(
-            "noc.sa.wipe.managedobject.wipe",
-            o=o.id
-        )
+        call_later("noc.sa.wipe.managedobject.wipe", o=o.id)
         return HttpResponse(status=self.DELETED)
 
-    @view(url=r"^actions/run_discovery/$", method=["POST"],
-          access="launch", api=True,
-          validate={
-              "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
-    })
+    @view(
+        url=r"^actions/run_discovery/$",
+        method=["POST"],
+        access="launch",
+        api=True,
+        validate={"ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)},
+    )
     def api_action_run_discovery(self, request, ids):
         d = 0
         for o in ids:
@@ -608,34 +591,38 @@ class ManagedObjectApplication(ExtModelApplication):
             "serial": o.get_data("asset", "serial"),
             "revision": rev or "",
             "description": o.model.description,
-            "model": o.model.name
+            "model": o.model.name,
         }
         children = []
         for n in o.model.connections:
             if n.direction == "i":
                 c, r_object, _ = o.get_p2p_connection(n.name)
                 if c is None:
-                    children += [{
-                        "id": None,
-                        "name": n.name,
-                        "leaf": True,
-                        "serial": None,
-                        "description": "--- EMPTY ---",
-                        "model": None
-                    }]
+                    children += [
+                        {
+                            "id": None,
+                            "name": n.name,
+                            "leaf": True,
+                            "serial": None,
+                            "description": "--- EMPTY ---",
+                            "model": None,
+                        }
+                    ]
                 else:
                     cc = self.get_nested_inventory(r_object)
                     cc["name"] = n.name
                     children += [cc]
             elif n.direction == "s":
-                children += [{
-                    "id": None,
-                    "name": n.name,
-                    "leaf": True,
-                    "serial": None,
-                    "description": n.description,
-                    "model": ", ".join(n.protocols)
-                }]
+                children += [
+                    {
+                        "id": None,
+                        "name": n.name,
+                        "leaf": True,
+                        "serial": None,
+                        "description": n.description,
+                        "model": ", ".join(n.protocols),
+                    }
+                ]
         if children:
             to_expand = "Transceiver" not in o.model.name
             r["children"] = children
@@ -644,8 +631,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r["leaf"] = True
         return r
 
-    @view(url=r"^(?P<id>\d+)/inventory/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<id>\d+)/inventory/$", method=["GET"], access="read", api=True)
     def api_inventory(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -655,13 +641,9 @@ class ManagedObjectApplication(ExtModelApplication):
             c = self.get_nested_inventory(p)
             c["name"] = p.name or o.name
             r += [c]
-        return {
-            "expanded": True,
-            "children": r
-        }
+        return {"expanded": True, "children": r}
 
-    @view(url=r"^(?P<id>\d+)/confdb/$", method=["GET"],
-          access="config", api=True)
+    @view(url=r"^(?P<id>\d+)/confdb/$", method=["GET"], access="config", api=True)
     def api_confdb(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -674,12 +656,16 @@ class ManagedObjectApplication(ExtModelApplication):
         return self.render_plain_text(cdb.dump("json"), content_type="text/json")
 
     @view(
-        url=r"^(?P<id>\d+)/confdb/$", method=["POST"],
+        url=r"^(?P<id>\d+)/confdb/$",
+        method=["POST"],
         validate={
             "query": StringParameter(),
             "cleanup": BooleanParameter(default=True),
-            "dump": BooleanParameter(default=False)
-        }, access="config", api=True)
+            "dump": BooleanParameter(default=False),
+        },
+        access="config",
+        api=True,
+    )
     def api_confdb_query(self, request, id, query="", cleanup=True, dump=False):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -687,21 +673,14 @@ class ManagedObjectApplication(ExtModelApplication):
         cdb = o.get_confdb(cleanup=cleanup)
         try:
             r = list(cdb.query(query))
-            result = {
-                "status": True,
-                "result": r
-            }
+            result = {"status": True, "result": r}
             if dump:
                 result["confdb"] = ujson.loads(cdb.dump("json"))
         except SyntaxError as e:
-            result = {
-                "status": False,
-                "error": str(e)
-            }
+            result = {"status": False, "error": str(e)}
         return result
 
-    @view(url=r"^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"], access="read", api=True)
     def api_job_log(self, request, id, job):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -710,27 +689,21 @@ class ManagedObjectApplication(ExtModelApplication):
         key = "discovery-%s-%s" % (job, o.id)
         d = get_db()["noc.joblog"].find_one({"_id": key})
         if d and d["log"]:
-            return self.render_plain_text(
-                zlib.decompress(str(d["log"]))
-            )
+            return self.render_plain_text(zlib.decompress(str(d["log"])))
         else:
             return self.render_plain_text("No data")
 
-    @view(url=r"^(?P<id>\d+)/interactions/$", method=["GET"],
-          access="interactions", api=True)
+    @view(url=r"^(?P<id>\d+)/interactions/$", method=["GET"], access="interactions", api=True)
     def api_interactions(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        return [{
-            "ts": self.to_json(i.timestamp),
-            "op": i.op,
-            "user": i.user,
-            "text": i.text
-        } for i in InteractionLog.objects.filter(object=o.id).order_by("-timestamp")]
+        return [
+            {"ts": self.to_json(i.timestamp), "op": i.op, "user": i.user, "text": i.text}
+            for i in InteractionLog.objects.filter(object=o.id).order_by("-timestamp")
+        ]
 
-    @view(url=r"^(?P<id>\d+)/scripts/$", method=["GET"], access="script",
-          api=True)
+    @view(url=r"^(?P<id>\d+)/scripts/$", method=["GET"], access="script", api=True)
     def api_scripts(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -748,59 +721,40 @@ class ManagedObjectApplication(ExtModelApplication):
                 "has_input": any(interface.gen_parameters()),
                 "require_input": interface.has_required_params,
                 "form": interface.get_form(),
-                "preview": interface.preview or "NOC.sa.managedobject.scripts.JSONPreview"
+                "preview": interface.preview or "NOC.sa.managedobject.scripts.JSONPreview",
             }
             r += [ss]
         return r
 
-    @view(url=r"^(?P<id>\d+)/scripts/(?P<name>[^/]+)/$",
-          method=["POST"], access="script", api=True)
+    @view(url=r"^(?P<id>\d+)/scripts/(?P<name>[^/]+)/$", method=["POST"], access="script", api=True)
     def api_run_script(self, request, id, name):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
-            return {
-                "error": "Access denied"
-            }
+            return {"error": "Access denied"}
         if name not in o.scripts:
-            return {
-                "error": "Script not found: %s" % name
-            }
+            return {"error": "Script not found: %s" % name}
         params = self.deserialize(request.body)
         try:
             result = o.scripts[name](**params)
         except Exception as e:
-            return {
-                "error": str(e)
-            }
-        return {
-            "result": result
-        }
+            return {"error": str(e)}
+        return {"result": result}
 
-    @view(url=r"^(?P<id>\d+)/console/$",
-          method=["POST"], access="console", api=True)
+    @view(url=r"^(?P<id>\d+)/console/$", method=["POST"], access="console", api=True)
     def api_console_command(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
-            return {
-                "error": "Access denied"
-            }
+            return {"error": "Access denied"}
         if "commands" not in o.scripts:
-            return {
-                "error": "Script not found: commands"
-            }
+            return {"error": "Script not found: commands"}
         params = self.deserialize(request.body)
         try:
             result = o.scripts.commands(**params)
         except Exception as e:
-            return {
-                "error": str(e)
-            }
-        return {
-            "result": result
-        }
+            return {"error": str(e)}
+        return {"result": result}
 
-    @view(url=r"(?P<id>\d+)/caps/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"(?P<id>\d+)/caps/$", method=["GET"], access="read", api=True)
     def api_get_caps(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -809,17 +763,18 @@ class ManagedObjectApplication(ExtModelApplication):
         oc = ObjectCapabilities.objects.filter(object=o).first()
         if oc:
             for c in oc.caps:
-                r += [{
-                    "capability": c.capability.name,
-                    "description": c.capability.description,
-                    "type": c.capability.type,
-                    "value": c.value,
-                    "source": c.source
-                }]
+                r += [
+                    {
+                        "capability": c.capability.name,
+                        "description": c.capability.description,
+                        "type": c.capability.type,
+                        "value": c.value,
+                        "source": c.source,
+                    }
+                ]
         return sorted(r, key=lambda x: x["capability"])
 
-    @view(url=r"(?P<id>\d+)/facts/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"(?P<id>\d+)/facts/$", method=["GET"], access="read", api=True)
     def api_get_facts(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -829,19 +784,16 @@ class ManagedObjectApplication(ExtModelApplication):
                 {
                     "cls": f.cls,
                     "label": f.label,
-                    "attrs": [
-                        {
-                            "name": a,
-                            "value": f.attrs[a]
-                        } for a in f.attrs
-                    ],
+                    "attrs": [{"name": a, "value": f.attrs[a]} for a in f.attrs],
                     "introduced": f.introduced.isoformat(),
-                    "changed": f.changed.isoformat()
-                } for f in ObjectFact.objects.filter(object=o.id)),
-            key=lambda x: (x["cls"], x["label"]))
+                    "changed": f.changed.isoformat(),
+                }
+                for f in ObjectFact.objects.filter(object=o.id)
+            ),
+            key=lambda x: (x["cls"], x["label"]),
+        )
 
-    @view(url=r"(?P<id>\d+)/revalidate/$", method=["POST"],
-          access="read", api=True)
+    @view(url=r"(?P<id>\d+)/revalidate/$", method=["POST"], access="read", api=True)
     def api_revalidate(self, request, id):
         def revalidate(o):
             engine = Engine(o)
@@ -853,8 +805,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         return self.submit_slow_op(request, revalidate, o)
 
-    @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"],
-          access="action", api=True)
+    @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)
     def api_action(self, request, id, action):
         def execute(o, a, args):
             return a.execute(o, **args)
@@ -871,8 +822,7 @@ class ManagedObjectApplication(ExtModelApplication):
             args = {}
         return self.submit_slow_op(request, execute, o, a, args)
 
-    @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$",
-          method=["POST"], access="change_link")
+    @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$", method=["POST"], access="change_link")
     def api_fix_links(self, request, link_id):
         def get_mac(arp, ip):
             for r in arp:
@@ -888,17 +838,11 @@ class ManagedObjectApplication(ExtModelApplication):
 
         def error_status(message, *args):
             self.logger.error(message, *args)
-            return {
-                "status": False,
-                "message": message % args
-            }
+            return {"status": False, "message": message % args}
 
         def success_status(message, *args):
             self.logger.error(message, *args)
-            return {
-                "status": True,
-                "message": message % args
-            }
+            return {"status": True, "message": message % args}
 
         link = self.get_object_or_404(Link, id=link_id)
         if len(link.interfaces) != 2:
@@ -933,45 +877,34 @@ class ManagedObjectApplication(ExtModelApplication):
         # mo1: Find mo2
         i1 = get_interface(r1, mac2)
         if not i1:
-            return error_status("[%s] Cannot find %s in the MAC address table",
-                                mo1.name, mo2.name)
+            return error_status("[%s] Cannot find %s in the MAC address table", mo1.name, mo2.name)
         # mo2: Find mo1
         i2 = get_interface(r2, mac1)
         if not i1:
-            return error_status("[%s] Cannot find %s in the MAC address table",
-                                mo2.name, mo1.name)
+            return error_status("[%s] Cannot find %s in the MAC address table", mo2.name, mo1.name)
         self.logger.info("%s:%s -- %s:%s", mo1.name, i1, mo2.name, i2)
         if link.interfaces[0].name == i1 and link.interfaces[1].name == i2:
             return success_status("Linked properly")
         # Get interfaces
         iface1 = mo1.get_interface(i1)
         if not iface1:
-            return error_status("[%s] Interface not found: %s",
-                                mo1.name, i1)
+            return error_status("[%s] Interface not found: %s", mo1.name, i1)
         iface2 = mo2.get_interface(i2)
         if not iface2:
-            return error_status("[%s] Interface not found: %s",
-                                mo2.name, i2)
+            return error_status("[%s] Interface not found: %s", mo2.name, i2)
         # Check we can relink
         if_ids = [i.id for i in link.interfaces]
         if iface1.id not in if_ids and iface1.is_linked:
-            return error_status(
-                "[%s] %s is already linked",
-                mo1.name, i1
-            )
+            return error_status("[%s] %s is already linked", mo1.name, i1)
         if iface2.id not in if_ids and iface2.is_linked:
-            return error_status(
-                "[%s] %s is already linked",
-                mo2.name, i2
-            )
+            return error_status("[%s] %s is already linked", mo2.name, i2)
         # Relink
         self.logger.info("Relinking")
         link.delete()
         iface1.link_ptp(iface2, method="macfix")
         return success_status("Relinked")
 
-    @view(url=r"^(?P<id>\d+)/cpe/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<id>\d+)/cpe/$", method=["GET"], access="read", api=True)
     def api_cpe(self, request, id):
         """
         GET CPEs
@@ -979,6 +912,7 @@ class ManagedObjectApplication(ExtModelApplication):
         :param id:
         :return:
         """
+
         def sorted_iname(s):
             return sorted(s, key=lambda x: split_alnum(x["name"]))
 
@@ -1006,9 +940,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 "location": c.location or "",
                 "distance": str(c.distance)
                 # "row_class": get_style(i)
-            } for c in CPEStatus.objects.filter(
-                managed_object=o.id)]
+            }
+            for c in CPEStatus.objects.filter(managed_object=o.id)
+        ]
 
-        return {
-            "cpe": sorted_iname(l1)
-        }
+        return {"cpe": sorted_iname(l1)}

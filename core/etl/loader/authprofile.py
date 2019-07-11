@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.sa.models.authprofile import AuthProfile
@@ -17,6 +18,7 @@ class AuthProfileLoader(BaseLoader):
     """
     Managed Object Profile loader
     """
+
     name = "authprofile"
     model = AuthProfile
     fields = [
@@ -28,5 +30,5 @@ class AuthProfileLoader(BaseLoader):
         "password",
         "super_password",
         "snmp_ro",
-        "snmp_rw"
+        "snmp_rw",
     ]

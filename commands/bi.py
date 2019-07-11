@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BI extract/load commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,9 +13,10 @@ import datetime
 import gzip
 import time
 from pymongo.errors import OperationFailure
+
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
@@ -31,11 +32,7 @@ class Command(BaseCommand):
     NSQ_CONNECT_TIMEOUT = config.nsqd.connect_timeout
     NSQ_PUB_RETRY_DELAY = config.nsqd.pub_retry_delay
 
-    EXTRACTORS = [
-        RebootsExtractor,
-        AlarmsExtractor,
-        ManagedObjectsExtractor
-    ]
+    EXTRACTORS = [RebootsExtractor, AlarmsExtractor, ManagedObjectsExtractor]
 
     # Extract by 1-day chunks
     EXTRACT_WINDOW = config.bi.extract_window
@@ -44,27 +41,18 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # Args
-        parser.add_argument(
-            "--data-prefix",
-            default=self.DATA_PREFIX,
-            help="Show only summary"
-        )
+        parser.add_argument("--data-prefix", default=self.DATA_PREFIX, help="Show only summary")
         # extract command
         extract = subparsers.add_parser("extract")
         extract.add_argument(
             "--use-archive",
             action="store_true",
             default=False,
-            help="Use archived collection for extract"
+            help="Use archived collection for extract",
         )
         # clean command
         clean = subparsers.add_parser("clean")
-        clean.add_argument(
-            "--force",
-            action="store_true",
-            default=False,
-            help="Really remove data"
-        )
+        clean.add_argument("--force", action="store_true", default=False, help="Really remove data")
         # load command
         subparsers.add_parser("load")
 
@@ -74,9 +62,7 @@ class Command(BaseCommand):
 
     def get_last_extract(self, name):
         coll = get_db()["noc.bi_timestamps"]
-        d = coll.find_one({
-            "_id": name
-        })
+        d = coll.find_one({"_id": name})
         if d:
             return d["last_extract"]
         else:
@@ -84,13 +70,7 @@ class Command(BaseCommand):
 
     def set_last_extract(self, name, ts):
         coll = get_db()["noc.bi_timestamps"]
-        coll.update({
-            "_id": name,
-        }, {
-            "$set": {
-                "last_extract": ts
-            }
-        }, upsert=True)
+        coll.update({"_id": name}, {"$set": {"last_extract": ts}}, upsert=True)
 
     def handle_extract(self, use_archive=False, *args, **options):
         now = datetime.datetime.now()
@@ -111,8 +91,9 @@ class Command(BaseCommand):
             while start < stop:
                 end = min(start + window, stop)
                 if hasattr(ecls, "use_archive"):
-                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX,
-                             use_archive=use_archive)
+                    e = ecls(
+                        start=start, stop=end, prefix=self.DATA_PREFIX, use_archive=use_archive
+                    )
                 else:
                     e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
                 t0 = time.time()
@@ -121,19 +102,23 @@ class Command(BaseCommand):
                 except OperationFailure as ex:
                     window = window // 2
                     if window < self.MIN_WINDOW:
-                        self.print("[%s] Window less two seconds. Too many element in interval. Fix it manually" %
-                                   e.name)
+                        self.print(
+                            "[%s] Window less two seconds. Too many element in interval. Fix it manually"
+                            % e.name
+                        )
                         self.die("Too many elements per interval")
-                    self.print("[%s] Mongo Exception: %s, switch window to: %s" % (e.name, ex, window))
+                    self.print(
+                        "[%s] Mongo Exception: %s, switch window to: %s" % (e.name, ex, window)
+                    )
                     is_exception = True
                     continue
 
-                self.print("[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True)
+                self.print(
+                    "[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True
+                )
                 dt = time.time() - t0
                 if dt > 0.0:
-                    self.print("%d records in %.3fs (%.2frec/s)" % (
-                        nr, dt, float(nr) / dt
-                    ))
+                    self.print("%d records in %.3fs (%.2frec/s)" % (nr, dt, float(nr) / dt))
                 else:
                     self.print("no records")
                 self.set_last_extract(ecls.name, e.last_ts or end)
@@ -142,7 +127,10 @@ class Command(BaseCommand):
                 if is_exception:  # Save extracted record after exception
                     extracted_record = nr
                     is_exception = False
-                if window != datetime.timedelta(seconds=self.EXTRACT_WINDOW) and nr < extracted_record * 0.75:
+                if (
+                    window != datetime.timedelta(seconds=self.EXTRACT_WINDOW)
+                    and nr < extracted_record * 0.75
+                ):
                     self.print("[%s] Restore Window to: %s" % (e.name, window * 2))
                     window = min(window * 2, datetime.timedelta(seconds=self.EXTRACT_WINDOW))
 
@@ -169,12 +157,17 @@ class Command(BaseCommand):
                 continue
             force = options.get("force")
             e = ecls(start=stop, stop=stop, prefix=self.DATA_PREFIX)
-            self.print("[%s] Cleaned before %s ... \n" % (
-                e.name, stop - datetime.timedelta(seconds=ecls.clean_delay)
-            ), end="", flush=True)
+            self.print(
+                "[%s] Cleaned before %s ... \n"
+                % (e.name, stop - datetime.timedelta(seconds=ecls.clean_delay)),
+                end="",
+                flush=True,
+            )
             if force:
-                self.print("All data before %s from collection %s will be Remove..\n" % (
-                    e.name, stop - datetime.timedelta(seconds=ecls.clean_delay)))
+                self.print(
+                    "All data before %s from collection %s will be Remove..\n"
+                    % (e.name, stop - datetime.timedelta(seconds=ecls.clean_delay))
+                )
                 for i in reversed(range(1, 10)):
                     self.print("%d\n" % i)
                     time.sleep(1)

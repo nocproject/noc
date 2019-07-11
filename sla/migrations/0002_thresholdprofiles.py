@@ -15,7 +15,7 @@ import bson
 import cachetools
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.mongo.connection import get_db
 from noc.core.migration.base import BaseMigration
 
 SAVE_FIELDS = {"_id", "metric_type", "enable_periodic", "enable_box", "is_stored"}

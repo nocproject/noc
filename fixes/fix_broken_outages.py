@@ -19,7 +19,7 @@ def fix():
     Problem has been related to out-of-order NSQ messages
     and has been fixed 08-NOV-2016
     """
-    print ("Fixing broken outages")
+    print("Fixing broken outages")
     r = Outage._get_collection().aggregate(
         [
             {"$project": {"_id": 1, "duration": {"$subtract": ["$stop", "$start"]}}},
@@ -30,4 +30,4 @@ def fix():
     ids = [d["_id"] for d in r]
     if ids:
         Outage._get_collection().remove({"_id": {"$in": ids}})
-    print (" ... Done (%d records fixed)" % len(ids))
+    print(" ... Done (%d records fixed)" % len(ids))

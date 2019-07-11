@@ -16,6 +16,7 @@ class ExtStorageApplication(ExtDocApplication):
     """
     ExtStorage application
     """
+
     title = _("Ext. Storage")
     menu = [_("Setup"), _("Ext. Storages")]
     model = ExtStorage

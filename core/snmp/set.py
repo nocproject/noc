@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import random
+
 # Third-party modules
 import six
+
 # NOC modules
 from .ber import BEREncoder
 from .consts import PDU_SET_REQUEST
@@ -41,20 +43,17 @@ def set_pdu(community, varbinds, request_id=None, version=SNMP_v2c):
             v = e.encode_int(value)
         else:
             raise ValueError("Unknown varbind type")
-        vbs += [
-            e.encode_sequence([e.encode_oid(oid), v])
-        ]
+        vbs += [e.encode_sequence([e.encode_oid(oid), v])]
     varbinds = e.encode_sequence(vbs)
     # Encode RFC-1905 SNMP SET PDU
-    pdu = e.encode_choice(PDU_SET_REQUEST, [
-        e.encode_int(request_id),
-        e.encode_int(0),  # Error status
-        e.encode_int(0),  # Error index
-        varbinds
-    ])
+    pdu = e.encode_choice(
+        PDU_SET_REQUEST,
+        [
+            e.encode_int(request_id),
+            e.encode_int(0),  # Error status
+            e.encode_int(0),  # Error index
+            varbinds,
+        ],
+    )
     # SNMP v2c PDU
-    return e.encode_sequence([
-        e.encode_int(version),
-        e.encode_octet_string(community),
-        pdu
-    ])
+    return e.encode_sequence([e.encode_int(version), e.encode_octet_string(community), pdu])

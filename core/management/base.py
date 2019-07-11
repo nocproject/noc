@@ -11,8 +11,10 @@ from __future__ import print_function
 import sys
 import os
 import argparse
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.config import config
 from noc.core.tz import setup_timezone
@@ -75,6 +77,7 @@ class BaseCommand(object):
         if enable_profiling:
             # Start profiler
             import yappi
+
             yappi.start()
         try:
             return self.handle(*args, **cmd_options) or 0
@@ -92,6 +95,7 @@ class BaseCommand(object):
             return 4
         except Exception:
             from noc.core.debug import error_report
+
             error_report()
             return 2
         finally:
@@ -104,11 +108,12 @@ class BaseCommand(object):
                         1: ("ncall", 10),
                         2: ("tsub", 8),
                         3: ("ttot", 8),
-                        4: ("tavg", 8)
-                    }
+                        4: ("tavg", 8),
+                    },
                 )
             if show_metrics:
                 from noc.core.perf import apply_metrics
+
                 d = apply_metrics({})
                 self.print("Internal metrics:")
                 for k in d:
@@ -136,40 +141,20 @@ class BaseCommand(object):
             action="store",
             dest="loglevel",
             help="Set loglevel",
-            choices=[
-                "critical", "error", "warning", "info", "debug", "none"
-            ],
-            default="info"
+            choices=["critical", "error", "warning", "info", "debug", "none"],
+            default="info",
         )
         group.add_argument(
-            "--quiet",
-            action="store_const",
-            dest="loglevel",
-            const="none",
-            help="Suppress logging"
+            "--quiet", action="store_const", dest="loglevel", const="none", help="Suppress logging"
         )
         group.add_argument(
-            "--debug",
-            action="store_const",
-            dest="loglevel",
-            const="debug",
-            help="Debugging output"
+            "--debug", action="store_const", dest="loglevel", const="debug", help="Debugging output"
         )
         group.add_argument(
-            "--enable-profiling",
-            action="store_true",
-            help="Enable built-in profiler"
+            "--enable-profiling", action="store_true", help="Enable built-in profiler"
         )
-        group.add_argument(
-            "--show-metrics",
-            action="store_true",
-            help="Dump internal metrics"
-        )
-        group.add_argument(
-            "--no-progressbar",
-            action="store_true",
-            help="Disable progressbar"
-        )
+        group.add_argument("--show-metrics", action="store_true", help="Dump internal metrics")
+        group.add_argument("--no-progressbar", action="store_true", help="Disable progressbar")
 
     def add_arguments(self, parser):
         """
@@ -192,7 +177,7 @@ class BaseCommand(object):
             "warning": logging.WARNING,
             "info": logging.INFO,
             "debug": logging.DEBUG,
-            "none": logging.NOTSET
+            "none": logging.NOTSET,
         }[loglevel]
         # Get Root logger
         logger = logging.getLogger()
@@ -219,5 +204,6 @@ class BaseCommand(object):
                 yield i
         else:
             import progressbar
+
             for i in progressbar.progressbar(iter, max_value=max_value):
                 yield i

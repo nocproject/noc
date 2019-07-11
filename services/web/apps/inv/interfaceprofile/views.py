@@ -16,6 +16,7 @@ class InterfaceProfileApplication(ExtDocApplication):
     """
     InterfaceProfile application
     """
+
     title = _("Interface Profile")
     menu = [_("Setup"), _("Interface Profiles")]
     model = InterfaceProfile

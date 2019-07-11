@@ -9,6 +9,7 @@
 # Python modules
 import argparse
 from noc.config import config
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -21,7 +22,7 @@ class Command(BaseCommand):
             "section",
             help="Print only config section with Name",
             nargs=argparse.REMAINDER,
-            default=None
+            default=None,
         )
 
     def handle(self, cmd, *args, **options):

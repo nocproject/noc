@@ -12,6 +12,7 @@ import platform
 import errno
 import os
 import sys
+
 # Third-party modules
 import six
 from tornado.util import errno_from_exception
@@ -52,8 +53,7 @@ class UDPServer(object):
 
         for sock in sockets:
             self._sockets[sock.fileno()] = sock
-            self.io_loop.add_handler(sock.fileno(), self.accept_handler,
-                                     IOLoop.READ)
+            self.io_loop.add_handler(sock.fileno(), self.accept_handler, IOLoop.READ)
 
     def add_socket(self, socket):
         """Singular version of `add_sockets`.  Takes a single socket object."""
@@ -79,8 +79,7 @@ class UDPServer(object):
         This method may be called multiple times prior to `start` to listen
         on multiple ports or interfaces.
         """
-        sockets = self.bind_udp_sockets(port, address=address, family=family,
-                                        backlog=backlog)
+        sockets = self.bind_udp_sockets(port, address=address, family=family, backlog=backlog)
         if self._started:
             self.add_sockets(sockets)
         else:
@@ -141,8 +140,7 @@ class UDPServer(object):
         """
         pass
 
-    def bind_udp_sockets(self, port, address=None, family=socket.AF_UNSPEC,
-                         flags=None):
+    def bind_udp_sockets(self, port, address=None, family=socket.AF_UNSPEC, flags=None):
         """Creates listening sockets bound to the given port and address.
 
         Returns a list of socket objects (multiple sockets are returned if
@@ -175,11 +173,14 @@ class UDPServer(object):
         if flags is None:
             flags = socket.AI_PASSIVE
         bound_port = None
-        for res in set(socket.getaddrinfo(address, port, family, socket.SOCK_DGRAM,
-                                          0, flags)):
+        for res in set(socket.getaddrinfo(address, port, family, socket.SOCK_DGRAM, 0, flags)):
             af, socktype, proto, canonname, sockaddr = res
-            if (platform.system() == 'Darwin' and address == 'localhost' and
-                    af == socket.AF_INET6 and sockaddr[3] != 0):
+            if (
+                platform.system() == "Darwin"
+                and address == "localhost"
+                and af == socket.AF_INET6
+                and sockaddr[3] != 0
+            ):
                 # Mac OS X includes a link-local address fe80::1%lo0 in the
                 # getaddrinfo results for 'localhost'.  However, the firewall
                 # doesn't understand that this is a local address and will
@@ -194,7 +195,7 @@ class UDPServer(object):
                     continue
                 raise
             set_close_exec(sock.fileno())
-            if os.name != 'nt':
+            if os.name != "nt":
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             if af == socket.AF_INET6:
                 # On linux, ipv6 sockets accept ipv4 too by default,

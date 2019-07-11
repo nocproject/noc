@@ -12,10 +12,12 @@ import datetime
 import logging
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from django.db import models
 import cachetools
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -29,38 +31,36 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
-NOTIFICATION_TOPICS = {
-    "mail": "mailsender",
-    "tg": "tgsender"
-}
+NOTIFICATION_TOPICS = {"mail": "mailsender", "tg": "tgsender"}
 
-NOTIFICATION_METHOD_CHOICES = [
-    (x, x) for x in sorted(NOTIFICATION_TOPICS)
-]
+NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_TOPICS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
 
 
-@on_delete_check(check=[
-    ("cm.ObjectNotify", "notification_group"),
-    ("dns.DNSZone", "notification_group"),
-    ("dns.DNSZoneProfile", "notification_group"),
-    ("fm.ActiveAlarm", "clear_notification_group"),
-    ("fm.AlarmTrigger", "notification_group"),
-    ("fm.EventTrigger", "notification_group"),
-    ("inv.InterfaceProfile", "status_change_notification"),
-    ("main.ReportSubscription", "notification_group"),
-    ("main.NotificationGroupOther", "notification_group"),
-    ("main.NotificationGroupUser", "notification_group"),
-    ("main.SystemNotification", "notification_group"),
-    ("sa.ObjectNotification", "notification_group"),
-    ("vc.VCDomainProvisioningConfig", "notification_group"),
-    ("peer.PeeringPoint", "prefix_list_notification_group")
-])
+@on_delete_check(
+    check=[
+        ("cm.ObjectNotify", "notification_group"),
+        ("dns.DNSZone", "notification_group"),
+        ("dns.DNSZoneProfile", "notification_group"),
+        ("fm.ActiveAlarm", "clear_notification_group"),
+        ("fm.AlarmTrigger", "notification_group"),
+        ("fm.EventTrigger", "notification_group"),
+        ("inv.InterfaceProfile", "status_change_notification"),
+        ("main.ReportSubscription", "notification_group"),
+        ("main.NotificationGroupOther", "notification_group"),
+        ("main.NotificationGroupUser", "notification_group"),
+        ("main.SystemNotification", "notification_group"),
+        ("sa.ObjectNotification", "notification_group"),
+        ("vc.VCDomainProvisioningConfig", "notification_group"),
+        ("peer.PeeringPoint", "prefix_list_notification_group"),
+    ]
+)
 @six.python_2_unicode_compatible
 class NotificationGroup(NOCModel):
     """
     Notification Groups
     """
+
     class Meta(object):
         verbose_name = "Notification Group"
         verbose_name_plural = "Notification Groups"
@@ -106,19 +106,16 @@ class NotificationGroup(NOCModel):
             user_contacts = ngu.user.contacts
             if user_contacts:
                 for tp, method, params in user_contacts:
-                    m += [(TimePatternList([ngu.time_pattern, tp]),
-                           method, params, lang)]
+                    m += [(TimePatternList([ngu.time_pattern, tp]), method, params, lang)]
             else:
                 m += [(TimePatternList([]), "mail", ngu.user.email, lang)]
         # Collect other notifications
         for ngo in self.notificationgroupother_set.all():
             if ngo.notification_method == "mail" and "," in ngo.params:
                 for y in ngo.params.split(","):
-                    m += [(ngo.time_pattern, ngo.notification_method,
-                           y.strip(), default_language)]
+                    m += [(ngo.time_pattern, ngo.notification_method, y.strip(), default_language)]
             else:
-                m += [(ngo.time_pattern, ngo.notification_method,
-                       ngo.params, default_language)]
+                m += [(ngo.time_pattern, ngo.notification_method, ngo.params, default_language)]
         return m
 
     @property
@@ -128,9 +125,7 @@ class NotificationGroup(NOCModel):
         """
         now = datetime.datetime.now()
         return set(
-            (method, param, lang)
-            for tp, method, param, lang
-            in self.members if tp.match(now)
+            (method, param, lang) for tp, method, param, lang in self.members if tp.match(now)
         )
 
     @property
@@ -148,22 +143,20 @@ class NotificationGroup(NOCModel):
         return "Cannot translate message"
 
     @classmethod
-    def send_notification(cls, method, address, subject, body,
-                          attachments=None):
+    def send_notification(cls, method, address, subject, body, attachments=None):
         topic = NOTIFICATION_TOPICS.get(method)
         if not topic:
             logging.error("Unknown notification method: %s", method)
             return
-        logging.debug("Sending notification to %s via %s",
-                      address, method)
+        logging.debug("Sending notification to %s via %s", address, method)
         pub(
             topic,
             {
                 "address": address,
                 "subject": subject,
                 "body": body,
-                "attachments": attachments or []
-            }
+                "attachments": attachments or [],
+            },
         )
 
     def notify(self, subject, body, link=None, attachments=None):
@@ -186,12 +179,11 @@ class NotificationGroup(NOCModel):
                 params,
                 self.get_effective_message(subject, lang),
                 self.get_effective_message(body, lang),
-                attachments
+                attachments,
             )
 
     @classmethod
-    def group_notify(cls, groups, subject, body, link=None, delay=None,
-                     tag=None):
+    def group_notify(cls, groups, subject, body, link=None, delay=None, tag=None):
         """
         Send notification to a list of groups
         Prevent duplicated messages
@@ -217,7 +209,7 @@ class NotificationGroup(NOCModel):
                 method,
                 params,
                 cls.get_effective_message(subject, lang[(method, params)]),
-                cls.get_effective_message(body, lang[(method, params)])
+                cls.get_effective_message(body, lang[(method, params)]),
             )
 
 
@@ -231,15 +223,19 @@ class NotificationGroupUser(NOCModel):
         unique_together = [("notification_group", "time_pattern", "user")]
 
     notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE
+    )
     time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)
+        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE
+    )
     user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
 
     def __str__(self):
-        return u"%s: %s: %s" % (
+        return "%s: %s: %s" % (
             self.notification_group.name,
-            self.time_pattern.name, self.user.username)
+            self.time_pattern.name,
+            self.user.username,
+        )
 
 
 @six.python_2_unicode_compatible
@@ -249,20 +245,23 @@ class NotificationGroupOther(NOCModel):
         verbose_name_plural = "Notification Group Others"
         app_label = "main"
         db_table = "main_notificationgroupother"
-        unique_together = [("notification_group", "time_pattern",
-                            "notification_method", "params")]
+        unique_together = [("notification_group", "time_pattern", "notification_method", "params")]
 
     notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE
+    )
     time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)
+        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE
+    )
     notification_method = models.CharField(
-        "Method", max_length=16, choices=NOTIFICATION_METHOD_CHOICES)
+        "Method", max_length=16, choices=NOTIFICATION_METHOD_CHOICES
+    )
     params = models.CharField("Params", max_length=256)
 
     def __str__(self):
-        return u"%s: %s: %s: %s" % (
+        return "%s: %s: %s: %s" % (
             self.notification_group.name,
-            self.time_pattern.name, self.notification_method,
-            self.params
+            self.time_pattern.name,
+            self.notification_method,
+            self.params,
         )

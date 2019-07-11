@@ -15,6 +15,7 @@ from noc.core.service.loader import get_service
 class Command(BaseCommand):
     def handle(self, *args, **options):
         from noc.lib.app.site import site
+
         site.service = get_service()
         try:
             Permission.sync()

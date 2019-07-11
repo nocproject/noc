@@ -10,10 +10,12 @@
 from __future__ import absolute_import
 import datetime
 import operator
+
 # Third-party modules
 import six
 from django.db.models import Q
 from mongoengine.errors import DoesNotExist
+
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
@@ -46,14 +48,15 @@ class ManagedObjectCard(BaseCard):
         if self.current_user.is_superuser:
             return ManagedObject.objects.get(id=id)
         else:
-            return ManagedObject.objects.get(id=id, administrative_domain__in=self.get_user_domains())
+            return ManagedObject.objects.get(
+                id=id, administrative_domain__in=self.get_user_domains()
+            )
 
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
 
     # get data function
     def get_data(self):
-
         def get_container_path(self):
             # Get container path
             if not self.object:
@@ -66,10 +69,7 @@ class ManagedObjectCard(BaseCard):
                         o = Object.objects.get(id=c)
                         # @todo: Address data
                         if o.container:
-                            cp.insert(0, {
-                                "id": o.id,
-                                "name": o.name
-                            })
+                            cp.insert(0, {"id": o.id, "name": o.name})
                         c = o.container.id if o.container else None
                     except DoesNotExist:
                         metrics["error", ("type", "no_such_object")] += 1
@@ -145,30 +145,35 @@ class ManagedObjectCard(BaseCard):
                     role = "uplink"
                 else:
                     role = "downlink"
-                links += [{
-                    "id": l.id,
-                    "role": role,
-                    "local_interface": sorted(
-                        local_interfaces,
-                        key=lambda x: split_alnum(x.name)
-                    ),
-                    "remote_object": ro,
-                    "remote_interface": sorted(
-                        remote_interfaces,
-                        key=lambda x: split_alnum(x.name)
-                    ),
-                    "remote_status": "up" if ro.get_status() else "down"
-                }]
-            links = sorted(links, key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0].name)))
+                links += [
+                    {
+                        "id": l.id,
+                        "role": role,
+                        "local_interface": sorted(
+                            local_interfaces, key=lambda x: split_alnum(x.name)
+                        ),
+                        "remote_object": ro,
+                        "remote_interface": sorted(
+                            remote_interfaces, key=lambda x: split_alnum(x.name)
+                        ),
+                        "remote_status": "up" if ro.get_status() else "down",
+                    }
+                ]
+            links = sorted(
+                links,
+                key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0].name)),
+            )
         # Build global services summary
         service_summary = ServiceSummary.get_object_summary(self.object)
 
         # Interfaces
         interfaces = []
-        metrics_map = ['Interface | Load | In',
-                       'Interface | Load | Out',
-                       'Interface | Errors | In',
-                       'Interface | Errors | Out']
+        metrics_map = [
+            "Interface | Load | In",
+            "Interface | Load | Out",
+            "Interface | Errors | In",
+            "Interface | Errors | Out",
+        ]
 
         mo = ManagedObject.objects.filter(id=self.object.id)
 
@@ -185,10 +190,7 @@ class ManagedObjectCard(BaseCard):
             for path, mres in six.iteritems(objects_metrics):
                 for key in mres:
                     metric_name = "%s | %s" % (key, path) if any(path.split("|")) else key
-                    meta[metric_name] = {
-                        "type": metric_type_name[key],
-                        "value": mres[key]
-                    }
+                    meta[metric_name] = {"type": metric_type_name[key], "value": mres[key]}
 
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
             load_in = "-"
@@ -202,33 +204,42 @@ class ManagedObjectCard(BaseCard):
                         continue
                     metric_type = metric_type_name.get(key) or metric_type_field.get(key)
                     if key == "Interface | Load | In":
-                        load_in = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
+                        load_in = (
+                            "%s%s" % (self.humanize_speed(value, metric_type), metric_type)
+                            if value
+                            else "-"
+                        )
                     if key == "Interface | Load | Out":
-                        load_out = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
+                        load_out = (
+                            "%s%s" % (self.humanize_speed(value, metric_type), metric_type)
+                            if value
+                            else "-"
+                        )
                     if key == "Interface | Errors | In":
                         errors_in = value if value else "-"
                     if key == "Interface | Errors | Out":
                         errors_out = value if value else "-"
-            interfaces += [{
-                "id": i.id,
-                "name": i.name,
-                "admin_status": i.admin_status,
-                "oper_status": i.oper_status,
-                "mac": i.mac or "",
-                "full_duplex": i.full_duplex,
-                "load_in": load_in,
-                "load_out": load_out,
-                "errors_in": errors_in,
-                "errors_out": errors_out,
-                "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
-                "untagged_vlan": None,
-                "tagged_vlan": None,
-                "profile": i.profile,
-                "service": i.service,
-                "service_summary":
-                    service_summary.get("interface").get(i.id, {}),
-                "description": i.description
-            }]
+            interfaces += [
+                {
+                    "id": i.id,
+                    "name": i.name,
+                    "admin_status": i.admin_status,
+                    "oper_status": i.oper_status,
+                    "mac": i.mac or "",
+                    "full_duplex": i.full_duplex,
+                    "load_in": load_in,
+                    "load_out": load_out,
+                    "errors_in": errors_in,
+                    "errors_out": errors_out,
+                    "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
+                    "untagged_vlan": None,
+                    "tagged_vlan": None,
+                    "profile": i.profile,
+                    "service": i.service,
+                    "service_summary": service_summary.get("interface").get(i.id, {}),
+                    "description": i.description,
+                }
+            ]
 
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
@@ -242,39 +253,46 @@ class ManagedObjectCard(BaseCard):
         service_groups = []
         for rg_id in self.object.effective_service_groups:
             rg = ResourceGroup.get_by_id(rg_id)
-            service_groups += [{
-                "id": rg_id,
-                "name": rg.name,
-                "technology": rg.technology,
-                "is_static": rg_id in static_services
-            }]
+            service_groups += [
+                {
+                    "id": rg_id,
+                    "name": rg.name,
+                    "technology": rg.technology,
+                    "is_static": rg_id in static_services,
+                }
+            ]
         # Client groups (i.e. client)
         static_clients = set(self.object.static_client_groups)
         client_groups = []
         for rg_id in self.object.effective_client_groups:
             rg = ResourceGroup.get_by_id(rg_id)
-            client_groups += [{
-                "id": rg_id,
-                "name": rg.name,
-                "technology": rg.technology,
-                "is_static": rg_id in static_clients
-            }]
+            client_groups += [
+                {
+                    "id": rg_id,
+                    "name": rg.name,
+                    "technology": rg.technology,
+                    "is_static": rg_id in static_clients,
+                }
+            ]
         # @todo: Administrative domain path
         # Alarms
         alarm_list = []
         for a in alarms:
-            alarm_list += [{
-                "id": a.id,
-                "root_id": self.get_root(alarms),
-                "timestamp": a.timestamp,
-                "duration": now - a.timestamp,
-                "subject": a.subject,
-                "managed_object": a.managed_object,
-                "service_summary": {
-                    "service": SummaryItem.items_to_dict(a.total_services),
-                    "subscriber": SummaryItem.items_to_dict(a.total_subscribers)},
-                "alarm_class": a.alarm_class
-            }]
+            alarm_list += [
+                {
+                    "id": a.id,
+                    "root_id": self.get_root(alarms),
+                    "timestamp": a.timestamp,
+                    "duration": now - a.timestamp,
+                    "subject": a.subject,
+                    "managed_object": a.managed_object,
+                    "service_summary": {
+                        "service": SummaryItem.items_to_dict(a.total_services),
+                        "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
+                    },
+                    "alarm_class": a.alarm_class,
+                }
+            ]
         alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
 
         # Maintenance
@@ -282,16 +300,18 @@ class ManagedObjectCard(BaseCard):
         for m in Maintenance.objects.filter(
             affected_objects__object=self.object.id,
             is_completed=False,
-            start__lte=now + datetime.timedelta(hours=1)
+            start__lte=now + datetime.timedelta(hours=1),
         ):
-            maintenance += [{
-                "maintenance": m,
-                "id": m.id,
-                "subject": m.subject,
-                "start": m.start,
-                "stop": m.stop,
-                "in_progress": m.start <= now
-            }]
+            maintenance += [
+                {
+                    "maintenance": m,
+                    "id": m.id,
+                    "subject": m.subject,
+                    "start": m.start,
+                    "stop": m.stop,
+                    "in_progress": m.start <= now,
+                }
+            ]
         # Get Inventory
         inv = []
         for p in self.object.get_inventory():
@@ -323,11 +343,8 @@ class ManagedObjectCard(BaseCard):
             "object_profile_name": self.object.object_profile.name,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
-            "firmware_status": FirmwarePolicy.get_status(
-                self.object.platform,
-                self.object.version),
-            "firmware_recommended":
-                FirmwarePolicy.get_recommended_version(self.object.platform),
+            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version),
+            "firmware_recommended": FirmwarePolicy.get_recommended_version(self.object.platform),
             "service_summary": service_summary,
             "container_path": cp,
             "current_state": current_state,
@@ -346,7 +363,9 @@ class ManagedObjectCard(BaseCard):
             "redundancy": redundancy,
             "inventory": self.flatten_inventory(inv),
             "serial_number": self.object.get_attr("Serial Number"),
-            "attributes": list(ManagedObjectAttribute.objects.filter(managed_object=self.object.id))
+            "attributes": list(
+                ManagedObjectAttribute.objects.filter(managed_object=self.object.id)
+            ),
         }
         return r
 
@@ -372,11 +391,13 @@ class ManagedObjectCard(BaseCard):
             q &= UserAccess.Q(handler.current_user)
         r = []
         for mo in ManagedObject.objects.filter(q):
-            r += [{
-                "scope": "managedobject",
-                "id": mo.id,
-                "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform)
-            }]
+            r += [
+                {
+                    "scope": "managedobject",
+                    "id": mo.id,
+                    "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform),
+                }
+            ]
         return r
 
     def get_nested_inventory(self, o):
@@ -389,31 +410,35 @@ class ManagedObjectCard(BaseCard):
             "revision": rev or "",
             "description": o.model.description,
             "model": o.model.name,
-            "children": []
+            "children": [],
         }
         for n in o.model.connections:
             if n.direction == "i":
                 c, r_object, _ = o.get_p2p_connection(n.name)
                 if c is None:
-                    r["children"] += [{
-                        "id": "",
-                        "name": n.name,
-                        "serial": "",
-                        "description": "--- EMPTY ---",
-                        "model": ""
-                    }]
+                    r["children"] += [
+                        {
+                            "id": "",
+                            "name": n.name,
+                            "serial": "",
+                            "description": "--- EMPTY ---",
+                            "model": "",
+                        }
+                    ]
                 else:
                     cc = self.get_nested_inventory(r_object)
                     cc["name"] = n.name
                     r["children"] += [cc]
             elif n.direction == "s":
-                r["children"] += [{
-                    "id": "",
-                    "name": n.name,
-                    "serial": "",
-                    "description": n.description,
-                    "model": ", ".join(n.protocols)
-                }]
+                r["children"] += [
+                    {
+                        "id": "",
+                        "name": n.name,
+                        "serial": "",
+                        "description": n.description,
+                        "model": ", ".join(n.protocols),
+                    }
+                ]
         return r
 
     def flatten_inventory(self, inv, level=0):
@@ -432,7 +457,6 @@ class ManagedObjectCard(BaseCard):
 
     @staticmethod
     def humanize_speed(speed, type_speed):
-
         def func_to_bytes(speed):
             try:
                 speed = float(speed)

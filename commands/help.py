@@ -11,6 +11,7 @@ from __future__ import print_function
 import os
 import subprocess
 import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
@@ -19,11 +20,7 @@ from noc.config import config
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument(
-            "command",
-            nargs=argparse.REMAINDER,
-            help="Show command's help"
-        )
+        parser.add_argument("command", nargs=argparse.REMAINDER, help="Show command's help")
 
     def handle(self, command=None, *args, **options):
         if command:

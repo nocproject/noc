@@ -9,10 +9,12 @@
 # Python modules
 import re
 import bz2
+
 # Third-party modules
 import pytest
 from fs import open_fs
 import ujson
+
 # NOC modules
 from noc.config import config
 from noc.core.script.loader import loader
@@ -68,7 +70,7 @@ def test_beef(beef_test):
         capabilities=test["capabilities"],
         version=test["version"],
         timeout=3600,
-        name=script
+        name=script,
     )
     result = scr.run()
     assert result == test["result"]

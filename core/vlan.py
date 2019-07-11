@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.lib.validators import is_vlan
 
@@ -58,6 +60,7 @@ def optimize_filter(vlan_filter, sep=","):
     :param vlan_filter:
     :return:
     """
+
     def get_part(v):
         v = v.strip()
         if "-" in v:
@@ -85,8 +88,4 @@ def optimize_filter(vlan_filter, sep=","):
     vlan_filter = vlan_filter.replace(" ", "")
     if not vlan_filter:
         return ""
-    return sep.join(
-        fmt(p) for p in iter_merge(
-            sorted(get_part(x) for x in vlan_filter.split(","))
-        )
-    )
+    return sep.join(fmt(p) for p in iter_merge(sorted(get_part(x) for x in vlan_filter.split(","))))

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseLoader
 from noc.fm.models.ttsystem import TTSystem
@@ -16,10 +17,4 @@ from noc.fm.models.ttsystem import TTSystem
 class TTMapLoader(BaseLoader):
     name = "ttsystem"
     model = TTSystem
-    fields = [
-        "id",
-        "name",
-        "handler",
-        "connection",
-        "description"
-    ]
+    fields = ["id", "name", "handler", "connection", "description"]

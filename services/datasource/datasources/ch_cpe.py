@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
 from noc.sa.models.cpestatus import CPEStatus
@@ -36,5 +37,5 @@ class CHInterfaceAttributesDataSource(BaseDataSource):
                 cpe.mac,
                 cpe.description,
                 cpe.location,
-                cpe.distance
+                cpe.distance,
             )

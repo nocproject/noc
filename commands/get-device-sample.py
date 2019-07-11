@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.platform import Platform
@@ -18,33 +19,20 @@ from noc.sa.models.managedobject import ManagedObject
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "-s",
-            "--sample",
-            type=int,
-            default=5,
-            help="Amount of samples for each platform"
+            "-s", "--sample", type=int, default=5, help="Amount of samples for each platform"
         )
-        parser.add_argument(
-            "--platform",
-            help="Fetch particular platform"
-        )
-        parser.add_argument(
-            "--profile",
-            help="Fetch particular profile"
-        )
+        parser.add_argument("--platform", help="Fetch particular platform")
+        parser.add_argument("--profile", help="Fetch particular profile")
 
         parser.add_argument(
             "--show",
             default="name",
-            help="List of fields to show (name, platform, profile, address, version)"
+            help="List of fields to show (name, platform, profile, address, version)",
         )
 
-    def handle(self, sample=5, platform=None, profile=None, show=None,
-               *args, **options):
+    def handle(self, sample=5, platform=None, profile=None, show=None, *args, **options):
         fields = show.split(",")
-        mqs = {
-            "is_managed": True
-        }
+        mqs = {"is_managed": True}
         pqs = {}
         if platform:
             p = Platform.objects.filter(name=platform).first()

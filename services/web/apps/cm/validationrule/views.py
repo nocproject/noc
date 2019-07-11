@@ -18,6 +18,7 @@ class ValidationRuleApplication(ExtDocApplication):
     """
     ValidationRule application
     """
+
     title = _("Validation Rule")
     menu = [_("Setup"), _("Validation Rules")]
     model = ValidationRule
@@ -55,36 +56,25 @@ class ValidationRuleApplication(ExtDocApplication):
     @view(url="^(?P<id>[0-9a-f]{24})/hits/$", access="read", api=True)
     def api_hits(self, request, id):
         rule = self.get_object_or_404(ValidationRule, id=id)
-        ar = ObjectFact._get_collection().aggregate([
-            {
-                "$match": {
-                    "attrs.rule": str(rule.id)
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$object",
-                    "hits": {
-                        "$sum": 1
-                    }
-                }
-            },
-            {
-                "$sort": {
-                    "hits": -1
-                }
-            }
-        ])
+        ar = ObjectFact._get_collection().aggregate(
+            [
+                {"$match": {"attrs.rule": str(rule.id)}},
+                {"$group": {"_id": "$object", "hits": {"$sum": 1}}},
+                {"$sort": {"hits": -1}},
+            ]
+        )
         r = []
         for x in ar:
             mo = ManagedObject.get_by_id(x["_id"])
             if not mo:
                 continue
-            r += [{
-                "managed_object_id": mo.id,
-                "managed_object": mo.name,
-                "address": mo.address,
-                "platform": mo.platform.name if mo.platform else "",
-                "hits": x["hits"]
-            }]
+            r += [
+                {
+                    "managed_object_id": mo.id,
+                    "managed_object": mo.name,
+                    "address": mo.address,
+                    "platform": mo.platform.name if mo.platform else "",
+                    "hits": x["hits"],
+                }
+            ]
         return r

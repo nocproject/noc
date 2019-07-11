@@ -15,6 +15,7 @@ class CDPCheck(TopologyDiscoveryCheck):
     """
     CDP Topology discovery
     """
+
     name = "cdp"
     required_script = "get_cdp_neighbors"
     required_capabilities = ["Network | CDP"]
@@ -27,11 +28,7 @@ class CDPCheck(TopologyDiscoveryCheck):
             device_id = n["device_id"]
             if device_id in self.RESERVED_NAMES and n.get("remote_ip"):
                 device_id = n["remote_ip"]
-            yield (
-                n["local_interface"],
-                device_id,
-                n["remote_interface"]
-            )
+            yield (n["local_interface"], device_id, n["remote_interface"])
 
     def get_neighbor(self, n):
         nn = self.get_neighbor_by_hostname(n)

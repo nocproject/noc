@@ -20,6 +20,7 @@ import cachetools
 # NOC modules
 from noc.config import config
 from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_init
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
@@ -28,6 +29,7 @@ from .dnsserver import DNSServer
 id_lock = Lock()
 
 
+@on_init
 @datastream
 @on_delete_check(check=[("dns.DNSZone", "profile")])
 @six.python_2_unicode_compatible
@@ -101,11 +103,11 @@ class DNSZoneProfile(NOCModel):
         else:
             return None
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:
             return
         for z in self.dnszone_set.all():
-            for ds, id in z.iter_changed_datastream():
+            for ds, id in z.iter_changed_datastream(changed_fields=changed_fields):
                 yield ds, id
 
     @property

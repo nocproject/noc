@@ -21,7 +21,7 @@ from mongoengine.errors import ValidationError
 import cachetools
 
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain

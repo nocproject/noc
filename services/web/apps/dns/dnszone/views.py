@@ -19,6 +19,7 @@ class DNSZoneApplication(ExtModelApplication):
     """
     DNSZone application
     """
+
     title = _("DNS Zone")
     menu = _("Zones")
     model = DNSZone

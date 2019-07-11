@@ -9,10 +9,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-Party modules
 import demjson
 from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
+
 # NOC modules
 from .base import BaseDashboard
 from noc.config import config
@@ -22,7 +24,7 @@ from noc.lib.text import split_alnum
 from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobject import ManagedObject
 
-TITLE_BAD_CHARS = u'"\\\n\r'
+TITLE_BAD_CHARS = '"\\\n\r'
 
 
 class MODashboard(BaseDashboard):
@@ -51,9 +53,7 @@ class MODashboard(BaseDashboard):
         subif = []
 
         # Get all interface profiles with configurable metrics
-        all_ifaces = list(Interface.objects.filter(
-            managed_object=self.object.id
-        ))
+        all_ifaces = list(Interface.objects.filter(managed_object=self.object.id))
         iprof = set(i.profile for i in all_ifaces)
         # @todo: Order by priority
         profiles = [p for p in iprof if interface_profile_has_metrics(p)]
@@ -62,44 +62,62 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
-                if iface.type == 'SVI' and not iface.profile.allow_subinterface_metrics:
+                if iface.type == "SVI" and not iface.profile.allow_subinterface_metrics:
                     continue
-                if iface.type == u"aggregated" and iface.lag_members:
-                    lags += [{
+                if iface.type == "aggregated" and iface.lag_members:
+                    lags += [
+                        {
+                            "name": iface.name,
+                            "ports": [i.name for i in iface.lag_members],
+                            "descr": self.str_cleanup(
+                                iface.description, remove_letters=TITLE_BAD_CHARS
+                            )
+                            or "No description",
+                            "status": [
+                                "status : ".join([i.name, i.status]) for i in iface.lag_members
+                            ],
+                        }
+                    ]
+                    continue
+                ports += [
+                    {
                         "name": iface.name,
-                        "ports": [i.name for i in iface.lag_members],
-                        "descr": self.str_cleanup(iface.description,
-                                                  remove_letters=TITLE_BAD_CHARS) or "No description",
-                        "status": ["status : ".join([i.name, i.status]) for i in iface.lag_members]
-                    }]
-                    continue
-                ports += [{"name": iface.name,
-                           "descr": self.str_cleanup(iface.description, remove_letters=TITLE_BAD_CHARS),
-                           "status": iface.status}]
+                        "descr": self.str_cleanup(
+                            iface.description, remove_letters=TITLE_BAD_CHARS
+                        ),
+                        "status": iface.status,
+                    }
+                ]
                 if iface.profile.allow_subinterface_metrics:
-                    subif += [{
-                        "name": si.name,
-                        "descr": self.str_cleanup(si.description, remove_letters=TITLE_BAD_CHARS)
-                    } for si in SubInterface.objects.filter(interface=iface)]
+                    subif += [
+                        {
+                            "name": si.name,
+                            "descr": self.str_cleanup(
+                                si.description, remove_letters=TITLE_BAD_CHARS
+                            ),
+                        }
+                        for si in SubInterface.objects.filter(interface=iface)
+                    ]
             if not ports:
                 continue
-            port_types += [{"type": profile.id, "name": profile.name,
-                            "ports": ports}]
+            port_types += [{"type": profile.id, "name": profile.name, "ports": ports}]
 
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
         om = []
-        for m in (self.object.object_profile.metrics or []):
+        for m in self.object.object_profile.metrics or []:
             mt = MetricType.get_by_id(m["metric_type"])
             if not mt or not (m.get("enable_periodic", False) or m.get("enable_box", False)):
                 continue
             om += [mt.name]
         object_metrics.extend(sorted(om))
 
-        return {"port_types": port_types,
-                "object_metrics": object_metrics,
-                "lags": lags,
-                "subifaces": subif}
+        return {
+            "port_types": port_types,
+            "object_metrics": object_metrics,
+            "lags": lags,
+            "subifaces": subif,
+        }
 
     def render(self):
 
@@ -107,7 +125,7 @@ class MODashboard(BaseDashboard):
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],
             "lags": self.object_data["lags"],
-            "device": self.object.name.replace('\"', ''),
+            "device": self.object.name.replace('"', ""),
             "ip": self.object.address,
             "platform": self.object.platform.name if self.object.platform else "Unknown platform",
             "device_id": self.object.id,
@@ -119,7 +137,7 @@ class MODashboard(BaseDashboard):
             "pool": self.object.pool.name,
             "extra_template": self.extra_template,
             "ping_interval": self.object.object_profile.ping_interval,
-            "discovery_interval": self.object.object_profile.periodic_discovery_interval
+            "discovery_interval": self.object.object_profile.periodic_discovery_interval,
         }
         self.logger.info("Context with data: %s" % context)
         j2_env = Environment(loader=FileSystemLoader(config.path.pm_templates))

@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Suggest SNMP check check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.service.client import open_sync_rpc
+from noc.core.service.error import RPCError
 from noc.core.script.scheme import SSH
 from noc.lib.text import safe_shadow
 
@@ -17,6 +18,7 @@ class SuggestCLICheck(DiscoveryCheck):
     """
     Version discovery
     """
+
     name = "suggest_cli"
     required_script = "login"
 
@@ -39,24 +41,27 @@ class SuggestCLICheck(DiscoveryCheck):
                     password=password,
                     super_password=super_password,
                     snmp_ro=ro,
-                    snmp_rw=rw
+                    snmp_rw=rw,
                 )
                 return
         self.logger.info("Failed to guess CLI credentials")
         self.set_problem(
             alarm_class="Discovery | Guess | CLI Credentials",
             message="Failed to guess CLI credentials (%s)" % message,
-            fatal=True
+            fatal=True,
         )
 
     def check_login(self, user, password, super_password):
         self.logger.debug("Checking %s/%s/%s", user, password, super_password)
-        self.logger.info("Checking %s/%s/%s", safe_shadow(user), safe_shadow(password), safe_shadow(super_password))
+        self.logger.info(
+            "Checking %s/%s/%s",
+            safe_shadow(user),
+            safe_shadow(password),
+            safe_shadow(super_password),
+        )
         try:
             r = open_sync_rpc(
-                "activator",
-                pool=self.object.pool.name,
-                calling_service="discovery"
+                "activator", pool=self.object.pool.name, calling_service="discovery"
             ).script(
                 "%s.login" % self.object.profile.name,
                 {
@@ -65,8 +70,8 @@ class SuggestCLICheck(DiscoveryCheck):
                     "user": user,
                     "password": password,
                     "super_password": super_password,
-                    "path": None
-                }
+                    "path": None,
+                },
             )
             self.logger.info("Result: %s, %s", r, r["message"])
             return bool(r["result"]), r["message"]  # bool(False) == bool(None)
@@ -74,8 +79,7 @@ class SuggestCLICheck(DiscoveryCheck):
             self.logger.debug("RPC Error: %s", e)
             return False, ""
 
-    def set_credentials(self, user, password, super_password,
-                        snmp_ro, snmp_rw):
+    def set_credentials(self, user, password, super_password, snmp_ro, snmp_rw):
         self.logger.info("Setting credentials")
         self.object.user = user
         self.object.password = password

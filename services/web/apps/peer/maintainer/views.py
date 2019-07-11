@@ -17,6 +17,7 @@ class MaintainerApplication(ExtModelApplication):
     """
     Maintainers application
     """
+
     title = _("Maintainers")
     menu = [_("Setup"), _("Maintainers")]
     model = Maintainer

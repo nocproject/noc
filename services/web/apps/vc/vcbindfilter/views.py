@@ -16,6 +16,7 @@ class VCBindFilterApplication(ExtModelApplication):
     """
     VCBindFilter application
     """
+
     title = _("VC Bind Filters")
     menu = [_("Setup"), _("VC Bind Filters")]
     model = VCBindFilter

@@ -9,10 +9,12 @@
 # Python modules
 import datetime
 import time
-# Django modules
+
+# Third-party modules
 from django import forms
 from django.forms import widgets
 from django.contrib.admin.widgets import AdminDateWidget
+
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.core.clickhouse.connect import connection
@@ -26,54 +28,28 @@ class ReportForm(forms.Form):
     repo_format = forms.ChoiceField(
         label="Формат отчёта",
         widget=widgets.RadioSelect,
-        choices=((0, "Статистика"),
-                 (1, "Детализация ошибок эскалации")),
+        choices=((0, "Статистика"), (1, "Детализация ошибок эскалации")),
         initial=0,
-        required=False
+        required=False,
     )
-    interval = forms.ChoiceField(choices=[
-        (0, _("Range")),
-        (1, _("1 day")),
-        (7, _("1 week")),
-        (30, _("1 month"))
-    ], label=_("Interval"))
-    from_date = forms.CharField(
-        widget=AdminDateWidget,
-        label=_("From Date"),
-        required=False
+    interval = forms.ChoiceField(
+        choices=[(0, _("Range")), (1, _("1 day")), (7, _("1 week")), (30, _("1 month"))],
+        label=_("Interval"),
     )
-    to_date = forms.CharField(
-        widget=AdminDateWidget,
-        label=_("To Date"),
-        required=False
-    )
+    from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=False)
+    to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
 
 
 class ReportTTSystemStatApplication(SimpleReport):
     title = _("TT system statistics")
     form = ReportForm
     predefined_reports = {
-        "1d": PredefinedReport(
-            _("TTSystem Stat (1 day)"), {
-                "interval": 1
-            }
-        ),
-        "7d": PredefinedReport(
-            _("TTSystem Stat (7 days)"), {
-                "interval": 7
-            }
-        ),
-        "30d": PredefinedReport(
-            _("TTSystem Stat (30 day)"), {
-                "interval": 30
-            }
-        ),
+        "1d": PredefinedReport(_("TTSystem Stat (1 day)"), {"interval": 1}),
+        "7d": PredefinedReport(_("TTSystem Stat (7 days)"), {"interval": 7}),
+        "30d": PredefinedReport(_("TTSystem Stat (30 day)"), {"interval": 30}),
         "1d_errors": PredefinedReport(
-            _("TTSystem Errors (1 day)"), {
-                "interval": 1,
-                "repo_format": "1"
-            }
-        )
+            _("TTSystem Errors (1 day)"), {"interval": 1, "repo_format": "1"}
+        ),
     }
 
     def get_data(self, request, interval=1, repo_format=0, from_date=None, to_date=None, **kwargs):
@@ -93,12 +69,29 @@ class ReportTTSystemStatApplication(SimpleReport):
             to_date = from_date + datetime.timedelta(days=int(interval))
         else:
             to_date = from_date + datetime.timedelta(days=1)
-        columns = [_("Server"), _("Service"), _("Request count"), _("Success request count"),
-                   _("Failed request count"), _("Success request (%)"),
-                   _("Q1 (ms)"), _("Q2 (ms)"), _("Q3 (ms)"), _("p95 (ms)"), _("max (ms)")]
+        columns = [
+            _("Server"),
+            _("Service"),
+            _("Request count"),
+            _("Success request count"),
+            _("Failed request count"),
+            _("Success request (%)"),
+            _("Q1 (ms)"),
+            _("Q2 (ms)"),
+            _("Q3 (ms)"),
+            _("p95 (ms)"),
+            _("max (ms)"),
+        ]
         if repo_format == "1":
-            columns = [_("Timestamp"), _("Server"), _("Service"), _("Managed object"),
-                       _("TT ID"), _("Error code"), _("Error text")]
+            columns = [
+                _("Timestamp"),
+                _("Server"),
+                _("Service"),
+                _("Managed object"),
+                _("TT ID"),
+                _("Error code"),
+                _("Error text"),
+            ]
         ts_from_date = time.mktime(from_date.timetuple())
         ts_to_date = time.mktime(to_date.timetuple())
 
@@ -121,29 +114,37 @@ class ReportTTSystemStatApplication(SimpleReport):
 
         q_where = ["server IN ('%s')" % "', '".join(tt_systems)]
         # q_where = ["managed_object IN (%s)" % ", ".join(mo_bi_dict.keys())]
-        q_where += ["(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" % (ts_from_date,
-                                                                                                  ts_from_date,
-                                                                                                  ts_to_date)]
+        q_where += [
+            "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))"
+            % (ts_from_date, ts_from_date, ts_to_date)
+        ]
         r = []
         ch = connection()
         if repo_format == "1":
-            aa = {aa.escalation_tt.split(":")[-1]: aa for aa in ArchivedAlarm.objects.filter(
-                clear_timestamp__gte=from_date, clear_timestamp__lte=to_date,
-                escalation_tt__exists=True)}
+            aa = {
+                aa.escalation_tt.split(":")[-1]: aa
+                for aa in ArchivedAlarm.objects.filter(
+                    clear_timestamp__gte=from_date,
+                    clear_timestamp__lte=to_date,
+                    escalation_tt__exists=True,
+                )
+            }
             query = q3 % " and ".join(q_where)
             for row in ch.execute(query):
                 if row[2] in ["create_massive_damage_outer"]:
-                    row[2] = u"Создание ТТ"
+                    row[2] = "Создание ТТ"
                     try:
                         row[3] = ManagedObject.objects.get(tt_system_id=int(row[3]))
                         row[4] = ""
                     except ManagedObject.DoesNotExist:
                         pass
                     except ManagedObject.MultipleObjectsReturned:
-                        row[3] = ManagedObject.objects.get(tt_system_id=int(row[3]), is_managed=True)
+                        row[3] = ManagedObject.objects.get(
+                            tt_system_id=int(row[3]), is_managed=True
+                        )
                         row[4] = ""
                 elif row[2] in ["change_massive_damage_outer_close"]:
-                    row[2] = u"Закрытие ТТ"
+                    row[2] = "Закрытие ТТ"
                     row[4] = row[3]
                     row[3] = aa[row[3]].managed_object if row[3] in aa else row[3]
                 else:
@@ -162,17 +163,16 @@ class ReportTTSystemStatApplication(SimpleReport):
                 else:
                     tt_s[(row[0], row[1])][2] += int(row[3])
 
-            r += [SectionRow(name="Report from %s to %s" % (from_date.strftime("%d.%m.%Y %H:%M"),
-                                                            to_date.strftime("%d.%m.%Y %H:%M")))]
+            r += [
+                SectionRow(
+                    name="Report from %s to %s"
+                    % (from_date.strftime("%d.%m.%Y %H:%M"), to_date.strftime("%d.%m.%Y %H:%M"))
+                )
+            ]
             for line in sorted(tt_s, key=lambda x: x[0]):
                 data = list(line)
                 data += tt_s[line]
                 data[5] = round((float(data[3]) / float(data[2])) * 100.0, 2)
                 r += [data]
 
-        return self.from_dataset(
-            title=self.title,
-            columns=columns,
-            data=r,
-            enumerate=True
-        )
+        return self.from_dataset(title=self.title, columns=columns, data=r, enumerate=True)
