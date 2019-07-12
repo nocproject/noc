@@ -79,9 +79,10 @@ class Script(BaseScript):
             interfaces[ifname] = {
                 "type": self.profile.get_interface_type(ifname),
                 "name": ifname,
-                "mac": value["mac"],
                 "subinterfaces": [],
             }
+            if value["mac"]:
+                interfaces[ifname]["mac"] = value["mac"]
             if "eth" in ifname:
                 interfaces[ifname]["subinterfaces"] += [
                     {"name": ifname, "mac": value["mac"], "enabled_afi": ["BRIDGE"]}
