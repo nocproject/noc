@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -19,17 +20,15 @@ class Script(BaseScript):
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
-        r"(packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss$",
-        re.MULTILINE)
+        r"(packets received|received),(?:\s|\s\S+ (errors|duplicates), )\d+% packet loss$",
+        re.MULTILINE,
+    )
     rx_stat = re.compile(
-        r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)\s.",
-        re.MULTILINE)
-    rx_count = re.compile(
-        r"^\d+ bytes from \d\S+\d+: seq=(\d+) ttl=\d+ time=\S+ ms",
-        re.MULTILINE)
+        r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)\s.", re.MULTILINE
+    )
+    rx_count = re.compile(r"^\d+ bytes from \d\S+\d+: seq=(\d+) ttl=\d+ time=\S+ ms", re.MULTILINE)
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         if count is None:
             count = 5
         cmd = "ping %s -c %d" % (address, int(count))
@@ -37,15 +36,20 @@ class Script(BaseScript):
             cmd += " -s %d" % int(size)
         if source_address:
             cmd += " -I %s" % source_address
-        ping = self.cli(cmd)
-        result = self.rx_result.search(ping)
+        result = None
+        try:
+            ping = self.cli(cmd, ignore_errors=True)
+            result = self.rx_result.search(ping)
+        except self.CLISyntaxError:
+            pass
+
         """
         Workaround for this incident
 
-        PING 10.218.217.227 (10.218.217.227): 56 data bytes
-        64 bytes from 10.218.217.227: seq=0 ttl=61 time=15.436 ms
-        64 bytes from 10.218.217.227: seq=1 ttl=61 time=15.265 ms
-        64 bytes from 10.218.217.227: seq=2 ttl=61 time=15.365 ms
+        PING X.X.X.X (X.X.X.X): 56 data bytes
+        64 bytes from X.X.X.X: seq=0 ttl=61 time=15.436 ms
+        64 bytes from X.X.X.X: seq=1 ttl=61 time=15.265 ms
+        64 bytes from X.X.X.X: seq=2 ttl=61 time=15.365 ms
         ping: sendto: Network is unreachable
         Invalid command.
 
@@ -54,15 +58,8 @@ class Script(BaseScript):
             result = self.rx_count.findall(ping)
             return {"success": len(result), "count": count}
 
-        r = {
-            "success": result.group("success"),
-            "count": result.group("count"),
-        }
+        r = {"success": result.group("success"), "count": result.group("count")}
         stat = self.rx_stat.search(ping)
         if stat:
-            r.update({
-                "min": stat.group("min"),
-                "avg": stat.group("avg"),
-                "max": stat.group("max"),
-            })
+            r.update({"min": stat.group("min"), "avg": stat.group("avg"), "max": stat.group("max")})
         return r
