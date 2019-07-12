@@ -20,7 +20,7 @@ class Script(BaseScript):
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
-        r"(packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss$",
+        r"(packets received|received),(?:\s|\s\S+ (errors|duplicates), )\d+% packet loss$",
         re.MULTILINE,
     )
     rx_stat = re.compile(
@@ -36,8 +36,13 @@ class Script(BaseScript):
             cmd += " -s %d" % int(size)
         if source_address:
             cmd += " -I %s" % source_address
-        ping = self.cli(cmd)
-        result = self.rx_result.search(ping)
+        result = None
+        try:
+            ping = self.cli(cmd, ignore_errors=True)
+            result = self.rx_result.search(ping)
+        except self.CLISyntaxError:
+            pass
+
         """
         Workaround for this incident
 

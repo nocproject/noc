@@ -73,8 +73,12 @@ class Script(BaseScript):
                 continue
             ifname = value["name"]
             if value.get("bss") and value.get("ssid"):
+                ssid = value["ssid"].replace(" ", "").replace("Managed", "")
+                if ssid.startswith("2a2d"):
+                    # 2a2d - hex string
+                    ssid = ssid.decode("hex")
                 bss = self.get_bss_status(value["bss"])
-                if_ssid = "%s.%s" % (ifname, value["ssid"])
+                if_ssid = "%s.%s" % (ifname, ssid)
                 r[ifname] = {
                     "interface": ifname,
                     "admin_status": bss["admin_status"],
