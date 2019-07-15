@@ -51,7 +51,7 @@ class Script(BaseScript):
                     "members": [
                         l.split(" ", 1)[0] for l in match.group("members").lstrip("\n").splitlines()
                     ],
-                    "type": {"normal": "S", "static": "L", "lacp": "L"}[
+                    "type": {"normal": "S", "static": "L", "lacp": "L", "dynamic": "L"}[
                         match.group("mode").lower()
                     ],
                 }
