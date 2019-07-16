@@ -21,6 +21,7 @@ import pytz
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
+from noc.core.mongo.connection import connect
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -230,6 +231,7 @@ class Command(BaseCommand):
         return r
 
     def handle(self, *args, **options):
+        connect()
         if options["verbosity"] >= 2:
             self.logger.setLevel(logging.DEBUG)
         else:

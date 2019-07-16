@@ -20,6 +20,7 @@ import ujson
 import yaml
 
 # NOC modules
+from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -102,6 +103,7 @@ class Command(BaseCommand):
         build_test_case_parser.add_argument("--test-path", type=unicode, help="Path name")
 
     def handle(self, cmd, *args, **options):
+        connect()
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_collect(self, storage, path, spec, force, objects, *args, **options):
