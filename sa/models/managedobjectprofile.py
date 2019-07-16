@@ -19,6 +19,7 @@ import cachetools
 
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.config import config
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
 from noc.core.model.fields import TagsField, PickledField, DocumentReferenceField
@@ -572,11 +573,42 @@ class ManagedObjectProfile(NOCModel):
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
 
-        for mo in ManagedObject.objects.filter(object_profile=self):
-            for c in mo.iter_changed_datastream(
-                changed_fields={"managed_object_profile"}.union(changed_fields)
+        if config.datastream.enable_managedobject and changed_fields.intersection(
+            {"name", "remote_system", "remote_id"}
+        ):
+            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
+                "id", flat=True
             ):
-                yield c
+                yield "managedobject", mo_id
+        if config.datastream.enable_cfgping and changed_fields.intersection(
+            {
+                "enable_ping",
+                "ping_interval",
+                "ping_policy",
+                "ping_size",
+                "ping_count",
+                "ping_timeout_ms",
+                "report_ping_rtt",
+                "report_ping_attempts",
+                "event_processing_policy",
+            }
+        ):
+            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
+                "id", flat=True
+            ):
+                yield "cfgping", mo_id
+        if config.datastream.enable_cfgsyslog and changed_fields.intersection(
+            {"event_processing_policy", "syslog_archive_policy"}
+        ):
+            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
+                "id", flat=True
+            ):
+                yield "cfgsyslog", mo_id
+        if config.datastream.enable_cfgtrap and "event_processing_policy" in changed_fields:
+            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
+                "id", flat=True
+            ):
+                yield "cfgtrap", mo_id
 
     def iter_pools(self):
         """
@@ -601,7 +633,6 @@ class ManagedObjectProfile(NOCModel):
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
             )
-
         if access_changed:
             cache.delete_many(
                 ["cred-%s" % x for x in self.managedobject_set.values_list("id", flat=True)]
@@ -669,7 +700,6 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
         profile = ManagedObjectProfile.objects.get(id=profile_id)
     except ManagedObjectProfile.DoesNotExist:
         return
-
     for mo_id, is_managed, pool in iter_objects():
         if box_changed:
             if profile.enable_box_discovery and is_managed:
