@@ -541,7 +541,7 @@ class TableSection(ReportSection):
             "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
             "<input type='hidden' name='filename' value='report.csv'>",
             "<input type='hidden' name='data' id='csv_data'>",
-            "<input class='button' disabled type='submit' value='CSV' onclick='getData(\".report-table\", \",\");'>",
+            "<input class='button' disabled type='button' value='CSV' onclick='getData(\".report-table\", \",\");'>",
             "<input class='button' disabled type='button' value='"
             + _("Print")
             + "'onclick='window.print()'>",
@@ -552,8 +552,8 @@ class TableSection(ReportSection):
             "function getData(t, delimiter) {",
             "  $('.button').attr('disabled','disabled');",
             "  setTimeout(function() {",
-            "      var v = $(t).TableCSVExport({delivery: 'value', separator: ';'});",
-            "      $('#csv_data').val($(t).TableCSVExport({delivery: 'value', separator: delimiter}));",
+            "      var v = $(t).TableCSVExport({delivery: 'value', separator: delimiter});",
+            "      $('#csv_data').val(v);",
             "      $('.button').prop('disabled', false);",
             "      $('#report').submit();",
             "  }, 0);",
