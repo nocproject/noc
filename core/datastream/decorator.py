@@ -54,7 +54,7 @@ def _on_model_change(sender, instance, *args, **kwargs):
 
 
 def _on_document_change(sender, document, *args, **kwargs):
-    _on_change(document, changed_fields=document._changed_fields)
+    _on_change(document, changed_fields=getattr(document, "_changed_fields", {}))
 
 
 def _on_change(obj, changed_fields=None):
