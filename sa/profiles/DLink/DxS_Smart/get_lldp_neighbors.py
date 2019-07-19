@@ -13,8 +13,6 @@ import six
 # NOC modiles
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.sa.interfaces.base import IPv4Parameter
 from noc.core.mac import MAC
 
 
