@@ -10,7 +10,7 @@
 import re
 import six
 
-# NOC modiles
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.mac import MAC
