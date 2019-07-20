@@ -57,6 +57,7 @@ class Script(BaseScript):
         "Gigabit-TX": "physical",
         "SFP": "physical",
         "SFP+": "physical",
+        "QSFP+": "physical",
         "EtherChannel": "aggregated",
         "EtherSVI": "SVI",
     }
