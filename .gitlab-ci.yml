@@ -323,7 +323,9 @@ Build release image:
     - docker build --target dev -t $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG -f .docker/Dockerfile .
     # registry.getnoc.com/noc/noc/static:stable
     - docker build --target static -t $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG -f .docker/Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
+    - docker push $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG 
+    - docker push $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG 
+    - docker push $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
     - docker rmi $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
   tags:
     - shell
