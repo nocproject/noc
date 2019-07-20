@@ -11,12 +11,13 @@ this Manual and additional editions of this text.
     /introduction
     /reference
     /services
-    /profiles
     /discovery
     /admin
     /dev
     /man
     /caps
+    /profiles
+    /platforms
     /scripts
     /alarms
     /events

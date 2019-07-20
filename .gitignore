@@ -19,7 +19,7 @@ contrib/share/*
 .*
 !/.docker/*
 !/.gitignore
-!/.dockerignore
+!/.dockerignore*
 !/.gitlab-ci.yml
 !/.flake8
 !/.pylintrc
@@ -50,3 +50,5 @@ site-packages/
 lib/tcl/
 lib/tk/
 docs/src/en/src/
+docs/src/en/include/auto
+docs/src/en/platforms/

@@ -8,4 +8,4 @@ Profiles
     :titlesonly:
     :glob:
 
-    /profiles/*
+    /profiles/vendor-*
