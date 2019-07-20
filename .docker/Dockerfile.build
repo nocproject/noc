@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.10
 
 MAINTAINER Aleksey Shirokih <shirokih@nocproject.org>
 
@@ -39,4 +39,4 @@ RUN pip install --no-cache --trusted-host cdn.getnoc.com --find-links https://cd
 
 COPY . /opt/noc
 RUN find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python -m py_compile \
-    && /usr/bin/cythonize -i speedup/*.pyx
+    && /usr/bin/cythonize2 -i speedup/*.pyx
