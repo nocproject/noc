@@ -197,53 +197,16 @@ Test python 3:
 Build release image:
   stage: Build release container
   before_script:
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     # registry.getnoc.com/noc/noc/code:stable
-    - CONTAINER_NAME=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CONTAINER_NAME -f .docker/Dockerfile .
-    - docker push $CONTAINER_NAME
-    - docker rmi $CONTAINER_NAME
-  tags:
-    - shell
-  only:
-    - tags
-
-Build nginx image:
-  stage: Build additional release containers
-  before_script:
-    # registry.getnoc.com/noc/noc/static:stable
-    - CONTAINER_NAME=$CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - >
-      docker build
-      --no-cache
-      --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
-      -t ${CONTAINER_NAME}
-      -f .docker/Dockerfile.static .
-    - docker push ${CONTAINER_NAME}
-    - docker rmi ${CONTAINER_NAME}
-  tags:
-    - shell
-  only:
-    - tags
-
-Build dev image:
-  stage: Build additional release containers
-  before_script:
+    - docker build --target code -t $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG -f .docker/Dockerfile .
     # registry.getnoc.com/noc/noc/dev:stable
-    - CONTAINER_NAME=$CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - >
-      docker build
-      --no-cache
-      --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
-      -t ${CONTAINER_NAME}
-      -f .docker/Dockerfile.dev .
-    - docker push ${CONTAINER_NAME}
-    - docker rmi ${CONTAINER_NAME}
+    - docker build --target dev -t $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG -f .docker/Dockerfile .
+    # registry.getnoc.com/noc/noc/static:stable
+    - docker build --target static -t $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG -f .docker/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
+    - docker rmi $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
   tags:
     - shell
   only:
