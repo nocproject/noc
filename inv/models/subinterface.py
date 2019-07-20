@@ -101,6 +101,10 @@ class SubInterface(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             yield "managedobject", self.managed_object.id
+        if config.datastream.enable_cfgsyslog and "ipv4_addresses" in changed_fields:
+            yield "cfgsyslog", self.managed_object.id
+        if config.datastream.enable_cfgtrap and "ipv4_addresses" in changed_fields:
+            yield "cfgtrap", self.managed_object.id
 
     @property
     def effective_vc_domain(self):

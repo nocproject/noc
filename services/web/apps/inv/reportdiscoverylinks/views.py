@@ -67,7 +67,7 @@ class ReportFilterApplication(SimpleReport):
                 .values_list("id", flat=True)
             )
             all_p = 100.0 / len(smos) if len(smos) else 1.0
-            data += [("All polling", len(smos))]
+            data += [("All polling", len(smos), "")]
             for c in count:
                 if c == 3:
                     data += [

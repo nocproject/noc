@@ -11,6 +11,7 @@ import argparse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
@@ -35,6 +36,7 @@ class Command(BaseCommand):
         apply_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
 
     def handle(self, cmd, *args, **options):
+        connect()
         if "mos" in options:
             moo = options["mos"]
         else:

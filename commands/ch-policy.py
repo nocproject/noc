@@ -14,6 +14,7 @@ import datetime
 
 # NOC modules
 from noc.config import config
+from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.core.clickhouse.connect import connection
 from noc.main.models.chpolicy import CHPolicy
@@ -41,6 +42,7 @@ class Command(BaseCommand):
         getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_apply(self, host=None, port=None, dry_run=True, *args, **options):
+        connect()
         read_only = dry_run
         ch = connection(host, port, read_only=read_only)
         today = datetime.date.today()

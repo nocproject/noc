@@ -89,8 +89,13 @@ Ext.define("NOC.core.ReportControl", {
                                 text: __("Download"),
                                 glyph: NOC.glyph.download,
                                 scope: me,
-                                handler: me.onDownload,
-                                formBind: true
+                                handler: me.onDownload
+                            },
+                            {
+                                text: __("Reset Filter"),
+                                glyph: NOC.glyph.eraser,
+                                scope: me,
+                                handler: me.onReset
                             }
                         ]
                     }
@@ -133,5 +138,16 @@ Ext.define("NOC.core.ReportControl", {
         columnsStore.each(setColumn);
         url.push("&columns=" + columns.join(","));
         window.open(url.join(""));
+    },
+    //
+    onReset: function() {
+        var me = this,
+            resetField = function(control) {
+                if(control.hasOwnProperty("name")) {
+                    var field = this.down("[name=" + control.name + "]");
+                    field.reset();
+                }
+            };
+        Ext.each(me.controls, resetField, me);
     }
 });

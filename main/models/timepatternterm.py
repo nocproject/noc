@@ -16,9 +16,13 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.lib.timepattern import TimePattern as TP
+from noc.core.model.decorator import on_init
+from noc.core.datastream.decorator import datastream
 from .timepattern import TimePattern
 
 
+@on_init
+@datastream
 @six.python_2_unicode_compatible
 class TimePatternTerm(NOCModel):
     """
@@ -53,3 +57,10 @@ class TimePatternTerm(NOCModel):
         """
         TimePatternTerm.check_syntax(self.term)
         super(TimePatternTerm, self).save(*args, **kwargs)
+
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.sa.models.managedobject import ManagedObject
+
+        for mo in ManagedObject.objects.filter(time_pattern=self.time_pattern):
+            for c in mo.iter_changed_datastream(changed_fields=changed_fields):
+                yield c

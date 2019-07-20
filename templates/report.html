@@ -21,15 +21,12 @@
                 table = $(t);
             var makeRow = function(tag, child){
               table.find(tag).find("tr").each(function(i, e) {
-                var row = [];
-                $(e).find(child).each(function(i, e) {
-                    var colSpan = $(e).prop('colSpan'),
+                var row = [],
+                    childs = $(e).find(child);
+                childs.each(function(i, e) {
+                    var colSpan = $(e).prop('colSpan') || 1,
                         name = $(e).text();
-                    if(colSpan > 0) {
-                        row.push({width: 'auto', text: name, colSpan: colSpan, fontSize: 8});
-                    } else {
-                        row.push({width: 'auto', text: name, fontSize: 8});
-                    }
+                    row.push({width: 'auto', text: name, colSpan: colSpan, fontSize: 8});
                 });
                 rows.push(row);
               });
