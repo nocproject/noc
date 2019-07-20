@@ -285,7 +285,7 @@
                 <tbody>
                     {% for r in phoneranges %}
                         <tr>
-                            <td><a href="/api/card/view/dialplan/{{ r.dialplan.id }}">{{ r.dialplan.name }}</a></td>
+                            <td><a href="/api/card/view/dialplan/{{ r.dialplan.id }}/">{{ r.dialplan.name }}</a></td>
                             <td>{{ r.name }}</td>
                             <td>{{ r.from_number }} - {{ r.to_number }}</td>
                             <td>{{ r.state.name }}</td>
@@ -311,7 +311,7 @@
                 <tbody>
                     {% for n in phonenumbers %}
                         <tr>
-                            <td><a href="/api/card/view/dialplan/{{ n.dialplan.id }}">{{ n.dialplan.name }}</a></td>
+                            <td><a href="/api/card/view/dialplan/{{ n.dialplan.id }}/">{{ n.dialplan.name }}</a></td>
                             <td>{{ n.name }}</td>
                             <td>{{ n.number }}</td>
                             <td>{{ n.state.name }}</td>
@@ -356,7 +356,7 @@
                 <tbody>
                     {% for vlan in vlans %}
                         <tr>
-                            <td><a href="/api/card/view/segment/{{ vlan.segment.id }}">{{ vlan.segment.name }}</a></td>
+                            <td><a href="/api/card/view/segment/{{ vlan.segment.id }}/">{{ vlan.segment.name }}</a></td>
                             <td>{{ vlan.name }}</td>
                             <td>{{ vlan.vlan }}</td>
                         </tr>
