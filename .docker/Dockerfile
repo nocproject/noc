@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.8 AS code
 
 MAINTAINER Aleksey Shirokih <shirokih@nocproject.org>
 
@@ -48,3 +48,23 @@ EXPOSE 1200
 
 VOLUME /opt/noc
 VOLUME /usr/lib/python2.7/site-packages/django
+
+FROM code AS dev
+
+RUN apk add --update vim \
+    python-dev \
+    gcc musl-dev \
+    && pip install pudb ipython \
+    && apk del python-dev gcc musl-dev \
+    && rm -rf /var/cache/apk/* /root/.cache/pip
+
+
+HEALTHCHECK NONE 
+
+FROM nginx:alpine AS static
+
+RUN apk add --no-cache curl
+
+COPY --from=code /usr/lib/python2.7/site-packages/django /usr/lib/python2.7/site-packages/django
+COPY --from=code /opt/noc/ui /opt/noc/ui
+
