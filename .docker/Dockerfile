@@ -1,4 +1,4 @@
-FROM alpine:3.10 AS code
+FROM alpine:3.8 AS code
 
 MAINTAINER Aleksey Shirokih <shirokih@nocproject.org>
 
@@ -39,7 +39,7 @@ RUN apk add --update --no-cache \
     && python ./scripts/deploy/install-packages requirements/card.json \
     && python ./scripts/deploy/install-packages requirements/bi.json \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python -m py_compile \
-    && /usr/bin/cythonize2 -i speedup/*.pyx \
+    && /usr/bin/cythonize -i speedup/*.pyx \
     && apk del -r .build-deps \
     && adduser -h /opt/noc -s /bin/sh -S -D -H -u 1200 noc \
     && chown noc /opt/noc
