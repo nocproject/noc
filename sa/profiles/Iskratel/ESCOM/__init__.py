@@ -20,3 +20,20 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal datadump"
     pattern_more = "More: <space>,  Quit: q or CTRL+Z, One line: <return>"
     command_more = "a"
+
+    convert_interface_name = BaseProfile.convert_interface_name_cisco
+
+    INTERFACE_TYPES = {
+        "oo": "management",
+        "fa": "physical",  # FastEthernet
+        "gi": "physical",  # gigabitethernet
+        "te": "physical",  # gigabitethernet
+        "Lo": "loopback",  # Loopback
+        "Po": "aggregated",  # Port-channel/Portgroup
+        "vl": "SVI",  # vlan
+        "Vl": "SVI",  # Vlan
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2])

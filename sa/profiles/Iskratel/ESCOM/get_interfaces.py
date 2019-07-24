@@ -5,11 +5,13 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-import re
 
 
 class Script(BaseScript):
@@ -100,12 +102,7 @@ class Script(BaseScript):
                 adm_status += [match.groupdict()]
         for match in self.rx_port.finditer(self.cli("show interfaces status")):
             ifname = match.group("port")
-            if ifname.startswith("Po"):
-                iftype = "aggregated"
-            elif ifname.startswith("oob"):
-                iftype = "management"
-            else:
-                iftype = "physical"
+            iftype = self.profile.get_interface_type(ifname)
             for i in adm_status:
                 if ifname == i["port"]:
                     st = bool(i["admin_status"] == "Up")
