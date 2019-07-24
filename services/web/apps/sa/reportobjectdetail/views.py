@@ -23,7 +23,7 @@ from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.reportdatasources.base import ReportModelFilter
 from noc.lib.app.reportdatasources.report_objectlinkcount import ReportObjectLinkCount
 from noc.lib.app.reportdatasources.report_objectifacestypestat import ReportObjectIfacesTypeStat
-from noc.lib.app.reportdatasources.report_container import ReportContainer
+from noc.lib.app.reportdatasources.report_container import ReportContainer, ReportContainerData
 from noc.lib.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
 from noc.lib.app.reportdatasources.report_objectifacesstatusstat import ReportObjectIfacesStatusStat
 from noc.lib.app.reportdatasources.report_objectcaps import ReportObjectCaps
@@ -187,7 +187,9 @@ class ReportObjectDetailApplication(ExtApplication):
             "object_profile",
             "object_vendor",
             "object_platform",
+            "object_attr_hwversion",
             "object_version",
+            "object_attr_bootprom",
             "object_serial",
             "object_attr_patch",
             "auth_profile",
@@ -215,7 +217,9 @@ class ReportObjectDetailApplication(ExtApplication):
             "OBJECT_PROFILE",
             "OBJECT_VENDOR",
             "OBJECT_PLATFORM",
+            "OBJECT_HWVERSION",
             "OBJECT_VERSION",
+            "OBJECT_BOOTPROM",
             "OBJECT_SERIAL",
             "OBJECT_ATTR_PATCH",
             "AUTH_PROFILE",
@@ -244,7 +248,6 @@ class ReportObjectDetailApplication(ExtApplication):
                     continue
         else:
             cmap = list(range(len(cols)))
-
         r = [translate_row(header_row, cmap)]
         mos = self.get_report_object(
             request.user, is_managed, administrative_domain, selector, pool, segment, ids
@@ -263,9 +266,13 @@ class ReportObjectDetailApplication(ExtApplication):
         link_count = iter(ReportObjectLinkCount(mos_id))
         iface_count = iter(ReportObjectIfacesTypeStat(mos_id))
         if "container" in columns_filter:
-            container_lookup = iter(ReportContainer(mos_id))
+            container_lookup = iter(ReportContainerData(mos_id))
         else:
             container_lookup = None
+        if "object_serial" in columns_filter:
+            container_serials = iter(ReportContainer(mos_id))
+        else:
+            container_serials = None
         if "interface_type_count" in columns_filter:
             iss = iter(ReportObjectIfacesStatusStat(mos_id))
         else:
@@ -340,14 +347,18 @@ class ReportObjectDetailApplication(ExtApplication):
         ):
             if (mos_filter and mo_id not in mos_filter) or not mos_id:
                 continue
+            if container_serials:
+                mo_serials = next(container_serials)
+            else:
+                mo_serials = [{}]
             if container_lookup:
                 mo_continer = next(container_lookup)
             else:
-                mo_continer = [{}]
+                mo_continer = ("",)
             if roa:
-                serial, hw_ver, patch = next(roa)[0]  # noqa
+                serial, hw_ver, boot_prom, patch = next(roa)[0]  # noqa
             else:
-                serial, hw_ver, patch = "", "", ""  # noqa
+                serial, hw_ver, boot_prom, patch = "", "", "", ""  # noqa
             r += [
                 translate_row(
                     row(
@@ -361,14 +372,16 @@ class ReportObjectDetailApplication(ExtApplication):
                             o_profile,
                             Vendor.get_by_id(vendor) if vendor else "",
                             Platform.get_by_id(platform) if platform else "",
+                            hw_ver,
                             Firmware.get_by_id(version) if version else "",
+                            boot_prom,
                             # Serial
-                            mo_continer[0].get("serial", "") or serial,
+                            mo_serials[0].get("serial", "") or serial,
                             patch or "",
                             auth_profile,
                             _("Yes") if avail.get(mo_id, None) else _("No"),
                             ad,
-                            mo_continer[0].get("text", ""),
+                            mo_continer[0],
                             NetworkSegment.get_by_id(m_segment) if m_segment else "",
                             next(iface_count)[0],
                             next(link_count)[0],
