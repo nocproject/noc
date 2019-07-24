@@ -9,8 +9,17 @@
 # NOC modules
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
-    DateField, DateTimeField, UInt16Field, Int32Field, BooleanField,
-    StringField, Float64Field, ReferenceField, IPv4Field, ArrayField)
+    DateField,
+    DateTimeField,
+    UInt16Field,
+    Int32Field,
+    BooleanField,
+    StringField,
+    Float64Field,
+    ReferenceField,
+    IPv4Field,
+    ArrayField,
+)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject as ManagedObjectDict
 from noc.core.bi.dictionaries.pool import Pool
@@ -27,16 +36,13 @@ from noc.sa.models.administrativedomain import AdministrativeDomain as Administr
 
 
 class ManagedObject(Model):
-    class Meta:
+    class Meta(object):
         db_table = "managedobjects"
         engine = MergeTree("date", ("managed_object", "ts"))
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))
-    managed_object = ReferenceField(
-        ManagedObjectDict,
-        description=_("Object Name")
-    )
+    managed_object = ReferenceField(ManagedObjectDict, description=_("Object Name"))
     # Location
     administrative_domain = ReferenceField(AdministrativeDomain, description=_("Admin. Domain"))
     segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
@@ -56,7 +62,9 @@ class ManagedObject(Model):
     profile = ReferenceField(Profile, description=_("Profile"))
     vendor = ReferenceField(Vendor, description=_("Vendor"))
     platform = ReferenceField(Platform, description=_("Platform"))
+    hw_version = StringField(description=_("HW. Version"))
     version = ReferenceField(Version, description=_("Version"))
+    bootprom_version = StringField(description=_("BootPROM. Version"))
     n_interfaces = Int32Field(description=_("Interface count"))
     n_subscribers = Int32Field(description=_("Subscribers count"))
     n_services = Int32Field(description=_("Services count"))
@@ -89,32 +97,17 @@ class ManagedObject(Model):
         # Get user domains
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
-        domain_ids = [
-            x.bi_id
-            for x in AdministrativeDomainM.objects.filter(id__in=domains)
-        ]
+        domain_ids = [x.bi_id for x in AdministrativeDomainM.objects.filter(id__in=domains)]
         filter = query.get("filter", {})
         dl = len(domain_ids)
         if not dl:
             return None
         elif dl == 1:
-            q = {
-                "$eq": [
-                    {"$field": "administrative_domain"},
-                    domain_ids[0]
-                ]
-            }
+            q = {"$eq": [{"$field": "administrative_domain"}, domain_ids[0]]}
         else:
-            q = {
-                "$in": [
-                    {"$field": "administrative_domain"},
-                    domain_ids
-                ]
-            }
+            q = {"$in": [{"$field": "administrative_domain"}, domain_ids]}
         if filter:
-            query["filter"] = {
-                "$and": [query["filter"], q]
-            }
+            query["filter"] = {"$and": [query["filter"], q]}
         else:
             query["filter"] = q
         return query
