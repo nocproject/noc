@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,17 +10,20 @@
 import logging
 import datetime
 import csv
-import StringIO
+
 # Third-party modules
+import six
+from six import StringIO
 import xlsxwriter
 from django.http import HttpResponse
+
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.reportdatasources.base import ReportModelFilter
 from noc.lib.app.reportdatasources.report_objectlinkcount import ReportObjectLinkCount
 from noc.lib.app.reportdatasources.report_objectifacestypestat import ReportObjectIfacesTypeStat
-from noc.lib.app.reportdatasources.report_container import ReportContainer
+from noc.lib.app.reportdatasources.report_container import ReportContainer, ReportContainerData
 from noc.lib.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
 from noc.lib.app.reportdatasources.report_objectifacesstatusstat import ReportObjectIfacesStatusStat
 from noc.lib.app.reportdatasources.report_objectcaps import ReportObjectCaps
@@ -44,8 +47,16 @@ logger = logging.getLogger(__name__)
 
 
 def get_column_width(name):
-    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
-                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    excel_column_format = {
+        "ID": 6,
+        "OBJECT_NAME": 38,
+        "OBJECT_STATUS": 10,
+        "OBJECT_PROFILE": 17,
+        "OBJECT_PLATFORM": 25,
+        "AVAIL": 6,
+        "ADMIN_DOMAIN": 25,
+        "PHYS_INTERFACE_COUNT": 5,
+    }
     if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
         return 8
     elif name.startswith("ADM_PATH"):
@@ -65,12 +76,15 @@ class ReportAdPath(object):
 
     def load(self):
         from django.db import connection
+
         cursor = connection.cursor()
-        cursor.execute("""SELECT ad.id, ad.name, r.name, ad2.name
+        cursor.execute(
+            """SELECT ad.id, ad.name, r.name, ad2.name
                           FROM sa_administrativedomain r
                           JOIN sa_administrativedomain ad ON ad.parent_id = r.id
                           JOIN sa_administrativedomain ad2 ON r.parent_id = ad2.id;
-                """)
+                """
+        )
         return {r[1]: (r[2], r[3]) for r in cursor}
 
     def __getitem__(self, item):
@@ -84,8 +98,9 @@ class ReportObjectDetailApplication(ExtApplication):
     SEGMENT_PATH_DEPTH = 7
     CONTAINER_PATH_DEPTH = 7
 
-    def get_report_object(self, user=None, is_managed=None, adm=None, selector=None,
-                          pool=None, segment=None, ids=None):
+    def get_report_object(
+        self, user=None, is_managed=None, adm=None, selector=None, pool=None, segment=None, ids=None
+    ):
         mos = ManagedObject.objects.filter()
         if user.is_superuser and not adm and not selector and not segment:
             mos = ManagedObject.objects.filter()
@@ -110,22 +125,39 @@ class ReportObjectDetailApplication(ExtApplication):
                 mos = mos.filter(segment__in=segment.get_nested_ids())
         return mos
 
-    @view("^download/$", method=["GET"], access="launch", api=True,
-          validate={
-              "administrative_domain": StringParameter(required=False),
-              "pool": StringParameter(required=False),
-              "segment": StringParameter(required=False),
-              "selector": StringParameter(required=False),
-              "ids": StringParameter(required=False),
-              "detail_stat": StringParameter(required=False),
-              "is_managed": BooleanParameter(required=False),
-              "avail_status": BooleanParameter(required=False),
-              "columns": StringParameter(required=False),
-              "o_format": StringParameter(choices=["csv", "xlsx"])})
-    def api_report(self, request, o_format, is_managed=None,
-                   administrative_domain=None, selector=None, pool=None,
-                   segment=None, avail_status=False, columns=None, ids=None,
-                   detail_stat=None, enable_autowidth=False):
+    @view(
+        "^download/$",
+        method=["GET"],
+        access="launch",
+        api=True,
+        validate={
+            "administrative_domain": StringParameter(required=False),
+            "pool": StringParameter(required=False),
+            "segment": StringParameter(required=False),
+            "selector": StringParameter(required=False),
+            "ids": StringParameter(required=False),
+            "detail_stat": StringParameter(required=False),
+            "is_managed": BooleanParameter(required=False),
+            "avail_status": BooleanParameter(required=False),
+            "columns": StringParameter(required=False),
+            "o_format": StringParameter(choices=["csv", "xlsx"]),
+        },
+    )
+    def api_report(
+        self,
+        request,
+        o_format,
+        is_managed=None,
+        administrative_domain=None,
+        selector=None,
+        pool=None,
+        segment=None,
+        avail_status=False,
+        columns=None,
+        ids=None,
+        detail_stat=None,
+        enable_autowidth=False,
+    ):
         def row(row):
             def qe(v):
                 if v is None:
@@ -155,7 +187,9 @@ class ReportObjectDetailApplication(ExtApplication):
             "object_profile",
             "object_vendor",
             "object_platform",
+            "object_attr_hwversion",
             "object_version",
+            "object_attr_bootprom",
             "object_serial",
             "object_attr_patch",
             "auth_profile",
@@ -183,7 +217,9 @@ class ReportObjectDetailApplication(ExtApplication):
             "OBJECT_PROFILE",
             "OBJECT_VENDOR",
             "OBJECT_PLATFORM",
+            "OBJECT_HWVERSION",
             "OBJECT_VERSION",
+            "OBJECT_BOOTPROM",
             "OBJECT_SERIAL",
             "OBJECT_ATTR_PATCH",
             "AUTH_PROFILE",
@@ -193,7 +229,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "SEGMENT",
             "PHYS_INTERFACE_COUNT",
             "LINK_COUNT",
-            "LAST_CONFIG_TS"
+            "LAST_CONFIG_TS",
         ]
         # "DISCOVERY_PROBLEM"
         # "ADM_PATH
@@ -212,16 +248,16 @@ class ReportObjectDetailApplication(ExtApplication):
                     continue
         else:
             cmap = list(range(len(cols)))
-
         r = [translate_row(header_row, cmap)]
-        mos = self.get_report_object(request.user, is_managed, administrative_domain,
-                                     selector, pool, segment, ids)
+        mos = self.get_report_object(
+            request.user, is_managed, administrative_domain, selector, pool, segment, ids
+        )
         columns_filter = set(columns.split(","))
         mos_id = tuple(mos.order_by("id").values_list("id", flat=True))
         mos_filter = None
         if detail_stat:
             ref = ReportModelFilter()
-            ids = ref.proccessed(detail_stat).values()
+            ids = list(six.itervalues(ref.proccessed(detail_stat)))
             mos_filter = set(mos_id).intersection(ids[0])
             mos_id = sorted(mos_filter)
         avail = {}
@@ -230,9 +266,13 @@ class ReportObjectDetailApplication(ExtApplication):
         link_count = iter(ReportObjectLinkCount(mos_id))
         iface_count = iter(ReportObjectIfacesTypeStat(mos_id))
         if "container" in columns_filter:
-            container_lookup = iter(ReportContainer(mos_id))
+            container_lookup = iter(ReportContainerData(mos_id))
         else:
             container_lookup = None
+        if "object_serial" in columns_filter:
+            container_serials = iter(ReportContainer(mos_id))
+        else:
+            container_serials = None
         if "interface_type_count" in columns_filter:
             iss = iter(ReportObjectIfacesStatusStat(mos_id))
         else:
@@ -251,15 +291,19 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend(type_columns)
         if "object_caps" in columns_filter:
             object_caps = ReportObjectCaps(mos_id)
-            caps_columns = object_caps.ATTRS.values()
+            caps_columns = list(six.itervalues(object_caps.ATTRS))
             ccc = iter(object_caps)
             r[-1].extend(caps_columns)
         if "object_tags" in columns_filter:
             r[-1].extend([_("OBJECT_TAGS")])
         if "sorted_tags" in columns_filter:
             tags = set()
-            for s in ManagedObject.objects.filter().exclude(
-                    tags=None).values_list('tags', flat=True).distinct():
+            for s in (
+                ManagedObject.objects.filter()
+                .exclude(tags=None)
+                .values_list("tags", flat=True)
+                .distinct()
+            ):
                 tags.update(set(s))
             tags_o = sorted([t for t in tags if "{" not in t])
             r[-1].extend(tags_o)
@@ -270,47 +314,83 @@ class ReportObjectDetailApplication(ExtApplication):
             dp_columns = discovery_result.ATTRS
             dp = iter(discovery_result)
             r[-1].extend(dp_columns)
-        for (mo_id, name, address, is_managed,
-             sa_profile, o_profile, auth_profile, ad, m_segment,
-             vendor, platform, version, tags
-             ) in mos.values_list(
-                "id", "name", "address", "is_managed",
-                "profile", "object_profile__name", "auth_profile__name",
-                "administrative_domain__name", "segment",
-                "vendor", "platform", "version", "tags").order_by("id"):
+        for (
+            mo_id,
+            name,
+            address,
+            is_managed,
+            sa_profile,
+            o_profile,
+            auth_profile,
+            ad,
+            m_segment,
+            vendor,
+            platform,
+            version,
+            tags,
+        ) in mos.values_list(
+            "id",
+            "name",
+            "address",
+            "is_managed",
+            "profile",
+            "object_profile__name",
+            "auth_profile__name",
+            "administrative_domain__name",
+            "segment",
+            "vendor",
+            "platform",
+            "version",
+            "tags",
+        ).order_by(
+            "id"
+        ):
             if (mos_filter and mo_id not in mos_filter) or not mos_id:
                 continue
+            if container_serials:
+                mo_serials = next(container_serials)
+            else:
+                mo_serials = [{}]
             if container_lookup:
                 mo_continer = next(container_lookup)
             else:
-                mo_continer = [{}]
+                mo_continer = ("",)
             if roa:
-                serial, hw_ver, patch = next(roa)[0]
+                serial, hw_ver, boot_prom, patch = next(roa)[0]  # noqa
             else:
-                serial, hw_ver, patch = "", "", ""
-            r += [translate_row(row([
-                mo_id,
-                name,
-                address,
-                next(hn)[0],
-                "managed" if is_managed else "unmanaged",
-                Profile.get_by_id(sa_profile),
-                o_profile,
-                Vendor.get_by_id(vendor) if vendor else "",
-                Platform.get_by_id(platform) if platform else "",
-                Firmware.get_by_id(version) if version else "",
-                # Serial
-                mo_continer[0].get("serial", "") or serial,
-                patch or "",
-                auth_profile,
-                _("Yes") if avail.get(mo_id, None) else _("No"),
-                ad,
-                mo_continer[0].get("text", ""),
-                NetworkSegment.get_by_id(m_segment) if m_segment else "",
-                next(iface_count)[0],
-                next(link_count)[0],
-                next(rc)[0]
-            ]), cmap)]
+                serial, hw_ver, boot_prom, patch = "", "", "", ""  # noqa
+            r += [
+                translate_row(
+                    row(
+                        [
+                            mo_id,
+                            name,
+                            address,
+                            next(hn)[0],
+                            "managed" if is_managed else "unmanaged",
+                            Profile.get_by_id(sa_profile),
+                            o_profile,
+                            Vendor.get_by_id(vendor) if vendor else "",
+                            Platform.get_by_id(platform) if platform else "",
+                            hw_ver,
+                            Firmware.get_by_id(version) if version else "",
+                            boot_prom,
+                            # Serial
+                            mo_serials[0].get("serial", "") or serial,
+                            patch or "",
+                            auth_profile,
+                            _("Yes") if avail.get(mo_id, None) else _("No"),
+                            ad,
+                            mo_continer[0],
+                            NetworkSegment.get_by_id(m_segment) if m_segment else "",
+                            next(iface_count)[0],
+                            next(link_count)[0],
+                            next(rc)[0],
+                        ]
+                    ),
+                    cmap,
+                )
+            ]
             if "adm_path" in columns_filter:
                 r[-1].extend([ad] + list(ad_path[ad]))
             if "interface_type_count" in columns_filter:
@@ -333,23 +413,22 @@ class ReportObjectDetailApplication(ExtApplication):
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % filename
-            writer = csv.writer(response, dialect='excel', delimiter=';')
+            response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
+            writer = csv.writer(response, dialect="excel", delimiter=";")
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            # with tempfile.NamedTemporaryFile(mode="wb") as f:
-            #    wb = xlsxwriter.Workbook(f.name)
-            response = StringIO.StringIO()
+            response = StringIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Objects")
             max_column_data_length = {}
             for rn, x in enumerate(r):
                 for cn, c in enumerate(x):
-                    if rn and (r[0][cn] not in max_column_data_length
-                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                    if rn and (
+                        r[0][cn] not in max_column_data_length
+                        or len(str(c)) > max_column_data_length[r[0][cn]]
+                    ):
                         max_column_data_length[r[0][cn]] = len(str(c))
                     ws.write(rn, cn, c, cf1)
             # for
@@ -363,11 +442,9 @@ class ReportObjectDetailApplication(ExtApplication):
                 ws.set_column(cn, cn, width=width)
             wb.close()
             response.seek(0)
-            response = HttpResponse(response.getvalue(),
-                                    content_type="application/vnd.ms-excel")
+            response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
             # response = HttpResponse(
             #     content_type="application/x-ms-excel")
-            response[
-                "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
+            response["Content-Disposition"] = 'attachment; filename="%s.xlsx"' % filename
             response.close()
             return response
