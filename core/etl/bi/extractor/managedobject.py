@@ -71,14 +71,16 @@ class ManagedObjectsExtractor(BaseExtractor):
                 # "object_profile": mo.object_profile,
                 "vendor": mo.vendor,
                 "platform": mo.platform,
+                "hw_version": mo.get_attr("HW version", default=None),
                 "version": mo.version,
+                "bootprom_version": mo.get_attr("Boot PROM", default=None),
                 "name": ch_escape(mo.name),
                 "hostname": did.hostname if did else "",
                 "ip": mo.address,
                 "is_managed": mo.is_managed,
                 "location": mo.container.get_address_text() if mo.container else "",
                 "uptime": uptime.last_value if uptime else 0.0,
-                "tags": [str(t) for t in mo.tags] if mo.tags else [],
+                "tags": [str(t) for t in mo.tags if "{" not in t] if mo.tags else [],  # { - bug
                 "serials": list(set(serials))
                 # subscribers
                 # services
