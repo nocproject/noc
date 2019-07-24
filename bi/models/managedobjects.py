@@ -36,7 +36,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain as Administr
 
 
 class ManagedObject(Model):
-    class Meta:
+    class Meta(object):
         db_table = "managedobjects"
         engine = MergeTree("date", ("managed_object", "ts"))
 
@@ -62,7 +62,9 @@ class ManagedObject(Model):
     profile = ReferenceField(Profile, description=_("Profile"))
     vendor = ReferenceField(Vendor, description=_("Vendor"))
     platform = ReferenceField(Platform, description=_("Platform"))
+    hw_version = StringField(description=_("HW. Version"))
     version = ReferenceField(Version, description=_("Version"))
+    bootprom_version = StringField(description=_("BootPROM. Version"))
     n_interfaces = Int32Field(description=_("Interface count"))
     n_subscribers = Int32Field(description=_("Subscribers count"))
     n_services = Int32Field(description=_("Services count"))
