@@ -18,7 +18,7 @@ from .base import BaseReportColumn
 
 class ReportObjectAttributes(BaseReportColumn):
     name = "attributes"
-    unknown_value = ((None, None, None),)
+    unknown_value = ((None, None, None, None),)
     builtin_sorted = True
 
     def extract(self):
@@ -27,7 +27,7 @@ class ReportObjectAttributes(BaseReportColumn):
         :return: Dict tuple MO attributes mo_id -> (attrs_list)
         :rtype: dict
         """
-        attr_list = ["Serial Number", "HW version", "Patch Version"]
+        attr_list = ["Serial Number", "HW version", "Boot PROM", "Patch Version"]
         cursor = connection.cursor()
 
         base_select = "select %s "
@@ -51,4 +51,4 @@ class ReportObjectAttributes(BaseReportColumn):
         query = query1 + query2 + " ORDER BY saa.managed_object_id"
         cursor.execute(query)
         for val in cursor:
-            yield val[0], val[1:6]
+            yield val[0], val[1:7]
