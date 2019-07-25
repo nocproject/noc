@@ -46,7 +46,7 @@ class Script(BaseScript):
         res = []
         # Fallback to CLI
         if self.match_version(version__regex="[12]\.[15]\.4[4-9]") or self.match_version(
-            version__regex="4\.0\.[4-7]$"
+            version__regex="4\.0\.[1,5-9]"
         ):
             cmd = self.cli("show interfaces channel-group", cached=True)
         else:
