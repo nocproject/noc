@@ -10,11 +10,7 @@
 from __future__ import absolute_import
 import os
 
-# Third-party modules
-from concurrent.futures import as_completed
-
 # NOC modules
-from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.etl.extractor.sql import SQLExtractor
 
 
