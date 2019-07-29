@@ -29,7 +29,7 @@ class Script(BaseScript):
         Oper\s\(v4/v6\)\s*?:\s(?P<oper_status>.*?)\n
         (Down\sReason\sCode\s:\s.*?\n)*
         Protocols\s*?:\s(?P<protocols>.*?)\n
-        (?P<ipaddr_section>(IP\sAddr/mask|IPv6\sAddr).*?)-{79}\n
+        (?P<ipaddr_section>(IP\sAddr/mask|IPv6\sAddr).*?)?-{79}\n
         Details\n
         -{79}\n
         Description\s*?:\s(?P<description>.*?)\n
@@ -230,6 +230,8 @@ class Script(BaseScript):
         :rtype : dict
         """
         result = {"ipv4_addresses": [], "ipv6_addresses": [], "enabled_afi": []}
+        if not ipaddr_section:
+            return result
         if "Unnumbered If" in ipaddr_section:
             return result
         for line in ipaddr_section.splitlines():
@@ -262,13 +264,12 @@ class Script(BaseScript):
             my_dict = {}
             if iftypeGroup in iface:
                 match_obj = self.re_int_desc_group.search(iface)
-                if "mac" in my_dict and not my_dict["mac"]:
-                    my_dict.pop("mac")
                 if match_obj:
                     my_dict = match_obj.groupdict()
+                    if "mac" in my_dict and not my_dict["mac"]:
+                        my_dict.pop("mac")
                     my_dict["type"] = "other"
                     my_dict["subinterfaces"] = []
-
             elif iftypeSubsc in iface:
                 match_obj = self.re_int_desc_subs.search(iface)
                 if "mac" in my_dict and not my_dict["mac"]:
@@ -290,9 +291,7 @@ class Script(BaseScript):
                 if "ipv6_addresses" in my_dict:
                     my_sub["ipv6_addresses"] = my_dict["ipv6_addresses"]
                     my_dict.pop("ipv6_addresses")
-
                 my_dict["subinterfaces"][0].update(my_sub)
-
             elif iftypeRed in iface:
                 match_obj = self.re_int_desc_vprn.search(iface)
                 my_dict = match_obj.groupdict()
@@ -301,7 +300,6 @@ class Script(BaseScript):
                         {"name": my_dict["subinterfaces"], "type": "tunnel"}
                     ]
                 my_dict["type"] = "tunnel"
-
             elif iftypeNetwork in iface or iftypeVPRN in iface or iftypeIES in iface:
                 match_obj = self.re_int_desc_vprn.search(iface)
                 if match_obj:
@@ -326,7 +324,6 @@ class Script(BaseScript):
                                     my_dict["vlan_ids"] = []
                                 elif vlans != "0":
                                     my_dict["vlan_ids"] = [int(vlans)]
-
                         my_dict["subinterfaces"] = [{"name": my_dict["name"]}]
             else:
                 continue
@@ -337,7 +334,6 @@ class Script(BaseScript):
             if "srrp" in my_dict:
                 my_dict["protocols"] += ["SRRP"]
                 my_dict.pop("srrp")
-
             my_dict["oper_status"] = self.fix_status(my_dict["oper_status"])
             my_dict["admin_status"] = self.fix_status(my_dict["admin_status"])
             if "ipaddr_section" in my_dict:
@@ -386,10 +382,8 @@ class Script(BaseScript):
                                 break
                         if found:
                             continue
-
             if "type" not in my_dict:
                 my_dict["type"] = "unknown"
-
             result += [my_dict]
         return result
 
@@ -434,9 +428,7 @@ class Script(BaseScript):
                     sap["type"] = "aggregated"
                 else:
                     sap["type"] = "physical"
-
                 result["interfaces"] += [sap]
-
         return result
 
     def get_vpls(self, vpls_id):
@@ -458,7 +450,6 @@ class Script(BaseScript):
                 result.pop("sap_section")
             else:
                 result["interfaces"] = {"type": "unknown", "subinterfaces": {"name": "empty_vpls"}}
-
         return result
 
     def get_forwarding_instance(self):
@@ -481,17 +472,14 @@ class Script(BaseScript):
                     fi["rd"] = mo2.group("rd")
                     if fi["rd"] == "None":
                         fi.pop("rd")
-
                     intf = self.cli("show router %s interface detail" % fi["forwarding_instance"])
                     fi["interfaces"] = self.parse_interfaces(intf, "")
-
                 elif fi["type"] == "bridge":
                     fi.update(self.get_vpls(fi["forwarding_instance"]))
                     fi.pop("id")
                 elif fi["type"] == "Unsupported":
                     continue
                 result.append(fi)
-
         return result
 
     def get_managment_router(self):
@@ -507,12 +495,12 @@ class Script(BaseScript):
                     "admin_status": self.fix_status(card[1]),
                     "oper_status": self.fix_status(card[2]),
                     "protocols": [],
-                    "mac": card[3],
                     "type": "physical",
                     "subinterfaces": self.parse_interfaces(sub_iface, ""),
                 }
             )
-
+            if card[3]:
+                fi["interfaces"][-1]["mac"] = card[3]
         return fi
 
     def get_base_router(self):
@@ -539,7 +527,6 @@ class Script(BaseScript):
                 my_dict.pop("bad_stat")
                 my_dict["description"] = my_dict["description"].replace("\n", "")
                 fi["interfaces"].append(my_dict)
-
         lag_info = self.cli("show lag detail")
 
         lags = self.re_lag_split.split(lag_info)
@@ -581,7 +568,6 @@ class Script(BaseScript):
                     my_dict["protocols"] = []
                 my_dict["description"] = my_dict["description"].replace("\n", "")
                 fi["interfaces"].append(my_dict)
-
         intf = self.cli('show router "Base" interface detail')
         fi["interfaces"] += self.parse_interfaces(intf, fi["interfaces"])
 
@@ -593,7 +579,6 @@ class Script(BaseScript):
         fi = self.get_forwarding_instance()
         for forw_instance in fi:
             result += [forw_instance]
-
         fi = self.get_managment_router()
         result += [fi]
 
