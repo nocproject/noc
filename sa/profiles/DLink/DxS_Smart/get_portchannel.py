@@ -75,7 +75,7 @@ class Script(BaseScript):
                             "interface": port,
                             # ?????? type detection
                             # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
-                            "type": "L" if v[3] == 1 else "S",
+                            "type": "L" if int(v[3]) == 1 else "S",
                             "members": members,
                         }
                     )
