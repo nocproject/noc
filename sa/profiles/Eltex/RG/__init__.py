@@ -15,7 +15,9 @@ class Profile(BaseProfile):
     name = "Eltex.RG"
     pattern_username = "^\S+ [Ll]ogin:"
     pattern_password = "^[Pp]assword:"
-    pattern_prompt = r"^\S+@(?P<hostname>\S+):~(\$|#)"
+    pattern_syntax_error = r"Permission denied"
+    pattern_unprivileged_prompt = r"^\S+@(?P<hostname>\S+):~\$"
+    pattern_prompt = r"^\S+@(?P<hostname>\S+):~#"
     command_exit = "exit"
     command_more = "\n"
 

@@ -16,5 +16,8 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        config = self.cli("tail -n +1 /tmp/etc/config/cert/* /tmp/etc/config/*")
+        try:
+            config = self.cli("tail -n +1 /tmp/etc/config/cert/* /tmp/etc/config/*")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError("Permission denied")
         return self.cleaned_config(config)
