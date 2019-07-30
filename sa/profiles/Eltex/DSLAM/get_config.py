@@ -18,8 +18,12 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         config = ""
         try:
-            for j in ["user", "adsl", "iptv", "snmp", "pppi", "dhcp"]:
-                config = config + "\n" + self.cli("system show cfg file " + j)
+            if self.is_platform_MXA32 or self.is_platform_MXA64:
+                for j in ["user", "adsl", "iptv", "snmp", "pppi", "dhcp"]:
+                    config = config + "\n" + self.cli("system show cfg file " + j)
+            elif self.is_platform_MXA24:
+                for j in ["user config", "snmp config", "net settings"]:
+                    config = config + "\n" + self.cli("system show " + j)
         except self.CLISyntaxError:
             pass
         return self.cleaned_config(config)
