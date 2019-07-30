@@ -121,9 +121,7 @@ class ReportPendingLinks(object):
                             "remote_iface": pend_str.group("remote_iface"),
                         }
                         # print(discovery["problems"]["lldp"])
-
             n += 10000
-
         return problems
 
 
@@ -135,7 +133,8 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             pool = forms.ChoiceField(
                 label=_("Managed Objects Pools"),
                 required=True,
-                choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+                choices=list(Pool.objects.order_by("name").scalar("id", "name"))
+                + [(None, "-" * 9)],
             )
             obj_profile = forms.ModelChoiceField(
                 label=_("Managed Objects Profile"),
@@ -168,7 +167,6 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if obj_profile:
             mos = mos.filter(object_profile=obj_profile)
-
         mos_id = dict((mo.id, mo) for mo in mos)
         report = ReportPendingLinks(
             list(six.iterkeys(mos_id)),
@@ -195,7 +193,6 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                         not_found[match[0]] += 1
                 elif problems[mo_id][iface]["problem"] == "Not found iface on remote":
                     local_on_remote[(mo.name, mo.address)] += 1
-
         data += [SectionRow(name="Summary information on u_object")]
         for c in not_found:
             if not_found[c] > 4:
@@ -204,7 +201,6 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         for c in local_on_remote:
             if local_on_remote[c] > 4:
                 data += [c]
-
         return self.from_dataset(
             title=self.title,
             columns=[
