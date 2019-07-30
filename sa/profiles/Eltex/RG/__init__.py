@@ -3,7 +3,7 @@
 # Vendor: Eltex
 # OS:     RG
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,9 @@ class Profile(BaseProfile):
     name = "Eltex.RG"
     pattern_username = "^\S+ [Ll]ogin:"
     pattern_password = "^[Pp]assword:"
-    pattern_prompt = r"^\S+\$ "
+    pattern_syntax_error = r"Permission denied"
+    pattern_unprivileged_prompt = r"^\S+@(?P<hostname>\S+):~\$"
+    pattern_prompt = r"^\S+@(?P<hostname>\S+):~#"
     command_exit = "exit"
     command_more = "\n"
 
