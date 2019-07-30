@@ -307,7 +307,7 @@ class Script(BaseScript):
             ifindex = 0
             name = res[0].strip()
             if self.match_version(version__regex=r"[12]\.[15]\.4[4-9]") or self.match_version(
-                version__regex=r"4\.0\.[1,5-9]"
+                version__regex=r"4\.0\.[4-9,10-19]"
             ):
                 v = self.cli("show interface %s" % name)
                 time.sleep(0.5)
