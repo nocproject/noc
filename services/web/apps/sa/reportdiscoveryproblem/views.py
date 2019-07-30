@@ -95,7 +95,7 @@ class ReportForm(forms.Form):
     pool = forms.ChoiceField(
         label=_("Managed Objects Pool"),
         required=False,
-        choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+        choices=list(Pool.objects.order_by("name").scalar("id", "name")) + [(None, "-" * 9)],
     )
     obj_profile = forms.ModelChoiceField(
         label=_("Managed Objects Profile"),
@@ -165,7 +165,6 @@ class ReportFilterApplication(SimpleReport):
             mos = ManagedObject.objects.filter(selector.Q)
         else:
             mos = ManagedObject.objects.filter(pool=pool, is_managed=True)
-
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if obj_profile:
@@ -175,7 +174,6 @@ class ReportFilterApplication(SimpleReport):
             mos = mos.filter(profile=Profile.objects.get(name=GENERIC_PROFILE)).exclude(
                 object_profile__in=mnp_in
             )
-
         if profile_check_only:
             match = {
                 "$or": [
@@ -185,7 +183,6 @@ class ReportFilterApplication(SimpleReport):
                     {"job.problems.version.": {"$regex": "Remote error code 1000[1234]"}},
                 ]
             }
-
         elif failed_scripts_only:
             match = {
                 "$and": [
@@ -196,12 +193,10 @@ class ReportFilterApplication(SimpleReport):
             }
         elif filter_view_other:
             match = {"job.problems.suggest_snmp": {"$exists": False}}
-
         rdp = ReportDiscoveryProblem(mos, avail_only=avail_status, match=match)
         exclude_method = []
         if filter_pending_links:
             exclude_method += ["lldp", "lacp", "cdp", "huawei_ndp"]
-
         for discovery in rdp:
             mo = ManagedObject.get_by_id(discovery["key"])
             for method in [x for x in discovery["job"][0]["problems"] if x not in exclude_method]:
@@ -214,7 +209,6 @@ class ReportFilterApplication(SimpleReport):
                     problem = code_map.get(problem.split(" ")[-1], problem)
                 if isinstance(problem, six.string_types):
                     problem = problem.replace("\n", " ").replace("\r", " ")
-
                 data += [
                     (
                         mo.name,
@@ -227,7 +221,6 @@ class ReportFilterApplication(SimpleReport):
                         problem,
                     )
                 ]
-
         return self.from_dataset(
             title=self.title,
             columns=[

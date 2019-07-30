@@ -27,7 +27,8 @@ class ReportDiscoveryCapsApplication(SimpleReport):
             pool = forms.ChoiceField(
                 label=_("Managed Objects Pool"),
                 required=True,
-                choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+                choices=list(Pool.objects.order_by("name").scalar("id", "name"))
+                + [(None, "-" * 9)],
             )
             obj_profile = forms.ModelChoiceField(
                 label=_("Managed Objects Profile"),
@@ -61,5 +62,4 @@ class ReportDiscoveryCapsApplication(SimpleReport):
                 if i.type == "SVI":
                     continue
                 data += [(mo.name, mo.address, i.name, ";".join(i.enabled_protocols))]
-
         return self.from_dataset(title=self.title, columns=columns, data=data)

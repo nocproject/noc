@@ -37,12 +37,14 @@ class ReportFilterApplication(SimpleReport):
             pool = forms.ChoiceField(
                 label=_("Managed Objects Pool"),
                 required=False,
-                choices=list(Pool.objects.order_by("name").scalar("id", "name")),
+                choices=list(Pool.objects.order_by("name").scalar("id", "name"))
+                + [(None, "-" * 9)],
             )
             int_profile = forms.ChoiceField(
                 label=_("Interface Profile"),
                 required=True,
-                choices=list(InterfaceProfile.objects.order_by("name").scalar("id", "name")),
+                choices=list(InterfaceProfile.objects.order_by("name").scalar("id", "name"))
+                + [(None, "-" * 9)],
             )
             mop = forms.ModelChoiceField(
                 label=_("Managed Object Profile"),
@@ -90,7 +92,6 @@ class ReportFilterApplication(SimpleReport):
             mo, iface = s.split(".")
             mo = ManagedObject.get_by_id(mo)
             data += [(mo.name, mo.address, mo.profile.name, iface)]
-
         return self.from_dataset(
             title=self.title,
             columns=[_("Managed Object"), _("Address"), _("SA Profile"), _("Interface")],
