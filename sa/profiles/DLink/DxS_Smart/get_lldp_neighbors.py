@@ -14,6 +14,7 @@ import six
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.mac import MAC
+from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_MAC
 
 
 class Script(BaseScript):
@@ -78,9 +79,9 @@ class Script(BaseScript):
             ]
         ):
             neigh = dict(zip(neighb, v[1:]))
-            if neigh["remote_chassis_id_subtype"] == 4:
+            if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC
                 neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
-            if neigh["remote_port_subtype"] == 3:
+            if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC
                 neigh["remote_port"] = MAC(neigh["remote_port"])
             for i in neigh:
                 if isinstance(neigh[i], six.string_types):
