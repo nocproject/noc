@@ -33,6 +33,8 @@ from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
 from noc.core.model.decorator import on_delete, on_save, on_delete_check
 from noc.core.model.fields import DocumentReferenceField
+from noc.ip.models.vrf import VRF
+from noc.vc.models.vcdomain import VCDomain
 from .profile import Profile
 from .administrativedomain import AdministrativeDomain
 from .managedobjectprofile import ManagedObjectProfile
@@ -113,10 +115,10 @@ class ManagedObjectSelector(NOCModel):
         on_delete=models.CASCADE,
     )
     filter_vrf = models.ForeignKey(
-        "ip.VRF", verbose_name=_("Filter by VRF"), null=True, blank=True, on_delete=models.CASCADE
+        VRF, verbose_name=_("Filter by VRF"), null=True, blank=True, on_delete=models.CASCADE
     )
     filter_vc_domain = models.ForeignKey(
-        "vc.VCDomain",
+        VCDomain,
         verbose_name=_("Filter by VC Domain"),
         null=True,
         blank=True,
