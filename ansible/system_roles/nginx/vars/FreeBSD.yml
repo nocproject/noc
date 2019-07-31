@@ -1,3 +1,4 @@
 # FreeBSD settings
 ---
 nginx_user: nginx  # ????? have to be fixed
+reload_command: "service nginx restart||true"
