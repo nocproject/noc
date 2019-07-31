@@ -81,6 +81,8 @@ class Profile(BaseProfile):
         "89": "MES-2308P",
         "92": "MES-2324P",
         "98": "MES-3508P",
+        "112": "MES-2308R",
+        "120": "MES-3348F",
     }
 
     def get_platform(self, s):
