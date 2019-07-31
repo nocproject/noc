@@ -690,7 +690,8 @@ class ManagedObjectProfile(NOCModel):
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
     def iter_objects():
-        pool_cache = cachetools.LRUCache(maxsize=200, missing=lambda x: Pool.objects.get(id=x))
+        pool_cache = cachetools.LRUCache(maxsize=200)
+        pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
         for o_id, is_managed, pool_id in profile.managedobject_set.values_list(
             "id", "is_managed", "pool"
         ):
