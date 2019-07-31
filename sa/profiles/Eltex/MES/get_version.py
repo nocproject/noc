@@ -75,7 +75,7 @@ class Script(BaseScript):
         try:
             v = self.cli("show unit", cached=True)
         except self.CLISyntaxError:
-            v = self.cli("show stack", cached=True)
+            v = self.cli("show stack", ignore_errors=True, cached=True)
         match = self.rx_master_unit.search(v)
         if match:
             master_unit = match.group("unit")
