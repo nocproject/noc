@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from builtins import zip
 import re
 import six
 
