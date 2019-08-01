@@ -66,7 +66,8 @@ class OutageCard(BaseCard):
                 else:
                     d1[k] = d2[k]
 
-        segment_path = cachetools.LRUCache(maxsize=10000, missing=get_segment_path)
+        segment_path = cachetools.LRUCache(maxsize=10000)
+        segment_path.__missing__ = get_segment_path
         # Build tree
         tree = {"segment": None, "segments": {}, "objects": {}, "subscribers": {}, "services": {}}
         if self.current_user.is_superuser:
