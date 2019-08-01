@@ -75,6 +75,8 @@ class Profile(BaseProfile):
         if v["platform"].startswith("DES-1210-52"):
             if v["version"].startswith("1") or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.7"
+            elif v["version"].startswith("4"):
+                return "1.3.6.1.4.1.171.10.75.20.1"
             else:
                 return "1.3.6.1.4.1.171.10.75.17"
         if v["platform"].startswith("DES-1210-48"):
