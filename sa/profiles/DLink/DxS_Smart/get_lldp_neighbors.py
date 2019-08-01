@@ -78,7 +78,7 @@ class Script(BaseScript):
                 "1.0.8802.1.1.2.1.4.1.1.12",  # LLDP-MIB::lldpRemSysCapEnabled
             ]
         ):
-            neigh = dict(zip(neighb, v[1:]))
+            neigh = dict(list(zip(neighb, v[1:])))
             if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
                 neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
             if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
