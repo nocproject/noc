@@ -45,7 +45,8 @@ class Migration(BaseMigration):
                 """,
                 [str(doc["_id"]), doc["handler"]],
             )
-        h_coll.bulk_write(bulk, ordered=True)
+        if bulk:
+            h_coll.bulk_write(bulk, ordered=True)
 
     def migrate_handler(self, table, field, **kwargs):
         h_coll = self.mongo_db["handlers"]
