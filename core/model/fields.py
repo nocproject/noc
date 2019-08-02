@@ -10,6 +10,7 @@
 import psycopg2
 from psycopg2.extensions import adapt
 from django.db import models
+from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 import six
 from bson import ObjectId
@@ -283,33 +284,17 @@ class DocumentReferenceField(models.Field):
             return str(value.id)
 
 
-class CachedForeignKeyDescriptor(object):
-    def __init__(self, field):
-        self.field = field
-        self.cache_name = "_%s" % field.get_cache_name()
-
-    def __get__(self, instance, owner):
-        try:
-            return getattr(instance, self.cache_name)
-        except AttributeError:
-            pass
-        val = getattr(instance, self.field.attname)
-        if val is None:
-            raise AttributeError
-        v = self.field.remote_field.model.get_by_id(val)
-        if v is not None:
-            setattr(instance, self.cache_name, v)
-            return v
-        raise AttributeError
-
-    def __set__(self, instance, value):
-        setattr(instance, self.cache_name, value)
+class CachedForeignKeyDescriptor(ForwardManyToOneDescriptor):
+    def get_object(self, instance):
+        ref = getattr(instance, self.field.attname, None)
+        if ref:
+            # Fast cached path
+            return self.field.remote_field.model.get_by_id(ref)
+        return super(CachedForeignKeyDescriptor, self).get_object(instance)
 
 
 class CachedForeignKey(models.ForeignKey):
-    def contribute_to_class(self, cls, name, *args, **kwargs):
-        super(CachedForeignKey, self).contribute_to_class(cls, name, *args, **kwargs)
-        setattr(cls, self.get_cache_name(), CachedForeignKeyDescriptor(self))
+    forward_related_accessor_class = CachedForeignKeyDescriptor
 
 
 class ObjectIDArrayField(models.Field):
