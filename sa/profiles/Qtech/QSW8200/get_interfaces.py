@@ -36,10 +36,10 @@ class Script(BaseScript):
     rx_ipv4 = re.compile(r"^\s+Internet Address is (?P<ipv4>\S+)", re.MULTILINE)
     rx_ipv6 = re.compile(r"^\s+Internet v6 Address is (?P<ipv6>\S+)", re.MULTILINE)
     # rx_jumbo = re.compile("^\s+JUMBOFRAME (?P<mtu>\d+) bytes")
-    rx_mtu = re.compile("^\s+MTU (?P<mtu>\d+) bytes", re.MULTILINE)
-    rx_vlan_id = re.compile("^vlan(?P<vlan_id>\d+)", re.MULTILINE)
+    rx_mtu = re.compile(r"^\s+MTU (?P<mtu>\d+) bytes", re.MULTILINE)
+    rx_vlan_id = re.compile(r"^vlan(?P<vlan_id>\d+)", re.MULTILINE)
     rx_ifname = re.compile(
-        "^(?P<ifname>tengigabitethernet|gigaethernet)(?P<ifnum>\d+/\d+/\d+)", re.MULTILINE
+        r"^(?P<ifname>tengigabitethernet|gigaethernet)(?P<ifnum>\d+/\d+/\d+)", re.MULTILINE
     )
     rx_switch = re.compile(
         r"^Interface:.*\n"
@@ -50,8 +50,8 @@ class Script(BaseScript):
         r"^Access Mode VLAN: (?P<a_vlan>\d+)\s*\n"
         r"^Administrative Access Egress VLANs:.*\n"
         r"^Operational Access Egress VLANs:.*\n"
-        r"^Trunk Native Mode VLAN:(?P<t_vlan>.*)\n"
-        r"^Trunk Native VLAN:.*\n"
+        r"^Trunk (Native Mode|Mode Native) VLAN:(?P<t_vlan>.*)\n"
+        r"^Trunk Native VLAN( Status|):.*\n"
         r"^Administrative Trunk Allowed VLANs:.*\n"
         r"^Operational Trunk Allowed VLANs:(?P<t_vlans>.*)\n"
         r"^Administrative Trunk Untagged VLANs:(?P<t_uvlan>.*)\n"
