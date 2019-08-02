@@ -18,6 +18,7 @@ import cachetools
 
 # NOC modules
 from noc.main.models.template import Template
+from noc.main.models.handler import Handler
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclass import EventClass
 from noc.core.window import wf_choices
@@ -42,8 +43,8 @@ class ThresholdConfig(EmbeddedDocument):
     open_event_class = PlainReferenceField(EventClass)
     close_event_class = PlainReferenceField(EventClass)
     # Handlers to call on open and close thresholds
-    open_handler = StringField()
-    close_handler = StringField()
+    open_handler = PlainReferenceField(Handler)
+    close_handler = PlainReferenceField(Handler)
     #
     template = ForeignKeyField(Template)
 
