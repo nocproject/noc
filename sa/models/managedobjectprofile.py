@@ -283,7 +283,7 @@ class ManagedObjectProfile(NOCModel):
         AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=models.CASCADE
     )
     #
-    hk_handler = models.CharField(_("Housekeeping Handler"), max_length=255, null=True, blank=True)
+    hk_handler = DocumentReferenceField(Handler, null=True, blank=True)
     # MAC collection settings
     # Collect all MAC addresses
     mac_collect_all = models.BooleanField(default=False)

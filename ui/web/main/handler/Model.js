@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.handler Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.handler.Model");
@@ -33,6 +33,18 @@ Ext.define("NOC.main.handler.Model", {
         },
         {
             name: "allow_config_validation",
+            type: "boolean"
+        },
+        {
+            name: "allow_config_diff",
+            type: "boolean"
+        },
+        {
+            name: "allow_config_diff_filter",
+            type: "boolean"
+        },
+        {
+            name: "allow_housekeeping",
             type: "boolean"
         },
         {

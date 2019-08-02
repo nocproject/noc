@@ -64,6 +64,21 @@ Ext.define("NOC.main.handler.Application", {
                     boxLabel: __("Allow Config Validation")
                 },
                 {
+                    name: "allow_config_diff",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Config Diff")
+                },
+                {
+                    name: "allow_config_diff_filter",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Config Diff Filter")
+                },
+                {
+                    name: "allow_housekeeping",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow housekeeping")
+                },
+                {
                     name: "allow_resolver",
                     xtype: "checkbox",
                     boxLabel: __("Allow Resolver")

@@ -575,12 +575,15 @@ class MetricsCheck(DiscoveryCheck):
                         # @todo
                         pass
                     if threshold.close_handler:
-                        handler = get_handler(threshold.close_handler)
-                        if handler:
-                            try:
-                                handler(self, cfg, threshold, w_value)
-                            except Exception as e:
-                                self.logger.error("Exception when calling close handler: %s", e)
+                        if threshold.close_handler.allow_threshold:
+                            handler = threshold.close_handler.get_handler()
+                            if handler:
+                                try:
+                                    handler(self, cfg, threshold, w_value)
+                                except Exception as e:
+                                    self.logger.error("Exception when calling close handler: %s", e)
+                        else:
+                            self.logger.warning("Handler is not allowed for Thresholds")
                 elif threshold.alarm_class:
                     # Remain umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
@@ -599,13 +602,16 @@ class MetricsCheck(DiscoveryCheck):
                     # @todo
                     pass
                 if threshold.open_handler:
-                    # Call handler
-                    handler = get_handler(threshold.open_handler)
-                    if handler:
-                        try:
-                            handler(self, cfg, threshold, w_value)
-                        except Exception as e:
-                            self.logger.error("Exception when calling open handler: %s", e)
+                    if threshold.open_handler.allow_threshold:
+                        # Call handler
+                        handler = threshold.open_handler.get_handler()
+                        if handler:
+                            try:
+                                handler(self, cfg, threshold, w_value)
+                            except Exception as e:
+                                self.logger.error("Exception when calling open handler: %s", e)
+                    else:
+                        self.logger.warning("Handler is not allowed for Thresholds")
                 if threshold.alarm_class:
                     # Raise umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)

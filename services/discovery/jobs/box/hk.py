@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # HouseKeeping check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.handler import get_handler
 
 
 class HouseKeepingCheck(DiscoveryCheck):
@@ -20,8 +19,8 @@ class HouseKeepingCheck(DiscoveryCheck):
 
     def handler(self):
         if self.object.object_profile.hk_handler:
-            handler = get_handler(self.object.object_profile.hk_handler)
-            if handler:
+            if self.object.object_profile.hk_handler.allow_housekeeping:
+                handler = self.object.object_profile.hk_handler.get_handler()
                 self.logger.info("Running housekeeping")
                 handler(self)
             else:
