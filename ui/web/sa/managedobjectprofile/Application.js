@@ -1479,10 +1479,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         },
                                         {
                                             name: "hk_handler",
-                                            xtype: "textfield",
-                                            labelAlign: "left",
+                                            xtype: "main.handler.LookupField",
                                             fieldLabel: __("Handler"),
                                             allowBlank: true,
+                                            uiStyle: "medium",
+                                            query: {
+                                                allow_housekeeping: true
+                                            },
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryHK.checked}"
                                             }

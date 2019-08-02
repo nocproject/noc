@@ -23,12 +23,20 @@ from noc.core.handler import get_handler
 id_lock = Lock()
 
 
-@on_delete_check(check=[("sa.ManagedObjectProfile", "resolver_handler")])
+@on_delete_check(
+    check=[
+        ("sa.ManagedObjectProfile", "resolver_handler"),
+        ("sa.ManagedObjectProfile", "hk_handler"),
+        ("sa.ManagedObject", "config_filter_handler"),
+        ("sa.ManagedObject", "config_diff_filter_handler"),
+        ("sa.ManagedObject", "config_validation_handler"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Handler(Document):
     meta = {"collection": "handlers", "strict": False, "auto_create_index": False}
 
-    handler = StringField(primary_key=True)
+    handler = StringField()
     name = StringField()
     description = StringField()
     allow_config_filter = BooleanField()

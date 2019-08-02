@@ -253,15 +253,10 @@ class ManagedObject(NOCModel):
     #
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
-    config_filter_handler = CharField(
-        "Config Filter handler", max_length=256, null=True, blank=True
-    )
-    config_diff_filter_handler = CharField(
-        "Config Diff Filter Handler", max_length=256, null=True, blank=True
-    )
-    config_validation_handler = CharField(
-        "Config Validation Handler", max_length=256, null=True, blank=True
-    )
+    config_filter_handler = DocumentReferenceField(Handler, null=True, blank=True)
+    config_diff_filter_handler = DocumentReferenceField(Handler, null=True, blank=True)
+    config_validation_handler = DocumentReferenceField(Handler, null=True, blank=True)
+    #
     max_scripts = IntegerField(
         "Max. Scripts", null=True, blank=True, help_text="Concurrent script session limits"
     )
@@ -981,52 +976,31 @@ class ManagedObject(NOCModel):
             data = "\n".join(r)
         # Wipe out unnecessary parts
         if self.config_filter_handler:
-            handler = Handler.get_by_id(self.config_filter_handler)
-            if handler and handler.allow_config_filter:
-                handler = handler.get_handler()
+            if self.config_filter_handler.allow_config_filter:
+                handler = self.config_filter_handler.get_handler()
                 data = handler(self, data)
-            elif handler and not handler.allow_config_filter:
-                logger.warning("Handler is not allowed for config filter")
             else:
-                logger.info(
-                    '[%s] Invalid config_filter_handler "%s", ignoring',
-                    self.name,
-                    self.config_filter_handler,
-                )
+                logger.warning("Handler is not allowed for config filter")
         # Pass data through config filter, if given
         if self.config_diff_filter_handler:
-            handler = Handler.get_by_id(self.config_diff_filter_handler)
-            if handler and handler.allow_config_diff_filter:
-                handler = handler.get_handler()
+            if self.config_diff_filter_handler.allow_config_diff_filter:
+                handler = self.config_diff_filter_handler.get_handler()
                 data = handler(self, data)
-            elif handler and not handler.allow_config_diff_filter:
-                logger.warning("Handler is not allowed for config diff filter")
             else:
-                logger.info(
-                    '[%s] Invalid config_diff_filter_handler "%s", ignoring',
-                    self.name,
-                    self.config_diff_filter_handler,
-                )
+                logger.warning("Handler is not allowed for config diff filter")
         # Pass data through the validation filter, if given
         # @todo: Replace with config validation policy
         if self.config_validation_handler:
-            handler = Handler.get_by_id(self.config_validation_handler)
-            if handler and handler.allow_config_validation:
-                handler = handler.get_handler()
+            if self.config_validation_handler.allow_config_validation:
+                handler = self.config_validation_handler.get_handler()
                 warnings = handler(self, data)
                 if warnings:
                     # There are some warnings. Notify responsible persons
                     self.event(
                         self.EV_CONFIG_POLICY_VIOLATION, {"object": self, "warnings": warnings}
                     )
-            elif handler and not handler.allow_config_validation:
-                logger.warning("Handler is not allowed for config validation")
             else:
-                logger.info(
-                    '[%s] Invalid config_validation_handler "%s", ignoring',
-                    self.name,
-                    self.config_validation_handler,
-                )
+                logger.warning("Handler is not allowed for config validation")
         # Calculate diff
         old_data = self.config.read()
         is_new = not bool(old_data)
@@ -1036,9 +1010,8 @@ class ManagedObject(NOCModel):
         else:
             # Calculate diff
             if self.config_diff_filter_handler:
-                handler = Handler.get_by_id(self.config_diff_filter_handler)
-                if handler and handler.allow_config_diff_filter:
-                    handler = handler.get_handler()
+                if self.config_diff_filter_handler.allow_config_diff_filter:
+                    handler = self.config_diff_filter_handler.get_handler()
                     # Pass through filters
                     old_data = handler(self, old_data)
                     new_data = handler(self, data)
@@ -1046,9 +1019,8 @@ class ManagedObject(NOCModel):
                         logger.error(
                             "[%s] broken config_diff_filter: Returns empty result", self.name
                         )
-                elif handler and not handler.allow_config_diff_filter:
-                    self.logger.warning("Handler is not allowed for config diff filter")
                 else:
+                    self.logger.warning("Handler is not allowed for config diff filter")
                     new_data = data
             else:
                 new_data = data

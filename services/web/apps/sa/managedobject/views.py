@@ -35,7 +35,6 @@ from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
-from noc.lib.app.decorators.handlerfield import handler_field
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
@@ -57,7 +56,6 @@ from noc.core.defer import call_later
 from noc.core.translation import ugettext as _
 
 
-@handler_field("config_filter_handler", "config_diff_filter_handler", "config_validation_handler")
 class ManagedObjectApplication(ExtModelApplication):
     """
     ManagedObject application

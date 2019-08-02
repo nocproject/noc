@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.handler Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.handler.Model");

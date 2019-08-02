@@ -545,6 +545,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "hk_handler__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false
