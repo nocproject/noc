@@ -8,6 +8,7 @@
 
 # Third-party modules
 import psycopg2
+from psycopg2.extensions import adapt
 from django.db import models
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 import six
@@ -183,6 +184,15 @@ class TagsField(models.Field):
 
     def get_db_prep_value(self, value, connection, prepared=False):
         return value
+
+
+@TagsField.register_lookup
+class TagsContainsLookup(models.Lookup):
+    lookup_name = "contains"
+
+    def as_sql(self, compiler, connection):
+        tags = ",".join(str(adapt(str(x).strip())) for x in self.rhs if str(x).strip())
+        return "(ARRAY[%s] <@ %s)" % (tags, self.lhs.as_sql(compiler, connection)[0]), []
 
 
 class DocumentReferenceDescriptor(object):

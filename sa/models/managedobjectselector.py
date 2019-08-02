@@ -30,7 +30,7 @@ from noc.main.models.pool import Pool
 from noc.main.models.prefixtable import PrefixTable
 from noc.core.model.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
-from noc.lib.db import SQL, QTags
+from noc.core.model.sql import SQL
 from noc.core.model.decorator import on_delete, on_save, on_delete_check
 from noc.core.model.fields import DocumentReferenceField
 from .profile import Profile
@@ -261,7 +261,7 @@ class ManagedObjectSelector(NOCModel):
             q &= Q(description__regex=self.filter_description)
         # Restrict to tags when necessary
         if self.filter_tags:
-            q &= QTags(self.filter_tags)
+            q &= Q(tags__contains=self.filter_tags)
         # Restrict to attributes when necessary
         for s in self.managedobjectselectorbyattribute_set.all():
             q &= SQL(
