@@ -33,7 +33,7 @@ class Script(GetMetricsScript):
         self.set_metric(id=("Memory | Usage", None), value=memory)
 
     @metrics(["Environment | Temperature"], volatile=False, access="C")  # CLI version
-    def get_memory_metrics(self, metrics):
+    def get_temperature_metrics(self, metrics):
         c = self.cli("get monitoring temperature")
         temperature = c.strip()
         self.set_metric(id=("Environment | Temperature", None), value=temperature)
