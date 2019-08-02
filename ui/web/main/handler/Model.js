@@ -36,6 +36,18 @@ Ext.define("NOC.main.handler.Model", {
             type: "boolean"
         },
         {
+            name: "allow_config_diff",
+            type: "boolean"
+        },
+        {
+            name: "allow_config_diff_filter",
+            type: "boolean"
+        },
+        {
+            name: "allow_housekeeping",
+            type: "boolean"
+        },
+        {
             name: "allow_resolver",
             type: "boolean"
         },

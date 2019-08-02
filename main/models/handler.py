@@ -55,7 +55,7 @@ class Handler(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        return Handler.objects.filter(handler=id).first()
+        return Handler.objects.filter(id=id).first()
 
     def get_handler(self):
         return get_handler(self.handler)

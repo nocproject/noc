@@ -19,7 +19,7 @@ class HouseKeepingCheck(DiscoveryCheck):
 
     def handler(self):
         if self.object.object_profile.hk_handler:
-            if self.object.object_profile.hk_handler.enable_housekeeping:
+            if self.object.object_profile.hk_handler.allow_housekeeping:
                 handler = self.object.object_profile.hk_handler.get_handler()
                 self.logger.info("Running housekeeping")
                 handler(self)

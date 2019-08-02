@@ -36,7 +36,7 @@ class Migration(BaseMigration):
         for doc in h_coll.find({}):
             doc["handler"] = doc["_id"]
             doc["_id"] = bson.ObjectId()
-            bulk += [InsertOne(doc), DeleteOne(doc["handler"])]
+            bulk += [InsertOne(doc), DeleteOne({"_id": doc["handler"]})]
             self.db.execute(
                 """
                 UPDATE sa_managedobjectprofile

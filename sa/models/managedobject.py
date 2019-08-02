@@ -978,14 +978,14 @@ class ManagedObject(NOCModel):
         if self.config_filter_handler:
             if self.config_filter_handler.allow_config_filter:
                 handler = self.config_filter_handler.get_handler()
-                data = handler(self, data)
+                data = handler(self, data) or ""
             else:
                 logger.warning("Handler is not allowed for config filter")
         # Pass data through config filter, if given
         if self.config_diff_filter_handler:
             if self.config_diff_filter_handler.allow_config_diff_filter:
                 handler = self.config_diff_filter_handler.get_handler()
-                data = handler(self, data)
+                data = handler(self, data) or ""
             else:
                 logger.warning("Handler is not allowed for config diff filter")
         # Pass data through the validation filter, if given
