@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # "now"search"" macro
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from __future__ import absolute_import
 
 # Third-party modules
 from django.db.models import Q
-from noc.lib.db import QTags
 from .base import BaseMacro
 
 
@@ -42,7 +41,7 @@ class SearchMacro(BaseMacro):
             tags = args["tags"].split(",")
             tags = [x for x in tags if x]
             if tags:
-                q &= QTags(tags)
+                q &= Q(tags__contains=tags)
         if "language" in args:
             q &= Q(language__name=args["language"])
         q = KBEntry.objects.filter(q)  # Flatten to query
