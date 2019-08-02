@@ -51,8 +51,8 @@ class Migration(BaseMigration):
         h_coll = self.mongo_db["handlers"]
         for mop_id, handler in self.db.execute(
             """
-            SELECT id, %s 
-            FROM %s 
+            SELECT id, %s
+            FROM %s
             WHERE %s IS NOT NULL
             """
             % (field, table, field)
