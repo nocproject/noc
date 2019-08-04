@@ -19,7 +19,10 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+" r"(?P<type>\S+)", re.MULTILINE
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+(?P<type>\S+)", re.MULTILINE
+    )
+    rx_escom_l_line = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<iface>\S+)", re.MULTILINE
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -31,7 +34,10 @@ class Script(BaseScript):
             cmd += " interface %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
-        for match in self.rx_line.finditer(self.cli(cmd)):
+        re_find = self.rx_line
+        if self.is_escom_l:
+            re_find = self.rx_escom_l_line
+        for match in re_find.finditer(self.cli(cmd)):
             if match.group("iface") == "0":
                 # self mac
                 continue
