@@ -78,6 +78,8 @@ class Script(BaseScript):
                     # 2a2d - hex string
                     ssid = ssid.decode("hex")
                 bss = self.get_bss_status(value["bss"])
+                if not bss:
+                    continue
                 if_ssid = "%s.%s" % (ifname, ssid)
                 r[ifname] = {
                     "interface": ifname,
