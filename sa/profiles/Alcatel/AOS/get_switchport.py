@@ -40,7 +40,7 @@ class Script(BaseScript):
             if i:
                 cli_ag = self.cli("show vlan port %s" % i)
                 tagget = []
-                untagged = []
+                untagged = None
                 for match_ag in self.rx_line_vlan_ag.finditer(cli_ag):
                     vlan = match_ag.group("vlan")
                     vlan_type = match_ag.group("vlan_type")
@@ -59,15 +59,15 @@ class Script(BaseScript):
                         "description": "",
                         "802.1Q Enabled": "True",
                         "802.1ad Tunnel": False,
-                        "untagged": untagged,
                         "tagged": tagget,
                         "members": members,
                     }
                 ]
+                if untagged:
+                    r[-1]["untagged"] = untagged
         if members:
             for m in pc["members"]:
                 portchannel_members[m] = i
-
         for match in self.rx_line_vlan.finditer(self.cli("show vlan port")):
             members = []
             interface = match.group("interface")
@@ -78,7 +78,6 @@ class Script(BaseScript):
                 iface_vlans[interface]["untagged"] = match.group("vlan")
             if vlan_type == "qtagged":
                 iface_vlans[interface]["tagged"] += [match.group("vlan")]
-
         for match in self.rx_line.finditer(self.cli("show interfaces status")):
             interface = match.group("interface")
             if interface not in portchannel_members:
