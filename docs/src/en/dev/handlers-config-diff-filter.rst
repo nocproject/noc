@@ -31,7 +31,7 @@ Examples
 
 Hide altering part
 ^^^^^^^^^^^^^^^^^^
-Remote *ntp date XXX*::
+Remove *ntp date XXX*::
 
     import re
 
