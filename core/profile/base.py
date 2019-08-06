@@ -243,6 +243,8 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator",
         "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",
         "noc.core.confdb.applicator.stppriority.DefaultSTPPriorityApplicator",
+        "noc.core.confdb.applicator.ntp.DefaultNTPModeApplication",
+        "noc.core.confdb.applicator.ntp.DefaultNTPVersionApplication",
     ]
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties

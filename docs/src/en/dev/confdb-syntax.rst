@@ -28,6 +28,8 @@ Structure
 | | **clock** :ref:`(?)<dev-config-normalized-system-clock>`
 | | | **timezone**
 | | | | ``<tz name>``
+| | | **source**
+| | | | ``<source>``
 | :ref:`virtual-router<dev-config-normalized-virtual-router>`
 | | ``<vr name>``
 | | | **forwarding-instance**
@@ -70,6 +72,30 @@ Structure
 | | | | | | | | ``<interface name>``
 | | | | | | | | | **cost**
 | | | | | | | | | | ``<interface cost>``
+| | | | | | **ntp**
+| | | | | | | ``<server name>``
+| | | | | | | | **version**
+| | | | | | | | | ``<version>``
+| | | | | | | | **address**
+| | | | | | | | | ``<address>``
+| | | | | | | | **mode**
+| | | | | | | | | ``<mode>``
+| | | | | | | | **authentication**
+| | | | | | | | | **type**
+| | | | | | | | | | ``<type>``
+| | | | | | | | | **key**
+| | | | | | | | | | ``<key>``
+| | | | | | | | **prefer**
+| | | | | | | | **broadcast**
+| | | | | | | | | **version**
+| | | | | | | | | | ``<version>``
+| | | | | | | | | **address**
+| | | | | | | | | | ``<address>``
+| | | | | | | | | **authentication**
+| | | | | | | | | | **type**
+| | | | | | | | | | | ``<type>``
+| | | | | | | | | | **key**
+| | | | | | | | | | | ``<key>``
 
 .. _dev-config-normalized-system:
 

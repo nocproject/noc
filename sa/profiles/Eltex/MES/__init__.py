@@ -49,6 +49,8 @@ class Profile(BaseProfile):
         ("hints", "protocols", "spanning-tree", "status", False),
         ("hints", "protocols", "spanning-tree", "priority", "32768"),
         ("hints", "protocols", "loop-detect", "status", False),
+        ("hints", "protocols", "ntp", "mode", "server"),
+        ("hints", "protocols", "ntp", "version", "3"),
     ]
 
     matchers = {"is_has_image": {"image": {"$regex": r"^\S+"}}}

@@ -30,6 +30,10 @@ class Profile(BaseProfile):
     rogue_chars = ["\r", "\x00"]
     config_tokenizer = "routeros"
     config_normalizer = "RouterOSNormalizer"
+    confdb_defaults = [
+        ("hints", "protocols", "ntp", "mode", "server"),
+        ("hints", "protocols", "ntp", "version", "3"),
+    ]
 
     # telnet_naws = "\x00\xfa\x00\xfa"
 
