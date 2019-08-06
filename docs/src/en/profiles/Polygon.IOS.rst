@@ -1,3 +1,4 @@
+.. _profile-Polygon.IOS:
 
 ===========
 Polygon.IOS

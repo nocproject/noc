@@ -1,3 +1,4 @@
+.. _profile-Eltex.TAU:
 
 =========
 Eltex.TAU

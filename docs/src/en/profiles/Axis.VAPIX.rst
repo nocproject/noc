@@ -1,3 +1,4 @@
+.. _profile-Axis.VAPIX:
 
 ==========
 Axis.VAPIX

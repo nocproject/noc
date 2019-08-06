@@ -1,3 +1,4 @@
+.. _profile-GWD.GFA:
 
 =======
 GWD.GFA

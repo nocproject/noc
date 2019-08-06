@@ -1,6 +1,8 @@
-=======================================
+.. _profile-Protei.MediaGateway:
+
+===================
 Protei.MediaGateway
-=======================================
+===================
 
 .. contents:: On this page
     :local:

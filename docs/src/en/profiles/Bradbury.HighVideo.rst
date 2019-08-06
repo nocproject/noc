@@ -1,6 +1,8 @@
-=======================================
+.. _profile-Bradbury.HighVideo:
+
+==================
 Bradbury.HighVideo
-=======================================
+==================
 
 .. contents:: On this page
     :local:

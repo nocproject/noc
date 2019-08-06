@@ -1,8 +1,8 @@
-.. _profile-Upvel-UP:
+.. _profile-Upvel.UP:
 
-=======================================
+========
 Upvel.UP
-=======================================
+========
 
 .. contents:: On this page
     :local:

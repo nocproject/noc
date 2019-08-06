@@ -1,3 +1,4 @@
+.. _profile-Linux.Debian:
 
 ============
 Linux.Debian

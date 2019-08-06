@@ -1,6 +1,8 @@
-=======================================
+.. _profile-Fortinet.Fortigate:
+
+==================
 Fortinet.Fortigate
-=======================================
+==================
 
 .. contents:: On this page
     :local:

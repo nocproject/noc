@@ -1,3 +1,4 @@
+.. _profile-Qtech.BFC_PBIC_S:
 
 ================
 Qtech.BFC_PBIC_S

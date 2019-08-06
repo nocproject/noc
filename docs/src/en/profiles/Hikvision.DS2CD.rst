@@ -1,3 +1,4 @@
+.. _profile-Hikvision.DS2CD:
 
 ===============
 Hikvision.DS2CD

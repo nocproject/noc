@@ -1,3 +1,4 @@
+.. _profile-Extreme.Summit200:
 
 =================
 Extreme.Summit200
