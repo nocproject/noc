@@ -1,3 +1,4 @@
+.. _profile-Dahua.DH:
 
 ========
 Dahua.DH

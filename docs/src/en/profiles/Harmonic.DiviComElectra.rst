@@ -1,6 +1,8 @@
-=======================================
+.. _profile-Harmonic.DiviComElectra:
+
+=======================
 Harmonic.DiviComElectra
-=======================================
+=======================
 
 .. contents:: On this page
     :local:

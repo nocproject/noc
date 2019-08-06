@@ -1,3 +1,4 @@
+.. _profile-ZTE.ZXA10:
 
 =========
 ZTE.ZXA10

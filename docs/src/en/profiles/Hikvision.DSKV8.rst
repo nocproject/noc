@@ -1,3 +1,4 @@
+.. _profile-Hikvision.DSKV8:
 
 ===============
 Hikvision.DSKV8

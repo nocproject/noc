@@ -1,6 +1,8 @@
-=======================================
+.. _profile-Generic.snmp_metrics:
+
+====================
 Generic.snmp_metrics
-=======================================
+====================
 
 .. contents:: On this page
     :local:

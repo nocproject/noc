@@ -1,3 +1,4 @@
+.. _profile-DLink.DxS_Industrial_CLI:
 
 ========================
 DLink.DxS_Industrial_CLI

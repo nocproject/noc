@@ -1,6 +1,8 @@
-=======================================
+.. _profile-MikroTik.RouterOS:
+
+=================
 MikroTik.RouterOS
-=======================================
+=================
 
 .. contents:: On this page
     :local:

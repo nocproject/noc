@@ -1,6 +1,8 @@
-=======================================
+.. _profile-Ruckus.ZoneDirector:
+
+===================
 Ruckus.ZoneDirector
-=======================================
+===================
 
 .. contents:: On this page
     :local:

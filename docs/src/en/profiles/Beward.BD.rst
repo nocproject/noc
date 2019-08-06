@@ -1,3 +1,4 @@
+.. _profile-Beward.BD:
 
 =========
 Beward.BD

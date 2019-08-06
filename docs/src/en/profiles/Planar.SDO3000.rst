@@ -1,3 +1,4 @@
+.. _profile-Planar.SDO3000:
 
 ==============
 Planar.SDO3000

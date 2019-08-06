@@ -1,8 +1,8 @@
-.. _profile-Terayon-BW:
+.. _profile-Terayon.BW:
 
-=======================================
+==========
 Terayon.BW
-=======================================
+==========
 
 .. contents:: On this page
     :local:

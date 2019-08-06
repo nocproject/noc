@@ -1,3 +1,4 @@
+.. _profile-Vector.Lambda:
 
 =============
 Vector.Lambda

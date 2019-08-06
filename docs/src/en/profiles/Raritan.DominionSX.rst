@@ -1,6 +1,8 @@
-=======================================
+.. _profile-Raritan.DominionSX:
+
+==================
 Raritan.DominionSX
-=======================================
+==================
 
 .. contents:: On this page
     :local:

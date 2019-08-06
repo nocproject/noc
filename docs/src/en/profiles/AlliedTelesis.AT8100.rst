@@ -1,8 +1,8 @@
-.. _profile-AlliedTelesis-AT8100:
+.. _profile-AlliedTelesis.AT8100:
 
-=======================================
+====================
 AlliedTelesis.AT8100
-=======================================
+====================
 
 .. contents:: On this page
     :local:
