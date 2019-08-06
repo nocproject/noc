@@ -35,9 +35,9 @@ class Script(BaseScript):
     )
     rx_ver_snmp1 = re.compile(
         r"Huawei Versatile Routing Platform Software\s*"
-        r"VRP \(R\) software, Version (?P<version>\d+.\d+) \((?:C[EX]\S+|ATN\S+|ATN(?: \S+){0,2}) (?P<image>\S+)\)\s*"
+        r"VRP \(R\) software, Version (?P<version>\d+.\d+) \((?:CX\S+|ATN\S+|ATN(?: \S+){0,2}) (?P<image>\S+)\)\s*"
         r"Copyright \(C\) \d+-\d+ Huawei Technologies Co., Ltd.\s*"
-        r"(?:HUAWEI\s*)?(?P<platform>(?:C[EX]\S+|ATN\S+|ATN(?: \S+){0,2}))\s*",
+        r"(?:HUAWEI\s*)?(?P<platform>(?:CX\S+|ATN\S+|ATN(?: \S+){0,2}))\s*",
         re.MULTILINE | re.IGNORECASE,
     )
     rx_ver_snmp2 = re.compile(
@@ -177,6 +177,13 @@ class Script(BaseScript):
             v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         except (self.snmp.TimeOutError, self.snmp.SNMPError):
             raise NotImplementedError()
+        if v in self.BAD_PLATFORM:
+            # Trying CLI
+            try:
+                v = self.cli("display version", cached=True)
+            except self.CLISyntaxError:
+                raise self.NotSupportedError()
+
         platform, version, image = self.parse_version(v)
         serial = []
         for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
@@ -222,3 +229,4 @@ class Script(BaseScript):
         if attributes:
             r["attributes"] = attributes.copy()
         return r
+
