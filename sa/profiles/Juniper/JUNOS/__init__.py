@@ -37,7 +37,11 @@ class Profile(BaseProfile):
         # "string_quote": "\""
     }
     config_normalizer = "JunOSNormalizer"
-    confdb_defaults = [("hints", "interfaces", "defaults", "admin-status", True)]
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", True),
+        ("hints", "protocols", "ntp", "mode", "server"),
+        ("hints", "protocols", "ntp", "version", "3"),
+    ]
     default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
     matchers = {
