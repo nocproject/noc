@@ -65,7 +65,7 @@ class DB(object):
         return self.execute(
             """
             SELECT EXISTS(
-              SELECT 1 
+              SELECT 1
               FROM information_schema.columns
               WHERE table_name=%s AND column_name=%s
             )""",
