@@ -13,4 +13,6 @@ ConfDB Reference
     /dev/confdb-tokenizer
     /dev/confdb-normalizer
     /dev/confdb-syntax
+    /dev/confdb-query
+
 
