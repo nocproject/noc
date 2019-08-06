@@ -55,6 +55,23 @@ class DB(object):
         else:
             self.execute("DROP TABLE %s;" % tn)
 
+    def has_column(self, table_name, name):
+        """
+        Check if table has column
+        :param table_name: Table name
+        :param name: Column name
+        :return: True, if table has column, False otherwise
+        """
+        return self.execute(
+            """
+            SELECT EXISTS(
+              SELECT 1
+              FROM information_schema.columns
+              WHERE table_name=%s AND column_name=%s
+            )""",
+            [table_name, name],
+        )[0][0]
+
     def add_column(self, table_name, name, field):
         sql = "ALTER TABLE %s ADD COLUMN %s;" % (
             self.quote_name(table_name),
