@@ -20,21 +20,19 @@ from .snmp.base import SNMP_SYNTAX
 from .ssh.base import SSH_SYNTAX
 from .telnet.base import TELNET_SYNTAX
 
-VR_PROTOCOLS_SYNTAX = (
-    DEF(
-        "protocols",
-        [
-            TELNET_SYNTAX,
-            SSH_SYNTAX,
-            HTTP_SYNTAX,
-            HTTPS_SYNTAX,
-            SNMP_SYNTAX,
-            ISIS_SYNTAX,
-            OSPF_SYNTAX,
-            LDP_SYNTAX,
-            RSVP_SYNTAX,
-            PIM_SYNTAX,
-            IGMP_SNOOPING_SYNTAX,
-        ],
-    ),
+VR_PROTOCOLS_SYNTAX = DEF(
+    "protocols",
+    [
+        TELNET_SYNTAX,
+        SSH_SYNTAX,
+        HTTP_SYNTAX,
+        HTTPS_SYNTAX,
+        SNMP_SYNTAX,
+        ISIS_SYNTAX,
+        OSPF_SYNTAX,
+        LDP_SYNTAX,
+        RSVP_SYNTAX,
+        PIM_SYNTAX,
+        IGMP_SNOOPING_SYNTAX,
+    ],
 )
