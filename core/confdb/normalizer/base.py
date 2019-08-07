@@ -17,8 +17,8 @@ import six
 
 # NOC modules
 from noc.core.ip import IPv4
-from ..patterns import ANY, REST
-from ..syntax import SYNTAX
+from ..syntax.patterns import ANY, REST
+from ..syntax.base import SYNTAX
 
 _match_seq = itertools.count()
 
