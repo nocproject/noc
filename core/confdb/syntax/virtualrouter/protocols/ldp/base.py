@@ -13,4 +13,12 @@ from __future__ import absolute_import
 from ....defs import DEF
 from ....patterns import UNIT_NAME
 
-LDP_SYNTAX = DEF("ldp", [DEF("interface", [DEF(UNIT_NAME, required=True, multi=True)])])
+LDP_SYNTAX = DEF(
+    "ldp",
+    [
+        DEF(
+            "interface",
+            [DEF(UNIT_NAME, name="interface", required=True, multi=True, gen="make_ldp_interface")],
+        )
+    ],
+)

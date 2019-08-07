@@ -52,10 +52,11 @@ SNMP_SYNTAX = DEF(
                             [
                                 DEF(
                                     "host",
-                                    [DEF(IP_ADDRESS, required=True, multi=True)],
+                                    [DEF(IP_ADDRESS, name="address", required=True, multi=True)],
                                     required=True,
                                 )
                             ],
+                            name="community",
                             required=True,
                             multi=True,
                         )

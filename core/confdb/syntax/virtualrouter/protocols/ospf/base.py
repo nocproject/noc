@@ -13,4 +13,20 @@ from __future__ import absolute_import
 from ....defs import DEF
 from ....patterns import UNIT_NAME
 
-OSPF_SYNTAX = DEF("ospf", [DEF("interface", [DEF(UNIT_NAME, required=True, multi=True)])])
+OSPF_SYNTAX = DEF(
+    "ospf",
+    [
+        DEF(
+            "interface",
+            [
+                DEF(
+                    UNIT_NAME,
+                    name="interface",
+                    required=True,
+                    multi=True,
+                    gen="make_ospf_interface",
+                )
+            ],
+        )
+    ],
+)

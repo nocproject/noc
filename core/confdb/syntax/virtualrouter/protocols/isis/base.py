@@ -16,15 +16,32 @@ from ....patterns import CHOICES, UNIT_NAME, ISO_ADDRESS
 ISIS_SYNTAX = DEF(
     "isis",
     [
-        DEF("area", [DEF(ISO_ADDRESS, required=True, multi=True)]),
+        DEF(
+            "area", [DEF(ISO_ADDRESS, name="area", required=True, multi=True, gen="make_isis_area")]
+        ),
         DEF(
             "interface",
             [
                 DEF(
                     UNIT_NAME,
-                    [DEF("level", [DEF(CHOICES("1", "2"), required=True, multi=True)])],
+                    [
+                        DEF(
+                            "level",
+                            [
+                                DEF(
+                                    CHOICES("1", "2"),
+                                    name="level",
+                                    required=True,
+                                    multi=True,
+                                    gen="make_isis_level",
+                                )
+                            ],
+                        )
+                    ],
+                    name="interface",
                     required=True,
                     multi=True,
+                    gen="make_isis_interface",
                 )
             ],
         ),
