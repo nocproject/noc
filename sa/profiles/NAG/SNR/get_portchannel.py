@@ -6,6 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from builtins import str
+from builtins import range
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -55,8 +59,9 @@ class Script(BaseScript):
                     ],
                     bulk=True,
                 ):
-                    oid = "1.3.6.1.2.1.31.1.1.1.1." + v[1]
-                    port = self.snmp.get(oid, cached=True)  # IF-MIB
+                    # oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
+                    # port = self.snmp.get(oid, cached=True)  # IF-MIB
+                    port = str(v[1])
                     #                    s = self.hex_to_bin(v[2])
                     s = hex2bin(v[2])
                     members = []
@@ -68,10 +73,10 @@ class Script(BaseScript):
 
                     r.append(
                         {
-                            "interface": port,
+                            "interface": "Port-Channel" + str(port),
                             # ?????? type detection
                             # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
-                            "type": "L" if v[3] == "1" else "S",
+                            "type": "L" if int(v[3]) == 1 else "S",
                             "members": members,
                         }
                     )
