@@ -55,7 +55,7 @@ class Script(BaseScript):
                     ],
                     bulk=True,
                 ):
-                    oid = "1.3.6.1.2.1.31.1.1.1.1." + v[1]
+                    oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
                     port = self.snmp.get(oid, cached=True)  # IF-MIB
                     #                    s = self.hex_to_bin(v[2])
                     s = hex2bin(v[2])
@@ -71,7 +71,7 @@ class Script(BaseScript):
                             "interface": port,
                             # ?????? type detection
                             # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
-                            "type": "L" if v[3] == "1" else "S",
+                            "type": "L" if int(v[3]) == 1 else "S",
                             "members": members,
                         }
                     )
