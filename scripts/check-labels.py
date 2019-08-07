@@ -136,6 +136,8 @@ def check_affected(labels):
         parts = f.split(os.sep)
         if parts[0] == "core":
             should_have.add("core")
+            if len(parts) > 3 and parts[1] == "confdb" and parts[2] == "syntax":
+                should_have.add("confdb")
         elif parts[0] == "docs":
             should_have.add("documentation")
         elif parts[0] == "ui":

@@ -26,6 +26,7 @@ Affected Subsystems Labels
 Following labels shows subsystems affected by MR. Any combination of labels is possible:
 
 * `core` - core modules
+* `confdb` - :ref:`ConfDB syntax<dev-confdb-syntax>`
 * `documentation` - documentation
 * `ui` - User Interface
 * `profiles` - SA Profiles
