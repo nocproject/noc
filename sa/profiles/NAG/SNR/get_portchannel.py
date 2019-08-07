@@ -59,8 +59,8 @@ class Script(BaseScript):
                     ],
                     bulk=True,
                 ):
-                    #oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
-                    #port = self.snmp.get(oid, cached=True)  # IF-MIB
+                    # oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
+                    # port = self.snmp.get(oid, cached=True)  # IF-MIB
                     port = str(v[1])
                     #                    s = self.hex_to_bin(v[2])
                     s = hex2bin(v[2])
