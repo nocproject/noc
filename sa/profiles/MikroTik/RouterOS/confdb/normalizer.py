@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, deferable
-from noc.core.confdb.syntax import INTEGER, IPv4_PREFIX, IPv4_ADDRESS
+from noc.core.confdb.syntax.patterns import INTEGER, IPv4_PREFIX, IPv4_ADDRESS
 
 
 class RouterOSNormalizer(BaseNormalizer):

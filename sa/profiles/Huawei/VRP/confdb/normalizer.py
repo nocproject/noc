@@ -8,7 +8,8 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
-from noc.core.confdb.syntax import DEF, IF_NAME, BOOL
+from noc.core.confdb.syntax.defs import DEF
+from noc.core.confdb.syntax.patterns import IF_NAME, BOOL
 
 
 class VRPNormalizer(BaseNormalizer):
