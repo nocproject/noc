@@ -11,7 +11,7 @@ import pytest
 
 # NOC modules
 from noc.core.confdb.tokenizer.context import ContextTokenizer
-from noc.core.confdb.patterns import ANY
+from noc.core.confdb.syntax.patterns import ANY
 
 
 # Raisecom-like

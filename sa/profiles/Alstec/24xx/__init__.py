@@ -9,7 +9,7 @@
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
-from noc.core.confdb.patterns import ANY
+from noc.core.confdb.syntax.patterns import ANY
 
 
 class Profile(BaseProfile):
