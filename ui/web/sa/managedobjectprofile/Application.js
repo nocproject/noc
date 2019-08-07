@@ -1906,6 +1906,34 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
+                                    title: __("ConfDB"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "confdb_raw_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Raw Policy"),
+                                            allowBlank: false,
+                                            store: [
+                                                ["D", __("Disabled")],
+                                                ["E", __("Enabled")]
+                                            ],
+                                            tooltip: __('Append raw section to confdb'),
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
                                     title: __("Config Validation"),
                                     layout: "hbox",
                                     defaults: {

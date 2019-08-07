@@ -468,6 +468,13 @@ class ManagedObject(NOCModel):
         ],
         default="P",
     )
+    # ConfDB settings
+    confdb_raw_policy = CharField(
+        "ConfDB Raw Policy",
+        max_length=1,
+        choices=[("P", "Profile"), ("D", "Disable"), ("E", "Enable")],
+        default="P",
+    )
     # Resource groups
     static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
@@ -1499,6 +1506,11 @@ class ManagedObject(NOCModel):
             return self.object_profile.denied_firmware_policy
         return self.denied_firmware_policy
 
+    def get_confdb_raw_policy(self):
+        if self.confdb_raw_policy == "P":
+            return self.object_profile.confdb_raw_policy
+        return self.confdb_raw_policy
+
     def get_config_policy(self):
         if self.config_policy == "P":
             return self.object_profile.config_policy
@@ -1631,10 +1643,16 @@ class ManagedObject(NOCModel):
         """
         profile = self.profile.get_profile()
         e = Engine()
-        # insert defaults
+        # Insert defaults
         defaults = profile.get_confdb_defaults(self)
         if defaults:
             e.insert_bulk(defaults)
+        # Get working config
+        if config is None:
+            config = self.config.read()
+        # Insert raw section
+        if self.get_confdb_raw_policy() == "E":
+            e.insert_bulk(("raw",) + t for t in self.iter_config_tokens(config))
         # Parse and normalize config
         e.insert_bulk(self.iter_normalized_tokens(config))
         # Apply applicators

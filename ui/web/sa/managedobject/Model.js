@@ -444,6 +444,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: "P"
         },
         {
+            name: "confdb_raw_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
             name: "static_service_groups",
             type: "auto"
         },

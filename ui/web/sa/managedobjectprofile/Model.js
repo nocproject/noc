@@ -771,6 +771,12 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
 
         },
         {
+            name: "confdb_raw_policy",
+            type: "string",
+            defaultValue: "D"
+
+        },
+        {
             name: "beef_storage",
             type: "string"
         },
