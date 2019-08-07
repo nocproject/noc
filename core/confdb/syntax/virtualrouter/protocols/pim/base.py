@@ -17,8 +17,20 @@ PIM_SYNTAX = DEF(
     "pim",
     [
         DEF(
-            "mode", [DEF(CHOICES("sparse", "dense", "sparse-dense"), required=True)], required=True
+            "mode",
+            [
+                DEF(
+                    CHOICES("sparse", "dense", "sparse-dense"),
+                    name="mode",
+                    required=True,
+                    gen="make_pim_mode",
+                )
+            ],
+            required=True,
         ),
-        DEF("interface", [DEF(UNIT_NAME, required=True, multi=True)]),
+        DEF(
+            "interface",
+            [DEF(UNIT_NAME, name="interface", required=True, multi=True, gen="make_pim_interface")],
+        ),
     ],
 )

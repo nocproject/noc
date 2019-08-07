@@ -22,10 +22,29 @@ IGMP_SNOOPING_SYNTAX = DEF(
                 DEF(
                     INTEGER,
                     [
-                        DEF("version", [DEF(CHOICES("1", "2", "3"), required=True)]),
+                        DEF(
+                            "version", [DEF(CHOICES("1", "2", "3"), name="version", required=True)]
+                        ),
                         DEF("immediate-leave"),
-                        DEF("interface", [DEF(UNIT_NAME, [DEF("multicast-router")], multi=True)]),
+                        DEF(
+                            "interface",
+                            [
+                                DEF(
+                                    UNIT_NAME,
+                                    [
+                                        DEF(
+                                            "multicast-router",
+                                            gen="make_igmp_snooping_multicast_router",
+                                        )
+                                    ],
+                                    name="interface",
+                                    multi=True,
+                                    gen="make_igmp_snooping_interface",
+                                )
+                            ],
+                        ),
                     ],
+                    name="vlan",
                     multi=True,
                 )
             ],

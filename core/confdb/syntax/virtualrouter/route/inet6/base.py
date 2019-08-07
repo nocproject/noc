@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 # NOC modules
 from ....defs import DEF
-from ....patterns import IPv4_PREFIX, IPv6_ADDRESS
+from ....patterns import IPv6_PREFIX, IPv6_ADDRESS
 
 VR_ROUTE_INET6_SYNTAX = DEF(
     "inet6",
@@ -20,7 +20,7 @@ VR_ROUTE_INET6_SYNTAX = DEF(
             "static",
             [
                 DEF(
-                    IPv4_PREFIX,
+                    IPv6_PREFIX,
                     [
                         DEF(
                             "next-hop",
@@ -34,6 +34,7 @@ VR_ROUTE_INET6_SYNTAX = DEF(
                             ],
                         )
                     ],
+                    name="route",
                 )
             ],
         )

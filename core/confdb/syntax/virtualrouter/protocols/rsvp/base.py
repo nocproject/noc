@@ -13,4 +13,20 @@ from __future__ import absolute_import
 from ....defs import DEF
 from ....patterns import UNIT_NAME
 
-RSVP_SYNTAX = DEF("rsvp", [DEF("interface", [DEF(UNIT_NAME, required=True, multi=True)])])
+RSVP_SYNTAX = DEF(
+    "rsvp",
+    [
+        DEF(
+            "interface",
+            [
+                DEF(
+                    UNIT_NAME,
+                    name="interface",
+                    required=True,
+                    multi=True,
+                    gen="make_rsvp_interface",
+                )
+            ],
+        )
+    ],
+)
