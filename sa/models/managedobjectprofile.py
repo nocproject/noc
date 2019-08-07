@@ -541,6 +541,13 @@ class ManagedObjectProfile(NOCModel):
         choices=[("D", "Disable"), ("A", "Always"), ("C", "Change")],
         default="D",
     )
+    # ConfDB policies
+    confdb_raw_policy = models.CharField(
+        _("ConfDB Raw Policy"),
+        max_length=1,
+        choices=[("D", "Disable"), ("E", "Enable")],
+        default="D",
+    )
     #
     metrics = PickledField(blank=True)
     #

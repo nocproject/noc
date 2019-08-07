@@ -922,6 +922,29 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
+                    title: __("ConfDB"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    items: [
+                        {
+                            name: "confdb_raw_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Raw Policy"),
+                            store: [
+                                    ["P", __("Profile")],
+                                    ["E", __("Enable")],
+                                    ["D", __("Disable")]
+                            ],
+                            allowBlank: false,
+                            groupEdit: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
                     title: __("Event Sources"),
                     layout: "column",
                     minWidth: me.formMinWidth,
