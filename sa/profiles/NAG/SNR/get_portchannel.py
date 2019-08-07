@@ -73,7 +73,7 @@ class Script(BaseScript):
 
                     r.append(
                         {
-                            "interface": port,
+                            "interface": "Port-Channel" + str(port),
                             # ?????? type detection
                             # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
                             "type": "L" if int(v[3]) == 1 else "S",
