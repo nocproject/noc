@@ -79,9 +79,9 @@ first predicate serves as input to the second one
 .. mermaid::
 
     graph LR
-        Input -> P1
-        P1 -> P2
-        P2 -> Output
+        Input --> P1
+        P1 --> P2
+        P2 --> Output
 
 Sequential chain is coded by boolean `and` operator
 
@@ -104,10 +104,10 @@ same input and combining and deduplicating resulting outputs
 .. mermaid::
 
     graph LR
-        Input -> P1
-        Input -> P2
-        P1 -> Output
-        P2 -> Output
+        Input --> P1
+        Input --> P2
+        P1 --> Output
+        P2 --> Output
 
 Parallel chains are coded by `or` operator
 
@@ -131,9 +131,11 @@ Built-in predicates
 Simple Logic
 ^^^^^^^^^^^^
 .. py:function:: True()
+
     Always True, pass context unmodified
 
 .. py:function:: False()
+
     Always False, breaks predicate chain
 
 Context Manipulation
@@ -183,6 +185,7 @@ ConfDB Matching
 ConfDB Manipulation
 ^^^^^^^^^^^^^^^^^^^
 .. py:function:: Fact(*args)
+
     Set Fact to database
 
     :param *args: ConfDB path of fact, eigther constants or bound variables
@@ -220,6 +223,7 @@ Filtering and Checking
     Re("-(?P<abs>\d+)", X)
 
 .. py:function:: HasVLAN(vlan_filter, vlan_id):
+
     Check `vlan_id` is within `vlan_filter` expression
 
     :param vlan_filter: VC Filter expression
@@ -232,6 +236,7 @@ Filtering and Checking
 Aggregation
 ^^^^^^^^^^^
 .. py:function:: Group(stack=None, *args, **kwargs):
+
     Group input context on given variables
 
 .. code-block:: python
@@ -244,6 +249,7 @@ Aggregation
     ) and Group("name")
 
 .. py:function:: Collapse(*args, **kwargs):
+
     Collapse multiple keys to a single one following rules
 
     :param kwargs: One of collapse operation should be specified
@@ -268,6 +274,7 @@ Debugging
     Dump("Point1")
 
 .. py:function:: Sprintf(name, fmt, *args):
+
     Perform string formatting and apply result to context variable
 
     :param name: Target variable name
