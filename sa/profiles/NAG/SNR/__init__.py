@@ -3,7 +3,7 @@
 # Vendor: NAG
 # OS:     SNR
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NAG.SNR"
-    pattern_more = [(r"^ --More-- ", "\n")]
+    pattern_more = [
+        (r"^ --More-- ", "\n"),
+        (r"^Confirm to overwrite current startup-config configuration \[Y/N\]:", "y\n"),
+    ]
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
