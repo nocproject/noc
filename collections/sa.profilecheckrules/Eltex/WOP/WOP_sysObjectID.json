@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | WOP | WOP sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "9b3427e4-6973-4c30-bda6-40d69eb94d55",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.128",
+    "action": "match",
+    "profile__name": "Eltex.WOP"
+}
