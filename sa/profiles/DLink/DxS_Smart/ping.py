@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-from noc.sa.profiles.DLink.DxS_Smart import DES1210
-import re
+from noc.sa.profiles.DLink.DxS_Smart.profile import DES1210
 
 
 class Script(BaseScript):

@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
-from noc.sa.profiles.DLink.DxS import DGS3600
+from noc.sa.profiles.DLink.DxS.profile import DGS3600
 
 
 class Script(BaseScript):

@@ -18,7 +18,7 @@ import six
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.profiles.Cisco.IOS import uBR
+from noc.sa.profiles.Cisco.IOS.profile import uBR
 
 
 class Script(BaseScript):
