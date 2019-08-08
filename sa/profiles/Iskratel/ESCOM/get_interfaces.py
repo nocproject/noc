@@ -8,10 +8,12 @@
 
 # Python modules
 import re
+import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -45,6 +47,13 @@ class Script(BaseScript):
     rx_iface = re.compile(
         r"^Port type: ethernet-csmacd, MTU: (?P<mtu>\d+)\s*\n"
         r"^Physically address: (?P<mac>\S+)\s*\n",
+        re.MULTILINE,
+    )
+    rx_escom_l_port = re.compile(
+        r"(?P<name>\S+)\s+is (?P<admin_status>\S+), line protocol is (?P<oper_status>\S+)\n"
+        r"\s+Ifindex is (?P<ifindex>\d+).*(,\s*unique port number is (?P<unique_port>\d+?))?\n"
+        r"\s+Hardware is (?P<type>\S+), [Aa]ddress is (?P<mac>\S+)\s*(\(.+\))?\n"
+        r"(\s+Interface address is (?P<address>\S+))?",
         re.MULTILINE,
     )
 
@@ -82,7 +91,69 @@ class Script(BaseScript):
             return []
         return []
 
-    def execute(self):
+    def get_escom_l_vlans(self):
+        r = {}
+        v = self.cli("show vlan")
+        for vid, vtype, vname, ifaces in parse_table(v, allow_wrap=True, n_row_delim=", "):
+            if not ifaces.strip():
+                continue
+            for iface in ifaces.split(","):
+                iface = self.profile.convert_interface_name(iface.strip())
+                if iface not in r:
+                    r[iface] = {"tagged": []}
+                r[iface]["tagged"] += [int(vid)]
+        return r
+
+    rx_split_mac = re.compile(r"(?P<mac>\S+)\((bia |)\S+\)")
+
+    def execute_escom_l(self):
+        interfaces = {}
+        switchport = self.get_escom_l_vlans()
+        v = self.cli("show interface")
+        for iface in self.rx_escom_l_port.finditer(v):
+            ifname = self.profile.convert_interface_name(iface.group("name"))
+            iftype = self.profile.get_interface_type(ifname)
+            interfaces[ifname] = {
+                "type": iftype,
+                "name": ifname,
+                "ifindex": iface.group("ifindex"),
+                "admin_status": iface.group("admin_status") == "up",
+                "oper_status": iface.group("oper_status") == "up",
+                "subinterfaces": [],
+            }
+            if ifname in switchport:
+                interfaces[ifname]["subinterfaces"] += [
+                    {
+                        "name": ifname,
+                        "admin_status": iface.group("admin_status") == "up",
+                        "oper_status": iface.group("oper_status") == "up",
+                        "enabled_afi": ["BRIDGE"],
+                        "tagged_vlans": switchport[ifname]["tagged"],
+                    }
+                ]
+            if iface.group("address"):
+                interfaces[ifname]["subinterfaces"] += [
+                    {
+                        "name": ifname,
+                        "admin_status": True,
+                        "oper_status": True,
+                        # "mac": mac,
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [iface.group("address")],
+                    }
+                ]
+            if iface.group("mac"):
+                if self.rx_split_mac.match(iface.group("mac")):
+                    interfaces[ifname]["mac"] = self.rx_split_mac.match(iface.group("mac")).group(
+                        "mac"
+                    )
+                else:
+                    interfaces[ifname]["mac"] = iface.group("mac")
+        return [{"interfaces": list(six.itervalues(interfaces))}]
+
+    def execute_cli(self, **kwargs):
+        if self.is_escom_l:
+            return self.execute_escom_l()
         interfaces = []
         descr = []
         adm_status = []
