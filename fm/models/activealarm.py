@@ -756,10 +756,11 @@ class ActiveAlarm(Document):
     else:
         set_root = set_root_plain
 
-    def escalate(self, tt_id, close_tt=False):
+    def escalate(self, tt_id, close_tt=False, wait_tt=None):
         self.escalation_tt = tt_id
         self.escalation_ts = datetime.datetime.now()
         self.close_tt = close_tt
+        self.wait_tt = wait_tt
         self.log_message("Escalated to %s" % tt_id)
         q = {"_id": self.id}
         op = {
@@ -767,6 +768,7 @@ class ActiveAlarm(Document):
                 "escalation_tt": self.escalation_tt,
                 "escalation_ts": self.escalation_ts,
                 "close_tt": self.close_tt,
+                "wait_tt": self.wait_tt,
                 "escalation_error": None,
             }
         }

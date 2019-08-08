@@ -196,7 +196,11 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                                 mo.tt_system.register_failure()
                                 Job.retry_after(get_next_retry(), str(e))
                             ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
-                            alarm.escalate(ctx["tt"], close_tt=a.close_tt)
+                            alarm.escalate(
+                                ctx["tt"],
+                                close_tt=a.close_tt,
+                                wait_tt=ctx["tt"] if a.wait_tt else None,
+                            )
                             if tts.promote_group_tt:
                                 # Create group TT
                                 log("Promoting to group tt")

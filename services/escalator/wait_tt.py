@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Wait TT
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2019, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,8 +18,6 @@ from noc.config import config
 
 
 logger = logging.getLogger(__name__)
-
-CHECK_INTERVAL = config.escalator.wait_tt_check_interval
 
 
 def wait_tt(alarm_id):
@@ -50,4 +48,4 @@ def wait_tt(alarm_id):
             force=True,
         )
     else:
-        Job.retry_after(CHECK_INTERVAL, msg="Next check")
+        Job.retry_after(config.escalator.wait_tt_check_interval, msg="Next check")
