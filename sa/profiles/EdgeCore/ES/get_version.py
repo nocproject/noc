@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -68,24 +67,12 @@ class Script(BaseScript):
     #
     # 35xx
     #
-    rx_sys_35 = re.compile(
-        r"^\s*System description\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE | re.IGNORECASE
-    )
-    rx_sys_42 = re.compile(
-        r"^\s*System OID String\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE | re.IGNORECASE
-    )
-    rx_ver_35 = re.compile(
-        r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$", re.MULTILINE | re.IGNORECASE
-    )
-    rx_ser_35 = re.compile(
-        r"^\s*Serial Number\s*:\s*(?P<serial>\S+)\s*$", re.MULTILINE | re.IGNORECASE
-    )
-    rx_hw_35 = re.compile(
-        r"^\s*Hardware Version\s*:\s*(?P<hardware>\S+)\s*$", re.MULTILINE | re.IGNORECASE
-    )
-    rx_boot_35 = re.compile(
-        r"^\s*Boot ROM Version\s+:\s+(?P<boot>.+)\s*$", re.MULTILINE | re.IGNORECASE
-    )
+    rx_sys_35 = re.compile(r"^\s*System description\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE)
+    rx_sys_42 = re.compile(r"^\s*System OID String\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE)
+    rx_ver_35 = re.compile(r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$", re.MULTILINE)
+    rx_ser_35 = re.compile(r"^\s*Serial Number\s*:\s*(?P<serial>\S+)\s*$", re.MULTILINE)
+    rx_hw_35 = re.compile(r"^\s*Hardware Version\s*:\s*(?P<hardware>\S+)\s*$", re.MULTILINE)
+    rx_boot_35 = re.compile(r"^\s*Boot ROM Version\s+:\s+(?P<boot>.+)\s*$", re.MULTILINE)
 
     def get_version_35xx(self, show_system, version):
         # Vendor default
@@ -168,36 +155,25 @@ class Script(BaseScript):
     #
     # ES4626
     #
-    rx_sys_4 = re.compile(
-        r"(?P<platform>ES.+?) Device, Compiled", re.MULTILINE | re.DOTALL | re.IGNORECASE
-    )
+    rx_sys_4 = re.compile(r"(?P<platform>ES.+?|Switch) Device, Compiled")
     rx_ver_4 = re.compile(
-        r"SoftWare (Package )?Version.*?(?:_|Vco\.)(?P<version>\d.+?)$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+        r"SoftWare (Package )?Version.*?(?:_|Vco\.| )(?P<version>\d.+?)$", re.MULTILINE
     )
-    rx_boot_4 = re.compile(
-        r"BootRom Version (\S+_)?(?P<boot>\d.+?)$", re.MULTILINE | re.DOTALL | re.IGNORECASE
-    )
-    rx_hw_4 = re.compile(
-        r"HardWare Version (\S+_)?(?P<hardware>\S+)$", re.MULTILINE | re.DOTALL | re.IGNORECASE
-    )
-    rx_ser_4 = re.compile(
-        r"Device serial number (\S+_)?(?P<serial>\S+)$", re.MULTILINE | re.DOTALL | re.IGNORECASE
-    )
+    rx_boot_4 = re.compile(r"BootRom Version (\S+_)?(?P<boot>\d.+?)$", re.MULTILINE)
+    rx_hw_4 = re.compile(r"HardWare Version (\S+_)?(?P<hardware>\S+)$", re.MULTILINE)
+    rx_ser_4 = re.compile(r"Device serial number (\S+_)?(?P<serial>\S+)$", re.MULTILINE)
 
     def get_version_4xxx(self, v, version):
         if not v:
             v = self.cli("show version 1", cached=True)
         match_sys = self.re_search(self.rx_sys_4, v)
+        platform = match_sys.group("platform")
+        if platform == "Switch":
+            platform = "Unknown"
         if not version:
             match_ver = self.re_search(self.rx_ver_4, v)
             version = match_ver.group("version")
-        r = {
-            "vendor": "EdgeCore",
-            "platform": match_sys.group("platform"),
-            "version": version,
-            "attributes": {},
-        }
+        r = {"vendor": "EdgeCore", "platform": platform, "version": version, "attributes": {}}
         match = self.rx_boot_4.search(v)
         if match:
             r["attributes"].update({"Boot PROM": match.group("boot")})
