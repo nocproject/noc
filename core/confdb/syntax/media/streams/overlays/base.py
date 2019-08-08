@@ -39,7 +39,7 @@ MEDIA_STREAMS_OVERLAYS_SYNTAX = DEF(
                                 DEF(
                                     INTEGER,
                                     name="x",
-                                    required="x",
+                                    required=True,
                                     gen="make_media_streams_overlay_position_x",
                                 )
                             ],
@@ -50,7 +50,7 @@ MEDIA_STREAMS_OVERLAYS_SYNTAX = DEF(
                                 DEF(
                                     INTEGER,
                                     name="y",
-                                    required="x",
+                                    required=True,
                                     gen="make_media_streams_overlay_position_y",
                                 )
                             ],
@@ -62,7 +62,7 @@ MEDIA_STREAMS_OVERLAYS_SYNTAX = DEF(
                     [DEF(ANY, name="text", required=True, gen="make_media_streams_overlay_text")],
                 ),
             ],
-            name="name",
+            name="overlay_name",
         )
     ],
 )

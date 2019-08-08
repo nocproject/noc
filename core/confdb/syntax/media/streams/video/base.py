@@ -57,7 +57,7 @@ MEDIA_STREAMS_VIDEO_SYNTAX = DEF(
         DEF(
             "codec",
             [
-                DEF("mpeg4", []),
+                DEF("mpeg4", [], gen="make_media_streams_video_codec_mpeg4"),
                 DEF(
                     "h264",
                     [
@@ -97,10 +97,85 @@ MEDIA_STREAMS_VIDEO_SYNTAX = DEF(
                                         )
                                     ],
                                 ),
+                                DEF(
+                                    "gov-length",
+                                    [
+                                        DEF(
+                                            INTEGER,
+                                            name="gov_length",
+                                            required=True,
+                                            gen="make_media_streams_video_codec_h264_profile_gov_length",
+                                        )
+                                    ],
+                                ),
                             ],
                         )
                     ],
                     gen="make_media_streams_video_codec_h264",
+                ),
+            ],
+        ),
+        DEF(
+            "rate-control",
+            [
+                DEF(
+                    "min-framerate",
+                    [
+                        DEF(
+                            INTEGER,
+                            name="min_framerate",
+                            required=False,
+                            gen="make_media_streams_video_rate_control_min_framerate",
+                        )
+                    ],
+                ),
+                DEF(
+                    "max-framerate",
+                    [
+                        DEF(
+                            INTEGER,
+                            name="max_framerate",
+                            required=True,
+                            gen="make_media_streams_video_rate_control_max_framerate",
+                        )
+                    ],
+                ),
+                DEF(
+                    "mode",
+                    [
+                        DEF(
+                            "cbr",
+                            [
+                                DEF(
+                                    "bitrate",
+                                    [
+                                        DEF(
+                                            INTEGER,
+                                            name="bitrate",
+                                            required=True,
+                                            gen="make_media_streams_video_rate_control_cbr_bitrate",
+                                        )
+                                    ],
+                                )
+                            ],
+                        ),
+                        DEF(
+                            "vbr",
+                            [
+                                DEF(
+                                    "max-bitrate",
+                                    [
+                                        DEF(
+                                            INTEGER,
+                                            name="max_bitrate",
+                                            required=True,
+                                            gen="make_media_streams_video_rate_control_vbr_max_bitrate",
+                                        )
+                                    ],
+                                )
+                            ],
+                        ),
+                    ],
                 ),
             ],
         ),
