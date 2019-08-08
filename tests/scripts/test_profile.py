@@ -54,7 +54,7 @@ def test_profile_name(sa_profile):
     req_name = profile.__module__
     if req_name.startswith("noc.sa.profiles."):
         req_name = req_name[16:]
-        if req_name == "Generic":
+        if req_name == "Generic.profile":
             pytest.skip("Generic profile")
         parts = req_name.split(".")
         assert 2 <= len(parts) <= 3
