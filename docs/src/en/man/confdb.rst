@@ -17,7 +17,7 @@ Name
 Synopsis
 --------
 
-    noc confdb syntax
+    noc confdb syntax [path ...]
 
 Description
 -----------
