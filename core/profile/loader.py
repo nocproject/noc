@@ -17,6 +17,7 @@ import warnings
 # NOC modules
 from noc.core.loader.base import BaseLoader
 from noc.config import config
+from noc.core.deprecations import RemovedInNOC1904Warning
 from .base import BaseProfile
 
 GENERIC_PROFILE = "Generic.Host"
@@ -64,7 +65,7 @@ class ProfileLoader(BaseLoader):
                                     warnings.warn(
                                         "%s profile: __init__.py should be moved to profile.py"
                                         % name,
-                                        DeprecationWarning,
+                                        RemovedInNOC1904Warning,
                                     )
                                 profile.initialize()
                                 break
