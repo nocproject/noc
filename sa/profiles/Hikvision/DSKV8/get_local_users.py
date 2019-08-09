@@ -44,9 +44,11 @@ class Script(BaseScript):
             r += [
                 {
                     "username": i["userName"][0]["_text"],
-                    "class": {"Administrator": "superuser", "Viewer": "operator"}[
-                        i["userLevel"][0]["_text"]
-                    ],
+                    "class": {
+                        "Administrator": "superuser",
+                        "Viewer": "operator",
+                        "Operator": "operator",
+                    }[i["userLevel"][0]["_text"]],
                     "is_active": True,
                 }
             ]
