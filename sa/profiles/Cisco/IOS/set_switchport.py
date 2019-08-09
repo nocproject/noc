@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.set_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.isetswitchport import ISetSwitchport
 from noc.lib.text import list_to_ranges
-from noc.sa.profiles.Cisco.IOS import MESeries
+from noc.sa.profiles.Cisco.IOS.profile import MESeries
 
 
 class Script(BaseScript):

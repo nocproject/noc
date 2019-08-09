@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.sa.profiles.DLink.DGS3100 import DGS3100
-import re
+from noc.sa.profiles.DLink.DGS3100.profile import DGS3100
 
 
 class Script(BaseScript):

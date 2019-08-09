@@ -1,0 +1,137 @@
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Mikrotik.RouterOS profile
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# Python modules
+import re
+
+# NOC modules
+from noc.core.profile.base import BaseProfile
+
+
+class Profile(BaseProfile):
+    name = "MikroTik.RouterOS"
+    command_submit = "\r"
+    command_exit = "quit"
+    pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] [^>]*> "
+    pattern_more = [
+        ('Please press "Enter" to continue!', "\n"),
+        ("q to abort", "q"),
+        (r"\[Q quit\|.+\]", " "),
+        (r"\[[yY]/[nN]\]", "y"),
+    ]
+    pattern_syntax_error = r"bad command name"
+    config_volatile = [r"^#.*?$", r"^\s?"]
+    default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
+    rogue_chars = ["\r", "\x00"]
+    config_tokenizer = "routeros"
+    config_normalizer = "RouterOSNormalizer"
+    confdb_defaults = [
+        ("hints", "protocols", "ntp", "mode", "server"),
+        ("hints", "protocols", "ntp", "version", "3"),
+    ]
+
+    # telnet_naws = "\x00\xfa\x00\xfa"
+
+    def setup_script(self, script):
+        """
+        Starting from v3.14 we can specify console options
+        during login process
+        :param script:
+        :return:
+        """
+        if script.parent is None:
+            user = script.credentials.get("user", "") or ""
+            if not user.endswith("+ct255w255h"):
+                script.credentials["user"] = user + "+ct255w255h"
+        self.add_script_method(script, "cli_detail", self.cli_detail)
+
+    def setup_session(self, script):
+        # MikroTik Remove duplicates prompt
+        script.cli("\n")
+
+    def cli_detail(self, script, cmd, cached=False):
+        """
+        Parse RouterOS .... print detail output
+        :param script:
+        :param cmd:
+        :param cached:
+        :return:
+        """
+        if cached:
+            return self.parse_detail(script.cli(cmd, cached=True))
+        else:
+            return self.parse_detail(script.cli(cmd))
+
+    rx_p_new = re.compile(r"^\s*(?P<line>\d+)\s+")
+    rx_key = re.compile(r"([0-9a-zA-Z\-]+)=")
+
+    def parse_detail(self, s):
+        """
+        :param s:
+        :return:
+        """
+        # Normalize
+        ns = []
+        flags = []
+        for l in s.splitlines():
+            if not l:
+                continue
+            if not flags and l.startswith("Flags:"):
+                # Parse flags from line like
+                # Flags: X - disabled, I - invalid, D - dynamic
+                flags = [f.split("-", 1)[0].strip() for f in l[6:].split(",")]
+                continue
+            match = self.rx_p_new.search(l)
+            if match:
+                # New item
+                if ";;;" in l:
+                    ns += [l.partition(";;;")[0].strip()]
+                else:
+                    ns += [l]
+            elif ns:
+                ns[-1] += " %s" % l.strip()
+        # Parse
+        f = "".join(flags)
+        # Some commands do not show flags
+        if not f:
+            f = "X"
+        rx = re.compile(
+            r"^\s*(?P<line>\d+)\s+" r"(?P<flags>[%s]+(?:\s+[%s]+)*\s+)?" r"(?P<rest>.+)$" % (f, f)
+        )
+        r = []
+        for l in ns:
+            match = rx.match(l)
+            if match:
+                n = int(match.group("line"))
+                f = match.group("flags")
+                if f is None:
+                    f = ""
+                else:
+                    f = f.replace(" ", "")
+                # Parse key-valued pairs
+                rest = match.group("rest")
+                kvp = []
+                while rest:
+                    m = self.rx_key.search(rest)
+                    if not m:
+                        if kvp:
+                            kvp[-1] += [rest]
+                        break
+                    if kvp:
+                        kvp[-1] += [rest[: m.start()]]
+                    kvp += [[m.group(1)]]
+                    rest = rest[m.end() :]
+                # Convert key-value-pairs to dict
+                d = {}
+                for k, v in kvp:
+                    v = v.strip()
+                    if v.startswith('"') and v.endswith('"'):
+                        v = v[1:-1]
+                    d[k] = v
+                r += [(n, f, d)]
+        return r

@@ -5,12 +5,14 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
-from noc.sa.profiles.DLink.DxS_Smart import DES1210, DGS1210, DGS1500
+from noc.sa.profiles.DLink.DxS_Smart.profile import DES1210, DGS1210, DGS1500
 
 
 class Script(BaseScript):
