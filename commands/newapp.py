@@ -15,9 +15,9 @@ import re
 
 # Third-party modules
 import six
-from django.template import Template, Context
 from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
+from jinja2 import Template
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
@@ -296,7 +296,7 @@ class Command(BaseCommand):
                     # Fill template
                     with open(os.path.join(dirpath, fn)) as f:
                         template = f.read()
-                    content = Template(template).render(Context(tv))
+                    content = Template(template).render(tv)
                     content = self.compact(content)
                     # Write template
                     if fn.endswith(".js.j2"):
