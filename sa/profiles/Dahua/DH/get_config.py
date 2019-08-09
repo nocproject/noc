@@ -23,6 +23,10 @@ class Script(BaseScript):
         "Encode",
         "VideoStandard",
         "Ptz",
+        "VideoInDayNight",
+        "NTP",
+        "VideoWidget",
+        "ChannelTitle",
     ]  # "VideoOut"
 
     def execute(self, **kwargs):
@@ -30,5 +34,6 @@ class Script(BaseScript):
             "/cgi-bin/configManager.cgi?action=getConfig&%s"
             % "&".join(["%s=%s" % ("name", c) for c in self.config_sections])
         )
+        users_info = self.http.get("/cgi-bin/userManager.cgi?action=getUserInfoAll")
 
-        return res
+        return res + users_info
