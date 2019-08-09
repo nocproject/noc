@@ -9,6 +9,17 @@
   tags:
     - config
 
+- name: Check if old django directory exists
+  stat:
+    path: "{{ noc_root }}/django/contrib/admin/static/admin/css"
+  register: old_dj_path
+
+- name: fix old django path
+  import_tasks: path.yml
+  when: old_dj_path.stat.exists and old_dj_path.stat.isdir
+  tags:
+    - config
+
 - name: Setup nginx
   template:
     src: "{{ item.name }}"

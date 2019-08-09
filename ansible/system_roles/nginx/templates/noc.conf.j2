@@ -216,7 +216,7 @@ server {
 
     # Legacy django media
     location ^~ /media/ {
-        alias {{ noc_root }}/django/contrib/admin/static/;
+        alias {{ noc_root }}/lib/python/site-packages/django/contrib/admin/static/;
         expires max;
         add_header Cache-Control public;
         add_header Pragma public;
