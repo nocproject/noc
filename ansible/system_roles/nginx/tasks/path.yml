@@ -1,0 +1,6 @@
+---
+- name: Create symlink to right folder
+  file:
+    src: "{{ noc_root }}/django/contrib/admin/static"
+    dest: "{{ noc_root }}/lib/python/site-packages/django/contrib/admin/static"
+    state: link
