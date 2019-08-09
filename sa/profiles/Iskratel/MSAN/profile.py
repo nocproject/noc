@@ -27,6 +27,7 @@ class Profile(BaseProfile):
         (r"--More-- or \(q\)uit", " "),
     ]
     pattern_syntax_error = r"% Invalid input detected at|Command not found"
+    pattern_operation_error = r"Error: RPC service is failed."
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
