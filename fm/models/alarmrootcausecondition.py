@@ -7,21 +7,23 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from mongoengine.document import EmbeddedDocument
+from mongoengine.fields import StringField, IntField, DictField
 import six
 
 # NOC modules
-import noc.lib.nosql as nosql
+from noc.core.mongo.fields import PlainReferenceField
 
 
 @six.python_2_unicode_compatible
-class AlarmRootCauseCondition(nosql.EmbeddedDocument):
+class AlarmRootCauseCondition(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
-    name = nosql.StringField(required=True)
-    root = nosql.PlainReferenceField("fm.AlarmClass")
-    window = nosql.IntField(required=True)
-    condition = nosql.StringField(default="True")
-    match_condition = nosql.DictField(required=True)
+    name = StringField(required=True)
+    root = PlainReferenceField("fm.AlarmClass")
+    window = IntField(required=True)
+    condition = StringField(default="True")
+    match_condition = DictField(required=True)
 
     def __str__(self):
         return self.name

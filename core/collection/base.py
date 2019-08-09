@@ -29,6 +29,7 @@ import cachetools
 # NOC modules
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
+from noc.core.mongo.connection import get_db
 
 state_lock = threading.Lock()
 
@@ -98,8 +99,6 @@ class Collection(object):
         Return mongo collection for state
         :return:
         """
-        from noc.lib.nosql import get_db
-
         return get_db()[self.STATE_COLLECTION]
 
     def get_state(self):

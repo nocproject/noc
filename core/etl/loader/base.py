@@ -22,8 +22,6 @@ import six
 from six.moves import zip_longest
 
 # NOC modules
-# from noc.lib.nosql import MultipleObjectsReturned
-# from django.core.exceptions import MultipleObjectsReturned as MultipleObjectsReturnedD
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
 from noc.config import config

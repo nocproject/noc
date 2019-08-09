@@ -10,27 +10,29 @@
 from __future__ import absolute_import
 
 # Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DictField, ListField
 import six
 
 # NOC modules
-import noc.lib.nosql as nosql
+from noc.core.mongo.fields import PlainReferenceField
 from .mib import MIB
 
 
 @six.python_2_unicode_compatible
-class MIBData(nosql.Document):
+class MIBData(Document):
     meta = {
         "collection": "noc.mibdata",
         "strict": False,
         "auto_create_index": False,
         "indexes": ["oid", "name", "mib", "aliases"],
     }
-    mib = nosql.PlainReferenceField(MIB)
-    oid = nosql.StringField(required=True, unique=True)
-    name = nosql.StringField(required=True)
-    description = nosql.StringField(required=False)
-    syntax = nosql.DictField(required=False)
-    aliases = nosql.ListField(nosql.StringField(), default=[])
+    mib = PlainReferenceField(MIB)
+    oid = StringField(required=True, unique=True)
+    name = StringField(required=True)
+    description = StringField(required=False)
+    syntax = DictField(required=False)
+    aliases = ListField(StringField(), default=[])
 
     def __str__(self):
         return self.name

@@ -15,12 +15,21 @@ import operator
 
 # Third-party modules
 import six
-from mongoengine import fields
-from mongoengine.document import EmbeddedDocument, Document
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    IntField,
+    ListField,
+    DictField,
+    ObjectIdField,
+    EmbeddedDocumentField,
+    UUIDField,
+)
 import cachetools
 
 # NOC modules
-from noc.lib import nosql
+from noc.core.mongo.fields import PlainReferenceField
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler
@@ -34,9 +43,9 @@ handlers_lock = Lock()
 @six.python_2_unicode_compatible
 class EventClassVar(EmbeddedDocument):
     meta = {"strict": False}
-    name = fields.StringField(required=True)
-    description = fields.StringField(required=False)
-    type = fields.StringField(
+    name = StringField(required=True)
+    description = StringField(required=False)
+    type = StringField(
         required=True,
         choices=[
             (x, x)
@@ -56,7 +65,7 @@ class EventClassVar(EmbeddedDocument):
             )
         ],
     )
-    required = fields.BooleanField(required=True)
+    required = BooleanField(required=True)
 
     def __str__(self):
         return self.name
@@ -74,12 +83,12 @@ class EventClassVar(EmbeddedDocument):
 class EventDispositionRule(EmbeddedDocument):
     meta = {"strict": False}
     # Name, unique within event class
-    name = fields.StringField(required=True, default="dispose")
+    name = StringField(required=True, default="dispose")
     # Python logical expression to check do the rules
     # applicable or not.
-    condition = fields.StringField(required=True, default="True")
+    condition = StringField(required=True, default="True")
     # Python logical expression to evaluate managed object
-    managed_object = fields.StringField(required=False)
+    managed_object = StringField(required=False)
     # What to do with disposed event:
     #    drop - delete and stop disposition
     #    ignore - stop disposition
@@ -87,14 +96,14 @@ class EventDispositionRule(EmbeddedDocument):
     #    raise - raise an alarm
     #    clear - clear alarm
     #
-    action = fields.StringField(
+    action = StringField(
         required=True, choices=[(x, x) for x in ("drop", "ignore", "raise", "clear")]
     )
     # Applicable for actions: raise and clear
-    alarm_class = nosql.PlainReferenceField(AlarmClass, required=False)
+    alarm_class = PlainReferenceField(AlarmClass, required=False)
     # Additional condition. Raise or clear action
     # will be performed only if additional events occured during time window
-    combo_condition = fields.StringField(
+    combo_condition = StringField(
         required=False,
         default="none",
         choices=[
@@ -117,18 +126,18 @@ class EventDispositionRule(EmbeddedDocument):
         ],
     )
     # Time window for combo events in seconds
-    combo_window = fields.IntField(required=False, default=0)
+    combo_window = IntField(required=False, default=0)
     # Applicable for frequency.
-    combo_count = fields.IntField(required=False, default=0)
+    combo_count = IntField(required=False, default=0)
     # Applicable for sequence, all and any combo_condition
-    combo_event_classes = fields.ListField(
-        nosql.PlainReferenceField("fm.EventClass"), required=False, default=[]
+    combo_event_classes = ListField(
+        PlainReferenceField("fm.EventClass"), required=False, default=[]
     )
     # event var name -> alarm var name mappings
     # try to use direct mapping if not set explicitly
-    var_mapping = fields.DictField(required=False)
+    var_mapping = DictField(required=False)
     # Stop event disposition if True or continue with next rule
-    stop_disposition = fields.BooleanField(required=False, default=True)
+    stop_disposition = BooleanField(required=False, default=True)
 
     def __str__(self):
         return "%s: %s" % (self.action, self.alarm_class.name)
@@ -162,12 +171,12 @@ class EventDispositionRule(EmbeddedDocument):
 @six.python_2_unicode_compatible
 class EventSuppressionRule(EmbeddedDocument):
     meta = {"strict": False}
-    name = fields.StringField()
-    condition = fields.StringField(required=True, default="True")
-    event_class = nosql.PlainReferenceField("fm.EventClass", required=True)
-    match_condition = fields.DictField(required=True, default={})
-    window = fields.IntField(required=True, default=3600)
-    suppress = fields.BooleanField(required=True, default=True)
+    name = StringField()
+    condition = StringField(required=True, default="True")
+    event_class = PlainReferenceField("fm.EventClass", required=True)
+    match_condition = DictField(required=True, default={})
+    window = IntField(required=True, default=3600)
+    suppress = BooleanField(required=True, default=True)
 
     def __str__(self):
         return self.name
@@ -187,18 +196,18 @@ class EventSuppressionRule(EmbeddedDocument):
 class EventPlugin(EmbeddedDocument):
     meta = {"strict": False}
 
-    name = fields.StringField()
-    config = fields.DictField(default={})
+    name = StringField()
+    config = DictField(default={})
 
     def __str__(self):
         return self.name
 
 
 @six.python_2_unicode_compatible
-class EventClassCategory(nosql.Document):
+class EventClassCategory(Document):
     meta = {"collection": "noc.eventclasscategories", "strict": False, "auto_create_index": False}
-    name = fields.StringField()
-    parent = fields.ObjectIdField(required=False)
+    name = StringField()
+    parent = ObjectIdField(required=False)
 
     def __str__(self):
         return self.name
@@ -237,41 +246,41 @@ class EventClass(Document):
         "json_depends_on": ["fm.alarmclasses"],
         "json_unique_fields": ["name"],
     }
-    name = fields.StringField(required=True, unique=True)
-    uuid = fields.UUIDField(binary=True)
-    description = fields.StringField(required=False)
+    name = StringField(required=True, unique=True)
+    uuid = UUIDField(binary=True)
+    description = StringField(required=False)
     # Event processing action:
     #     D - Drop
     #     L - Log as processed, do not move to archive
     #     A - Log as processed, move to archive
-    action = fields.StringField(
+    action = StringField(
         required=True, choices=[("D", "Drop"), ("L", "Log"), ("A", "Log & Archive")]
     )
-    vars = fields.ListField(fields.EmbeddedDocumentField(EventClassVar))
+    vars = ListField(EmbeddedDocumentField(EventClassVar))
     # Text messages
-    subject_template = fields.StringField()
-    body_template = fields.StringField()
-    symptoms = fields.StringField()
-    probable_causes = fields.StringField()
-    recommended_actions = fields.StringField()
+    subject_template = StringField()
+    body_template = StringField()
+    symptoms = StringField()
+    probable_causes = StringField()
+    recommended_actions = StringField()
 
-    disposition = fields.ListField(fields.EmbeddedDocumentField(EventDispositionRule))
-    repeat_suppression = fields.ListField(fields.EmbeddedDocumentField(EventSuppressionRule))
+    disposition = ListField(EmbeddedDocumentField(EventDispositionRule))
+    repeat_suppression = ListField(EmbeddedDocumentField(EventSuppressionRule))
     # Window to suppress duplicated events (in seconds)
     # 0 means no deduplication
-    deduplication_window = fields.IntField(default=3)
+    deduplication_window = IntField(default=3)
     # Time to live in active window, unless not belonging to any alarm
     # (in seconds)
-    ttl = fields.IntField(default=86400)
+    ttl = IntField(default=86400)
     # True if event processing is regulated by
     # Interface Profile.link_events setting
-    link_event = fields.BooleanField(default=False)
+    link_event = BooleanField(default=False)
     #
-    handlers = fields.ListField(fields.StringField())
+    handlers = ListField(StringField())
     # Plugin settings
-    plugins = fields.ListField(fields.EmbeddedDocumentField(EventPlugin))
+    plugins = ListField(EmbeddedDocumentField(EventPlugin))
     #
-    category = fields.ObjectIdField()
+    category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)

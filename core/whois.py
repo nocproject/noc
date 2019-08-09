@@ -21,6 +21,7 @@ from noc.peer.models.whoisassetmembers import WhoisASSetMembers
 from noc.peer.models.whoisoriginroute import WhoisOriginRoute
 from noc.peer.models.asn import AS
 from noc.core.scheduler.job import Job
+from noc.core.mongo.connection import connect
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,13 @@ class WhoisCacheLoader(object):
         self.use_ripe = use_ripe
         self.use_arin = use_arin
         self.use_radb = use_radb
+        self._connected = False
+
+    def require_db_connect(self):
+        if self._connected:
+            return
+        connect()
+        self._connected = True
 
     @staticmethod
     def parse_rpsl(f, fields=None):
@@ -225,15 +233,13 @@ class WhoisCacheLoader(object):
             v = self.update_from_rpsl(self.RADB, r, "route", "origin", False, parser)
             logger.info("Processed RADb origin -> route: %d records" % v)
         if r:
-            import noc.lib.nosql  # noqa Connect to MongoDB
-
             # Upload to database
             logger.info("Updating noc.whois.origin.route collection")
+            self.require_db_connect()
             count = WhoisOriginRoute.upload(r)
             logger.info("%d records written into noc.whois.origin.route collection" % count)
         if as_routes:
-            import noc.lib.nosql  # noqa Connect to MongoDB
-
+            self.require_db_connect()
             delay = 0
             for a in as_routes:
                 logger.info("[%s] Sending %d prefixes to AS discovery", a, len(as_routes[a]))

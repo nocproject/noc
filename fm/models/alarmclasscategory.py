@@ -7,21 +7,20 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, ObjectIdField
 import six
-
-# NOC modules
-import noc.lib.nosql as nosql
 
 
 @six.python_2_unicode_compatible
-class AlarmClassCategory(nosql.Document):
+class AlarmClassCategory(Document):
     meta = {
         "collection": "noc.alartmclasscategories",  # @todo: Fix bug
         "strict": False,
         "auto_create_index": False,
     }
-    name = nosql.StringField()
-    parent = nosql.ObjectIdField(required=False)
+    name = StringField()
+    parent = ObjectIdField(required=False)
 
     def __str__(self):
         return self.name

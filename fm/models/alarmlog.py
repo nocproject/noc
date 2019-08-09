@@ -7,19 +7,18 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from mongoengine.document import EmbeddedDocument
+from mongoengine.fields import DateTimeField, StringField
 import six
-
-# NOC modules
-import noc.lib.nosql as nosql
 
 
 @six.python_2_unicode_compatible
-class AlarmLog(nosql.EmbeddedDocument):
+class AlarmLog(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
-    timestamp = nosql.DateTimeField()
-    from_status = nosql.StringField(max_length=1, regex=r"^[AC]$", required=True)
-    to_status = nosql.StringField(max_length=1, regex=r"^[AC]$", required=True)
-    message = nosql.StringField()
+    timestamp = DateTimeField()
+    from_status = StringField(max_length=1, regex=r"^[AC]$", required=True)
+    to_status = StringField(max_length=1, regex=r"^[AC]$", required=True)
+    message = StringField()
 
     def __str__(self):
         return "%s [%s -> %s]: %s" % (

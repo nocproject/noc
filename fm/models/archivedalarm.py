@@ -27,7 +27,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.config import config
-import noc.lib.nosql as nosql
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.datastream.decorator import datastream
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
@@ -57,8 +57,8 @@ class ArchivedAlarm(Document):
 
     timestamp = DateTimeField(required=True)
     clear_timestamp = DateTimeField(required=True)
-    managed_object = nosql.ForeignKeyField(ManagedObject)
-    alarm_class = nosql.PlainReferenceField(AlarmClass)
+    managed_object = ForeignKeyField(ManagedObject)
+    alarm_class = PlainReferenceField(AlarmClass)
     severity = IntField(required=True)
     vars = DictField()
     log = ListField(EmbeddedDocumentField(AlarmLog))

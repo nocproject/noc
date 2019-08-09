@@ -10,22 +10,27 @@
 from __future__ import absolute_import
 
 # Third-party modules
-import six
-from mongoengine import document, fields
+from mongoengine.document import Document
+from mongoengine.fields import (
+    DateTimeField,
+    IntField,
+    DictField,
+    ListField,
+    EmbeddedDocumentField,
+    ObjectIdField,
+)
 from django.template import Template, Context
+import six
 
 # NOC modules
+from noc.sa.models.managedobject import ManagedObject
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField, RawDictField
 from .eventlog import EventLog
 from .eventclass import EventClass
-from noc.sa.models.managedobject import ManagedObject
-from noc.lib import nosql
 
 
 @six.python_2_unicode_compatible
-class ArchivedEvent(document.Document):
-    """
-    """
-
+class ArchivedEvent(Document):
     meta = {
         "collection": "noc.events.archive",
         "strict": False,
@@ -34,16 +39,16 @@ class ArchivedEvent(document.Document):
     }
     status = "S"
 
-    timestamp = fields.DateTimeField(required=True)
-    managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
-    event_class = nosql.PlainReferenceField(EventClass, required=True)
-    start_timestamp = fields.DateTimeField(required=True)
-    repeats = fields.IntField(required=True)
-    raw_vars = nosql.RawDictField()
-    resolved_vars = nosql.RawDictField()
-    vars = fields.DictField()
-    log = fields.ListField(nosql.EmbeddedDocumentField(EventLog))
-    alarms = fields.ListField(nosql.ObjectIdField())
+    timestamp = DateTimeField(required=True)
+    managed_object = ForeignKeyField(ManagedObject, required=True)
+    event_class = PlainReferenceField(EventClass, required=True)
+    start_timestamp = DateTimeField(required=True)
+    repeats = IntField(required=True)
+    raw_vars = RawDictField()
+    resolved_vars = RawDictField()
+    vars = DictField()
+    log = ListField(EmbeddedDocumentField(EventLog))
+    alarms = ListField(ObjectIdField())
 
     def __str__(self):
         return "%s" % self.id

@@ -11,7 +11,7 @@ from noc.config import config
 from noc.lib.validators import is_asn
 from noc.core.ip import IP
 from noc.core.prefixlist import optimize_prefix_list, optimize_prefix_list_maxlen
-from noc.lib import nosql
+from noc.core.mongo.connection import get_db
 
 
 class WhoisCache(object):
@@ -25,7 +25,7 @@ class WhoisCache(object):
         Returns True if cache contains asset.members
         :return:
         """
-        db = nosql.get_db()
+        db = get_db()
         collection = db.noc.whois.asset.members
         return bool(collection.count_documents({}))
 
@@ -35,7 +35,7 @@ class WhoisCache(object):
         Returns True if cache contains origin.routes
         :return:
         """
-        db = nosql.get_db()
+        db = get_db()
         collection = db.noc.whois.origin.route
         return bool(collection.count_documents({}))
 
@@ -48,7 +48,7 @@ class WhoisCache(object):
         """
         if is_asn(as_set[2:]):
             return True
-        db = nosql.get_db()
+        db = get_db()
         collection = db.noc.whois.asset.members
         return bool(collection.find_one({"_id": as_set}, {"_id": 1}))
 
@@ -58,7 +58,7 @@ class WhoisCache(object):
         if seen is None:
             seen = set()
         if collection is None:
-            db = nosql.get_db()
+            db = get_db()
             collection = db.noc.whois.asset.members
         for a in as_set.split():
             a = a.upper()
@@ -75,7 +75,7 @@ class WhoisCache(object):
 
     @classmethod
     def _resolve_as_set_prefixes(cls, as_set):
-        db = nosql.get_db()
+        db = get_db()
         collection = db.noc.whois.origin.route
         # Resolve
         prefixes = set()
