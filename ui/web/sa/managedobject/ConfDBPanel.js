@@ -9,6 +9,9 @@ console.debug("Defining NOC.sa.managedobject.ConfDBPanel");
 Ext.define("NOC.sa.managedobject.ConfDBPanel", {
     extend: "NOC.core.ApplicationPanel",
     app: null,
+    requires: [
+        "NOC.cm.confdbquery.LookupField"
+    ],
     autoScroll: true,
     layout: "border",
     //
@@ -119,26 +122,49 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
                 me.matchField
             ]
         });
-        me.queryPanel = Ext.create({
-            xtype: "panel",
-            region: "center",
-            height: "30%",
-            layout: "fit",
-            items: [{
+
+        me.queryField = Ext.create({
                 xtype: "cmtext",
                 itemId: "query",
                 mode: "python",
                 listeners: {
                     scope: me,
                     change: function(field, value) {
-                        this.runButton.setDisabled(!value);
+                        me.runButton.setDisabled(!value);
                     },
                     run: me.runQuery
                 }
-            }],
+            });
+
+        me.confDBQueryField = Ext.create({
+            xtype: "cm.confdbquery.LookupField",
+            listeners: {
+                scope: me,
+                change: function(field, value) {
+                    Ext.Ajax.request({
+                        url: "/cm/confdbquery/" + value + "/",
+                        scope: me,
+                        success: function(response) {
+                            var data = Ext.decode(response.responseText);
+                            me.queryField.setValue(data.query)
+                        }
+                    })
+                }
+            }
+        });
+
+        me.queryPanel = Ext.create({
+            xtype: "panel",
+            region: "center",
+            height: "30%",
+            layout: "fit",
+            items: [
+                me.queryField
+            ],
             tbar: [
                 me.runButton,
                 me.closeQueryButton,
+                me.confDBQueryField,
                 "->",
                 me.helpButton
             ]
@@ -369,6 +395,7 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
                     fields: keys,
                     data: data
                 },
+                emptyText: __("No data found"),
                 tbar: [
                     {
                         xtype: "displayfield",

@@ -88,7 +88,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 18
+MANAGEDOBJECT_CACHE_VERSION = 19
 
 Credentials = namedtuple(
     "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw"]
@@ -1132,23 +1132,35 @@ class ManagedObject(NOCModel):
         except storage.Error as e:
             logger.error("[%s] Failed to mirror config: %s", self.name, e)
 
-    def validate_config(self, changed):
+    def to_validate(self, changed):
         """
-        Apply config validation rules
-        :param changed:
-        :return:
+        Check if config is to be validated
+
+        :param changed: True if config has been changed
+        :return: Boolean
         """
-        logger.debug("[%s] Validating config", self.name)
         policy = self.object_profile.config_validation_policy
         # D - Disable
         if policy == "D":
             logger.debug("[%s] Validation is disabled by policy. Skipping", self.name)
-            return
-        # C - Mirror on Change
+            return False
+        # C - Validate on Change
         if policy == "C" and not changed:
             logger.debug("[%s] Configuration has not been changed. Skipping", self.name)
+            return False
+        return True
+
+    def validate_config(self, changed):
+        """
+        Apply config validation rules (Legacy CLIPS path)
+
+        :param changed:
+        :return:
+        """
+        logger.debug("[%s] Validating config (Legacy path)", self.name)
+        if not self.to_validate(changed):
             return
-        # Validate
+        # Validate (Legacy Path)
         from noc.cm.engine import Engine
 
         engine = Engine(self)
@@ -1157,6 +1169,23 @@ class ManagedObject(NOCModel):
         except:  # noqa
             logger.error("Failed to validate config for %s", self.name)
             error_report()
+
+    def iter_validation_problems(self, changed):
+        """
+        Yield validation problems
+
+        :param changed: True if config has been changed
+        :return:
+        """
+        logger.debug("[%s] Validating config", self.name)
+        if not self.to_validate(changed):
+            return
+        if not self.object_profile.object_validation_policy:
+            logger.debug("[%s] Validation policy is not set. Skipping", self.name)
+            return
+        confdb = self.get_confdb()
+        for problem in self.object_profile.object_validation_policy.iter_problems(confdb):
+            yield problem
 
     @property
     def credentials(self):

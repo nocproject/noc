@@ -25,7 +25,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.vc.vpnprofile.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.extstorage.LookupField",
-        "NOC.main.handler.LookupField"
+        "NOC.main.handler.LookupField",
+        "NOC.cm.objectvalidationpolicy.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -1959,6 +1960,15 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             },
                                             listeners: {
                                                 render: me.addTooltip
+                                            }
+                                        },
+                                        {
+                                            name: "object_validation_policy",
+                                            xtype: "cm.objectvalidationpolicy.LookupField",
+                                            fieldLabel: __("Policy"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
                                             }
                                         }
                                     ]

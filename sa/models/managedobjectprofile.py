@@ -38,6 +38,7 @@ from noc.vc.models.vpnprofile import VPNProfile
 from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
 from noc.core.datastream.decorator import datastream
+from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 
@@ -470,6 +471,7 @@ class ManagedObjectProfile(NOCModel):
         choices=[("D", "Disable"), ("A", "Always"), ("C", "Change")],
         default="C",
     )
+    object_validation_policy = DocumentReferenceField(ObjectValidationPolicy, null=True, blank=True)
     # Interface discovery settings
     interface_discovery_policy = models.CharField(
         _("Interface Discovery Policy"),

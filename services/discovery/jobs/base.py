@@ -122,7 +122,9 @@ class MODiscoveryJob(PeriodicJob):
         yield
         self.check_timings += [(name, perf_counter() - t)]
 
-    def set_problem(self, check=None, alarm_class=None, path=None, message=None, fatal=False):
+    def set_problem(
+        self, check=None, alarm_class=None, path=None, message=None, fatal=False, **kwargs
+    ):
         """
         Set discovery problem
         :param check: Check name
@@ -131,8 +133,18 @@ class MODiscoveryJob(PeriodicJob):
         :param message: Text message
         :param fatal: True if problem is fatal and all following checks
             must be disabled
+        :param kwargs: Optional variables
         :return:
         """
+        self.logger.debug(
+            "[%s] Set problem: class=%s path=%s message=%s fatal=%s vars=%s",
+            check,
+            alarm_class,
+            path,
+            message,
+            fatal,
+            kwargs,
+        )
         self.problems += [
             {
                 "check": check,
@@ -141,6 +153,7 @@ class MODiscoveryJob(PeriodicJob):
                 "path": str(path) if path else "",
                 "message": message,
                 "fatal": fatal,
+                "vars": kwargs,
             }
         ]
         if fatal:
@@ -614,7 +627,7 @@ class DiscoveryCheck(object):
                 except ValueError as e:
                     self.logger.info("Failed to unlink: %s", e)
 
-    def set_problem(self, alarm_class=None, path=None, message=None, fatal=False):
+    def set_problem(self, alarm_class=None, path=None, message=None, fatal=False, **kwargs):
         """
         Set discovery problem
         :param alarm_class: Alarm class instance or name
@@ -622,11 +635,17 @@ class DiscoveryCheck(object):
         :param message: Text message
         :param fatal: True if problem is fatal and all following checks
             must be disabled
+        :param kwargs: Dict containing optional variables
         :return:
         """
         self.logger.info("Set path: %s" % path)
         self.job.set_problem(
-            check=self.name, alarm_class=alarm_class, path=path, message=message, fatal=fatal
+            check=self.name,
+            alarm_class=alarm_class,
+            path=path,
+            message=message,
+            fatal=fatal,
+            **kwargs
         )
 
     def set_artefact(self, name, value=None):

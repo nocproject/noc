@@ -37,6 +37,7 @@ class Command(BaseCommand):
             "id",
             "config",
             "asset",
+            "configvalidation",
             "vlan",
             "nri",
             "udld",
