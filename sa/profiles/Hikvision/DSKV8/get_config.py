@@ -37,7 +37,15 @@ class Script(BaseScript):
         return d
 
     def execute(self, **kwargs):
-        c = ""
+        c = "DeviceInfo\n"
+        v = self.http.get("/ISAPI/System/deviceInfo", cached=True, use_basic=True)
+        v = v.replace("\n", "")
+        root = ElementTree.fromstring(v)
+        v = self.xml_2_dict(root)
+        for key, value in sorted(six.iteritems(v["DeviceInfo"])):
+            if key == "_text" or isinstance(value, six.string_types):
+                continue
+            c += "    %s %s\n" % (key, value[0]["_text"])
         v = self.http.get("/ISAPI/Streaming/channels", use_basic=True)
         v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
@@ -45,97 +53,115 @@ class Script(BaseScript):
         channels = v["StreamingChannelList"]["StreamingChannel"]
         i = 1
         for o in channels:
-            c += "StreamingChannel:\n"
-            c += "    id: %s\n" % o["id"][0]["_text"]
-            c += '    channelName: "%s"\n' % o["channelName"][0]["_text"]
-            c += "    enabled: %s\n" % o["enabled"][0]["_text"]
+            c += "StreamingChannel %s\n" % o["id"][0]["_text"].strip("'")
+            c += "  id %s\n" % o["id"][0]["_text"]
+            c += '  channelName "%s"\n' % o["channelName"][0]["_text"]
+            c += "  enabled %s\n" % o["enabled"][0]["_text"]
             video = o["Video"][0]
-            c += "Video:\n"
+            c += "  Video\n"
             for key, value in sorted(six.iteritems(video)):
                 if key == "_text" or isinstance(value, six.string_types):
                     continue
-                c += "    %s: %s\n" % (key, value[0]["_text"])
-        v = self.http.get("/ISAPI/Image/channels/1/color", use_basic=True)
+                c += "    %s %s\n" % (key, value[0]["_text"])
+            audio = o["Audio"][0]
+            c += "  Audio\n"
+            for key, value in sorted(six.iteritems(audio)):
+                if key == "_text" or isinstance(value, six.string_types):
+                    continue
+                c += "    %s %s\n" % (key, value[0]["_text"])
+        v = self.http.get("/ISAPI/Image/channels/1", use_basic=True)
         v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
-        color = v["Color"]
-        c += "Color:\n"
+        o = v["ImageChannel"]
+
+        color = o["Color"][0]
+        c += "Color\n"
         for key, value in sorted(six.iteritems(color)):
             if key == "_text" or isinstance(value, six.string_types):
                 continue
-            c += "    %s: %s\n" % (key, value[0]["_text"])
-
+            c += "    %s %s\n" % (key, value[0]["_text"])
+        if "WDR" in o:
+            wdr = o["WDR"][0]
+            c += "WDR\n"
+            for key, value in sorted(six.iteritems(wdr)):
+                if key == "_text" or isinstance(value, six.string_types):
+                    continue
+                c += "    %s %s\n" % (key, value[0]["_text"])
+        blc = o["BLC"][0]
+        c += "BLC\n"
+        for key, value in sorted(six.iteritems(blc)):
+            if key == "_text" or isinstance(value, six.string_types):
+                continue
+            try:
+                c += "    %s %s\n" % (key, value[0]["_text"])
+            except KeyError:
+                continue
         try:
-            v = self.http.get("/ISAPI/Image/channels/1/WDR", use_basic=True)
+            v = self.http.get("/ISAPI/System/Video/inputs/channels/1/overlays", use_basic=True)
             v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
-            c += "WDR:\n"
-            c += "    mode: %s\n" % v["WDR"]["mode"][0]["_text"]
-            c += "    WDRLevel: %s\n" % v["WDR"]["WDRLevel"][0]["_text"]
+            c += "Overlay\n"
+            for o in v["VideoOverlay"]:
+                if o == "version" or o == "_text":
+                    continue
+                elif o == "TextOverlayList":
+                    overlay = v["VideoOverlay"][o][0]
+                    if overlay:
+                        c += "  TextOverlay \n"
+                    i = 1
+                    if "_text" in overlay:
+                        c += '    TextOverlay %d "%s"\n' % (i, overlay["_text"].strip())
+                        continue
+                    elif "TextOverlay" in overlay:
+                        overlay = overlay["TextOverlay"]
+                        for o in overlay:
+                            text = o["displayText"][0]
+                            if text:
+                                c += '    TextOverlay %d "%s"\n' % (i, text["_text"])
+                            else:
+                                c += '    TextOverlay %d ""\n' % i
+                            i = i + 1
+                else:
+                    c += "  %s\n" % o
+                    for key, value in sorted(six.iteritems(v["VideoOverlay"][o][0])):
+                        if key == "_text" or isinstance(value, six.string_types):
+                            continue
+                        c += "    %s %s\n" % (key, value[0]["_text"])
         except HTTPError:
             pass
-
-        try:
-            v = self.http.get("/ISAPI/Image/channels/1/BLC", use_basic=True)
-            v = v.replace("\n", "")
-            root = ElementTree.fromstring(v)
-            v = self.xml_2_dict(root)
-            c += "BLC:\n"
-            c += "    enabled: %s\n" % v["BLC"]["enabled"][0]["_text"]
-            if "BLCMode" in v["BLC"]:
-                c += "    BLCMode: %s\n" % v["BLC"]["BLCMode"][0]["_text"]
-        except HTTPError:
-            pass
-
-        try:
-            v = self.http.get(
-                "/ISAPI/System/Video/inputs/channels/1/overlays/capabilities", use_basic=True
-            )
-            v = v.replace("\n", "")
-            root = ElementTree.fromstring(v)
-            v = self.xml_2_dict(root)
-            overlay = v["VideoOverlay"]["TextOverlayList"][0]
-            if "TextOverlay" in overlay:
-                overlay = overlay["TextOverlay"]
-                if overlay:
-                    c += "Overlays:\n"
-                i = 1
-                for o in overlay:
-                    text = o["displayText"][0]
-                    if text:
-                        c += '    TextOverlay%d: "%s"\n' % (i, text["_text"])
-                    else:
-                        c += '    TextOverlay%d: ""\n' % i
-                    i = i + 1
-        except HTTPError:
-            pass
-
         try:
             v = self.http.get("/ISAPI/System/time", use_basic=True)
             v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
-            timeMode = v["Time"]["timeMode"][0]["_text"]
-            c += "Time:\n"
-            c += "    timeMode: %s\n" % timeMode
+            c += "Time\n"
+            for key, value in sorted(six.iteritems(v["Time"])):
+                if key == "_text" or isinstance(value, six.string_types) or key == "localTime":
+                    continue
+                c += "  %s %s\n" % (key, value[0]["_text"])
         except HTTPError:
             pass
-
         try:
             v = self.http.get("/ISAPI/System/time/ntpServers", use_basic=True)
             v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
             ntp_servers = v["NTPServerList"]["NTPServer"]
-            if ntp_servers:
-                c += "NTP:\n"
-            i = 1
-            for o in ntp_servers:
+            for i, o in enumerate(ntp_servers):
                 text = o["ipAddress"][0]["_text"]
-                c += "    NTPServer%d: %s\n" % (i, text)
+                c += "  NTPServer %d %s\n" % (i, text)
         except HTTPError:
             pass
-
+        v = self.http.get("/ISAPI/Security/users", json=False, cached=True, use_basic=True)
+        root = ElementTree.fromstring(v)
+        v = self.xml_2_dict(root)
+        c += "Users\n"
+        for u in v["UserList"]["User"]:
+            c += " user %s\n" % u["userName"][0]["_text"]
+            for key, value in sorted(six.iteritems(u)):
+                if key == "_text" or isinstance(value, six.string_types):
+                    continue
+                c += "    %s %s\n" % (key, value[0]["_text"])
         return c
