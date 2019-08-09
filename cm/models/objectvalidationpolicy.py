@@ -30,6 +30,7 @@ id_lock = threading.Lock()
 @six.python_2_unicode_compatible
 class ObjectValidationRule(EmbeddedDocument):
     query = PlainReferenceField(ConfDBQuery)
+    filter_query = PlainReferenceField(ConfDBQuery)
     is_active = BooleanField(default=True)
     error_code = StringField()
     error_text_template = StringField(default="{{error}}")
@@ -47,6 +48,7 @@ class ObjectValidationPolicy(Document):
 
     name = StringField(unique=True)
     description = StringField()
+    filter_query = PlainReferenceField(ConfDBQuery)
     rules = ListField(EmbeddedDocumentField(ObjectValidationRule))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -66,9 +68,17 @@ class ObjectValidationPolicy(Document):
         :param engine: ConfDB Engine instance
         :return: List of problems
         """
+        # Check filter query, if any
+        if self.filter_query:
+            if not self.filter_query.any(engine):
+                raise StopIteration
+        # Process rules
         for rule in self.rules:
             if not rule.is_active:
                 continue
+            if rule.filter_query:
+                if not rule.filter_query.any(engine):
+                    continue
             for ctx in rule.query.query(engine):
                 if "error" in ctx:
                     tpl = Template(rule.error_text_template)

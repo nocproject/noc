@@ -25,7 +25,13 @@ from noc.core.model.decorator import on_delete_check
 id_lock = threading.Lock()
 
 
-@on_delete_check(check=[("cm.ObjectValidationPolicy", "rules.query")])
+@on_delete_check(
+    check=[
+        ("cm.ObjectValidationPolicy", "filer_query"),
+        ("cm.ObjectValidationPolicy", "rules.query"),
+        ("cm.ObjectValidationPolicy", "rules.filer_query"),
+    ]
+)
 @six.python_2_unicode_compatible
 class ConfDBQuery(Document):
     meta = {
@@ -40,6 +46,8 @@ class ConfDBQuery(Document):
     uuid = UUIDField(binary=True)
     description = StringField()
     source = StringField()
+    allow_object_filter = BooleanField(default=False)
+    allow_interface_filter = BooleanField(default=False)
     allow_object_validation = BooleanField(default=False)
     allow_interface_validation = BooleanField(default=False)
     allow_object_classification = BooleanField(default=False)
@@ -69,12 +77,23 @@ class ConfDBQuery(Document):
         for ctx in engine.query(self.source, **kwargs):
             yield ctx
 
+    def any(self, engine, **kwargs):
+        """
+        Run query agains ConfDB engine and return True if any result found
+        :param engine: ConfDB engine
+        :param kwargs: Optional arguments
+        :return: True if any result found
+        """
+        return engine.any(self.source, **kwargs)
+
     def to_json(self):
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "source": self.source,
+            "allow_object_filter": self.allow_object_filter,
+            "allow_interface_filter": self.allow_interface_filter,
             "allow_object_validation": self.allow_object_validation,
             "allow_interface_validation": self.allow_interface_validation,
             "allow_object_classification": self.allow_object_classification,
@@ -90,6 +109,8 @@ class ConfDBQuery(Document):
                 "uuid",
                 "description",
                 "source",
+                "allow_object_filter",
+                "allow_interface_filter",
                 "allow_object_validation",
                 "allow_interface_validation",
                 "allow_object_classification",

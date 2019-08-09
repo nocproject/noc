@@ -42,6 +42,15 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "filter_query",
+                    xtype: "cm.confdbquery.LookupField",
+                    fieldLabel: __("Filter Query"),
+                    query: {
+                        allow_object_filter: true
+                    },
+                    allowBlank: true
+                },
+                {
                     name: "rules",
                     xtype: "gridfield",
                     fieldLabel: __("Rules"),
@@ -58,6 +67,19 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
                                 }
                             },
                             renderer: NOC.render.Lookup("query")
+                        },
+                        {
+                            text: __("Filter Query"),
+                            dataIndex: "filter_query",
+                            width: 200,
+                            editor: {
+                                xtype: "cm.confdbquery.LookupField",
+                                allowBlank: false,
+                                query: {
+                                    allow_object_filter: true
+                                }
+                            },
+                            renderer: NOC.render.Lookup("filter_query")
                         },
                         {
                             text: __("Active"),

@@ -44,6 +44,14 @@ Ext.define("NOC.cm.confdbquery.Model", {
             type: "boolean"
         },
         {
+            name: "allow_object_filter",
+            type: "boolean"
+        },
+        {
+            name: "allow_interface_filter",
+            type: "boolean"
+        },
+        {
             name: "uuid",
             type: "string"
         }

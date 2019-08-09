@@ -17,6 +17,6 @@ class ObjectValidationPolicyApplication(ExtDocApplication):
     ObjectValidationPolicy application
     """
 
-    title = "ObjectValidationPolicy"
+    title = "Object Validation Policy"
     menu = [_("Setup"), _("Object Validation Policies")]
     model = ObjectValidationPolicy

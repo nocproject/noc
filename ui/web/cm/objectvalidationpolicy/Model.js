@@ -26,6 +26,15 @@ Ext.define("NOC.cm.objectvalidationpolicy.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "filter_query",
+            type: "string"
+        },
+        {
+            name: "filter_query__label",
+            type: "string",
+            persist: false
         }
     ]
 });

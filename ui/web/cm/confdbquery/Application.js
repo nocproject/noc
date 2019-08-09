@@ -71,9 +71,19 @@ Ext.define("NOC.cm.confdbquery.Application", {
                     },
                     items: [
                         {
+                            name: "allow_object_filter",
+                            xtype: "checkbox",
+                            boxLabel: __("Object Filter")
+                        },
+                        {
                             name: "allow_object_validation",
                             xtype: "checkbox",
                             boxLabel: __("Object Validation")
+                        },
+                        {
+                            name: "allow_interface_filter",
+                            xtype: "checkbox",
+                            boxLabel: __("Interface Filter")
                         },
                         {
                             name: "allow_interface_validation",
