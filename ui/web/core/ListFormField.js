@@ -95,11 +95,29 @@ Ext.define("NOC.core.ListFormField", {
         me.currentSelection = undefined;
         me.callParent();
     },
+    getFormData: function(form) {
+        var me = this,
+            fields = form.getFields().items,
+            f, field, data, name,
+            fLen = fields.length,
+            values = {};
+        for(f = 0; f < fLen; f++) {
+            field = fields[f];
+            data = field.getModelData();
+            if(Ext.isObject(data)) {
+                name = field.getName();
+                if(data.hasOwnProperty(name)) {
+                    values[name] = data[name];
+                }
+            }
+        }
+        return values;
+    },
     getValue: function() {
         var me = this,
             records = [];
         me.panel.items.each(function(panel) {
-            records.push(panel.form.getValues())
+            records.push(me.getFormData(panel.form))
         });
         return records;
     },
