@@ -124,17 +124,17 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
         });
 
         me.queryField = Ext.create({
-                xtype: "cmtext",
-                itemId: "query",
-                mode: "python",
-                listeners: {
-                    scope: me,
-                    change: function(field, value) {
-                        me.runButton.setDisabled(!value);
-                    },
-                    run: me.runQuery
-                }
-            });
+            xtype: "cmtext",
+            itemId: "query",
+            mode: "python",
+            listeners: {
+                scope: me,
+                change: function(field, value) {
+                    me.runButton.setDisabled(!value);
+                },
+                run: me.runQuery
+            }
+        });
 
         me.confDBQueryField = Ext.create({
             xtype: "cm.confdbquery.LookupField",
@@ -345,11 +345,18 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
             scope: me,
             jsonData: query,
             success: function(response) {
-                var data = Ext.decode(response.responseText);
+                var result,
+                    data = Ext.decode(response.responseText);
                 me.unmask();
                 if(data.status) {
                     me.resultPanel.destroy();
-                    me.rightPanel.add(me.resultPanel = this.createResultPanel(data.result));
+                    result = data.result.map(function(element) {
+                        if(Ext.Object.isEmpty(element)) {
+                            return {result: "Empty Context"};
+                        }
+                        return element;
+                    });
+                    me.rightPanel.add(me.resultPanel = this.createResultPanel(result));
                     me.setConfDB(data.confdb);
                 } else {
                     NOC.error(data.error);
