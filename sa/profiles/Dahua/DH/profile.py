@@ -18,6 +18,9 @@ class Profile(BaseProfile):
     name = "Dahua.DH"
     enable_http_session = True
     http_request_middleware = ["digestauth"]
+    config_tokenizer = "line"
+    config_tokenizer_settings = {"line_comment": "#", "rewrite": [(re.compile(r"[\.=\[\]]"), " ")]}
+    config_normalizer = "DHNormalizer"
 
     rx_depth = re.compile(r"\S+(\[[\S\d]+\])")
 
