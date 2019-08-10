@@ -48,7 +48,7 @@ class ObjectValidationRule(EmbeddedDocument):
         return self.query.name
 
 
-@on_delete_check(check=[("sa.ManageObjectProfile", "object_validation_policy")])
+@on_delete_check(check=[("sa.ManagedObjectProfile", "object_validation_policy")])
 @six.python_2_unicode_compatible
 class ObjectValidationPolicy(Document):
     meta = {"collection": "objectvalidationpolicies", "strict": True, "auto_create_index": False}
