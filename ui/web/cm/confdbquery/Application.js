@@ -63,6 +63,44 @@ Ext.define("NOC.cm.confdbquery.Application", {
                     mode: "python"
                 },
                 {
+                    name: "params",
+                    xtype: "gridfield",
+                    fieldLabel: __("Parameters"),
+                    columns: [
+                        {
+                            dataIndex: "name",
+                            text: __("Name"),
+                            editor: "textfield",
+                            width: 150
+                        },
+                        {
+                            dataIndex: "type",
+                            text: __("Type"),
+                            width: 70,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["str", "str"],
+                                    ["int", "int"],
+                                    ["bool", "bool"]
+                                ]
+                            }
+                        },
+                        {
+                            dataIndex: "default",
+                            text: __("Default"),
+                            editor: "textfield",
+                            width: 200
+                        },
+                        {
+                            dataIndex: "description",
+                            text: __("Description"),
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
+                },
+                {
                     xtype: "fieldset",
                     title: __("Allow"),
                     layout: "hbox",

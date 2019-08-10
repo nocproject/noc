@@ -13,7 +13,13 @@ import operator
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, ListField, EmbeddedDocumentField
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ListField,
+    EmbeddedDocumentField,
+    DictField,
+)
 from jinja2 import Template
 import six
 import cachetools
@@ -30,6 +36,7 @@ id_lock = threading.Lock()
 @six.python_2_unicode_compatible
 class ObjectValidationRule(EmbeddedDocument):
     query = PlainReferenceField(ConfDBQuery)
+    query_params = DictField()
     filter_query = PlainReferenceField(ConfDBQuery)
     is_active = BooleanField(default=True)
     error_code = StringField()
@@ -79,7 +86,7 @@ class ObjectValidationPolicy(Document):
             if rule.filter_query:
                 if not rule.filter_query.any(engine):
                     continue
-            for ctx in rule.query.query(engine):
+            for ctx in rule.query.query(engine, **rule.query_params):
                 if "error" in ctx:
                     tpl = Template(rule.error_text_template)
                     problem = {

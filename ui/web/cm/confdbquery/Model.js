@@ -54,6 +54,10 @@ Ext.define("NOC.cm.confdbquery.Model", {
         {
             name: "uuid",
             type: "string"
+        },
+        {
+            name: "params",
+            type: "auto"
         }
     ]
 });

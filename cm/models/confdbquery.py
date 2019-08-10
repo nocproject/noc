@@ -12,8 +12,14 @@ import operator
 import os
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, BooleanField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    BooleanField,
+    ListField,
+    EmbeddedDocumentField,
+)
 import six
 import cachetools
 
@@ -21,22 +27,47 @@ import cachetools
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
+from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
 
 id_lock = threading.Lock()
+TYPE_MAP = {"str": StringParameter(), "int": IntParameter(), "bool": BooleanParameter()}
+
+
+@six.python_2_unicode_compatible
+class ConfDBQueryParam(EmbeddedDocument):
+    meta = {"strict": True}
+    name = StringField()
+    type = StringField(choices=["str", "int", "bool"])
+    default = StringField()
+    description = StringField()
+
+    def __str__(self):
+        return self.name
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "type": self.type,
+            "description": self.description,
+            "default": self.default,
+        }
+
+    def get_parameter(self):
+        return TYPE_MAP[self.type]
 
 
 @on_delete_check(
     check=[
         ("cm.ObjectValidationPolicy", "filer_query"),
-        ("cm.ObjectValidationPolicy", "rules.query"),
-        ("cm.ObjectValidationPolicy", "rules.filer_query"),
+        # ("cm.ObjectValidationPolicy", "rules.query"),
+        # ("cm.ObjectValidationPolicy", "rules.filer_query"),
     ]
 )
 @six.python_2_unicode_compatible
 class ConfDBQuery(Document):
     meta = {
         "collection": "confdbqueries",
-        "strict": True,
+        "strict": False,
         "auto_create_index": False,
         "json_collection": "cm.confdbqueries",
         "json_unique_fields": ["name"],
@@ -46,6 +77,7 @@ class ConfDBQuery(Document):
     uuid = UUIDField(binary=True)
     description = StringField()
     source = StringField()
+    params = ListField(EmbeddedDocumentField(ConfDBQueryParam))
     allow_object_filter = BooleanField(default=False)
     allow_interface_filter = BooleanField(default=False)
     allow_object_validation = BooleanField(default=False)
@@ -74,7 +106,10 @@ class ConfDBQuery(Document):
         :param kwargs: Optional arguments
         :return:
         """
-        for ctx in engine.query(self.source, **kwargs):
+        params = kwargs.copy()
+        for p in self.params:
+            params[p.name] = p.get_parameter().clean(params.get(p.name, p.default))
+        for ctx in engine.query(self.source, **params):
             yield ctx
 
     def any(self, engine, **kwargs):
@@ -92,6 +127,7 @@ class ConfDBQuery(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "source": self.source,
+            "params": [p.to_json() for p in self.params],
             "allow_object_filter": self.allow_object_filter,
             "allow_interface_filter": self.allow_interface_filter,
             "allow_object_validation": self.allow_object_validation,
@@ -109,6 +145,7 @@ class ConfDBQuery(Document):
                 "uuid",
                 "description",
                 "source",
+                "params",
                 "allow_object_filter",
                 "allow_interface_filter",
                 "allow_object_validation",

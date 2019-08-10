@@ -11,7 +11,8 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
     requires: [
         "NOC.cm.objectvalidationpolicy.Model",
         "NOC.cm.confdbquery.LookupField",
-        "NOC.fm.alarmclass.LookupField"
+        "NOC.fm.alarmclass.LookupField",
+        "NOC.core.ListFormField"
     ],
     model: "NOC.cm.objectvalidationpolicy.Model",
     search: true,
@@ -23,7 +24,7 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
                 {
                     text: __("Name"),
                     dataIndex: "name",
-                    width: 150
+                    flex: 1
                 }
             ],
 
@@ -52,75 +53,109 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
                 },
                 {
                     name: "rules",
-                    xtype: "gridfield",
+                    xtype: "listform",
                     fieldLabel: __("Rules"),
-                    columns: [
+                    items: [
                         {
-                            text: __("Query"),
-                            dataIndex: "query",
-                            width: 200,
-                            editor: {
-                                xtype: "cm.confdbquery.LookupField",
-                                allowBlank: false,
-                                query: {
+                            name: "query",
+                            xtype: "cm.confdbquery.LookupField",
+                            fieldLabel: __("Query"),
+                            query: {
                                     allow_object_validation: true
+                            },
+                            listeners: {
+                                scope: me,
+                                select: me.onSelectQuery
+                            }
+                        },
+                        {
+                            name: "query_params",
+                            xtype: "gridfield",
+                            fieldLabel: __("Query Parameters"),
+                            columns: [
+                                {
+                                    dataIndex: "name",
+                                    text: __("Name"),
+                                    width: 150
+                                },
+                                {
+                                    dataIndex: "type",
+                                    text: __("Type"),
+                                    width: 70
+                                },
+                                {
+                                    dataIndex: "value",
+                                    text: __("Value"),
+                                    editor: "textfield",
+                                    width: 200
+                                },
+                                {
+                                    dataIndex: "default",
+                                    text: __("Default"),
+                                    width: 100
+                                },
+                                {
+                                    dataIndex: "description",
+                                    text: __("Description"),
+                                    flex: 1
                                 }
-                            },
-                            renderer: NOC.render.Lookup("query")
+                            ]
                         },
                         {
-                            text: __("Filter Query"),
-                            dataIndex: "filter_query",
-                            width: 200,
-                            editor: {
-                                xtype: "cm.confdbquery.LookupField",
-                                allowBlank: false,
-                                query: {
-                                    allow_object_filter: true
-                                }
-                            },
-                            renderer: NOC.render.Lookup("filter_query")
+                            name: "filter_query",
+                            xtype: "cm.confdbquery.LookupField",
+                            fieldLabel: __("Filter Query"),
+                            allowBlank: true,
+                            query: {
+                                allow_object_filter: true
+                            }
                         },
                         {
-                            text: __("Active"),
-                            dataIndex: "is_active",
-                            editor: "checkbox",
-                            width: 50,
-                            renderer: NOC.render.Bool
+                            name: "is_active",
+                            xtype: "checkbox",
+                            boxLabel: __("Active")
                         },
                         {
-                            text: __("Code"),
-                            dataIndex: "error_code",
-                            editor: "textfield",
-                            width: 70
+                            name: "error_code",
+                            xtype: "textfield",
+                            fieldLabel: __("Code"),
+                            allowBlank: true
                         },
                         {
-                            text: __("Error template"),
-                            dataIndex: "error_text_template",
-                            editor: {
-                                xtype: "textfield",
-                                placeHolder: "{{error}}"
-                            },
-                            flex: 1
+                            name: "error_text_template",
+                            xtype: "textfield",
+                            fieldLabel: __("Error template"),
+                            placeHolder: "{{error}}",
+                            allowBlank: true,
+                            uiStyle: "extra"
                         },
                         {
-                            text: __("Alarm Class"),
-                            dataIndex: "alarm_class",
-                            editor: "fm.alarmclass.LookupField",
-                            width: 120,
-                            renderer: NOC.render.Lookup("alarm_class")
+                            name: "alarm_class",
+                            xtype: "fm.alarmclass.LookupField",
+                            fieldLabel: __("Alarm Class"),
+                            allowBlank: true
                         },
                         {
-                            text: __("Fatal"),
-                            dataIndex: "is_fatal",
-                            editor: "checkbox",
-                            width: 50,
-                            renderer: NOC.render.Bool
+                            name: "is_fatal",
+                            xtype: "checkbox",
+                            boxLabel: __("Fatal")
                         }
                     ]
                 }
             ]
         });
         me.callParent();
+    },
+    //
+    onSelectQuery: function(field, record) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/cm/confdbquery/" + record.get("id") + "/",
+            scope: me,
+            success: function (response) {
+                var data = Ext.decode(response.responseText);
+                field.up().getForm().findField("query_params").setValue(data.params)
+            }
+        })
     }
 });
