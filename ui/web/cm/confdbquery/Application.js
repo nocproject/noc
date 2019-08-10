@@ -129,6 +129,11 @@ Ext.define("NOC.cm.confdbquery.Application", {
                             boxLabel: __("Interface Validation")
                         }
                     ]
+                },
+                {
+                    name: "require_raw",
+                    xtype: "checkbox",
+                    boxLabel: "Require raw"
                 }
             ],
 

@@ -58,6 +58,10 @@ Ext.define("NOC.cm.confdbquery.Model", {
         {
             name: "params",
             type: "auto"
+        },
+        {
+            name: "require_raw",
+            type: "boolean"
         }
     ]
 });

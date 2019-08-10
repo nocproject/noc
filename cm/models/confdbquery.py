@@ -84,6 +84,7 @@ class ConfDBQuery(Document):
     allow_interface_validation = BooleanField(default=False)
     allow_object_classification = BooleanField(default=False)
     allow_interface_classification = BooleanField(default=False)
+    require_raw = BooleanField(default=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -134,6 +135,7 @@ class ConfDBQuery(Document):
             "allow_interface_validation": self.allow_interface_validation,
             "allow_object_classification": self.allow_object_classification,
             "allow_interface_classification": self.allow_interface_classification,
+            "require_raw": self.require_raw,
         }
         if self.description:
             r["description"] = self.description
@@ -152,5 +154,6 @@ class ConfDBQuery(Document):
                 "allow_interface_validation",
                 "allow_object_classification",
                 "allow_interface_classification",
+                "require_raw",
             ],
         )
