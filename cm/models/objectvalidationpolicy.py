@@ -51,7 +51,7 @@ class ObjectValidationRule(EmbeddedDocument):
 @on_delete_check(check=[("sa.ManagedObjectProfile", "object_validation_policy")])
 @six.python_2_unicode_compatible
 class ObjectValidationPolicy(Document):
-    meta = {"collection": "objectvalidationpolicies", "strict": True, "auto_create_index": False}
+    meta = {"collection": "objectvalidationpolicies", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()

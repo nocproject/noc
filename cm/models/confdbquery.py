@@ -35,7 +35,7 @@ TYPE_MAP = {"str": StringParameter(), "int": IntParameter(), "bool": BooleanPara
 
 @six.python_2_unicode_compatible
 class ConfDBQueryParam(EmbeddedDocument):
-    meta = {"strict": True}
+    meta = {"strict": False}
     name = StringField()
     type = StringField(choices=["str", "int", "bool"])
     default = StringField()
