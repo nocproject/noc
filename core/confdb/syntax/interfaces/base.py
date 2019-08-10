@@ -11,6 +11,7 @@ from __future__ import absolute_import
 # NOC modules
 from ..defs import DEF
 from ..patterns import ANY, CHOICES, IF_NAME, INTEGER, BOOL, FLOAT, ETHER_MODE
+from ..meta.interfaces import INTERFACES_META_SYNTAX
 
 INTERFACES_SYNTAX = DEF(
     "interfaces",
@@ -18,6 +19,7 @@ INTERFACES_SYNTAX = DEF(
         DEF(
             IF_NAME,
             [
+                INTERFACES_META_SYNTAX,
                 DEF(
                     "type",
                     [

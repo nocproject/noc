@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from .query import QueryApplicator
 
 
-class DefaultNTPVersionApplication(QueryApplicator):
+class DefaultNTPVersionApplicator(QueryApplicator):
     CHECK_QUERY = "Match('hints', 'protocols', 'ntp', 'version')"
     QUERY = [
         "Match('hints', 'protocols', 'ntp', 'version', default_version) and "
@@ -22,7 +22,7 @@ class DefaultNTPVersionApplication(QueryApplicator):
     ]
 
 
-class DefaultNTPModeApplication(QueryApplicator):
+class DefaultNTPModeApplicator(QueryApplicator):
     CHECK_QUERY = "Match('hints', 'protocols', 'ntp', 'mode')"
     QUERY = [
         "Match('hints', 'protocols', 'ntp', 'mode', default_mode) and "
