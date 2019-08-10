@@ -798,6 +798,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "beef_policy",
             type: "string",
             defaultValue: "D"
+        },
+        {
+            name: "object_validation_policy",
+            type: "string"
+        },
+        {
+            name: "object_validation_policy__label",
+            type: "string",
+            persist: false
         }
     ]
 });

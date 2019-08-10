@@ -65,6 +65,17 @@ class Engine(object):
         for ctx in g:
             yield ctx
 
+    def any(self, expr, **kwargs):
+        """
+        Run query and return True if any result found
+        :param expr:
+        :param kwargs:
+        :return:
+        """
+        for _ in self.query(expr, **kwargs):
+            return True
+        return False
+
     def dump(self, format="tree"):
         return self.db.marshall(format)
 

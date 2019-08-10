@@ -13,6 +13,7 @@ import pytest
 from noc.core.confdb.engine.base import Engine
 
 CONF1 = [
+    ["system", "hostname", "h1"],
     ["interface", "Fa 0/1", "description", "First interface"],
     ["interface", "Fa 0/2", "description", "Second interface"],
     ["interface", "Fa 0/3", "description", "Third interface"],
@@ -22,6 +23,10 @@ CONF1 = [
 @pytest.mark.parametrize(
     "conf,query,output",
     [
+        # Exact match
+        (CONF1, "Match('interface')", [{}]),
+        # Exact mismatch
+        (CONF1, "Match('absent')", []),
         # Match incomplete
         (
             CONF1,

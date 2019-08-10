@@ -9,6 +9,9 @@ console.debug("Defining NOC.sa.managedobject.ConfDBPanel");
 Ext.define("NOC.sa.managedobject.ConfDBPanel", {
     extend: "NOC.core.ApplicationPanel",
     app: null,
+    requires: [
+        "NOC.cm.confdbquery.LookupField"
+    ],
     autoScroll: true,
     layout: "border",
     //
@@ -119,26 +122,49 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
                 me.matchField
             ]
         });
+
+        me.queryField = Ext.create({
+            xtype: "cmtext",
+            itemId: "query",
+            mode: "python",
+            listeners: {
+                scope: me,
+                change: function(field, value) {
+                    me.runButton.setDisabled(!value);
+                },
+                run: me.runQuery
+            }
+        });
+
+        me.confDBQueryField = Ext.create({
+            xtype: "cm.confdbquery.LookupField",
+            listeners: {
+                scope: me,
+                change: function(field, value) {
+                    Ext.Ajax.request({
+                        url: "/cm/confdbquery/" + value + "/",
+                        scope: me,
+                        success: function(response) {
+                            var data = Ext.decode(response.responseText);
+                            me.queryField.setValue(data.query)
+                        }
+                    })
+                }
+            }
+        });
+
         me.queryPanel = Ext.create({
             xtype: "panel",
             region: "center",
             height: "30%",
             layout: "fit",
-            items: [{
-                xtype: "cmtext",
-                itemId: "query",
-                mode: "python",
-                listeners: {
-                    scope: me,
-                    change: function(field, value) {
-                        this.runButton.setDisabled(!value);
-                    },
-                    run: me.runQuery
-                }
-            }],
+            items: [
+                me.queryField
+            ],
             tbar: [
                 me.runButton,
                 me.closeQueryButton,
+                me.confDBQueryField,
                 "->",
                 me.helpButton
             ]
@@ -319,11 +345,18 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
             scope: me,
             jsonData: query,
             success: function(response) {
-                var data = Ext.decode(response.responseText);
+                var result,
+                    data = Ext.decode(response.responseText);
                 me.unmask();
                 if(data.status) {
                     me.resultPanel.destroy();
-                    me.rightPanel.add(me.resultPanel = this.createResultPanel(data.result));
+                    result = data.result.map(function(element) {
+                        if(Ext.Object.isEmpty(element)) {
+                            return {result: "Empty Context"};
+                        }
+                        return element;
+                    });
+                    me.rightPanel.add(me.resultPanel = this.createResultPanel(result));
                     me.setConfDB(data.confdb);
                 } else {
                     NOC.error(data.error);
@@ -369,6 +402,7 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
                     fields: keys,
                     data: data
                 },
+                emptyText: __("No data found"),
                 tbar: [
                     {
                         xtype: "displayfield",

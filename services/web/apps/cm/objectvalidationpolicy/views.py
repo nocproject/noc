@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# cm.objectvalidationpolicy application
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
+from noc.core.translation import ugettext as _
+
+
+class ObjectValidationPolicyApplication(ExtDocApplication):
+    """
+    ObjectValidationPolicy application
+    """
+
+    title = "Object Validation Policy"
+    menu = [_("Setup"), _("Object Validation Policies")]
+    model = ObjectValidationPolicy
+    glyph = "ambulance"
+    implied_permissions = {
+        "create": ["cm:confdbquery:lookup", "cm:confdbquery:read"],
+        "update": ["cm:confdbquery:lookup", "cm:confdbquery:read"],
+    }
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        v = super(ObjectValidationPolicyApplication, self).instance_to_dict(
+            o, fields=fields, nocustom=nocustom
+        )
+        if v.get("rules") and (not fields or "rules" in fields):
+            for rule, edoc in zip(o.rules, v["rules"]):
+                edoc["query_params"] = self.params_to_list(rule, edoc.get("query_params"))
+        return v
+
+    @staticmethod
+    def params_to_list(rule, params):
+        params = params or {}
+        r = []
+        for p in rule.query.params:
+            r += [
+                {
+                    "name": p.name,
+                    "type": p.type,
+                    "value": params.get(p.name) or "",
+                    "default": p.default,
+                    "description": p.description,
+                }
+            ]
+        return r
+
+    @staticmethod
+    def list_to_params(params):
+        return dict((p["name"], p["value"]) for p in params if p["value"] != "")
+
+    def clean(self, data):
+        for rule in data.get("rules", []):
+            rule["query_params"] = self.list_to_params(rule.get("query_params") or [])
+        return super(ObjectValidationPolicyApplication, self).clean(data)
