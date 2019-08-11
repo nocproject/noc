@@ -22,6 +22,7 @@ from mongoengine.queryset import Q
 from noc.config import config
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.mongo.connection import connect
 from services.correlator.rule import Rule
 from services.correlator.rcacondition import RCACondition
 from services.correlator.trigger import Trigger
@@ -89,6 +90,7 @@ class CorrelatorService(Service):
         Load rules from database just after loading config
         """
         super(CorrelatorService, self).on_start()
+        connect()  # use_mongo connect do after on_start.
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
