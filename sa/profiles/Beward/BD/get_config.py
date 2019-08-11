@@ -22,4 +22,4 @@ class Script(BaseScript):
         users = self.http.get(
             "/cgi-bin/admin/privacy.cgi?", json=False, cached=True, use_basic=True
         )
-        return config + users
+        return config + "\n".join("user=" + u for u in users.splitlines() if u.strip())
