@@ -7,18 +7,17 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from mongoengine.document import EmbeddedDocument
+from mongoengine.fields import StringField
 import six
-
-# NOC modules
-import noc.lib.nosql as nosql
 
 
 @six.python_2_unicode_compatible
-class AlarmClassVar(nosql.EmbeddedDocument):
+class AlarmClassVar(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
-    name = nosql.StringField(required=True)
-    description = nosql.StringField(required=False)
-    default = nosql.StringField(required=False)
+    name = StringField(required=True)
+    description = StringField(required=False)
+    default = StringField(required=False)
 
     def __str__(self):
         return self.name

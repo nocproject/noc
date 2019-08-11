@@ -12,9 +12,10 @@ import yaml
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.config import config
-import noc.lib.nosql
+from noc.core.mongo.connection import connect
 
 CONFIG = config.path.legacy_config
+
 
 def update_if_changed(pool, values):
     changed = False
@@ -30,6 +31,7 @@ def update_if_changed(pool, values):
 def main():
     with open(CONFIG) as f:
         data = yaml.safe_load(f)
+    connect()
     changed = False
     for p in data["pools"]:
         try:
@@ -48,6 +50,7 @@ def main():
         print "CHANGED"
     else:
         print "OK"
+
 
 if __name__ == "__main__":
     main()

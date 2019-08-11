@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # fix command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -61,8 +61,11 @@ class Command(BaseCommand):
     def handle_apply(self, fixes=None, *args, **options):
         if not fixes:
             return
-        import noc.lib.nosql  # noqa Connect to mongo
+        # Connect to mongo
+        from noc.core.mongo.connection import connect
 
+        connect()
+        # Apply fixes
         for f in fixes:
             fix = self.get_fix(f)
             if not fix:

@@ -7,18 +7,17 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from mongoengine.document import EmbeddedDocument
+from mongoengine.fields import StringField, DictField
 import six
-
-# NOC modules
-import noc.lib.nosql as nosql
 
 
 @six.python_2_unicode_compatible
-class DataSource(nosql.EmbeddedDocument):
+class DataSource(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
-    name = nosql.StringField()
-    datasource = nosql.StringField()
-    search = nosql.DictField()
+    name = StringField()
+    datasource = StringField()
+    search = DictField()
 
     def __str__(self):
         return self.name

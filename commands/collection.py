@@ -19,6 +19,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.collection.base import Collection
 from noc.core.fileutils import safe_rewrite
 from noc.models import COLLECTIONS, get_model
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
@@ -83,6 +84,7 @@ class Command(BaseCommand):
         getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_sync(self):
+        connect()
         for c in Collection.iter_collections():
             try:
                 c.sync()
@@ -90,6 +92,7 @@ class Command(BaseCommand):
                 self.die(str(e))
 
     def handle_install(self, install_files=None, remove=False, load=False):
+        connect()
         install_files = install_files or []
         for fp in install_files:
             if not os.path.isfile(fp):
@@ -114,6 +117,7 @@ class Command(BaseCommand):
         export_model_names=None,
         export_model_uuids=None,
     ):
+        connect()
         MODELS = {}
         for c in COLLECTIONS:
             cm = get_model(c)

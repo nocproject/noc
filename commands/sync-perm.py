@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Syncronize permissions
+# Synchronize permissions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,13 +10,17 @@
 from noc.core.management.base import BaseCommand
 from noc.aaa.models.permission import Permission
 from noc.core.service.loader import get_service
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         from noc.lib.app.site import site
 
+        connect()
+        # Install service stub
         site.service = get_service()
+        # Synchronize permissions
         try:
             Permission.sync()
         except ValueError as e:

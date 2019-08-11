@@ -104,12 +104,15 @@ class MetricsCheck(DiscoveryCheck):
 
     SLA_CAPS = ["Cisco | IP | SLA | Probes"]
 
-    AC_PM_THRESHOLDS = AlarmClass.get_by_name("NOC | PM | Out of Thresholds")
-
     def __init__(self, *args, **kwargs):
         super(MetricsCheck, self).__init__(*args, **kwargs)
         self.id_count = itertools.count()
         self.id_metrics = {}
+
+    @staticmethod
+    @cachetools.cached({})
+    def get_ac_pm_thresholds():
+        return AlarmClass.get_by_name("NOC | PM | Out of Thresholds")
 
     @classmethod
     @cachetools.cachedmethod(
@@ -429,7 +432,7 @@ class MetricsCheck(DiscoveryCheck):
             self.send_metrics(data)
         # Set up threshold alarms
         self.logger.info("%d alarms detected", len(alarms))
-        self.job.update_umbrella(self.AC_PM_THRESHOLDS, alarms)
+        self.job.update_umbrella(self.get_ac_pm_thresholds(), alarms)
 
     def convert_delta(self, m, r):
         """

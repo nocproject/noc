@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Custom python module importer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import imp
 
 # NOC modules
 from noc.config import config
+from noc.core.mongo.connection import get_db
 
 
 class ImportRouter(object):
@@ -106,8 +107,6 @@ class NOCPyruleLoader(NOCLoader):
 
     def _get_collection(self):
         if not self.collection:
-            from noc.lib.nosql import get_db
-
             self.collection = get_db()[self.COLLECTION_NAME]
         return self.collection
 
