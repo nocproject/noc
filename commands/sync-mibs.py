@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Upload bundled MIBs
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ import ujson
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 from noc.config import config
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
@@ -56,6 +57,7 @@ class Command(BaseCommand):
         """
         Upload bundled MIBs
         """
+        connect()
         for mib_name, path in self.get_bundled_mibs():
             mib = MIB.objects.filter(name=mib_name).first()
             if path.endswith(".gz"):
@@ -102,7 +104,7 @@ class Command(BaseCommand):
         return datetime.datetime(year=ts.tm_year, month=ts.tm_mon, day=ts.tm_mday)
 
     def update_mib(self, mib, data, version=None):
-        # Deserealize
+        # Deserialize
         d = ujson.loads(data)
         # Update timestamp
         mib.last_updated = self.decode_date(d["last_updated"])
@@ -116,7 +118,7 @@ class Command(BaseCommand):
             mib.load_data(d["data"])
 
     def create_mib(self, data):
-        # Deserialze
+        # Deserialize
         d = ujson.loads(data)
         # Create MIB
         mib = MIB(
