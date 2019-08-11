@@ -132,6 +132,10 @@ class HikvisionNormalizer(BaseNormalizer):
             admin_status=tokens[3] == "true", overlay_name="channel_name"
         )
 
+    @match("Overlay", "channelNameOverlay", "channelName", ANY)
+    def normalize_overlay_channel_name_text(self, tokens):
+        yield self.make_media_streams_overlay_text(overlay_name="channel_name", text=tokens[3])
+
     @match("Overlay", "DateTimeOverlay", "enabled", ANY)
     def normalize_overlay_datetime_enable(self, tokens):
         yield self.make_media_streams_overlay_status(

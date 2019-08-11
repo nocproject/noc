@@ -51,11 +51,10 @@ class Script(BaseScript):
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
         channels = v["StreamingChannelList"]["StreamingChannel"]
-        i = 1
         for o in channels:
             c += "StreamingChannel %s\n" % o["id"][0]["_text"].strip("'")
             c += "  id %s\n" % o["id"][0]["_text"]
-            c += '  channelName "%s"\n' % o["channelName"][0]["_text"]
+            c += '  channelName "%s"\n' % o["channelName"][0].get("_text", "")
             c += "  enabled %s\n" % o["enabled"][0]["_text"]
             video = o["Video"][0]
             c += "  Video\n"
@@ -98,6 +97,13 @@ class Script(BaseScript):
             except KeyError:
                 continue
         try:
+            v = self.http.get("/ISAPI/System/Video/inputs/channels", use_basic=True)
+            root = ElementTree.fromstring(v)
+            v = self.xml_2_dict(root)
+            for vic in v["VideoInputChannelList"]["VideoInputChannel"]:
+                # vid = vic["id"][0]["_text"]
+                # for channelName overlay
+                vname = vic["name"][0]["_text"]
             v = self.http.get("/ISAPI/System/Video/inputs/channels/1/overlays", use_basic=True)
             v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
@@ -116,8 +122,8 @@ class Script(BaseScript):
                         continue
                     elif "TextOverlay" in overlay:
                         overlay = overlay["TextOverlay"]
-                        for o in overlay:
-                            text = o["displayText"][0]
+                        for oo in overlay:
+                            text = oo["displayText"][0]
                             if text:
                                 c += '    TextOverlay %d "%s"\n' % (i, text["_text"])
                             else:
@@ -129,6 +135,8 @@ class Script(BaseScript):
                         if key == "_text" or isinstance(value, six.string_types):
                             continue
                         c += "    %s %s\n" % (key, value[0]["_text"])
+                if o == "channelNameOverlay":
+                    c += "    %s %s\n" % ("channelName", vname)
         except HTTPError:
             pass
         try:
@@ -150,7 +158,11 @@ class Script(BaseScript):
             v = self.xml_2_dict(root)
             ntp_servers = v["NTPServerList"]["NTPServer"]
             for i, o in enumerate(ntp_servers):
-                text = o["ipAddress"][0]["_text"]
+                aft = o["addressingFormatType"][0]["_text"]
+                if aft == "hostname":
+                    text = o["hostName"][0]["_text"]
+                else:
+                    text = o["ipAddress"][0]["_text"]
                 c += "  NTPServer %d %s\n" % (i, text)
         except HTTPError:
             pass
