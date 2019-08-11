@@ -1184,8 +1184,28 @@ class ManagedObject(NOCModel):
             logger.debug("[%s] Validation policy is not set. Skipping", self.name)
             return
         confdb = self.get_confdb()
+        # Object-level validation
         for problem in self.object_profile.object_validation_policy.iter_problems(confdb):
             yield problem
+        # Interface-level validation
+        from noc.inv.models.interface import Interface
+        from noc.inv.models.interfaceprofile import InterfaceProfile
+
+        for doc in Interface._get_collection().aggregate(
+            [
+                {"$match": {"managed_object": self.id}},
+                {"$project": {"_id": 0, "name": 1, "profile": 1}},
+                {"$group": {"_id": "$profile", "ifaces": {"$push": "$name"}}},
+            ]
+        ):
+            iprofile = InterfaceProfile.get_by_id(doc["_id"])
+            if not iprofile or not iprofile.interface_validation_policy:
+                continue
+            for ifname in doc["ifaces"]:
+                for problem in iprofile.interface_validation_policy.iter_problems(
+                    confdb, ifname=ifname
+                ):
+                    yield problem
 
     @property
     def credentials(self):

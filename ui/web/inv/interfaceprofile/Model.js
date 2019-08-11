@@ -99,6 +99,15 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "allow_subinterface_metrics",
             type: "boolean"
         },
+        {
+            name: "interface_validation_policy",
+            type: "string"
+        },
+        {
+            name: "interface_validation_policy__label",
+            type: "string",
+            persist: false
+        },
         // CSS
         {
             name: "row_class",

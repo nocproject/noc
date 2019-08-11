@@ -16,7 +16,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
-        "NOC.pm.thresholdprofile.LookupField"
+        "NOC.pm.thresholdprofile.LookupField",
+        "NOC.cm.interfacevalidationpolicy.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
@@ -165,6 +166,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             ["m", __("Management VLAN")]
                         ],
                         uiStyle: "medium"
+                    },
+                    {
+                        name: "interface_validation_policy",
+                        xtype: "cm.interfacevalidationpolicy.LookupField",
+                        fieldLabel: __("Validation Policy"),
+                        allowBlank: true
                     },
                     {
                         name: "allow_lag_mismatch",
