@@ -10,7 +10,7 @@ managedobject DataStream
     :depth: 1
     :class: singlecol
 
-managedobject DataStream contains summarized :ref:`Managed Object<reference-managedobject>`
+managedobject DataStream contains summarized :ref:`Managed Object<reference-managed-object>`
 state, including capabilities, interfaces and topology
 
 Fields
@@ -19,7 +19,7 @@ Fields
 +------------------------+------------------+------------------------------------------------------------------------+
 | Name                   | Type             | Description                                                            |
 +========================+==================+========================================================================+
-| id                     | String           | :ref:`Managed Object's<reference-managedobject>` id                    |
+| id                     | String           | :ref:`Managed Object's<reference-managed-object>` id                   |
 +------------------------+------------------+------------------------------------------------------------------------+
 | change_id              | String           | :ref:`Record's change id<api-datastream-changeid>`                     |
 +------------------------+------------------+------------------------------------------------------------------------+

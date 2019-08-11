@@ -100,7 +100,7 @@ Usage
 Authentication
 --------------
 Common :ref:`reference-apikey` scheme is used for client authentication.
-:ref:`datastream<_reference-apikey-roles-datastream>` API access required.
+:ref:`datastream<reference-apikey-roles-datastream>` API access required.
 
 Scenarios
 ---------
@@ -109,7 +109,7 @@ Full Data Fetching
 ^^^^^^^^^^^^^^^^^^
 Start from very start and process until stream contains changes
 
-.. sourcecode::
+.. sourcecode:: text
 
     change_id = None
     while True:
@@ -126,7 +126,7 @@ Last processed :ref:`Change ID<api-datastream-changeid>` should
 be stored somewhere and restored on next run. This scenario
 offers gentle recover in case of `process_item` failure.
 
-.. sourcecode::
+.. sourcecode:: text
 
     change_id = restore_change_id()
     while True:
@@ -144,7 +144,7 @@ Exploit `block=1` query parameter. Client will block awaiting new
 changes. Note that http client may break request during timeout,
 so code must catch timeout and repeat request
 
-.. sourcecode::
+.. sourcecode:: text
 
     change_id = restore_change_id()
     while True:
@@ -160,7 +160,7 @@ Record deletion processing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Deleted records remains in stream and marked with `$deleted` key
 
-.. sourcecode::
+.. sourcecode:: text
 
     {
       "id": "XXXXX",

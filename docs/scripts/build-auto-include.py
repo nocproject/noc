@@ -96,6 +96,12 @@ def render_vendor_index(vendor):
     return "\n".join(r)
 
 
+def write_file(path, data):
+    print("Writing %s" % path)
+    with open(path, "w") as f:
+        f.write(data)
+
+
 def build_platforms(root, inc_root):
     global all_profiles
 
@@ -113,8 +119,7 @@ def build_platforms(root, inc_root):
             data = json.load(f)
         ref = "platforms-%s-%s" % (vendor, data["name"])
         plat_rst_path = os.path.join(plat_root, "%s-%s.rst" % (vendor, jname[:-5]))
-        with open(plat_rst_path, "w") as f:
-            f.write(render_platform(vendor, data))
+        write_file(plat_rst_path, render_platform(vendor, data))
         tags = data.get("tags") or []
         vendor_platforms[vendor] += [(data["name"], ref)]
         for t in tags:
@@ -123,15 +128,18 @@ def build_platforms(root, inc_root):
     # Vendor Platforms
     for vendor in vendor_platforms:
         # Vendor index
-        with open(os.path.join(plat_root, "vendor-%s.rst" % vendor), "w") as f:
-            f.write(render_vendor_index(vendor))
+        write_file(os.path.join(plat_root, "vendor-%s.rst" % vendor), render_vendor_index(vendor))
         # Supported platform
-        with open(os.path.join(inc_root, "supported-vendor-platforms-%s.rst" % vendor), "w") as f:
-            f.write(render_vendor_platforms(vendor_platforms[vendor]))
+        write_file(
+            os.path.join(inc_root, "supported-vendor-platforms-%s.rst" % vendor),
+            render_vendor_platforms(vendor_platforms[vendor]),
+        )
     # Profile platforms
     for profile in profile_platforms:
-        with open(os.path.join(inc_root, "supported-profile-platforms-%s.rst" % profile), "w") as f:
-            f.write(render_vendor_platforms(profile_platforms[profile]))
+        write_file(
+            os.path.join(inc_root, "supported-profile-platforms-%s.rst" % profile),
+            render_vendor_platforms(profile_platforms[profile]),
+        )
 
 
 def build_scripts(root, inc_root):
@@ -149,16 +157,14 @@ def build_scripts(root, inc_root):
         profiles[script] += [profile]
     # Build supported scripts
     for profile in scripts:
-        with open(os.path.join(inc_root, "supported-scripts-%s.rst" % profile), "w") as f:
-            r = ["* :ref:`%s <script-%s>`" % (s, s) for s in sorted(scripts[profile])]
-            data = "\n".join(r)
-            f.write(data)
+        r = ["* :ref:`%s <script-%s>`" % (s, s) for s in sorted(scripts[profile])]
+        data = "\n".join(r)
+        write_file(os.path.join(inc_root, "supported-scripts-%s.rst" % profile), data)
     # Build supported profiles
     for script in profiles:
-        with open(os.path.join(inc_root, "supported-profiles-%s.rst" % script), "w") as f:
-            r = ["* :ref:`%s <profile-%s>`" % (p, p) for p in sorted(profiles[script])]
-            data = "\n".join(r)
-            f.write(data)
+        r = ["* :ref:`%s <profile-%s>`" % (p, p) for p in sorted(profiles[script])]
+        data = "\n".join(r)
+        write_file(os.path.join(inc_root, "supported-profiles-%s.rst" % script), data)
     all_profiles = set(scripts)
 
 

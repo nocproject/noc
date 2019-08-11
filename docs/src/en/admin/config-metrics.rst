@@ -19,7 +19,7 @@ default_hist
 
 Default histogram buckets (in seconds)
 
-.. _config-metrics-enable_mongo_hist
+.. _config-metrics-enable_mongo_hist:
 
 enable_mongo_hist
 ~~~~~~~~~~~~~~~~~
@@ -47,7 +47,7 @@ mongo_hist
 
 Histogram buckets (in seconds) for mongo transactions
 
-.. _config-metrics-enable_postgres_hist
+.. _config-metrics-enable_postgres_hist:
 
 enable_postgres_hist
 ~~~~~~~~~~~~~~~~~~~~
@@ -146,8 +146,10 @@ enable_mongo_quantiles
 
 Enable quantiles collection for mongo transactions
 
+.. _config-metrics-enable_postgres_quantiles:
+
 enable_postgres_quantiles
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =============================================
 **YAML Path**       metrics.enable_postgres_quantiles
