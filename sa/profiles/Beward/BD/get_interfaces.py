@@ -22,6 +22,8 @@ class Script(BaseScript):
             "/cgi-bin/admin/param.cgi?action=list", json=False, cached=True, use_basic=True
         )
         r = {}
+        if "Permission denied" in res:
+            raise self.http.HTTPError("Permission denied")
         for x in res.splitlines():
             if not x:
                 continue
