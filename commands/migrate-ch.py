@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CH database schema migration tool
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from __future__ import print_function
 from noc.core.management.base import BaseCommand
 from noc.core.clickhouse.connect import connection
 from noc.core.clickhouse.ensure import ensure_bi_models, ensure_pm_scopes
+from noc.core.mongo.connection import connect as mongo_connect
 
 
 class Command(BaseCommand):
@@ -24,6 +25,7 @@ class Command(BaseCommand):
         self.host = host or None
         self.port = port or None
         self.connect()
+        mongo_connect()
         self.create_dictionaries_db()
         self.ensure_db()
         changed = ensure_bi_models(connect=self.connect)
