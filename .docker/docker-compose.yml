@@ -103,7 +103,7 @@ services:
     command: >
       sh -c "set -xe
       && /usr/bin/python ./scripts/deploy/install-packages requirements/collections.json
-      && ./noc test run --coverage-report=/opt/noc/var/coverage --test-report=/opt/noc/var/test_report/index.html --statistics
+      && ./noc test run --coverage-report=/opt/noc/var/coverage --statistics
       "
     environment:
       NOC_TEST_DB: noc_tests
