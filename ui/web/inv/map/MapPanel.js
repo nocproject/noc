@@ -197,7 +197,14 @@ Ext.define("NOC.inv.map.MapPanel", {
             // showDelay: 0,
             // hideDelay: 100,
             closable: true,
-            autoShow: false
+            autoShow: false,
+            tpl: new Ext.XTemplate(
+                "<table style='font-size: 10px'>",
+                "<tpl for='.'>",
+                "<tr><td>{values}</td><td>|</td><td>Load {names} Mb</td><td>|</td><td>{port}</td></tr>",
+                "</tpl>",
+                "</table>"
+            )
         });
         //
         me.callParent();
@@ -514,7 +521,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
 
     onLinkOver: function(link, evt) {
-        var me = this, data, body = [],
+        var me = this, data, rows = [],
             nameByPort = function(portId) {
                 var elementNameAttr = "name";
                 if(me.app.addressIPButton.pressed) {
@@ -538,11 +545,10 @@ Ext.define("NOC.inv.map.MapPanel", {
                     values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
                     names.push((dat.metric === "Interface | Load | Out" ? "Out" : "In"));
                 });
-                body.push(Ext.String.format("<tr><td>{0}</td><td>|</td><td>Load {1} Mb</td><td>|</td><td>{2}</td></tr>"
-                    , values.join(" / "), names.join(" / "), nameByPort(metric.port)));
+                rows.push({values: values.join(" / "), names: names.join(" / "), port: nameByPort(metric.port)});
             });
-            if(body.length) {
-                me.tip.html = "<table style='font-size: 10px'>" + body.join("") + "</table>";
+            if(rows.length) {
+                me.tip.setData(rows);
                 me.tip.showAt([evt.pageX, evt.pageY]);
             }
         }
