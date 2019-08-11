@@ -94,6 +94,7 @@ Referencing
   | Use the :doc:`/tutorial/convert-replica-set-to-replicated-shard-cluster`
   | procedure if you have an existing replica set.
   |
+
   Type this:
 
   |
@@ -153,6 +154,7 @@ ReStructured Text and Typesetting
   * **-** for heading level 2 or h2s.
   * **~** for heading level 3 or h3s.
   * **`** for heading level 4 or h4s.
+
 * Use hyphens (-) to indicate items of an ordered list.
 * Place footnotes and other references, if you use them,
   at the end of a section rather than the end of a file.

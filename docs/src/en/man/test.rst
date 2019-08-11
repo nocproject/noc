@@ -57,7 +57,7 @@ Examples
 
     $ ./noc test --summary
 
-.. code-block::
+.. code-block:: text
 
     $ ./noc test -v tests/test_0001_migrate.py::test_database_migrations
 
