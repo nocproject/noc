@@ -11,6 +11,7 @@ import pytest
 
 # NOC modules
 from noc.config import config
+from noc.core.mongo.connection import connect as mongo_connect
 
 
 @pytest.fixture(scope="session")
@@ -55,11 +56,8 @@ def _create_mongo_db():
     Create mongodb test database
     :return:
     """
-    import mongoengine
-
-    client = mongoengine.connect(**config.mongo_connection_args)
-    client.close()
-    # MongoDB creates database automatically
+    # MongoDB creates database automatically on connect
+    mongo_connect()
 
 
 def _create_clickhouse_db():
