@@ -9,7 +9,7 @@ console.debug("Defining NOC.{{module}}.{{app}}.Application");
 Ext.define("NOC.{{module}}.{{app}}.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        {%for r in requires%}"{{r}}"{% if forloop.last %}{%else%},
+        {%for r in requires%}"{{r}}"{% if loop.last %}{%else%},
         {%endif%}{%endfor%}
     ],
     
