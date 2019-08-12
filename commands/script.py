@@ -34,6 +34,7 @@ from noc.core.script.scheme import (
     HTTP,
     HTTPS,
 )
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
@@ -163,6 +164,7 @@ class Command(BaseCommand):
         from noc.sa.models.managedobject import ManagedObject
         from django.db.models import Q
 
+        connect()
         if object_name.endswith(".json") and os.path.isfile(object_name):
             return JSONObject(object_name)
         q = Q(name=object_name)
@@ -261,6 +263,7 @@ class Command(BaseCommand):
         from noc.dev.models.spec import Spec, SpecAnswer
         from noc.sa.models.profile import Profile
 
+        connect()
         self.print("Updating spec: %s" % name)
         spec = Spec.get_by_name(name)
         changed = False

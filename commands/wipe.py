@@ -14,6 +14,7 @@ from contextlib import contextmanager
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
+from noc.core.mongo.connection import connect
 from noc.lib.validators import is_int
 from noc.core.datastream.change import bulk_datastream_changes
 
@@ -36,6 +37,7 @@ class Command(BaseCommand):
             raise CommandError(
                 "Invalid model '%s'. Valid models are: %s" % (m, ", ".join(self.models))
             )
+        connect()
         objects = []
         getter = getattr(self, "get_%s" % m)
         wiper = getattr(self, "wipe_%s" % m)

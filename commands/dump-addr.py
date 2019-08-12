@@ -14,6 +14,7 @@ import argparse
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
+from noc.core.mongo.connection import connect
 from noc.gis.models.division import Division
 
 
@@ -66,6 +67,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ctr = options.get("countries", [])
+        connect()
         print(ctr)
         print(options)
         # Check countries

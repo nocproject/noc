@@ -14,6 +14,7 @@ import time
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.sa.models.selectorcache import SelectorCache
 from noc.fm.models.utils import get_alarm
@@ -48,6 +49,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, cmd, *args, **options):
+        connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_check(self, check_alarms=None, *args, **kwargs):

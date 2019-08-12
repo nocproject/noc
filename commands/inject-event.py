@@ -18,6 +18,7 @@ import bson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.nsq.pub import nsq_pub
 
@@ -34,6 +35,7 @@ class Command(BaseCommand):
         sys.exit(0)
 
     def handle(self, *args, **options):
+        connect()
         if len(args) < 1:
             self._usage()
         # Get managed object

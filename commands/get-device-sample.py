@@ -11,6 +11,7 @@ from __future__ import print_function
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.inv.models.platform import Platform
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
@@ -32,6 +33,7 @@ class Command(BaseCommand):
 
     def handle(self, sample=5, platform=None, profile=None, show=None, *args, **options):
         fields = show.split(",")
+        connect()
         mqs = {"is_managed": True}
         pqs = {}
         if platform:

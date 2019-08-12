@@ -12,6 +12,7 @@ import argparse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.etl.portmapper.loader import loader
@@ -30,6 +31,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, cmd, *args, **options):
+        connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_portmap(self, portmap_objects=[]):

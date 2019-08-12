@@ -16,6 +16,7 @@ import datetime
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.fm.models.mib import MIB, MIBData
@@ -50,6 +51,7 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         if options.get("local"):
             self.svc = MIBAPI(ServiceStub(), None, None)
+        connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_lookup(self, oids, *args, **kwargs):

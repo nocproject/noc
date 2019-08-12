@@ -16,6 +16,7 @@ from six.moves import zip_longest
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
+from noc.core.mongo.connection import connect
 from noc.dns.models.dnszone import DNSZone
 from noc.dns.models.dnszonerecord import DNSZoneRecord
 from noc.dns.models.dnszoneprofile import DNSZoneProfile
@@ -94,6 +95,7 @@ class Command(BaseCommand):
     ]
 
     def handle(self, cmd, *args, **options):
+        connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_import(
