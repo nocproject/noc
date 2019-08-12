@@ -35,6 +35,7 @@ DATABASES = {
         "HOST": config.pg.addresses[0].host,
         "PORT": config.pg.addresses[0].port,
         "AUTOCOMMIT": True,
+        "DISABLE_SERVER_SIDE_CURSORS": True,
         "OPTIONS": {"connect_timeout": config.pg.connect_timeout},
     }
 }
