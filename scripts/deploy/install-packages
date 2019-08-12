@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 import tarfile
 import tempfile
@@ -21,7 +22,7 @@ from noc.config import config
 class NPkg(object):
     VAR = config.path.npkg_root
 
-    def __init__(self, config):
+    def __init__(self, config, verbose=False):
         self.config = config
         self.url = None
         self.required_versions = None
@@ -29,6 +30,7 @@ class NPkg(object):
         self.read_config()
         self.get_installed_versions()
         self.changed = False
+        self.verbose = verbose
 
     def get_latest_version(self, r):
         url = self.url + r["name"] + ".latest"
@@ -61,11 +63,16 @@ class NPkg(object):
     def get_manifest_path(self, pkg, version):
         return os.path.join(self.VAR, "%s@%s.json" % (pkg, version))
 
+    def log(self, msg):
+        if self.verbose:
+            print(msg)
+
     def install(self, pkg):
         self.changed = True
         version = self.required_versions[pkg]
         url = self.url + pkg + "%40" + version + ".tar.bz2"
         with tempfile.NamedTemporaryFile() as tf:
+            self.log("Downloading %s" % url)
             # Download
             f = urlopen(url)
             tf.write(f.read())
@@ -82,6 +89,7 @@ class NPkg(object):
                 if mi.name.startswith("/") or ".." in mi.name:
                     continue  # Skip suspicious paths
                 manifest["files"] += [mi.name]
+                self.log("Extracting %s" % mi.name)
                 tar.extract(mi)
             # Write manifest
             with open(self.get_manifest_path(pkg, version), "w") as f:
@@ -109,20 +117,30 @@ class NPkg(object):
         for pkg in self.required_versions:
             if pkg in self.installed_versions:
                 if self.installed_versions[pkg] != self.required_versions[pkg]:
+                    self.log("Installed version mismatch: %s != %s. Uninstalling" % (self.installed_versions[pkg], self.required_versions[pkg]))
                     self.uninstall(pkg)
                 else:
+                    self.log("Already installed. Skipping.")
                     continue
+            self.log("Installing %s (%s)" % (pkg, self.required_versions[pkg]))
             self.install(pkg)
 
         if self.changed:
-            print "CHANGED"
+            print("CHANGED")
         else:
-            print "OK"
+            print("OK")
+
 
 if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print "You have to set file to install to."
+        print("You have to set file to install to.")
         exit(1)
-    NPkg(sys.argv[1]).sync()
+    if len(sys.argv) == 3:
+        verbose = sys.argv[1] == "-v"
+        config = sys.argv[2]
+    else:
+        verbose = False
+        config = sys.argv[1]
+    NPkg(config, verbose=verbose).sync()
