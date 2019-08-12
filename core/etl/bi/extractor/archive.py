@@ -17,7 +17,7 @@ from pymongo.errors import BulkWriteError
 from jinja2 import Template
 
 # NOC modules
-from noc.core.mongo.connection import get_db
+from noc.core.mongo.connection import get_db, connect
 from .base import BaseExtractor
 
 
@@ -27,9 +27,15 @@ class ArchivingExtractor(BaseExtractor):
     archive_batch_limit = 1000
     archive_collection_template = None
     archive_collection_prefix = "alarms"
-    archive_db = get_db()
+    _archive_db = None
     archive_meta = {}
     archive_intervals = {}
+
+    def require_db_connect(self):
+        if self._archive_db:
+            return
+        connect()
+        self._archive_db = get_db()
 
     def clean(self, force=False):
         if self.enable_archive:
@@ -55,7 +61,7 @@ class ArchivingExtractor(BaseExtractor):
         :return:
         :rtype: str
         """
-        for c in self.archive_db.list_collection_names():
+        for c in self._archive_db.list_collection_names():
             if not c.startswith(self.archive_collection_prefix):
                 continue
             yield c
@@ -67,7 +73,7 @@ class ArchivingExtractor(BaseExtractor):
         :return:
         :rtype: dict
         """
-        coll = self.archive_db.get_collection(collection_name)
+        coll = self._archive_db.get_collection(collection_name)
         start_document = coll.find_one(
             sort=([("clear_timestamp", pymongo.ASCENDING)]), projection={"clear_timestamp": 1}
         )
@@ -83,7 +89,7 @@ class ArchivingExtractor(BaseExtractor):
 
     def fill_meta(self):
         for collection_name in self.iter_archived_collections():
-            coll = self.archive_db.get_collection(collection_name)
+            coll = self._archive_db.get_collection(collection_name)
             meta_doc = coll.find_one({"type": "metadata"})
             if not meta_doc:
                 meta_doc = self.calculate_meta(collection_name)
@@ -115,6 +121,7 @@ class ArchivingExtractor(BaseExtractor):
                 return None
             return r
 
+        self.require_db_connect()
         db = get_db()
         # Compile name template
         tpl = self.get_archived_template()
