@@ -26,22 +26,20 @@ class Script(BaseScript):
         re.IGNORECASE | re.DOTALL | re.MULTILINE,
     )
 
-    @BaseScript.match(platform__contains="4612")
-    def execute_4612(self):
-        # return self.cli("show arp",list_re=self.rx_line_4612)
-        arp = self.cli("show arp")
-        return [
-            {
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "interface": "Vlan " + match.group("interface"),
-            }
-            for match in self.rx_line_4612.finditer(arp)
-        ]
-
-    @BaseScript.match()
-    def execute_other(self):
-        try:
-            return self.cli("show arp", list_re=self.rx_line)
-        except self.CLISyntaxError:
-            raise self.NotSupportedError()
+    def execute_cli(self):
+        if self.is_platform_4612:
+            # return self.cli("show arp",list_re=self.rx_line_4612)
+            arp = self.cli("show arp")
+            return [
+                {
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": "Vlan " + match.group("interface"),
+                }
+                for match in self.rx_line_4612.finditer(arp)
+            ]
+        else:
+            try:
+                return self.cli("show arp", list_re=self.rx_line)
+            except self.CLISyntaxError:
+                raise self.NotSupportedError()

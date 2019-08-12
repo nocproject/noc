@@ -12,6 +12,7 @@ import re
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -19,57 +20,51 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
+    def execute_snmp(self):
+        s = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
+        oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"], cached=True)
+        if oid == "":
+            raise self.snmp.TimeOutError  # Fallback to CLI
+        if ", " in oid:
+            oid = oid[1:-1].replace(", ", ".")
+        if oid[-3:] == "2.4":
+            # 3528M-SFP OID (v1.4.x.x)
+            v = self.snmp.get(oid[:-3] + "1.4.1.1.3.1.6.1", cached=True)
+        else:
+            if oid[-3:] == "101":
+                # 3528MV2-Style OID
+                v = self.snmp.get(oid[:-3] + "1.1.3.1.6.1", cached=True)
+            else:
+                # 3526-Style OID
+                v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
+        if v == "":
+            # 4626-Style OID
+            v = self.snmp.get(oid + ".100.1.3.0", cached=True)
+            if v == "":
+                raise self.snmp.TimeOutError  # Fallback to CLI
+        if self.rx_sys_4.search(s):
+            return self.get_version_4xxx(s, v)
+        return self.get_version_35xx("System description : " + s, v)
+
     #
     # Main dispatcher
     #
-    def execute(self):
-        s = ""
-        if self.has_snmp():
-            # Trying SNMP
-            try:
-                # SNMPv2-MIB::sysDescr.0
-                s = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-                # SNMPv2-MIB::sysObjectID.0
-                oid = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
-                if oid == "":
-                    raise self.snmp.TimeOutError  # Fallback to CLI
-                if ", " in oid:
-                    oid = oid[1:-1].replace(", ", ".")
-                if oid[-3:] == "2.4":
-                    # 3528M-SFP OID (v1.4.x.x)
-                    v = self.snmp.get(oid[:-3] + "1.4.1.1.3.1.6.1", cached=True)
-                else:
-                    if oid[-3:] == "101":
-                        # 3528MV2-Style OID
-                        v = self.snmp.get(oid[:-3] + "1.1.3.1.6.1", cached=True)
-                    else:
-                        # 3526-Style OID
-                        v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
-                if v == "":
-                    # 4626-Style OID
-                    v = self.snmp.get(oid + ".100.1.3.0", cached=True)
-                    if v == "":
-                        raise self.snmp.TimeOutError  # Fallback to CLI
-                if self.rx_sys_4.search(s):
-                    return self.get_version_4xxx(s, v)
-                return self.get_version_35xx("System description : " + s, v)
-            except self.snmp.TimeOutError:
-                pass
-        if s == "":
-            # Trying CLI
-            try:
-                s = self.cli("show system", cached=True)
-            except self.CLISyntaxError:
-                # Get 4xxx version
-                return self.get_version_4xxx(None, None)
-            return self.get_version_35xx(s, None)
+    def execute_cli(self):
+        try:
+            s = self.cli("show system", cached=True)
+        except self.CLISyntaxError:
+            # Get 4xxx version
+            return self.get_version_4xxx(None, None)
+        return self.get_version_35xx(s, None)
 
     #
     # 35xx
     #
-    rx_sys_35 = re.compile(r"^\s*System description\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE)
+    rx_sys_35 = re.compile(r"^\s*System [Dd]escription\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE)
     rx_sys_42 = re.compile(r"^\s*System OID String\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE)
-    rx_ver_35 = re.compile(r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$", re.MULTILINE)
+    rx_ver_35 = re.compile(
+        r"^\s*Operation [Cc]ode [Vv]ersion\s*:\s*(?P<version>\S+)\s*$", re.MULTILINE
+    )
     rx_ser_35 = re.compile(r"^\s*Serial Number\s*:\s*(?P<serial>\S+)\s*$", re.MULTILINE)
     rx_hw_35 = re.compile(r"^\s*Hardware Version\s*:\s*(?P<hardware>\S+)\s*$", re.MULTILINE)
     rx_boot_35 = re.compile(r"^\s*Boot ROM Version\s+:\s+(?P<boot>.+)\s*$", re.MULTILINE)
@@ -82,6 +77,8 @@ class Script(BaseScript):
             v = self.cli("show version", cached=True)
             match = self.re_search(self.rx_ver_35, v)
             version = match.group("version")
+        else:
+            v = ""
         # Detect platform
         match = self.rx_sys_35.search(show_system)
         platform = match.group("platform")
@@ -140,7 +137,8 @@ class Script(BaseScript):
             else:
                 raise self.NotSupportedError(platform)
         r = {"vendor": vendor, "platform": platform, "version": version, "attributes": {}}
-        v = self.cli("show version", cached=True)
+        if not v:
+            return r
         match = self.rx_boot_35.search(v)
         if match:
             r["attributes"].update({"Boot PROM": match.group("boot")})

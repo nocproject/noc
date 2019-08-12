@@ -20,16 +20,6 @@ class Script(BaseScript):
     name = "EdgeCore.ES.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    #
-    # No lldp on 46xx
-    #
-    @BaseScript.match(platform__contains="46")
-    def execute_46(self):
-        raise self.NotSupportedError()
-
-    #
-    # 35xx
-    #
     rx_localport = re.compile(
         r"^\s*Eth(| )(.+?)\s*(\|)MAC Address\s+(\S+).+?$", re.MULTILINE | re.DOTALL
     )
@@ -48,8 +38,11 @@ class Script(BaseScript):
     rx_port_descr = re.compile(r"^\s*Port Description\s+:\s+(?P<descr>.+)\n", re.MULTILINE)
     rx_system_descr = re.compile(r"^\s*System Description\s+:\s+(?P<descr>.+)\n", re.MULTILINE)
 
-    @BaseScript.match()
-    def execute_35(self):
+    def execute_cli(self):
+        # No lldp on 46xx
+        if self.is_platform_46:
+            raise self.NotSupportedError()
+
         ifs = []
         r = []
         # EdgeCore ES3526 advertises MAC address(3) port sub-type,

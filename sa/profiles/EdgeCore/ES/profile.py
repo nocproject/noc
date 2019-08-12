@@ -49,6 +49,16 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "mode", "server"),
         ("hints", "protocols", "ntp", "version", "3"),
     ]
+    matchers = {
+        "is_platform_46": {"platform": {"$regex": r"46"}},
+        "is_platform_4612": {"platform": {"$regex": r"4612"}},
+        "is_platform_4626": {"platform": {"$regex": r"4626"}},
+        "is_platform_3510": {"platform": {"$regex": r"3510|3526|3528|3552|2228N|ECS4210"}},
+        "is_platform_3510ma": {"platform": {"$regex": r"3510MA|ECS4210"}},
+        "is_platform_3526s": {"platform": {"$regex": r"3526S"}},
+        "is_platform_3528mv2": {"platform": {"$regex": r"3528MV2"}},
+        "is_platform_ecs4100": {"platform": {"$regex": r"ECS4100"}},
+    }
     rx_if_snmp_eth = re.compile(
         r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$", re.IGNORECASE
     )

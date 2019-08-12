@@ -63,7 +63,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
 
-    def execute(self):
+    def execute_cli(self):
         ifaces = {}
         current = None
         is_bundle = False
@@ -79,7 +79,7 @@ class Script(BaseScript):
         untagged_ = {}
 
         # Tested only ES3510MA, ES3510, ES3526XAv2, ES3528M, ES3552M, ES4612
-        if self.match_version(platform__contains="4626"):
+        if self.is_platform_4626:
             raise self.NotSupportedError()
 
         # Get interface status
@@ -117,7 +117,7 @@ class Script(BaseScript):
                         lldp.add(self.profile.convert_interface_name(match.group("name")))
 
         # Get SVI interfaces on 4612
-        if self.match_version(platform__contains="4612"):
+        if self.is_platform_4612:
             for ls in self.cli("show ip interface").splitlines():
                 match = self.rx_svi_name_stat_4612.search(ls)
                 if match:
@@ -158,19 +158,9 @@ class Script(BaseScript):
                     }
 
         # Dirty-hack 3510/3526/3528/3552 managment SVI interface
-        if (
-            self.match_version(platform__contains="3510")
-            or self.match_version(platform__contains="3526")
-            or self.match_version(platform__contains="3528")
-            or self.match_version(platform__contains="2228N")
-            or self.match_version(platform__contains="3552")
-            or self.match_version(platform__contains="ECS4210")
-        ):
-
-            # Dirty-hack 3510MA managment SVI interface
-            if self.match_version(platform__contains="3510MA") or self.match_version(
-                platform__contains="ECS4210"
-            ):
+        if self.is_platform_3510:
+            # Dirty-hack 3510MA/ECS4210 managment SVI interface
+            if self.is_platform_3510ma:
                 for ls in self.cli("show ip interface").splitlines():
                     match = self.rx_svi_name_stat_3510MA.search(ls)
                     if match:
