@@ -62,12 +62,13 @@ class Script(BaseScript):
                 if key == "_text" or isinstance(value, six.string_types):
                     continue
                 c += "    %s %s\n" % (key, value[0]["_text"])
-            audio = o["Audio"][0]
-            c += "  Audio\n"
-            for key, value in sorted(six.iteritems(audio)):
-                if key == "_text" or isinstance(value, six.string_types):
-                    continue
-                c += "    %s %s\n" % (key, value[0]["_text"])
+            if "Audio" in o:
+                audio = o["Audio"][0]
+                c += "  Audio\n"
+                for key, value in sorted(six.iteritems(audio)):
+                    if key == "_text" or isinstance(value, six.string_types):
+                        continue
+                    c += "    %s %s\n" % (key, value[0]["_text"])
         v = self.http.get("/ISAPI/Image/channels/1", use_basic=True)
         v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
