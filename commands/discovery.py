@@ -14,6 +14,7 @@ from collections import defaultdict
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.core.handler import get_handler
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.scheduler.scheduler import Scheduler
@@ -76,6 +77,7 @@ class Command(BaseCommand):
         run_parser.add_argument("managed_objects", nargs=argparse.REMAINDER, help="Managed objects")
 
     def handle(self, cmd, *args, **options):
+        connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_run(self, job, managed_objects, check=None, trace=False, *args, **options):
