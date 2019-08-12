@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# ObjectValidationPolicy
+# InterfaceValidationPolicy
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -34,7 +34,7 @@ id_lock = threading.Lock()
 
 
 @six.python_2_unicode_compatible
-class ObjectValidationRule(EmbeddedDocument):
+class InterfaceValidationRule(EmbeddedDocument):
     query = PlainReferenceField(ConfDBQuery)
     query_params = DictField()
     filter_query = PlainReferenceField(ConfDBQuery)
@@ -48,15 +48,19 @@ class ObjectValidationRule(EmbeddedDocument):
         return self.query.name
 
 
-@on_delete_check(check=[("sa.ManagedObjectProfile", "object_validation_policy")])
+@on_delete_check(check=[("inv.InterfaceProfile", "interface_validation_policy")])
 @six.python_2_unicode_compatible
-class ObjectValidationPolicy(Document):
-    meta = {"collection": "objectvalidationpolicies", "strict": False, "auto_create_index": False}
+class InterfaceValidationPolicy(Document):
+    meta = {
+        "collection": "interfacevalidationpolicies",
+        "strict": False,
+        "auto_create_index": False,
+    }
 
     name = StringField(unique=True)
     description = StringField()
     filter_query = PlainReferenceField(ConfDBQuery)
-    rules = ListField(EmbeddedDocumentField(ObjectValidationRule))
+    rules = ListField(EmbeddedDocumentField(InterfaceValidationRule))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -66,30 +70,31 @@ class ObjectValidationPolicy(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        return ObjectValidationPolicy.objects.filter(id=id).first()
+        return InterfaceValidationPolicy.objects.filter(id=id).first()
 
-    def iter_problems(self, engine):
+    def iter_problems(self, engine, ifname):
         """
         Check rules against ConfDB engine
 
         :param engine: ConfDB Engine instance
+        :param ifname: Interface name
         :return: List of problems
         """
         # Check filter query, if any
         if self.filter_query:
-            if not self.filter_query.any(engine):
+            if not self.filter_query.any(engine, ifname=ifname):
                 raise StopIteration
         # Process rules
         for rule in self.rules:
             if not rule.is_active:
                 continue
             if rule.filter_query:
-                if not rule.filter_query.any(engine):
+                if not rule.filter_query.any(engine, ifname=ifname):
                     continue
-            for ctx in rule.query.query(engine, **rule.query_params):
+            for ctx in rule.query.query(engine, ifname=ifname, **rule.query_params):
                 if "error" in ctx:
                     tpl = Template(rule.error_text_template)
-                    path = []
+                    path = [ifname]
                     if rule.error_code:
                         path += [rule.error_code]
                     problem = {

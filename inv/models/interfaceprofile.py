@@ -25,12 +25,13 @@ from mongoengine.fields import (
 import cachetools
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.thresholdprofile import ThresholdProfile
+from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 
@@ -106,6 +107,8 @@ class InterfaceProfile(Document):
     allow_autosegmentation = BooleanField(default=False)
     # Allow collecting metrics from subinterfaces
     allow_subinterface_metrics = BooleanField(default=False)
+    # Validation policy
+    interface_validation_policy = PlainReferenceField(InterfaceValidationPolicy)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
