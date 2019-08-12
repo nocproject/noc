@@ -13,6 +13,7 @@ import os
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
 from noc.core.fileutils import safe_rewrite
@@ -68,6 +69,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.repo = options["repo"]
+        connect()
         self.vcs = GridVCS(self.repo)
         if self.repo in self.clean_int:
             self.clean_id = lambda y: int(y)

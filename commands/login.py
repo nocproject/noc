@@ -12,6 +12,7 @@ import getpass
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.services.login.backends.base import BaseAuthBackend
 
 
@@ -30,6 +31,7 @@ class Command(BaseCommand):
     def handle(self, backend, user, password, *args, **kwargs):
         if not password:
             password = getpass.getpass()
+        connect()
         backend = BaseAuthBackend.get_backend(backend)
         auth = backend(None)
         try:

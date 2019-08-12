@@ -11,6 +11,7 @@ from __future__ import print_function
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
+from noc.core.mongo.connection import connect
 from noc.peer.models.whoiscache import WhoisCache
 from noc.sa.models.profile import Profile
 
@@ -39,6 +40,7 @@ class Command(BaseCommand):
         # Check expression
         if len(args) != 1:
             raise CommandError("No expression given")
+        connect()
         expression = args[0]
         # Process profile
         profile = None

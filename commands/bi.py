@@ -16,7 +16,7 @@ from pymongo.errors import OperationFailure
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.mongo.connection import get_db
+from noc.core.mongo.connection import get_db, connect
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
@@ -58,6 +58,7 @@ class Command(BaseCommand):
 
     def handle(self, cmd, data_prefix, *args, **options):
         self.DATA_PREFIX = data_prefix
+        connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def get_last_extract(self, name):

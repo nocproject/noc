@@ -21,6 +21,7 @@ from pymongo.errors import DocumentTooLarge
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -156,6 +157,7 @@ class Command(BaseCommand):
             self.stdout.write("IO Error: %s" % str(e))
 
     def _handle(self, *args, **options):
+        connect()
         try:
             handler = getattr(self, "handle_%s" % options["cmd"])
             events = self.get_events(options)

@@ -15,6 +15,7 @@ from collections import namedtuple, defaultdict
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
+from noc.core.mongo.connection import connect
 from noc.ip.models.vrf import VRF
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.forwardinginstance import ForwardingInstance
@@ -76,6 +77,7 @@ class Command(BaseCommand):
                 raise CommandError("Unknown output format")
         if options["layout"] not in self.LAYOUT:
             raise CommandError("Invalid layout: %s" % options["layout"])
+        connect()
         exclude = options["exclude"] or []
         # Check VRF
         rd = "0:0"

@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
 
 
@@ -25,6 +26,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        connect()
         if options.get("action") == "rebuild_cache":
             self.stdout.write("Rebuilding connections cache")
             ModelConnectionsCache.rebuild()

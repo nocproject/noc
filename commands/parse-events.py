@@ -17,6 +17,7 @@ import operator
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.services.classifier.ruleset import RuleSet
 from noc.core.profile.loader import loader as profile_loader
 from noc.fm.models.mib import MIB
@@ -36,6 +37,7 @@ class Command(BaseCommand):
 
     def handle(self, paths, profile, format, progress=False, *args, **options):
         assert profile_loader.get_profile(profile), "Invalid profile: %s" % profile
+        connect()
         t0 = time.time()
         ruleset = RuleSet()
         ruleset.load()

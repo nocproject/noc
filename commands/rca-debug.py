@@ -17,6 +17,7 @@ import six
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.objectdata import ObjectData
@@ -50,6 +51,7 @@ class Command(BaseCommand):
         def nq(s):
             return s.split("#", 1)[0]
 
+        connect()
         if config.fm.enable_rca_neighbor_cache:
             self.topology_rca = self.topology_rca_neighbor
         else:

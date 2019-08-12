@@ -12,6 +12,7 @@ from pymongo import UpdateOne
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.inv.models.extnrilink import ExtNRILink
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
@@ -32,6 +33,7 @@ class Command(BaseCommand):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_apply(self, *args, **options):
+        connect()
         self.mo_cache = {}
         self.mc_cache = {}
         self.bulk = []

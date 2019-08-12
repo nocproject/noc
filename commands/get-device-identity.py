@@ -12,6 +12,7 @@ import argparse
 # Third-party modules
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.mib import mib
 from noc.core.error import NOCError
@@ -27,6 +28,7 @@ class Command(BaseCommand):
 
     def handle(self, devices, *args, **options):
         devs = set()
+        connect()
         for d in devices:
             try:
                 devs |= set(ManagedObjectSelector.get_objects_from_expression(d))

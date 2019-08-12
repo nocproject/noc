@@ -17,6 +17,7 @@ import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.datastream.loader import loader
+from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.dns.models.dnszone import DNSZone
@@ -97,6 +98,7 @@ class Command(BaseCommand):
         model = self.MODELS.get(datastream)
         if not model:
             self.die("Unsupported datastream")
+        connect()
         ds = loader[datastream]
         if not ds:
             self.die("Cannot initialize datastream")
@@ -116,6 +118,7 @@ class Command(BaseCommand):
     def handle_get(self, datastream, objects, filter, *args, **kwargs):
         if not datastream:
             self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
+        connect()
         ds = loader[datastream]
         if not ds:
             self.die("Cannot initialize datastream")

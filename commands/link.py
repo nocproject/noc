@@ -13,6 +13,7 @@ from collections import defaultdict
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
+from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 
@@ -40,10 +41,10 @@ class Command(BaseCommand):
         remove_parser.add_argument("args", nargs=argparse.REMAINDER, help="Show discovery method")
 
     def handle(self, *args, **options):
-        print(args)
         action = options["cmd"]
         if not action:
             action = "show"
+        connect()
         getattr(self, "handle_%s" % action)(*args, **options)
 
     def show_link(self, link, show_method=False):

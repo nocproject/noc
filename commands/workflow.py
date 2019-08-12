@@ -13,6 +13,7 @@ import datetime
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.models import get_model
 from noc.wf.models.wfmigration import WFMigration
 
@@ -48,6 +49,7 @@ class Command(BaseCommand):
         expire_parser.add_argument("--model", action="append", help="Models to expire")
 
     def handle(self, cmd, *args, **options):
+        connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_migrate(

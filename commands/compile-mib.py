@@ -18,6 +18,7 @@ from mongoengine.errors import DoesNotExist
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 
@@ -48,6 +49,7 @@ class Command(BaseCommand):
             job = [(args[0], options.get("output"))]
 
         # Compile
+        connect()
         for mib_name, path in job:
             try:
                 mib = MIB.objects.get(name=mib_name)
