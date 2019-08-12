@@ -32,7 +32,7 @@ HAS_NOC_SRC = NOC_SRC_PATH and os.path.exists(NOC_SRC_PATH)
 
 if HAS_NOC_SRC:
     NOC_SRC_PATH = os.path.abspath(NOC_SRC_PATH)
-    sys.path.insert(0, os.path.dirname(NOC_SRC_PATH))
+    sys.path.insert(0, NOC_SRC_PATH)
 
 
 def get_branch():
