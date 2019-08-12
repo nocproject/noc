@@ -42,6 +42,7 @@ class ReportDiscoveryResult(BaseReportColumn):
         "vlan",
         "vpn",
         "config",
+        "configvalidation",
         "lldp",
         "lacp",
         "stp",
