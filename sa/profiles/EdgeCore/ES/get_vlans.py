@@ -40,7 +40,7 @@ class Script(BaseScript):
             result += [{"vlan_id": int(o), "name": v.strip().rstrip("\x00")}]
         return sorted(result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"]))
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         vlans = self.cli("show vlan")
         # ES4626 = Cisco Style
