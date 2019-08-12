@@ -1180,13 +1180,13 @@ class ManagedObject(NOCModel):
         logger.debug("[%s] Validating config", self.name)
         if not self.to_validate(changed):
             return
-        if not self.object_profile.object_validation_policy:
-            logger.debug("[%s] Validation policy is not set. Skipping", self.name)
-            return
         confdb = self.get_confdb()
         # Object-level validation
-        for problem in self.object_profile.object_validation_policy.iter_problems(confdb):
-            yield problem
+        if self.object_profile.object_validation_policy:
+            for problem in self.object_profile.object_validation_policy.iter_problems(confdb):
+                yield problem
+        else:
+            logger.debug("[%s] Object validation policy is not set. Skipping", self.name)
         # Interface-level validation
         from noc.inv.models.interface import Interface
         from noc.inv.models.interfaceprofile import InterfaceProfile
