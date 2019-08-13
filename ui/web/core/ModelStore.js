@@ -49,7 +49,8 @@ Ext.define("NOC.core.ModelStore", {
                     type: "json",
                     rootProperty: "data",
                     totalProperty: "total",
-                    successProperty: "success"
+                    successProperty: "success",
+                    messageProperty : "message"
                 },
                 writer: {
                     type: "json"
