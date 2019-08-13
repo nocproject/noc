@@ -30,7 +30,8 @@ class CiscoIOSNormalizer(BaseNormalizer):
     @match("snmp-server", "community", ANY, ANY, ANY)
     def normalize_snmp_protocol(self, tokens):
         yield self.make_snmp_community_level(
-            community=tokens[2], level={"RO": "read-only", "RW": "read-write"}[tokens[3]])
+            community=tokens[2], level={"RO": "read-only", "RW": "read-write"}[tokens[3]]
+        )
 
     @match("vlan", ANY)
     def normalize_vlan(self, tokens):
@@ -47,13 +48,16 @@ class CiscoIOSNormalizer(BaseNormalizer):
             yield self.make_unit_description(
                 interface=self.interface_name(ifname),
                 unit=self.interface_name(tokens[1]),
-                description="")
+                description="",
+            )
         else:
             yield self.make_interface(interface=self.interface_name(tokens[1]))
 
     @match("interface", ANY, "shutdown")
     def normalize_interface_status(self, tokens):
-        yield self.make_interface_admin_status(interface=self.interface_name(tokens[1]), admin_status=False)
+        yield self.make_interface_admin_status(
+            interface=self.interface_name(tokens[1]), admin_status=False
+        )
 
     @match("interface", ANY, "mtu", ANY)
     def normalize_interface_mtu(self, tokens):
@@ -66,11 +70,12 @@ class CiscoIOSNormalizer(BaseNormalizer):
             yield self.make_unit_description(
                 interface=self.interface_name(ifname),
                 unit=self.interface_name(tokens[1]),
-                description=" ".join(tokens[3:]))
+                description=" ".join(tokens[3:]),
+            )
         else:
             yield self.make_interface_description(
-                interface=self.interface_name(tokens[1]),
-                description=" ".join(tokens[3:]))
+                interface=self.interface_name(tokens[1]), description=" ".join(tokens[3:])
+            )
 
     @match("interface", ANY, "speed", ANY)
     def normalize_interface_speed(self, tokens):
@@ -124,11 +129,7 @@ class CiscoIOSNormalizer(BaseNormalizer):
     @match("interface", ANY, "switchport", "trunk", "allowed", "vlan", REST)
     def normalize_switchport_tagged(self, tokens):
         if_name = self.interface_name(tokens[1])
-        yield self.make_switchport_tagged(
-            interface=if_name,
-            unit=if_name,
-            vlan_filter=tokens[6],
-        )
+        yield self.make_switchport_tagged(interface=if_name, unit=if_name, vlan_filter=tokens[6])
 
     @match("interface", ANY, "ip", "address", ANY, ANY)
     def normalize_interface_ip(self, tokens):
@@ -138,7 +139,8 @@ class CiscoIOSNormalizer(BaseNormalizer):
         yield self.make_unit_inet_address(
             interface=self.interface_name(ifname),
             unit=self.interface_name(tokens[1]),
-            address=self.to_prefix(tokens[4], tokens[5]))
+            address=self.to_prefix(tokens[4], tokens[5]),
+        )
 
     @match("ip", "vrf", ANY, "rd", ANY)
     def normalize_routing_instances_rd(self, tokens):
@@ -165,19 +167,21 @@ class CiscoIOSNormalizer(BaseNormalizer):
     @match("interface", ANY, "spanning-tree", "portfast", ANY)
     def normalize_spanning_tree_interface_mode(self, tokens):
         yield self.make_spanning_tree_interface_mode(
-            interface=self.interface_name(tokens[1]), mode="portfast")
+            interface=self.interface_name(tokens[1]), mode="portfast"
+        )
 
     @match("interface", ANY, "spanning-tree", "bpdufilter", "enable")
     def normalize_spanning_tree_bpdufilter(self, tokens):
         yield self.make_spanning_tree_interface_bpdu_filter(
-            interface=self.interface_name(tokens[1]), enabled=True)
+            interface=self.interface_name(tokens[1]), enabled=True
+        )
 
     @match("interface", ANY, "spanning-tree", "bpduguard", "enable")
     def normalize_spanning_tree_bpduguard(self, tokens):
         yield self.make_spanning_tree_interface_bpdu_guard(
-            interface=self.interface_name(tokens[1]), enabled=True)
+            interface=self.interface_name(tokens[1]), enabled=True
+        )
 
     @match("interface", ANY, "no", "cdp", "enable")
     def normalize_cdp_interface_disable(self, tokens):
-        yield self.make_cdp_interface_disable(
-            interface=self.interface_name(tokens[1]))
+        yield self.make_cdp_interface_disable(interface=self.interface_name(tokens[1]))
