@@ -43,6 +43,15 @@ class Profile(BaseProfile):
     )
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}
+    config_normalizer = "CiscoIOSNormalizer"
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", True),
+        ("hints", "protocols", "lldp", "status", False),
+        ("hints", "protocols", "cdp", "status", True),
+        ("hints", "protocols", "ntp", "mode", "server"),
+        ("hints", "protocols", "ntp", "version", "3"),
+        # ("hints", "protocols", "loop-detect", "status", False),
+    ]
     default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
     rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
 
