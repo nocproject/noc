@@ -221,7 +221,7 @@ Ext.define("NOC.core.ModelApplication", {
                 xtype: "form",
                 autoScroll: true,
                 itemId: "filters",
-                width: baseField.width + 13,
+                width: baseField.width + Ext.getScrollbarSize().width + 10,
                 title: __("Filter"),
                 bodyPadding: 4,
                 tools: [
