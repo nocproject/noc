@@ -112,7 +112,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         // Finally, load the store
         if(Ext.Object.isEmpty(me.currentQuery)) {
-            me.store.load();
+            me.loadStore();
         } else {
             Ext.each(me.filterSetters, function(set) {
                 set(me.currentQuery);
@@ -191,8 +191,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
         gridToolbar.push("->");
-        me.totalField = Ext.create("Ext.button.Button", {
-        });
+        me.totalField = Ext.create("Ext.button.Button", {});
         gridToolbar.push(me.totalField);
         if(NOC.settings.enableHelp && (me.helpId || me.listHelpId)) {
             me.listHelpButton = Ext.create("Ext.button.Button", {
@@ -751,8 +750,7 @@ Ext.define("NOC.core.ModelApplication", {
                 if(response.responseText) {
                     try {
                         message = Ext.decode(response.responseText).message;
-                    }
-                    catch(err) {
+                    } catch(err) {
                         console.log(response.responseText);
                     }
                 }
@@ -943,7 +941,7 @@ Ext.define("NOC.core.ModelApplication", {
         // ExtJS 5.0.0 WARNING:
         // me.store.reload() sometimes leaves empty grid
         // so we must use load() instead
-        me.store.load();
+        me.loadStore();
     },
     // Search
     onSearch: function(query) {
@@ -1351,9 +1349,10 @@ Ext.define("NOC.core.ModelApplication", {
         me.store.load({
             scope: me,
             callback: function(records, operation, success) {
-                if(success && records.length === 1) {
+                if(operation.success && records.length === 1) {
                     Ext.callback(callback, me, [records[0]]);
                 }
+                me.checkStoreLoad(operation);
             }
         });
     },
@@ -1883,6 +1882,27 @@ Ext.define("NOC.core.ModelApplication", {
                 target: element.getEl(),
                 html: element.tooltip
             });
+        }
+    },
+    loadStore: function() {
+        var me = this;
+        me.store.load({
+            callback: function(records, operation) {
+                me.checkStoreLoad(operation)
+            }
+        });
+    },
+    checkStoreLoad: function(operation) {
+        if(operation.success === false) {
+            var message = operation.getError() || __("Failed to load data");
+            if(Ext.isObject(message)) {
+                message = message.statusText;
+            }
+            NOC.error(message);
+            return
+        }
+        if(operation.getResponse().status >= 300) {
+            NOC.error(__("HTTP status : ") + operation.getResponse().status);
         }
     }
 });
