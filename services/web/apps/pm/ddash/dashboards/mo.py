@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObject's dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,10 +47,23 @@ class MODashboard(BaseDashboard):
                     return True
             return False
 
+        def interface_radio_metrics(profile):
+            """
+            Check interface profile has metrics
+            """
+            metrics = []
+            for m in profile.metrics:
+                if m.metric_type.name.startswith("Radio"):
+                    metrics.append(m.metric_type.field_name)
+            if metrics:
+                return metrics
+            return None
+
         port_types = []
         object_metrics = []
         lags = []
         subif = []
+        radio_types = []
 
         # Get all interface profiles with configurable metrics
         all_ifaces = list(Interface.objects.filter(managed_object=self.object.id))
@@ -61,6 +74,7 @@ class MODashboard(BaseDashboard):
         for profile in profiles:
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
+            radio = []
             for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
                 if iface.type == "SVI" and not iface.profile.allow_subinterface_metrics:
                     continue
@@ -74,20 +88,33 @@ class MODashboard(BaseDashboard):
                             )
                             or "No description",
                             "status": [
-                                "status : ".join([i.name, i.status]) for i in iface.lag_members
+                                ", Status : ".join([i.name, i.status]) for i in iface.lag_members
                             ],
                         }
                     ]
                     continue
-                ports += [
-                    {
-                        "name": iface.name,
-                        "descr": self.str_cleanup(
-                            iface.description, remove_letters=TITLE_BAD_CHARS
-                        ),
-                        "status": iface.status,
-                    }
-                ]
+                if interface_radio_metrics(profile):
+                    radio += [
+                        {
+                            "name": iface.name,
+                            "descr": self.str_cleanup(
+                                iface.description, remove_letters=TITLE_BAD_CHARS
+                            ),
+                            "status": iface.status,
+                            "metrics": interface_radio_metrics(profile),
+                        }
+                    ]
+                    continue
+                if iface.type == "physical":
+                    ports += [
+                        {
+                            "name": iface.name,
+                            "descr": self.str_cleanup(
+                                iface.description, remove_letters=TITLE_BAD_CHARS
+                            ),
+                            "status": iface.status,
+                        }
+                    ]
                 if iface.profile.allow_subinterface_metrics:
                     subif += [
                         {
@@ -98,9 +125,10 @@ class MODashboard(BaseDashboard):
                         }
                         for si in SubInterface.objects.filter(interface=iface)
                     ]
-            if not ports:
-                continue
-            port_types += [{"type": profile.id, "name": profile.name, "ports": ports}]
+            if ports:
+                port_types += [{"type": profile.id, "name": profile.name, "ports": ports}]
+            if radio:
+                radio_types += [{"type": profile.id, "name": profile.name, "ports": radio}]
 
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
@@ -117,6 +145,7 @@ class MODashboard(BaseDashboard):
             "object_metrics": object_metrics,
             "lags": lags,
             "subifaces": subif,
+            "radio_types": radio_types,
         }
 
     def render(self):
@@ -133,6 +162,7 @@ class MODashboard(BaseDashboard):
             "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown version",
             "subifaces": self.object_data["subifaces"],
+            "radio_types": self.object_data["radio_types"],
             "bi_id": self.object.bi_id,
             "pool": self.object.pool.name,
             "extra_template": self.extra_template,
@@ -143,6 +173,5 @@ class MODashboard(BaseDashboard):
         j2_env = Environment(loader=FileSystemLoader(config.path.pm_templates))
         tmpl = j2_env.get_template("dash_mo.j2")
         data = tmpl.render(context)
-
         render = demjson.decode(data)
         return render

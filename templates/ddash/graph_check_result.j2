@@ -1,0 +1,91 @@
+{
+  "backgroundColor": "rgba(128, 128, 128, 0.1)",
+  "colorMaps": [
+    {
+      "color": "#CCC",
+      "text": "N/A"
+    },
+    {
+      "color": "#629e51",
+      "text": "Ping Ok"
+    },
+    {
+      "color": "#bf1b00",
+      "text": "Ping Failed"
+    }
+  ],
+  "datasource": null,
+  "display": "timeline",
+  "expandFromQueryS": 600,
+  "extendLastValue": true,
+  "highlightOnMouseover": true,
+  "id": 8000,
+  "legendSortBy": "-ms",
+  "lineColor": "rgba(128, 128, 128, 1.0)",
+  "links": [],
+  "mappingTypes": [
+    {
+      "name": "value to text",
+      "value": 1
+    },
+    {
+      "name": "range to text",
+      "value": 2
+    }
+  ],
+  "metricNameColor": "#FFF899",
+  "rangeMaps": [
+    {
+      "from": "null",
+      "text": "N/A",
+      "to": "null"
+    }
+  ],
+  "rowHeight": 50,
+  "showDistinctCount": false,
+  "showLegend": true,
+  "showLegendCounts": false,
+  "showLegendNames": true,
+  "showLegendPercent": true,
+  "showLegendTime": true,
+  "showLegendValues": true,
+  "showTransitionCount": false,
+  "targets": [
+    {
+      "database": "noc",
+      "dateColDataType": "date",
+      "dateLoading": false,
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((ip, Result)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        path[2] as ip, \n        avg(result) as `Result` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        GROUP BY path[2], t ORDER BY t) \nGROUP BY t  \nORDER BY t ASC",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "table": "check",
+      "tableLoading": false,
+      "format": "time_series",
+      "dateTimeType": "DATETIME",
+      "round": "0s",
+
+    }
+  ],
+  "textSize": 24,
+  "title": "Ping Check Status",
+  "type": "natel-discrete-panel",
+  "valueMaps": [
+    {
+      "op": "=",
+      "text": "Ping Failed",
+      "value": "0"
+    },
+    {
+      "op": "=",
+      "text": "Ping Ok",
+      "value": "1"
+    }
+  ],
+  "valueTextColor": "#000000",
+  "writeAllValues": true,
+  "writeLastValue": true,
+  "writeMetricNames": true,
+}
