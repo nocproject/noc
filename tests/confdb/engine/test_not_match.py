@@ -39,13 +39,18 @@ EMPTY_CONF = []
         (CONF1, "NotMatch('interfaces', 'Fa 0/1', 'description', x)", []),
         # Match two unbound variables
         (CONF1, "NotMatch('interfaces', x, 'description', y)", []),
-        #
         # Match placeholder
         (CONF1, "NotMatch('interfaces', _x, 'admin-status')", [{}, {}, {}]),
         # Empty config, bound
         (EMPTY_CONF, "NotMatch('interfaces', 'Fa0/1', 'admin-status')", [{}]),
         # Empty config, unbound
         (EMPTY_CONF, "NotMatch('interfaces', x, 'admin-status')", []),
+        # Partial path, bound
+        (
+            CONF1,
+            "Set(x=['a', 'b', 'c']) and NotMatch('protocols', 'cdp', 'interface', x)",
+            [{"x": "a"}, {"x": "b"}, {"x": "c"}],
+        ),
     ],
 )
 def test_match(conf, query, output):

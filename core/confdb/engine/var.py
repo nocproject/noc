@@ -11,6 +11,12 @@ class Var(object):
     def __init__(self, name):
         self.name = name
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return "<Var '%s' at %s>" % (self.name, id(self))
+
     def get(self, ctx):
         return ctx.get(self.name)
 
