@@ -243,6 +243,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator",
         "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",
         "noc.core.confdb.applicator.stppriority.DefaultSTPPriorityApplicator",
+        "noc.core.confdb.applicator.cdpstatus.DefaultCDPStatusApplicator",
         "noc.core.confdb.applicator.ntp.DefaultNTPModeApplicator",
         "noc.core.confdb.applicator.ntp.DefaultNTPVersionApplicator",
         # Finally apply meta
