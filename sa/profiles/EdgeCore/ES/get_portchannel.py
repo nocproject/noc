@@ -32,7 +32,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         if self.is_platform_3510 or self.is_platform_4612 or self.is_platform_ecs4100:
-            status = self.cli("show interface status")
+            status = self.cli("show interface status", cached=True)
             r = []
             for match in self.rx_chan_line_3526.finditer(status):
                 members = match.group("members_str").strip().rstrip(",").replace("Eth", "Eth ")
@@ -43,7 +43,7 @@ class Script(BaseScript):
                         "type": "S",
                     }
                 ]
-                return r
+            return r
         elif self.is_platform_4626:
             channels = self.cli("show port-group brief")
             r = []

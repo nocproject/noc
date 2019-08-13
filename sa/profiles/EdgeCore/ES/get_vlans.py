@@ -19,15 +19,15 @@ class Script(BaseScript):
     cache = True
     interface = IGetVlans
 
-    rx_vlan_line_4626 = re.compile(
-        r"^\s*(?P<vlan_id>\d{1,4})" r"\s+(?P<name>\S+)\s+", re.IGNORECASE | re.MULTILINE
-    )
+    rx_vlan_line_4626 = re.compile(r"^\s*(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+", re.MULTILINE)
     rx_vlan_line_4612 = re.compile(
-        r"^\s*(?P<vlan_id>\d{1,4})" r"\s+\S+\s+(?P<name>\S+)\s+", re.IGNORECASE | re.MULTILINE
+        r"^\s*(?P<vlan_id>\d{1,4})\s+\S+\s+(?P<name>\S+)\s+", re.MULTILINE
     )
     rx_vlan_line_3526 = re.compile(
-        r"^VLAN ID\s*?:\s+?(?P<vlan_id>\d{1,4})\n" r".*?Name\s*?:\s+(?P<name>\S*?)\n",
-        re.IGNORECASE | re.DOTALL | re.MULTILINE,
+        r"^VLAN ID\s*?:\s+?(?P<vlan_id>\d{1,4})\n"
+        r"^Type\s*:.*\n"
+        r"^Name\s*?:\s+(?P<name>\S*?)\n",
+        re.MULTILINE,
     )
 
     def execute_snmp(self):
@@ -46,17 +46,20 @@ class Script(BaseScript):
         # ES4626 = Cisco Style
         if self.is_platform_4626:
             for match in self.rx_vlan_line_4626.finditer(vlans):
-                r += [{"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}]
+                r += [match.groupdict()]
             return r
 
         # ES4612 or 3526S
         elif self.is_platform_4612 or self.is_platform_3526s:
             for match in self.rx_vlan_line_4612.finditer(vlans):
-                r += [{"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}]
+                r += [match.groupdict()]
             return r
 
         # Other
         else:
             for match in self.rx_vlan_line_3526.finditer(vlans):
-                r += [{"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}]
+                if match.group("name"):
+                    r += [match.groupdict()]
+                else:
+                    r += [{"vlan_id": int(match.group("vlan_id"))}]
             return r

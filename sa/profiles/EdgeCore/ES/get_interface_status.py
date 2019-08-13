@@ -101,7 +101,7 @@ class Script(BaseScript):
                 buf = self.cli(cmd).replace("\n ", " ")
             except Exception:
                 cmd = "show interface status"
-                buf = self.cli(cmd).replace("\n ", " ")
+                buf = self.cli(cmd, cached=True).replace("\n ", " ")
             for l in buf.splitlines():
                 match = self.rx_interface_status.match(l)
                 if match:
@@ -118,7 +118,7 @@ class Script(BaseScript):
                         r[-1]["description"] = mdescr.group("descr")
         else:
             cmd = "show interface status"
-            buf = self.cli(cmd).lstrip("\n\n")
+            buf = self.cli(cmd, cached=True).lstrip("\n\n")
             for l in buf.split("\n\n"):
                 match = self.rx_interface_status_3526.search(l + "\n")
                 if match:

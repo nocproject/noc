@@ -35,7 +35,7 @@ class Script(BaseScript):
                 v = self.cli("show system\n")  # ES-3538MV2
                 match = self.rx_mac_3528mv2.search(v)
             else:
-                v = self.cli("show system")
+                v = self.cli("show system", cached=True)
                 match = self.re_search(self.rx_mac, v)
             first_mac = match.group("id")
             last_mac = first_mac
