@@ -52,7 +52,7 @@ msgstr "Роль"
 
 #: ui/web/aaa/apikey/Application.js:114
 msgid "ACL"
-msgstr "Спсиок сетей доступа"
+msgstr "Разрешённые адреса"
 
 #: ui/web/aaa/group/Application.js:49
 msgid "Permissions"
@@ -7551,7 +7551,7 @@ msgstr ""
 
 #: ui/web/sa/managedobject/ConfDBPanel.js:96
 msgid "Close Query"
-msgstr "Зарыть запрос"
+msgstr "Закрыть запрос"
 
 #: ui/web/sa/managedobject/ConfDBPanel.js:294
 msgid "Invalid regular expression"
