@@ -292,7 +292,7 @@ class Config(BaseConfig):
     instance = IntParameter(default=0)
 
     language = StringParameter(default="en")
-    language_code = StringParameter(default="en-us")
+    language_code = StringParameter(default="en")
 
     class layout(ConfigSection):
         ring_ring_edge = IntParameter(default=150)

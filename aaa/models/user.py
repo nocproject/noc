@@ -20,10 +20,11 @@ from django.core import validators
 from django.contrib.auth.hashers import check_password, make_password
 
 # NOC modules
+from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
-from noc.settings import LANGUAGE_CODE, LANGUAGES
+from noc.settings import LANGUAGES
 from .group import Group
 
 id_lock = Lock()
@@ -93,7 +94,7 @@ class User(NOCModel):
     )
     # Custom profile
     preferred_language = models.CharField(
-        max_length=16, null=True, blank=True, default=LANGUAGE_CODE, choices=LANGUAGES
+        max_length=16, null=True, blank=True, default=config.language, choices=LANGUAGES
     )
     # Heatmap position
     heatmap_lon = models.FloatField("Longitude", blank=True, null=True)
