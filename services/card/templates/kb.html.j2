@@ -23,8 +23,8 @@
                 <td align="right"><a href='/api/card/view/kb/{{ o.id  }}/'>KB{{ o.id }}</a></td>
                 <td>{{ o.subject }}</td>
                 <td>{{ o.preview_count }}</td>
-                <td>{{ o.last_history.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-                <td>{{ o.last_history.user }}</td>
+                <td>{% if o.last_history %}{{ o.last_history.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}{% else %}{% endif %}</td>
+                <td>{% if o.last_history %}{{ o.last_history.user }}{% else %}{% endif %}</td>
             </tr>
         {% endfor %}
     </tbody>
