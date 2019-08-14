@@ -22,7 +22,11 @@ def is_document(klass):
 def _get_field_snapshot(sender, instance):
     def g(field):
         n = getattr(field, "raw_name", field.attname)
-        return getattr(instance, n)
+        nv = instance.__dict__.get(n)
+        if nv:
+            # Resolve references when neccessary
+            return getattr(instance, n)
+        return nv
 
     return dict((f.name, g(f)) for f in sender._meta.local_fields)
 

@@ -213,7 +213,7 @@ class DocumentReferenceDescriptor(object):
             # Try already resolved value
             return getattr(instance, self.cache_name)
         except AttributeError:
-            val = instance.__dict__.get(self.name)
+            val = instance.__dict__.get(self.name) or None
             if val is None:
                 # If NULL is an allowed value, return it.
                 if self.field.null:
