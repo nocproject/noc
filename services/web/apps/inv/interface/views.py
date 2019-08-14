@@ -130,23 +130,23 @@ class InterfaceAppplication(ExtApplication):
         :return: dict with data of attributes
         """
         return {
-                "id": str(i.id),
-                "name": i.name,
-                "description": i.description,
-                "members": [j.name for j in Interface.objects.filter(
-                    managed_object=o.id, aggregated_interface=i.id)],
-                "profile": str(i.profile.id) if i.profile else None,
-                "profile__label": unicode(i.profile) if i.profile else None,
-                "enabled_protocols": i.enabled_protocols,
-                "project": i.project.id if i.project else None,
-                "project__label": unicode(i.project) if i.project else None,
-                "state": i.state.id if i.state else self.default_state.id,
-                "state__label": unicode(i.state if i.state else self.default_state),
-                "vc_domain": i.vc_domain.id if i.vc_domain else None,
-                "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
-                "row_class": self.get_style(i),
-                "mo": o.name,
-                "url": self.convert_mo_interface_url(o.id)
+            "id": str(i.id),
+            "name": i.name,
+            "description": i.description,
+            "members": [j.name for j in Interface.objects.filter(
+                managed_object=o.id, aggregated_interface=i.id)],
+            "profile": str(i.profile.id) if i.profile else None,
+            "profile__label": unicode(i.profile) if i.profile else None,
+            "enabled_protocols": i.enabled_protocols,
+            "project": i.project.id if i.project else None,
+            "project__label": unicode(i.project) if i.project else None,
+            "state": i.state.id if i.state else self.default_state.id,
+            "state__label": unicode(i.state if i.state else self.default_state),
+            "vc_domain": i.vc_domain.id if i.vc_domain else None,
+            "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
+            "row_class": self.get_style(i),
+            "mo": o.name,
+            "url": self.convert_mo_interface_url(o.id)
         }
 
     def prepare_l2_iface_data(self, i, o):
@@ -156,12 +156,12 @@ class InterfaceAppplication(ExtApplication):
         :return: dict with data of attributes
         """
         return {
-                "name": i.name,
-                "description": i.description,
-                "untagged_vlan": i.untagged_vlan,
-                "tagged_vlans": i.tagged_vlans,
-                "mo": o.name,
-                "url": self.convert_mo_interface_url(o.id)
+            "name": i.name,
+            "description": i.description,
+            "untagged_vlan": i.untagged_vlan,
+            "tagged_vlans": i.tagged_vlans,
+            "mo": o.name,
+            "url": self.convert_mo_interface_url(o.id)
         }
 
     def prepare_l3_iface_data(self, i, o):
@@ -171,15 +171,15 @@ class InterfaceAppplication(ExtApplication):
         :return: dict with data of attributes
         """
         return {
-                "name": i.name,
-                "description": i.description,
-                "ipv4_addresses": i.ipv4_addresses,
-                "ipv6_addresses": i.ipv6_addresses,
-                "enabled_protocols": i.enabled_protocols,
-                "vlan": i.vlan_ids,
-                "vrf": i.forwarding_instance.name if i.forwarding_instance else "",
-                "mo": o.name,
-                "url": self.convert_mo_interface_url(o.id)
+            "name": i.name,
+            "description": i.description,
+            "ipv4_addresses": i.ipv4_addresses,
+            "ipv6_addresses": i.ipv6_addresses,
+            "enabled_protocols": i.enabled_protocols,
+            "vlan": i.vlan_ids,
+            "vrf": i.forwarding_instance.name if i.forwarding_instance else "",
+            "mo": o.name,
+            "url": self.convert_mo_interface_url(o.id)
         }
 
     # api
@@ -198,23 +198,23 @@ class InterfaceAppplication(ExtApplication):
         # @todo: proper ordering
         l1 = [
             self.prepare_l1_iface_data(i, o) for i in Interface.objects.filter(
-                                                       managed_object=o.id, type="physical")
+                managed_object=o.id, type="physical")
         ]
         # LAG
         lag = [
             self.prepare_lag_iface_data(i, o) for i in Interface.objects.filter(
-                                                       managed_object=o.id, type="aggregated")
+                managed_object=o.id, type="aggregated")
         ]
         # L2 interfaces
         l2 = [
             self.prepare_l2_iface_data(i, o) for i in SubInterface.objects.filter(
-                                                        managed_object=o.id, enabled_afi="BRIDGE")
+                managed_object=o.id, enabled_afi="BRIDGE")
         ]
         # L3 interfaces
         q = Q(enabled_afi="IPv4") | Q(enabled_afi="IPv6")
         l3 = [
             self.prepare_l3_iface_data(i, o) for i in SubInterface.objects.filter(
-                                                        managed_object=o.id).filter(q)
+                managed_object=o.id).filter(q)
         ]
         return {
             "l1": self.sorted_iname(l1),
@@ -354,27 +354,27 @@ class InterfaceAppplication(ExtApplication):
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         l1 = [] if len(description) < 2 else [
             self.prepare_l1_iface_data(i, i.managed_object) for i in Interface.objects.filter(
-                                                       description__icontains=description, type="physical",
-                                                       managed_object__in=mos)[:300]
+                description__icontains=description, type="physical",
+                managed_object__in=mos)[:300]
         ]
         # LAG
         lag = [] if len(description) < 2 else [
             self.prepare_lag_iface_data(i, i.managed_object) for i in Interface.objects.filter(
-                                                       description__icontains=description, type="aggregated",
-                                                       managed_object__in=mos)[:300]
+                description__icontains=description, type="aggregated",
+                managed_object__in=mos)[:300]
         ]
         # L2 interfaces
         l2 = [] if len(description) < 2 else [
             self.prepare_l2_iface_data(i, i.managed_object) for i in SubInterface.objects.filter(
-                                                        description__icontains=description, enabled_afi="BRIDGE",
-                                                        managed_object__in=mos)[:300]
+                description__icontains=description, enabled_afi="BRIDGE",
+                managed_object__in=mos)[:300]
         ]
         # L3 interfaces
         q = Q(enabled_afi="IPv4") | Q(enabled_afi="IPv6")
         l3 = [] if len(description) < 2 else [
             self.prepare_l3_iface_data(i, i.managed_object) for i in SubInterface.objects.filter(
-                                                        description__icontains=description,
-                                                        managed_object__in=mos).filter(q)[:300]
+                description__icontains=description,
+                managed_object__in=mos).filter(q)[:300]
         ]
         return {
             "l1": self.sorted_iname(l1),
