@@ -1716,6 +1716,20 @@ class ManagedObject(NOCModel):
     def has_confdb_support(self):
         return self.profile.get_profile().has_confdb_support(self)
 
+    @classmethod
+    def mock_object(cls, profile=None):
+        """
+        Return mock object for tests
+
+        :param profile: Profile name
+        :return:
+        """
+        mo = ManagedObject()
+        if profile:
+            mo.profile = Profile.get_by_name(profile)
+        mo.is_mock = True
+        return mo
+
 
 @on_save
 @six.python_2_unicode_compatible
