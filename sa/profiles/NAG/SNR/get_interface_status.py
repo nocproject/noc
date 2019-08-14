@@ -9,32 +9,23 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
     name = "NAG.SNR.get_interface_status"
     interface = IGetInterfaceStatus
 
-    def execute(self, interface=None):
+    def execute_snmp(self, interface=None):
         r = []
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                for n, s in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"
-                ):  # IF-MIB
-                    if n[:8] == "Ethernet":
-                        pass
-                    else:
-                        continue
-                    if interface:
-                        if n == interface:
-                            r.append({"interface": n, "status": int(s) == 1})
-                    else:
-                        r.append({"interface": n, "status": int(s) == 1})
-                return r
-            except self.snmp.TimeOutError:
+        for n, s in self.snmp.join_tables(mib["IF-MIB::ifName"], mib["IF-MIB::ifOperStatus"]):
+            if n[:8] == "Ethernet":
                 pass
-
-        # Fallback to CLI
-        raise Exception("Not implemented")
+            else:
+                continue
+            if interface:
+                if n == interface:
+                    r += [{"interface": n, "status": int(s) == 1}]
+            else:
+                r += [{"interface": n, "status": int(s) == 1}]
+        return r

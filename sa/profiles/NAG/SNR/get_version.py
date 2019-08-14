@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,10 +21,10 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^\s+(?P<platform>\S+) Device, Compiled on.*\n"
-        r"^\s+sysLocation.*\n"
-        r"^\s+CPU Mac \S+\s*\n"
-        r"^\s+Vlan MAC \S+\s*\n"
-        r"^\s+SoftWare Version (?P<version>\S+)\s*\n"
+        r"(^\s+sysLocation.*\n)?"
+        r"(^\s+CPU Mac \S+\s*\n)?"
+        r"(^\s+Vlan MAC \S+\s*\n)?"
+        r"^\s+SoftWare(?: Package)? Version (?P<version>\S+)\s*\n"
         r"^\s+BootRom Version (?P<bootprom>\S+)\s*\n"
         r"^\s+HardWare Version (?P<hardware>\S+)\s*\n"
         r"^\s+CPLD Version.*\n"
@@ -32,31 +32,26 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1", cached=True)
-                platform = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-                platform = platform.split(" ")[0]
-                version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.1", cached=True)
-                bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
-                hardware = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.1", cached=True)
-                serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1", cached=True)
-                return {
-                    "vendor": vendor,
-                    "platform": platform,
-                    "version": version,
-                    "attributes": {
-                        "Boot PROM": bootprom,
-                        "HW version": hardware,
-                        "Serial Number": serial,
-                    },
-                }
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self):
+        vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1", cached=True)
+        platform = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
+        platform = platform.split(" ")[0]
+        version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.1", cached=True)
+        bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
+        hardware = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.1", cached=True)
+        serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1", cached=True)
+        return {
+            "vendor": vendor,
+            "platform": platform,
+            "version": version,
+            "attributes": {
+                "Boot PROM": bootprom,
+                "HW version": hardware,
+                "Serial Number": serial,
+            },
+        }
 
-        # Fallback to CLI
+    def execute_cli(self):
         match = self.rx_ver.search(self.cli("show version", cached=True))
         return {
             "vendor": "NAG",
