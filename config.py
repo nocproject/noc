@@ -524,6 +524,7 @@ class Config(BaseConfig):
         theme = StringParameter(default="gray")
         api_row_limit = IntParameter(default=0)
         api_arch_alarm_limit = IntParameter(default=4 * 86400)
+        max_upload_size = IntParameter(default=16777216)
         language = StringParameter(default="en")
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)

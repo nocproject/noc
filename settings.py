@@ -72,6 +72,10 @@ STATIC_URL = "/media/"
 # Make this unique, and don"t share it with anybody.
 SECRET_KEY = config.secret_key
 
+# The maximum size in bytes that a request body may be
+# before a SuspiciousOperation (RequestDataTooBig) is raised.
+DATA_UPLOAD_MAX_MEMORY_SIZE = config.web.max_upload_size
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
     "django.template.loaders.filesystem.Loader",
