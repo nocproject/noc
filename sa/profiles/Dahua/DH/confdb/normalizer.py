@@ -118,7 +118,7 @@ class DHNormalizer(BaseNormalizer):
     @match("table", "Encode", "0", ANY, ANY, "Video", "resolution", ANY)
     def normalize_resolution(self, tokens):
         name = self.get_channel_name(tokens[3], tokens[4])
-        height, width = tokens[7].split("x")
+        width, height = tokens[7].split("x")
         if name:
             yield self.make_media_streams_video_resolution_height(name=name, height=height)
             yield self.make_media_streams_video_resolution_width(name=name, width=width)
