@@ -24,10 +24,10 @@ class Migration(BaseMigration):
         #
         current_default = self.db.execute(
             """
-            SELECT column_default 
-            FROM information_schema.columns 
-            WHERE 
-              table_name = 'auth_user' 
+            SELECT column_default
+            FROM information_schema.columns
+            WHERE
+              table_name = 'auth_user'
               AND column_name='preferred_language'
             """
         )[0][0]
