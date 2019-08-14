@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Remove unused legacy fields from User model
+# Restore User.last_login
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Third-party modules
+from django.db.models import DateTimeField
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -12,5 +15,7 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        if self.db.has_column("auth_user", "is_staff"):
-            self.db.delete_column("auth_user", "is_staff")
+        if not self.db.has_column("auth_user", "last_login"):
+            self.db.add_column(
+                "auth_user", "last_login", DateTimeField("Last Login", blank=True, null=True)
+            )

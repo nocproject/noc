@@ -330,6 +330,7 @@ class Config(BaseConfig):
         radius_secret = SecretParameter(default="noc")
         radius_server = StringParameter()
         user_cookie_ttl = IntParameter(default=1)
+        register_last_login = BooleanParameter(default=True)
 
     class mailsender(ConfigSection):
         smtp_server = StringParameter()

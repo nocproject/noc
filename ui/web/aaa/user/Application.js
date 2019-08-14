@@ -53,12 +53,20 @@ Ext.define("NOC.aaa.user.Application", {
                 {
                     text: __("Active"),
                     dataIndex: "is_active",
-                    renderer: NOC.render.Bool
+                    renderer: NOC.render.Bool,
+                    width: 50
                 },
                 {
                     text: __("Superuser"),
                     dataIndex: "is_superuser",
-                    renderer: NOC.render.Bool
+                    renderer: NOC.render.Bool,
+                    width: 50
+                },
+                {
+                    text: __("Last Login"),
+                    dataIndex: "last_login",
+                    renderer: NOC.render.DateTime,
+                    flex: 1
                 }
             ],
             fields: [

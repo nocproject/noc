@@ -34,6 +34,9 @@ class BaseAuthBackend(object):
         """
         Authenticate user using given credentials.
         Raise LoginError when failed
+
+        :return: User name
+        :raises LoginError: Authentication error
         """
         raise self.LoginError()
 

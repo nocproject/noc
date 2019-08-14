@@ -100,6 +100,8 @@ class User(NOCModel):
     heatmap_lon = models.FloatField("Longitude", blank=True, null=True)
     heatmap_lat = models.FloatField("Latitude", blank=True, null=True)
     heatmap_zoom = models.IntegerField("Zoom", blank=True, null=True)
+    # Last login (Populated by login service)
+    last_login = models.DateTimeField("Last Login", blank=True, null=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -170,3 +172,14 @@ class User(NOCModel):
         """
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
+
+    def register_login(self, ts=None):
+        """
+        Register user login
+
+        :param ts: Login timestamp
+        :return:
+        """
+        ts = ts or datetime.datetime.now()
+        self.last_login = ts
+        self.save(update_fields=["last_login"])

@@ -19,6 +19,7 @@ from noc.services.login.auth import AuthRequestHandler
 from noc.services.login.logout import LogoutRequestHandler
 from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
+from noc.aaa.models.user import User
 from noc.aaa.models.apikey import APIKey
 from noc.core.perf import metrics
 from noc.config import config
@@ -77,6 +78,11 @@ class LoginService(UIService):
             metrics["auth_success", ("method", method)] += 1
             # Set cookie
             handler.set_secure_cookie("noc_user", user, expires_days=config.login.session_ttl)
+            # Register last login
+            if config.login.register_last_login:
+                u = User.get_by_username(user)
+                if u:
+                    u.register_login()
             return True
         self.logger.error("Login failed for %s: %s", c, le)
         return False
