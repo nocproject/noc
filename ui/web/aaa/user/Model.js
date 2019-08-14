@@ -54,11 +54,6 @@ Ext.define("NOC.aaa.user.Model", {
             defaultValue: true
         },
         {
-            name: "is_staff",
-            type: "boolean",
-            defaultValue: true
-        },
-        {
             name: "groups",
             type: "auto"
         },
