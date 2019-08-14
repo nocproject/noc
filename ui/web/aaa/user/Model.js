@@ -60,6 +60,11 @@ Ext.define("NOC.aaa.user.Model", {
         {
             name: "user_permissions",
             type: "auto"
+        },
+        {
+            name: "last_login",
+            type: "date",
+            persist: false
         }
     ]
 });

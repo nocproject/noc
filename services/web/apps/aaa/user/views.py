@@ -53,6 +53,7 @@ class UserApplication(ExtModelApplication):
         "last_name": StringParameter(default=""),
         "email": StringParameter(default=""),
     }
+    ignored_fields = {"id", "bi_id", "password"}
     custom_m2m_fields = {"permissions": Permission}
 
     @classmethod
@@ -151,6 +152,7 @@ class UserApplication(ExtModelApplication):
             return self.response_forbidden("Permission denied")
         user = self.get_object_or_404(self.model, pk=object_id)
         user.set_password(password)
+        user.save()
         return self.response({"result": "Password changed", "status": True}, self.OK)
 
     def can_delete(self, user, obj=None):

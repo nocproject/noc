@@ -146,4 +146,16 @@ user_cookie_ttl
 **Default Value**   1
 ==================  =========================
 
+.. _config-login-register_last_login:
 
+register_last_login
+~~~~~~~~~~~~~~~~~~~
+
+==================  =============================
+**YAML Path**       login.register_last_login
+**Key-Value Path**  login/register_last_login
+**Environment**     NOC_LOGIN_REGISTER_LAST_LOGIN
+**Default Value**   True
+==================  =============================
+
+Write each successful login into User's last_login field
