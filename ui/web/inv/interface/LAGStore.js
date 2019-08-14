@@ -67,7 +67,15 @@ Ext.define("NOC.inv.interface.LAGStore", {
         {
             name: "row_class",
             type: "string"
-        }
+        },
+        {
+            name: "mo",
+            type: "string"
+        },
+        {
+            name: "url",
+            type: "string"
+        },
     ],
     data: []
 });

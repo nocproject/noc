@@ -108,7 +108,13 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             text: __("ifIndex"),
                             dataIndex: "ifindex",
                             hidden: true
-                        }
+                        },
+                        {
+                            text: __("Managed Object"),
+                            dataIndex: "mo",
+                            xtype: 'templatecolumn',
+                            tpl: '<a href={url} target="_blank">{mo}</a>'
+                        },
                     ],
                     viewConfig: {
                         getRowClass: Ext.bind(me.getRowClass, me),

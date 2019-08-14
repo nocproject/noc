@@ -45,7 +45,15 @@ Ext.define("NOC.inv.interface.L3Store", {
         {
             name: "vrf",
             type: "string"
-        }
+        },
+        {
+            name: "mo",
+            type: "string"
+        },
+        {
+            name: "url",
+            type: "string"
+        },
     ],
     data: []
 });

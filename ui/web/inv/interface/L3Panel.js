@@ -59,7 +59,13 @@ Ext.define("NOC.inv.interface.L3Panel", {
                             text: __("Description"),
                             dataIndex: "description",
                             flex: 1
-                        }
+                        },
+                        {
+                            text: __("Managed Object"),
+                            dataIndex: "mo",
+                            xtype: 'templatecolumn',
+                            tpl: '<a href={url} target="_blank">{mo}</a>'
+                        },
                      ]
                 }
             ]

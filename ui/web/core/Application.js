@@ -153,5 +153,14 @@ Ext.define("NOC.core.Application", {
     //
     clearNavTabTooltip: function() {
         NOC.app.app.clearActiveNavTabTooltip();
+    },
+    //
+    addTooltip: function(element) {
+        if(element.tooltip) {
+            Ext.create('Ext.tip.ToolTip', {
+                target: element.getEl(),
+                html: element.tooltip
+            });
+        }
     }
 });

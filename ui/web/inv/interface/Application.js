@@ -53,6 +53,19 @@ Ext.define("NOC.inv.interface.Application", {
             scope: me,
             handler: me.onSearch
         });
+        me.searchDescriptionField = Ext.create("Ext.ux.form.SearchField", {
+            fieldLabel: __("Description Search"),
+            tooltip: __("Put your Search Description end press ENTER<br/>" +
+                        "Returns only first 300 strings with match description."),
+            labelWidth: 100,
+            width: "500",
+            explicitSubmit: true,
+            scope: me,
+            handler: me.onSearchDescriptionField,
+            listeners: {
+                       render: me.addTooltip
+            }
+        });
         //
         Ext.apply(me, {
             items: [
@@ -88,7 +101,8 @@ Ext.define("NOC.inv.interface.Application", {
                         }
                     }
                 },
-                me.searchField
+                me.searchField,
+                me.searchDescriptionField
             ]
         });
         me.callParent();
@@ -175,5 +189,18 @@ Ext.define("NOC.inv.interface.Application", {
                 || smatch(r, "description", s)
                 || smatch(r, "vrf", s));
         });
-    }
+    },
+    //search_description handler
+    onSearchDescriptionField: function(value) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/interface/search_description/" + value + "/",
+            method: "GET",
+            scope: me,
+            success: me.onLoadInterfaces,
+            failure: function() {
+                NOC.error("Failed to get interfaces");
+            }
+        });
+    },
 });

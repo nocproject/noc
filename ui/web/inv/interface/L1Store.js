@@ -77,7 +77,15 @@ Ext.define("NOC.inv.interface.L1Store", {
         {
             name: "row_class",
             type: "string"
-        }
+        },
+        {
+            name: "mo",
+            type: "string"
+        },
+        {
+            name: "url",
+            type: "string"
+        },
     ],
     data: []
 });
