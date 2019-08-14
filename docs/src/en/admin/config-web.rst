@@ -29,6 +29,20 @@ api_row_limit
 **Default Value**   0
 ==================  =====================
 
+.. _config-web-max_upload_size:
+
+max_upload_size
+~~~~~~~~~~~~~~~
+
+==================  =======================
+**YAML Path**       web.max_upload_size
+**Key-Value Path**  web/max_upload_size
+**Environment**     NOC_WEB_MAX_UPLOAD_SIZE
+**Default Value**   0
+==================  =======================
+
+The maximum size in bytes that a request body may be
+before a RequestDataTooBig is raised.
 
 .. _config-web-api_arch_alarm_limit:
 
