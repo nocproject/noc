@@ -8,6 +8,9 @@
 
 # Python modules
 import logging
+import re
+
+# NOC modules
 from noc.config import config
 
 if config.features.pypy:
@@ -52,7 +55,12 @@ DATETIME_FORMAT = config.date_time_formats.datetime_format
 # Set up date input formats
 DATE_INPUT_FORMATS = ["%Y-%m-%d"]
 if config.date_time_formats.date_format != DATE_INPUT_FORMATS[0]:
-    DATE_INPUT_FORMATS.insert(0, config.date_time_formats.date_format)
+    DATE_INPUT_FORMATS.insert(
+        0,
+        re.sub(
+            "[^./: ]", lambda match: "%%%s" % match.group(0), config.date_time_formats.date_format
+        ),
+    )
 
 SITE_ID = 1
 
