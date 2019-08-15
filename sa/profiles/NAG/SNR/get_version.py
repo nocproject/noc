@@ -45,6 +45,7 @@ class Script(BaseScript):
         match = self.rx_ver_snmp.search(self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True))
         if match:
             return {
+                "vendor": "NAG",
                 "platform": match.group("platform"),
                 "version": match.group("version"),
                 "attributes": {
