@@ -9,20 +9,21 @@
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
 <META HTTP-EQUIV="Expires" CONTENT="0" />
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}/media/admin/css/base.css{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}/ui/pkg/django-media/admin/css/base.css{% endblock %}" />
 <link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css" />
 <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />
 <link rel="stylesheet" type="text/css" href="/ui/web/css/print.css" />
 <script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
 {% block extrastyle %}{% endblock %}
-<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}/media/admin/css/ie.css{% endblock %}" /><![endif]-->
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}/media/admin/css/rtl.css{% endblock %}" />{% endif %}
-<script type="text/javascript">window.__admin_media_prefix__ = "/media/admin/";</script>
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}/ui/pkg/django-media/admin/css/ie.css{% endblock %}" /><![endif]-->
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}/ui/pkg/django-media/admin/css/rtl.css{% endblock %}" />{% endif %}
+<script type="text/javascript">window.__admin_media_prefix__ = "/ui/pkg/django-media/admin/";</script>
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 {% block extrahead %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-</head>
 {% load i18n %}
+</head>
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
         onmousemove="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();"

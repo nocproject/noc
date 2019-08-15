@@ -7,7 +7,9 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.conf.urls import url
 from django.http import HttpResponseServerError
+from django.views.i18n import JavaScriptCatalog
 
 # NOC modules
 from noc.lib.app.site import site
@@ -18,9 +20,11 @@ from noc.core.debug import error_report
 #
 site.autodiscover()
 #
-# Install URL handlers
+# Install URL handlers, including django's translations
 #
-urlpatterns = site.urls
+urlpatterns = site.urls + [
+    url(r"^jsi18n/$", JavaScriptCatalog.as_view(), name="javascript-catalog")
+]
 
 
 def handler500(request):

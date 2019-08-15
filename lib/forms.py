@@ -44,7 +44,7 @@ class NOCForm(forms.Form):
     """
 
     class Media:
-        css = {"all": ["/media/admin/css/forms.css"]}
+        css = {"all": ["/ui/pkg/django-media/admin/css/forms.css"]}
 
     def __init__(self, *args, **kwargs):
         super(NOCForm, self).__init__(*args, **kwargs)
