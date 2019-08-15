@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+from builtins import str
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -26,11 +27,11 @@ class Script(BaseScript):
         for v in self.snmp.get_tables(
             ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2", "1.3.6.1.2.1.4.22.1.3"], bulk=True
         ):
-            iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[1], cached=True)  # IF-MIB
+            iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True)  # IF-MIB
             mac = ":".join(["%02x" % ord(c) for c in v[2]])
-            ip = ["%02x" % ord(c) for c in v[3]]
-            ip = ".".join(str(int(c, 16)) for c in ip)
-            r.append({"ip": ip, "mac": mac, "interface": iface})
+            # ip = ["%02x" % ord(c) for c in v[3]]
+            # ip = ".".join(str(int(c, 16)) for c in ip)
+            r.append({"ip": v[3], "mac": mac, "interface": iface})
         return r
 
     def execute_cli(self):
