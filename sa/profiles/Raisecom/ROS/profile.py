@@ -130,35 +130,47 @@ class Profile(BaseProfile):
         re.MULTILINE,
     )
 
+    rx_ver_rotek = re.compile(r"Rotek Operating System Software\n" r"Copyright .+NPK Rotek")
+
+    # NPK Rotek some Chinese vendor
     def get_version(self, script):
         c = script.cli("show version", cached=True)
+        r = {"vendor": "Raisecom"}
+        if self.rx_ver_rotek.match(c):
+            r["vendor"] = "Rotek"
         if "Support ipv6" in c:
             match = self.rx_ver.search(c)
         else:
             match = self.rx_ver_wipv6.search(c)
         if match:
-            return match.groupdict()
+            r.update(match.groupdict())
+            return r
         else:
             match = self.rx_ver2.search(c)
         if match:
-            return match.groupdict()
+            r.update(match.groupdict())
+            return r
         else:
             match = self.rx_ver_2016.search(c)
         if match:
-            return match.groupdict()
+            r.update(match.groupdict())
+            return r
         else:
             match = self.rx_ver_2015.search(c)
         if match:
-            return match.groupdict()
+            r.update(match.groupdict())
+            return r
         else:
             match = self.rx_ver_2017.search(c)
         if match:
-            return match.groupdict()
+            r.update(match.groupdict())
+            return r
         else:
             match = self.rx_ver3.search(c)
-        return match.groupdict()
+        r.update(match.groupdict())
+        return r
 
-    rx_port = re.compile("^port(|\s+)(?P<port>\d+)")
+    rx_port = re.compile(r"^port(|\s+)(?P<port>\d+)")
 
     def convert_interface_name(self, interface):
         if interface.startswith("GE"):
