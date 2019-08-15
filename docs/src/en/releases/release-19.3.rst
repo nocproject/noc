@@ -115,7 +115,9 @@ To enable the feature perform following steps:
 
 Prometheus Histograms
 ^^^^^^^^^^^^^^^^^^^^^
-Prometheus histograms and quantiles may be exported via /metrics endpoint
+Prometheus histograms and quantiles may be exported via /metrics endpoint.
+Additional metrics may be enabled in config.
+See :ref:`metrics section<config-metrics>` for details.
 
 ObjectModel Tags
 ^^^^^^^^^^^^^^^^
