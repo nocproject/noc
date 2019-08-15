@@ -125,7 +125,7 @@ class Qtech2800Normalizer(BaseNormalizer):
     def normalize_default_gateway(self, tokens):
         yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[2])
 
-    @match("ntp", "client")
+    @match("ntp", "enable")
     def normalize_timesource(self, tokens):
         yield self.make_clock_source(source="ntp")
 
