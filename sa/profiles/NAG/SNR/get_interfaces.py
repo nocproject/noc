@@ -26,7 +26,7 @@ class Script(BaseScript):
         r"line protocol is\s+(?P<oper_status>up|down)"
         r"(, dev index is (?P<snmp_ifindex>\d+))?\s*\n"
         r"(?P<other>(?:^\s+.+\n)+?)"
-        r"(?:^\s+Encapsulation |^Output packets statistics:)",
+        r"(?:^\s+Encapsulation |^\s+Output packets statistics:)",
         re.MULTILINE,
     )
     rx_hw = re.compile(
