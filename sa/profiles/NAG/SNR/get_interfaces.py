@@ -68,7 +68,7 @@ class Script(BaseScript):
             other = match.group("other")
             match1 = self.rx_hw.search(other)
             iface = {
-                "type": self.profile.get_interface_type(match1.group("hw_type")),
+                "type": self.profile.get_interface_type(name),
                 "name": name,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
