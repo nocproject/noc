@@ -1,0 +1,44 @@
+{% macro radio(port_type) -%}
+{% if port_type["ports"][0] and port_type["ports"][0]["descr"] %}
+    {% set port_name = port_type["ports"][0]["descr"] %}
+{% elif port_type["ports"][0] and port_type["ports"][0]["name"] %}
+    {% set port_name = port_type["ports"][0]["name"] %}
+{% elif port_type["ports"][0] %}
+    {% set port_name = "Lag w/o interfaces" %}
+{%endif%}
+
+{% set comma = joiner(",") -%}
+{
+  "current": {
+    "selected": true,
+    "tags": [],
+    "text": "All",
+    "value": [
+      "$__all"
+     ]
+  },
+  "datasource": null,
+  "hide": 0,
+  "includeAll": true,
+  "label": "{{port_type.name}}",
+  "multi": true,
+  "name": "{{port_type.type}}",
+  "options": [
+    {
+      "selected": false,
+      "text": "All",
+      "value": "$__all"
+    },
+    {%for port in port_type.ports -%}
+    {{ comma() }}{
+      "selected": false,
+      "text": "{%- if port.descr -%}{{port.name}} status : {{ port.status }} ({{port.descr}}){%else%}{{port.name}} status : {{ port.status }}{%- endif -%}",
+      "value": "{{port.name}}"
+    }
+    {%- endfor %}
+   ],
+  "query": "{%- for port in port_type.ports %}{{port.name}},{% endfor %}",
+  "refresh": 0,
+  "type": "custom"
+}
+{%- endmacro %}
