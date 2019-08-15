@@ -20,7 +20,7 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.profile.get_version(self)
         return {
-            "vendor": "Raisecom",
+            "vendor": v.get("vendor", "Raisecom"),
             "platform": v["platform"],
             "version": v["version"],
             "attributes": {
