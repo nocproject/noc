@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -31,10 +32,29 @@ class Script(BaseScript):
         r"^\s+Serial No.:(?P<serial>\S+)\s*\n",
         re.MULTILINE,
     )
+    rx_ver_snmp = re.compile(
+        r"^\s*(?P<platform>\S+) Device, Compiled.*\n"
+        r"^\s+SoftWare Version (?P<version>\S+)\s*\n"
+        r"^\s+BootRom Version (?P<bootprom>\S+)\s*\n"
+        r"^\s+HardWare Version (?P<hardware>\S+)\s*\n"
+        r"^\s+Serial No.:\s*(?P<serial>\S+)\s*\n",
+        re.MULTILINE,
+    )
 
     def execute_snmp(self):
+        match = self.rx_ver_snmp.search(self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True))
+        if match:
+            return {
+                "platform": match.group("platform"),
+                "version": match.group("version"),
+                "attributes": {
+                    "Boot PROM": match.group("bootprom"),
+                    "HW version": match.group("hardware"),
+                    "Serial Number": match.group("serial"),
+                },
+            }
         vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1", cached=True)
-        platform = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
+        platform = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
         platform = platform.split(" ")[0]
         version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.1", cached=True)
         bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
@@ -44,11 +64,7 @@ class Script(BaseScript):
             "vendor": vendor,
             "platform": platform,
             "version": version,
-            "attributes": {
-                "Boot PROM": bootprom,
-                "HW version": hardware,
-                "Serial Number": serial,
-            },
+            "attributes": {"Boot PROM": bootprom, "HW version": hardware, "Serial Number": serial},
         }
 
     def execute_cli(self):
