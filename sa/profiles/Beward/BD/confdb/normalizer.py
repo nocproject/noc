@@ -107,7 +107,7 @@ class BDNormalizer(BaseNormalizer):
             if not res:
                 height, width = 0, 0
             else:
-                height, width = res.width, res.width
+                height, width = res.width, res.height
             yield self.make_media_streams_video_admin_status(
                 name=stream_name, admin_status=resolution_name != "disable"
             )
