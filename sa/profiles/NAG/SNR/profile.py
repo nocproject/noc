@@ -29,6 +29,7 @@ class Profile(BaseProfile):
         "Ethe": "physical",  # Ethernet
         "Vlan": "physical",  # Vlan
         "Port": "aggregated",  # Port-Channel
+        "Vsf-": "aggregated",  # Vsf-Port
         "vpls": "unknown",  # vpls_dev
         "l2ov": "tunnel",  # l2overgre
     }

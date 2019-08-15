@@ -26,7 +26,7 @@ class Script(BaseScript):
         r"line protocol is\s+(?P<oper_status>up|down)"
         r"(, dev index is (?P<snmp_ifindex>\d+))?\s*\n"
         r"(?P<other>(?:^\s+.+\n)+?)"
-        r"^\s+Encapsulation ",
+        r"(?:^\s+Encapsulation |^Output packets statistics:)",
         re.MULTILINE,
     )
     rx_hw = re.compile(
@@ -52,17 +52,6 @@ class Script(BaseScript):
     )
     rx_lag_port = re.compile(r"\s*\S+ is LAG member port, LAG port:(?P<lag_port>\S+)\n")
 
-    HW_TYPES = {
-        "Fast-Ethernet": "physical",
-        "Gigabit-Combo": "physical",
-        "Gigabit-TX": "physical",
-        "SFP": "physical",
-        "SFP+": "physical",
-        "QSFP+": "physical",
-        "EtherChannel": "aggregated",
-        "EtherSVI": "SVI",
-    }
-
     def execute(self):
         interfaces = []
         # Get LLDP interfaces
@@ -79,7 +68,7 @@ class Script(BaseScript):
             other = match.group("other")
             match1 = self.rx_hw.search(other)
             iface = {
-                "type": self.HW_TYPES[match1.group("hw_type")],
+                "type": self.profile.get_interface_type(match1.group("hw_type")),
                 "name": name,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
