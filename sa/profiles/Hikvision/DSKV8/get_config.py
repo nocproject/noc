@@ -45,7 +45,7 @@ class Script(BaseScript):
         for key, value in sorted(six.iteritems(v["DeviceInfo"])):
             if key == "_text" or isinstance(value, six.string_types):
                 continue
-            c += "    %s %s\n" % (key, value[0]["_text"])
+            c += "    %s %s\n" % (key, value[0]["_text"] if value[0] else "")
         v = self.http.get("/ISAPI/Streaming/channels", use_basic=True)
         v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
