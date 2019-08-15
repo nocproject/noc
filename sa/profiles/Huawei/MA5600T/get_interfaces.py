@@ -361,7 +361,7 @@ class Script(BaseScript):
                     else:
                         ifindex = self.snmp_index(p["type"], 0, slot, int(p["num"]))
                     interfaces[p_name] = {
-                        "name": p,
+                        "name": p_name,
                         "type": "physical",
                         "admin_status": True,
                         "oper_status": p["state"],
