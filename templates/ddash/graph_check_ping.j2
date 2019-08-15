@@ -1,0 +1,83 @@
+{
+  "bars": false,
+  "timeFrom": null,
+  "links": [],
+  "thresholds": [],
+  "spaceLength": 10,
+  "nullPointMode": "connected",
+  "renderer": "flot",
+  "linewidth": 2,
+  "steppedLine": false,
+  "id": 8001,
+  "fill": 1,
+  "span": 6,
+  "title": "Check | RTT",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": true,
+    "values": true,
+    "alignAsTable": true,
+    "total": false,
+    "sortDesc": true
+  },
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "check",
+      "query": "SELECT \n    t, \n    groupArray((ip, RTT)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        path[2] as ip, \n        avg(rtt) as `RTT` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        GROUP BY path[2], t ORDER BY t) \nGROUP BY t  \nORDER BY t ASC",
+      "refId": "A"
+    }
+  ],
+  "yaxes": [
+    {
+      "logBase": 1,
+      "show": true,
+      "max": null,
+      "format": "µs",
+      "min": null,
+      "label": null
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": "5",
+      "min": null,
+      "label": null,
+      "show": false
+    }
+  ],
+  "xaxis": {
+    "buckets": null,
+    "show": true,
+    "values": [],
+    "mode": "time",
+    "name": null
+  },
+  "percentage": false,
+  "type": "graph",
+  "dashes": false,
+  "x-axis": true,
+  "grid": {},
+  "dashLength": 10,
+  "stack": false,
+  "y-axis": true,
+  "timeShift": null,
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+}

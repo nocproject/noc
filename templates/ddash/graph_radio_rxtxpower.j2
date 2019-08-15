@@ -1,11 +1,10 @@
-{% macro subinterface() -%}
+{% macro interface(interface, lindex) -%}
 {
-  "title": "$SubInterfaces $SubInterfaces",
+  "title": "Tx/RX Power ${{interface.type}}",
   "aliasColors": {},
   "bars": false,
-  "internal_comment":"graph_subinterface_load.j2",
+  "internal_comment":"graph_radio_rxtxpower.j2",
   "datasource": null,
-  "repeat": "SubInterfaces",
   "fill": 1,
   "grid": {
     "threshold1": null,
@@ -13,7 +12,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": 1300,
+  "id": {{lindex + 2000}},
   "legend": {
     "alignAsTable": true,
     "avg": true,
@@ -34,31 +33,21 @@
   "pointradius": 5,
   "points": false,
   "renderer": "flot",
+  "repeat": "{{interface.type}}",
   "scopedVars": {
-  },
-  "seriesOverrides": [
-    {
-      "alias": "Input",
-      "transform": "negative-Y"
-    },
-    {
-      "alias": "Oper status",
-      "yaxis": 2,
-      "fill": 0
-    },
-    {
-      "alias": "Admin status",
-      "yaxis": 2,
-      "fill": 0
+    "{{interface.type}}": {
+      "selected": true,
+      "text": "{{interface.ports[0].name}}({{interface.ports[0].descr}})",
+      "value": "{{interface.ports[0].name}}"
     }
-  ],
+  },
   "span": 12,
   "stack": false,
   "steppedLine": false,
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(load_in) as Input, avg(load_out) as Output FROM $table WHERE managed_object = $bi_id and path[5]=toString($SubInterfaces) and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(rx_power) as `Rx Power`,avg(tx_power) as `Tx Power` FROM $table WHERE managed_object = $bi_id and path[4]=toString(${{interface.type}}) and $timeFilter and (tx_power != -32555 and rx_power != -32555) GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
       "database": "noc",
@@ -85,8 +74,8 @@
   "y-axis": true,
   "yaxes": [
     {
-      "format": "bps",
-      "label": "bit/s",
+      "format": "dB",
+      "label": "dB",
       "logBase": 1,
       "max": null,
       "min": null,
@@ -94,11 +83,11 @@
     },
     {
       "logBase": 1,
-      "show": false,
-      "max": null,
       "format": "short",
+      "max": null,
       "min": null,
-      "label": null
+      "label": null,
+      "show": true
     }
   ]
 }

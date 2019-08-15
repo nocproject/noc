@@ -20,10 +20,17 @@
   "templating": {
     "list": [
       {%if port_types %}
-      {% for port_type in port_types -%}
-        {% from 'template_port.j2' import ports -%}
-        {{ comma() }}{{ ports(port_type) }}
-      {% endfor -%},
+        {% for port_type in port_types -%}
+          {% from 'template_port.j2' import ports -%}
+          {{ comma() }}{{ ports(port_type) }}
+        {% endfor -%},
+      {% endif %}
+
+      {% if radio_types %}
+        {% for port_type in radio_types -%}
+          {% from 'template_radio.j2' import radio -%}
+          {{ radio(port_type) }}{{ comma() }}
+        {% endfor -%}
       {% endif %}
 
       {% if subifaces %}
@@ -140,19 +147,18 @@
 
     {%if subifaces %}
     ,
-        {% set comma = joiner(",") -%}
-        {
-          "collapse": true,
-          "editable": false,
-          "height": "250px",
-          "showTitle": true,
-          "title": "SubInterfaces",
-          "internal_comment": "subif_row",
-          "panels": [
-            {% from "graph_subinterface_load.j2" import subinterface -%}
-            {{subinterface()}}
-          ]
-        }
+      {
+        "collapse": true,
+        "editable": false,
+        "height": "250px",
+        "showTitle": true,
+        "title": "SubInterfaces",
+        "internal_comment": "subif_row",
+        "panels": [
+          {% from "graph_subinterface_load.j2" import subinterface -%}
+          {{subinterface()}}
+        ]
+      }
     {%endif%}
     {%if lags %}
     ,
@@ -179,22 +185,61 @@
         {% include "row_errors.j2" with context -%}
     {%endif%}
 
-    {%if port_types %}
+    {%if radio_types %}
     ,
-        {
-          "collapse": true,
-          "editable": false,
-          "height": "250px",
-          "showTitle": true,
-          "internal_comment": "radio_row",
-          "title": "Radio metrics",
-          "panels": [
-              {% include "graph_radio_rssi_cinr.j2" with context -%},
-              {% include "graph_radio_txrxpower.j2" with context -%}
-          ]
-        }
+        {% set comma = joiner(",") -%}
+        {% for radio in radio_types -%}
+            {{ comma() }}
+
+            {
+              "collapse": true,
+              "editable": false,
+              "height": "250px",
+              "showTitle": true,
+              "title": "{{radio.name}}",
+              "internal_comment": "radio_row",
+              "panels": [
+                {%if "tx_power" in radio.ports[0].metrics or "rx_power" in radio.ports[0].metrics %}
+                  {% from "graph_radio_rxtxpower.j2" import interface -%}
+                  {{interface(radio, loop.index)}},
+                {% endif %}
+
+                {%if "rssi" in radio.ports[0].metrics or "cnri" in radio.ports[0].metrics %}
+                  {% from "graph_radio_cinr_rssi.j2" import interface -%}
+                  {{interface(radio, loop.index)}},
+                {% endif %}
+
+                {%if "signal_level" in radio.ports[0].metrics or "noise_level" in radio.ports[0].metrics %}
+                  {% from "graph_radio_signal_noise_level.j2" import interface -%}
+                  {{interface(radio, loop.index)}},
+                {% endif %}
+              ]
+            }
+        {%- endfor %}
     {%endif%}
 
+    {%if object_check_metrics %}
+      ,
+      {
+        "collapse": true,
+        "editable": false,
+        "height": "250px",
+        "showTitle": true,
+        "internal_comment": "object_check_metrics",
+        "title": "Check metrics",
+        "panels": [
+            {% for metric in object_check_metrics -%}
+              {% if "result" in metric.metric %}
+                {% include "graph_check_result.j2" with context -%},
+              {% endif %}
+              {% if "rtt" in metric.metric %}
+                {% include "graph_check_ping.j2" with context -%}
+              {% endif %}
+            {%- endfor %}
+        ]
+
+      }
+    {%endif%}
 
     {%if object_metrics%}
         ,
