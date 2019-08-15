@@ -95,7 +95,7 @@ function ts_on_search(s) {
 </script>
 <div class="tablesorter-container">
 <div class="tablesorter-search-row">
-    <label for="tablesorter-search"><img src="/media/admin/img/icon_searchbox.png" alt="Search" /></label>
+    <label for="tablesorter-search"><img src="/ui/pkg/django-media/admin/img/icon_searchbox.png" alt="Search" /></label>
     <input type="text" id="tablesorter-search" onkeyup="ts_on_search(this);"/>
 </div>
 """
@@ -170,9 +170,9 @@ def bool_icon(value):
     if value is None:
         return "?"
     elif value:
-        return SafeString("<img src='/media/admin/img/icon-yes.gif' alt='Yes' />")
+        return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-yes.gif' alt='Yes' />")
     else:
-        return SafeString("<img src='/media/admin/img/icon-no.gif' alt='No' />")
+        return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-no.gif' alt='No' />")
 
 
 register.filter("bool_icon", bool_icon)

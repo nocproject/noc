@@ -369,9 +369,9 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 $(".s_img").each(function(i){
                     ip=$(this).attr("id").substring(2);
                     if ((ip in result) && result[ip])
-                        src="/media/admin/img/icon-yes.gif";
+                        src="/ui/pkg/django-media/admin/img/icon-yes.gif";
                     else
-                        src="/media/admin/img/icon-no.gif";
+                        src="/ui/pkg/django-media/admin/img/icon-no.gif";
                     $(this).attr("src",src);
                 })
             }

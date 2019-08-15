@@ -599,7 +599,7 @@ class TableSection(ReportSection):
                                 "<tr><td colspan=%d style='margin: 0" % s_span,
                                 "padding: 2px 5px 3px 5px;font-size: 11px;text-align:left",
                                 "font-weight:bold",
-                                "background: #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x",
+                                "background: #7CA0C7 url(/ui/pkg/django-media/admin/img/default-bg.gif) top left repeat-x",
                                 "color:white;'>",
                             ]
                         ),

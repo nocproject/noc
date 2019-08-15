@@ -1,12 +1,13 @@
 {% extends "template.html" %}
 {% block extrastyle %}
-<link rel="stylesheet" type="text/css" href="/media/admin/css/base.css" />
-<link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" />
-    <link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css" />
+<link rel="stylesheet" type="text/css" href="/ui/pkg/django-media/admin/css/base.css" />
+<link rel="stylesheet" type="text/css" href="/ui/pkg/django-media/admin/css/forms.css" />
+<link rel="stylesheet" type="text/css" href="/ui/pkg/django-media/admin/css/widgets.css" />
 <script>
 function gettext(x) {
     return x;
 }
+
 function get_format(fmt) {
     switch(fmt) {
         case 'FIRST_DAY_OF_WEEK':
@@ -31,7 +32,7 @@ django = {
     jQuery: $
 };
 </script>
-<script type="text/javascript" src="/media/admin/js/core.js"></script>
+<script type="text/javascript" src="/ui/pkg/django-media/admin/js/core.js"></script>
 {% endblock %}
 {% block content %}
 <h1>{{app.title}}</h1>
