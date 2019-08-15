@@ -27,7 +27,7 @@ class Profile(BaseProfile):
 
     INTERFACE_TYPES = {
         "Ethe": "physical",  # Ethernet
-        "Vlan": "physical",  # Vlan
+        "Vlan": "SVI",  # Vlan
         "Port": "aggregated",  # Port-Channel
         "Vsf-": "aggregated",  # Vsf-Port
         "vpls": "unknown",  # vpls_dev
