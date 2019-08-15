@@ -366,6 +366,7 @@ class ManagedObjectCard(BaseCard):
             "attributes": list(
                 ManagedObjectAttribute.objects.filter(managed_object=self.object.id)
             ),
+            "confdb": self.object.get_confdb(),
         }
         return r
 
