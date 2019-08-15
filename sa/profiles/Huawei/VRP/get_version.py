@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetVersion
     always_prefer = "S"
 
-    rx_simple_version = re.compile("\d+\.\d+")
+    rx_simple_version = re.compile(r"\d+\.\d+")
 
     rx_ver = re.compile(
         r"^VRP.+Software, Version (?P<version>[^ ,]+),?\s*(\(\S+\s+(?P<image>\S+)\))?.*?\n"
@@ -151,9 +151,14 @@ class Script(BaseScript):
         if "NetEngine" in v or "MultiserviceEngine" in v or "HUAWEINE" in v or "HUAWEI NE" in v:
             # Use specified regex for this platform
             match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
-        if "Eudemon" in v:
+        elif "Eudemon" in v:
             match_re_list.insert(0, self.rx_ver_snmp7_eudemon)
-        rx = self.find_re(match_re_list, v)
+        elif "Quidway S5600-HI" in v:  # Bad platform
+            return "Quidway S5600-HI", None, None
+        try:
+            rx = self.find_re(match_re_list, v)
+        except self.UnexpectedResultError:
+            raise NotImplementedError
         match = rx.search(v)
         image = None
         platform = match.group("platform")
@@ -178,12 +183,23 @@ class Script(BaseScript):
         except (self.snmp.TimeOutError, self.snmp.SNMPError):
             raise NotImplementedError()
         platform, version, image = self.parse_version(v)
+        if platform in self.BAD_PLATFORM:
+            platform = self.snmp.get(
+                mib["ENTITY-MIB::entPhysicalModelName", 2]
+            )  # "Quidway S5628F-HI"
+            platform = platform.split()[-1]
+            version1 = self.snmp.get(
+                mib["ENTITY-MIB::entPhysicalSoftwareRev", 2]
+            )  # like "5.20 Release 2102P01"
+            version2 = self.snmp.get(
+                mib["ENTITY-MIB::entPhysicalSoftwareRev", 7]
+            )  # "V200R001B02D015SP02"
+            version = "%s (%s)" % (version1.split()[0], version2)
         serial = []
         for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
             if not x:
                 continue
             serial += [x.strip(" \x00")]
-
         r = {"vendor": "Huawei", "platform": platform, "version": version}
         attributes = {}
         if image:
@@ -205,8 +221,7 @@ class Script(BaseScript):
             try:
                 v = self.cli("display version", cached=True)
             except self.CLISyntaxError:
-                raise self.NotSupportedError()
-
+                raise NotImplementedError
         platform, version, image = self.parse_version(v)
         r = {"vendor": "Huawei", "platform": platform, "version": version}
         attributes = {}
