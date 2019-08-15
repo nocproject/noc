@@ -22,9 +22,9 @@ class Script(BaseScript):
     rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
     rx_lldp = re.compile(r"LLDP enabled port : (?P<local_if>\S*.+)$", re.MULTILINE)
     rx_sh_int = re.compile(
-        r"^\s*(?P<interface>\S+)\s+is\s+(?P<admin_status>up|down)(?:\s*\(\d\))?,\s+"
+        r"^\s*(?P<interface>\S+)\s+is\s+(?P<admin_status>up|down|administratively down)(?:\s*\(\d\))?,\s+"
         r"line protocol is\s+(?P<oper_status>up|down)"
-        r"(, dev index is (?P<snmp_ifindex>\d+))?\s*\n"
+        r"(,(?: dev)? index is (?P<snmp_ifindex>\d+))?\s*\n"
         r"(?P<other>(?:^\s+.+\n)+?)"
         r"(?:^\s+Encapsulation |^\s+Output packets statistics:)",
         re.MULTILINE,
