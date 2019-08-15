@@ -14,22 +14,27 @@ import binascii
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
+)
 
 
 class Script(BaseScript):
     name = "EdgeCore.ES.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    #
-    # No lldp on 46xx
-    #
-    @BaseScript.match(platform__contains="46")
-    def execute_46(self):
-        raise self.NotSupportedError()
-
-    #
-    # 35xx
-    #
     rx_localport = re.compile(
         r"^\s*Eth(| )(.+?)\s*(\|)MAC Address\s+(\S+).+?$", re.MULTILINE | re.DOTALL
     )
@@ -48,8 +53,11 @@ class Script(BaseScript):
     rx_port_descr = re.compile(r"^\s*Port Description\s+:\s+(?P<descr>.+)\n", re.MULTILINE)
     rx_system_descr = re.compile(r"^\s*System Description\s+:\s+(?P<descr>.+)\n", re.MULTILINE)
 
-    @BaseScript.match()
-    def execute_35(self):
+    def execute_cli(self):
+        # No lldp on 46xx
+        if self.is_platform_46:
+            raise self.NotSupportedError()
+
         ifs = []
         r = []
         # EdgeCore ES3526 advertises MAC address(3) port sub-type,
@@ -65,23 +73,23 @@ class Script(BaseScript):
                 i["local_interface_id"] = local_port_ids[i["local_interface"]]
             v = self.cli("show lldp info remote detail %s" % i["local_interface"])
             match = self.re_search(self.rx_detail, v)
-            n = {"remote_chassis_id_subtype": 4}
+            n = {"remote_chassis_id_subtype": LLDP_CHASSIS_SUBTYPE_MAC}
             if match:
                 n["remote_port_subtype"] = {
-                    "MAC Address": 3,
-                    "Interface name": 5,
-                    "Interface Name": 5,
-                    "Inerface Alias": 5,
-                    "Inerface alias": 5,
-                    "Interface Alias": 5,
-                    "Interface alias": 5,
-                    "Local": 7,
-                    "Locally Assigned": 7,
-                    "Locally assigned": 7,
+                    "MAC Address": LLDP_PORT_SUBTYPE_MAC,
+                    "Interface name": LLDP_PORT_SUBTYPE_NAME,
+                    "Interface Name": LLDP_PORT_SUBTYPE_NAME,
+                    "Inerface Alias": LLDP_PORT_SUBTYPE_NAME,
+                    "Inerface alias": LLDP_PORT_SUBTYPE_NAME,
+                    "Interface Alias": LLDP_PORT_SUBTYPE_NAME,
+                    "Interface alias": LLDP_PORT_SUBTYPE_NAME,
+                    "Local": LLDP_PORT_SUBTYPE_LOCAL,
+                    "Locally Assigned": LLDP_PORT_SUBTYPE_LOCAL,
+                    "Locally assigned": LLDP_PORT_SUBTYPE_LOCAL,
                 }[match.group("p_type")]
-                if n["remote_port_subtype"] == 3:
+                if n["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                     remote_port = MACAddressParameter().clean(match.group("p_id"))
-                elif n["remote_port_subtype"] == 5:
+                elif n["remote_port_subtype"] == LLDP_PORT_SUBTYPE_NAME:
                     remote_port = match.group("p_id").strip()
                 else:
                     # Removing bug
@@ -93,21 +101,22 @@ class Script(BaseScript):
                 n["remote_chassis_id"] = match.group("id")
                 n["remote_system_name"] = match.group("name")
                 n["remote_port"] = remote_port
-                # Get capability
-                cap = 0
-                for c in match.group("capability").strip().split(", "):
-                    cap |= {
-                        "Other": 1,
-                        "Repeater": 2,
-                        "Bridge": 4,
-                        "WLAN": 8,
-                        "WLAN Access Point": 8,
-                        "Router": 16,
-                        "Telephone": 32,
-                        "Cable": 64,
-                        "Station": 128,
-                    }[c]
-                n["remote_capabilities"] = cap
+
+                caps = lldp_caps_to_bits(
+                    match.group("capability").strip().split(", "),
+                    {
+                        "other": LLDP_CAP_OTHER,
+                        "repeater": LLDP_CAP_REPEATER,
+                        "bridge": LLDP_CAP_BRIDGE,
+                        "wlan": LLDP_CAP_WLAN_ACCESS_POINT,
+                        "wlan access point": LLDP_CAP_WLAN_ACCESS_POINT,
+                        "router": LLDP_CAP_ROUTER,
+                        "telephone": LLDP_CAP_TELEPHONE,
+                        "cable": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                        "station": LLDP_CAP_STATION_ONLY,
+                    },
+                )
+                n["remote_capabilities"] = caps
                 match = self.rx_system_descr.search(v)
                 if match:
                     n["remote_system_description"] = match.group("descr")

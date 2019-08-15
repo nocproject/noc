@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -58,16 +58,7 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
-        if (
-            self.match_version(platform__contains="3526")
-            or self.match_version(platform__contains="3510")
-            or self.match_version(platform__contains="2228N")
-            or self.match_version(platform__contains="3528")
-            or self.match_version(platform__contains="3552")
-            or self.match_version(platform__contains="4612")
-            or self.match_version(platform__contains="ECS4210")
-            or self.match_version(platform__contains="ECS4100")
-        ):
+        if self.is_platform_3510 or self.is_platform_4612 or self.is_platform_ecs4100:
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
                 matchint = self.rx_interface_3526.search(block)
@@ -114,7 +105,7 @@ class Script(BaseScript):
                     swport["untagged"] = untagged
                 swport["tagged"] = tagged
                 r += [swport]
-        elif self.match_version(platform__contains="4626"):
+        elif self.is_platform_4626:
             cmd = self.cli("show interface switchport")
             for block in cmd.split("\n\n"):
                 match = self.rx_interface_swport_4626.search(block)

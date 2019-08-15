@@ -24,30 +24,19 @@ class Script(BaseScript):
     )
     rx_mac = re.compile(r"MAC Address[^:]*?:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
-    # ES4626
-    @BaseScript.match(platform__contains="4626")
-    def execute_4626(self):
-        v = self.cli("show mac-address-table static")
-        match = self.re_search(self.rx_mac_4626, v)
-        mac = match.group("id")
-        return {"first_chassis_mac": mac, "last_chassis_mac": mac}
-
-    # Other
-    @BaseScript.match()
-    def execute_other(self):
-        if self.match_version(platform__contains="3528MV2"):
-            v = self.cli("show system\n")  # ES-3538MV2
-            match = self.rx_mac_3528mv2.search(v)
+    def execute_cli(self):
+        if self.is_platform_4626:
+            v = self.cli("show mac-address-table static")
+            match = self.re_search(self.rx_mac_4626, v)
+            mac = match.group("id")
+            return {"first_chassis_mac": mac, "last_chassis_mac": mac}
         else:
-            v = self.cli("show system")
-            match = self.re_search(self.rx_mac, v)
-        first_mac = match.group("id")
-        v = self.cli("show int statu")
-        for l in v.splitlines():
-            match = self.rx_mac.search(l)
-            if match:
-                if match.group("id") != first_mac:
-                    last_mac = match.group("id")
-        if not last_mac:
+            if self.is_platform_3528mv2:
+                v = self.cli("show system\n")  # ES-3538MV2
+                match = self.rx_mac_3528mv2.search(v)
+            else:
+                v = self.cli("show system", cached=True)
+                match = self.re_search(self.rx_mac, v)
+            first_mac = match.group("id")
             last_mac = first_mac
-        return {"first_chassis_mac": first_mac, "last_chassis_mac": last_mac}
+            return {"first_chassis_mac": first_mac, "last_chassis_mac": last_mac}

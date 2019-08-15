@@ -49,63 +49,59 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
 
-    def execute(self, interface=None):
-        if self.has_snmp():
-            try:
-                # Get interface status
-                r = []
-                for i, n, s, d, m in self.snmp.join(
-                    [
-                        mib["IF-MIB::ifDescr"],
-                        mib["IF-MIB::ifOperStatus"],
-                        mib["IF-MIB::ifAlias"],
-                        mib["IF-MIB::ifPhysAddress"],
-                    ],
-                    join="left",
-                ):
-                    match = self.rx_snmp_name_eth.search(n)
-                    if match:
-                        if match.group("unit") == "0":
-                            unit = "1"
-                            n = "Eth " + unit + "/" + match.group("port")
-                        else:
-                            n = "Eth " + match.group("unit") + "/" + match.group("port")
-                    if n.startswith("Trunk ID"):
-                        n = "Trunk " + n.replace("Trunk ID ", "").lstrip("0")
-                    if n.startswith("Trunk Port ID"):
-                        n = "Trunk " + n.replace("Trunk Port ID ", "").lstrip("0")
-                    if n.startswith("Trunk Member"):
-                        n = "Eth 1/" + str(i)
-                    if n.startswith("VLAN ID"):
-                        n = "VLAN " + n.replace("VLAN ID ", "").lstrip("0")
-                    if n.startswith("VLAN interface"):
-                        n = "VLAN " + n.replace("VLAN interface ID ", "").lstrip("0")
-                    if n.startswith("Console"):
-                        continue
-                    if n.startswith("Loopback"):
-                        continue
-                    r += [
-                        {
-                            "snmp_ifindex": i,
-                            "interface": n,
-                            "status": int(s) == 1,
-                            "description": d,
-                            "mac": MACAddressParameter().clean(m),
-                        }
-                    ]
-                return r
-            except self.snmp.TimeOutError:
-                pass
-            # Fallback to CLI
+    def execute_snmp(self, interface=None):
+        # Get interface status
         r = []
-        s = []
-        if self.match_version(platform__contains="4626"):
+        for i, n, s, d, m in self.snmp.join(
+            [
+                mib["IF-MIB::ifDescr"],
+                mib["IF-MIB::ifOperStatus"],
+                mib["IF-MIB::ifAlias"],
+                mib["IF-MIB::ifPhysAddress"],
+            ],
+            join="left",
+        ):
+            match = self.rx_snmp_name_eth.search(n)
+            if match:
+                if match.group("unit") == "0":
+                    unit = "1"
+                    n = "Eth " + unit + "/" + match.group("port")
+                else:
+                    n = "Eth " + match.group("unit") + "/" + match.group("port")
+            if n.startswith("Trunk ID"):
+                n = "Trunk " + n.replace("Trunk ID ", "").lstrip("0")
+            if n.startswith("Trunk Port ID"):
+                n = "Trunk " + n.replace("Trunk Port ID ", "").lstrip("0")
+            if n.startswith("Trunk Member"):
+                n = "Eth 1/" + str(i)
+            if n.startswith("VLAN ID"):
+                n = "VLAN " + n.replace("VLAN ID ", "").lstrip("0")
+            if n.startswith("VLAN interface"):
+                n = "VLAN " + n.replace("VLAN interface ID ", "").lstrip("0")
+            if n.startswith("Console"):
+                continue
+            if n.startswith("Loopback"):
+                continue
+            r += [
+                {
+                    "snmp_ifindex": i,
+                    "interface": n,
+                    "status": int(s) == 1,
+                    "description": d,
+                    "mac": MACAddressParameter().clean(m),
+                }
+            ]
+        return r
+
+    def execute_cli(self, interface=None):
+        r = []
+        if self.is_platform_4626:
             try:
                 cmd = "show interface status | include line protocol is|alias|address is"
                 buf = self.cli(cmd).replace("\n ", " ")
             except Exception:
                 cmd = "show interface status"
-                buf = self.cli(cmd).replace("\n ", " ")
+                buf = self.cli(cmd, cached=True).replace("\n ", " ")
             for l in buf.splitlines():
                 match = self.rx_interface_status.match(l)
                 if match:
@@ -122,7 +118,7 @@ class Script(BaseScript):
                         r[-1]["description"] = mdescr.group("descr")
         else:
             cmd = "show interface status"
-            buf = self.cli(cmd).lstrip("\n\n")
+            buf = self.cli(cmd, cached=True).lstrip("\n\n")
             for l in buf.split("\n\n"):
                 match = self.rx_interface_status_3526.search(l + "\n")
                 if match:
