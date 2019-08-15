@@ -6,7 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
 # Python modules
 from __future__ import absolute_import
 
@@ -59,8 +58,17 @@ class MODashboard(BaseDashboard):
                 return metrics
             return None
 
+        def check_metrics(metric):
+            """
+            Object check metrics
+            """
+            if metric.name.startswith("Check"):
+                return True
+            return False
+
         port_types = []
         object_metrics = []
+        object_check_metrics = []
         lags = []
         subif = []
         radio_types = []
@@ -132,17 +140,24 @@ class MODashboard(BaseDashboard):
 
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
+
         om = []
+        ocm = []
         for m in self.object.object_profile.metrics or []:
             mt = MetricType.get_by_id(m["metric_type"])
             if not mt or not (m.get("enable_periodic", False) or m.get("enable_box", False)):
                 continue
+            if check_metrics(mt):
+                ocm += [{"name": mt.name, "metric": mt.field_name}]
+                continue
             om += [mt.name]
         object_metrics.extend(sorted(om))
+        object_check_metrics.extend(sorted(ocm))
 
         return {
             "port_types": port_types,
             "object_metrics": object_metrics,
+            "object_check_metrics": object_check_metrics,
             "lags": lags,
             "subifaces": subif,
             "radio_types": radio_types,
@@ -153,6 +168,7 @@ class MODashboard(BaseDashboard):
         context = {
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],
+            "object_check_metrics": self.object_data["object_check_metrics"],
             "lags": self.object_data["lags"],
             "device": self.object.name.replace('"', ""),
             "ip": self.object.address,
