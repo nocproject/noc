@@ -74,7 +74,7 @@ class Profile(BaseProfile):
         "is_kernel_3": {"version": {"$gte": "3.0", "$lt": "5.0"}},
         "is_kernelgte_5": {"version": {"$gte": "5.0"}},
         "is_bad_platform": {
-            "version": {"$in": ["5.20"]},
+            "version": {"$regex": r"5.20.+"},
             "platform": {"$in": ["S5628F", "S5628F-HI"]},
         },
         "is_ne_platform": {"platform": {"$regex": "^NE"}},
