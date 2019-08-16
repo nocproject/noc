@@ -134,7 +134,7 @@ interface Fa 0/2
   description 2
 #
 #
-router ospf    
+router ospf
 """
 
 TOKENS4 = [
