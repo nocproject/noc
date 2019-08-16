@@ -66,7 +66,7 @@ NOC 19.3 introduces 4 new profiles:
 
 * :ref:`Beward.BD<profile-Beward.BD>`
 * :ref:`Cisco.IOS<profile-Cisco.IOS>`
-* :ref:`Dahua.DH<profile-profile-Dahua.DH>`
+* :ref:`Dahua.DH<profile-Dahua.DH>`
 * :ref:`Hikvision.DSKV8<profile-Hikvision.DSKV8>`
 
 Uplink Policy
