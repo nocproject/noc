@@ -21,7 +21,6 @@ from noc.lib.text import split_alnum
 
 class Command(BaseCommand):
     help = "Show Links"
-    def_iface_prof = InterfaceProfile.get_by_name("default")
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -33,6 +32,12 @@ class Command(BaseCommand):
         reset_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
         # load command
         apply_parser = subparsers.add_parser("apply", help="Apply classification rules")
+        apply_parser.add_argument(
+            "--reset-default",
+            action="store_true",
+            default=False,
+            help="Set not matched profile to default",
+        )
         apply_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
 
     def handle(self, cmd, *args, **options):
@@ -93,12 +98,13 @@ class Command(BaseCommand):
             for i in Interface.objects.filter(managed_object=o.id):
                 if i.profile:
                     self.stdout.write("    resetting profile on %s to default\n" % i.name)
-                    i.profile = self.def_iface_prof
+                    i.profile = InterfaceProfile.get_default_profile()
                     i.save()
 
     def handle_apply(self, moo, *args, **kwargs):
         # sol = config.get("interface_discovery", "get_interface_profile")
         # @todo Classification pyrule
+        default_profile = InterfaceProfile.get_default_profile()
         get_profile = None
         if not get_profile:
             get_profile = InterfaceClassificationRule
@@ -127,6 +133,10 @@ class Command(BaseCommand):
                         v = "Set %s" % p.name
                     else:
                         v = "Not matched"
+                        if kwargs.get("reset_default") and i.profile != default_profile:
+                            i.profile = default_profile
+                            i.save()
+                            v = "Not matched. Reset to default"
                     self.show_interface(tps, i, v)
 
 
