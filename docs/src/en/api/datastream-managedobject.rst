@@ -67,9 +67,9 @@ Fields
 +------------------------+------------------+------------------------------------------------------------------------+
 | service_groups         | Array of Object  | Service :ref:`Resource Groups<reference-resource-group>`               |
 +------------------------+------------------+------------------------------------------------------------------------+
-| * id                   | String           | :ref:`Resource Group's<reference-resourcegroup>` id                    |
+| * id                   | String           | :ref:`Resource Group's<reference-resource-group>` id                   |
 +------------------------+------------------+------------------------------------------------------------------------+
-| * name                 | String           | :ref:`Resource Group's<reference-resourcegroup>` id                    |
+| * name                 | String           | :ref:`Resource Group's<reference-resource-group>` id                   |
 +------------------------+------------------+------------------------------------------------------------------------+
 | * technology           | String           | :ref:`Technology's<reference-technology>` name                         |
 +------------------------+------------------+------------------------------------------------------------------------+
@@ -77,9 +77,9 @@ Fields
 +------------------------+------------------+------------------------------------------------------------------------+
 | client_groups          | Array of Object  | Client :ref:`Resource Groups<reference-resource-group>`                |
 +------------------------+------------------+------------------------------------------------------------------------+
-| * id                   | String           | :ref:`Resource Group's<reference-resourcegroup>` id                    |
+| * id                   | String           | :ref:`Resource Group's<reference-resource-group>` id                   |
 +------------------------+------------------+------------------------------------------------------------------------+
-| * name                 | String           | :ref:`Resource Group's<reference-resourcegroup>` id                    |
+| * name                 | String           | :ref:`Resource Group's<reference-resource-group>` id                   |
 +------------------------+------------------+------------------------------------------------------------------------+
 | * technology           | String           | :ref:`Technology's<reference-technology>` name                         |
 +------------------------+------------------+------------------------------------------------------------------------+
