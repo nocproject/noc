@@ -52,14 +52,15 @@ class IndentTokenizer(LineTokenizer):
             c_depth = len(tokens[0]) if tokens[0].startswith(" ") else 0
             if c_depth:
                 tokens = tokens[1:]
-            if c_depth > depts[-1] and last:
+            if depts and c_depth > depts[-1] and last:
                 # Push context
                 depts += [c_depth]
                 contexts += [last]
             elif tokens == eoc:
-                # Pop context
-                depts.pop(-1)
-                contexts.pop(-1)
+                if len(depts) > 1:
+                    # Pop context
+                    depts.pop(-1)
+                    contexts.pop(-1)
                 continue
             # Apply current context
             tokens = contexts[-1] + tokens
