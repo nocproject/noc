@@ -32,6 +32,7 @@ It is good time to begin legacy validation policy migrations.
 ConfDB Syntax Expansion
 ^^^^^^^^^^^^^^^^^^^^^^^
 ConfDB got additional syntax for:
+
 * NTP support
 * Video, Audio settings and media streaming
 
@@ -63,10 +64,10 @@ ConfDB Normalizers
 ^^^^^^^^^^^^^^^^^^
 NOC 19.3 introduces 4 new profiles:
 
-* `Beward.BD<profile-Beward.BD>`
-* `Cisco.IOS<profile-Cisco.IOS>`
-* `Dahua.DH<profile-profile-Dahua.DH>`
-* `Hikvision.DSKV8<profile-Hikvision.DSKV8>`
+* :ref:`Beward.BD<profile-Beward.BD>`
+* :ref:`Cisco.IOS<profile-Cisco.IOS>`
+* :ref:`Dahua.DH<profile-profile-Dahua.DH>`
+* :ref:`Hikvision.DSKV8<profile-Hikvision.DSKV8>`
 
 Uplink Policy
 ^^^^^^^^^^^^^
@@ -134,18 +135,19 @@ upgrading to each next Django\'s major release is the real pain.
 Django 1.4 fits our needs well but is not maintained and is incompatible
 with Python 3. So it is the time to to collect the pains.
 
-We'd migrated from 1.4 to `1.5<https://docs.djangoproject.com/en/2.2/releases/1.5/>`_,
-then from 1.5 to `1.6<https://docs.djangoproject.com/en/2.2/releases/1.6/>`_,
-then followed by upgrades to `1.7<https://docs.djangoproject.com/en/2.2/releases/1.7/>`_,
-`1.8<https://docs.djangoproject.com/en/2.2/releases/1.8/>`_,
-`1.9<https://docs.djangoproject.com/en/2.2/releases/1.9/>`_,
-`1.10<https://docs.djangoproject.com/en/2.2/releases/1.10/>`_
-and stopped at `1.11<https://docs.djangoproject.com/en/2.2/releases/1.11/>`_.
+We'd migrated from 1.4 to `1.5 <https://docs.djangoproject.com/en/2.2/releases/1.5/>`_,
+then from 1.5 to `1.6 <https://docs.djangoproject.com/en/2.2/releases/1.6/>`_,
+then followed by upgrades to `1.7 <https://docs.djangoproject.com/en/2.2/releases/1.7/>`_,
+`1.8 <https://docs.djangoproject.com/en/2.2/releases/1.8/>`_,
+`1.9 <https://docs.djangoproject.com/en/2.2/releases/1.9/>`_,
+`1.10 <https://docs.djangoproject.com/en/2.2/releases/1.10/>`_
+and stopped at `1.11 <https://docs.djangoproject.com/en/2.2/releases/1.11/>`_.
 During our stroll we'd became very disappointed by Django\'s API stability
 and the high maintenance costs for the complex applications and applied
 some countermeasures.
 
 NOC 19.3 brings following changes:
+
 * Django 1.11.22
 * Django\'s auth contrib package has been replaced with :ref:`AAA module<release-19.3-aaa>`.
 * `South` migrations has been replaced with our own :ref:`Migration Engine<release-19.3-migrations>`.
@@ -193,7 +195,7 @@ add black formatting to git's pre-commit hook or to the IDE's on-save
 hook.
 
 We'd already reformatted all ours codebase and NOC is now fully
-`PEP8<https://www.python.org/dev/peps/pep-0008/>`_-compatible.
+`PEP8 <https://www.python.org/dev/peps/pep-0008/>`_-compatible.
 Docker container is also available. Use::
 
     docker run --rm \
@@ -215,7 +217,7 @@ in one of future releases.
 
 MR Labels
 ^^^^^^^^^
-We're developed :ref:`the policy<dev-mr-labels>` to Merge Request's (MR) labels.
+We're developed :ref:`the policy<dev-mr-labels>` for Merge Request's (MR) labels.
 CI pipeline checks the labels and fails at the `lint` stage in case of errors.
 Label policy helps to organize testing and code reviewing process
 and quickly explains the goals of MR and subsystems affected.
