@@ -76,10 +76,10 @@ class Version(object):
                 ["git", "describe", "--tags", "--abbrev=%d" % CHANGESET_LEN]
             )
             if "-" not in v:
-                return v
+                return v.strip()
             r = v.rsplit("-", 2)
             if len(r) < 3:
-                return v
+                return v.strip()
             v, n, cs = r
             return "%s+%s.%s.%s" % (v, self.branch, n, cs[1 : CHANGESET_LEN + 1])
         else:
