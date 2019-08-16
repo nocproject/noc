@@ -1,8 +1,8 @@
 .. _reference-resource-group:
 
-==========
-Technology
-==========
+==============
+Resource Group
+==============
 
 .. contents:: On this page
     :local:
