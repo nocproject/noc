@@ -123,6 +123,29 @@ TOKENS3 = [
     ("ntp-service", "server", "disable"),
 ]
 
+CFG4 = """! Test config
+#
+  http server
+#
+interface Fa 0/1
+  description 1
+#
+interface Fa 0/2
+  description 2
+#
+#
+router ospf
+"""
+
+TOKENS4 = [
+    ("http", "server"),
+    ("interface", "Fa", "0/1"),
+    ("interface", "Fa", "0/1", "description", "1"),
+    ("interface", "Fa", "0/2"),
+    ("interface", "Fa", "0/2", "description", "2"),
+    ("router", "ospf"),
+]
+
 
 @pytest.mark.parametrize(
     "input,config,expected",
@@ -130,6 +153,7 @@ TOKENS3 = [
         (CFG1, {"line_comment": "#"}, TOKENS1),
         (CFG2, {"line_comment": "#", "end_of_context": "end"}, TOKENS2),
         (CFG3, {"line_comment": "#"}, TOKENS3),
+        (CFG4, {"line_comment": "!", "end_of_context": "#"}, TOKENS4),
     ],
 )
 def test_tokenizer(input, config, expected):
