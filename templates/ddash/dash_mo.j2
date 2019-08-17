@@ -1,4 +1,3 @@
-{% set comma = joiner(",") -%}
 {
   "id": "dca571a2-2018-432e-b6a5-101670b395ca",
   "title": "{{device}}",
@@ -20,6 +19,7 @@
   "templating": {
     "list": [
       {%if port_types %}
+        {% set comma = joiner(",") -%}
         {% for port_type in port_types -%}
           {% from 'template_port.j2' import ports -%}
           {{ comma() }}{{ ports(port_type) }}
@@ -27,10 +27,11 @@
       {% endif %}
 
       {% if radio_types %}
+        {% set comma = joiner(",") -%}
         {% for port_type in radio_types -%}
           {% from 'template_radio.j2' import radio -%}
-          {{ radio(port_type) }}{{ comma() }}
-        {% endfor -%}
+          {{ comma() }}{{ radio(port_type) }}
+        {% endfor -%},
       {% endif %}
 
       {% if subifaces %}
@@ -196,7 +197,7 @@
               "editable": false,
               "height": "250px",
               "showTitle": true,
-              "title": "{{radio.name}}",
+              "title": "Radio: {{radio.name}}",
               "internal_comment": "radio_row",
               "panels": [
                 {%if "tx_power" in radio.ports[0].metrics or "rx_power" in radio.ports[0].metrics %}
