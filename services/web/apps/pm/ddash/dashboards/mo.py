@@ -112,7 +112,6 @@ class MODashboard(BaseDashboard):
                             "metrics": interface_radio_metrics(profile),
                         }
                     ]
-                    continue
                 if iface.type == "physical":
                     ports += [
                         {
