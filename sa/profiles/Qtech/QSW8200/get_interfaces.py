@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -19,27 +20,26 @@ class Script(BaseScript):
     @todo: IGMP
     @todo: IPv6
     """
+
     name = "Qtech.QSW8200.get_interfaces"
     interface = IGetInterfaces
 
     rx_interface = re.compile(
         r"^\s+(?P<ifname>\S+) is (?P<oper_status>UP|DOWN), "
         r"administrative status is (?P<admin_status>UP|DOWN)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_descr = re.compile(r"^\s+Description is (?P<descr>.+),", re.MULTILINE)
     rx_hw_mac = re.compile(
-        r"^\s+Hardware is (?P<iftype>\S+), MAC address is (?P<mac>\S+)",
-        re.MULTILINE)
-    rx_ipv4 = re.compile(
-        r"^\s+Internet Address is (?P<ipv4>\S+)", re.MULTILINE)
-    rx_ipv6 = re.compile(
-        r"^\s+Internet v6 Address is (?P<ipv6>\S+)", re.MULTILINE)
+        r"^\s+Hardware is (?P<iftype>\S+), MAC address is (?P<mac>\S+)", re.MULTILINE
+    )
+    rx_ipv4 = re.compile(r"^\s+Internet Address is (?P<ipv4>\S+)", re.MULTILINE)
+    rx_ipv6 = re.compile(r"^\s+Internet v6 Address is (?P<ipv6>\S+)", re.MULTILINE)
     # rx_jumbo = re.compile("^\s+JUMBOFRAME (?P<mtu>\d+) bytes")
-    rx_mtu = re.compile("^\s+MTU (?P<mtu>\d+) bytes", re.MULTILINE)
-    rx_vlan_id = re.compile("^vlan(?P<vlan_id>\d+)", re.MULTILINE)
+    rx_mtu = re.compile(r"^\s+MTU (?P<mtu>\d+) bytes", re.MULTILINE)
+    rx_vlan_id = re.compile(r"^vlan(?P<vlan_id>\d+)", re.MULTILINE)
     rx_ifname = re.compile(
-        "^(?P<ifname>tengigabitethernet|gigaethernet)(?P<ifnum>\d+/\d+/\d+)",
-        re.MULTILINE
+        r"^(?P<ifname>tengigabitethernet|gigaethernet)(?P<ifnum>\d+/\d+/\d+)", re.MULTILINE
     )
     rx_switch = re.compile(
         r"^Interface:.*\n"
@@ -50,13 +50,13 @@ class Script(BaseScript):
         r"^Access Mode VLAN: (?P<a_vlan>\d+)\s*\n"
         r"^Administrative Access Egress VLANs:.*\n"
         r"^Operational Access Egress VLANs:.*\n"
-        r"^Trunk Native Mode VLAN:(?P<t_vlan>.*)\n"
-        r"^Trunk Native VLAN:.*\n"
+        r"^Trunk (Native Mode|Mode Native) VLAN:(?P<t_vlan>.*)\n"
+        r"^Trunk Native VLAN( Status|):.*\n"
         r"^Administrative Trunk Allowed VLANs:.*\n"
         r"^Operational Trunk Allowed VLANs:(?P<t_vlans>.*)\n"
         r"^Administrative Trunk Untagged VLANs:(?P<t_uvlan>.*)\n"
         r"^Operational Trunk Untagged VLANs:.*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     IFTYPES = {
@@ -65,7 +65,7 @@ class Script(BaseScript):
         "tengigabitethernet": "physical",
         "trunk": "aggregated",
         "vlan-interface": "SVI",
-        "unknown": "unknown"
+        "unknown": "unknown",
     }
 
     def execute(self):
@@ -78,13 +78,13 @@ class Script(BaseScript):
             iface = {
                 "name": ifname,
                 "admin_status": match.group("admin_status") == "UP",
-                "oper_status": match.group("oper_status") == "UP"
+                "oper_status": match.group("oper_status") == "UP",
             }
             sub = {
                 "name": ifname,
                 "admin_status": match.group("admin_status") == "UP",
                 "oper_status": match.group("oper_status") == "UP",
-                "enabled_afi": []
+                "enabled_afi": [],
             }
             match = self.rx_hw_mac.search(l)
             if ifname.startswith("loopback"):
@@ -128,14 +128,13 @@ class Script(BaseScript):
             match = self.rx_ifname.search(i["name"])
             if match:
                 c = self.cli(
-                    "show switchport interface %s %s" %
-                    (match.group("ifname"), match.group("ifnum"))
+                    "show switchport interface %s %s"
+                    % (match.group("ifname"), match.group("ifnum"))
                 )
                 match = self.rx_switch.search(c)
                 mode = match.group("oper_mode")
                 if mode == "access":
-                    i["subinterfaces"][0]["untagged_vlan"] = \
-                        match.group("a_vlan")
+                    i["subinterfaces"][0]["untagged_vlan"] = match.group("a_vlan")
                 if mode == "trunk":
                     if match.group("t_uvlan").strip():
                         untagged = int(match.group("t_uvlan").strip())
@@ -143,9 +142,7 @@ class Script(BaseScript):
                     else:
                         untagged = 0
                     if match.group("t_vlans").strip():
-                        tagged = self.expand_rangelist(
-                            match.group("t_vlans").strip()
-                        )
+                        tagged = self.expand_rangelist(match.group("t_vlans").strip())
                         if untagged and (untagged in tagged):
                             tagged.remove(untagged)
                         i["subinterfaces"][0]["tagged_vlans"] = tagged
