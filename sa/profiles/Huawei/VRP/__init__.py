@@ -80,7 +80,7 @@ class Profile(BaseProfile):
         },
         "is_bad_platform": {
             "version": {
-                "$in": ["5.20"]
+                "version": {"$regex": r"5.20.+"},
             },
             "platform": {
                 "$in": ["S5628F", "S5628F-HI"]
