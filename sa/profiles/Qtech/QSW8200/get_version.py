@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -23,13 +24,12 @@ class Script(BaseScript):
         r"(Product Version:.*\n)?"
         r"Hardware Version:(?P<hardware>.*)\n"
         r"Software Version: (?P<version>\S+)\(.+\)\s*\n"
-        r"Q?OS Version:.*\n"
-        r"REAP Version:.*\n"
+        r"Q?OS Version:.*(\nREAP Version:)?.*\n"
         r"Bootrom Version:(?P<bootprom>.*)\n"
         r"\s*\n"
         r"System MAC Address:.*\n"
         r"Serial number:(?P<serial>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -40,12 +40,7 @@ class Script(BaseScript):
         bootprom = match.group("bootprom")
         hardware = match.group("hardware")
         serial = match.group("serial")
-        r = {
-            "vendor": "Qtech",
-            "platform": platform,
-            "version": version,
-            "attributes": {}
-        }
+        r = {"vendor": "Qtech", "platform": platform, "version": version, "attributes": {}}
         if serial and serial.strip():
             r["attributes"]["Serial Number"] = serial.strip()
         if bootprom and bootprom.strip():
