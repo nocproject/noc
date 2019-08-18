@@ -281,6 +281,15 @@ class StatusIsolator(IsolatorClass):
             )
             # return self.f_attribute("13020", value)
 
+    def _6_is(self, index):
+        # Status - Discovery
+        if index == "1":
+            # Is discovery = Is managed and enable box
+            return d_Q(**{"is_managed": True}) & d_Q(object_profile__enable_box_discovery=True)
+        elif index == "2":
+            # Not discovery = Is managed and disable box
+            return d_Q(**{"is_managed": True}) & d_Q(object_profile__enable_box_discovery=False)
+
     def f_is(self, num, value):
         """
 
