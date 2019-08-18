@@ -37,6 +37,8 @@ class Profile(BaseProfile):
         r = {}
         v = self.get_list(script, command, eof_mark)
         for line in v.splitlines():
+            if line.startswith("#"):
+                continue
             key, value = line.split("=", 1)
             if value.startswith('"') and value.endswith('"'):
                 value = value[1:-1]
