@@ -17,7 +17,9 @@ class Script(BaseScript):
 
     def execute_cli(self, policy="r"):
         assert policy in ("r", "s")
-        if policy == "s":
+        if self.is_escom_l and policy == "s":
+            config = self.cli("more startup-config")
+        elif policy == "s":
             config = self.cli("show startup-config")
         else:
             config = self.cli("show running-config")
