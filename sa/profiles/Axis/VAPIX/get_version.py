@@ -28,11 +28,10 @@ class Script(BaseScript):
         """
         platform = c.get("root.Brand.ProdNbr")  # I don't sure
         version = c.get("root.Properties.Firmware.Version")
-        serial = c.get("root.Properties.System.SerialNumber")
 
-        r = {"vendor": "Axis", "platform": platform, "version": version}
-        if serial:
-            r["attributes"] = {}
-            r["attributes"]["Serial Number"] = serial
-
+        r = {"vendor": "Axis", "platform": platform, "version": version, "attributes": {}}
+        if "root.Properties.System.SerialNumber" in c:
+            r["attributes"]["Serial Number"] = c["root.Properties.System.SerialNumber"]
+        if "root.Properties.Firmware.BuildDate" in c:
+            r["attributes"]["Build Date"] = c["root.Properties.Firmware.BuildDate"]
         return r

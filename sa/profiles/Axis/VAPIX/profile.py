@@ -7,11 +7,23 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Axis.VAPIX"
+
+    config_tokenizer = "line"
+    config_tokenizer_settings = {"line_comment": "#", "rewrite": [(re.compile(r"[\.=\[\]]"), " ")]}
+    config_normalizer = "VAPIXNormalizer"
+    confdb_defaults = [
+        ("hints", "protocols", "ntp", "mode", "client"),
+        ("hints", "protocols", "ntp", "version", "3"),
+    ]
 
     def get_list(self, script, command=None, eof_mark=None):
         if command is None:
