@@ -151,25 +151,93 @@ class MESNormalizer(BaseNormalizer):
     def normalize_default_gateway(self, tokens):
         yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[2])
 
-    @match("interface", ANY, "selective-qinq", "list", "ingress", REST)
-    def normalize_ingress_mappings(self, tokens):
+    # selective-qinq list ingress add_vlan 1000
+    @match("interface", ANY, "selective-qinq", "list", "ingress", "add_vlan", ANY)
+    def normalize_add_vlan(self, tokens):
         if_name = self.interface_name(tokens[1])
-        if tokens[5] == "permit":
-            # vlan mappings
-            yield self.make_es_rewrite(
-                interface=if_name,
-                unit=if_name,
-                # stack="1",
-                # inner_vlans=tokens[7],
-                op="swap",
+        yield self.make_input_vlan_map_rewrite_vlan(
+            interface=if_name,
+            unit=if_name,
+            num="1",
+            # stack="1",
+            # inner_vlans=tokens[8],
+            op="push",
+            vlan=tokens[6],
+        )
+
+    # selective-qinq list ingress permit ingress_vlan 100,101,102,103
+    @match("interface", ANY, "selective-qinq", "list", "egress", "permit", "ingress_vlan", ANY)
+    @match("interface", ANY, "selective-qinq", "list", "ingress", "permit", "ingress_vlan", ANY)
+    def normalize_ingress_vlan(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        if tokens[4] == "ingress":
+            yield self.make_input_vlan_map_inner_vlans(
+                interface=if_name, unit=if_name, num="1", vlan_filter=tokens[7]
             )
-        elif tokens[5] == "add_vlan":
-            # vlan mappings
-            yield self.make_es_rewrite_vlan(
-                interface=if_name,
-                unit=if_name,
-                # stack="1",
-                # inner_vlans=tokens[8],
-                op="push",
-                vlan=tokens[6],
+        else:
+            yield self.make_output_vlan_map_outer_vlans(
+                interface=if_name, unit=if_name, num="1", vlan_filter=tokens[7]
+            )
+
+    @match(
+        "interface",
+        ANY,
+        "selective-qinq",
+        "list",
+        "egress",
+        "override_vlan",
+        ANY,
+        "ingress_vlan",
+        ANY,
+    )
+    @match(
+        "interface",
+        ANY,
+        "selective-qinq",
+        "list",
+        "ingress",
+        "override_vlan",
+        ANY,
+        "ingress_vlan",
+        ANY,
+    )
+    def normalize_ingress_override_vlan(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        if tokens[4] == "ingress":
+            yield self.make_input_vlan_map_inner_vlans(
+                interface=if_name, unit=if_name, num="1", vlan_filter=tokens[8]
+            )
+            yield self.make_input_vlan_map_rewrite_vlan(
+                interface=if_name, unit=if_name, num="1", op="swap", vlan=tokens[6]
+            )
+        else:
+            yield self.make_output_vlan_map_outer_vlans(
+                interface=if_name, unit=if_name, num="1", vlan_filter=tokens[8]
+            )
+            yield self.make_output_vlan_map_rewrite_vlan(
+                interface=if_name, unit=if_name, num="1", op="swap", vlan=tokens[6]
+            )
+
+    # selective-qinq list ingress add_vlan 1000 ingress_vlan 100,200
+    @match(
+        "interface", ANY, "selective-qinq", "list", "egress", "add_vlan", ANY, "ingress_vlan", ANY
+    )
+    @match(
+        "interface", ANY, "selective-qinq", "list", "ingress", "add_vlan", ANY, "ingress_vlan", ANY
+    )
+    def normalize_ingress_add_vlan(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        if tokens[4] == "ingress":
+            yield self.make_input_vlan_map_inner_vlans(
+                interface=if_name, unit=if_name, num="1", vlan_filter=tokens[8]
+            )
+            yield self.make_input_vlan_map_rewrite_vlan(
+                interface=if_name, unit=if_name, num="1", op="push", vlan=tokens[6]
+            )
+        else:
+            yield self.make_output_vlan_map_outer_vlans(
+                interface=if_name, unit=if_name, num="1", vlan_filter=tokens[8]
+            )
+            yield self.make_output_vlan_map_rewrite_vlan(
+                interface=if_name, unit=if_name, num="1", op="push", vlan=tokens[6]
             )
