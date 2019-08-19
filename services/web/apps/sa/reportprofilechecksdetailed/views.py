@@ -90,8 +90,8 @@ class ReportFilterApplication(SimpleReport):
         columns, columns_desr = [], []
         r_map = [
             (_("Not Available"), "2is1.3isp1.3is1"),
-            (_("Failed to guess CLI credentials"), "2is1.3isp0.2isp1"),
-            (_("Failed to guess SNMP community"), "2is1.3isp1.3is2.1isp1"),
+            (_("Failed to guess CLI credentials"), "2is1.6is1.3isp0.2isp1"),
+            (_("Failed to guess SNMP community"), "2is1.6is1.3isp1.3is2.1isp1"),
         ]
         for x, y in r_map:
             columns += [y]
