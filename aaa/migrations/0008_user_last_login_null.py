@@ -14,9 +14,9 @@ class Migration(BaseMigration):
     def migrate(self):
         is_nullable = self.db.execute(
             """
-            SELECT is_nullable = 'YES' 
-            FROM information_schema.columns 
-            WHERE 
+            SELECT is_nullable = 'YES'
+            FROM information_schema.columns
+            WHERE
               table_name = 'auth_user'
               AND column_name = 'last_login'
             """
