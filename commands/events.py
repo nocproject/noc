@@ -31,7 +31,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.lib.validators import is_oid
-from noc.lib.escape import json_escape
+from noc.core.escape import json_escape
 
 
 DEFAULT_CLEAN = datetime.timedelta(weeks=4)

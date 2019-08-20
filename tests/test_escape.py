@@ -10,7 +10,7 @@
 import pytest
 
 # NOC modules
-from noc.lib.escape import fm_escape, fm_unescape
+from noc.core.escape import fm_escape, fm_unescape
 
 
 @pytest.mark.parametrize("value,expected", [("ab\xffcd", "ab=FFcd")])

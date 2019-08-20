@@ -19,7 +19,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.lib.datasource import datasource_registry
 from noc.services.classifier.exception import InvalidPatternException
-from noc.lib.escape import fm_unescape
+from noc.core.escape import fm_unescape
 
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
