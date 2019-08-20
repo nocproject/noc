@@ -1,5 +1,5 @@
 #jinja2: lstrip_blocks: True
-{% if nbi_whitelist_access and nbi_whitelist_access is defined %}
+{% if nbi_whitelist_access is defined and nbi_whitelist_access %}
 {% set ipadr = nbi_whitelist_access.split(',') %}
 {% for ip in ipadr %}
 allow {{ ip }};
