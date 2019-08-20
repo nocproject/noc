@@ -13,7 +13,7 @@ import datetime
 import pytest
 
 # NOC modules
-from noc.lib.dateutils import hits_in_range
+from noc.core.dateutils import hits_in_range
 
 
 def test_hits_in_range():
