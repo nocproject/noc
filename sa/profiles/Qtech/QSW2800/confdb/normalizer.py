@@ -124,3 +124,11 @@ class Qtech2800Normalizer(BaseNormalizer):
     @match("ip", "default-gateway", ANY)
     def normalize_default_gateway(self, tokens):
         yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[2])
+
+    @match("ntp", "enable")
+    def normalize_timesource(self, tokens):
+        yield self.make_clock_source(source="ntp")
+
+    @match("ntp", "server", ANY)
+    def normalize_ntp_server(self, tokens):
+        yield self.make_ntp_server_address(name="0", address=tokens[2])
