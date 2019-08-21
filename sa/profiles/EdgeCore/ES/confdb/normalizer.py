@@ -149,3 +149,11 @@ class ESNormalizer(BaseNormalizer):
     def normalize_no_loopback_detection(self, tokens):
         self.set_context("loop_detect_disabled", True)
         yield self.make_global_loop_detect_status(status=False)
+
+    @match("ntp", "client")
+    def normalize_timesource(self, tokens):
+        yield self.make_clock_source(source="ntp")
+
+    @match("ntp", "server", ANY)
+    def normalize_ntp_server(self, tokens):
+        yield self.make_ntp_server_address(name="0", address=tokens[2])
