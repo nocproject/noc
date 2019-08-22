@@ -168,13 +168,16 @@ class Script(BaseScript):
         except HTTPError:
             pass
         v = self.http.get("/ISAPI/Security/users", json=False, cached=True, use_basic=True)
-        root = ElementTree.fromstring(v)
-        v = self.xml_2_dict(root)
-        c += "Users\n"
-        for u in v["UserList"]["User"]:
-            c += " user %s\n" % u["userName"][0]["_text"]
-            for key, value in sorted(six.iteritems(u)):
-                if key == "_text" or isinstance(value, six.string_types):
-                    continue
-                c += "    %s %s\n" % (key, value[0]["_text"])
+        try:
+            root = ElementTree.fromstring(v)
+            v = self.xml_2_dict(root)
+            c += "Users\n"
+            for u in v["UserList"]["User"]:
+                c += " user %s\n" % u["userName"][0]["_text"]
+                for key, value in sorted(six.iteritems(u)):
+                    if key == "_text" or isinstance(value, six.string_types):
+                        continue
+                    c += "    %s %s\n" % (key, value[0]["_text"])
+        except ElementTree.ParseError:
+            pass
         return c
