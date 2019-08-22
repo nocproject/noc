@@ -30,6 +30,16 @@ class Script(BaseScript):
         r"^\s*(?P<interface>\S+) is (?P<admin_status>\S*\s*\S+), "
         r"line protocol is (?P<oper_status>\S+)"
     )
+    rx_switchport = re.compile(
+        r"(?P<interface>\S+\d+(/\d+)?)\n"
+        r"Type :(?P<type>Universal|"
+        r"Aggregation(?: member)?)\n"
+        r"(?:Mac addr num: No limit\n)?"
+        r"Mode :\S+\s*\nPort VID :(?P<pvid>\d+)\n"
+        r"((?:Hybrid tag|Trunk) allowed Vlan:"
+        r"\s+(?P<tags>\S+))?",
+        re.MULTILINE,
+    )
     rx_description = re.compile(r"alias name is (?P<description>[A-Za-z0-9\-_/\.\s\(\)]*)")
     rx_ifindex = re.compile(r"index is (?P<ifindex>\d+)$")
     rx_ipv4 = re.compile(r"^\s+(?P<ip>[\d+\.]+)\s+(?P<mask>[\d+\.]+)\s+")
@@ -37,6 +47,9 @@ class Script(BaseScript):
     rx_mtu = re.compile(r"^\s+MTU(?: is)? (?P<mtu>\d+) bytes")
     rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
     rx_vid = re.compile(r"(?P<vid>\d+)")
+    rx_interface_lag = re.compile(
+        r"^\s+(?P<interface>\S+) is LAG member port, " r"LAG port:(?P<pc>\S+)", re.MULTILINE
+    )
     MAX_REPETITIONS = 10
     MAX_GETNEXT_RETIRES = 1
 
@@ -48,25 +61,48 @@ class Script(BaseScript):
                 r = l.split(":")[1].split()
         return r
 
+    def get_interface_oam(self, ifname):
+        try:
+            v = self.cli("show ethernet-oam local interface %s" % ifname)
+            match = self.rx_oam.search(v)
+            if not match:
+                return True
+        except self.CLISyntaxError:
+            pass
+
+    def get_port_vlans(self):
+        r = {}
+        # @todo 'show vlan' parser
+        # @todo add QinQ translation parser
+        v = self.cli("show switchport interface")
+        for match in self.rx_switchport.finditer(v):
+            ifname = match.group("interface")
+            pvid = int(match.group("pvid"))
+            # initial data
+            r[ifname] = {
+                "interface": ifname,
+                "tagged": [],
+                "untagged": pvid,
+                "802.1ad Tunnel": False,
+            }
+            if match.group("tags"):
+                ma_group = match.group("tags").replace(";", ",")
+                if "showOneSwitchPort" in ma_group:
+                    continue
+                for tag in self.expand_rangelist(ma_group):
+                    if tag != pvid:
+                        r[ifname]["tagged"] += [tag]
+        return r
+
     def execute_cli(self):
         # get switchports
-        swports = {}
-        for sp in self.scripts.get_switchport():
-            swports[sp["interface"]] = (sp["untagged"] if "untagged" in sp else None, sp["tagged"])
-
-        # get portchannels
-        pc_members = {}
-        for pc in self.scripts.get_portchannel():
-            i = pc["interface"]
-            t = pc["type"] == "L"
-            for m in pc["members"]:
-                pc_members[m] = (i, t)
+        swports = self.get_port_vlans()
 
         # Get LLDP port
         lldp = self.get_lldp()
         # process all interfaces and form result
         r = []
-        cmd = self.cli("show interface")
+        cmd = self.cli("show interface", cached=True)
         for l in cmd.splitlines():
             # find interface name
             match = self.rx_interface.match(l)
@@ -80,35 +116,14 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                     "subinterfaces": [],
                 }
-                # detect interface type
-                if ifname.startswith("Eth"):
-                    iface["type"] = "physical"
-                elif ifname.startswith("Po") or ifname.startswith("Vsf"):
-                    iface["type"] = "aggregated"
-                elif ifname.startswith("Vlan"):
-                    iface["type"] = "SVI"
-                elif ifname.startswith("l2over"):
-                    iface["type"] = "tunnel"
-                elif ifname.startswith("Loop"):
-                    iface["type"] = "loopback"
-                elif ifname.startswith("vpls_dev"):
-                    iface["type"] = "other"
+                iftype = self.profile.get_interface_type(ifname)
+                iface["type"] = iftype
                 # proccess LLDP
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
-                # process portchannels' members
-                if ifname in pc_members:
-                    iface["aggregated_interface"] = pc_members[ifname][0]
-                    if pc_members[ifname][1]:
-                        iface["enabled_protocols"] += ["LACP"]
                 if ifname.startswith("Ethernet"):
-                    try:
-                        v = self.cli("show ethernet-oam local interface %s" % ifname)
-                        match = self.rx_oam.search(v)
-                        if not match:
-                            iface["enabled_protocols"] += ["OAM"]
-                    except self.CLISyntaxError:
-                        pass
+                    if self.get_interface_oam(ifname):
+                        iface["enabled_protocols"] += ["OAM"]
                 # process subinterfaces
                 if "aggregated_interface" not in iface:
                     sub = {
@@ -119,7 +134,7 @@ class Script(BaseScript):
                     }
                     # process switchports
                     if ifname in swports:
-                        u, t = swports[ifname]
+                        u, t = swports[ifname]["untagged"], swports[ifname]["tagged"]
                         if u:
                             sub["untagged_vlan"] = u
                         if t:
@@ -127,6 +142,12 @@ class Script(BaseScript):
                         sub["enabled_afi"] += ["BRIDGE"]
                 else:
                     sub = {}
+            match = self.rx_interface_lag.search(l)
+            if match:
+                iface["aggregated_interface"] = self.profile.convert_interface_name(
+                    match.group("pc")
+                )
+                iface["enabled_protocols"] += ["LACP"]
             # get snmp ifindex
             match = self.rx_ifindex.search(l)
             if match:

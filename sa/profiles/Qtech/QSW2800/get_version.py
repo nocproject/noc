@@ -26,7 +26,8 @@ class Script(BaseScript):
         r"^\s*SoftWare(?: Package)? Version\s+(?P<version>\S+(?:\(\S+\))?)\n"
         r"^\s*BootRom Version\s+(?P<bootprom>\S+)\n"
         r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
-        r"^\s*(?:Device serial number |Serial No.:(?:|\s))(?P<serial>\S+)\n",
+        r"^\s*(?:Device serial number |Serial No.:(?:|\s+))(?P<serial>\S+|\S+pn sw)\n",
+        # pn sw on serial - QSW-3500-10T-AC, 8.2.1.52
         re.MULTILINE | re.DOTALL,
     )
 
@@ -36,6 +37,11 @@ class Script(BaseScript):
         r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
         r"^\s*(?:Device serial number |Serial No.:(?:|\s))(?P<serial>\S+)\n",
         re.MULTILINE | re.DOTALL,
+    )
+
+    rx_ver3 = re.compile(
+        r"(?P<platform>\S+),\s*(?P<platform_description>.+),"
+        r"\s*(?P<version>\S+),\s+Linux (?P<linux_version>\S+)"
     )
 
     rx_vendor = re.compile(r"^DeviceOid\s+\d+\s+(?P<oid>\S+)", re.MULTILINE)
@@ -51,7 +57,7 @@ class Script(BaseScript):
         "1.3.6.1.4.1.6339.1.1.2.59": "QSW-8200-28F-AC-DC",
         "1.3.6.1.4.1.13464.1.3.13": "QSW-2900-24T",
         "1.3.6.1.4.1.13464.1.3.26.7": "QSW-2910",
-        "1.3.6.1.4.1.27514": "QSW-8200–28F-AC-DC rev.Q1",
+        "1.3.6.1.4.1.27514": "QSW-8200–28F-AC-DC rev.Q1",  # Bad lifehack
         "1.3.6.1.4.1.27514.1.1.1.39": "QSW-2800-26T-AC",
         "1.3.6.1.4.1.27514.1.1.1.48": "QSW-2800-10T-AC",
         "1.3.6.1.4.1.27514.1.1.1.49": "QSW-2800-28T-AC",
@@ -63,6 +69,7 @@ class Script(BaseScript):
         "1.3.6.1.4.1.27514.1.1.1.235": "QSW-8200-28F-AC-DC",
         "1.3.6.1.4.1.27514.1.1.1.248": "QSW-3450-28T-POE-AC",
         "1.3.6.1.4.1.27514.1.1.1.282": "QSW-3470-10T-AC",
+        "1.3.6.1.4.1.6339.1.1.1.301": "QSW-3470-10T-AC-POE",
         "1.3.6.1.4.1.27514.1.1.1.310": "QSW-3580-28T-AC",
         "1.3.6.1.4.1.27514.1.1.1.337": "QSW-2850-28T-AC",
         "1.3.6.1.4.1.27514.1.1.1.354": "QSW-3470-28T-AC-POE",
@@ -96,62 +103,52 @@ class Script(BaseScript):
     def fix_platform(self, oid):
         if oid.startswith("."):
             oid = oid[1:]
+        # self.snmp.get(mib[".1.3.6.1.4.1.27514.1.1.1.1.1.1", 0], cached=True)
         platform = self.qtech_platforms.get(oid)
         if platform is None:
             self.logger.info("Unknown platform OID: %s" % oid)
             raise NotImplementedError("Unknown platform OID: %s" % oid)
         return platform
 
-    def execute_snmp(self, **kwargs):
+    def fix_hw_serial(self):
+        serial, hw_ver = None, None
         try:
-            ver = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
-            match = self.rx_ver.search(ver)
-            match2 = self.rx_ver2.search(ver)
-            if match:
-                platform = match.group("platform").strip(" ,")
-                version = match.group("version")
-                bootprom = match.group("bootprom")
-                hardware = match.group("hardware")
-                serial = match.group("serial")
-                if platform == "Switch":
-                    oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
-                    platform = self.fix_platform(oid)
+            # SNMPv2-MIB::sysDescr.0
+            serial = self.snmp.get(mib["1.3.6.1.4.1.27514.1.1.1.1.1.4.0"])
+            hw_ver = self.snmp.get(mib["1.3.6.1.4.1.27514.1.1.1.1.1.6.0"])
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
+            pass
+        return serial, hw_ver
 
-                return {
-                    "vendor": "Qtech",
-                    "platform": platform,
-                    "version": version,
-                    "attributes": {
-                        "Boot PROM": bootprom,
-                        "HW version": hardware,
-                        "Serial Number": serial,
-                    },
-                }
-            elif match2:
-                version = match2.group("version")
-                bootprom = match2.group("bootprom")
-                hardware = match2.group("hardware")
-                serial = match2.group("serial")
-                oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
-                platform = self.fix_platform(oid)
-                return {
-                    "vendor": "Qtech",
-                    "platform": platform,
-                    "version": version,
-                    "attributes": {
-                        "Boot PROM": bootprom,
-                        "HW version": hardware,
-                        "Serial Number": serial,
-                    },
-                }
-            else:
-                oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
-                platform = self.fix_platform(oid)
-                match = self.rx_version.search(ver)
-                version = match.group("version")
-                return {"vendor": "Qtech", "platform": platform, "version": version}
-        except self.snmp.TimeOutError:
-            raise self.NotSupportedError
+    def execute_snmp(self, **kwargs):
+        r = {"vendor": "Qtech", "attributes": {}}
+        sys_descr = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
+        sys_descr = sys_descr.replace("\x16", "")  # On QSW-3400-28T-AC 7.0.3.5(B0221.0055)
+        for ree in [self.rx_ver, self.rx_ver2, self.rx_ver3]:
+            match = ree.match(sys_descr)
+            if match:
+                match = match.groupdict()
+                if "platform" in match:
+                    r["platform"] = match["platform"]
+                r["version"] = match["version"]
+                break
+        if not match or "platform" not in match or match["platform"] == "Switch":
+            oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
+            r["platform"] = self.fix_platform(oid)
+        if "version" not in r:
+            r["version"] = self.rx_version.search(sys_descr).group("version")
+        if "bootprom" in match:
+            r["attributes"]["Boot PROM"] = match["bootprom"]
+        hw_ver, serial = self.fix_hw_serial()
+        if "hardware" in match:
+            r["attributes"]["HW version"] = match["hardware"]
+        elif hw_ver:
+            r["attributes"]["HW version"] = hw_ver
+        if "serial" in match:
+            r["attributes"]["Serial Number"] = match["serial"]
+        elif serial:
+            r["attributes"]["Serial Number"] = serial
+        return r
 
     def execute_cli(self, **kwargs):
         ver = self.cli("show version", cached=True)
@@ -171,7 +168,6 @@ class Script(BaseScript):
                         platform = self.fix_platform(match.group("oid"))
                 except self.CLISyntaxError:
                     pass
-
             return {
                 "vendor": "Qtech",
                 "platform": platform,
@@ -183,4 +179,4 @@ class Script(BaseScript):
                 },
             }
         else:
-            return {"vendor": "Qtech", "platform": "Unknown", "version": "Unknown"}
+            raise NotImplementedError("Unknown platform")
