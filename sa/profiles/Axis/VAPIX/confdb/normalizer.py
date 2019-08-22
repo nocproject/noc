@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.video.resolution import get_resolution
 
 
 class VAPIXNormalizer(BaseNormalizer):
@@ -59,7 +60,11 @@ class VAPIXNormalizer(BaseNormalizer):
     @match("root", "Image", "I0", "Appearance", "Resolution", ANY)
     def normalize_resolution(self, tokens):
         for stream_name, resolution in [("h264", tokens[5]), ("mjpeg", tokens[5])]:
-            height, width = resolution.split("x")
+            if "x" in resolution:
+                height, width = resolution.split("x")
+            else:
+                resolution = get_resolution(resolution.lower())
+                height, width = resolution.height, resolution.width
             yield self.make_media_streams_video_admin_status(name=stream_name, admin_status=True)
             yield self.make_media_streams_video_resolution_height(name=stream_name, height=height)
             yield self.make_media_streams_video_resolution_width(name=stream_name, width=width)
