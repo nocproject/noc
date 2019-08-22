@@ -32,6 +32,7 @@ Following labels shows subsystems affected by MR. Any combination of labels is p
 * `profiles` - SA Profiles
 * `migration` - Database migrations
 * `tests` - Unittests
+* `nbi` - :ref:`NBI API<api-nbi>`
 
 .. _dev-mr-labels-pri:
 

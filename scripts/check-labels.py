@@ -148,6 +148,8 @@ def check_affected(labels):
             should_have.add("migration")
         elif parts[0] == "tests":
             should_have.add("tests")
+        elif parts[:3] == ["services", "nbi", "api"]:
+            should_have.add("nbi")
     return [
         "'%s' label is not set.\n"
         "Refer to %s for details." % (l, go_url("dev-mr-labels-affected"))
