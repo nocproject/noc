@@ -38,9 +38,11 @@ class Script(BaseScript):
             "Serial Number": system_info["serialNumber"]
             # "Firmware Type":
         }
-
+        vendor = "Dahua"
+        if system_info["deviceType"].startswith("RVi"):
+            vendor = "RVi"
         return {
-            "vendor": "Dahua",
+            "vendor": vendor,
             "platform": system_info["deviceType"],
             "version": version,
             "attributes": attributes,
