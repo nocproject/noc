@@ -7,7 +7,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
 from noc.core.profile.base import BaseProfile
 
 
