@@ -26,10 +26,11 @@ class Profile(BaseProfile):
         (r"^  ---- More ----\s*", " "),
         (r"[Cc]ontinue?\S+", "y\n\r"),
         (r"[Cc]onfirm?\S+", "y\n\r"),
-        (r" [Aa]re you sure?\S+", "y\n\r"),
+        (r"\s*[Aa]re you sure?\S+", "y\n\r"),
         (r"^Delete flash:", "y\n\r"),
         (r"^Squeeze flash:", "y\n\r"),
         (r"^The password needs to be changed\. Change now\? \[Y\/N\]\:", "n\n\r"),
+        (r"unchanged press the enter key\)\:", "\n"),
     ]
     pattern_prompt = (
         r"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)"
