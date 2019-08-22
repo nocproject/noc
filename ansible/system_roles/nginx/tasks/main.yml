@@ -44,7 +44,8 @@
     owner: "{{ nginx_user }}"
   notify: reload nginx
   when:
-    - datastream_whitelist_access is defined
+    - "'svc-datastream-exec' in groups"
+    - "groups['svc-datastream-exec'] | length > 0"
   tags:
     - config
 
@@ -55,7 +56,8 @@
     owner: "{{ nginx_user }}"
   notify: reload nginx
   when:
-    - nbi_whitelist_access is defined
+    - "'svc-nbi-exec' in groups"
+    - "groups['svc-nbi-exec'] | length > 0"
   tags:
     - config
 

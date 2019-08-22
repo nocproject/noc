@@ -178,9 +178,7 @@ server {
     location /api/datastream/ {
         proxy_pass http://datastream;
         auth_request /api/auth/auth/;
-        {% if 'svc-datastream-exec' in groups and groups['svc-datastream-exec'] | length > 0 %}
         include allow_ip_datastream.conf;
-        {% endif %}
         auth_request_set $apiaccess $upstream_http_x_noc_api_access;
         proxy_set_header Remote-User $user;
         proxy_set_header Remote-Groups $groups;
@@ -199,9 +197,7 @@ server {
     location /api/nbi/ {
         proxy_pass http://nbi;
         auth_request /api/auth/auth/;
-        {% if 'svc-nbi-exec' in groups and groups['svc-nbi-exec'] | length > 0 %}
         include allow_ip_nbi.conf;
-        {% endif %}
         auth_request_set $apiaccess $upstream_http_x_noc_api_access;
         proxy_set_header Remote-User $user;
         proxy_set_header Remote-Groups $groups;
