@@ -26,7 +26,7 @@ class Script(BaseScript):
     def execute_cli(self):
         macs = []
         if self.is_support_mac_version:
-            cmd = self.cli("show version")
+            cmd = self.cli("show version", cached=True)
             for match in self.rx_mac.finditer(cmd):
                 macs += [match.group("mac")]
         if not macs:
