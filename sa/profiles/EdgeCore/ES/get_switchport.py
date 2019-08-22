@@ -29,7 +29,11 @@ class Script(BaseScript):
         r"Information of (?P<interface>[^\n]+?)\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
     )
     rx_interface_swport_3526 = re.compile(
-        r"Information of (?P<interface>[^\n]+?)\n.*?VLAN Membership Mode(|\s+):\s+(?P<mode>[^\n]+?)\n.*?Native VLAN(|\s+):\s+(?P<native>\d+).*?Allowed VLAN(|\s+):\s+(?P<vlans>.*?)Forbidden VLAN(|\s+):",
+        r"Information of (?P<interface>[^\n]+?)\n"
+        r".*?VLAN Membership Mode(|\s+):\s+(?P<mode>[^\n]+?)\n"
+        r"(.*?Native VLAN(|\s+):\s+(?P<native>\d+))?"
+        r".*?Allowed VLAN(|\s+):\s+(?P<vlans>.*?)"
+        r"Forbidden VLAN(|\s+):",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_interface_qinq_3526 = re.compile(
@@ -57,7 +61,6 @@ class Script(BaseScript):
         # Get interfaces status
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
-
         if self.is_platform_3510 or self.is_platform_4612 or self.is_platform_ecs4100:
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
