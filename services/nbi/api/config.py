@@ -11,8 +11,6 @@ from __future__ import absolute_import
 
 # Third-party modules
 import tornado.gen
-import ujson
-import six
 
 # NOC modules
 from noc.core.service.apiaccess import authenticated
