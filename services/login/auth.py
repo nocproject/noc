@@ -36,8 +36,14 @@ class AuthRequestHandler(tornado.web.RequestHandler):
             if key_name:
                 self.set_header("Remote-User", key_name)
 
-        def fail():
+        def fail(user_name=None, reason=None):
             self.set_status(401, "Not authorized")
+            self.service.logger.error(
+                "[%s|%s] Denied: %s",
+                user_name or "NOT SET",
+                self.request.remote_ip,
+                reason or "Unspecified reason",
+            )
 
         user = self.get_secure_cookie(self.USER_COOKIE)
         if user:
@@ -46,8 +52,11 @@ class AuthRequestHandler(tornado.web.RequestHandler):
             name, access = self.service.get_api_access(
                 self.request.headers.get("Private-Token"), self.request.remote_ip
             )
-            if name and access:
-                return api_success(access, name)
+            if not name:
+                return fail(reason="API Key not found")
+            if not access:
+                return fail(user_name=name, reason="API Key has not access")
+            return api_success(access, name)
         elif self.request.headers.get("Authorization"):
             # Fallback to the basic auth
             ah = self.request.headers.get("Authorization")
@@ -58,4 +67,6 @@ class AuthRequestHandler(tornado.web.RequestHandler):
                     credentials = {"user": user, "password": password, "ip": self.request.remote_ip}
                     if self.service.authenticate(self, credentials):
                         return success(user)
+                    else:
+                        return fail(user_name=user, reason="Authentication failed")
         return fail()
