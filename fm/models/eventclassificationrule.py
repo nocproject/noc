@@ -19,7 +19,7 @@ from mongoengine.document import EmbeddedDocument, Document
 from .eventclass import EventClass
 from .datasource import DataSource
 from noc.core.mongo.fields import PlainReferenceField
-from noc.lib.escape import json_escape as jq
+from noc.core.escape import json_escape as jq
 from noc.lib.text import quote_safe_path
 
 

@@ -14,7 +14,7 @@ from functools import reduce
 import six
 
 # NOC modules
-from noc.lib.escape import json_escape
+from noc.core.escape import json_escape
 from noc.lib.text import indent
 
 

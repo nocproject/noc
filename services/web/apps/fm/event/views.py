@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
-from noc.lib.escape import json_escape
+from noc.core.escape import json_escape
 from noc.core.translation import ugettext as _
 
 

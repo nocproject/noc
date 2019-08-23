@@ -20,7 +20,7 @@ import cachetools
 
 # NOC modules
 from noc.lib.validators import is_oid
-from noc.lib.escape import fm_unescape, fm_escape
+from noc.core.escape import fm_unescape, fm_escape
 from noc.core.snmp.util import render_tc
 from noc.core.model.decorator import on_delete_check
 from .error import MIBNotFoundException, OIDCollision

@@ -36,7 +36,7 @@ import noc.inv.models.interface
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.version import version
 from noc.core.debug import error_report
-from noc.lib.escape import fm_unescape
+from noc.core.escape import fm_unescape
 from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
