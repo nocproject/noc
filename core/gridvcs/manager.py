@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Django's model manager for GridVCS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -97,6 +97,16 @@ class GridVCSObjectProxy(object):
         if isinstance(r, six.string_types):
             r = g.find_revision(self.id, r)
         return g.get(self.id, r)
+
+    def has_revision(self, r):
+        """
+        Check config has revision
+
+        :param r: String containing revision id
+        :return: True if object has revision
+        """
+        g = self.get_gridvcs()
+        return bool(g.find_revision(self.id, r))
 
     def get_revisions(self, reverse=False):
         return list(self.get_gridvcs().iter_revisions(self.id, reverse=reverse))
