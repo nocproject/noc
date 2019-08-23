@@ -24,3 +24,18 @@ class Profile(BaseProfile):
     command_exit = "exit"
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}
+
+    INTERFACE_TYPES = {
+        "Ethe": "physical",  # Ethernet
+        "Vlan": "SVI",  # Vlan
+        "Port": "aggregated",  # Port-Channel
+        "Vsf-": "aggregated",  # Vsf-Port
+        "vpls": "unknown",  # vpls_dev
+        "l2ov": "tunnel",  # l2overgre
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        if name == "Ethernet0":
+            return "management"
+        return cls.INTERFACE_TYPES.get(name[:4])
