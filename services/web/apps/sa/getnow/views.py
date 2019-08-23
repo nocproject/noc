@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.services.web.apps.sa.objectlist.views import ObjectListApplication
-from noc.lib.dateutils import humanize_distance
+from noc.core.dateutils import humanize_distance
 from noc.core.scheduler.job import Job
 from noc.core.translation import ugettext as _
 

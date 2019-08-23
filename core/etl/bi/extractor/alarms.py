@@ -18,7 +18,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.alarms import Alarms
 from noc.core.etl.bi.stream import Stream
 from noc.config import config
-from noc.lib.dateutils import hits_in_range
+from noc.core.dateutils import hits_in_range
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from .archive import ArchivingExtractor
@@ -41,7 +41,7 @@ class AlarmsExtractor(ArchivingExtractor):
     def iter_data(self):
         if self.use_archive:
             coll = [
-                self.archive_db.get_collection(coll_name)
+                self._archive_db.get_collection(coll_name)
                 for coll_name in self.find_archived_collections(self.start, self.stop)
             ]
         else:

@@ -15,7 +15,7 @@ from noc.config import config
 from noc.core.ioloop.whois import whois
 from noc.dns.models.dnszone import DNSZone, ZONE_FORWARD
 from noc.main.models.systemnotification import SystemNotification
-from noc.lib.dateutils import humanize_timedelta
+from noc.core.dateutils import humanize_timedelta
 
 logger = logging.getLogger(__name__)
 

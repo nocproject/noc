@@ -2,17 +2,16 @@
 # ---------------------------------------------------------------------
 # Stale Discovery Job Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 
-# Third-party modules
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.lib.dateutils import humanize_distance
+from noc.core.dateutils import humanize_distance
 from noc.core.scheduler.scheduler import Scheduler
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
