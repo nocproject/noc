@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_version = re.compile(
-        r"^System Serial Number\s*:\s*(?P<platform>\S+)\s+(?P<serial>.+)\s\s+.+\n"
+        r"^System Serial Number\s*:\s*(?P<platform>\S+)\s+(?P<serial>.+?)\s\s+.+\n"
         r"^Image\s*:\s*Extremeware\s+Version (?P<version>\S+)\s.+\n"
         r"^\s*\n"
         r"^BootROM\s*:\s*(?P<bootprom>\S+)\s*\n",
