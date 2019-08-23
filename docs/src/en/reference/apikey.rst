@@ -29,42 +29,42 @@ datastream API
 ^^^^^^^^^^^^^^
 Access to :ref:`api-datastream`
 
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| API:Role                          | Description                                                                       |
-+===================================+===================================================================================+
-| `datastream:administrativedomain` | ref:`administrativedomain datastream<api-datastream-administrativedomain>` access |
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| `datastream:alarm`                | ref:`alarm datastream<api-datastream-alarm>` access                               |
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| `datastream:resourcegroup`        | ref:`resourcegroup datastream<api-datastream-resourcegroup>` access               |
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| `datastream:managedobject`        | ref:`managedobject datastream<api-datastream-managedobject>` access               |
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| `datastream:dnszone`              | ref:`dnszone datastream<api-datastream-dnszone>` access                           |
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| `datastream:cfgping`              | ref:`cfgping datastream<api-datastream-cfgping>` access                           |
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| `datastream:cfgsyslog`            | ref:`cfgsyslog datastream<api-datastream-cfgsyslog>` access                       |
-+-----------------------------------+-----------------------------------------------------------------------------------+
-| `datastream:cfgtrap`              | ref:`cfgtrap datastream<api-datastream-cfgtrap>` access                           |
-+-----------------------------------+-----------------------------------------------------------------------------------+
++-----------------------------------+------------------------------------------------------------------------------------+
+| API:Role                          | Description                                                                        |
++===================================+====================================================================================+
+| `datastream:administrativedomain` | ref:`administrativedomain datastream <api-datastream-administrativedomain>` access |
++-----------------------------------+------------------------------------------------------------------------------------+
+| `datastream:alarm`                | ref:`alarm datastream <api-datastream-alarm>` access                               |
++-----------------------------------+------------------------------------------------------------------------------------+
+| `datastream:resourcegroup`        | ref:`resourcegroup datastream <api-datastream-resourcegroup>` access               |
++-----------------------------------+------------------------------------------------------------------------------------+
+| `datastream:managedobject`        | ref:`managedobject datastream <api-datastream-managedobject>` access               |
++-----------------------------------+------------------------------------------------------------------------------------+
+| `datastream:dnszone`              | ref:`dnszone datastream <api-datastream-dnszone>` access                           |
++-----------------------------------+------------------------------------------------------------------------------------+
+| `datastream:cfgping`              | ref:`cfgping datastream <api-datastream-cfgping>` access                           |
++-----------------------------------+------------------------------------------------------------------------------------+
+| `datastream:cfgsyslog`            | ref:`cfgsyslog datastream <api-datastream-cfgsyslog>` access                       |
++-----------------------------------+------------------------------------------------------------------------------------+
+| `datastream:cfgtrap`              | ref:`cfgtrap datastream <api-datastream-cfgtrap>` access                           |
++-----------------------------------+------------------------------------------------------------------------------------+
 
 .. _reference-apikey-roles-nbi:
 
 NBI API
 ^^^^^^^
 
-+-----------------------+---------------------------------------------------------------+
-| API:Role              | Description                                                   |
-+===========================+===========================================================+
-| `nbi:config`          | ref:`NBI config API<api-nbi-config>` access                   |
-+-----------------------+---------------------------------------------------------------+
-| `nbi:configrevisions` | ref:`NBI configrevisions API<api-nbi-configrevisions>` access |
-+-----------------------+---------------------------------------------------------------+
-| `nbi:objectmetrics`   | ref:`NBI objectmetrics API<api-nbi-objectmetrics>` access     |
-+-----------------------+---------------------------------------------------------------+
-| `nbi:telemetry`       | ref:`NBI telemetry API<api-nbi-telemetry>` access             |
-+-----------------------+---------------------------------------------------------------+
++-----------------------+----------------------------------------------------------------+
+| API:Role              | Description                                                    |
++===========================+============================================================+
+| `nbi:config`          | ref:`NBI config API <api-nbi-config>` access                   |
++-----------------------+----------------------------------------------------------------+
+| `nbi:configrevisions` | ref:`NBI configrevisions API <api-nbi-configrevisions>` access |
++-----------------------+----------------------------------------------------------------+
+| `nbi:objectmetrics`   | ref:`NBI objectmetrics API <api-nbi-objectmetrics>` access     |
++-----------------------+----------------------------------------------------------------+
+| `nbi:telemetry`       | ref:`NBI telemetry API <api-nbi-telemetry>` access             |
++-----------------------+----------------------------------------------------------------+
 
 Best Practices
 --------------
