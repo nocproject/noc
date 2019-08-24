@@ -2,18 +2,17 @@
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
-from noc.lib.convert import mw2dbm
+from noc.core.convert.dbm import mw2dbm
 
 
 class Script(BaseScript):

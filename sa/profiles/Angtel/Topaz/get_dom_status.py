@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
-from noc.lib.convert import mw2dbm
+from noc.core.convert.dbm import mw2dbm
 
 
 class Script(BaseScript):
