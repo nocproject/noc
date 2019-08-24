@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 from noc.lib.text import parse_kv
 from noc.lib.validators import is_int
-from noc.lib.convert import mw2dbm
+from noc.core.convert.dbm import mw2dbm
 
 
 class Script(BaseScript):
