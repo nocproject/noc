@@ -31,7 +31,6 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        stacks = []
         s = self.scripts.get_version()
         revision = s["attributes"]["HW version"]
         serial = s["attributes"]["Serial Number"]
