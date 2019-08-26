@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.inv conduits plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from collections import defaultdict
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
-from noc.lib.geo import distance, bearing, bearing_sym
+from noc.core.geo import distance, bearing, bearing_sym
 from noc.gis.map import map
 from noc.sa.interfaces.base import (
     DocumentParameter,
