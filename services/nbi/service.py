@@ -3,9 +3,12 @@
 # ----------------------------------------------------------------------
 # nbi service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Third-party modules
+import six
 
 # NOC modules
 from noc.core.service.base import Service
@@ -23,19 +26,29 @@ class NBIService(Service):
         traefik_backend = "nbi"
         traefik_frontend_rule = "PathPrefix:/api/nbi"
 
-    def get_api(self):
-        r = []
+    def iter_api(self):
+        """
+        Iterate existing API handler classes
+
+        :return: Yields API class
+        """
         for api in loader.iter_classes():
             handler = loader[api]
             if handler:
                 self.logger.info("[%s] Initializing API", api)
-                r += [handler]
+                yield handler
             else:
                 self.logger.info("[%s] Failed to initialize API", api)
-        return r
 
     def get_handlers(self):
-        return [("/api/nbi/%s" % api.name, api, {"service": self}) for api in self.get_api()]
+        r = []
+        for api in self.iter_api():
+            path = api.get_path()
+            if isinstance(path, six.string_types):
+                r += [("/api/nbi/%s" % api.get_path(), api, {"service": self})]
+            else:
+                r += [("/api/nbi/%s" % p, api, {"service": self}) for p in path]
+        return r
 
     def log_request(self, handler):
         if not isinstance(handler, NBIAPI):

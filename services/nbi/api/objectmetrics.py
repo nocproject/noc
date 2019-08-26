@@ -64,6 +64,7 @@ class ObjectMetricsAPI(NBIAPI):
         if isinstance(result, six.string_types):
             self.write(result)
         else:
+            self.set_header("Content-Type", "text/json")
             self.write(ujson.dumps(result))
 
     def handler(self):

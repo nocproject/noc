@@ -32,3 +32,12 @@ class NBIAPI(APIAccessRequestHandler):
 
     def get_access_tokens_set(self):
         return {"nbi:*", "nbi:%s" % self.name}
+
+    @classmethod
+    def get_path(cls):
+        """
+        Returns rest of handler's URL, excluding /api/nbi/
+
+        :return: String containing URL part
+        """
+        return cls.name
