@@ -120,6 +120,16 @@ Ext.define("Ext.ux.form.GridField", {
         me.callParent();
     },
 
+    getSubmitData: function() {
+        var me = this,
+            data = null;
+        if (!me.disabled && me.submitValue) {
+            data = {};
+            data[me.getName()] = me.getValue();
+        }
+        return data;
+    },
+
     getValue: function() {
         var me = this,
             records = [];

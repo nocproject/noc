@@ -18,6 +18,7 @@ Ext.define("NOC.core.ListFormField", {
     initComponent: function() {
         var me = this;
 
+        me.scroll = {x: 0, y: 0};
         // me.rows = me.rows || 3;
         me.fields = Ext.clone(me.items).map(function(item) {
             return Ext.Object.merge(item, {isListForm: true})
@@ -68,7 +69,7 @@ Ext.define("NOC.core.ListFormField", {
         });
 
         me.panel = Ext.create("Ext.form.Panel", {
-            scrollable: 'vertical',
+            scrollable: "vertical",
             dockedItems: [
                 {
                     xtype: "toolbar",
@@ -85,7 +86,8 @@ Ext.define("NOC.core.ListFormField", {
                     ]
                 }
             ],
-            items: []
+            items: [],
+            onScrollEnd: me.onScrollEnd
         });
         Ext.apply(me, {
             items: [
@@ -94,6 +96,10 @@ Ext.define("NOC.core.ListFormField", {
         });
         me.currentSelection = undefined;
         me.callParent();
+    },
+    onScrollEnd: function(x, y) {
+        var me = this;
+        me.scroll = {x: x, y: y};
     },
     getFormData: function(form) {
         var me = this,
@@ -200,7 +206,7 @@ Ext.define("NOC.core.ListFormField", {
             itemId: itemId,
             items: me.fields,
             defaults: {
-                margin: "0 30 0 10"
+                margin: "4 30 0 10"
             },
             listeners: {
                 scope: me,
@@ -208,7 +214,7 @@ Ext.define("NOC.core.ListFormField", {
                     var me = this;
                     // reset selected label
                     me.panel.items.each(function(panel) {
-                        panel.setBodyStyle("border-left-width", "1px");
+                        panel.setBodyStyle("border-width", "3 3 0 1");
                         panel.setBodyStyle("margin-left", "5px")
                     });
                     me.selected(self);
@@ -217,11 +223,12 @@ Ext.define("NOC.core.ListFormField", {
                 },
                 afterrender: function(self) {
                     var me = this;
-                    me.panel.setMaxHeight(self.getHeight() * me.rows);
+                    me.panel.setMaxHeight((self.getHeight() + 6) * me.rows + 6);
                 }
             }
         });
-        formPanel.setBodyStyle("margin-left", "5px");
+        formPanel.setBodyStyle("border-width", "3 3 0 3");
+        formPanel.setBodyStyle("margin-left", "3px");
         if(record != null) {
             formPanel.form.setValues(record);
         }
@@ -235,8 +242,8 @@ Ext.define("NOC.core.ListFormField", {
         me.cloneButton.setDisabled(arg);
     },
     selected: function(panel) {
-        panel.setBodyStyle("border-left-width", "6px");
-        panel.setBodyStyle("margin-left", "0px")
+        panel.setBodyStyle("border-width", "3 3 0 6");
+        panel.setBodyStyle("margin-left", "0px");
     },
     deleteRecord: function() {
         var me = this;

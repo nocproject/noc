@@ -33,40 +33,46 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
+                    labelAlign: "top",
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "large"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
+                    labelAlign: "top",
                     allowBlank: true
                 },
                 {
                     name: "filter_query",
                     xtype: "cm.confdbquery.LookupField",
                     fieldLabel: __("Filter Query"),
+                    labelAlign: "top",
                     query: {
                         allow_object_filter: true
                     },
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large"
                 },
                 {
                     name: "rules",
                     xtype: "listform",
                     fieldLabel: __("Rules"),
+                    labelAlign: "top",
                     items: [
                         {
                             name: "query",
                             xtype: "cm.confdbquery.LookupField",
                             fieldLabel: __("Query"),
                             query: {
-                                    allow_object_validation: true
+                                allow_object_validation: true
                             },
                             listeners: {
                                 scope: me,
                                 select: me.onSelectQuery
-                            }
+                            },
+                            uiStyle: "large"
                         },
                         {
                             name: "query_params",
@@ -108,7 +114,8 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
                             allowBlank: true,
                             query: {
                                 allow_object_filter: true
-                            }
+                            },
+                            uiStyle: "large"
                         },
                         {
                             name: "is_active",
@@ -133,7 +140,8 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
                             name: "alarm_class",
                             xtype: "fm.alarmclass.LookupField",
                             fieldLabel: __("Alarm Class"),
-                            allowBlank: true
+                            allowBlank: true,
+                            uiStyle: "large"
                         },
                         {
                             name: "is_fatal",
@@ -152,9 +160,13 @@ Ext.define("NOC.cm.objectvalidationpolicy.Application", {
         Ext.Ajax.request({
             url: "/cm/confdbquery/" + record.get("id") + "/",
             scope: me,
-            success: function (response) {
-                var data = Ext.decode(response.responseText);
-                field.up().getForm().findField("query_params").setValue(data.params)
+            success: function(response) {
+                var data = Ext.decode(response.responseText),
+                    queryParamsField = field.up().getForm().findField("query_params"),
+                    rulesForm = field.up().up(),
+                    scrollPos = rulesForm.scroll;
+                queryParamsField.setValue(data.params);
+                rulesForm.scrollTo(scrollPos.x, scrollPos.y);
             }
         })
     }
