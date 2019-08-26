@@ -44,10 +44,11 @@ Get last config
         hostname Switch
         ...
 
-    :param object_id: Managed Object's id
-    :reqheader Private-Token: :ref:`reference-apikey` with `nbi:config` API access
-    :statuscode 200: Success
-    :statuscode 404: Object not found
+    :param object_id: Managed Object's id.
+    :reqheader Private-Token: :ref:`reference-apikey` with `nbi:config` API access.
+    :statuscode 200: Success.
+    :statuscode 204: No Content. Config has not been read yet.
+    :statuscode 404: Object not found.
 
 Get config by revision
 ^^^^^^^^^^^^^^^^^^^^^^

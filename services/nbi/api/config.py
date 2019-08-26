@@ -39,7 +39,9 @@ class ConfigAPI(NBIAPI):
             config = mo.config.get_revision(revision)
         else:
             config = mo.config.read()
-        return 200, config or ""
+        if config is None:
+            return 204, ""
+        return 200, config
 
     @classmethod
     def get_path(cls):
