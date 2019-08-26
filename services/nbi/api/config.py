@@ -27,7 +27,8 @@ class ConfigAPI(NBIAPI):
         code, result = yield self.executor.submit(self.handler, object_id, revision)
         self.set_status(code)
         self.set_header("Content-Type", "text/plain")
-        self.write(result)
+        if code != 204:
+            self.write(result)
 
     def handler(self, object_id, revision):
         mo = ManagedObject.get_by_id(int(object_id))
