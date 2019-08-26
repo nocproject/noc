@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Map
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ import geojson
 from noc.gis.models.layer import Layer
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.lib.geo import distance
+from noc.core.geo import distance
 
 
 class Map(object):
