@@ -51,3 +51,15 @@ class RouterOSNormalizer(BaseNormalizer):
     @match("/ip", "address", INTEGER, "interface", ANY)
     def normalize_interface_address_interface(self, tokens):
         yield self.defer("ip.address.%s" % tokens[2], interface=tokens[4])
+
+    @match("/system", "ntp", "client", INTEGER, "enabled", ANY)
+    def normalize_timesource(self, tokens):
+        if tokens[5] == "yes":
+            yield self.make_clock_source(source="ntp")
+
+    @match("/system", "ntp", "client", ANY, ANY)
+    def normalize_ntp_server(self, tokens):
+        if tokens[3] == "primary-ntp":
+            yield self.make_ntp_server_address(name="0", address=tokens[4])
+        if tokens[3] == "secondary-ntp":
+            yield self.make_ntp_server_address(name="1", address=tokens[4])
