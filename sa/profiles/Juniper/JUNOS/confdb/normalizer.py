@@ -134,3 +134,13 @@ class JunOSNormalizer(BaseNormalizer):
         yield self.make_forwarding_instance_description(
             instance=tokens[1], description=" ".join(tokens[3:])
         )
+
+    @match("system", "ntp")
+    def normalize_timesource(self, tokens):
+        yield self.make_clock_source(source="ntp")
+
+    @match("system", "ntp", "server", ANY)
+    @match("system", "ntp", "server", ANY, ANY)
+    @match("system", "ntp", "server", ANY, ANY, ANY, ANY, ANY)
+    def normalize_ntp_server(self, tokens):
+        yield self.make_ntp_server_address(name=tokens[3], address=tokens[3])
