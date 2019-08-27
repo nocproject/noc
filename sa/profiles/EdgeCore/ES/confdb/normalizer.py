@@ -156,4 +156,4 @@ class ESNormalizer(BaseNormalizer):
 
     @match("ntp", "server", ANY)
     def normalize_ntp_server(self, tokens):
-        yield self.make_ntp_server_address(name="0", address=tokens[2])
+        yield self.make_ntp_server_address(name=tokens[2], address=tokens[2])
