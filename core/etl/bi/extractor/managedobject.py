@@ -50,13 +50,16 @@ class ManagedObjectsExtractor(BaseExtractor):
         x_data = [self.get_interfaces(), self.get_links(), self.get_caps()]
         sn = self.get_mo_sn()
         # Extract managed objects
-        for mo in ManagedObject.objects.all():
+        for mo in ManagedObject.objects.all().iterator():
             did = DiscoveryID.objects.filter(object=mo).first()
             uptime = Uptime.objects.filter(object=mo.id, stop=None).first()
             serials = sn.get(mo.id, [])
             inventory = mo.get_inventory()
             if inventory:
                 serials += inventory[0].get_object_serials(chassis_only=False)
+            location = ""
+            if mo.container:
+                location = mo.container.get_address_text()
             r = {
                 "ts": ts,
                 "managed_object": mo,
@@ -75,10 +78,10 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "version": mo.version,
                 "bootprom_version": mo.get_attr("Boot PROM", default=None),
                 "name": ch_escape(mo.name),
-                "hostname": did.hostname if did else "",
+                "hostname": ch_escape(did.hostname or "") if did else "",
                 "ip": mo.address,
                 "is_managed": mo.is_managed,
-                "location": mo.container.get_address_text() if mo.container else "",
+                "location": ch_escape(location) if location else "",
                 "uptime": uptime.last_value if uptime else 0.0,
                 "tags": [str(t) for t in mo.tags if "{" not in t] if mo.tags else [],  # { - bug
                 "serials": list(set(serials))
