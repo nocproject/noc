@@ -7,93 +7,78 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from pymongo import ReadPreference
+from collections import defaultdict
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from noc.core.mongo.connection import get_db
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow, TableColumn
+from noc.lib.app.reportdatasources.base import ReportModelFilter
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.authprofile import AuthProfile
-from noc.sa.models.profile import Profile
 from noc.core.translation import ugettext as _
-from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportFilterApplication(SimpleReport):
     title = _("Discovery Links Summary")
     predefined_reports = {"default": PredefinedReport(_("Discovery Links Summary"), {})}
 
+    save_perc = None
+
+    def calc_percent(self, column, val):
+        if column != _("All polling"):
+            if val == 0:
+                return "%.2f %%" % 100
+            else:
+                r = "%.2f %%" % ((val / float(self.save_perc)) * 100)
+            # self.save_perc = None
+            return r
+        elif column == _("All polling"):
+            self.save_perc = val
+        return ""
+
     def get_data(self, request, **kwargs):
+        columns, columns_desr = [], []
+
+        r_map = [
+            (_("All polling"), "2is1.6is1.7a2"),  # "Is Managed, object type defined"
+            (_("0"), "2is1.6is1.7a2.3hs0"),  # "Has 0 Links w type defined"
+            (_("1"), "2is1.6is1.3hs2"),  # "Has 1 links"
+            (_("2"), "2is1.6is1.3hs3"),  # "Has 2 links"
+            (_("More 3"), "2is1.6is1.3hs4"),  # "Has more 3 links"
+        ]
+        for x, y in r_map:
+            columns += [y]
+            columns_desr += [x]
+        report = ReportModelFilter()
+        result = report.proccessed(",".join(columns))
+
+        summary = defaultdict(int)
         data = []
-
-        value = (
-            get_db()["noc.links"]
-            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-            .aggregate(
-                [
-                    {"$unwind": "$interfaces"},
-                    {
-                        "$lookup": {
-                            "from": "noc.interfaces",
-                            "localField": "interfaces",
-                            "foreignField": "_id",
-                            "as": "int",
-                        }
-                    },
-                    {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}},
-                ]
-            )
+        # url = "/sa/reportstat/repstat_download/?report=%s"
+        url = "/sa/reportobjectdetail/download/?" + "&".join(
+            [
+                "o_format=xlsx",
+                "columns=object_name,object_address,object_profile,object_status,profile_name,admin_domain,segment",
+                "detail_stat=%s&pool=%s",
+            ]
         )
-        count = {0: set([]), 1: set([]), 2: set([]), 3: set([])}
-        ap = AuthProfile.objects.filter(name__startswith="TG")
-        for v in value:
-            if v["count"] > 2:
-                count[3].add(v["_id"][0])
-                continue
-            if not v["_id"]:
-                self.logger.warning("No IDS in response query")
-                continue
-            count[v["count"]].add(v["_id"][0])
-
-        for p in Pool.objects.order_by("name"):
-            if p.name == "P0001":
-                continue
+        for p in Pool.objects.filter().order_by("name"):
+            m = []
+            moss = set(ManagedObject.objects.filter(pool=p).values_list("id", flat=True))
+            for col in columns:
+                m += [len(result[col.strip()].intersection(moss))]
+                summary[col] += m[-1]
             data += [SectionRow(name=p.name)]
-            smos = set(
-                ManagedObject.objects.filter(pool=p, is_managed=True)
-                .exclude(profile=Profile.get_by_name(GENERIC_PROFILE))
-                .exclude(auth_profile__in=ap)
-                .values_list("id", flat=True)
-            )
-            all_p = 100.0 / len(smos) if len(smos) else 1.0
-            data += [("All polling", len(smos), "")]
-            for c in count:
-                if c == 3:
-                    data += [
-                        (
-                            "More 3",
-                            len(count[c].intersection(smos)),
-                            "%.2f %%" % round(len(count[c].intersection(smos)) * all_p, 2),
-                        )
-                    ]
-                    continue
-                data += [
-                    (
-                        c,
-                        len(count[c].intersection(smos)),
-                        "%.2f %%" % round(len(count[c].intersection(smos)) * all_p),
-                        2,
-                    )
-                ]
-
-            # 0 links - All discovering- summary with links
-            s0 = len(smos) - sum([d[1] for d in data[-3:]])
-            data.pop(-4)
-            data.insert(-3, (0, s0, "%.2f %%" % round(s0 * all_p, 2)))
-
+            data += [
+                (x, y, self.calc_percent(x, y), url % (columns[columns_desr.index(x)], p.name))
+                for x, y in zip(columns_desr, m)
+            ]
         return self.from_dataset(
             title=self.title,
-            columns=[_("Links count"), _("MO Count"), _("Percent at All")],
+            columns=[
+                _("Links count"),
+                _("MO Count"),
+                _("Percent at All"),
+                TableColumn(_("Detail"), format="url"),
+            ],
             data=data,
         )
