@@ -23,6 +23,26 @@ class Script(BaseScript):
         "hw. type": "magicBox.getHardwareType",
     }
 
+    def get_ptz_version(self):
+        """
+        Getting PTZ SW version from WEB:
+        POST, /RPC2, {"method": "magicBox.getSubModules", "params": null}
+        Response {"id":194,"params":{"subModules":[
+        {"HardwareVersion":"Unknow","ModuleName":"PTZ","SoftwareVersion":"3.01.35.RHNT","State":"Normal"},
+        {"HardwareVersion":"Unknow","ModuleName":"Camera","SoftwareVersion":"Unknow","State":"Normal"}]},
+        "result":true,"session":43241591}
+        :return: PTZ Driver Version
+        :rtype: str
+        """
+        r = self.http.post(
+            "/RPC2", data={"method": "magicBox.getSubModules", "params": None}, json=True
+        )
+        # @todo add PTZ to caps
+        for sm in r["params"].get("subModules", []):
+            if sm["ModuleName"] == "PTZ":
+                return sm["SoftwareVersion"]
+        return None
+
     def execute(self):
         system_info = self.http.get("/cgi-bin/magicBox.cgi?action=getSystemInfo")
         system_info = self.profile.parse_equal_output(system_info)
@@ -41,6 +61,10 @@ class Script(BaseScript):
         vendor = "Dahua"
         if system_info["deviceType"].startswith("RVi"):
             vendor = "RVi"
+        if vendor == "Dahua":
+            ptz = self.get_ptz_version()
+            if ptz:
+                attributes["PTZ version"] = ptz
         return {
             "vendor": vendor,
             "platform": system_info["deviceType"],

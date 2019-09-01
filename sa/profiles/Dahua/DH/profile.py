@@ -17,7 +17,11 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Dahua.DH"
     enable_http_session = True
-    http_request_middleware = ["digestauth"]
+    http_request_middleware = [
+        "digestauth",
+        "noc.sa.profiles.Dahua.DH.middleware.dahuaauth.DahuaAuthMiddeware",
+        ("jsonrequestid", {"request_id_param": "id"}),
+    ]
     config_tokenizer = "line"
     config_tokenizer_settings = {"line_comment": "#", "rewrite": [(re.compile(r"[\.=\[\]]"), " ")]}
     config_normalizer = "DHNormalizer"
