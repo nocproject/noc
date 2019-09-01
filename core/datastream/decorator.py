@@ -47,7 +47,7 @@ def _on_model_change(sender, instance, *args, **kwargs):
         instance,
         changed_fields=set(
             f_name
-            for f_name in instance.initial_data
+            for f_name in getattr(instance, "initial_data", [])
             if instance.initial_data[f_name] != getattr(instance, f_name)
         ),
     )
