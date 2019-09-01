@@ -183,7 +183,7 @@ Ext.define("NOC.aaa.user.Application", {
                     allowBlank: true,
                     items: [
                         {
-                            name: "user_permissions",
+                            name: "permissions",
                             xtype: "noc.group.permission"
                         }
                     ]
@@ -279,7 +279,7 @@ Ext.define("NOC.aaa.user.Application", {
             success: function(response) {
                 var me = this,
                     data = Ext.decode(response.responseText).data;
-                me.newRecord({user_permissions: data.permissions});
+                me.newRecord({permissions: data.permissions});
             },
             failure: function() {
                 NOC.error(__("Failed to get data"));
@@ -292,7 +292,7 @@ Ext.define("NOC.aaa.user.Application", {
         Ext.TaskManager.start({
             run: function() {
                 me.down("[name=groups]").getStore().removeAll();
-                me.form.findField("user_permissions").resetAllPermission();
+                me.form.findField("permissions").resetAllPermission();
                 me.unmask(msg);
             },
             interval: 0,
