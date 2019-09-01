@@ -39,6 +39,7 @@ Ext.define("NOC.cm.confdbquery.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
+                    labelAlign: "top",
                     allowBlank: false,
                     uiStyle: "medium"
                 },
@@ -46,26 +47,21 @@ Ext.define("NOC.cm.confdbquery.Application", {
                     name: "uuid",
                     xtype: "displayfield",
                     fieldLabel: __("UUID"),
+                    labelAlign: "top",
                     allowBlank: true
                 },
                 {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
+                    labelAlign: "top",
                     allowBlank: true
-                },
-                {
-                    name: "source",
-                    xtype: "cmtext",
-                    fieldLabel: __("Source"),
-                    allowBlank: false,
-                    flex: 1,
-                    mode: "python"
                 },
                 {
                     name: "params",
                     xtype: "gridfield",
                     fieldLabel: __("Parameters"),
+                    labelAlign: "top",
                     columns: [
                         {
                             dataIndex: "name",
@@ -134,6 +130,14 @@ Ext.define("NOC.cm.confdbquery.Application", {
                     name: "require_raw",
                     xtype: "checkbox",
                     boxLabel: "Require raw"
+                },
+                {
+                    name: "source",
+                    xtype: "cmtext",
+                    fieldLabel: __("Source"),
+                    labelAlign: "top",
+                    allowBlank: false,
+                    mode: "python"
                 }
             ],
 

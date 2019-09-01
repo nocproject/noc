@@ -84,7 +84,7 @@ Ext.define("NOC.core.CMText", {
             textareaCls: cssPrefix + 'hidden',
             editorCls: cssPrefix + 'codemirror ' + me.editorWrapCls,
             editorName: Ext.id(),
-            size: 'height:100px;width:100%'
+            size: 'height:100%;width:100%'
         };
     },
 
