@@ -287,6 +287,11 @@ class Config(BaseConfig):
         https_port = IntParameter(default=443)
         validate_certs = BooleanParameter(default=False, help="Have to be set as True")
 
+    class initial(ConfigSection):
+        admin_user_name = StringParameter(default="admin")
+        admin_password = StringParameter(default="admin")
+        admin_email = StringParameter(default="test@example.com")
+
     installation_name = StringParameter(default="Unconfigured installation")
 
     instance = IntParameter(default=0)
