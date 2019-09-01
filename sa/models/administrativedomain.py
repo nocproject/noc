@@ -22,7 +22,7 @@ from noc.core.model.base import NOCModel
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_init
 from noc.core.bi.decorator import bi_sync
 from noc.core.datastream.decorator import datastream
 
@@ -30,6 +30,7 @@ id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 
+@on_init
 @bi_sync
 @datastream
 @on_delete_check(
