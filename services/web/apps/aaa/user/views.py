@@ -96,10 +96,10 @@ class UserApplication(ExtModelApplication):
     def instance_to_dict_get(self, o, fields=None):
         r = super(UserApplication, self).instance_to_dict(o, fields)
         del r["password"]
-        r["user_permissions"] = self.apps_permissions_list()
+        r["permissions"] = self.apps_permissions_list()
         current_perms = Permission.get_user_permissions(o)
         if current_perms:
-            for p in r["user_permissions"]:
+            for p in r["permissions"]:
                 if p["name"] in current_perms:
                     p["status"] = True
         return r
@@ -120,7 +120,7 @@ class UserApplication(ExtModelApplication):
     def update_m2m(self, o, name, values):
         if values is None:
             return  # Do not touch
-        if name == "user_permissions":
+        if name == "permissions":
             Permission.set_user_permissions(user=o, perms=values)
         else:
             super(UserApplication, self).update_m2m(o, name, values)
