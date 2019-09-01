@@ -6,8 +6,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+from django.contrib.auth.hashers import make_password
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
+from noc.config import config
 
 
 class Migration(BaseMigration):
@@ -20,11 +24,11 @@ class Migration(BaseMigration):
             "(username, first_name, last_name, email, password, is_active, is_superuser, date_joined) "
             "VALUES(%s, %s, %s, %s, %s, %s, %s, 'now')",
             [
-                "admin",
+                config.initial.admin_user_name,
                 "NOC",
                 "Admin",
-                "test@example.com",
-                "sha1$235c1$e8e4d9aaa945e1fae62a965ee87fbf7b4a185e3f",
+                config.initial.admin_email,
+                make_password(config.initial.admin_password),
                 True,
                 True,
             ],
