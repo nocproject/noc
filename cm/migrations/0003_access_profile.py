@@ -10,7 +10,7 @@
 from django.db import models
 
 # NOC modules
-from noc.lib.url import URL
+from noc.core.url import URL
 from noc.core.script.scheme import TELNET, SSH
 from noc.core.migration.base import BaseMigration
 
