@@ -58,7 +58,7 @@ Ext.define("NOC.aaa.user.Model", {
             type: "auto"
         },
         {
-            name: "user_permissions",
+            name: "permissions",
             type: "auto"
         },
         {
