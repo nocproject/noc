@@ -19,7 +19,7 @@ Ext.define('NOC.inv.map.Legend', {
         {
             xtype: 'draw',
             fontSize: 15,
-            height: 335,
+            height: 338,
             sprites: [
                 {
                     type: 'text', x: 10, y: 15,
@@ -200,5 +200,5 @@ Ext.define('NOC.inv.map.Legend', {
                 }
             ]
         }
-    ],
+    ]
 });

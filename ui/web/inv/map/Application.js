@@ -12,7 +12,7 @@ Ext.define("NOC.inv.map.Application", {
         "NOC.inv.networksegment.TreeCombo",
         "NOC.inv.map.MapPanel"
     ],
-    rightWidth: 200,
+    rightWidth: 250,
     zoomLevels: [
         [0.25, "25%"],
         [0.5, "50%"],
