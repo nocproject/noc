@@ -37,6 +37,8 @@ def match(ctx, expr):
                 return False
             if isinstance(expr[x], dict):
                 for m in expr[x]:
+                    if ctx[x] is None:
+                        continue
                     mf = matchers.get(m)
                     if mf and not isinstance(expr[x][m], tuple):
                         if not mf(ctx[x], expr[x][m]):
