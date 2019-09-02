@@ -35,6 +35,7 @@ class Command(BaseCommand):
 
     help = "Manage Jobs"
     default_time = timedelta(minutes=5)
+    connect()
 
     @staticmethod
     def valid_date(s):
@@ -47,7 +48,6 @@ class Command(BaseCommand):
 
     @staticmethod
     def scheduler(s):
-        connect()
         scheduler, pool = "scheduler", "default"
         if "." in s:
             scheduler, pool = s.split(".")
