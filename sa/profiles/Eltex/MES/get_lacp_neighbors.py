@@ -59,9 +59,7 @@ class Script(BaseScript):
         r = []
         d = {}
         bundle = []
-        if self.match_version(version__regex="[12]\.[15]\.4[4-9]") or self.match_version(
-            version__regex="4\.0\.[4-7]$"
-        ):
+        if self.is_has_chgroup:
             cmd = self.cli("show interfaces channel-group")
         else:
             cmd = self.cli("show interfaces port-channel")
