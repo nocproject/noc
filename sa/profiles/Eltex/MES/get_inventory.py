@@ -91,7 +91,7 @@ class Script(BaseScript):
     def get_pwr(self, type, pwr_type):
         if pwr_type == "AC":
             part_no = "PM160-220/12"
-        elif pwr_type == "AC":
+        elif pwr_type == "DC":
             part_no = "PM75-48/12"
         elif pwr_type == "N/A":
             part_no = "PM160-220/12"
