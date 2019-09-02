@@ -252,7 +252,7 @@ class HTTP(object):
                 # Handler
                 mw_cls = get_handler(name)
                 assert mw_cls
-                assert isinstance(mw_cls, BaseMiddleware)
+                assert issubclass(mw_cls, BaseMiddleware)
             else:
                 # Middleware name
                 mw_cls = loader.get_class(name)
