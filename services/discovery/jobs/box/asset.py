@@ -448,7 +448,7 @@ class AssetCheck(DiscoveryCheck):
                 self.unknown_part_no[p] = set()
             for pp in part_no:
                 self.unknown_part_no[p].add(pp)
-            UnknownModel.mark_unknown(vendor.code, self.object, p, descripton)
+            UnknownModel.mark_unknown(vendor.code[0], self.object, p, descripton)
 
     def get_unknown_part_no(self):
         """
