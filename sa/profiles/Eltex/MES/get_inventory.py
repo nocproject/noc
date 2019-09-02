@@ -28,6 +28,9 @@ class Script(BaseScript):
     )
     rx_platform = re.compile(r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
     rx_descr = re.compile(r"^System (?:Description|Type):\s+(?P<descr>.+)$", re.MULTILINE)
+    rx_pwr = re.compile(
+        r"^(?P<type>\S+) Power Supply Status \[(?P<pwr_type>\S+)\]:\s+", re.MULTILINE
+    )
     rx_trans = re.compile(
         r"^\s*Transceiver information:\s*\n"
         r"^\s*Vendor name: (?P<vendor>.+?)\s*\n"
@@ -85,6 +88,19 @@ class Script(BaseScript):
             r["description"] = descr
         return r
 
+    def get_pwr(self, type, pwr_type):
+        if pwr_type == "AC":
+            part_no = "PM160-220/12"
+        elif pwr_type == "DC":
+            part_no = "PM75-48/12"
+        elif pwr_type == "N/A":
+            part_no = "PM160-220/12"
+        else:
+            raise self.NotSupportedError("Unknown PS type: %s" % pwr_type)
+        if type not in ["Main", "Redundant"]:
+            raise self.NotSupportedError("Unknown PS type: %s" % type)
+        return {"type": "PWR", "vendor": "ELTEX", "part_no": part_no, "number": type}
+
     def get_trans(self, ifname):
         v = self.cli("show fiber-ports optical-transceiver detailed interface %s" % ifname)
         match = self.rx_trans.search(v)
@@ -113,12 +129,14 @@ class Script(BaseScript):
                 else:
                     # raise self.NotSupportedError()
                     part_no = "NoName | Transceiver | 1G | SFP"
+            elif code == "1000BASE-T":
+                part_no = "NoName | Transceiver | 1G | SFP T"
             elif code == "10GBASE-LR":
                 part_no = "NoName | Transceiver | 10G | SFP+ LR"
             elif code == "unknown":
                 part_no = "NoName | Transceiver | 1G | SFP"
             else:
-                raise self.NotSupportedError()
+                raise self.NotSupportedError("Unknown Compliance code: %s" % code)
         r["part_no"] = part_no
         return r
 
@@ -129,7 +147,7 @@ class Script(BaseScript):
         try:
             v = self.cli("show fiber-ports optical-transceiver")
             for i in parse_table(v):
-                if i[1] == "OK":
+                if i[1] in ["OK", "N/S"]:
                     ports += [i[0]]
         except self.CLISyntaxError:
             pass
@@ -144,6 +162,8 @@ class Script(BaseScript):
                 ser = self.cli("show system id unit %s" % unit, cached=True)
                 r = self.get_chassis(plat, ver, ser)
                 res += [r]
+                for match in self.rx_pwr.finditer(plat):
+                    res += [self.get_pwr(match.group("type"), match.group("pwr_type"))]
                 for p in ports:
                     if p.startswith("gi") or p.startswith("te"):
                         if unit == p[2]:
@@ -154,6 +174,8 @@ class Script(BaseScript):
             ser = self.cli("show system id", cached=True)
             r = self.get_chassis(plat, ver, ser)
             res = [r]
+            for match in self.rx_pwr.finditer(plat):
+                res += [self.get_pwr(match.group("type"), match.group("pwr_type"))]
             for p in ports:
                 res += [self.get_trans(p)]
 
