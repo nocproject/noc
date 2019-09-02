@@ -53,7 +53,10 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
     ]
 
-    matchers = {"is_has_image": {"image": {"$regex": r"^\S+"}}}
+    matchers = {
+        "is_has_image": {"image": {"$regex": r"^\S+"}},
+        "is_has_chgroup": {"version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9])"}},
+    }
 
     PLATFORMS = {
         "24": "MES-3124",

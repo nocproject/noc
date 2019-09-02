@@ -306,11 +306,7 @@ class Script(BaseScript):
             mac = None
             ifindex = 0
             name = res[0].strip()
-            if (
-                self.match_version(version__regex=r"[12]\.[15]\.4[4-9]")
-                or self.match_version(version__regex=r"4\.0\.[1,5-9]")
-                or self.match_version(version__regex=r"4\.0\.4$")
-            ):
+            if self.is_has_chgroup:
                 v = self.cli("show interface %s" % name)
                 time.sleep(0.5)
                 for match in self.rx_sh_int.finditer(v):
