@@ -33,11 +33,11 @@ class Command(BaseCommand):
             print("USAGE: %s <model> <object id> [.. <object id>]" % sys.argv[0])
             sys.exit(1)
         m = args[0].replace("-", "_")
+        connect()
         if m not in self.models:
             raise CommandError(
                 "Invalid model '%s'. Valid models are: %s" % (m, ", ".join(self.models))
             )
-        connect()
         objects = []
         getter = getattr(self, "get_%s" % m)
         wiper = getattr(self, "wipe_%s" % m)
