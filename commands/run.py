@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
 
@@ -38,6 +39,7 @@ class Command(BaseCommand):
 
     def iter_objects(self, objects):
         r = set()
+        connect()
         for x in objects:
             for o in ManagedObjectSelector.get_objects_from_expression(x):
                 r.add(o)
