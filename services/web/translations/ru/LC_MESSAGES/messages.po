@@ -8,18 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-08-14 12:14+0300\n"
+"POT-Creation-Date: 2019-08-29 18:03+0300\n"
 "PO-Revision-Date: 2019-08-14 15:46+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
-"X-Generator: Poedit 2.2\n"
 
 #: lib/app/reportapplication.py:64
 #: services/web/apps/fm/reportalarmdetail/views.py:108
@@ -47,7 +46,8 @@ msgstr "Ключи доступа к API"
 msgid "Groups"
 msgstr "Группы"
 
-#: services/web/apps/aaa/user/views.py:43 services/web/apps/aaa/user/views.py:45
+#: services/web/apps/aaa/user/views.py:43
+#: services/web/apps/aaa/user/views.py:45
 msgid "Users"
 msgstr "Пользователи"
 
@@ -329,7 +329,8 @@ msgstr "Правило классификации"
 msgid "Classification Rules"
 msgstr "Правила классификации"
 
-#: services/web/apps/fm/event/views.py:36 services/web/apps/fm/event/views.py:37
+#: services/web/apps/fm/event/views.py:36
+#: services/web/apps/fm/event/views.py:37
 msgid "Events"
 msgstr "События"
 
@@ -612,7 +613,7 @@ msgid "Managed Object"
 msgstr "Объекты управления"
 
 #: services/web/apps/fm/reportescalations/views.py:89
-#: services/web/apps/sa/reportstalediscovery/views.py:69
+#: services/web/apps/sa/reportstalediscovery/views.py:68
 msgid "Segment"
 msgstr "Сегмент"
 
@@ -882,7 +883,8 @@ msgstr "Способность"
 msgid "Capabilities"
 msgstr "Способности"
 
-#: services/web/apps/inv/card/views.py:15 services/web/apps/inv/card/views.py:16
+#: services/web/apps/inv/card/views.py:15
+#: services/web/apps/inv/card/views.py:16
 msgid "Cards"
 msgstr "Карточки"
 
@@ -990,22 +992,49 @@ msgstr "Сводка опроса"
 msgid "Discovery Object Caps"
 msgstr "Найденные возможности оборудования"
 
-#: services/web/apps/inv/reportdiscoverylinks/views.py:24
-#: services/web/apps/inv/reportdiscoverylinks/views.py:25
+#: services/web/apps/inv/reportdiscoverylinks/views.py:21
+#: services/web/apps/inv/reportdiscoverylinks/views.py:22
 msgid "Discovery Links Summary"
 msgstr "Сводка по поиску линков"
 
-#: services/web/apps/inv/reportdiscoverylinks/views.py:97
+#: services/web/apps/inv/reportdiscoverylinks/views.py:27
+#: services/web/apps/inv/reportdiscoverylinks/views.py:34
+#: services/web/apps/inv/reportdiscoverylinks/views.py:42
+msgid "All polling"
+msgstr ""
+
+#: services/web/apps/inv/reportdiscoverylinks/views.py:43
+msgid "0"
+msgstr ""
+
+#: services/web/apps/inv/reportdiscoverylinks/views.py:44
+msgid "1"
+msgstr ""
+
+#: services/web/apps/inv/reportdiscoverylinks/views.py:45
+msgid "2"
+msgstr ""
+
+#: services/web/apps/inv/reportdiscoverylinks/views.py:46
+msgid "More 3"
+msgstr ""
+
+#: services/web/apps/inv/reportdiscoverylinks/views.py:78
 msgid "Links count"
 msgstr "Количество линков"
 
-#: services/web/apps/inv/reportdiscoverylinks/views.py:97
+#: services/web/apps/inv/reportdiscoverylinks/views.py:79
 msgid "MO Count"
 msgstr "Количество Объектов"
 
-#: services/web/apps/inv/reportdiscoverylinks/views.py:97
+#: services/web/apps/inv/reportdiscoverylinks/views.py:80
 msgid "Percent at All"
 msgstr "Проценты от всех"
+
+#: services/web/apps/inv/reportdiscoverylinks/views.py:81
+#: services/web/apps/sa/reportprofilechecksummary/views.py:121
+msgid "Detail"
+msgstr "Ссылка на детализацию"
 
 #: services/web/apps/inv/reportdiscoverypoison/views.py:17
 msgid "Discovery ID cache poison"
@@ -1090,7 +1119,7 @@ msgstr "Список объектов"
 #: services/web/apps/inv/reportpendinglinks/views.py:208
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:228
 #: services/web/apps/sa/reportprofilechecksdetailed/views.py:140
-#: services/web/apps/sa/reportstalediscovery/views.py:68
+#: services/web/apps/sa/reportstalediscovery/views.py:67
 msgid "Address"
 msgstr "Адрес"
 
@@ -1103,7 +1132,7 @@ msgstr "Производитель"
 #: services/web/apps/fm/reportoutages/views.py:125
 #: services/web/apps/inv/reportobjectsserial/views.py:47
 #: services/web/apps/sa/reportobjectsummary/views.py:132
-#: services/web/apps/sa/reportstalediscovery/views.py:66
+#: services/web/apps/sa/reportstalediscovery/views.py:65
 msgid "Platform"
 msgstr "Платформа"
 
@@ -1387,7 +1416,8 @@ msgstr "Интерфейсы"
 msgid "Tools"
 msgstr "Инструменты"
 
-#: services/web/apps/ip/tools/views.py:51 services/web/apps/ip/tools/views.py:86
+#: services/web/apps/ip/tools/views.py:51
+#: services/web/apps/ip/tools/views.py:86
 msgid "Permission denied"
 msgstr "Доступ запрещён"
 
@@ -1466,8 +1496,8 @@ msgstr "CIR(bps). Можно использовать множители K, M и
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:25
 msgid ""
-"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 is "
-"default)"
+"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 "
+"is default)"
 msgstr ""
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:32
@@ -1492,9 +1522,9 @@ msgstr ""
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:61
 msgid ""
-"Recommended way for policy-map values calculating is: normal-burst-bytes=bits-"
-"per-second*Tc/8.Recommended way for rate-limit values calculating is: burst-"
-"normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
+"Recommended way for policy-map values calculating is: normal-burst-bytes"
+"=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
+"is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
 msgstr ""
 
 #: services/web/apps/main/calculator/views.py:25
@@ -1526,7 +1556,8 @@ msgstr "Политики устаревания данных CliсkHouse"
 msgid "CronTabs"
 msgstr "Планировщик"
 
-#: services/web/apps/main/csv/views.py:28 services/web/apps/main/csv/views.py:30
+#: services/web/apps/main/csv/views.py:28
+#: services/web/apps/main/csv/views.py:30
 msgid "CSV Export/Import"
 msgstr "Импорт/экспорт CSV"
 
@@ -1759,7 +1790,8 @@ msgstr "Группы пиров"
 #: services/web/apps/crm/subscriberprofile/views.py:21
 #: services/web/apps/crm/supplier/views.py:23
 #: services/web/apps/crm/supplierprofile/views.py:21
-#: services/web/apps/dev/quiz/views.py:21 services/web/apps/dev/spec/views.py:21
+#: services/web/apps/dev/quiz/views.py:21
+#: services/web/apps/dev/spec/views.py:21
 #: services/web/apps/dns/dnsserver/views.py:21
 #: services/web/apps/dns/dnszoneprofile/views.py:21
 #: services/web/apps/fm/alarmclass/views.py:22
@@ -2274,84 +2306,84 @@ msgid "Managed Object Profile Check Summary"
 msgstr "Сводка по статусу объектов"
 
 #: services/web/apps/sa/reportprofilechecksummary/views.py:29
-#: services/web/apps/sa/reportprofilechecksummary/views.py:60
+#: services/web/apps/sa/reportprofilechecksummary/views.py:61
 msgid "Is Managed, object type defined"
 msgstr "Тип устройства определён, опрашивается"
 
 #: services/web/apps/sa/reportprofilechecksummary/views.py:36
-#: services/web/apps/sa/reportprofilechecksummary/views.py:57
+#: services/web/apps/sa/reportprofilechecksummary/views.py:58
 msgid "Is Managed"
 msgstr "Управляемые"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:56
+#: services/web/apps/sa/reportprofilechecksummary/views.py:57
 msgid "Not Managed"
 msgstr "Не управляемые"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:61
+#: services/web/apps/sa/reportprofilechecksummary/views.py:62
 msgid "Is Managed, object type defined bad CLI Credential"
 msgstr "Тип устройства определен, но не подходят пользователь/пароль"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:62
+#: services/web/apps/sa/reportprofilechecksummary/views.py:63
 msgid "Is Managed, object type undefined"
 msgstr "Тип устройства не определён"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:63
+#: services/web/apps/sa/reportprofilechecksummary/views.py:64
 msgid "Is Managed, object type undefined not ping response"
 msgstr "Тип устройства не определён, т.к. оно недоступно"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:64
+#: services/web/apps/sa/reportprofilechecksummary/views.py:65
 msgid "Is Managed, object type undefined has ping response"
 msgstr "Тип устройства не определён, но устройство доступно"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:65
+#: services/web/apps/sa/reportprofilechecksummary/views.py:67
 msgid "Is Managed, object type undefined bad SNMP Credential"
 msgstr "Тип устройства не определён, т.к. не подходит SNMP Community"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:66
+#: services/web/apps/sa/reportprofilechecksummary/views.py:71
 msgid "Is Managed, object type undefined for various reasons"
 msgstr "Тип устройства не определён, по различным причинам"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:67
+#: services/web/apps/sa/reportprofilechecksummary/views.py:74
 msgid "Is Managed, object type Profile is not know"
 msgstr "Тип устройства не определён,т.к. система не смогла подобрать профиль"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:99
-#: services/web/apps/sa/reportprofilechecksummary/views.py:106
+#: services/web/apps/sa/reportprofilechecksummary/views.py:75
+msgid "Is monitoring, object type undefined, only availablity check"
+msgstr ""
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:107
+#: services/web/apps/sa/reportprofilechecksummary/views.py:114
 msgid "Is Managed, objects not processed yet"
 msgstr "Тип устройства не определён, т.к. опрос ещё не прошёл"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:109
+#: services/web/apps/sa/reportprofilechecksummary/views.py:117
 msgid "PP"
 msgstr ""
 
 #: services/web/apps/fm/reportoutages/views.py:127
-#: services/web/apps/sa/reportprofilechecksummary/views.py:110
+#: services/web/apps/sa/reportprofilechecksummary/views.py:118
 msgid "Status"
 msgstr "Состояние"
 
 #: services/web/apps/sa/reportobjectsummary/views.py:153
-#: services/web/apps/sa/reportprofilechecksummary/views.py:111
+#: services/web/apps/sa/reportprofilechecksummary/views.py:119
 msgid "Quantity"
 msgstr "Количество"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:112
+#: services/web/apps/sa/reportprofilechecksummary/views.py:120
 msgid "Percent"
 msgstr "Проценты"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:113
-msgid "Detail"
-msgstr "Ссылка на детализацию"
-
-#: services/web/apps/sa/reportstalediscovery/views.py:23
+#: services/web/apps/sa/reportstalediscovery/views.py:22
 msgid "Stale discovery"
 msgstr "Зависший опрос"
 
-#: services/web/apps/sa/reportstalediscovery/views.py:63
+#: services/web/apps/sa/reportstalediscovery/views.py:62
 msgid "Admin. Domain"
 msgstr "З.О."
 
 #: services/web/apps/inv/reportdiscoverycaps/views.py:57
-#: services/web/apps/sa/reportstalediscovery/views.py:64
+#: services/web/apps/sa/reportstalediscovery/views.py:63
 msgid "Object"
 msgstr "Объект"
 
@@ -2366,24 +2398,24 @@ msgstr "Объект"
 #: services/web/apps/sa/reportobjectsummary/views.py:132
 #: services/web/apps/sa/reportobjectsummary/views.py:140
 #: services/web/apps/sa/reportprofilechecksdetailed/views.py:142
-#: services/web/apps/sa/reportstalediscovery/views.py:65
+#: services/web/apps/sa/reportstalediscovery/views.py:64
 msgid "Profile"
 msgstr "Профиль"
 
 #: services/web/apps/sa/reportobjectsummary/views.py:140
-#: services/web/apps/sa/reportstalediscovery/views.py:67
+#: services/web/apps/sa/reportstalediscovery/views.py:66
 msgid "Version"
 msgstr "Версия"
 
-#: services/web/apps/sa/reportstalediscovery/views.py:70
+#: services/web/apps/sa/reportstalediscovery/views.py:69
 msgid "Job"
 msgstr "Задача (Job)"
 
-#: services/web/apps/sa/reportstalediscovery/views.py:71
+#: services/web/apps/sa/reportstalediscovery/views.py:70
 msgid "Last Success"
 msgstr "Последний успех"
 
-#: services/web/apps/sa/reportstalediscovery/views.py:72
+#: services/web/apps/sa/reportstalediscovery/views.py:71
 msgid "Reason"
 msgstr "Причина"
 
@@ -2492,11 +2524,13 @@ msgstr ""
 msgid "VPN Profiles"
 msgstr ""
 
-#: services/web/apps/wf/__init__.py:12 services/web/apps/wf/workflow/views.py:34
+#: services/web/apps/wf/__init__.py:12
+#: services/web/apps/wf/workflow/views.py:34
 msgid "Workflow"
 msgstr ""
 
-#: services/web/apps/wf/state/views.py:20 services/web/apps/wf/state/views.py:21
+#: services/web/apps/wf/state/views.py:20
+#: services/web/apps/wf/state/views.py:21
 msgid "States"
 msgstr "Состояния"
 
@@ -2556,13 +2590,9 @@ msgstr ""
 
 #~ msgid "Load interface in % (For Load Interfaces Report Type)"
 #~ msgstr ""
-#~ "Загрузка интерфейса в % от пропускной способности (Для отчёта по загрузке "
-#~ "интерфейсов)"
 
 #~ msgid "Enable Default interface profile (For Load Interfaces Report Type)"
 #~ msgstr ""
-#~ "Включить профиль интерфейса по умолчанию (для Отчёта по загрузке "
-#~ "интерфейсов)"
 
 #~ msgid "Int Descr"
 #~ msgstr "Описание интерфейса"
@@ -2617,7 +2647,6 @@ msgstr ""
 
 #~ msgid "Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"
 #~ msgstr ""
-#~ "Обязательное поле. Не более 75 символов. Только буквы, цифры и @/./+/-/_"
 
 #~ msgid "This value must contain only letters, digits and @/./+/-/_."
 #~ msgstr "Это значение должно состоять только из букв, цифр и @/./+/-/_."
@@ -2626,13 +2655,7 @@ msgstr ""
 #~ msgstr "Пароль"
 
 #~ msgid ""
-#~ "Raw passwords are not stored, so there is no way to see this user's "
-#~ "password, but you can change the password using <a href=\"password/\">this "
-#~ "form</a>."
 #~ msgstr ""
-#~ "В открытом виде пароль не хранится, поэтому вы не можете увидеть пароль "
-#~ "этого пользователя, но вы можете изменить пароль, используя <a href="
-#~ "\"password/\">эту форму</a>."
 
 #~ msgid "Personal info"
 #~ msgstr "Личные данные"
@@ -2645,3 +2668,4 @@ msgstr ""
 
 #~ msgid "Important dates"
 #~ msgstr "Важные даты"
+
