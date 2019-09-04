@@ -27,6 +27,12 @@ class Script(BaseScript):
         r"(?:\s+Laser wavelength is (?P<nm>\d+) nm\.)?",
         re.MULTILINE,
     )
+    rx_stack = re.compile(
+        r"^(Software package |Local software )version\s+:\s(?P<software>\S+)\s*\n"
+        r"^Bootrom version\s+:\s(?P<bootrom>\S+)\s*\n"
+        r"^CPLD.+\n"
+        r"^Hardware version\s+:\s(?P<hardware>\S+)\s*\n"
+        r"^Serial number\s+:\s(?P<serial>\S+)\s*\n", re.MULTILINE)
     fake_vendors = ["OEM", "CISCO-FINISAR"]
 
     def execute(self):
@@ -35,15 +41,37 @@ class Script(BaseScript):
         revision = s["attributes"]["HW version"]
         serial = s["attributes"]["Serial Number"]
         part_no = s["platform"]
-        p = {
-            "type": "CHASSIS",
-            "vendor": "NAG",
-            "part_no": part_no,
-            "revision": revision,
-            "serial": serial,
-            "description": "",
-        }
-        r += [p]
+        slot = self.cli("show slot")
+        slot_id = 0
+        if "Invalid" in slot:
+            p = {
+                "type": "CHASSIS",
+                "vendor": "NAG",
+                "part_no": part_no,
+                "revision": revision,
+                "serial": serial,
+                "description": ""
+            }
+            r += [p]
+            r += self.get_transceivers(1)
+        else:
+            for match in self.rx_stack.finditer(slot):
+                slot_id += 1
+                sl = {
+                    "type": "CHASSIS",
+                    "number": slot_id,
+                    "vendor": "NAG",
+                    "part_no": part_no,
+                    "revision": match.group("hardware"),
+                    "serial": match.group("serial"),
+                    "description": ""
+                }
+                r += [sl]
+                r += self.get_transceivers(slot_id)
+        return r
+
+    def get_transceivers(self, slot_id):
+        out = []
         try:
             c = self.cli("show transceiver detail")
             for match in self.rx_media_type.finditer(c):
@@ -52,75 +80,77 @@ class Script(BaseScript):
                 type = match.group("type")
                 mbd = int(match.group("mbd"))
                 nm = match.group("nm")
-                if not nm:
-                    nm = 0
-                else:
-                    nm = int(nm)
-                if vendor in self.fake_vendors:
-                    vendor = "NONAME"
-                    part_no = "NoName | Transceiver | "
-                    if mbd == 1300 and nm == 1310:
-                        part_no = part_no + "1G | SFP BXU"
-                    elif mbd == 1300 and nm == 1550:
-                        part_no = part_no + "1G | SFP BXD"
-                    elif mbd == 1200 and nm == 1310:
-                        part_no = part_no + "1G | SFP BX10U"
-                    elif mbd >= 1200 and nm == 1490:
-                        part_no = part_no + "1G | SFP BX10D"
-                    elif mbd == 10300 and nm == 0 and description.startswith("unkn"):
-                        part_no = part_no + "1G | SFP"
-                    elif mbd == 10300 and description.startswith("10G"):
-                        if description.endswith(tuple([" ER", "-ER"])):
-                            part_no = part_no + "10G | SFP+ ER"
-                        elif description.endswith(tuple([" LR", "-LR"])):
-                            part_no = part_no + "10G | SFP+ LR"
-                        elif description.endswith(tuple([" SR", "-SR"])):
-                            part_no = part_no + "10G | SFP+ SR"
-                        elif description.endswith(tuple([" ZR", "-ZR"])):
-                            part_no = part_no + "10G | SFP+ ZR"
-                        else:
-                            part_no = part_no + "10G | SFP+"
-                    elif mbd == 12000 and nm == 0:
-                        part_no = part_no + "10G | SFP+ Copper DAC"
-                    elif mbd >= 1000 and mbd <= 1300 and nm == 0:
-                        if description.endswith(tuple([" EX", "-EX"])):
-                            part_no = part_no + "1G | SFP EX"
-                        elif description.endswith(tuple([" LH", "-LH"])):
-                            part_no = part_no + "1G | SFP LH"
-                        elif description.endswith(tuple([" LX", "-LX"])):
-                            part_no = part_no + "1G | SFP LX"
-                        elif description.endswith(tuple([" SX", "-SX"])):
-                            part_no = part_no + "1G | SFP SX"
-                        elif description.endswith(tuple([" T", "-T"])):
-                            part_no = part_no + "1G | SFP T"
-                        elif description.endswith(tuple([" TX", "-TX"])):
-                            part_no = part_no + "1G | SFP TX"
-                        elif description.endswith(tuple([" ZX", "-ZX"])):
-                            part_no = part_no + "1G | SFP ZX"
-                        else:
-                            part_no = part_no + "1G | SFP"
-                    elif mbd == 100 and nm == 1310:
-                        part_no = part_no + "100M | SFP BX100U"
-                    elif mbd == 100 and nm == 1550:
-                        part_no = part_no + "100M | SFP BX100D"
-                    elif description.startswith("40G"):
-                        part_no = part_no + "40G | QSFP+"
+                ch_id = int(match.group("ch_id"))
+                if ch_id == slot_id:
+                    if not nm:
+                        nm = 0
                     else:
-                        part_no = part_no + "Unknown SFP"
-                else:
-                    part_no = vendor + " | Transceiver | " + type
+                        nm = int(nm)
+                    if vendor in self.fake_vendors:
+                        vendor = "NONAME"
+                        part_no = 'NoName | Transceiver | '
+                        if mbd == 1300 and nm == 1310:
+                            part_no = part_no + '1G | SFP BXU'
+                        elif mbd == 1300 and nm == 1550:
+                            part_no = part_no + '1G | SFP BXD'
+                        elif mbd == 1200 and nm == 1310:
+                            part_no = part_no + '1G | SFP BX10U'
+                        elif mbd >= 1200 and nm == 1490:
+                            part_no = part_no + '1G | SFP BX10D'
+                        elif mbd == 10300 and nm == 0 and description.startswith('unkn'):
+                            part_no = part_no + '1G | SFP'
+                        elif mbd == 10300 and description.startswith('10G') :
+                            if description.endswith(tuple([" ER", "-ER"])):
+                                part_no = part_no + '10G | SFP+ ER'
+                            elif description.endswith(tuple([" LR", "-LR"])):
+                                part_no = part_no + '10G | SFP+ LR'
+                            elif description.endswith(tuple([" SR", "-SR"])):
+                                part_no = part_no + '10G | SFP+ SR'
+                            elif description.endswith(tuple([" ZR", "-ZR"])):
+                                part_no = part_no + '10G | SFP+ ZR'
+                            else:
+                                part_no = part_no + '10G | SFP+'
+                        elif mbd == 12000 and nm == 0:
+                            part_no = part_no + '10G | SFP+ Copper DAC'
+                        elif mbd >= 1000 and mbd <=1300 and nm == 0:
+                            if description.endswith(tuple([" EX", "-EX"])):
+                                part_no = part_no + '1G | SFP EX'
+                            elif description.endswith(tuple([" LH", "-LH"])):
+                                part_no = part_no + '1G | SFP LH'
+                            elif description.endswith(tuple([" LX", "-LX"])):
+                                part_no = part_no + '1G | SFP LX'
+                            elif description.endswith(tuple([" SX", "-SX"])):
+                                part_no = part_no + '1G | SFP SX'
+                            elif description.endswith(tuple([" T", "-T"])):
+                                part_no = part_no + '1G | SFP T'
+                            elif description.endswith(tuple([" TX", "-TX"])):
+                                part_no = part_no + '1G | SFP TX'
+                            elif description.endswith(tuple([" ZX", "-ZX"])):
+                                part_no = part_no + '1G | SFP ZX'
+                            else:
+                                part_no = part_no + '1G | SFP'
+                        elif mbd == 100 and nm == 1310:
+                            part_no = part_no + '100M | SFP BX100U'
+                        elif mbd == 100 and nm == 1550:
+                            part_no = part_no + '100M | SFP BX100D'
+                        elif description.startswith('40G'):
+                            part_no = part_no + '40G | QSFP+'
+                        else:
+                            part_no = part_no + 'Unknown SFP'
+                    else:
+                        part_no = vendor + " | Transceiver | " + type
 
-                i = {
-                    "type": "XCVR",
-                    "number": match.group("port"),
-                    "vendor": vendor,
-                    "part_no": part_no,
-                    "revision": "",
-                    "serial": match.group("serial"),
-                    "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
-                }
-                r += [i]
+                    i = {
+                        "type": "XCVR",
+                        "number": "Ethernet1/" + match.group("port"),
+                        "vendor": vendor,
+                        "part_no": part_no,
+                        "revision": "",
+                        "serial": match.group("serial"),
+                        "description": "%s, %dMbd, %dnm" % (description, mbd, nm)
+                    }
+                    out += [i]
         except self.CLISyntaxError:
             pass
 
-        return r
+        return out
