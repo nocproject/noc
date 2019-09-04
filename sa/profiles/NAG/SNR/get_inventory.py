@@ -75,7 +75,7 @@ class Script(BaseScript):
     def get_transceivers(self, slot_id):
         out = []
         try:
-            c = self.cli("show transceiver detail")
+            c = self.cli("show transceiver detail", cached=True)
             for match in self.rx_media_type.finditer(c):
                 vendor = match.group("vendor")
                 description = match.group("part_no")
