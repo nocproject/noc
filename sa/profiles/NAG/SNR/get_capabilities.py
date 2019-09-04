@@ -20,7 +20,6 @@ class Script(BaseScript):
     rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
     rx_stack = re.compile(r"-+member :(?P<id>\d+)-+")
 
-
     @false_on_cli_error
     def has_lldp_cli(self):
         """
