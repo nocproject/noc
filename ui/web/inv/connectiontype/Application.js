@@ -9,6 +9,8 @@ console.debug("Defining NOC.inv.connectiontype.Application");
 Ext.define("NOC.inv.connectiontype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
+        "NOC.core.TemplatePreview",
         "Ext.ux.form.ModelDataField",
         "NOC.inv.connectiontype.LookupField"
     ],

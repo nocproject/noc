@@ -10,7 +10,10 @@ Ext.define("NOC.fm.mib.Application", {
     extend: "NOC.core.ModelApplication",
     model: "NOC.fm.mib.Model",
     search: true,
-
+    requires: [
+        "NOC.core.Preview",
+        "NOC.fm.mib.MIBUpload"
+    ],
     columns: [
         {
             text: __("MIB"),

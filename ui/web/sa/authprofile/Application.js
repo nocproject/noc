@@ -9,6 +9,8 @@ console.debug("Defining NOC.sa.authprofile.Application");
 Ext.define("NOC.sa.authprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.PasswordField",
+        "NOC.core.TagsField",
         "NOC.sa.authprofile.Model",
         "NOC.main.remotesystem.LookupField"
     ],

@@ -8,6 +8,9 @@ console.debug("Defining NOC.sa.managedobject.scripts.TablePreview");
 
 Ext.define("NOC.sa.managedobject.scripts.TablePreview", {
     extend: "NOC.sa.managedobject.scripts.ResultPreview",
+    requires: [
+        "Ext.ux.form.SearchField"
+    ],
     columns: [],
     search: false,
 

@@ -17,7 +17,9 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.remotesystem.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
-        "NOC.cm.interfacevalidationpolicy.LookupField"
+        "NOC.cm.validationpolicysettings.ValidationSettingsPanel",
+        "NOC.cm.interfacevalidationpolicy.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,

@@ -9,11 +9,15 @@ console.debug("Defining NOC.inv.objectmodel.Application");
 Ext.define("NOC.inv.objectmodel.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "Ext.ux.form.ModelDataField",
+        "NOC.core.JSONPreview",
+        "NOC.core.TagsField",
+        "NOC.core.TemplatePreview",
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
-        "NOC.inv.connectionrule.LookupField"
+        "NOC.inv.connectionrule.LookupField",
+        "Ext.ux.form.ModelDataField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.objectmodel.Model",
     search: true,

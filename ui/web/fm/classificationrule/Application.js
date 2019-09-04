@@ -9,8 +9,12 @@ console.debug("Defining NOC.fm.classificationrule.Application");
 Ext.define("NOC.fm.classificationrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
+        "NOC.core.TemplatePreview",
         "NOC.fm.classificationrule.Model",
-        "NOC.fm.eventclass.LookupField"
+        "NOC.fm.classificationrule.TestForm",
+        "NOC.fm.eventclass.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.classificationrule.Model",
     search: true,

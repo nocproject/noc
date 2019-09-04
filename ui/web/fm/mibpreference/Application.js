@@ -8,7 +8,10 @@ console.debug("Defining NOC.fm.mibpreference.Application");
 
 Ext.define("NOC.fm.mibpreference.Application", {
     extend: "NOC.core.ModelApplication",
-    requires: ["NOC.fm.mibpreference.Model"],
+    requires: [
+        "NOC.core.JSONPreview",
+        "NOC.fm.mibpreference.Model"
+    ],
     model: "NOC.fm.mibpreference.Model",
     search: true,
 

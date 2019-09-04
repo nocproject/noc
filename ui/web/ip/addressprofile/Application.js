@@ -9,6 +9,7 @@ console.debug("Defining NOC.ip.addressprofile.Application");
 Ext.define("NOC.ip.addressprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
         "NOC.ip.addressprofile.Model",
         "NOC.wf.workflow.LookupField",
         "NOC.main.style.LookupField",

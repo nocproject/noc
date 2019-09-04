@@ -9,8 +9,9 @@ console.debug("Defining NOC.dev.quiz.Application");
 Ext.define("NOC.dev.quiz.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.dev.quiz.Model",
-        "NOC.core.ListFormField"
+        "NOC.core.ListFormField",
+        "NOC.core.JSONPreview",
+        "NOC.dev.quiz.Model"
     ],
     model: "NOC.dev.quiz.Model",
     search: true,

@@ -11,8 +11,10 @@ Ext.define("NOC.gis.building.Application", {
     requires: [
         "NOC.gis.building.Model",
         "NOC.gis.building.AddressesModel",
+        "NOC.gis.building.FillEntrancesForm",
         "NOC.gis.division.LookupField",
-        "NOC.gis.street.LookupField"
+        "NOC.gis.street.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.gis.building.Model",
     search: true,

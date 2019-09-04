@@ -12,7 +12,8 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
         "NOC.inv.networksegmentprofile.Model",
         "NOC.inv.networksegmentprofile.LookupField",
         "NOC.main.style.LookupField",
-        "NOC.vc.vlanprofile.LookupField"
+        "NOC.vc.vlanprofile.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.networksegmentprofile.Model",
     search: true,

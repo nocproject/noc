@@ -13,7 +13,8 @@ Ext.define("NOC.sla.slaprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
-        "NOC.pm.thresholdprofile.LookupField"
+        "NOC.pm.thresholdprofile.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.sla.slaprofile.Model",
     rowClassField: "row_class",

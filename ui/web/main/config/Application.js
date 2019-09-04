@@ -9,7 +9,8 @@ console.debug("Defining NOC.main.config.Application");
 Ext.define("NOC.main.config.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.main.config.ConfigModel"
+        "NOC.main.config.ConfigModel",
+        "Ext.ux.form.SearchField"
     ],
 
     initComponent: function() {

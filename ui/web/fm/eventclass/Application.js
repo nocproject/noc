@@ -9,11 +9,13 @@ console.debug("Defining NOC.fm.eventclass.Application");
 Ext.define("NOC.fm.eventclass.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.fm.eventclass.Model",
         "NOC.fm.eventclass.LookupField",
         "NOC.fm.alarmclass.LookupField",
         "Ext.ux.form.JSONField",
-        "Ext.ux.form.StringsField"
+        "Ext.ux.form.StringsField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.eventclass.Model",
     search: true,

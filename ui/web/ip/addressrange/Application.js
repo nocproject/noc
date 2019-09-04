@@ -9,6 +9,7 @@ console.debug("Defining NOC.ip.addressrange.Application");
 Ext.define("NOC.ip.addressrange.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
         "NOC.ip.addressrange.Model",
         "NOC.ip.vrf.LookupField"
     ],

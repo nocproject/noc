@@ -9,16 +9,21 @@ Ext.define("NOC.main.desktop.Application", {
     extend: "Ext.Viewport",
     layout: "border",
     requires: [
-        "Ext.ux.form.SearchField",
+        "NOC.core.CMText",
+        "NOC.core.PasswordField",
         "NOC.core.TagsField",
         "NOC.core.StringListField",
         "NOC.core.StateField",
+        "NOC.core.StateProvider",
+        "NOC.main.desktop.WorkplacePanel",
+        "NOC.main.desktop.HeaderPanel",
+        "NOC.main.desktop.NavPanel",
+        "NOC.main.desktop.Breadcrumbs",
+        "Ext.ux.form.SearchField",
         "Ext.ux.form.GridField",
         "Ext.ux.form.DictField",
         "Ext.ux.form.ColorField",
-        "Ext.ux.grid.column.GlyphAction",
-        "NOC.core.CMText",
-        "NOC.core.PasswordField"
+        "Ext.ux.grid.column.GlyphAction"
     ],
 
     initComponent: function() {

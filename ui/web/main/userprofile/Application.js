@@ -10,7 +10,9 @@ Ext.define("NOC.main.userprofile.Application", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.main.timepattern.LookupField",
-        "NOC.main.ref.unotificationmethod.LookupField"
+        "NOC.main.ref.unotificationmethod.LookupField",
+        "NOC.main.ref.ulanguage.LookupField",
+        "Ext.ux.form.GridField"
     ],
     layout: "fit",
     //

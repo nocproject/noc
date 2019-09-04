@@ -9,8 +9,9 @@ console.debug("Defining NOC.sa.administrativedomain.Application");
 Ext.define("NOC.sa.administrativedomain.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
+        "NOC.core.combotree.ComboTree",
         "NOC.sa.administrativedomain.Model",
-        "NOC.sa.administrativedomain.TreeCombo",
         "NOC.main.pool.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
@@ -56,16 +57,13 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             fieldLabel: __("Name"),
             allowBlank: false
         },
-        Ext.create('NOC.sa.administrativedomain.TreeCombo', {
+        {
+            xtype: "noc.core.combotree",
+            restUrl: "/sa/administrativedomain/",
             name: "parent",
             fieldLabel: __("Parent"),
-            allowBlank: true,
-            emptyText: __("Select parent..."),
-            labelAlign: "left",
-            labelWidth: 100,
-            listWidth: 1,
-            margin: '0 0 5'
-        }),
+            allowBlank: true
+        },
         {
             name: "description",
             xtype: "textfield",

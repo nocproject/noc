@@ -12,7 +12,8 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
         "NOC.inv.firmwarepolicy.Model",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.inv.firmware.LookupField",
-        "NOC.inv.platform.LookupField"
+        "NOC.inv.platform.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.firmwarepolicy.Model",
     initComponent: function() {

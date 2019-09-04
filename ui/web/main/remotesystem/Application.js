@@ -9,7 +9,8 @@ console.debug("Defining NOC.main.remotesystem.Application");
 Ext.define("NOC.main.remotesystem.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.remotesystem.Model"
+        "NOC.main.remotesystem.Model",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.main.remotesystem.Model",
     search: true,

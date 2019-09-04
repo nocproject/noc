@@ -8,14 +8,20 @@ console.debug("Defining NOC.support.account.Application");
 
 Ext.define("NOC.support.account.Application", {
     extend: "NOC.core.Application",
+    requires: [
+        "NOC.support.account.AccountPanel",
+        "NOC.support.account.SystemPanel",
+    ],
     items: [],
     initComponent: function() {
         var me = this;
 
         me.accountTab = Ext.create("NOC.support.account.AccountPanel", {
-            app: me});
+            app: me
+        });
         me.systemTab = Ext.create("NOC.support.account.SystemPanel", {
-            app: me});
+            app: me
+        });
         Ext.apply(me, {
             items: [{
                 xtype: "tabpanel",

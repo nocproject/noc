@@ -10,9 +10,12 @@ Ext.define("NOC.cm.validationrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.cm.validationrule.Model",
+        "NOC.cm.validationrule.HitsPanel",
         "NOC.main.ref.validator.LookupField",
         "NOC.sa.managedobject.LookupField",
-        "NOC.sa.managedobjectselector.LookupField"
+        "NOC.sa.managedobjectselector.LookupField",
+        "Ext.ux.form.FormField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.cm.validationrule.Model",
     search: true,

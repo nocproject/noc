@@ -11,7 +11,8 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
     controller: "fm.alarm.GridController",
     requires: [
         "NOC.fm.alarm.view.grids.GridController",
-        "NOC.fm.alarm.view.grids.GridViewTable"
+        "NOC.fm.alarm.view.grids.GridViewTable",
+        "Ext.ux.grid.column.GlyphAction"
     ],
     stateful: true,
     columns: [

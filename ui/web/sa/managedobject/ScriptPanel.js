@@ -8,6 +8,11 @@ console.debug("Defining NOC.sa.managedobject.ScriptPanel");
 
 Ext.define("NOC.sa.managedobject.ScriptPanel", {
     extend: "NOC.core.ApplicationPanel",
+    requires: [
+        "NOC.sa.managedobject.ScriptStore",
+        "NOC.sa.managedobject.scripts.ErrorPreview",
+        "Ext.ux.form.SearchField"
+    ],
     app: null,
     autoScroll: true,
     layout: "card",
@@ -127,10 +132,10 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
     showResult: function(name, result) {
         var me = this,
             preview = Ext.create(me.currentPreview, {
-            app: me,
-            script: name,
-            result: result
-        });
+                app: me,
+                script: name,
+                result: result
+            });
         me.add(preview);
         me.getLayout().setActiveItem(1);
     },

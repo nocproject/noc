@@ -10,7 +10,14 @@ Ext.define("NOC.inv.map.Application", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.inv.networksegment.TreeCombo",
-        "NOC.inv.map.MapPanel"
+        "NOC.inv.map.MapPanel",
+        "NOC.inv.map.inspectors.SegmentInspector",
+        "NOC.inv.map.inspectors.ManagedObjectInspector",
+        "NOC.inv.map.inspectors.LinkInspector",
+        "NOC.inv.map.inspectors.CloudInspector",
+        "NOC.inv.map.Legend",
+        "NOC.inv.map.MiniMap",
+        "NOC.inv.map.Basket",
     ],
     rightWidth: 250,
     zoomLevels: [
@@ -30,7 +37,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.readOnly = !me.hasPermission("write");
 
-        me.segmentCombo = Ext.create('NOC.inv.networksegment.TreeCombo', {
+        me.segmentCombo = Ext.create("NOC.inv.networksegment.TreeCombo", {
             fieldLabel: __("Segment"),
             labelWidth: 50,
             labelAlign: "left",

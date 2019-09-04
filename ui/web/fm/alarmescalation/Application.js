@@ -17,6 +17,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
         "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.timepattern.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.alarmescalation.Model",
     initComponent: function () {

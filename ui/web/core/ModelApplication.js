@@ -11,7 +11,20 @@ Ext.define("NOC.core.ModelApplication", {
     requires: [
         "NOC.core.ModelStore",
         "NOC.core.InlineModelStore",
-        "NOC.core.InlineGrid"
+        "NOC.core.InlineGrid",
+        "NOC.core.TreeFilterToolbar",
+        "NOC.core.modelfilter.Base",
+        "NOC.core.modelfilter.Boolean",
+        "NOC.core.modelfilter.Choices",
+        "NOC.core.modelfilter.Lookup",
+        "NOC.core.modelfilter.List",
+        "NOC.core.modelfilter.VCFilter",
+        "NOC.core.modelfilter.AFI",
+        "NOC.core.modelfilter.VC",
+        "NOC.core.modelfilter.Tag",
+        "NOC.core.modelfilter.Favorites",
+        "NOC.core.modelfilter.Tree",
+        "Ext.ux.grid.column.GlyphAction"
     ],
     mixins: [
         "NOC.core.Export"

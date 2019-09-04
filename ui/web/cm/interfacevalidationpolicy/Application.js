@@ -12,7 +12,8 @@ Ext.define("NOC.cm.interfacevalidationpolicy.Application", {
         "NOC.cm.interfacevalidationpolicy.Model",
         "NOC.cm.confdbquery.LookupField",
         "NOC.fm.alarmclass.LookupField",
-        "NOC.core.ListFormField"
+        "NOC.core.ListFormField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.cm.interfacevalidationpolicy.Model",
     search: true,
