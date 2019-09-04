@@ -28,7 +28,6 @@ class Script(BaseScript):
         cmd = self.cli("show lldp", ignore_errors=True)
         return self.rx_lldp_en.search(cmd) is not None
 
-
     def execute_platform_cli(self, caps):
         try:
             s = []
