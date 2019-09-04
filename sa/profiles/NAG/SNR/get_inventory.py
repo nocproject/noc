@@ -112,7 +112,7 @@ class Script(BaseScript):
                                 part_no = part_no + '10G | SFP+'
                         elif mbd == 12000 and nm == 0:
                             part_no = part_no + '10G | SFP+ Copper DAC'
-                        elif mbd >= 1000 and mbd <=1300 and nm == 0:
+                        elif mbd >= 1000 and mbd <= 1300 and nm == 0:
                             if description.endswith(tuple([" EX", "-EX"])):
                                 part_no = part_no + '1G | SFP EX'
                             elif description.endswith(tuple([" LH", "-LH"])):
