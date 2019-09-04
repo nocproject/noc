@@ -540,6 +540,7 @@ class ManagedObject(NOCModel):
                 "is_managed",
                 "pool",
                 "address",
+                "object_profile",
                 "time_pattern",
                 "event_processing_policy",
             }
@@ -552,6 +553,7 @@ class ManagedObject(NOCModel):
                 "is_managed",
                 "pool",
                 "address",
+                "object_profile",
                 "event_processing_policy",
                 "syslog_archive_policy",
                 "syslog_source_type",
@@ -566,6 +568,7 @@ class ManagedObject(NOCModel):
                 "is_managed",
                 "pool",
                 "address",
+                "object_profile",
                 "event_processing_policy",
                 "trap_source_type",
                 "trap_source_ip",
