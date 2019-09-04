@@ -19,11 +19,11 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_media_type = re.compile(
-        r"(?P<port>\S+) transceiver detail information: \n"
-        r"Base information:\n\s+(?P<type>\S+) found in this port, manufactured by (?P<vendor>\S+), on .+\.\n"
-        r"\s+Type is (?P<part_no>\S+)\.  Serial number is (?P<serial>\S+)\.\n"
+        r"(?P<port>\S+) transceiver detail information: \s*\n"
+        r"Base information:\n\s+(?P<type>\S+) found in this port, manufactured by (?P<vendor>\S+), on .+\.\s*\n"
+        r"\s+Type is (?P<part_no>\S+)\.  Serial number is (?P<serial>\S+)\.\s*\n"
         r"(\s+Link length is.+\n){1,}"
-        r"\s+Nominal bit rate is (?P<mbd>\d+) Mb\/s\.\n"
+        r"\s+Nominal bit rate is (?P<mbd>\d+) Mb\/s\.\s*\n"
         r"(?:\s+Laser wavelength is (?P<nm>\d+) nm\.)?",
         re.MULTILINE,
     )
