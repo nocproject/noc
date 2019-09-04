@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_media_type = re.compile(
-        r"(?P<port>\S+) transceiver detail information: \s*\n"
+        r"Ethernet(?P<ch_id>\d+)\/(?P<port>\S+) transceiver detail information: \s*\n"
         r"Base information:\n\s+(?P<type>\S+) found in this port, manufactured by (?P<vendor>\S+), on .+\.\s*\n"
         r"\s+Type is (?P<part_no>\S+)\.  Serial number is (?P<serial>\S+)\.\s*\n"
         r"(\s+Link length is.+\n){1,}"
