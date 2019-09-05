@@ -16,6 +16,7 @@ from noc.config import config
 class MRTService(Service):
     name = "mrt"
     use_telemetry = config.mrt.enable_command_logging
+    use_mongo = True
 
     if config.features.traefik:
         traefik_backend = "mrt"
