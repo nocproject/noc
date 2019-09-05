@@ -126,9 +126,15 @@ class Qtech2800Normalizer(BaseNormalizer):
         yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[2])
 
     @match("ntp", "enable")
+    @match("sntp", "polltime", ANY)
     def normalize_timesource(self, tokens):
         yield self.make_clock_source(source="ntp")
 
     @match("ntp", "server", ANY)
+    @match("sntp", "server", ANY)
+    @match("ntp", "server", ANY, ANY)
+    @match("sntp", "server", ANY, ANY)
+    @match("ntp", "server", ANY, ANY, ANY)
+    @match("sntp", "server", ANY, ANY, ANY)
     def normalize_ntp_server(self, tokens):
-        yield self.make_ntp_server_address(name="0", address=tokens[2])
+        yield self.make_ntp_server_address(name=tokens[2], address=tokens[2])
