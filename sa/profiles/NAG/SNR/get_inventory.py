@@ -167,7 +167,7 @@ class Script(BaseScript):
                     else:
                         mf_mon = self.month.get(mf_m)
                         mf_parts = [match.group("mf_y"), mf_mon, match.group("mf_d")]
-                        mf_date = '-'.join(mf_parts)
+                        mf_date = "-".join(mf_parts)
                         i = {
                             "type": "XCVR",
                             "number": "Ethernet1/" + match.group("port"),
