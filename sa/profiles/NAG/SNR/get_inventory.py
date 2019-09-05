@@ -95,7 +95,6 @@ class Script(BaseScript):
             c = self.cli("show transceiver detail", cached=True)
             for match in self.rx_media_type.finditer(c):
                 description = match.group("part_no")
-                type = match.group("type")
                 mbd = int(match.group("mbd"))
                 nm = match.group("nm")
                 ch_id = int(match.group("ch_id"))
