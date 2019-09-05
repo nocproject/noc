@@ -36,6 +36,20 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     fake_vendors = ["OEM", "CISCO-FINISAR"]
+    month = {
+        "Jan": "01",
+        "Feb": "02",
+        "Mar": "03",
+        "Apr": "04",
+        "May": "05",
+        "Jun": "06",
+        "Jul": "07",
+        "Aug": "08",
+        "Sep": "09",
+        "Oct": "10",
+        "Nov": "11",
+        "Dec": "12",
+    }
 
     def execute(self):
         r = []
@@ -142,12 +156,16 @@ class Script(BaseScript):
                     else:
                         part_no = vendor + " | Transceiver | " + type
 
+                    mf_mon = self.month.get(match.group("mf_m"))
+                    mf_parts = [match.group("mf_y"), mf_mon, match.group("mf_d")]
+                    mf_date = '-'.join(mf_parts)
                     i = {
                         "type": "XCVR",
                         "number": "Ethernet1/" + match.group("port"),
                         "vendor": vendor,
                         "part_no": part_no,
                         "revision": "",
+                        "mfg_date":  mf_date,
                         "serial": match.group("serial"),
                         "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
                     }
