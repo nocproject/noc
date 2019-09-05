@@ -154,7 +154,10 @@ class Script(BaseScript):
                         else:
                             part_no = part_no + "Unknown SFP"
                     else:
-                        part_no = vendor + " | Transceiver | " + type
+                        if description.startswith("10G"):
+                            part_no = vendor + " | Transceiver | 10G | " + description
+                        else:
+                            part_no = vendor + " | Transceiver | " + type
 
                     mf_mon = self.month.get(match.group("mf_m"))
                     mf_parts = [match.group("mf_y"), mf_mon, match.group("mf_d")]
