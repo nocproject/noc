@@ -1,0 +1,26 @@
+{
+  "name": "builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.5",
+    "chalk": "^2.4.2",
+    "comment-parser": "^0.6.0",
+    "escodegen": "^1.11.1",
+    "esprima": "^4.0.1",
+    "esprima-ast-utils": "^0.0.7",
+    "esquery": "^1.0.1",
+    "expand-tilde": "^2.0.2",
+    "glob": "^7.1.4",
+    "toposort": "^2.0.2",
+    "uglify-js": "^3.6.0"
+  },
+  "devDependencies": {}
+}
