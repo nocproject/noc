@@ -165,7 +165,7 @@ class Script(BaseScript):
                         "vendor": vendor,
                         "part_no": part_no,
                         "revision": "",
-                        "mfg_date":  mf_date,
+                        "mfg_date": mf_date,
                         "serial": match.group("serial"),
                         "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
                     }
