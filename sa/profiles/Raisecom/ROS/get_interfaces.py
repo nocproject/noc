@@ -75,7 +75,7 @@ class Script(BaseScript):
     rx_iface_iscom2624g = re.compile(
         r"^\s*(?P<ifname>\S+) is (?P<oper_status>UP|DOWN), "
         r"administrative status is (?P<admin_status>UP|DOWN)\s*\n"
-        r"(^\s*Description is \"(?P<descr>.+)\"?\s*\n)?"
+        r"(^\s*Description is \"(?P<descr>.+)\",?\s*\n)?"
         r"(^\s*Hardware is (?P<hw_type>\S+), MAC address is (?P<mac>\S+)\s*\n)?"
         r"(^\s*Internet Address is (?P<ip>\S+)\s+primary\s*\n)?"
         r"(^\s*Internet v6 Address is (?P<ipv6>\S+)\s+Link\s*\n)?"
@@ -134,8 +134,8 @@ class Script(BaseScript):
                 "enabled_afi": [],
             }
             if match.group("descr"):
-                i["description"] = match.group("descr").strip("\"")
-                sub["description"] = match.group("descr").strip("\"")
+                i["description"] = match.group("descr").strip('"')
+                sub["description"] = match.group("descr").strip('"')
             if match.group("mac") and match.group("mac") != "0000.0000.0000":
                 i["mac"] = match.group("mac")
                 sub["mac"] = match.group("mac")
@@ -169,7 +169,6 @@ class Script(BaseScript):
                 sub["vlan_ids"] = [int(ifunit)]
             i["subinterfaces"] = [sub]
             ifaces += [i]
-
         return [{"interfaces": ifaces}]
 
     def execute_cli(self):
@@ -194,7 +193,6 @@ class Script(BaseScript):
             if i["name"] in lldp_ifaces:
                 i["enabled_protocols"] = ["LLDP"]
             ifaces.append(i)
-
         statuses = []
         v = self.cli("show interface port")
         for line in v.splitlines()[5:]:
@@ -204,14 +202,12 @@ class Script(BaseScript):
                 "oper_status": "up" in line[14:29],
             }
             statuses.append(i)
-
         vlans = []
         v = self.cli("show interface port switchport")
         for section in v.split("Port"):
             if not section:
                 continue
             vlans.append(self.parse_vlans(section))
-
         d = defaultdict(dict)
 
         for l in (statuses, ifaces):
@@ -238,13 +234,11 @@ class Script(BaseScript):
             tvl = [vlan["op_trunk_allowed_vlan"] for vlan in vlans if int(vlan["name"]) == name][0]
             if "n/a" not in tvl:
                 port["subinterfaces"][0]["tagged_vlans"] = ranges_to_list(tvl)
-
         if_descr = []
         v = self.cli("show interface ip description")
         for line in v.splitlines()[2:-1]:
             i = {"name": int(line[:9]), "description": str(line[9:])}
             if_descr.append(i)
-
         if not l3:
             v = self.cli("show interface description")
             for match in self.rx_descr.finditer(v):
@@ -276,7 +270,6 @@ class Script(BaseScript):
                                     i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
                             else:
                                 i["subinterfaces"][0]["untagged_vlan"] = vlan_id
-
         v = self.profile.get_version(self)
         mac = v["mac"]
         # XXX: This is a dirty hack !!!
@@ -314,12 +307,10 @@ class Script(BaseScript):
                     i["description"] = q["description"]
                     i["subinterfaces"][0]["description"] = q["description"]
             l3 += [i]
-
         try:
             v = self.cli("show ip interface brief")
         except self.CLISyntaxError:
             return [{"interfaces": l3}]
-
         for match in self.rx_iface2.finditer(v):
             ifname = match.group("iface")
             i = {
@@ -344,5 +335,4 @@ class Script(BaseScript):
                 if i["name"] == ifname:
                     i["subinterfaces"][0]["vlan_ids"] = vlan_id
                     break
-
         return [{"interfaces": l3}]
