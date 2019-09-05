@@ -57,6 +57,26 @@ black:
     - docker
   allow_failure: false
 
+prettier:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/prettier:master
+  script:
+    - set -x
+    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA  | egrep "\.(js|json|yml|css)$" | grep -v ".docker/"|| true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        /usr/local/bin/prettier --config=.prettierrc --check $FLIST
+      else
+        echo "No files to lint"
+        true;
+      fi
+  only:
+    - merge_requests
+  tags:
+    - docker
+  allow_failure: true
+
 # waiting for https://github.com/rubik/xenon/issues/21
 xenon:
   stage: lint
