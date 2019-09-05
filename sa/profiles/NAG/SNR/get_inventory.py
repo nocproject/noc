@@ -154,19 +154,29 @@ class Script(BaseScript):
                     else:
                         part_no = part_no + "Unknown SFP"
 
-                    mf_mon = self.month.get(match.group("mf_m"))
-                    mf_parts = [match.group("mf_y"), mf_mon, match.group("mf_d")]
-                    mf_date = "-".join(mf_parts)
-                    i = {
-                        "type": "XCVR",
-                        "number": "Ethernet1/" + match.group("port"),
-                        "vendor": vendor,
-                        "part_no": part_no,
-                        "revision": "",
-                        "mfg_date": mf_date,
-                        "serial": match.group("serial"),
-                        "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
-                    }
+                    mf_m = match.group("mf_m")
+                    if mf_m == "(null)":
+                        i = {
+                            "type": "XCVR",
+                            "number": "Ethernet1/" + match.group("port"),
+                            "vendor": vendor,
+                            "part_no": part_no,
+                            "serial": match.group("serial"),
+                            "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
+                        }
+                    else:
+                        mf_mon = self.month.get(mf_m)
+                        mf_parts = [match.group("mf_y"), mf_mon, match.group("mf_d")]
+                        mf_date = '-'.join(mf_parts)
+                        i = {
+                            "type": "XCVR",
+                            "number": "Ethernet1/" + match.group("port"),
+                            "vendor": vendor,
+                            "part_no": part_no,
+                            "mfg_date": mf_date,
+                            "serial": match.group("serial"),
+                            "description": "%s, %dMbd, %dnm" % (description, mbd, nm),
+                        }
                     out += [i]
         except self.CLISyntaxError:
             pass
