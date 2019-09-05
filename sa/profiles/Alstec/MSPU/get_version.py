@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Alstec.MSPU.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -25,7 +24,7 @@ class Script(BaseScript):
     )
     rx_ver2 = re.compile(r"^software v\.(?P<version>\S+) ", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         try:
             c = self.cli("context dslam version ", cached=True)
             match = self.rx_ver1.search(c)
@@ -33,7 +32,7 @@ class Script(BaseScript):
                 "vendor": "Alstec",
                 "platform": "MSPU",
                 "version": match.group("sw_ver"),
-                "attribute": {"HW version": match.group("hw_ver")},
+                "attributes": {"HW version": match.group("hw_ver")},
             }
         except self.CLISyntaxError:
             c = self.cli("version", cached=True)
