@@ -75,7 +75,7 @@ class Script(BaseScript):
     rx_iface_iscom2624g = re.compile(
         r"^\s*(?P<ifname>\S+) is (?P<oper_status>UP|DOWN), "
         r"administrative status is (?P<admin_status>UP|DOWN)\s*\n"
-        r"(^\s*Description is \"(?P<descr>.+)\",\s*\n)?"
+        r"(^\s*Description is \"(?P<descr>.+)\"?\s*\n)?"
         r"(^\s*Hardware is (?P<hw_type>\S+), MAC address is (?P<mac>\S+)\s*\n)?"
         r"(^\s*Internet Address is (?P<ip>\S+)\s+primary\s*\n)?"
         r"(^\s*Internet v6 Address is (?P<ipv6>\S+)\s+Link\s*\n)?"
@@ -123,7 +123,7 @@ class Script(BaseScript):
                     hw_type = "loopback"
             i = {
                 "name": ifname,
-                "type": self.IFTYPES[hw_type],
+                "type": self.profile.get_interface_type(ifname),
                 "admin_status": match.group("admin_status") == "UP",
                 "oper_status": match.group("oper_status") == "UP",
             }
@@ -134,8 +134,8 @@ class Script(BaseScript):
                 "enabled_afi": [],
             }
             if match.group("descr"):
-                i["description"] = match.group("descr")
-                sub["description"] = match.group("descr")
+                i["description"] = match.group("descr").strip("\"")
+                sub["description"] = match.group("descr").strip("\"")
             if match.group("mac") and match.group("mac") != "0000.0000.0000":
                 i["mac"] = match.group("mac")
                 sub["mac"] = match.group("mac")
