@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_table
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -44,6 +45,7 @@ class Script(BaseScript):
         r"^\s*Transfer distance: (?P<distance>.+?)\s*\n",
         re.MULTILINE,
     )
+    has_detail = True
 
     def get_chassis(self, plat, ver, ser):
         match = self.rx_descr.search(plat)
@@ -88,21 +90,54 @@ class Script(BaseScript):
             r["description"] = descr
         return r
 
-    def get_pwr(self, type, pwr_type):
-        if pwr_type == "AC":
-            part_no = "PM160-220/12"
-        elif pwr_type == "DC":
-            part_no = "PM75-48/12"
-        elif pwr_type == "N/A":
-            part_no = "PM160-220/12"
+    def get_pwr(self, type, pwr_type, platform):
+        if platform in [
+            "MES-3116",
+            "MES-3124",
+            "MES-3124F",
+            "MES-3308F",
+            "MES-3316F",
+            "MES-3324",
+            "MES-3324F",
+            "MES-3348",
+            "MES-3348F",
+            "MES-5312",
+            "MES-5324",
+            "MES-5332A",
+        ]:
+            if pwr_type == "AC":
+                part_no = "PM160-220/12"
+            elif pwr_type == "DC":
+                part_no = "PM100-48/12"
+            elif pwr_type == "N/A":
+                part_no = "PM160-220/12"
+            else:
+                raise self.NotSupportedError("Unknown PS type: %s" % pwr_type)
+        elif platform in ["MES-5148", "MES-5248", "MES-5448", "MES-7048"]:
+            if pwr_type == "AC":
+                part_no = "PM350-220/12"
+            elif pwr_type == "DC":
+                part_no = "PM350-48/12"
+            elif pwr_type == "N/A":
+                part_no = "PM350-220/12"
+            else:
+                raise self.NotSupportedError("Unknown PS type: %s" % pwr_type)
+        elif platform in ["MES-2348P"]:
+            part_no = "PM950"
         else:
-            raise self.NotSupportedError("Unknown PS type: %s" % pwr_type)
+            raise self.NotSupportedError("PS on unknown platform: %s" % platform)
         if type not in ["Main", "Redundant"]:
             raise self.NotSupportedError("Unknown PS type: %s" % type)
         return {"type": "PWR", "vendor": "ELTEX", "part_no": part_no, "number": type}
 
     def get_trans(self, ifname):
-        v = self.cli("show fiber-ports optical-transceiver detailed interface %s" % ifname)
+        if self.has_detail:
+            try:
+                v = self.cli("show fiber-ports optical-transceiver detailed interface %s" % ifname)
+            except self.CLISyntaxError:
+                self.has_detail = False
+        if not self.has_detail:
+            v = self.cli("show fiber-ports optical-transceiver interface %s" % ifname)
         match = self.rx_trans.search(v)
         r = {"type": "XCVR", "vendor": match.group("vendor")}
         if match.group("serial"):
@@ -146,24 +181,41 @@ class Script(BaseScript):
 
         try:
             v = self.cli("show fiber-ports optical-transceiver")
-            for i in parse_table(v):
-                if i[1] in ["OK", "N/S"]:
+            for i in parse_table(v, footer=r"Temp\s+- Internally measured transceiver temperature"):
+                if i[1] in ["OK", "N/S"] or is_int(i[1]):
                     ports += [i[0]]
         except self.CLISyntaxError:
             pass
 
         if self.has_capability("Stack | Members"):
+            has_unit_command = True
             for unit in self.capabilities["Stack | Member Ids"].split(" | "):
-                plat = self.cli("show system unit %s" % unit, cached=True)
+                try:
+                    plat = self.cli("show system unit %s" % unit, cached=True)
+                except self.CLISyntaxError:
+                    # Found on MES1124M SW version 1.1.46
+                    # Left for compatibility with other models
+                    if unit == "1":
+                        plat = self.cli("show system", cached=True)
+                        has_unit_command = False
+                    else:
+                        raise self.NotSupportedError()
                 if not self.is_has_image:
-                    ver = self.cli("show version unit %s" % unit, cached=True)
+                    if has_unit_command:
+                        ver = self.cli("show version unit %s" % unit, cached=True)
+                    else:
+                        ver = self.cli("show version", cached=True)
                 else:
                     ver = ""
-                ser = self.cli("show system id unit %s" % unit, cached=True)
+                if has_unit_command:
+                    ser = self.cli("show system id unit %s" % unit, cached=True)
+                else:
+                    ser = self.cli("show system", cached=True)
                 r = self.get_chassis(plat, ver, ser)
+                platform = r["part_no"][0]
                 res += [r]
                 for match in self.rx_pwr.finditer(plat):
-                    res += [self.get_pwr(match.group("type"), match.group("pwr_type"))]
+                    res += [self.get_pwr(match.group("type"), match.group("pwr_type"), platform)]
                 for p in ports:
                     if p.startswith("gi") or p.startswith("te"):
                         if unit == p[2]:
@@ -173,9 +225,10 @@ class Script(BaseScript):
             ver = self.cli("show version", cached=True)
             ser = self.cli("show system id", cached=True)
             r = self.get_chassis(plat, ver, ser)
+            platform = r["part_no"][0]
             res = [r]
             for match in self.rx_pwr.finditer(plat):
-                res += [self.get_pwr(match.group("type"), match.group("pwr_type"))]
+                res += [self.get_pwr(match.group("type"), match.group("pwr_type"), platform)]
             for p in ports:
                 res += [self.get_trans(p)]
 
