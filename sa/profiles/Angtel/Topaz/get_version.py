@@ -40,7 +40,7 @@ class Script(BaseScript):
         (2, 0, 8): "2X-8E",
     }
 
-    def execute(self):
+    def execute_cli(self):
         o = 0
         E = 0
         X = 0

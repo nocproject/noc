@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -19,6 +21,6 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
 
-    def execute(self):
-        match = self.re_search(self.rx_mac, self.cli("show system"))
+    def execute_cli(self):
+        match = self.rx_mac.search(self.cli("show system", cached=True))
         return {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}
