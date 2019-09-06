@@ -96,12 +96,9 @@ class Script(BaseScript):
             match = self.rx_port1.match(l.strip())
             if match:
                 adm_status += [match.groupdict()]
-        for match in self.rx_port.finditer(self.cli("show interfaces status")):
+        for match in self.rx_port.finditer(self.cli("show interfaces status", cached=True)):
             ifname = match.group("port")
-            if ifname.startswith("Po"):
-                iftype = "aggregated"
-            else:
-                iftype = "physical"
+            iftype = self.profile.get_interface_type(ifname)
             for i in adm_status:
                 if ifname == i["port"]:
                     st = bool(i["admin_status"] == "Up")
@@ -145,7 +142,7 @@ class Script(BaseScript):
                     sub["tagged_vlans"] += [int(vlan_id)]
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
-        match = self.re_search(self.rx_mac, self.cli("show system"))
+        match = self.rx_mac.search(self.cli("show system", cached=True))
         mac = match.group("mac")
         for l in self.cli("show ip interface").split("\n"):
             match = self.rx_vlan_ipif.match(l.strip())

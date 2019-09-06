@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,23 @@ from noc.core.script.base import BaseScript
 from noc.lib.text import parse_table
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.lib.validators import is_ipv4, is_ipv6, is_mac
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
+)
 
 
 class Script(BaseScript):
@@ -29,17 +46,6 @@ class Script(BaseScript):
         r"^Port description:(?P<port_descr>.+?)\n",
         re.MULTILINE | re.DOTALL,
     )
-    CAPS = {
-        "": 0,
-        "Other": 1,
-        "Repeater": 2,
-        "Bridge": 4,
-        "Wlan-Access-Point": 8,
-        "Router": 16,
-        "Telephone": 32,
-        "D": 64,
-        "H": 128,
-    }
 
     def execute_cli(self):
         r = []
@@ -64,20 +70,31 @@ class Script(BaseScript):
             match = self.rx_neighbor.search(v)
             chassis_id = match.group("chassis_id").strip()
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
-                chassis_id_subtype = 5
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(chassis_id):
-                chassis_id_subtype = 4
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
             else:
-                chassis_id_subtype = 7
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
             port_id = match.group("port_id").strip()
             if is_ipv4(port_id) or is_ipv6(port_id):
-                port_id_subtype = 4
+                port_id_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(port_id):
-                port_id_subtype = 3
+                port_id_subtype = LLDP_PORT_SUBTYPE_MAC
             else:
-                port_id_subtype = 7
-            capabilities = match.group("caps")
-            caps = sum([self.CAPS[s.strip()] for s in capabilities.split(",")])
+                port_id_subtype = LLDP_PORT_SUBTYPE_LOCAL
+            caps = lldp_caps_to_bits(
+                match.group("caps").strip().split(","),
+                {
+                    "other": LLDP_CAP_OTHER,
+                    "repeater": LLDP_CAP_REPEATER,
+                    "bridge": LLDP_CAP_BRIDGE,
+                    "wlan-access-point": LLDP_CAP_WLAN_ACCESS_POINT,
+                    "router": LLDP_CAP_ROUTER,
+                    "telephone": LLDP_CAP_TELEPHONE,
+                    "d": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                    "h": LLDP_CAP_STATION_ONLY,
+                },
+            )
             neighbor = {
                 "remote_chassis_id": chassis_id,
                 "remote_chassis_id_subtype": chassis_id_subtype,
