@@ -3,7 +3,7 @@
 # Vendor: Angtel (Angstrem telecom - http://www.angtel.ru/)
 # OS:     Topaz
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,3 +38,15 @@ class Profile(BaseProfile):
         # if ("15" not in v) and script.credentials["super_password"]:
         #    script.cli("enable\n%s" % script.credentials["super_password"])
         script.cli("show privilege")
+
+    INTERFACE_TYPES = {
+        "fa": "physical",  # FastEthernet
+        "gi": "physical",  # GigabitEthernet
+        "te": "physical",  # TenGigabitEthernet
+        "po": "aggregated",  # Port-channel/Portgroup
+        "vl": "SVI",  # Vlan
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2].lower())
