@@ -43,7 +43,7 @@ class NOCForm(forms.Form):
     Form wrapper returning NOCBoundField items
     """
 
-    class Media:
+    class Media(object):
         css = {"all": ["/ui/pkg/django-media/admin/css/forms.css"]}
 
     def __init__(self, *args, **kwargs):

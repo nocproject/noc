@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ from noc.core.ip import IP, IPv4
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
-from noc.lib.forms import NOCForm
+from noc.core.forms import NOCForm
 from noc.config import config
 from noc.core.translation import ugettext as _
 
