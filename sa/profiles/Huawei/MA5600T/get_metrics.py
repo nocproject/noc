@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ class Script(GetMetricsScript):
     )
     def collect_dom_metrics_cli(self, metrics):
         super(Script, self).collect_dom_metrics(metrics)
-        self.collect_cpe_metricscli(metrics)
+        self.collect_cpe_metrics_cli(metrics)
 
     def collect_cpe_metrics_cli(self, metrics):
         # ifaces = set(m.path[-1].split("/")[:2] for m in metrics)
