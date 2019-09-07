@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# ReportObjectLinkCount datasource
+# ReportObjectConfig datasource
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -25,16 +25,17 @@ class ReportObjectConfig(BaseReportColumn):
     builtin_sorted = True
 
     def extract(self):
+        pipeline = [
+            {"$group": {"_id": "$object", "last_ts": {"$max": "$ts"}}},
+            {"$sort": {"_id": 1}},
+        ]
+        if len(self.sync_ids) < 20000:
+            # @todo Very large list slowest encode, need research
+            pipeline.insert(0, {"$match": {"object": {"$in": self.sync_ids}}})
         value = (
             get_db()["noc.gridvcs.config.files"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-            .aggregate(
-                [
-                    {"$match": {"object": {"$in": self.sync_ids}}},
-                    {"$group": {"_id": "$object", "last_ts": {"$max": "$ts"}}},
-                    {"$sort": {"_id": 1}},
-                ]
-            )
+            .aggregate(pipeline)
         )
         for v in value:
             if not v["_id"]:
