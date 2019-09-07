@@ -182,3 +182,21 @@ class Profile(BaseProfile):
             return match.group("port")
         else:
             return interface
+
+    INTERFACE_TYPES = {
+        "nu": "null",  # NULL
+        "fa": "physical",  # fastethernet
+        "fe": "physical",  # fastethernet
+        "gi": "physical",  # gigaethernet
+        "ge": "physical",  # gigaethernet
+        "lo": "loopback",  # Loopback
+        "tr": "aggregated",  #
+        "mn": "management",  # Stack-port
+        # "te": "physical",  # TenGigabitEthernet
+        "vl": "SVI",  # vlan
+        "un": "unknown",
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get((name[:2]).lower())
