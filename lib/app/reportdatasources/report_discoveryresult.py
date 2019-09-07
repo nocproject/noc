@@ -11,7 +11,6 @@ from __future__ import absolute_import
 from collections import namedtuple
 
 # Third-party modules
-import six
 from pymongo import ReadPreference
 
 # NOC modules
@@ -25,7 +24,6 @@ class ReportDiscoveryResult(BaseReportColumn):
     """Report for MO links detail"""
 
     builtin_sorted = True
-    multiple_series = True
     safe_output = False  # Convert outpur object to string
     COLL_NAME = "noc.schedules.discovery.%s"
     # @todo from managedobjectprofile
@@ -111,17 +109,14 @@ class ReportDiscoveryResult(BaseReportColumn):
     def extract(self):
         r = {}
         ids = set(self.sync_ids[:])
-
+        pid = {}
         for p in Pool.objects.filter():
             pool_ids = ids.intersection(
-                set(
-                    ManagedObject.objects.filter(pool=p, is_managed=True).values_list(
-                        "id", flat=True
-                    )
-                )
+                set(ManagedObject.objects.filter(pool=p).values_list("id", flat=True))
             )
             if not pool_ids:
                 continue
+            pid.update({mo_id: p.name for mo_id in pool_ids})
             r[p.name] = self.convert(
                 get_db()[self.COLL_NAME % p.name]
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -130,7 +125,9 @@ class ReportDiscoveryResult(BaseReportColumn):
             ids.difference_update(pool_ids)
             if not ids:
                 break
-        return list(six.itervalues(r))
+        for i in self.sync_ids:
+            yield next(r[pid[i]], (i, ("",) * len(self.ATTRS)))
+        # return list(six.itervalues(r))
 
     def convert(self, val):
         dresult = namedtuple("DResult", self.ATTRS)
