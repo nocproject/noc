@@ -27,7 +27,8 @@ class ReportObjectIfacesTypeStat(BaseReportColumn):
     def extract(self):
         i_type = "physical"
         match = {"type": i_type}
-        if self.sync_ids:
+        if len(self.sync_ids) < 20000:
+            # @todo Very large list slowest encode, need research
             match = {"type": i_type, "managed_object": {"$in": self.sync_ids}}
         value = (
             get_db()["noc.interfaces"]
