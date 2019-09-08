@@ -1,0 +1,34 @@
+{
+    "name": "Eltex | PWR | PM75-48/12",
+    "$collection": "inv.objectmodels",
+    "uuid": "c3584676-6ebd-4cde-8d4c-08f0f50fc5a6",
+    "vendor__code": "ELTEX",
+    "description": "PM75-48/12 (48V DC, 100W) Power Supply",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "internal Power slot",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PM75-48/12"]
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 0.4
+        }
+    }
+}
