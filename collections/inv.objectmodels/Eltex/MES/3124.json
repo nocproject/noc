@@ -1,0 +1,312 @@
+{
+    "name": "Eltex | MES | 3124",
+    "$collection": "inv.objectmodels",
+    "uuid": "e9675e56-8a9e-4441-812d-a50bc27c757d",
+    "vendor__code": "ELTEX",
+    "description": "24 х 10/100/1000Base-T (RJ-45), 4 х 10GBase-X(SFP+) ",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "gigabitethernet 1/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/11 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/12 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/13 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/14 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/15 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/16 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/17 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/18 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/19 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/20 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/21 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/22 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/23 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "tengigabitethernet 1/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te1_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te2_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te3_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te4_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Power slot main",
+            "direction": "i",
+            "gender": "f",
+            "name": "Main_psu",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "description": "Power slot redundant",
+            "direction": "i",
+            "gender": "f",
+            "name": "Redundant_psu",
+            "type__name": "Eltex | MES | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES-3124"]
+        },
+        "dimensions": {
+            "depth": 265,
+            "height": 44,
+            "width": 430
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 50.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3.7
+        }
+    }
+}

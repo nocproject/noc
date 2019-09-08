@@ -1,0 +1,8 @@
+{
+    "name": "Eltex | MES | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "aa73fe1c-574e-46d6-9899-c05c2ea9ba7d",
+    "description": "Eltex power supply unit connection",
+    "c_group": [],
+    "genders": "mf"
+}
