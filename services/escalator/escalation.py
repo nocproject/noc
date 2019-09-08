@@ -201,7 +201,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                                 close_tt=a.close_tt,
                                 wait_tt=ctx["tt"] if a.wait_tt else None,
                             )
-                            if tts.promote_group_tt:
+                            if tts.promote_group_tt and a.promote_group_tt:
                                 # Create group TT
                                 log("Promoting to group tt")
                                 gtt = tts.create_group_tt(tt_id, alarm.timestamp)
