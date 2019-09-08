@@ -362,38 +362,36 @@ class ReportObjectDetailApplication(ExtApplication):
             else:
                 serial, hw_ver, boot_prom, patch = "", "", "", ""  # noqa
             r.append(
-                [
-                    translate_row(
-                        row(
-                            [
-                                mo_id,
-                                name,
-                                address,
-                                next(hn)[0],
-                                "managed" if is_managed else "unmanaged",
-                                Profile.get_by_id(sa_profile),
-                                o_profile,
-                                Vendor.get_by_id(vendor) if vendor else "",
-                                Platform.get_by_id(platform) if platform else "",
-                                hw_ver,
-                                Firmware.get_by_id(version) if version else "",
-                                boot_prom,
-                                # Serial
-                                mo_serials[0].get("serial", "") or serial,
-                                patch or "",
-                                auth_profile,
-                                _("Yes") if avail.get(mo_id, None) else _("No"),
-                                ad,
-                                mo_continer[0],
-                                NetworkSegment.get_by_id(m_segment) if m_segment else "",
-                                next(iface_count)[0],
-                                next(link_count)[0],
-                                next(rc)[0],
-                            ]
-                        ),
-                        cmap,
-                    )
-                ]
+                translate_row(
+                    row(
+                        [
+                            mo_id,
+                            name,
+                            address,
+                            next(hn)[0],
+                            "managed" if is_managed else "unmanaged",
+                            Profile.get_by_id(sa_profile),
+                            o_profile,
+                            Vendor.get_by_id(vendor) if vendor else "",
+                            Platform.get_by_id(platform) if platform else "",
+                            hw_ver,
+                            Firmware.get_by_id(version) if version else "",
+                            boot_prom,
+                            # Serial
+                            mo_serials[0].get("serial", "") or serial,
+                            patch or "",
+                            auth_profile,
+                            _("Yes") if avail.get(mo_id, None) else _("No"),
+                            ad,
+                            mo_continer[0],
+                            NetworkSegment.get_by_id(m_segment) if m_segment else "",
+                            next(iface_count)[0],
+                            next(link_count)[0],
+                            next(rc)[0],
+                        ]
+                    ),
+                    cmap,
+                )
             )
             if "adm_path" in columns_filter:
                 r[-1].extend([ad] + list(ad_path[ad]))
