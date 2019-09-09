@@ -16,7 +16,7 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.crypto import md5crypt
-from noc.lib.rpsl import rpsl_format
+from noc.core.rpsl import rpsl_format
 from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.model.decorator import on_delete_check
