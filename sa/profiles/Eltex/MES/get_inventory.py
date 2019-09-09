@@ -92,6 +92,8 @@ class Script(BaseScript):
 
     def get_pwr(self, type, pwr_type, platform):
         if platform in [
+            "MES-3108",
+            "MES-3108F",
             "MES-3116",
             "MES-3124",
             "MES-3124F",
