@@ -192,7 +192,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["DES-3200-18"]
+            "part_no": ["DES-3200-18", "DES-3200-18/A1"]
         },
         "management": {
             "managed": true

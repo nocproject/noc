@@ -298,7 +298,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["DES-1228/ME"]
+            "part_no": ["DES-1228/ME", "DES-1228/ME/A1", "DES-1228/ME/A2", "DES-1228/ME/B1"]
         },
         "management": {
             "managed": true
