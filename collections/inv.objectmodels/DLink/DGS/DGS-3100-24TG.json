@@ -209,6 +209,20 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "Stack port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Stack port 1",
+            "type__name": "Electrical | HDMI"
+        },
+        {
+            "description": "Stack port 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Stack port 2",
+            "type__name": "Electrical | HDMI"
+        },
+        {
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
@@ -227,6 +241,9 @@
         },
         "rackmount": {
             "units": 1.0
+        },
+        "stack": {
+            "stackable": true
         }
     }
 }

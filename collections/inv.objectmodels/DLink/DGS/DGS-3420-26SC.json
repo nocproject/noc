@@ -291,13 +291,16 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["DGS-3420-26SC"]
+            "part_no": ["DGS-3420-26SC", "DGS-3420-26SC/A2", "DGS-3420-26SC/B1"]
         },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1.0
+        },
+        "stack": {
+            "stackable": true
         }
     }
 }

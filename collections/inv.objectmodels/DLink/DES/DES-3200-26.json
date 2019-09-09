@@ -256,7 +256,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["DES-3200-26"]
+            "part_no": ["DES-3200-26", "DES-3200-26/A1"]
         },
         "management": {
             "managed": true
