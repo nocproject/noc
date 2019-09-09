@@ -30,7 +30,7 @@ from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.core.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6
-from noc.lib.rpsl import rpsl_format
+from noc.core.rpsl import rpsl_format
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check

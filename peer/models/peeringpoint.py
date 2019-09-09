@@ -18,7 +18,7 @@ from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.profile import Profile
 from noc.core.model.fields import DocumentReferenceField
-from noc.lib.rpsl import rpsl_format
+from noc.core.rpsl import rpsl_format
 from noc.core.model.decorator import on_delete_check
 from .asn import AS
 
@@ -56,35 +56,6 @@ class PeeringPoint(NOCModel):
             return " %s (%s)" % (self.hostname, self.location)
         else:
             return self.hostname
-
-    def sync_cm_prefix_list(self):
-        from noc.cm.models.prefixlist import PrefixList
-
-        peers_pl = set()
-        peers_pl.update(
-            [
-                p.import_filter_name
-                for p in self.peer_set.filter(import_filter_name__isnull=False)
-                if p.import_filter_name.strip()
-            ]
-        )
-        peers_pl.update(
-            [
-                p.export_filter_name
-                for p in self.peer_set.filter(export_filter_name__isnull=False)
-                if p.export_filter_name.strip()
-            ]
-        )
-        h = self.hostname + "/"
-        l_h = len(h)
-        for p in PrefixList.objects.filter(repo_path__startswith=h):
-            pl = p.path[l_h:]
-            if pl not in peers_pl:
-                p.delete()
-            else:
-                del peers_pl[pl]
-        for pl in peers_pl:
-            PrefixList(repo_path=h + pl).save()
 
     @property
     def generated_prefix_lists(self):
