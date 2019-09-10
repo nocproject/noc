@@ -10,6 +10,7 @@ Ext.define("NOC.wf.workflow.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.wf.workflow.Model",
+        "NOC.wf.workflow.WFEditor",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.wf.workflow.Model",

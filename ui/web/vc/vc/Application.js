@@ -9,7 +9,10 @@ console.debug("Defining NOC.vc.vc.Application");
 Ext.define("NOC.vc.vc.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
+        "NOC.core.TemplatePreview",
         "NOC.vc.vc.Model",
+        "NOC.vc.vc.AddFirstFreeForm",
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField",

@@ -16,7 +16,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
-        "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
@@ -26,7 +25,10 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.template.LookupField",
         "NOC.main.extstorage.LookupField",
         "NOC.main.handler.LookupField",
-        "NOC.cm.objectvalidationpolicy.LookupField"
+        "NOC.cm.validationpolicysettings.ValidationSettingsPanel",
+        "NOC.cm.objectvalidationpolicy.LookupField",
+        "Ext.ux.form.MultiIntervalField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,

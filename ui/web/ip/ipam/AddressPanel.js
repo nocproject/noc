@@ -9,6 +9,8 @@ console.debug("Defining NOC.ip.ipam.AddressPanel");
 Ext.define("NOC.ip.ipam.AddressPanel", {
     extend: "NOC.core.FormPanel",
     requires: [
+        "NOC.core.TagsField",
+        "NOC.core.StateField",
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",
         "NOC.sa.managedobject.LookupField"

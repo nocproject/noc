@@ -10,7 +10,8 @@ Ext.define("NOC.cm.validationpolicy.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.cm.validationpolicy.Model",
-        "NOC.cm.validationrule.LookupField"
+        "NOC.cm.validationrule.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.cm.validationpolicy.Model",
     search: true,

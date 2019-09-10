@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.technology.Application");
 Ext.define("NOC.inv.technology.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.inv.technology.Model",
         "NOC.main.ref.modelid.LookupField"
     ],

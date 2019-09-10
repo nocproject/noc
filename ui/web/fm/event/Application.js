@@ -8,6 +8,15 @@ console.debug("Defining NOC.fm.event.Application");
 
 Ext.define("NOC.fm.event.Application", {
     extend: "NOC.core.Application",
+    requires: [
+        "NOC.core.ModelStore",
+        "NOC.core.JSONPreview",
+        "NOC.sa.managedobject.LookupField",
+        "NOC.sa.managedobjectselector.LookupField",
+        "NOC.sa.administrativedomain.LookupField",
+        "NOC.fm.eventclass.LookupField",
+        "NOC.fm.event.EventPanel",
+    ],
     layout: "card",
     STATUS_MAP: {
         A: "Active",

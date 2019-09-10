@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.profilecheckrule.Application");
 Ext.define("NOC.sa.profilecheckrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.sa.profilecheckrule.Model",
         "NOC.sa.profile.LookupField"
     ],

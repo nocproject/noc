@@ -10,7 +10,8 @@ Ext.define("NOC.wf.wfmigration.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.wf.wfmigration.Model",
-        "NOC.wf.state.LookupField"
+        "NOC.wf.state.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.wf.wfmigration.Model",
     initComponent: function() {

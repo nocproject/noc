@@ -7,6 +7,9 @@
 console.debug("Defining NOC.main.desktop.HeaderPanel");
 Ext.define("NOC.main.desktop.HeaderPanel", {
     extend: "Ext.Panel",
+    requires: [
+        "Ext.ux.form.SearchField"
+    ],
     region: "north",
     layout: {
         type: "hbox",

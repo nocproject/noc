@@ -9,7 +9,10 @@ console.debug("Defining NOC.cm.confdbquery.Application");
 Ext.define("NOC.cm.confdbquery.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.cm.confdbquery.Model"
+        "NOC.core.CMText",
+        "NOC.core.JSONPreview",
+        "NOC.cm.confdbquery.Model",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.cm.confdbquery.Model",
     search: true,

@@ -9,13 +9,15 @@ console.debug("Defining NOC.phone.phonerange.Application");
 Ext.define("NOC.phone.phonerange.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.StateField",
         "NOC.phone.phonerange.Model",
         "NOC.phone.dialplan.LookupField",
         "NOC.phone.phonerangeprofile.LookupField",
         "NOC.project.project.LookupField",
         "NOC.crm.supplier.LookupField",
         "NOC.sa.administrativedomain.LookupField",
-        "NOC.inv.resourcegroup.LookupField"
+        "NOC.inv.resourcegroup.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.phone.phonerange.Model",
     search: true,
@@ -250,7 +252,7 @@ Ext.define("NOC.phone.phonerange.Application", {
                     name: "to_allocate_numbers",
                     xtype: "checkbox",
                     boxLabel: __("Allocate Numbers")
-                },
+                }
             ],
 
             formToolbar: [

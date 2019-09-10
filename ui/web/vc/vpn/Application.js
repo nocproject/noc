@@ -9,12 +9,15 @@ console.debug("Defining NOC.vc.vpn.Application");
 Ext.define("NOC.vc.vpn.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
+        "NOC.core.StateField",
         "NOC.vc.vpn.Model",
         "NOC.vc.vpnprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.project.project.LookupField",
         "NOC.sa.managedobject.LookupField",
-        "NOC.vc.vpn.LookupField"
+        "NOC.vc.vpn.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.vc.vpn.Model",
     rowClassField: "row_class",

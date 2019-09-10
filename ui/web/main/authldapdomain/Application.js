@@ -10,7 +10,8 @@ Ext.define("NOC.main.authldapdomain.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.main.authldapdomain.Model",
-        "NOC.aaa.group.LookupField"
+        "NOC.aaa.group.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.main.authldapdomain.Model",
     initComponent: function() {

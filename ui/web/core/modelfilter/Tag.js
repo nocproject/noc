@@ -9,7 +9,9 @@ console.debug("Defining NOC.core.modelfilter.Tag");
 
 Ext.define("NOC.core.modelfilter.Tag", {
     extend: "NOC.core.modelfilter.Base",
-    require: ["NOC.core.TagsField"],
+    require: [
+        "NOC.core.TagsField"
+    ],
 
     initComponent: function() {
         var me = this;

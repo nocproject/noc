@@ -9,6 +9,7 @@ console.debug("Defining NOC.sla.slaprobe.Application");
 Ext.define("NOC.sla.slaprobe.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
         "NOC.sla.slaprobe.Model",
         "NOC.sa.managedobject.LookupField",
         "NOC.sla.slaprofile.LookupField"

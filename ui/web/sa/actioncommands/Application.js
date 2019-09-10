@@ -9,9 +9,11 @@ console.debug("Defining NOC.sa.actioncommands.Application");
 Ext.define("NOC.sa.actioncommands.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.sa.actioncommands.Model",
         "NOC.sa.action.LookupField",
-        "NOC.sa.profile.LookupField"
+        "NOC.sa.profile.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.actioncommands.Model",
     search: true,

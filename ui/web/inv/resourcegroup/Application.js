@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.resourcegroup.Application");
 Ext.define("NOC.inv.resourcegroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
         "NOC.inv.resourcegroup.Model",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.inv.technology.LookupField",

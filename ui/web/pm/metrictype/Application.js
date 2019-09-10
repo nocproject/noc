@@ -9,6 +9,7 @@ console.debug("Defining NOC.pm.metrictype.Application");
 Ext.define("NOC.pm.metrictype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.pm.metrictype.Model",
         "NOC.pm.metricscope.LookupField"
     ],

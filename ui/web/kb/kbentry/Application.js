@@ -11,9 +11,12 @@ Ext.define("NOC.kb.kbentry.Application", {
     layout: "card",
     requires: [
         "NOC.core.ListFormField",
+        "NOC.core.TagsField",
         "NOC.kb.kbentry.Model",
+        "NOC.kb.kbentry.HistoryPanel",
         "NOC.main.language.LookupField",
-        "NOC.main.ref.kbparser.LookupField"
+        "NOC.main.ref.kbparser.LookupField",
+        "Ext.ux.grid.column.GlyphAction"
     ],
     model: "NOC.kb.kbentry.Model",
     itemId: "kbentryApp",

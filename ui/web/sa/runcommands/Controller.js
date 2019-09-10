@@ -6,6 +6,9 @@
 console.debug('Defining NOC.sa.runcommands.Controller');
 Ext.define('NOC.sa.runcommands.Controller', {
     extend: 'Ext.app.ViewController',
+    requires: [
+        "Ext.ux.grid.column.GlyphAction"
+    ],
     alias: 'controller.runcommands',
 
     init: function(app) {

@@ -9,7 +9,9 @@ console.debug("Defining NOC.bi.dashboardlayout.Application");
 Ext.define("NOC.bi.dashboardlayout.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.bi.dashboardlayout.Model"
+        "NOC.core.JSONPreview",
+        "NOC.bi.dashboardlayout.Model",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.bi.dashboardlayout.Model",
     initComponent: function() {

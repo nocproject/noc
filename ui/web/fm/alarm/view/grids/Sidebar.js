@@ -20,7 +20,8 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
         "NOC.fm.alarm.view.grids.SidebarModel",
         "NOC.fm.alarm.view.grids.SidebarController",
         "NOC.fm.alarm.view.grids.ProfileFilter",
-        "NOC.fm.alarm.view.grids.DisplayFilter"
+        "NOC.fm.alarm.view.grids.DisplayFilter",
+        "Ext.ux.form.SearchField"
     ],
     reference: "fm-alarm-filter",
     bind: {

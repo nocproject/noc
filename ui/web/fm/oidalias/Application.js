@@ -8,7 +8,10 @@ console.debug("Defining NOC.fm.oidalias.Application");
 
 Ext.define("NOC.fm.oidalias.Application", {
     extend: "NOC.core.ModelApplication",
-    requires: ["NOC.fm.oidalias.Model"],
+    requires: [
+        "NOC.core.JSONPreview",
+        "NOC.fm.oidalias.Model"
+    ],
     model: "NOC.fm.oidalias.Model",
     search: true,
 

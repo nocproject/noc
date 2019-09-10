@@ -11,6 +11,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
     requires: [
         "NOC.sa.managedobjectselector.Model",
         "NOC.sa.managedobjectselector.AttributesModel",
+        "NOC.sa.managedobjectselector.ObjectsPanel",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.sa.managedobjectselector.M2MField",
         "NOC.sa.profile.LookupField",
