@@ -81,7 +81,7 @@ class Script(BaseScript):
                 "name": ifname,
                 "subinterfaces": [],
             }
-            if value["mac"]:
+            if value["mac"] and value["mac"] != "00:00:00:00:00:00":
                 interfaces[ifname]["mac"] = value["mac"]
             if "eth" in ifname:
                 interfaces[ifname]["subinterfaces"] += [
@@ -100,13 +100,10 @@ class Script(BaseScript):
                 )
             if ip_address:
                 interfaces[ifname]["subinterfaces"] += [
-                    {
-                        "name": ifname,
-                        "mac": value["mac"],
-                        "enabled_afi": ["IPv4"],
-                        "ipv4_addresses": [ip_address],
-                    }
+                    {"name": ifname, "enabled_afi": ["IPv4"], "ipv4_addresses": [ip_address]}
                 ]
+                if value["mac"] != "00:00:00:00:00:00":
+                    interfaces[ifname]["subinterfaces"][-1]["mac"] = value["mac"]
             if value.get("bss") and value.get("ssid"):
                 # For some reason creating SSID as interfaces otherwise sub.
                 interfaces.pop(ifname)
