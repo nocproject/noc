@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "EX8208 Fan Tray",
     "cr_context": "FAN",
+    "tags": ["fan"],
     "connections": [
         {
             "description": "Chassis connection",

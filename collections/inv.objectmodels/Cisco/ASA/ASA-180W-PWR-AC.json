@@ -5,6 +5,7 @@
     "vendor__code": "CISCO",
     "description": "ASA/IPS 180W AC Power Supply",
     "cr_context": "CHASSIS",
+    "tags": ["psu"],
     "connections": [
         {
             "description": "Power inlet",

@@ -5,6 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco SCE 8000 Fan tray",
     "cr_context": "FAN",
+    "tags": ["fan"],
     "connections": [
         {
             "description": "Fan slot 1",

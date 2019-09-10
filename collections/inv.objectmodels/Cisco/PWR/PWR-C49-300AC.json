@@ -5,6 +5,7 @@
     "vendor__code": "CISCO",
     "description": "300 Watt AC PSU",
     "cr_context": "PSU",
+    "tags": ["psu"],
     "connections": [
         {
             "description": "Power input",

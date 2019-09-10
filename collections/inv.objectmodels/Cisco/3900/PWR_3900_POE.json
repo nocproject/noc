@@ -5,6 +5,7 @@
     "vendor__code": "CISCO",
     "description": "C3900 AC-POE Power Supply",
     "cr_context": "PSU",
+    "tags": ["psu"],
     "connections": [
         {
             "description": "Power input",

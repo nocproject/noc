@@ -5,6 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco ASR1004 AC Power Supply",
     "cr_context": "PSU",
+    "tags": ["psu"],
     "connections": [
         {
             "description": "Chassis connection",

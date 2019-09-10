@@ -1,19 +1,27 @@
 {
-    "name": "Huawei | Quidway S2300 | S2328TP-EI-AC",
+    "name": "Huawei | Quidway S2300 | S2326TP-EI-DC",
     "$collection": "inv.objectmodels",
-    "uuid": "ea7f1304-5af5-4ea7-b637-48109916706f",
+    "uuid": "56a47c98-344f-4eaa-a97a-66f1ef802842",
     "vendor__code": "HUAWEI",
-    "description": "L2 switch with 24 10/100 Base-TX ports, 2 100/1000 Base-X SFP ports, 2 10/100/1000 Base-T combo  ports",
+    "description": "Quidway S2326TP-EI-CX4Z126AM-S2326TP-EI Mainframe(24 10/100 BASE-T ports and 2 Combo GE(10/100/1000 BASE-T+100/1000 Base-X) ports and DC 110/220V",
     "connection_rule__name": "Huawei | Quidway",
     "tags": ["chassis", "sup", "psu", "fabric", "ports", "fan"],
     "connections": [
         {
-            "description": "Power outlet",
+            "description": "-48V",
             "direction": "s",
-            "gender": "f",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
             "description": "Management Console",
@@ -256,7 +264,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["S2328TP-EI-AC"]
+            "part_no": ["S2326TP-EI-DC"]
         },
         "dimensions": {
             "depth": 220,
@@ -267,7 +275,7 @@
             "managed": true
         },
         "power": {
-            "power": 10.47
+            "power": 15.5
         },
         "rackmount": {
             "units": 1.0
