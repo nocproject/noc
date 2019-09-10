@@ -80,7 +80,10 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
     },
     onShowMap: function() {
         NOC.launch("inv.map", "history", {
-            args: [this.getViewModel().get("selected.segment_id")]
+            args: [
+                this.getViewModel().get("selected.segment_id"),
+                this.getViewModel().get("selected.managed_object")
+            ]
         });
     },
     onShowObject: function() {
