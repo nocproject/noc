@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  SegmentTopology class
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2018 The NOC Project
+#  Copyright (C) 2007-2019 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -55,6 +55,8 @@ class SegmentTopology(BaseTopology):
     @cachetools.cachedmethod(operator.attrgetter("_uplinks_cache"))
     def get_uplinks(self):
         self.logger.info("Searching for uplinks")
+        if not self.G:
+            raise StopIteration
         for policy in self.segment.profile.iter_uplink_policy():
             uplinks = getattr(self, "get_uplinks_%s" % policy)()
             if uplinks:
