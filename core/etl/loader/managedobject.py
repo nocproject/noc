@@ -14,6 +14,7 @@ from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from .base import BaseLoader
+from noc.lib.validators import is_ipv4
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -77,6 +78,8 @@ class ManagedObjectLoader(BaseLoader):
                 if v["tags"]
                 else []
             )
+        assert is_ipv4(v["address"])
+        v["address"] = v["address"].strip()
         v["profile"] = Profile.get_by_name(v["profile"])
         v["static_client_groups"] = [v["static_client_groups"]] if v["static_client_groups"] else []
         v["static_service_groups"] = (
