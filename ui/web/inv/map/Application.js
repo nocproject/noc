@@ -10,7 +10,8 @@ Ext.define("NOC.inv.map.Application", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.inv.networksegment.TreeCombo",
-        "NOC.inv.map.MapPanel"
+        "NOC.inv.map.MapPanel",
+        "Ext.ux.form.SearchField"
     ],
     rightWidth: 250,
     zoomLevels: [
@@ -29,6 +30,42 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
 
         me.readOnly = !me.hasPermission("write");
+
+        me.searchField = Ext.create({
+            xtype: "searchfield",
+            minWidth: 150,
+            triggers: {
+                clear: {
+                    cls: "x-form-clear-trigger",
+                    hidden: true,
+                    weight: -1,
+                    scope: me,
+                    handler: function(field) {
+                        field.setValue(null);
+                        this.resetSearchButton();
+                    }
+                }
+            },
+            listeners: {
+                scope: me,
+                specialkey: me.searchByText,
+                change: function(field, value) {
+                    if(value == null || value === "") {
+                        field.getTrigger("clear").hide();
+                        return;
+                    }
+                    field.getTrigger("clear").show();
+                    this.resetSearchButton();
+                }
+            }
+        });
+
+        me.searchButton = Ext.create({
+            xtype: "button",
+            text: __("Search"),
+            scope: me,
+            handler: me.onSearch
+        });
 
         me.segmentCombo = Ext.create('NOC.inv.networksegment.TreeCombo', {
             fieldLabel: __("Segment"),
@@ -112,37 +149,25 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onChangeName
         });
 
-        me.segmentInspector = Ext.create(
-            "NOC.inv.map.inspectors.SegmentInspector",
-            {
-                app: me,
-                readOnly: me.readOnly
-            }
-        );
+        me.segmentInspector = Ext.create("NOC.inv.map.inspectors.SegmentInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
 
-        me.managedObjectInspector = Ext.create(
-            "NOC.inv.map.inspectors.ManagedObjectInspector",
-            {
-                app: me,
-                readOnly: me.readOnly
-            }
-        );
+        me.managedObjectInspector = Ext.create("NOC.inv.map.inspectors.ManagedObjectInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
 
-        me.linkInspector = Ext.create(
-            "NOC.inv.map.inspectors.LinkInspector",
-            {
-                app: me,
-                readOnly: me.readOnly
-            }
-        );
+        me.linkInspector = Ext.create("NOC.inv.map.inspectors.LinkInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
 
-        me.cloudInspector = Ext.create(
-            "NOC.inv.map.inspectors.CloudInspector",
-            {
-                app: me,
-                readOnly: me.readOnly
-            }
-        );
+        me.cloudInspector = Ext.create("NOC.inv.map.inspectors.CloudInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
 
         me.legendPanel = Ext.create("NOC.inv.map.Legend", {
             collapsed: true,
@@ -220,6 +245,9 @@ Ext.define("NOC.inv.map.Application", {
                 },
                 renderdone: function() {
                     me.miniMapPanel.scaleContentToFit();
+                    if(me.selectedObjectId) {
+                        me.selectCell(me.mapPanel.objectNodes[me.selectedObjectId]);
+                    }
                 }
             }
         });
@@ -305,6 +333,9 @@ Ext.define("NOC.inv.map.Application", {
                         me.zoomCombo,
                         me.reloadButton,
                         "-",
+                        me.searchField,
+                        me.searchButton,
+                        "-",
                         me.editButton,
                         me.saveButton,
                         me.revertButton,
@@ -356,6 +387,9 @@ Ext.define("NOC.inv.map.Application", {
 
         if(me.getCmd() === "history") {
             me.loadSegment(me.noc.cmd.args[0]);
+            if(me.noc.cmd.args.length > 1) {
+                me.selectedObjectId = me.noc.cmd.args[1];
+            }
         }
         me.miniMapPanel.createMini(me.mapPanel);
     },
@@ -505,10 +539,59 @@ Ext.define("NOC.inv.map.Application", {
     onBasket: function() {
         this.basketPanel.toggleCollapse();
     },
+
     setStateMapButtons: function(state) {
         var me = this;
         me.newLayoutButton.setDisabled(state);
         me.rotateButton.setDisabled(state);
         me.revertButton.setDisabled(state);
+    },
+
+    searchByText: function(field, e) {
+        if(Ext.EventObject.ENTER === e.getKey()) {
+            this.onSearch();
+        }
+    },
+
+    onSearch: function() {
+        var searched = undefined,
+            value = this.searchField.getValue();
+        if(!Ext.isEmpty(value)) {
+            Ext.Object.eachValue(this.mapPanel.objectNodes, function(node) {
+                var name = node.attributes.name.replace(/\n/g, '');
+                if(name.indexOf(value) !== -1) {
+                    searched = node;
+                    return false;
+                }
+            });
+            this.selectCell(searched);
+        }
+    },
+
+    selectCell: function(searched) {
+        var zoom = this.zoomCombo.getValue(),
+            getScroll = function(pos, offset) {
+                var value = pos * zoom - offset;
+                return value > 0 ? value : 0;
+            };
+        if(searched && searched.isElement()) {
+            var offsetX = this.mapPanel.getWidth() / 2,
+                offsetY = this.mapPanel.getHeight() / 2;
+            this.searchButton.setText(__("Search"));
+            scrollX = getScroll(searched.attributes.position.x, offsetX);
+            scrollY = getScroll(searched.attributes.position.y, offsetY);
+            this.mapPanel.onCellSelected(this.mapPanel.paper.findViewByModel(searched));
+        } else {
+            scrollX = scrollY = 0;
+            this.mapPanel.unhighlight();
+            this.searchButton.setText(__("Not found"));
+        }
+        this.mapPanel.setPaperDimension();
+        this.mapPanel.scrollTo(scrollX, scrollY);
+    },
+
+    resetSearchButton: function() {
+        this.searchButton.setText(__("Search"));
+        this.mapPanel.setPaperDimension();
     }
 });
