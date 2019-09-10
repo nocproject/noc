@@ -9,14 +9,14 @@
         {
             "description": "internal Power slot",
             "direction": "o",
-            "gender": "f",
+            "gender": "m",
             "name": "in",
             "type__name": "Eltex | MES | PSU"
         },
         {
             "description": "-48V",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "name": "-48V",
             "protocols": [">-48VDC"],
             "type__name": "Power | MSTB 2.5/3-ST-5.08"

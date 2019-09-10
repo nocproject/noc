@@ -1,0 +1,149 @@
+{
+    "name": "Eltex | MES | 2308P",
+    "$collection": "inv.objectmodels",
+    "uuid": "5c21993d-7b61-45b2-a1f5-013e767dfb72",
+    "vendor__code": "ELTEX",
+    "description": "8x10/100/1000BASE-T(PoE/PoE+) , 2x10/100/1000BASE-T(RJ-45), 2x1000BASE-X (SFP)",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gi10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/11 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "gi11_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/12 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "gi12_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES-2308P"]
+        },
+        "dimensions": {
+            "depth": 158,
+            "height": 44,
+            "width": 430
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 270.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3.9
+        }
+    }
+}
