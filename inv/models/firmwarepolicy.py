@@ -69,6 +69,12 @@ class FirmwarePolicy(Document):
 
     @classmethod
     def get_recommended_version(cls, platform):
+        """
+        Get recommended version for  platform
+
+        :param platform: Platform instance
+        :return: Version string or None
+        """
         if not platform:
             return None
         fp = FirmwarePolicy.objects.filter(platform=platform.id, status=FS_RECOMMENDED).first()
@@ -79,6 +85,5 @@ class FirmwarePolicy(Document):
             versions += [fp.firmware.version]
         if versions:
             # Get latest acceptable version
-            return sorted(versions, key=lambda x: split_alnum(x.name))[-1]
-        else:
-            return None
+            return sorted(versions, key=lambda x: split_alnum(x))[-1]
+        return None
