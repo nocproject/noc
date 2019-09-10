@@ -1260,8 +1260,10 @@ Ext.define("NOC.inv.map.MapPanel", {
         }
     },
 
-    setPaperDimension: function() {
+    setPaperDimension: function(offsetX, offsetY) {
         var me = this,
+            paddingX = offsetX || 15,
+            paddingY = offsetY || 15,
             w = me.getWidth(),
             h = me.getHeight();
 
@@ -1271,10 +1273,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             if(contentBB && contentBB.width && contentBB.height) {
                 w = Ext.Array.max([contentBB.width, me.getWidth()]);
                 h = Ext.Array.max([contentBB.height, me.getHeight()]);
-                // ToDo may by use paper padding?
-                var padding = 15;
-                me.paper.setOrigin((-1) * contentBB.x + padding, (-1) * contentBB.y + padding);
-                me.paper.setDimensions(w + padding * 2, h + padding * 2);
+                me.paper.translate((-1) * contentBB.x + paddingX, (-1) * contentBB.y + paddingY);
+                me.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
             }
         }
     },
