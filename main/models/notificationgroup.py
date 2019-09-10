@@ -22,7 +22,7 @@ import cachetools
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.settings import LANGUAGE_CODE
-from noc.lib.timepattern import TimePatternList
+from noc.core.timepattern import TimePatternList
 from noc.core.service.pub import pub
 from noc.core.model.decorator import on_delete_check
 from .timepattern import TimePattern

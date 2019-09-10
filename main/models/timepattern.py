@@ -18,7 +18,7 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.lib.timepattern import TimePattern as TP
+from noc.core.timepattern import TimePattern as TP
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
