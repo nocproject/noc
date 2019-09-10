@@ -11,6 +11,7 @@ console.debug("Defining NOC.inv.macdb.Application");
 Ext.define("NOC.inv.macdb.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.inv.macdb.MACLogForm",
         "NOC.inv.macdb.Model",
         "NOC.main.style.LookupField",
         "NOC.main.pool.LookupField",

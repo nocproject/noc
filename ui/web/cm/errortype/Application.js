@@ -9,6 +9,7 @@ console.debug("Defining NOC.cm.errortype.Application");
 Ext.define("NOC.cm.errortype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.cm.errortype.Model"
     ],
     model: "NOC.cm.errortype.Model",

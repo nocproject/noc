@@ -9,7 +9,9 @@ console.debug("Defining NOC.sa.action.Application");
 Ext.define("NOC.sa.action.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.sa.action.Model"
+        "NOC.core.JSONPreview",
+        "NOC.sa.action.Model",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.action.Model",
     search: true,

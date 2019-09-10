@@ -13,7 +13,8 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
         "NOC.main.prefixtable.LookupField",
-        "NOC.vc.vcfilter.LookupField"
+        "NOC.vc.vcfilter.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.interfaceclassificationrule.Model",
     search: true,

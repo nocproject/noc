@@ -11,7 +11,14 @@ Ext.define("NOC.inv.map.Application", {
     requires: [
         "NOC.inv.networksegment.TreeCombo",
         "NOC.inv.map.MapPanel",
-        "Ext.ux.form.SearchField"
+        "NOC.inv.map.inspectors.SegmentInspector",
+        "NOC.inv.map.inspectors.ManagedObjectInspector",
+        "NOC.inv.map.inspectors.LinkInspector",
+        "NOC.inv.map.inspectors.CloudInspector",
+        "NOC.inv.map.Legend",
+        "NOC.inv.map.MiniMap",
+        "NOC.inv.map.Basket",
+        "Ext.ux.form.SearchField",
     ],
     rightWidth: 250,
     zoomLevels: [
@@ -30,7 +37,6 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
 
         me.readOnly = !me.hasPermission("write");
-
         me.searchField = Ext.create({
             xtype: "searchfield",
             minWidth: 150,

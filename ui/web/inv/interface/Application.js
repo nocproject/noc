@@ -9,7 +9,16 @@ console.debug("Defining NOC.inv.interface.Application");
 Ext.define("NOC.inv.interface.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.sa.managedobject.LookupField"
+        "NOC.inv.interface.L1Store",
+        "NOC.inv.interface.L2Store",
+        "NOC.inv.interface.L3Store",
+        "NOC.inv.interface.LAGStore",
+        "NOC.inv.interface.L1Panel",
+        "NOC.inv.interface.L2Panel",
+        "NOC.inv.interface.L3Panel",
+        "NOC.inv.interface.LAGPanel",
+        "NOC.sa.managedobject.LookupField",
+        "Ext.ux.form.SearchField"
     ],
 
     initComponent: function() {

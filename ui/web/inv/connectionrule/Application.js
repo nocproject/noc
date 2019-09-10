@@ -9,8 +9,10 @@ console.debug("Defining NOC.inv.connectionrule.Application");
 Ext.define("NOC.inv.connectionrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
+        "NOC.core.StringListField",
         "NOC.inv.connectionrule.Model",
-        "NOC.core.StringListField"
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.connectionrule.Model",
     search: true,

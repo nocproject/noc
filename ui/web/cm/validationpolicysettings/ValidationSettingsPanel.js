@@ -9,7 +9,8 @@ console.debug("Defining NOC.cm.validationpolicysettings.ValidationSettingsPanel"
 Ext.define("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
     extend: "Ext.tab.Panel",
     requires: [
-        "NOC.cm.validationpolicy.LookupField"
+        "NOC.cm.validationpolicy.LookupField",
+        "Ext.ux.form.GridField"
     ],
     layout: "fit",
     app: null,

@@ -14,7 +14,6 @@ Ext.define('NOC.inv.map.Maintenance', {
     requires: [
         'Ext.grid.Panel',
         'Ext.ux.form.SearchField',
-
         "NOC.maintenance.maintenance.Model",
         "NOC.maintenance.maintenancetype.LookupField",
         "NOC.sa.managedobject.LookupField"

@@ -8,6 +8,13 @@ console.debug("Defining NOC.ip.ipam.Application");
 
 Ext.define("NOC.ip.ipam.Application", {
     extend: "NOC.core.Application",
+    requires: [
+        "NOC.ip.ipam.LegacyPanel",
+        "NOC.ip.ipam.PrefixPanel",
+        "NOC.ip.ipam.AddressPanel",
+        "NOC.ip.ipam.RebasePanel",
+        "NOC.ip.ipam.DeletePrefixPanel"
+    ],
     layout: "card",
     currentVRF: null,
     currentAFI: null,

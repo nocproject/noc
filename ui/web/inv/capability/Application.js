@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.capability.Application");
 Ext.define("NOC.inv.capability.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.inv.capability.Model"
     ],
     model: "NOC.inv.capability.Model",

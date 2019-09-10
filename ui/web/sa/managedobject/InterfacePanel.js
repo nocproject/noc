@@ -8,6 +8,16 @@ console.debug("Defining NOC.sa.managedobject.InterfacePanel");
 
 Ext.define("NOC.sa.managedobject.InterfacePanel", {
     extend: "NOC.core.ApplicationPanel",
+    requires: [
+        "NOC.sa.managedobject.L1Store",
+        "NOC.sa.managedobject.L2Store",
+        "NOC.sa.managedobject.L3Store",
+        "NOC.sa.managedobject.LAGStore",
+        "NOC.sa.managedobject.L1Panel",
+        "NOC.sa.managedobject.LAGPanel",
+        "NOC.sa.managedobject.L2Panel",
+        "NOC.sa.managedobject.L3Panel"
+    ],
     app: null,
     autoScroll: true,
     historyHashPrefix: "interfaces",

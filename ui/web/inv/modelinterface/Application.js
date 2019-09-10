@@ -8,6 +8,10 @@ console.debug("Defining NOC.inv.modelinterface.Application");
 
 Ext.define("NOC.inv.modelinterface.Application", {
     extend: "NOC.core.ModelApplication",
+    requires: [
+        "NOC.core.JSONPreview",
+        "Ext.ux.form.GridField"
+    ],
     model: "NOC.inv.modelinterface.Model",
     search: true,
     //

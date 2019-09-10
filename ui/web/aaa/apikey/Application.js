@@ -10,7 +10,9 @@ Ext.define("NOC.aaa.apikey.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.aaa.apikey.Model",
-        "NOC.core.PasswordGenerator"
+        "NOC.core.PasswordGenerator",
+        "NOC.core.PasswordField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.aaa.apikey.Model",
     search: true,

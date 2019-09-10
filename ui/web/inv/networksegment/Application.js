@@ -9,15 +9,18 @@ console.debug("Defining NOC.inv.networksegment.Application");
 Ext.define("NOC.inv.networksegment.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
+        "NOC.inv.allocationgroup.LookupField",
         "NOC.inv.networksegment.Model",
         "NOC.inv.networksegment.TreeCombo",
+        "NOC.inv.networksegment.EffectiveSettingsPanel",
+        "NOC.inv.networksegmentprofile.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "Ext.ux.form.DictField",
-        "NOC.inv.networksegmentprofile.LookupField",
-        "NOC.inv.allocationgroup.LookupField",
         "NOC.vc.vcfilter.LookupField",
-        "NOC.vc.vlan.LookupField"
+        "NOC.vc.vlan.LookupField",
+        "Ext.ux.form.DictField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.networksegment.Model",
     rowClassField: "row_class",

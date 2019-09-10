@@ -9,7 +9,9 @@ console.debug("Defining NOC.pm.metricscope.Application");
 Ext.define("NOC.pm.metricscope.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.pm.metricscope.Model"
+        "NOC.core.JSONPreview",
+        "NOC.pm.metricscope.Model",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.pm.metricscope.Model",
     search: true,

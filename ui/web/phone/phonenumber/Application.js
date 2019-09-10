@@ -9,16 +9,19 @@ console.debug("Defining NOC.phone.phonenumber.Application");
 Ext.define("NOC.phone.phonenumber.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.StateField",
         "NOC.phone.phonenumber.Model",
         "NOC.phone.dialplan.LookupField",
         "NOC.phone.phonenumberprofile.LookupField",
         "NOC.phone.numbercategory.LookupField",
+        "NOC.phone.phonerange.TreeCombo",
         "NOC.phone.phonerange.LookupField",
         "NOC.project.project.LookupField",
         "NOC.phone.phonenumber.LookupField",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.inv.resourcegroup.LookupField",
-        "NOC.wf.state.LookupField"
+        "NOC.wf.state.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.phone.phonenumber.Model",
     rowClassField: "row_class",

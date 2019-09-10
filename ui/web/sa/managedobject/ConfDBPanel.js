@@ -10,6 +10,7 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
     extend: "NOC.core.ApplicationPanel",
     app: null,
     requires: [
+        "NOC.core.CMText",
         "NOC.cm.confdbquery.LookupField"
     ],
     autoScroll: true,

@@ -9,6 +9,7 @@ console.debug("Defining NOC.fm.alarmseverity.Application");
 Ext.define("NOC.fm.alarmseverity.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.fm.alarmseverity.Model",
         "NOC.main.style.LookupField",
         "NOC.main.ref.sound.LookupField"

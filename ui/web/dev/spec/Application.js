@@ -9,10 +9,11 @@ console.debug("Defining NOC.dev.spec.Application");
 Ext.define("NOC.dev.spec.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
+        "NOC.core.ListFormField",
         "NOC.dev.spec.Model",
         "NOC.dev.quiz.LookupField",
-        "NOC.sa.profile.LookupField",
-        "NOC.core.ListFormField"
+        "NOC.sa.profile.LookupField"
     ],
     model: "NOC.dev.spec.Model",
     search: true,

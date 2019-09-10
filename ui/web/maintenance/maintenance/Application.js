@@ -10,6 +10,7 @@ Ext.define("NOC.maintenance.maintenance.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.maintenance.maintenance.Model",
+        "NOC.maintenance.maintenance.ObjectsPanel",
         "NOC.maintenance.maintenancetype.LookupField",
         "NOC.sa.managedobject.LookupField",
         "NOC.inv.networksegment.LookupField",

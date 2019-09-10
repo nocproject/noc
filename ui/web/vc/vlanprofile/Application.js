@@ -9,6 +9,7 @@ console.debug("Defining NOC.vc.vlanprofile.Application");
 Ext.define("NOC.vc.vlanprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
         "NOC.vc.vlanprofile.Model",
         "NOC.wf.workflow.LookupField",
         "NOC.main.style.LookupField",

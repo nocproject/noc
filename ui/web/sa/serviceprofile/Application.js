@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.serviceprofile.Application");
 Ext.define("NOC.sa.serviceprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
         "NOC.sa.serviceprofile.Model",
         "NOC.main.ref.glyph.LookupField",
         "NOC.main.remotesystem.LookupField",

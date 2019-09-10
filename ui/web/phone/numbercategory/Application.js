@@ -10,7 +10,8 @@ Ext.define("NOC.phone.numbercategory.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.phone.numbercategory.Model",
-        "NOC.phone.dialplan.LookupField"
+        "NOC.phone.dialplan.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.phone.numbercategory.Model",
     search: true,

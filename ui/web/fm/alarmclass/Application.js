@@ -9,11 +9,13 @@ console.debug('Defining NOC.fm.alarmclass.Application');
 Ext.define('NOC.fm.alarmclass.Application', {
     extend: 'NOC.core.ModelApplication',
     requires: [
+        'NOC.core.JSONPreview',
         'NOC.fm.alarmclass.Model',
         'NOC.fm.alarmclass.LookupField',
         'NOC.fm.alarmseverity.LookupField',
         'Ext.ux.form.JSONField',
-        'Ext.ux.form.StringsField'
+        'Ext.ux.form.StringsField',
+        'Ext.ux.form.GridField'
     ],
     model: 'NOC.fm.alarmclass.Model',
     search: true,

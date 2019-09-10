@@ -8,6 +8,10 @@ console.debug("Defining NOC.main.search.Application");
 
 Ext.define("NOC.main.search.Application", {
     extend: "NOC.core.Application",
+    requires: [
+        "NOC.main.search.SearchStore",
+        "Ext.ux.form.SearchField"
+    ],
     initComponent: function() {
         var me = this;
         me.store = Ext.create("NOC.main.search.SearchStore");
@@ -28,8 +32,8 @@ Ext.define("NOC.main.search.Application", {
                     xtype: "templatecolumn",
                     flex: 1,
                     tpl: "<div class='noc-search-title'>{title}</div>" +
-                         "<div class='noc-search-card'>{card}</div>" +
-                         "<tpl for='tags'><span class='x-display-tag'>{.}</span></tpl>"
+                        "<div class='noc-search-card'>{card}</div>" +
+                        "<tpl for='tags'><span class='x-display-tag'>{.}</span></tpl>"
                 }
             ],
             listeners: {

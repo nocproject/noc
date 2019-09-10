@@ -13,6 +13,9 @@ Ext.application({
         "Ext.ux": "/ui/web/ux"
     },
 
+    requires: [
+        "NOC.main.desktop.Application"
+    ],
     launch: function() {
         var me = this;
         console.log("Initializing history API");

@@ -9,7 +9,9 @@ console.debug("Defining NOC.gis.layer.Application");
 Ext.define("NOC.gis.layer.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.gis.layer.Model",
+        "Ext.ux.form.ColorField"
     ],
     model: "NOC.gis.layer.Model",
     search: true,

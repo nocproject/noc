@@ -9,6 +9,7 @@ console.debug("Defining NOC.vc.vpnprofile.Application");
 Ext.define("NOC.vc.vpnprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.TagsField",
         "NOC.vc.vpnprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",

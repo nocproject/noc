@@ -9,6 +9,7 @@ console.debug("Defining NOC.peer.person.Application");
 Ext.define("NOC.peer.person.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.RepoPreview",
         "NOC.peer.person.Model",
         "NOC.peer.rir.LookupField"
     ],

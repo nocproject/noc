@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.profile.Application");
 Ext.define("NOC.sa.profile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.sa.profile.Model"
     ],
     model: "NOC.sa.profile.Model",
