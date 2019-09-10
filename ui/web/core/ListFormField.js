@@ -24,14 +24,14 @@ Ext.define("NOC.core.ListFormField", {
             return Ext.Object.merge(item, {isListForm: true})
         });
 
-        me.addButtonEnd = Ext.create("Ext.button.Button", {
+        me.appendButton = Ext.create("Ext.button.Button", {
             text: __("Append"),
             glyph: NOC.glyph.plus,
             scope: me,
             handler: Ext.pass(me.onAddRecord, true)
         });
 
-        me.addButton = Ext.create("Ext.button.Button", {
+        me.insertButton = Ext.create("Ext.button.Button", {
             text: __("Insert"),
             glyph: NOC.glyph.indent,
             scope: me,
@@ -75,8 +75,8 @@ Ext.define("NOC.core.ListFormField", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        me.addButton,
-                        me.addButtonEnd,
+                        me.insertButton,
+                        me.appendButton,
                         me.deleteButton,
                         "-",
                         me.cloneButton,
@@ -237,7 +237,7 @@ Ext.define("NOC.core.ListFormField", {
     },
     disableButtons: function(arg) {
         var me = this;
-        me.addButton.setDisabled(arg);
+        me.insertButton.setDisabled(arg);
         me.deleteButton.setDisabled(arg);
         me.cloneButton.setDisabled(arg);
     },
