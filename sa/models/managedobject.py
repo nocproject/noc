@@ -1131,7 +1131,7 @@ class ManagedObject(NOCModel):
                     logger.debug("[%s] Ensuring directory: %s", self.name, dir_path)
                     fs.makedirs(dir_path, recreate=True)
                 logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
-                fs.setbytes(path, bytes(data))
+                fs.writebytes(path, bytes(data))
         except storage.Error as e:
             logger.error("[%s] Failed to mirror config: %s", self.name, e)
 

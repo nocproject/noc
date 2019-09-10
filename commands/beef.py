@@ -353,7 +353,7 @@ class Command(BaseCommand):
                 config = cfg[beef.uuid][0] if beef.uuid in cfg else cfg[""][0]
                 config["beef"] = str(beef.uuid)
                 self.print("Writing %s:%s/test-config.yml" % (test_storage, save_path))
-                fs.setbytes(
+                fs.writebytes(
                     unicode(os.path.join(save_path, "test-config.yml")),
                     yaml.dump(config, default_flow_style=False),
                 )
@@ -374,7 +374,7 @@ class Command(BaseCommand):
         if not cfg:
             # Get config
             with test_st.open_fs() as fs:
-                data = fs.getbytes(unicode(os.path.join(test_path, "test-config.yml")))
+                data = fs.readbytes(unicode(os.path.join(test_path, "test-config.yml")))
                 cfg = yaml.safe_load(data)
         # Get beef
         beef_path = os.path.join(test_path, "beef.json.bz2")
@@ -428,7 +428,7 @@ class Command(BaseCommand):
             rn = os.path.join(test_path, "%04d.%s.json.bz2" % (n, test["script"]))
             self.print("[%04d] Writing %s" % (n, rn))
             with test_st.open_fs() as fs:
-                fs.setbytes(unicode(rn), data)
+                fs.writebytes(unicode(rn), data)
 
     def get_storage(self, name, beef=False, beef_test=False, beef_test_config=False):
         """
@@ -469,7 +469,7 @@ class Command(BaseCommand):
         for config_st in self.iter_storage(name=storage, beef_test_config=True):
             with config_st.open_fs() as fs:
                 for config_path in fs.walk.files(path=path):
-                    cfg = fs.getbytes(unicode(config_path))
+                    cfg = fs.readbytes(unicode(config_path))
                     data = yaml.safe_load(cfg)
                     r[data.get("beef", "")] += [data]
         return r

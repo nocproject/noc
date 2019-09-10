@@ -106,7 +106,7 @@ def get_discovery_configs():
         pool_name = "DP%04d" % (n + 1)
         fs = open_fs(url)
         for m, path in enumerate(fs.walk.files(filter=["test-discovery.yml"])):
-            data = yaml.safe_load(fs.getbytes(path))
+            data = yaml.safe_load(fs.readbytes(path))
             name = os.path.basename(os.path.dirname(path))
             m = m + 1
             address = "10.%d.%d.%d" % ((m >> 16) & 0xFF, (m >> 8) & 0xFF, m & 0xFF)
