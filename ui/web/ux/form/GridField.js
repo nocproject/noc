@@ -36,8 +36,8 @@ Ext.define("Ext.ux.form.GridField", {
             data: []
         });
 
-        me.addButton = Ext.create("Ext.button.Button", {
-            text: __("Add"),
+        me.insertButton = Ext.create("Ext.button.Button", {
+            text: __("Insert"),
             glyph: NOC.glyph.plus,
             scope: me,
             handler: me.onAddRecord
@@ -68,7 +68,7 @@ Ext.define("Ext.ux.form.GridField", {
 
         // Build toolbar
         toolbar = [
-            me.addButton,
+            me.insertButton,
             me.appendButton,
             me.deleteButton,
             "-",
