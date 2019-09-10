@@ -28,7 +28,8 @@ def fix():
         ins = defaultdict(list)
         bulk = []
         for doc in coll.find(
-            {"managed_object_profile": {"$exists": False}}, {"_id": 1, "managed_object": 1}
+            {"managed_object_profile": {"$exists": False}, "managed_object": {"$exists": True}},
+            {"_id": 1, "managed_object": 1},
         ):
             mo = ManagedObject.get_by_id(doc["managed_object"])
             if not mo:
