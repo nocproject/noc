@@ -6,6 +6,7 @@
     "description": "FANTRAY",
     "connection_rule__name": "Ericsson | SmartEdge",
     "cr_context": "CHASSIS",
+    "tags": ["fan"],
     "connections": [
         {
             "description": "Line connector",

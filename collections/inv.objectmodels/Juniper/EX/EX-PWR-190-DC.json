@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "190 W DC Power Supply Unit (PSU)",
     "cr_context": "PEM",
+    "tags": ["psu"],
     "connections": [
         {
             "description": "Inner slot",

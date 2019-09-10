@@ -5,6 +5,7 @@
     "vendor__code": "ELTEX",
     "description": "PM950 (220V AC, 950W) Power Supply",
     "cr_context": "PSU",
+    "tags": ["psu"],
     "connections": [
         {
             "description": "Power input",

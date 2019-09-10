@@ -5,6 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 1300 watt",
     "cr_context": "PSU",
+    "tags": ["psu"],
     "connections": [
         {
             "description": "AC power inlet",

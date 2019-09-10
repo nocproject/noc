@@ -6,6 +6,7 @@
     "description": "Chassis FastIron SX 800",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
+    "tags": ["chassis"],
     "connections": [
         {
             "description": "pwr",
