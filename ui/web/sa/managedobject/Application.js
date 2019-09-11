@@ -379,7 +379,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "description",
                                     xtype: "textarea",
                                     fieldLabel: __("Description"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "is_managed",
