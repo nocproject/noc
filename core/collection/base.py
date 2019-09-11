@@ -245,6 +245,11 @@ class Collection(object):
             return v
 
     def update_item(self, data):
+        def set_attrs(obj, values):
+            for vk in values:
+                if hasattr(obj, vk):
+                    setattr(obj, vk, values[vk])
+
         if data["uuid"] in self.partial_errors:
             del self.partial_errors[data["uuid"]]
         try:
@@ -257,15 +262,15 @@ class Collection(object):
             self.stdout.write(
                 "[%s|%s] Updating %s\n" % (self.name, data["uuid"], getattr(o, self.name_field))
             )
-            for k in d:
-                setattr(o, k, d[k])
+            set_attrs(o, d)
             o.save()
             return True
         else:
             self.stdout.write(
                 "[%s|%s] Creating %s\n" % (self.name, data["uuid"], data.get(self.name_field))
             )
-            o = self.model(**d)
+            o = self.model()
+            set_attrs(o, d)
             try:
                 o.save()
                 return True
