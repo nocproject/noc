@@ -22,7 +22,6 @@ class DiscoveryService(Service):
     name = "discovery"
     leader_group_name = "discovery-%(pool)s"
     pooled = True
-    require_nsq_writer = True
     use_mongo = True
     process_name = "noc-%(name).10s-%(pool).5s"
 

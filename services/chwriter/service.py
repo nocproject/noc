@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # chwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,7 +22,6 @@ from noc.core.backport.time import perf_counter
 
 class CHWriterService(Service):
     name = "chwriter"
-    require_nsq_writer = True
 
     CH_SUSPEND_ERRORS = {598, 599}
 

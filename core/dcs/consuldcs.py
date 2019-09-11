@@ -81,13 +81,17 @@ class ConsulResolver(ResolverBase):
     @tornado.gen.coroutine
     def start(self):
         index = 0
-        self.logger.info("[%s] Starting resolver", self.name)
+        self.logger.info("[%s] Starting resolver (near=%s)", self.name, self.near)
         while not self.to_shutdown:
             self.logger.debug("[%s] Requesting changes from index %d", self.name, index)
             try:
                 old_index = index
                 index, services = yield self.dcs.consul.health.service(
-                    service=self.name, index=index, token=self.dcs.consul_token, passing=True
+                    service=self.name,
+                    index=index,
+                    token=self.dcs.consul_token,
+                    passing=True,
+                    near=self.near,
                 )
             except ConsulRepeatableErrors as e:
                 if self.critical:

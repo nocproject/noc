@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,13 +34,10 @@ class SyslogCollectorService(Service):
     name = "syslogcollector"
     leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
-    require_nsq_writer = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
         super(SyslogCollectorService, self).__init__()
-        self.messages = []
-        self.send_callback = None
         self.mappings_callback = None
         self.report_invalid_callback = None
         self.source_configs = {}  # id -> SourceConfig
@@ -63,10 +60,6 @@ class SyslogCollectorService(Service):
                 metrics["error", ("type", "socket_listen_error")] += 1
                 self.logger.error("Failed to start syslog server at %s:%s: %s", addr, port, e)
         server.start()
-        # Send spooled messages every 250ms
-        self.logger.debug("Stating message sender task")
-        self.send_callback = tornado.ioloop.PeriodicCallback(self.send_messages, 250, self.ioloop)
-        self.send_callback.start()
         # Report invalid sources every 60 seconds
         self.logger.info("Stating invalid sources reporting task")
         self.report_invalid_callback = tornado.ioloop.PeriodicCallback(
@@ -97,13 +90,14 @@ class SyslogCollectorService(Service):
         if cfg.process_events:
             # Send to classifier
             metrics["events_out"] += 1
-            self.messages += [
+            self.pub(
+                "events.%s" % config.pool,
                 {
                     "ts": timestamp,
                     "object": cfg.id,
                     "data": {"source": "syslog", "collector": config.pool, "message": message},
-                }
-            ]
+                },
+            )
         if cfg.archive_events and cfg.bi_id:
             # Archive message
             metrics["events_archived"] += 1
@@ -115,15 +109,6 @@ class SyslogCollectorService(Service):
                 "syslog.date.ts.managed_object.facility.severity.message",
                 [str("%s\t%s\t%s\t%d\t%d\t%s" % (date, ts, cfg.bi_id, facility, severity, msg))],
             )
-
-    @tornado.gen.coroutine
-    def send_messages(self):
-        """
-        Periodic task to send collected messages to classifier
-        """
-        if self.messages:
-            messages, self.messages = self.messages, []
-            self.mpub("events.%s" % config.pool, messages)
 
     @tornado.gen.coroutine
     def get_object_mappings(self):

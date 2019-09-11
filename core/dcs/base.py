@@ -105,19 +105,28 @@ class DCSBase(object):
         raise NotImplementedError()
 
     @tornado.gen.coroutine
-    def get_resolver(self, name, critical=False):
+    def get_resolver(self, name, critical=False, near=False):
         with self.resolvers_lock:
-            resolver = self.resolvers.get((name, critical))
+            resolver = self.resolvers.get((name, critical, near))
             if not resolver:
                 self.logger.info("Running resolver for service %s", name)
-                resolver = self.resolver_cls(self, name, critical)
-                self.resolvers[name, critical] = resolver
+                resolver = self.resolver_cls(self, name, critical=critical, near=near)
+                self.resolvers[name, critical, near] = resolver
                 self.ioloop.add_callback(resolver.start)
         raise tornado.gen.Return(resolver)
 
     @tornado.gen.coroutine
-    def resolve(self, name, hint=None, wait=True, timeout=None, full_result=False, critical=False):
-        resolver = yield self.get_resolver(name, critical)
+    def resolve(
+        self,
+        name,
+        hint=None,
+        wait=True,
+        timeout=None,
+        full_result=False,
+        critical=False,
+        near=False,
+    ):
+        resolver = yield self.get_resolver(name, critical=critical, near=near)
         r = yield resolver.resolve(hint=hint, wait=wait, timeout=timeout, full_result=full_result)
         raise tornado.gen.Return(r)
 
@@ -196,7 +205,7 @@ class DCSBase(object):
 
 
 class ResolverBase(object):
-    def __init__(self, dcs, name, critical=False):
+    def __init__(self, dcs, name, critical=False, near=False):
         self.dcs = dcs
         self.name = name
         self.to_shutdown = False
@@ -208,6 +217,7 @@ class ResolverBase(object):
         self.policy = self.policy_random
         self.rr_index = -1
         self.critical = critical
+        self.near = near
         self.ready_event = tornado.locks.Event()
 
     def stop(self):
