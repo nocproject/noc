@@ -13,10 +13,10 @@ import logging
 import signal
 import uuid
 import argparse
-import functools
 from collections import defaultdict
 import random
 import time
+import threading
 
 # Third-party modules
 import tornado.ioloop
@@ -24,10 +24,9 @@ import tornado.gen
 import tornado.web
 import tornado.netutil
 import tornado.httpserver
+import tornado.locks
 import setproctitle
-import nsq
 import ujson
-import threading
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
@@ -42,6 +41,9 @@ from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, SPAN_FIELDS
 from noc.core.tz import setup_timezone
 from noc.core.backport.time import perf_counter
+from noc.core.nsq.topic import TopicQueue
+from noc.core.nsq.pub import mpub
+from noc.core.nsq.error import NSQPubError
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -84,9 +86,6 @@ class Service(object):
     # Format string to set process name
     # config variables can be expanded as %(name)s
     process_name = "noc-%(name).10s"
-
-    # Run NSQ writer on service startup
-    require_nsq_writer = False
     # Connect to MongoDB on activate
     use_mongo = False
     # List of API instances
@@ -168,6 +167,10 @@ class Service(object):
             self.get_shard = self.get_sharding_function()
         else:
             self.die("Invalid ClickHouse cluster topology")
+        # NSQ Topics
+        self.topic_queues = {}  # name -> TopicQueue()
+        self.topic_queue_lock = threading.Lock()
+        self.topic_shutdown = {}  # name -> event
 
     def create_parser(self):
         """
@@ -457,8 +460,6 @@ class Service(object):
                 "Supported API: %s at http://%s:%s/api/%s/", a.name, self.address, self.port, a.name
             )
         #
-        if self.require_nsq_writer or self.use_telemetry:
-            self.get_nsq_writer()
         if self.use_telemetry:
             # Start sender callback
             with self.metrics_lock:
@@ -496,36 +497,8 @@ class Service(object):
                     self.logger.info("Timed out when shutting down %s", x)
         # Custom deactivation
         yield self.on_deactivate()
-        # Flush pending NSQ messages
-        if self.nsq_writer:
-            conns = list(self.nsq_writer.conns)
-            n = self.NSQ_WRITER_CLOSE_RETRIES
-            while conns:
-                self.logger.info("Waiting for %d NSQ connections to finish", len(conns))
-                waiting = []
-                for conn_id in conns:
-                    connect = self.nsq_writer.conns.get(conn_id)
-                    if not connect:
-                        continue
-                    if connect.callback_queue:
-                        # Pending operations
-                        waiting += [conn_id]
-                    elif not connect.closed():
-                        # Unclosed connection
-                        connect.close()
-                        waiting += [conn_id]
-                conns = waiting
-                if conns:
-                    n -= 1
-                    if n <= 0:
-                        self.logger.info(
-                            "Failed to close NSQ writer properly. Giving up. Pending messages may be lost"
-                        )
-                        break
-                    # Wait
-                    yield tornado.gen.sleep(self.NSQ_WRITER_CLOSE_TRY_TIMEOUT)
-                else:
-                    self.logger.info("NSQ writer is shut down clearly")
+        # Shutdown NSQ topics
+        yield self.shutdown_topic_queues()
         # Continue deactivation
         # Finally stop ioloop
         self.dcs = None
@@ -632,6 +605,8 @@ class Service(object):
             for x in self.executors:
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
+        for topic in self.topic_queues:
+            self.topic_queues[topic].apply_metrics(r)
         apply_hists(r)
         apply_quantiles(r)
         return r
@@ -723,20 +698,71 @@ class Service(object):
         self.logger.info("Resuming subscription for handler %s", handler)
         self.nsq_readers[handler].set_max_in_flight(config.nsqd.max_in_flight)
 
-    def get_nsq_writer(self):
-        if not self.nsq_writer:
-            self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer(
-                [str(a) for a in config.nsqd.addresses],
-                reconnect_interval=config.nsqd.reconnect_interval,
-                snappy=config.nsqd.compression == "snappy",
-                deflate=config.nsqd.compression == "deflate",
-                deflate_level=config.nsqd.compression_level
-                if config.nsqd.compression == "deflate"
-                else 6,
-                io_loop=self.ioloop,
+    def get_topic_queue(self, topic):
+        q = self.topic_queues.get(topic)
+        if q:
+            return q
+        # Create when necessary
+        with self.topic_queue_lock:
+            q = self.topic_queues.get(topic)
+            if q:
+                return q  # Created in concurrent task
+            q = TopicQueue(topic)
+            self.topic_queues[topic] = q
+            self.topic_shutdown[topic] = tornado.locks.Lock()
+            self.ioloop.add_callback(self.nsq_publisher, topic)
+            return q
+
+    @tornado.gen.coroutine
+    def nsq_publisher(self, topic):
+        """
+        Publisher for NSQ topic
+
+        :return:
+        """
+        self.logger.info("[nsq|%s] Starting NSQ publisher", topic)
+        queue = self.topic_queues[topic]
+        while not queue.to_shutdown:
+            # Message throttling. Wait and allow to collect more messages
+            yield queue.wait_async(rate=config.nsqd.topic_mpub_rate)
+            # Get next batch up to `mpub_messages` messages or up to `mpub_size` size
+            messages = list(
+                queue.iter_get(
+                    n=config.nsqd.mpub_messages,
+                    size=config.nsqd.mpub_size,
+                    total_overhead=4,
+                    message_overhead=4,
+                )
             )
-        return self.nsq_writer
+            try:
+                self.logger.debug("[nsq|%s] Publishing %d messages", topic, len(messages))
+                yield mpub(topic, messages, dcs=self.dcs, io_loop=self.ioloop)
+            except NSQPubError:
+                if queue.to_shutdown:
+                    self.logger.debug(
+                        "[nsq|%s] Failed to publish during shutdown. Dropping messages", topic
+                    )
+                else:
+                    # Return to queue
+                    self.logger.debug(
+                        "[nsq|%s] Failed to publish. %d messages returned to queue",
+                        topic,
+                        len(messages),
+                    )
+                    queue.return_messages(messages)
+            del messages  # Release memory
+        self.logger.info("[nsq|%s] Stopping NSQ publisher", topic)
+        self.topic_shutdown[topic].set()
+
+    @tornado.gen.coroutine
+    def shutdown_topic_queues(self):
+        with self.topic_queue_lock:
+            # Send shutdown signal
+            for topic in self.topic_queues:
+                self.topic_queues[topic].shutdown()
+            # Wait for queue
+            for topic in self.topic_queues:
+                yield self.topic_queues[topic].wait()
 
     def pub(self, topic, data, raw=False):
         """
@@ -747,36 +773,17 @@ class Service(object):
           otherwise
         :param raw: True - pass message as-is, False - convert to JSON
         """
-
-        def finish_pub(conn, msg):
-            if isinstance(msg, nsq.Error):
-                self.logger.info("Failed to pub to topic '%s': %s. Retry", topic, msg)
-                w.io_loop.call_later(
-                    config.nsqd.pub_retry_delay,
-                    functools.partial(w.pub, topic, data, callback=finish_pub),
-                )
-
-        w = self.get_nsq_writer()
         if not raw:
             data = ujson.dumps(data)
-        w.pub(topic, data, callback=finish_pub)
+        self.get_topic_queue(topic).put(data)
 
     def mpub(self, topic, messages):
         """
         Publish multiple messages to topic
         """
-
-        def finish_pub(conn, data):
-            if isinstance(data, nsq.Error):
-                self.logger.info("Failed to mpub to topic '%s': %s. Retry", topic, data)
-                w.io_loop.call_later(
-                    config.nsqd.pub_retry_delay,
-                    functools.partial(w.mpub, topic, msg, callback=finish_pub),
-                )
-
-        w = self.get_nsq_writer()
-        msg = [ujson.dumps(m) for m in messages]
-        w.mpub(topic, msg, callback=finish_pub)
+        q = self.get_topic_queue(topic)
+        for m in messages:
+            q.put(ujson.dumps(m))
 
     def get_executor(self, name):
         """
@@ -894,7 +901,6 @@ class Service(object):
                 f = "%s else %r" % (f, channels)
         return compile(f, "<string>", "eval")
 
-    @tornado.gen.coroutine
     def send_metrics(self):
         # Inject spans
         spans = get_spans()
@@ -903,7 +909,6 @@ class Service(object):
         #
         if not self._metrics:
             return
-        w = self.get_nsq_writer()
         with self.metrics_lock:
             data = self._metrics
             self._metrics = defaultdict(list)
@@ -914,7 +919,7 @@ class Service(object):
                     to_send[: config.nsqd.ch_chunk_size],
                     to_send[config.nsqd.ch_chunk_size :],
                 )
-                w.pub(channel, "%s\n%s\n" % (fields, "\n".join(chunk)))
+                self.pub(channel, "%s\n%s\n" % (fields, "\n".join(chunk)), raw=True)
 
     def log_request(self, handler):
         """

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Ping service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,17 +33,13 @@ class PingService(Service):
     #
     leader_group_name = "ping-%(pool)s"
     pooled = True
-    require_nsq_writer = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
     PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
 
     def __init__(self):
         super(PingService, self).__init__()
-        self.messages = []
-        self.send_callback = None
         self.mappings_callback = None
-        self.metrics_callback = None
         self.probes = {}  # mo id -> ProbeSetting
         self.ping = None
         self.is_throttled = False
@@ -70,15 +66,6 @@ class PingService(Service):
         metrics["down_objects"] = 0
         # Open ping sockets
         self.ping = Ping(self.ioloop, tos=config.ping.tos)
-        # Send spooled messages every 250ms
-        self.logger.debug("Stating message sender task")
-        self.send_callback = tornado.ioloop.PeriodicCallback(
-            self.send_messages,
-            # @fixme have to be configured
-            250,
-            self.ioloop,
-        )
-        self.send_callback.start()
         # Start tracking changes
         self.ioloop.add_callback(self.get_object_mappings)
 
@@ -91,16 +78,7 @@ class PingService(Service):
         """
         Spool message to be sent
         """
-        self.messages += [{"ts": timestamp, "object": object, "data": data}]
-
-    @tornado.gen.coroutine
-    def send_messages(self):
-        """
-        Periodic task to send collected messages to classifier
-        """
-        if self.messages:
-            messages, self.messages = self.messages, []
-            self.mpub("events.%s" % config.pool, messages)
+        self.pub("events.%s" % config.pool, {"ts": timestamp, "object": object, "data": data})
 
     @tornado.gen.coroutine
     def get_object_mappings(self):

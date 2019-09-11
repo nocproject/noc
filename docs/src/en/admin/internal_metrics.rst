@@ -137,7 +137,7 @@ Supports the following tags:
 NSQ client metrics
 ~~~~~~~~~~~~~~~~~~
 
-The client is NSQused to work with the service queue - NSQD.
+The client is used to work with the service queue - NSQD.
 Used for two options:
 
 * Subscription ( subscribe) on topic ( topic). For new messages
@@ -161,6 +161,31 @@ The client provides the following metrics:
 | error                       | type:nsqlookupd_invalid_json_<code>     | reader            | Error decoding a message received from HTTPLookupD              |
 +-----------------------------+-----------------------------------------+-------------------+-----------------------------------------------------------------+
 
+.. internal-metrics-nsq-topicqueue-metrics:
+
+NSQ TopicQueue metrics
+~~~~~~~~~~~~~~~~~~~~~~
+
+TopicQueue is the service's internal buffering queue between NSQ
+message producing threads and the NSQ publisher.
+
+The TopicQueue provides following metrics:
+
++-----------------------+----------------+------------+------------------------------------------------------------------------------------+
+| Metric Name           | Tag value      | A place    | Physical meaning                                                                   |
++=======================+================+============+====================================================================================+
+| nsq_msg_put           | `topic:<name>` | TopicQueue | Amount of messages submitted to TopicQueue                                         |
++-----------------------+----------------+------------+------------------------------------------------------------------------------------+
+| nsq_msg_put_size      | `topic:<name>` | TopicQueue | Total size of messages submitted to TopicQueue (in octets)                         |
++-----------------------+----------------+------------+------------------------------------------------------------------------------------+
+| nsq_msg_get           | `topic:<name>` | TopicQueue | Amount of messages fetched from TopicQueue                                         |
++-----------------------+----------------+------------+------------------------------------------------------------------------------------+
+| nsq_msg_get_size      | `topic:<name>` | TopicQueue | Total size of messages fetched from TopicQueue (in octets)                         |
++-----------------------+----------------+------------+------------------------------------------------------------------------------------+
+| nsq_msg_requeued      | `topic:<name>` | TopicQueue | Amount of messages returned to TopicQueue due to publishing errors                 |
++-----------------------+----------------+------------+------------------------------------------------------------------------------------+
+| nsq_msg_requeued_size | `topic:<name>` | TopicQueue | Total size of messages returned to TopicQueue due to publishing errors (in octets) |
++-----------------------+----------------+------------+------------------------------------------------------------------------------------+
 
 .. internal-metrics-dcs-metrics:
 
