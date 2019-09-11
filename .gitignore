@@ -24,7 +24,7 @@ contrib/share/*
 !/.flake8
 !/.pylintrc
 !/.coveragerc
-!/.style.yapf
+!/.prettierrc
 ext_*
 etc/requirements/local.txt
 static/pkg/
