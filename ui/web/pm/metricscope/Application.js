@@ -109,6 +109,11 @@ Ext.define("NOC.pm.metricscope.Application", {
                             editor: "textfield"
                         }
                     ]
+                },
+                {
+                    name: "enable_timedelta",
+                    xtype: "checkbox",
+                    boxLabel: __("Enable Time Delta")
                 }
             ],
             formToolbar: [

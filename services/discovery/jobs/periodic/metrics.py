@@ -327,7 +327,16 @@ class MetricsCheck(DiscoveryCheck):
         n_metrics = 0
         mo_id = self.object.bi_id
         ts_cache = {}  # timestamp -> (date, ts)
-        #
+        # Calculate time_delta
+        time_delta = self.job.context.get("time_delta", None)
+        if time_delta:
+            del self.job.context["time_delta"]  # Remove from context
+        if time_delta and time_delta > 0xFFFF:
+            self.logger.info(
+                "time_delta overflow (%d). time_delta measurement will be dropped" % time_delta
+            )
+            time_delta = None
+        # Process collected metrics
         for m in result:
             path = m.path
             cfg = self.id_metrics.get(m.id)
@@ -403,6 +412,9 @@ class MetricsCheck(DiscoveryCheck):
                 except ValueError as e:
                     self.logger.info("[%s] Cannot clean value %s: %s", m.label, m.abs_value, e)
                     continue
+                # Attach time_delta, when required
+                if time_delta and cfg.metric_type.scope.enable_timedelta:
+                    data[table, pk]["time_delta"] = time_delta
                 n_metrics += 1
             if cfg.threshold_profile and m.abs_value is not None:
                 alarms += self.process_thresholds(m, cfg)
@@ -418,8 +430,11 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.info("No metrics configured. Skipping")
             return
         # Collect metrics
+        ts = time.time()
+        if "last_run" in self.job.context and self.job.context["last_run"] < ts:
+            self.job.context["time_delta"] = int(round(ts - self.job.context["last_run"]))
+        self.job.context["last_run"] = ts
         self.logger.debug("Collecting metrics: %s", metrics)
-
         result = [MData(**r) for r in self.object.scripts.get_metrics(metrics=metrics)]
         if not result:
             self.logger.info("No metrics found")
