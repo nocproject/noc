@@ -35,7 +35,7 @@ import six
 import jinja2
 
 # NOC modules
-from noc.lib.forms import NOCForm
+from noc.core.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
 from noc.core.cache.base import cache
@@ -104,8 +104,8 @@ class ApplicationBase(type):
     Application metaclass. Registers application class to site
     """
 
-    def __new__(cls, name, bases, attrs):
-        m = type.__new__(cls, name, bases, attrs)
+    def __new__(mcs, name, bases, attrs):
+        m = type.__new__(mcs, name, bases, attrs)
         for name in attrs:
             m.add_to_class(name, attrs[name])
         if "apps" in m.__module__:
