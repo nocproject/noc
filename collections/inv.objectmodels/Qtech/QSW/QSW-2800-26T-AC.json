@@ -1,9 +1,9 @@
 {
-    "name": "Qtech | QSW | QSW-2850-28T-AC",
+    "name": "Qtech | QSW | QSW-2800-26T-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "c003f554-e733-4cd6-b8d5-326ea1d31913",
+    "uuid": "5be0d431-c13c-4d2a-ad38-0a2324888c33",
     "vendor__code": "QTECH",
-    "description": "Управляемый коммутатор уровня L2+, 24 порта 10/100BASE-T, 2 комбо-порта 10/100/1000BASE-T или 100/1000BASE-X SFP, 2 порта 100/1000BASE-X SFP, 16K MAC-адресов, 4К VLAN, 220В А",
+    "description": "24 х 10/100Base-TX, 2х 1000M/Gigabits Combo(SFP/GT) ",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -236,30 +236,12 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Fiber port 27",
-            "direction": "i",
-            "gender": "f",
-            "group": "27",
-            "name": "sfp27",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Fiber port 28",
-            "direction": "i",
-            "gender": "f",
-            "group": "28",
-            "name": "sfp28",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "Power outlet",
@@ -272,7 +254,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["QSW-2850-28T-AC"]
+            "part_no": ["QSW-2800-26T-AC"]
         },
         "management": {
             "managed": true
@@ -281,16 +263,12 @@
             "units": 1.0
         },
         "dimensions": {
-            "depth": 200,
+            "depth": 230,
             "height": 44,
-            "width": 440
+            "width": 442
         },
         "power": {
-            "power": 20.0
-        },
-        "weight": {
-            "is_recursive": true,
-            "weight": 2.2
+            "power": 17.0
         }
     }
 }

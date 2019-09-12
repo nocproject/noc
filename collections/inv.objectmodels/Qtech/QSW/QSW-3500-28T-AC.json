@@ -1,9 +1,9 @@
 {
-    "name": "Qtech | QSW | QSW-2850-28T-AC",
+    "name": "Qtech | QSW | QSW-3500-28T-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "c003f554-e733-4cd6-b8d5-326ea1d31913",
+    "uuid": "c0e165e9-e840-45d5-adc0-9cfbc00ec95c",
     "vendor__code": "QTECH",
-    "description": "Управляемый коммутатор уровня L2+, 24 порта 10/100BASE-T, 2 комбо-порта 10/100/1000BASE-T или 100/1000BASE-X SFP, 2 порта 100/1000BASE-X SFP, 16K MAC-адресов, 4К VLAN, 220В А",
+    "description": "Управляемый коммутатор уровня L2+ с поддержкой PoE 802.3af/at, 24 порта 10/100/1000BASE-T PoE, 4 порта 100/1000BASE-X SFP, 16K MAC адресов, общая мощность PoE 370Вт, встроенный БП, 100-240В AC, размеры ШхГхВ (442x280x43.6  мм) ",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -12,7 +12,7 @@
             "direction": "s",
             "gender": "f",
             "name": "1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -20,7 +20,7 @@
             "direction": "s",
             "gender": "f",
             "name": "2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +28,7 @@
             "direction": "s",
             "gender": "f",
             "name": "3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +36,7 @@
             "direction": "s",
             "gender": "f",
             "name": "4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +44,7 @@
             "direction": "s",
             "gender": "f",
             "name": "5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +52,7 @@
             "direction": "s",
             "gender": "f",
             "name": "6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +60,7 @@
             "direction": "s",
             "gender": "f",
             "name": "7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +68,7 @@
             "direction": "s",
             "gender": "f",
             "name": "8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +76,7 @@
             "direction": "s",
             "gender": "f",
             "name": "9",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -84,7 +84,7 @@
             "direction": "s",
             "gender": "f",
             "name": "10",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -92,7 +92,7 @@
             "direction": "s",
             "gender": "f",
             "name": "11",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -100,7 +100,7 @@
             "direction": "s",
             "gender": "f",
             "name": "12",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -108,7 +108,7 @@
             "direction": "s",
             "gender": "f",
             "name": "13",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -116,7 +116,7 @@
             "direction": "s",
             "gender": "f",
             "name": "14",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -124,7 +124,7 @@
             "direction": "s",
             "gender": "f",
             "name": "15",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -132,7 +132,7 @@
             "direction": "s",
             "gender": "f",
             "name": "16",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -140,7 +140,7 @@
             "direction": "s",
             "gender": "f",
             "name": "17",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -148,7 +148,7 @@
             "direction": "s",
             "gender": "f",
             "name": "18",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -156,7 +156,7 @@
             "direction": "s",
             "gender": "f",
             "name": "19",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -164,7 +164,7 @@
             "direction": "s",
             "gender": "f",
             "name": "20",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -172,7 +172,7 @@
             "direction": "s",
             "gender": "f",
             "name": "21",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -180,7 +180,7 @@
             "direction": "s",
             "gender": "f",
             "name": "22",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -188,7 +188,7 @@
             "direction": "s",
             "gender": "f",
             "name": "23",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -196,41 +196,21 @@
             "direction": "s",
             "gender": "f",
             "name": "24",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "25",
-            "direction": "s",
-            "gender": "f",
-            "group": "25",
-            "name": "25",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX","1000BASETX","<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "Fiber port 25",
             "direction": "i",
             "gender": "f",
-            "group": "25",
             "name": "sfp25",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "26",
-            "direction": "s",
-            "gender": "f",
-            "group": "26",
-            "name": "26",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "Fiber port 26",
             "direction": "i",
             "gender": "f",
-            "group": "26",
             "name": "sfp26",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -239,7 +219,6 @@
             "description": "Fiber port 27",
             "direction": "i",
             "gender": "f",
-            "group": "27",
             "name": "sfp27",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -248,7 +227,6 @@
             "description": "Fiber port 28",
             "direction": "i",
             "gender": "f",
-            "group": "28",
             "name": "sfp28",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -259,7 +237,7 @@
             "gender": "f",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "Power outlet",
@@ -272,7 +250,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["QSW-2850-28T-AC"]
+            "part_no": ["QSW-3500-28T-AC"]
         },
         "management": {
             "managed": true
@@ -281,16 +259,12 @@
             "units": 1.0
         },
         "dimensions": {
-            "depth": 200,
+            "depth": 280,
             "height": 44,
-            "width": 440
+            "width": 442
         },
         "power": {
-            "power": 20.0
-        },
-        "weight": {
-            "is_recursive": true,
-            "weight": 2.2
+            "power": 370.0
         }
     }
 }
