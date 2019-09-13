@@ -1,29 +1,32 @@
 {
-    "name": "Huawei | Quidway S5300 | Fan Module",
+    "name": "Huawei | Quidway | Fan Module",
     "$collection": "inv.objectmodels",
     "uuid": "ae0df0b7-e0a1-46db-a4f9-126134bbf2d4",
     "vendor__code": "HUAWEI",
-    "description": "Huawei Quidway S5300 Fan Module",
+    "description": "Huawei Quidway Fan Module",
     "connections": [
         {
             "description": "Fan Slot",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | Quidway S5300 | FAN"
+            "type__name": "Huawei | Quidway | FAN"
         }
     ],
     "data": {
+        "asset": {
+            "part_no": ["CX7E1FANA"]
+        },
         "dimensions": {
-            "depth": "100",
-            "height": "40",
-            "width": "103"
+            "depth": 100,
+            "height": 40,
+            "width": 103
         },
         "power": {
-            "power": "12"
+            "power": 12.0
         },
         "weight": {
-            "weight": "0.27"
+            "weight": 0.27
         }
     }
 }
