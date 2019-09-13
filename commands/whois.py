@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ./noc whois
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import argparse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
@@ -28,6 +29,7 @@ class Command(BaseCommand):
         prefix_list_parser.add_argument("as_set", nargs=argparse.REMAINDER, help="AS-set")
 
     def handle(self, cmd, *args, **options):
+        connect()
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_update_cache(self, *args, **options):
