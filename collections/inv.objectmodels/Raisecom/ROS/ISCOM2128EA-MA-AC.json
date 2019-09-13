@@ -1,5 +1,5 @@
 {
-    "name": "Raisecom | ROS | ISCOM2128EA-MA",
+    "name": "Raisecom | ROS | ISCOM2128EA-MA-AC",
     "$collection": "inv.objectmodels",
     "uuid": "cb59d6c2-d2da-4b7b-bf3b-47187f9c4ded",
     "vendor__code": "RAISECOM",
@@ -292,11 +292,22 @@
         "asset": {
             "part_no": ["ISCOM2128EA-MA-AC"]
         },
+        "dimensions": {
+            "depth": 220,
+            "height": 44,
+            "width": 440
+        },
         "management": {
             "managed": true
         },
+        "power": {
+            "power": 15.0
+        },
         "rackmount": {
             "units": 1.0
+        },
+        "weight": {
+            "weight": 3.0
         }
     }
 }
