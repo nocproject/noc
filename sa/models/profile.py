@@ -20,7 +20,7 @@ import cachetools
 
 # NOC modules
 from noc.core.bi.decorator import bi_sync
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.core.profile.loader import loader, GENERIC_PROFILE
 

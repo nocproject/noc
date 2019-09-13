@@ -27,7 +27,7 @@ from mongoengine.fields import (
 from noc.core.mongo.fields import PlainReferenceField
 from .profile import Profile
 from noc.lib.text import quote_safe_path
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 from .action import Action
 
 

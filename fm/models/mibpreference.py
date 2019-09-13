@@ -12,7 +12,7 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, IntField
 
 # NOC modules
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 
 
 @six.python_2_unicode_compatible

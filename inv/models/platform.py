@@ -27,7 +27,7 @@ from bson.int64 import Int64
 from noc.core.mongo.fields import PlainReferenceField, DateField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync, new_bi_id
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 from noc.models import get_model
 from .vendor import Vendor
 
