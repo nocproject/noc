@@ -1,9 +1,9 @@
 {
-    "name": "Qtech | QSW | QSW-2850-28T-AC",
+    "name": "Qtech | QSW | QSW-2850-28T-DC",
     "$collection": "inv.objectmodels",
-    "uuid": "c003f554-e733-4cd6-b8d5-326ea1d31913",
+    "uuid": "6b6f0940-a4fb-4c0a-bcb8-570ba1a33f8e",
     "vendor__code": "QTECH",
-    "description": "Управляемый коммутатор уровня L2+, 24 порта 10/100BASE-T, 2 комбо-порта 10/100/1000BASE-T или 100/1000BASE-X SFP, 2 порта 100/1000BASE-X SFP, 16K MAC-адресов, 4К VLAN, 220В А",
+    "description": "Управляемый коммутатор уровня L2+, 24 порта 10/100BASE-T, 2 комбо-порта 10/100/1000BASE-T или 100/1000BASE-X SFP, 2 порта 100/1000BASE-X SFP, 16K MAC-адресов, 4К VLAN",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -265,14 +265,14 @@
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
+            "name": "-48V",
+            "protocols": [">-36VDC", ">-72VDC"],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["QSW-2850-28T-AC"]
+            "part_no": ["QSW-2850-28T-DC"]
         },
         "management": {
             "managed": true

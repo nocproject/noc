@@ -1,7 +1,7 @@
 {
-    "name": "Qtech | QSW | QSW-2850-28T-AC",
+    "name": "Qtech | QSW | QSW-2910-28T-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "c003f554-e733-4cd6-b8d5-326ea1d31913",
+    "uuid": "53974e18-0485-4fb0-b30f-a2c4d33bfd50",
     "vendor__code": "QTECH",
     "description": "Управляемый коммутатор уровня L2+, 24 порта 10/100BASE-T, 2 комбо-порта 10/100/1000BASE-T или 100/1000BASE-X SFP, 2 порта 100/1000BASE-X SFP, 16K MAC-адресов, 4К VLAN, 220В А",
     "connection_rule__name": "Generic | Switch SFP",
@@ -272,25 +272,13 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["QSW-2850-28T-AC"]
+            "part_no": ["QSW-2910-28T-AC"]
         },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1.0
-        },
-        "dimensions": {
-            "depth": 200,
-            "height": 44,
-            "width": 440
-        },
-        "power": {
-            "power": 20.0
-        },
-        "weight": {
-            "is_recursive": true,
-            "weight": 2.2
         }
     }
 }
