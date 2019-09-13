@@ -52,4 +52,6 @@ class UnknownModel(Document):
 
     @classmethod
     def clear_unknown(cls, vendor, part_numbers):
-        cls._get_collection().delete_many({"vendor": vendor, "part_no": {"$in": part_numbers}})
+        cls._get_collection().delete_many(
+            {"vendor": {"$in": vendor}, "part_no": {"$in": part_numbers}}
+        )
