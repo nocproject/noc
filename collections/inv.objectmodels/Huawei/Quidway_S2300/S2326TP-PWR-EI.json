@@ -1,31 +1,13 @@
 {
-    "name": "Huawei | Quidway S2300 | S2326TP-EI-DC",
+    "name": "Huawei | Quidway S2300 | S2326TP-PWR-EI",
     "$collection": "inv.objectmodels",
-    "uuid": "56a47c98-344f-4eaa-a97a-66f1ef802842",
+    "uuid": "15132640-6bf8-4c1e-8961-7ba15ad9575e",
     "vendor__code": "HUAWEI",
-    "description": "Quidway S2326TP-EI-CX4Z126DM-S2326TP-EI Mainframe(24 10/100 BASE-T ports and 2 Combo GE(10/100/1000 BASE-T+100/1000 Base-X) ports and DC -48V",
+    "description": "Quidway S2326TP-PWR-EI,LS2Z326CM,S2326TP-PWR-EI Mainframe(24 10/100 BASE-T ports and 2 Combo GE(10/100/1000 BASE-T+100/1000 Base-X) ports ,PoE,Chassis,Dual Slots of power,Without Power)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "tags": ["chassis", "sup", "psu", "fabric", "ports", "fan"],
     "connections": [
-        {
-            "description": "-48V",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "-48V",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
-        },
-        {
-            "description": "RTN (+)",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "RTN",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
-        },
         {
             "description": "Management Console",
             "direction": "s",
@@ -39,7 +21,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -47,7 +29,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -55,7 +37,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -63,7 +45,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -71,7 +53,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -79,7 +61,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -87,7 +69,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -95,7 +77,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -103,7 +85,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/9",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -111,7 +93,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/10",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -119,7 +101,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/11",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -127,7 +109,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/12",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -135,7 +117,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/13",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -143,7 +125,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/14",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -151,7 +133,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/15",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -159,7 +141,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/16",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -167,7 +149,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/17",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -175,7 +157,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/18",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -183,7 +165,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/19",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -191,7 +173,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/20",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -199,7 +181,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/21",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -207,7 +189,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/22",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -215,7 +197,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/23",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -223,7 +205,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet0/0/24",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -263,14 +245,35 @@
             "name": "GigabitEthernet0/0/2_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "FAN slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan",
+            "type__name": "Huawei | Quidway | FAN"
+        },
+        {
+            "description": "PSU slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Huawei | Quidway S2300 | PSU"
+        },
+        {
+            "description": "PSU slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Huawei | Quidway S2300 | PSU"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["CX4Z126DM", "S2326TP-EI-DC"]
+            "part_no": ["LS2Z326CM"]
         },
         "dimensions": {
-            "depth": 220,
+            "depth": 420,
             "height": 43,
             "width": 442
         },
@@ -278,13 +281,13 @@
             "managed": true
         },
         "power": {
-            "power": 15.5
+            "power": 68.0
         },
         "rackmount": {
             "units": 1.0
         },
         "weight": {
-            "weight": 2.4
+            "weight": 4.0
         }
     }
 }

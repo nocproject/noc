@@ -1,30 +1,20 @@
 {
-    "name": "Huawei | Quidway S2300 | S2326TP-EI-DC",
+    "name": "Huawei | Quidway S2300 | S2350-28TP-EI-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "56a47c98-344f-4eaa-a97a-66f1ef802842",
+    "uuid": "be6dea5e-3a7f-40dd-9cfe-2f00e2aa0217",
     "vendor__code": "HUAWEI",
-    "description": "Quidway S2326TP-EI-CX4Z126DM-S2326TP-EI Mainframe(24 10/100 BASE-T ports and 2 Combo GE(10/100/1000 BASE-T+100/1000 Base-X) ports and DC -48V",
+    "description": "Quidway S2350-28TP-EI-AC(24 Ethernet 10/100 ports,2 Gig SFP and 2 dual-purpose 10/100/1000 or SFP,AC 110/220V,front access)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "ports", "fan"],
+    "tags": ["chassis", "sup", "psu", "fabric", "ports"],
     "connections": [
         {
-            "description": "-48V",
+            "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "group": "0",
-            "name": "-48V",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
-        },
-        {
-            "description": "RTN (+)",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "RTN",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
         },
         {
             "description": "Management Console",
@@ -227,11 +217,29 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "GigabitEthernet 0/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernet0/0/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernet0/0/2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "description": "GigabitEthernet 0/0/1 port",
             "direction": "s",
             "gender": "f",
-            "group": "GigabitEthernet0/0/1",
-            "name": "GigabitEthernet0/0/1",
+            "group": "GigabitEthernet0/0/3",
+            "name": "GigabitEthernet0/0/3",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -239,9 +247,9 @@
             "description": "GigabitEthernet 0/0/1 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/1",
-            "internal_name": "Port_1",
-            "name": "GigabitEthernet0/0/1_sfp",
+            "group": "GigabitEthernet0/0/3",
+            "internal_name": "Port_3",
+            "name": "GigabitEthernet0/0/3",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -249,8 +257,8 @@
             "description": "GigabitEthernet 0/0/2 port",
             "direction": "s",
             "gender": "f",
-            "group": "GigabitEthernet0/0/2",
-            "name": "GigabitEthernet0/0/2",
+            "group": "GigabitEthernet0/0/4",
+            "name": "GigabitEthernet0/0/4",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -258,16 +266,16 @@
             "description": "GigabitEthernet 0/0/2 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/2",
-            "internal_name": "Port_2",
-            "name": "GigabitEthernet0/0/2_sfp",
+            "group": "GigabitEthernet0/0/4",
+            "internal_name": "Port_4",
+            "name": "GigabitEthernet0/0/4",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["CX4Z126DM", "S2326TP-EI-DC"]
+            "part_no": ["S2350-28TP-EI-AC"]
         },
         "dimensions": {
             "depth": 220,
@@ -278,13 +286,13 @@
             "managed": true
         },
         "power": {
-            "power": 15.5
+            "power": 15.7
         },
         "rackmount": {
             "units": 1.0
         },
         "weight": {
-            "weight": 2.4
+            "weight": 5.0
         }
     }
 }
