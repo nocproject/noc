@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.connectionrule application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 from noc.core.translation import ugettext as _
 
 

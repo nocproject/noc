@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.objectmodel application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ from noc.main.models.doccategory import DocCategory
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 from noc.core.translation import ugettext as _
 
 

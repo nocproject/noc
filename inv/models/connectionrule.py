@@ -15,7 +15,7 @@ from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, UUIDField, ListField, EmbeddedDocumentField
 
 # NOC modules
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 

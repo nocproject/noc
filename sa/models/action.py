@@ -28,7 +28,7 @@ import cachetools
 
 # NOC modules
 from noc.lib.text import quote_safe_path
-from noc.lib.prettyjson import to_json
+from noc.core.prettyjson import to_json
 from noc.core.ip import IP
 
 id_lock = threading.Lock()
