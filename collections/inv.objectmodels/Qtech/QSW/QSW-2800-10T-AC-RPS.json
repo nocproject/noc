@@ -122,6 +122,14 @@
             "name": "power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "redundant power supply",
+            "direction": "s",
+            "gender": "f",
+            "name": "RPS",
+            "protocols": ["<-12VDC"],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
     "data": {
