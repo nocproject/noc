@@ -2,17 +2,18 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import re
 import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
-from noc.lib.text import parse_table_header
+from noc.core.text import parse_table_header
 from noc.core.mib import mib
 
 

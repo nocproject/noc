@@ -25,7 +25,7 @@ import cachetools
 
 # NOC modules
 from noc.core.prettyjson import to_json
-from noc.lib.text import quote_safe_path
+from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
 

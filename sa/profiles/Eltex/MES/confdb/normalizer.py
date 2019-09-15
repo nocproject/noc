@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
-from noc.lib.text import ranges_to_list
+from noc.core.text import ranges_to_list
 
 
 class MESNormalizer(BaseNormalizer):

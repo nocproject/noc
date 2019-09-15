@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CLI FSM
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ import six
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.lib.text import replace_re_group
+from noc.core.text import replace_re_group
 from .error import (
     CLIError,
     CLIAuthFailed,

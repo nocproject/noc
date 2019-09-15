@@ -2,15 +2,30 @@
 # ----------------------------------------------------------------------
 # noc.lib.text tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Thirt-party modules
+# Third-party modules
 import pytest
 
 # NOC modules
-from noc.lib.text import parse_table
+from noc.core.text import (
+    parse_table,
+    strip_html_tags,
+    xml_to_table,
+    list_to_ranges,
+    ranges_to_list,
+    replace_re_group,
+    indent,
+    split_alnum,
+    find_indented,
+    to_seconds,
+    format_table,
+    clean_number,
+    safe_shadow,
+    ch_escape,
+)
 
 
 @pytest.mark.parametrize(
@@ -248,3 +263,166 @@ te1/0/3        (1RY\t#       GigabitEthernet1/  MBH_75_00020_1       B, R      1
 )
 def test_parse_table(value, kwargs, expected):
     assert parse_table(value, **kwargs) == expected
+
+
+@pytest.mark.parametrize("expected", ["Title            Body    Text"])
+def test_strip_html_tags(expected):
+    html = """
+    <html>
+    <head>
+    <title>Title</title>
+    </head>
+    <body>
+    <H1>Body</H1>
+    <P>Text</P>
+    </body>
+    </html>
+    """
+    out = strip_html_tags(html)
+    out = out.strip()
+    out = out.replace("\n", "")
+    assert out == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        (
+            [
+                '<?xml version="1.0" encoding="UTF-8" ?><response><action><row><a>1</a><b>2</b></row><row><a>3</a><b>4</b></row></action></response>'  # noqa
+            ],
+            [{"a": "1", "b": "2"}, {"a": "3", "b": "4"}],
+        )
+    ],
+)
+def test_xml_to_table(config, expected):
+    assert xml_to_table(str(config), "action", "row") == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        ([], ""),
+        ([1], "1"),
+        ([1, 2], "1-2"),
+        ([1, 2, 3], "1-3"),
+        ([1, 2, 3, 5], "1-3,5"),
+        ([1, 2, 3, 5, 6, 7], "1-3,5-7"),
+        (range(1, 4001), "1-4000"),
+    ],
+)
+def test_list_to_ranges(config, expected):
+    assert list_to_ranges(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        ("1", [1]),
+        ("1, 2", [1, 2]),
+        ("1, 10-12", [1, 10, 11, 12]),
+        ("1, 10-12, 15, 17-19", [1, 10, 11, 12, 15, 17, 18, 19]),
+    ],
+)
+def test_ranges_to_list(config, expected):
+    assert ranges_to_list(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        ("nothing", "nothing"),
+        ("the (?P<groupname>simple) test", "the groupvalue test"),
+        ("the (?P<groupname> nested (test)>)", "the groupvalue"),
+    ],
+)
+def test_replace_re_group(config, expected):
+    assert replace_re_group(config, "(?P<groupname>", "groupvalue") == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        ("", ""),
+        (
+            "the quick brown fox\\njumped over an lazy dog\\nend",
+            " the quick brown fox\\njumped over an lazy dog\\nend",
+        ),
+    ],
+)
+def test_indent(config, expected):
+    assert indent(config, n=1) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        ("Fa 0/1", ["Fa ", 0, "/", 1]),
+        ("Fa 0/1.15", ["Fa ", 0, "/", 1, ".", 15]),
+        ("ge-1/0/1", ["ge-", 1, "/", 0, "/", 1]),
+        ("ge-1/0/1.15", ["ge-", 1, "/", 0, "/", 1, ".", 15]),
+    ],
+)
+def test_split_alnum(config, expected):
+    assert split_alnum(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        (
+            "section0\nsection 1\n  line 1-1\n  line 1-2\n\n section 2\n  line 2-1\n  line 2-2",
+            ["section 1\n  line 1-1\n  line 1-2\n section 2\n  line 2-1\n  line 2-2"],
+        )
+    ],
+)
+def test_find_indented(config, expected):
+    assert find_indented(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [("1h", 3600), ("1d", 86400), ("1w", 604800), ("1m", 2592000), ("1y", 31536000)],
+)
+def test_to_seconds(config, expected):
+    assert to_seconds(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        (
+            [["H1", "H2", "H3"], ["s1", "s2", "s3"], ["s1.1", "s2.1", "s3.1"]],
+            "H1   H2   H3  \n---- ---- ----\ns1   s2   s3  \ns1.1 s2.1 s3.1",
+        )
+    ],
+)
+def test_format_table(config, expected):
+    assert format_table([0, 0, 0, 0, 0], config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [("12w34r5t6y7", "1234567"), ("   223ssSSSf*3", "2233"), ("(032HDWeg sda^@3f ", "0323")],
+)
+def test_clean_number(config, expected):
+    assert clean_number(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [(None, "None"), ("s", "******"), ("sssssss", "s******s"), ("1", "******"), ([1, 2], "******")],
+)
+def test_safe_shadow(config, expected):
+    assert safe_shadow(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        ("aaaa\nbbbb\nssssss\n", "aaaa\\\\nbbbb\\\\nssssss\\\\n"),
+        ("aaaa\nbbbb\nsss sss\n", "aaaa\\\\nbbbb\\\\nsss sss\\\\n"),
+    ],
+)
+def test_ch_escape(config, expected):
+    assert ch_escape(config) == expected

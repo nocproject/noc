@@ -22,7 +22,7 @@ import tornado.gen
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
 from noc.config import config
-from noc.lib.text import ch_escape
+from noc.core.text import ch_escape
 from noc.core.backport.time import perf_counter
 
 forensic_logger = logging.getLogger("noc.core.forensic")

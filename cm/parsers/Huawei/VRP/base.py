@@ -10,7 +10,7 @@
 from collections import defaultdict
 
 # NOC modules
-from noc.lib.text import ranges_to_list
+from noc.core.text import ranges_to_list
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
 from noc.lib.validators import is_ipv4

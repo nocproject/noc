@@ -13,7 +13,7 @@ from collections import defaultdict
 import six
 
 # NOC modules
-from noc.lib.text import ranges_to_list
+from noc.core.text import ranges_to_list
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.core.vpn import get_vpn_id
 from noc.core.service.rpc import RPCError

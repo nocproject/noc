@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
-from noc.lib.text import parse_table
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):

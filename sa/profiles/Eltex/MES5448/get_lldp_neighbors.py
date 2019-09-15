@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.text import parse_table
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):

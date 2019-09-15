@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import re
 import datetime
 from collections import defaultdict
@@ -13,7 +14,7 @@ from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.lib.text import parse_kv
+from noc.core.text import parse_kv
 from noc.lib.validators import is_int
 
 

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Asset check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
-from noc.lib.text import str_dict
+from noc.core.text import str_dict
 
 
 class AssetCheck(DiscoveryCheck):

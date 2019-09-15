@@ -2,17 +2,19 @@
 # ----------------------------------------------------------------------
 # Expression matcher
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
 from collections import Iterable
+
+# Third-party modules
 import six
 
 # NOC modules
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 
 
 __all__ = ["match"]

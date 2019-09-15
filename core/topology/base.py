@@ -17,7 +17,7 @@ import cachetools
 
 # NOC modules
 from noc.core.stencil import stencil_registry
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 from .layout.ring import RingLayout
 from .layout.spring import SpringLayout
 from .layout.tree import TreeLayout

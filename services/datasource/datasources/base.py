@@ -13,7 +13,7 @@ import six
 from noc.main.models.datasourcecache import DataSourceCache
 from noc.core.perf import metrics
 from noc.config import config
-from noc.lib.text import ch_escape
+from noc.core.text import ch_escape
 
 
 class BaseDataSource(object):

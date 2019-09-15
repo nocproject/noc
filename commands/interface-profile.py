@@ -16,7 +16,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 
 
 class Command(BaseCommand):

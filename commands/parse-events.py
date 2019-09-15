@@ -24,7 +24,7 @@ from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
 from noc.core.fileutils import iter_open
-from noc.lib.text import format_table
+from noc.core.text import format_table
 from noc.core.perf import metrics
 
 

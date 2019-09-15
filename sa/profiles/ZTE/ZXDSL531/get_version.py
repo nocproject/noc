@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# ZTE.ZXDSL531.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.lib.text import strip_html_tags
-import re
+from noc.core.text import strip_html_tags
 
 rx_html_ver = re.compile(r"Firmware Version\s+\S+\s+(?P<version>\S+)")
 

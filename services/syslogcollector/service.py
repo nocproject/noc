@@ -23,7 +23,7 @@ from noc.core.service.base import Service
 from noc.core.perf import metrics
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
-from noc.lib.text import ch_escape
+from noc.core.text import ch_escape
 
 SourceConfig = namedtuple(
     "SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events"]

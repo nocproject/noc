@@ -10,7 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.lib.validators import is_int
-from noc.lib.text import parse_table
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):

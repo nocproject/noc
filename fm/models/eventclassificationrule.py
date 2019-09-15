@@ -20,7 +20,7 @@ from .eventclass import EventClass
 from .datasource import DataSource
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.escape import json_escape as jq
-from noc.lib.text import quote_safe_path
+from noc.core.text import quote_safe_path
 
 
 @six.python_2_unicode_compatible

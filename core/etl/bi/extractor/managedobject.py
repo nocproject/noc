@@ -2,18 +2,18 @@
 # ----------------------------------------------------------------------
 # Managed Object Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 import datetime
-from noc.lib.text import ch_escape
 from collections import defaultdict
 
 # NOC modules
 from .base import BaseExtractor
+from noc.core.text import ch_escape
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.core.etl.bi.stream import Stream

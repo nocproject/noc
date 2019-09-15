@@ -15,7 +15,7 @@ import time
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.text import parse_table
+from noc.core.text import parse_table
 from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.ip import IPv4
