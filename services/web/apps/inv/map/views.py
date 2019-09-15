@@ -27,7 +27,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.maintenance.models.maintenance import Maintenance
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 from noc.core.pm.utils import get_interface_metrics
 from noc.sa.interfaces.base import (
     ListOfParameter,

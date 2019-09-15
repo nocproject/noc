@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # managedobject datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 
 
 def qs(s):

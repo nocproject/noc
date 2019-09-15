@@ -12,8 +12,6 @@ import zlib
 
 # Third-party modules
 from django.http import HttpResponse
-
-# Third-party modules
 import ujson
 from mongoengine.queryset import Q as MQ
 
@@ -39,7 +37,7 @@ from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 from noc.sa.interfaces.base import (
     ListOfParameter,
     ModelParameter,

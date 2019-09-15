@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Linksys.VoIP.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.lib.text import strip_html_tags
+from noc.core.text import strip_html_tags
 
 
 class Script(BaseScript):

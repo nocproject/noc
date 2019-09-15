@@ -19,7 +19,7 @@ from .base import BaseDashboard
 from noc.config import config
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobject import ManagedObject
 

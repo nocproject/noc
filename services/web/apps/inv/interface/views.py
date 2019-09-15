@@ -24,7 +24,7 @@ from noc.sa.interfaces.base import (
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 from noc.core.translation import ugettext as _
 from noc.config import config
 

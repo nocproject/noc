@@ -16,7 +16,7 @@ from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.etl.portmapper.loader import loader
-from noc.lib.text import split_alnum, format_table
+from noc.core.text import split_alnum, format_table
 
 
 class Command(BaseCommand):

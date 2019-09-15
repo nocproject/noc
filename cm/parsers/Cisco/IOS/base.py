@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic IOS parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,13 +10,23 @@
 import re
 
 # Third-party modules
-from pyparsing import *
+from pyparsing import (
+    LineStart,
+    Literal,
+    Word,
+    alphanums,
+    Optional,
+    restOfLine,
+    Combine,
+    ZeroOrMore,
+    nums,
+)
 
 # NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS, RD
-from noc.lib.text import ranges_to_list
+from noc.core.text import ranges_to_list
 from noc.lib.validators import is_ipv4, is_int
 
 

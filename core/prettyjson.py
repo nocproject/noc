@@ -15,7 +15,7 @@ import six
 
 # NOC modules
 from noc.core.escape import json_escape
-from noc.lib.text import indent
+from noc.core.text import indent
 
 
 class PrettyJSON(object):

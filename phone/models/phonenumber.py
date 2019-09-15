@@ -25,7 +25,7 @@ from noc.sa.models.service import Service
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.lib.text import clean_number
+from noc.core.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow

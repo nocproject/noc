@@ -23,7 +23,7 @@ from .metricscope import MetricScope
 from noc.inv.models.capability import Capability
 from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.doccategory import category
-from noc.lib.text import quote_safe_path
+from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save

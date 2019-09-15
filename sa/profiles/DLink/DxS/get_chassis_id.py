@@ -2,17 +2,19 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.lib.validators import is_mac
-from noc.lib.text import parse_table
+from noc.core.text import parse_table
 from noc.core.mib import mib
-import re
 
 
 class Script(BaseScript):

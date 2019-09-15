@@ -12,7 +12,7 @@ import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
-from noc.lib.text import parse_kv
+from noc.core.text import parse_kv
 from noc.core.mib import mib
 
 SNMP_UNKNOWN_VALUE = 2147483647

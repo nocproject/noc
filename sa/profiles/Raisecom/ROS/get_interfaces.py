@@ -16,7 +16,7 @@ import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.text import ranges_to_list
+from noc.core.text import ranges_to_list
 from noc.core.ip import IPv4
 
 

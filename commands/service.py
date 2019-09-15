@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Service command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ import six
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.service.loader import get_service
-from noc.lib.text import format_table
+from noc.core.text import format_table
 
 
 class Command(BaseCommand):

@@ -11,7 +11,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.script.scheme import SSH
-from noc.lib.text import safe_shadow
+from noc.core.text import safe_shadow
 
 
 class SuggestCLICheck(DiscoveryCheck):

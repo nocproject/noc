@@ -28,7 +28,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter
-from noc.lib.text import list_to_ranges
+from noc.core.text import list_to_ranges
 
 logger = logging.getLogger(__name__)
 

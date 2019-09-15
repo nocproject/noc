@@ -31,7 +31,7 @@ import cachetools
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.escape import json_escape as q
-from noc.lib.text import quote_safe_path
+from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.model.decorator import on_delete_check
 from .alarmclass import AlarmClass

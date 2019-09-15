@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-from noc.lib.text import split_alnum
+from noc.core.text import split_alnum
 
 
 class Script(BaseScript):

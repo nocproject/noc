@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.lib.text import parse_table
-import re
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):

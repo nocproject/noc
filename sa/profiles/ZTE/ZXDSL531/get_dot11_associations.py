@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# ZTE.ZXDSL531.get_dot11_associations
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
-from noc.lib.text import strip_html_tags
-import re
+from noc.core.text import strip_html_tags
 
 rx_mac = re.compile(
     "(?P<mac>[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2})"

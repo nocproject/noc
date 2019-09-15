@@ -30,7 +30,7 @@ from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.defer import call_later
-from noc.lib.text import clean_number
+from noc.core.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
 from .dialplan import DialPlan
 from .phonerangeprofile import PhoneRangeProfile

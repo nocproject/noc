@@ -27,7 +27,7 @@ import jinja2
 import cachetools
 
 # NOC modules
-from noc.lib.text import quote_safe_path
+from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 from noc.core.ip import IP
 

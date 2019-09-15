@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic Junos parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ from pyparsing import OneOrMore, Word, alphanums, QuotedString
 # NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
-from noc.lib.text import ranges_to_list
+from noc.core.text import ranges_to_list
 
 
 class BaseQSW2800Parser(BaseParser):

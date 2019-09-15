@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zhone.Bitstorm.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 import re
 
 # NOC modules
-from noc.lib.text import parse_table
+from noc.core.text import parse_table
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
