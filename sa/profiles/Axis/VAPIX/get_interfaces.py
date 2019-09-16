@@ -10,7 +10,7 @@
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):

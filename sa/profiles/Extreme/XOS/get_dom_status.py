@@ -13,7 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 from noc.core.text import parse_kv
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.convert.dbm import mw2dbm
 
 

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Expanded Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
 from noc.main.models.customfield import CustomField
-from noc.lib.validators import check_ipv6_prefix, check_ipv4_prefix, ValidationError
+from noc.core.validators import check_ipv6_prefix, check_ipv4_prefix, ValidationError
 
 
 class ReportForm(forms.Form):

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Siklu.EH.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_NAME,
     LLDP_PORT_SUBTYPE_LOCAL,
 )
-from noc.lib.validators import is_mac
+from noc.core.validators import is_mac
 
 
 class Script(BaseScript):

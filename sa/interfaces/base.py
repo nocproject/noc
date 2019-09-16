@@ -17,7 +17,7 @@ import six
 from noc.core.text import list_to_ranges, ranges_to_list
 from noc.core.ip import IPv6
 from noc.core.mac import MAC
-from noc.lib.validators import is_ipv6
+from noc.core.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 from noc.core.interface.parameter import ORParameter  # noqa

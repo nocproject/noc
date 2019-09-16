@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ./noc wipe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from contextlib import contextmanager
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.datastream.change import bulk_datastream_changes
 
 

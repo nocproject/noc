@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # Alstec.ALS.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-from noc.lib.validators import is_ipv4, is_ipv6
-import re
+from noc.core.validators import is_ipv4, is_ipv6
 
 
 class Script(BaseScript):

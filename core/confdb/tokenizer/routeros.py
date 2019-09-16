@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import re
 
 # NOC modules
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from .line import LineTokenizer
 
 

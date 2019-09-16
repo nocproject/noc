@@ -17,7 +17,7 @@ from noc.core.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 from noc.core.text import ranges_to_list
-from noc.lib.validators import is_ipv4, is_int
+from noc.core.validators import is_ipv4, is_int
 
 
 class BaseASAParser(BasePyParser):

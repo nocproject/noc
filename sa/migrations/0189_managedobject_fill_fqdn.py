@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from noc.lib.validators import is_ipv4, is_ipv6
+from noc.core.validators import is_ipv4, is_ipv6
 
 
 class Migration(BaseMigration):

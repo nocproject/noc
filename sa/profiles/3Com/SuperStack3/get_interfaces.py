@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # 3Com.SuperStack3.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):

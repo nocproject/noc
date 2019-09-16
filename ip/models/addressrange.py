@@ -20,7 +20,7 @@ from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.core.model.fields import TagsField, CIDRField
 from noc.core.ip import IP
-from noc.lib.validators import check_ipv4, check_ipv6
+from noc.core.validators import check_ipv4, check_ipv6
 from noc.core.datastream.decorator import datastream
 from .afi import AFI_CHOICES
 from .vrf import VRF

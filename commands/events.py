@@ -30,7 +30,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
-from noc.lib.validators import is_oid
+from noc.core.validators import is_oid
 from noc.core.escape import json_escape
 
 

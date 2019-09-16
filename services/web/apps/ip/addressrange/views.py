@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ip.addressrange application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.ip.models.addressrange import AddressRange
 from noc.core.ip import IP
-from noc.lib.validators import is_ipv4, is_ipv6, is_fqdn
+from noc.core.validators import is_ipv4, is_ipv6, is_fqdn
 from noc.core.translation import ugettext as _
 
 

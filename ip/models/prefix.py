@@ -25,7 +25,7 @@ from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
 from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey
 from noc.lib.app.site import site
-from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
+from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _

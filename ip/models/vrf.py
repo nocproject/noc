@@ -20,7 +20,7 @@ import cachetools
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
-from noc.lib.validators import check_rd
+from noc.core.validators import check_rd
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search

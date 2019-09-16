@@ -18,7 +18,7 @@ import six
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.validators import is_vlan
+from noc.core.validators import is_vlan
 
 
 class Script(BaseScript):

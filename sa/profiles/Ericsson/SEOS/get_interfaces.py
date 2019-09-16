@@ -15,7 +15,7 @@ from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.mac import MAC
 from noc.core.ip import IPv4
-from noc.lib.validators import is_mac
+from noc.core.validators import is_mac
 
 
 class Script(BaseScript):

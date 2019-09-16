@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Rotek.RTBSv1.get_metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
-from noc.lib.validators import is_ipv4
+from noc.core.validators import is_ipv4
 
 
 class Script(GetMetricsScript):

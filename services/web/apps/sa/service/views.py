@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # sa.service application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from mongoengine.queryset import Q
 from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sa.models.service import Service
 from noc.core.translation import ugettext as _
-from noc.lib.validators import is_objectid
+from noc.core.validators import is_objectid
 
 
 class ServiceApplication(ExtDocApplication):

@@ -10,7 +10,7 @@
 import pytest
 
 # NOC modules
-from noc.lib.validators import (
+from noc.core.validators import (
     is_int,
     is_float,
     is_asn,

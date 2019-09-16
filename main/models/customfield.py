@@ -23,7 +23,7 @@ import mongoengine.signals
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from .customfieldenumgroup import CustomFieldEnumGroup
 
 logger = logging.getLogger(__name__)

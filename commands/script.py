@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ./noc script
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ import yaml
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.span import get_spans, Span
 from noc.core.script.loader import loader
 from noc.core.script.beef import Beef

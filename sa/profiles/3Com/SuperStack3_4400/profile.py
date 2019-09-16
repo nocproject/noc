@@ -3,7 +3,7 @@
 # Vendor: 3Com
 # OS:     SuperStack3_4400
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import re
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Profile(BaseProfile):

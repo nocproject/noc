@@ -41,7 +41,7 @@ from noc.sa.interfaces.base import (
     ModelParameter,
     InterfaceTypeError,
 )
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.models import is_document
 from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry

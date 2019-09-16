@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Pretty command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ import tornado.queues
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.validators import is_ipv4
+from noc.core.validators import is_ipv4
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.backport.time import perf_counter

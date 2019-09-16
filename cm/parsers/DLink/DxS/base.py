@@ -16,7 +16,7 @@ from pyparsing import nums, Word, Group, Optional, Suppress, Combine, Literal, d
 # NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
-from noc.lib.validators import is_ipv4, is_int
+from noc.core.validators import is_ipv4, is_int
 
 
 class BaseDLinkParser(BaseParser):
