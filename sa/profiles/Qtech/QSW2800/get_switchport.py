@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_switchport import Script as BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):

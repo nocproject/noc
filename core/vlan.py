@@ -13,7 +13,7 @@ import re
 import six
 
 # NOC modules
-from noc.lib.validators import is_vlan
+from noc.core.validators import is_vlan
 
 rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 

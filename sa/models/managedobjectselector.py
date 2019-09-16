@@ -29,7 +29,7 @@ from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.pool import Pool
 from noc.main.models.prefixtable import PrefixTable
 from noc.core.model.fields import TagsField
-from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
+from noc.core.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.core.model.sql import SQL
 from noc.core.model.decorator import on_delete, on_save, on_delete_check
 from noc.core.model.fields import DocumentReferenceField

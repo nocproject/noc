@@ -23,7 +23,7 @@ from noc.sa.interfaces.base import (
     InterfaceTypeError,
     DocumentParameter,
 )
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
 

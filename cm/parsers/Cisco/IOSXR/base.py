@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic IOS XR parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from pyparsing import OneOrMore, Word, alphanums, QuotedString
 
 # NOC modules
 from noc.cm.parsers.base import BaseParser
-from noc.lib.validators import is_ipv4, is_ipv6
+from noc.core.validators import is_ipv4, is_ipv6
 
 
 class BaseIOSXRParser(BaseParser):

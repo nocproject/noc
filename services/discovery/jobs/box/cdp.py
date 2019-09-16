@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # CDP check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.lib.validators import is_ipv4, is_mac
+from noc.core.validators import is_ipv4, is_mac
 
 
 class CDPCheck(TopologyDiscoveryCheck):

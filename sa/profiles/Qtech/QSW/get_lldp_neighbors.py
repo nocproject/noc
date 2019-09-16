@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int, is_ipv4, is_mac
+from noc.core.validators import is_int, is_ipv4, is_mac
 
 
 class Script(BaseScript):

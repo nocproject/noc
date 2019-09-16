@@ -14,7 +14,7 @@ import struct
 import six
 
 # NOC Modules
-from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
+from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
 
 # Bit masks
 B16 = 0xFFFF

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.inv application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ import os
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
-from noc.lib.validators import is_objectid
+from noc.core.validators import is_objectid
 from noc.sa.interfaces.base import (
     StringParameter,
     ObjectIdParameter,

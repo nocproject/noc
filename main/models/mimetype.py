@@ -15,7 +15,7 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.lib.validators import check_extension, check_mimetype
+from noc.core.validators import check_extension, check_mimetype
 
 
 @six.python_2_unicode_compatible

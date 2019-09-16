@@ -21,7 +21,7 @@ from six.moves import zip
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.handler import get_handler
 from noc.core.mac import MAC

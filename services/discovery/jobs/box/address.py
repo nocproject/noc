@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Address check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
-from noc.lib.validators import is_fqdn
+from noc.core.validators import is_fqdn
 from noc.core.ip import IP, IPv4, PrefixDB
 
 

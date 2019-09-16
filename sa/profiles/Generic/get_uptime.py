@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # Generic.get_uptime
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetuptime import IGetUptime
-from noc.lib.validators import is_float
+from noc.core.validators import is_float
 from noc.core.mib import mib
 
 

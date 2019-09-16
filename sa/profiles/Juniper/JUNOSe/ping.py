@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-from noc.lib.validators import is_ipv4
+from noc.core.validators import is_ipv4
 
 
 class Script(BaseScript):

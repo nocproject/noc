@@ -13,7 +13,7 @@ from collections import defaultdict
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
-from noc.lib.validators import is_ipv4
+from noc.core.validators import is_ipv4
 
 
 class Script(GetMetricsScript):

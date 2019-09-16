@@ -21,7 +21,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
 from noc.core.ip import IP
-from noc.lib.validators import is_rd
+from noc.core.validators import is_rd
 
 
 class Command(BaseCommand):

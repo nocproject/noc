@@ -25,7 +25,7 @@ from noc.sa.interfaces.base import (
     StringListParameter,
     NoneParameter,
 )
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.model.fields import TextArrayField
 
 

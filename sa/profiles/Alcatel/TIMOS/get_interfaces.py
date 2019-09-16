@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  Alcatel.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.validators import is_int, is_ipv6
+from noc.core.validators import is_int, is_ipv6
 
 
 class Script(BaseScript):

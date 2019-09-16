@@ -27,7 +27,7 @@ import ujson
 
 # NOC modules
 from noc.core.perf import metrics
-from noc.lib.validators import is_ipv4
+from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 from noc.config import config
 

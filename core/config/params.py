@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Config parameters
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ import logging
 import six
 
 # NOC modules
-from noc.lib.validators import is_int, is_ipv4
+from noc.core.validators import is_int, is_ipv4
 
 logger = logging.getLogger(__name__)
 

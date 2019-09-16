@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ import six
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.base import IntParameter
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.mib import mib
 
 

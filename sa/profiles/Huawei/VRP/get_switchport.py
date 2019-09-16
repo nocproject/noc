@@ -15,7 +15,7 @@ from binascii import hexlify
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.core.mib import mib
 
 

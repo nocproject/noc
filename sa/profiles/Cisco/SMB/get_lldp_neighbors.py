@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
+from noc.core.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.core.text import parse_table
 
 

@@ -23,7 +23,7 @@ from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.ip.models.vrf import VRF
 from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 from noc.dns.utils.rr import RR
 from noc.core.text import split_alnum
 

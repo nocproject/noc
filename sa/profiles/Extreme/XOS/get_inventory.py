@@ -15,7 +15,7 @@ from collections import defaultdict
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.core.text import parse_kv
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):

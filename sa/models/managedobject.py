@@ -58,7 +58,7 @@ from noc.core.model.fields import (
 from noc.core.model.sql import SQL
 from noc.lib.app.site import site
 from noc.core.stencil import stencil_registry
-from noc.lib.validators import is_ipv4, is_ipv4_prefix
+from noc.core.validators import is_ipv4, is_ipv4_prefix
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.gridvcs.manager import GridVCSField

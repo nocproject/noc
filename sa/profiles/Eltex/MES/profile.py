@@ -13,7 +13,7 @@ import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Profile(BaseProfile):

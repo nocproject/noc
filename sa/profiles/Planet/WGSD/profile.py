@@ -3,13 +3,13 @@
 # Vendor: Planet
 # OS:     WGSD
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Profile(BaseProfile):

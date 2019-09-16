@@ -15,7 +15,7 @@ import tornado.gen
 import tornado.ioloop
 
 # NOC modules
-from noc.lib.validators import is_fqdn
+from noc.core.validators import is_fqdn
 
 DEFAULT_WHOIS_SERVER = "whois.ripe.net"
 DEFAULT_WHOIS_PORT = 43

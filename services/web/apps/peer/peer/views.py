@@ -9,7 +9,7 @@
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models.peer import Peer
-from noc.lib.validators import is_prefix
+from noc.core.validators import is_prefix
 from noc.core.ip import IP
 from noc.lib.app.repoinline import RepoInline
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter

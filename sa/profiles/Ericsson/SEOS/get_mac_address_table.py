@@ -10,7 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.core.text import parse_table
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):
