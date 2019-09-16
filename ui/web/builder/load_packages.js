@@ -1,5 +1,8 @@
 const fs = require('fs');
 const url = require('url');
+const request = require('sync-request');
+const tar = require('tar-fs');
+const bz2 = require('unbzip2-stream');
 const content = fs.readFileSync('../../../requirements/web.json');
 const requirements = JSON.parse(content.toString());
 const reqUrl = url.parse(requirements.url);
@@ -47,18 +50,30 @@ function getPackage(url) {
 //     }
 // }
 
-async function load() {
+function load() {
     function loadPackage(pkg) {
         {
             const filename = `${pkg.name}@${pkg.version}.tar.bz2`;
             const url = `${requirements.url}/${filename}`;
+            let res = request('GET', url);
+            console.log(url);
+
+            const input = fs.createReadStream(res.getBody());
+            const output = fs.createWriteStream(filename.replace('.bz2', ''), {flags: 'a'});
+            // input.pipe(bz2()).write(output);
+            input.write(output);
+            // output.write(res.getBody(), function() {
+            //     // Now the data has been written.
+            //     console.log('file closed');
+            // }).pipe(bz2);
+            console.log('xxx');
 //     let code = download(url);
 //     console.log(`${url} : ${code}`);
-            getPackage(url).then((response) => {
-                console.log(response);
-            }).catch((error) => {
-                console.log(error);
-            });
+//             getPackage(url).then((response) => {
+//                 console.log(response);
+//             }).catch((error) => {
+//                 console.log(error);
+//             });
             // client.get(url, (res) => {
             //     console.log('statusCode:', res.statusCode);
             //     console.log('headers:', res.headers);
@@ -73,7 +88,7 @@ async function load() {
         }
     }
 
-    await requirements.packages.forEach(pkg => loadPackage(pkg));
+    requirements.packages.forEach(pkg => loadPackage(pkg));
     console.log('Done');
 }
 

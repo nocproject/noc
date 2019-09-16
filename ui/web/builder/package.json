@@ -19,8 +19,10 @@
     "esquery": "^1.0.1",
     "expand-tilde": "^2.0.2",
     "glob": "^7.1.4",
-    "toposort": "^2.0.2",
-    "uglify-js": "^3.6.0"
+    "sync-request": "^6.1.0",
+    "tar-fs": "^2.0.0",
+    "uglify-js": "^3.6.0",
+    "unbzip2-stream": "^1.3.3"
   },
   "devDependencies": {}
 }
