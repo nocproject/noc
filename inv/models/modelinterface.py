@@ -110,6 +110,7 @@ class ModelInterface(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.modelinterfaces",
+        "json_unique_fields": ["uuid", "name"],
     }
 
     name = StringField(unique=True)
