@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Export model to CSV
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from __future__ import print_function
 import sys
 import argparse
 
-# Third-party modules modules
+# Third-party modules
 from django.apps import apps
 
 # NOC modules
@@ -19,6 +19,7 @@ from noc.sa.models.managedobject import ManagedObject  # noqa
 from noc.core.management.base import BaseCommand
 from noc.core.csvutils import csv_export
 from noc.models import load_models
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
@@ -57,6 +58,7 @@ class Command(BaseCommand):
         return model.objects.filter(**q)
 
     def handle(self, *args, **options):
+        connect()
         if len(args) < 1:
             self._usage()
         r = args[0].split(".")
