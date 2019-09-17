@@ -31,6 +31,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["load_out_p", __("Load Out (% Bandwith)"), false],
         ["errors_in", __("Errors In"), true],
         ["errors_out", __("Errors Out"), true],
+        ["interface_flap", __("Interface Flap count"), false],
         ["interface_load_url", __("Interface Load URL"), false]
     ],
     objectData: [

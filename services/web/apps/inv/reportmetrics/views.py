@@ -140,7 +140,8 @@ class ReportMetricsDetailApplication(ExtApplication):
             "cpu_usage",
             "memory_usage",
             "ping_rtt",
-            "ping_attempts" "interface_flap",
+            "ping_attempts",
+            "interface_flap",
             "interface_load_url",
         ]
 
