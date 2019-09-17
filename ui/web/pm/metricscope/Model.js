@@ -38,6 +38,10 @@ Ext.define("NOC.pm.metricscope.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "enable_timedelta",
+            type: "boolean"
         }
     ]
 });

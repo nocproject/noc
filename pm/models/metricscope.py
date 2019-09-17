@@ -84,6 +84,7 @@ class MetricScope(Document):
     description = StringField(required=False)
     key_fields = ListField(EmbeddedDocumentField(KeyField))
     path = ListField(EmbeddedDocumentField(PathItem))
+    enable_timedelta = BooleanField(default=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -105,6 +106,7 @@ class MetricScope(Document):
             "description": self.description,
             "key_fields": [kf.to_json() for kf in self.key_fields],
             "path": [p.to_json() for p in self.path],
+            "enable_timedelta": self.enable_timedelta,
         }
         return r
 
@@ -132,12 +134,14 @@ class MetricScope(Document):
         """
         from .metrictype import MetricType
 
-        yield ("date", "Date")
-        yield ("ts", "DateTime")
+        yield "date", "Date"
+        yield "ts", "DateTime"
         for f in self.key_fields:
-            yield (f.field_name, f.field_type)
+            yield f.field_name, f.field_type
         if self.path:
-            yield ("path", "Array(String)")
+            yield "path", "Array(String)"
+        if self.enable_timedelta:
+            yield "time_delta", "UInt16"
         for t in MetricType.objects.filter(scope=self.id).order_by("id"):
             yield (t.field_name, t.field_type)
 
