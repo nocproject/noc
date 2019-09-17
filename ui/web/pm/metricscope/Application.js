@@ -113,7 +113,15 @@ Ext.define("NOC.pm.metricscope.Application", {
                 {
                     name: "enable_timedelta",
                     xtype: "checkbox",
-                    boxLabel: __("Enable Time Delta")
+                    boxLabel: __("Enable Time Delta (Require migration)"),
+                    tooltip: __(
+                        "Required run migration metric Database after changed." +
+                        "That enabled only by deploy."
+                    ),
+                    disabled: true,
+                    listeners: {
+                        render: me.addTooltip
+                    }
                 }
             ],
             formToolbar: [
