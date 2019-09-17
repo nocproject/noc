@@ -20,6 +20,7 @@ from noc.core.management.base import BaseCommand, CommandError
 from noc.core.debug import error_report
 from noc.core.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
 from noc.models import load_models
+from noc.core.mongo.connection import connect
 
 
 class Command(BaseCommand):
@@ -49,6 +50,7 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args, **options):
+        connect()
         try:
             self._handle(*args, **options)
         except CommandError as why:
