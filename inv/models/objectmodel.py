@@ -109,7 +109,7 @@ class ObjectModel(Document):
             ("vendor", "data.asset.order_part_no")
         ],
         "json_collection": "inv.objectmodels",
-        "json_unique_fields": ["name"],
+        "json_unique_fields": ["name", "uuid"],
         "json_depends_on": [
             "inv.vendors",
             "inv.connectionrules"

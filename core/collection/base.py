@@ -17,6 +17,7 @@ from collections import namedtuple
 import sys
 import threading
 import operator
+
 # Third-party modules
 import ujson
 import bson
@@ -24,9 +25,11 @@ from mongoengine.fields import ListField, EmbeddedDocumentField
 from mongoengine.errors import NotUniqueError
 from pymongo import UpdateOne
 import cachetools
+
 # NOC modules
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
+from noc.lib.nosql import get_db
 
 state_lock = threading.Lock()
 
@@ -35,6 +38,7 @@ class Collection(object):
     PREFIX = "collections"
     CUSTOM_PREFIX = config.get_customized_paths(PREFIX, prefer_custom=True)
     STATE_COLLECTION = "noc.collectionstates"
+    DEFAULT_API_VERSION = 1
 
     _MODELS = {}
 
@@ -60,6 +64,7 @@ class Collection(object):
     @classmethod
     def iter_collections(cls):
         from noc.models import COLLECTIONS, get_model
+
         for c in COLLECTIONS:
             cm = get_model(c)
             cn = cm._meta["json_collection"]
@@ -95,7 +100,6 @@ class Collection(object):
         Return mongo collection for state
         :return:
         """
-        from noc.lib.nosql import get_db
         return get_db()[self.STATE_COLLECTION]
 
     def get_state(self):
@@ -107,9 +111,7 @@ class Collection(object):
         # Get state from database
         cs = coll.find_one({"_id": self.name})
         if cs:
-            return ujson.loads(
-                zlib.decompress(str(cs["state"]))
-            )
+            return ujson.loads(zlib.decompress(str(cs["state"])))
         # Fallback to legacy local
         lpath = self.get_legacy_state_path()
         state = {}
@@ -128,17 +130,11 @@ class Collection(object):
         :return:
         """
         coll = self.get_state_collection()
-        coll.update({
-            "_id": self.name,
-        }, {
-            "$set": {
-                "state": bson.Binary(
-                    zlib.compress(
-                        ujson.dumps(state)
-                    )
-                )
-            }
-        }, upsert=True)
+        coll.update_one(
+            {"_id": self.name},
+            {"$set": {"state": bson.Binary(zlib.compress(ujson.dumps(state)))}},
+            upsert=True,
+        )
         # Remove legacy state
         lpath = self.get_legacy_state_path()
         if os.path.isfile(lpath):
@@ -160,8 +156,7 @@ class Collection(object):
         :return:
         """
         parts = self.name.split(".")
-        return os.path.join("local", "collections",
-                            parts[0], "%s.csv" % parts[1])
+        return os.path.join("local", "collections", parts[0], "%s.csv" % parts[1])
 
     def get_changed_status(self):
         """
@@ -176,6 +171,21 @@ class Collection(object):
         containing new state
         :return:
         """
+
+        def item_hash_default(x):
+            return hashlib.sha256(x).hexdigest()
+
+        def item_hash_tagged(x):
+            return "%s:%s" % (api_version, item_hash_default(x))
+
+        # Get current API version and select proper hashing function
+        # And build proper hashing function
+        api_version = self.model._meta.get("json_api_version", self.DEFAULT_API_VERSION)
+        if api_version == self.DEFAULT_API_VERSION:
+            item_hash = item_hash_default
+        else:
+            item_hash = item_hash_tagged
+        #
         items = {}
         for p in self.get_path():
             for root, dirs, files in os.walk(p):
@@ -191,12 +201,8 @@ class Collection(object):
                         raise ValueError("Error load %s: %s" % (fp, e))
                     if "uuid" not in jdata:
                         raise ValueError("Invalid JSON %s: No UUID" % fp)
-                    csum = hashlib.sha256(data).hexdigest()
                     items[jdata["uuid"]] = self.Item(
-                        uuid=jdata["uuid"],
-                        path=fp,
-                        hash=csum,
-                        data=jdata
+                        uuid=jdata["uuid"], path=fp, hash=item_hash(data), data=jdata
                     )
         return items
 
@@ -224,8 +230,7 @@ class Collection(object):
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
-            if (type(field) == ListField and
-                    isinstance(field.field, EmbeddedDocumentField)):
+            if isinstance(field, ListField) and isinstance(field.field, EmbeddedDocumentField):
                 edoc = field.field.document_type
                 try:
                     v = [edoc(**self.dereference(x, model=edoc)) for x in d[k]]
@@ -248,13 +253,18 @@ class Collection(object):
                 v = ref.objects.get(**{field: key})
             except ref.DoesNotExist:
                 raise ValueError(
-                    "lookup for %s.%s == '%s' has been failed" % (
-                        ref._meta["collection"], field, key)
+                    "lookup for %s.%s == '%s' has been failed"
+                    % (ref._meta["collection"], field, key)
                 )
             self.ref_cache[ref][field][key] = v
             return v
 
     def update_item(self, data):
+        def set_attrs(obj, values):
+            for vk in values:
+                if hasattr(obj, vk):
+                    setattr(obj, vk, values[vk])
+
         if data["uuid"] in self.partial_errors:
             del self.partial_errors[data["uuid"]]
         try:
@@ -265,23 +275,17 @@ class Collection(object):
         o = self.model.objects.filter(uuid=data["uuid"]).first()
         if o:
             self.stdout.write(
-                "[%s|%s] Updating %s\n" % (
-                    self.name, data["uuid"],
-                    getattr(o, self.name_field)
-                )
+                "[%s|%s] Updating %s\n" % (self.name, data["uuid"], getattr(o, self.name_field))
             )
-            for k in d:
-                setattr(o, k, d[k])
+            set_attrs(o, d)
             o.save()
             return True
         else:
             self.stdout.write(
-                "[%s|%s] Creating %s\n" % (
-                    self.name, data["uuid"],
-                    data.get(self.name_field)
-                )
+                "[%s|%s] Creating %s\n" % (self.name, data["uuid"], data.get(self.name_field))
             )
-            o = self.model(**d)
+            o = self.model()
+            set_attrs(o, d)
             try:
                 o.save()
                 return True
@@ -293,7 +297,7 @@ class Collection(object):
                 # Try to find conflicting item
                 for k in self.model._meta["json_unique_fields"]:
                     if not isinstance(k, tuple):
-                        k = (k, )
+                        k = (k,)
                     qs = {}
                     for fk in k:
                         if isinstance(d[fk], list):
@@ -303,11 +307,8 @@ class Collection(object):
                     o = self.model.objects.filter(**qs).first()
                     if o:
                         self.stdout.write(
-                            "[%s|%s] Changing local uuid %s (%s)\n" % (
-                                self.name, data["uuid"],
-                                o.uuid,
-                                getattr(o, self.name_field)
-                            )
+                            "[%s|%s] Changing local uuid %s (%s)\n"
+                            % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
                         )
                         o.uuid = data["uuid"]
                         o.save()
@@ -320,9 +321,7 @@ class Collection(object):
         o = self.model.objects.filter(uuid=uuid).first()
         if not o:
             return
-        self.stdout.write("[%s|%s] Deleting %s\n" % (
-            self.name, uuid, getattr(o, self.name_field)
-        ))
+        self.stdout.write("[%s|%s] Deleting %s\n" % (self.name, uuid, getattr(o, self.name_field)))
         o.delete()
 
     def sync(self):
@@ -357,12 +356,12 @@ class Collection(object):
             if len(self.partial_errors) == pl:
                 # Cannot resolve partials
                 for u in self.partial_errors:
-                    self.stdout.write("[%s|%s] Error: %s\n" % (
-                        self.name, u, self.partial_errors[u]
-                    ))
+                    self.stdout.write(
+                        "[%s|%s] Error: %s\n" % (self.name, u, self.partial_errors[u])
+                    )
                 raise ValueError(
-                    "[%s] Cannot resolve references for %s" % (
-                        self.name, ", ".join(self.partial_errors))
+                    "[%s] Cannot resolve references for %s"
+                    % (self.name, ", ".join(self.partial_errors))
                 )
         # Deleted items
         for u in current_uuids - new_uuids:
@@ -381,20 +380,10 @@ class Collection(object):
         :return:
         """
         bulk = []
-        for d in self.model._get_collection().find({
-            "uuid": {
-                "$type": "string"
-            }
-        }, {
-            "_id": 1,
-            "uuid": 1
-        }
+        for d in self.model._get_collection().find(
+            {"uuid": {"$type": "string"}}, {"_id": 1, "uuid": 1}
         ):
-            bulk += [UpdateOne({"_id": d["_id"]}, {
-                "$set": {
-                    "uuid": uuid.UUID(d["uuid"])
-                }
-            })]
+            bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"uuid": uuid.UUID(d["uuid"])}})]
         if bulk:
             self.stdout.write("[%s] Fixing %d UUID\n" % (self.name, len(bulk)))
             self.model._get_collection().bulk_write(bulk)
@@ -412,17 +401,8 @@ class Collection(object):
         # Format JSON
         json_data = o.to_json()
         # Write
-        path = os.path.join(
-            cls.PREFIX,
-            c.name,
-            o.get_json_path()
-        )
+        path = os.path.join(cls.PREFIX, c.name, o.get_json_path())
         if "uuid" not in data:
             raise ValueError("Invalid JSON: No UUID")
-        c.stdout.write("[%s|%s] Installing %s\n" % (
-            c.name, data["uuid"], path))
-        safe_rewrite(
-            path,
-            json_data,
-            mode=0o644
-        )
+        c.stdout.write("[%s|%s] Installing %s\n" % (c.name, data["uuid"], path))
+        safe_rewrite(path, json_data, mode=0o644)
