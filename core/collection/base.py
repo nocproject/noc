@@ -38,6 +38,7 @@ class Collection(object):
     PREFIX = "collections"
     CUSTOM_PREFIX = config.get_customized_paths(PREFIX, prefer_custom=True)
     STATE_COLLECTION = "noc.collectionstates"
+    DEFAULT_API_VERSION = 1
 
     _MODELS = {}
 
@@ -170,6 +171,21 @@ class Collection(object):
         containing new state
         :return:
         """
+
+        def item_hash_default(x):
+            return hashlib.sha256(x).hexdigest()
+
+        def item_hash_tagged(x):
+            return "%s:%s" % (api_version, item_hash_default(x))
+
+        # Get current API version and select proper hashing function
+        # And build proper hashing function
+        api_version = self.model._meta.get("json_api_version", self.DEFAULT_API_VERSION)
+        if api_version == self.DEFAULT_API_VERSION:
+            item_hash = item_hash_default
+        else:
+            item_hash = item_hash_tagged
+        #
         items = {}
         for p in self.get_path():
             for root, dirs, files in os.walk(p):
@@ -185,9 +201,8 @@ class Collection(object):
                         raise ValueError("Error load %s: %s" % (fp, e))
                     if "uuid" not in jdata:
                         raise ValueError("Invalid JSON %s: No UUID" % fp)
-                    csum = hashlib.sha256(data).hexdigest()
                     items[jdata["uuid"]] = self.Item(
-                        uuid=jdata["uuid"], path=fp, hash=csum, data=jdata
+                        uuid=jdata["uuid"], path=fp, hash=item_hash(data), data=jdata
                     )
         return items
 
@@ -245,6 +260,11 @@ class Collection(object):
             return v
 
     def update_item(self, data):
+        def set_attrs(obj, values):
+            for vk in values:
+                if hasattr(obj, vk):
+                    setattr(obj, vk, values[vk])
+
         if data["uuid"] in self.partial_errors:
             del self.partial_errors[data["uuid"]]
         try:
@@ -257,15 +277,15 @@ class Collection(object):
             self.stdout.write(
                 "[%s|%s] Updating %s\n" % (self.name, data["uuid"], getattr(o, self.name_field))
             )
-            for k in d:
-                setattr(o, k, d[k])
+            set_attrs(o, d)
             o.save()
             return True
         else:
             self.stdout.write(
                 "[%s|%s] Creating %s\n" % (self.name, data["uuid"], data.get(self.name_field))
             )
-            o = self.model(**d)
+            o = self.model()
+            set_attrs(o, d)
             try:
                 o.save()
                 return True
