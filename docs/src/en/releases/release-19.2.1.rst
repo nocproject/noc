@@ -6,6 +6,7 @@ NOC 19.2.1
 
 19.2.1 release contains 69 bugfixes, optimisations and improvements.
 Release is fully binary compatible with :ref:`NOC 19.2 <release-19.2>`.
+All users of :ref:`NOC 19.2 <release-19.2>` are urged to upgrade to 19.2.1.
 
 New features
 ------------
