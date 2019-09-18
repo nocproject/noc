@@ -28,7 +28,7 @@ class Script(BaseScript):
     rx_platform = re.compile(r"^\s*System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
     rx_serial = re.compile(r"^\s*Serial number : (?P<serial>\S+)")
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
         r = {
