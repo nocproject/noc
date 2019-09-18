@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Alstec.ALS.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -25,7 +24,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         r = []
         for match in self.rx_port.finditer(self.cli("show interfaces status")):
             if (interface is not None) and (interface == match.group("port")):

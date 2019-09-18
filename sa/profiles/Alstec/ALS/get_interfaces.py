@@ -73,14 +73,14 @@ class Script(BaseScript):
 
     def get_lldp(self):
         try:
-            v = self.cli("show lldp configuration")
+            v = self.cli("show lldp configuration", cached=True)
             if "LLDP state: Enabled" in v:
                 return self.rx_lldp.findall(v)
         except self.CLISyntaxError:
             return []
         return []
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         descr = []
         adm_status = []
@@ -100,17 +100,13 @@ class Script(BaseScript):
                 adm_status += [match.groupdict()]
         for match in self.rx_port.finditer(self.cli("show interfaces status")):
             ifname = match.group("port")
-            if ifname.startswith(("Po", "ch")):
-                iftype = "aggregated"
-            else:
-                iftype = "physical"
             for i in adm_status:
                 if ifname == i["port"]:
                     st = bool(i["admin_status"] == "Up")
                     break
             iface = {
                 "name": ifname,
-                "type": iftype,
+                "type": self.profile.get_interface_type(ifname),
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_protocols": [],
@@ -151,7 +147,7 @@ class Script(BaseScript):
                     sub["tagged_vlans"] += [int(vlan_id)]
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
-        match = self.re_search(self.rx_mac, self.cli("show system"))
+        match = self.rx_mac.search(self.cli("show system", cached=True))
         mac = match.group("mac")
         for l in self.cli("show ip interface").split("\n"):
             match = self.rx_vlan_ipif.match(l.strip())
