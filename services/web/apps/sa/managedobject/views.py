@@ -945,10 +945,10 @@ class ManagedObjectApplication(ExtModelApplication):
     def has_repo_config_access(self, user, obj):
         """
         Check user has access to object
-        
-        :param user:
-        :param obj:
-        :return:
+
+        :param user: User instance
+        :param obj: ManagedObject instance
+        :return: True if user has access, False otherwise
         """
         if user.is_superuser:
             return True
