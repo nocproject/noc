@@ -51,6 +51,8 @@ class ManagedObjectDataStream(DataStream):
             r["address"] = mo.address
         if mo.description:
             r["description"] = mo.description
+        if mo.tags:
+            r["tags"] = [qs(x) for x in mo.tags]
         cls._apply_remote_system(mo, r)
         cls._apply_pool(mo, r)
         cls._apply_version(mo, r)
