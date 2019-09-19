@@ -8,6 +8,11 @@ NOC 19.2.2
 Release is fully binary compatible with :ref:`NOC 19.2 <release-19.2>`.
 All users of :ref:`NOC 19.2.1 <release-19.2.1>` are urged to upgrade to 19.2.2.
 
+Migration
+---------
+
+Migration from 19.2 release is straightforward. Just deploy **19.2.2** or **stable-19.2** tags from Tower.
+
 Improvements
 ------------
 +------------+----------------------------------------------------------------+
