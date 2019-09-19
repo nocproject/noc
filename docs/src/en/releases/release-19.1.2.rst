@@ -7,6 +7,10 @@ NOC 19.1.2
 19.1.2 release contains 18 bugfixes, optimisations and improvements.
 Release is fully binary compatible with :ref:`NOC 19.1 <release-19.1>`.
 
+Migration
+---------
+
+Migration from 19.1 release is straightforward. Just deploy **19.1.2** or **stable-19.1** tags from Tower.
 
 Improvements
 ------------
