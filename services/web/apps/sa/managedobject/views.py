@@ -941,3 +941,15 @@ class ManagedObjectApplication(ExtModelApplication):
         ]
 
         return {"cpe": sorted_iname(l1)}
+
+    def has_repo_config_access(self, user, obj):
+        """
+        Check user has access to object
+
+        :param user: User instance
+        :param obj: ManagedObject instance
+        :return: True if user has access, False otherwise
+        """
+        if user.is_superuser:
+            return True
+        return ManagedObject.objects.filter(id=obj.id).filter(UserAccess.Q(user)).exists()
