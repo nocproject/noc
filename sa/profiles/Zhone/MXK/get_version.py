@@ -24,9 +24,9 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.cli("swversion", cached=True)
-        match = self.re_search(self.rx_ver, v)
+        match = self.rx_ver.search(v)
         version = match.group("version")
         v = self.cli("slots", cached=True)
-        match = self.re_search(self.rx_platform, v)
+        match = self.rx_platform.search(v)
         platform = match.group("platform")
         return {"vendor": "Zhone", "version": version, "platform": platform}
