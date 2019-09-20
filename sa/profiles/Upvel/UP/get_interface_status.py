@@ -2,40 +2,27 @@
 # ---------------------------------------------------------------------
 # Upvel.UP.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-# Python modules
-import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):
     name = "Upvel.UP.get_interface_status"
     interface = IGetInterfaceStatus
 
-    rx_port = re.compile(
-        r"^(?P<port>(?:Gi|2.5Gi|10Gi)\S+ \S+)\s+\S+\s+\S+\s+(?:\S+\s+)?\d+\s+"
-        r"\S+\s+(?P<oper_status>\S+)",
-        re.MULTILINE,
-    )
-
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         r = []
-        for match in self.rx_port.finditer(self.cli("show interface * status")):
-            if (interface is not None) and (interface == match.group("port")):
-                return [
-                    {
-                        "interface": match.group("port"),
-                        "status": match.group("oper_status") != "Down",
-                    }
-                ]
-            r += [
-                {"interface": match.group("port"), "status": match.group("oper_status") != "Down"}
-            ]
+        v = self.cli("show interface * status", cached=True)
+        for i in parse_table(v):
+            ifname = i[0]
+            status = i[6] != "Down"
+            if (interface is not None) and (interface == ifname):
+                return [{"interface": ifname, "status": status}]
+            r += [{"interface": ifname, "status": status}]
         return r

@@ -19,11 +19,6 @@ class Script(BaseScript):
     name = "Upvel.UP.get_interfaces"
     interface = IGetInterfaces
 
-    rx_port = re.compile(
-        r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s+(?P<admin_status>\S+)\s+"
-        r"\S+\s+(?:\S+\s+)?\d+\s+\S+\s+(?P<oper_status>\S+)\s*\n",
-        re.MULTILINE,
-    )
     rx_stp = re.compile(r"^(?P<port>(?:Gi|2.5G|10G) \S+)\s+", re.MULTILINE)
     rx_ctp = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n" r"^\-+\s*\n" r"^\s+Loop protect mode is enabled",
@@ -93,7 +88,7 @@ class Script(BaseScript):
             return []
         return []
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         gvrp = self.get_gvrp()
         stp = self.get_stp()
@@ -109,13 +104,16 @@ class Script(BaseScript):
                     "ifname": row[2].strip(),
                 }
             ]
-        for match in self.rx_port.finditer(self.cli("show interface * status")):
-            ifname = match.group("port")
+        v = self.cli("show interface * status", cached=True)
+        for i in parse_table(v):
+            ifname = i[0]
+            admin_status = i[1] == "enabled"
+            oper_status = i[6] != "Down"
             iface = {
                 "name": ifname,
                 "type": "physical",
-                "admin_status": match.group("admin_status") != "Down",
-                "oper_status": match.group("oper_status") != "Down",
+                "admin_status": admin_status,
+                "oper_status": oper_status,
                 "enabled_protocols": [],
                 "subinterfaces": [],
             }
@@ -136,8 +134,8 @@ class Script(BaseScript):
                     break
             sub = {
                 "name": ifname,
-                "admin_status": match.group("admin_status") != "Down",
-                "oper_status": match.group("oper_status") == "Up",
+                "admin_status": admin_status,
+                "oper_status": oper_status,
                 "enabled_afi": ["BRIDGE"],
                 "tagged_vlans": [],
             }
