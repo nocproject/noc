@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Upvel.UP.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ Static  35   ff:ff:ff:ff:ff:ff  GigabitEthernet 1/1-8 2.5GigabitEthernet 1/1-2 1
 
     """
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         r = []
         cmd = "show mac address-table"
         if mac is not None:
