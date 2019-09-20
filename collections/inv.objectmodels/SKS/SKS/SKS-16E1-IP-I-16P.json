@@ -1,0 +1,202 @@
+{
+    "name": "SKS | SKS | SKS-16E1-IP-I-16P",
+    "$collection": "inv.objectmodels",
+    "uuid": "1efb27d1-36c8-4f38-b117-dd8eb94222d8",
+    "vendor__code": "SKS",
+    "description": "L2 Managed Switch witch 16 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP with PoE",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "f0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "11",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "12",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/13",
+            "direction": "s",
+            "gender": "f",
+            "name": "13",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/14",
+            "direction": "s",
+            "gender": "f",
+            "name": "14",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/15",
+            "direction": "s",
+            "gender": "f",
+            "name": "15",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/16",
+            "direction": "s",
+            "gender": "f",
+            "name": "16",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "g0/17",
+            "direction": "s",
+            "gender": "f",
+            "group": "17",
+            "name": "17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 17",
+            "direction": "i",
+            "gender": "f",
+            "group": "17",
+            "name": "sfp17",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "g0/18",
+            "direction": "s",
+            "gender": "f",
+            "group": "18",
+            "name": "18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 18",
+            "direction": "i",
+            "gender": "f",
+            "group": "18",
+            "name": "sfp18",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SKS-16E1-IP-I-16P"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
