@@ -23,7 +23,7 @@ class Script(BaseScript):
             v = self.cli("show ddm")
         except self.CLISyntaxError:
             return r
-        for i in parse_table(v):
+        for i in parse_table(v, expand_columns=True):
             ifname = i[0]
             vendor = i[1]
             part_no = i[2]
