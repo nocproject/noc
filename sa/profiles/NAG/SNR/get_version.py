@@ -37,7 +37,7 @@ class Script(BaseScript):
         r"^\s+SoftWare Version (?P<version>\S+)\s*\n"
         r"^\s+BootRom Version (?P<bootprom>\S+)\s*\n"
         r"^\s+HardWare Version (?P<hardware>\S+)\s*\n"
-        r"^\s+Serial No.:\s*(?P<serial>\S+)\s*\n",
+        r"^\s+(?:Serial No.:|Device serial number)\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE,
     )
 
@@ -69,7 +69,10 @@ class Script(BaseScript):
         }
 
     def execute_cli(self):
-        match = self.rx_ver.search(self.cli("show version", cached=True))
+        v = self.cli("show version", cached=True)
+        match = self.rx_ver.search(v)
+        if not match:
+            match = self.rx_ver_snmp.search(v)
         return {
             "vendor": "NAG",
             "platform": match.group("platform"),
