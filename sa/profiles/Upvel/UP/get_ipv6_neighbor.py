@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Upvel.UP.get_ipv6_neighbor
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ class Script(BaseScript):
         "PROBE": "probe",
     }
 
-    def execute(self, vrf=None):
+    def execute_cli(self, vrf=None):
         # Get states
         cmd = "show ipv6 neighbor"
         r = self.cli(cmd, list_re=self.rx_line)
