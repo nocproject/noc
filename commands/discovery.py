@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # discovery commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -125,12 +125,12 @@ class Command(BaseCommand):
         if sample:
             spans = get_spans()
             self.print("Spans:")
-            self.print("\n".join(spans))
+            self.print("\n".join(str(s) for s in spans))
         if scheduler.service.metrics:
             self.print("Collected CH data:")
-            for f in scheduler.service.metrics:
-                self.print("Fields: %s", f)
-                self.print("\n".join(scheduler.service.metrics[f]))
+            for t in scheduler.service.metrics:
+                self.print("Table: %s" % t)
+                self.print("\n".join(str(x) for x in scheduler.service.metrics[t]))
         if job.context_version and job.context:
             self.print("Saving job context to %s" % ctx_key)
             scheduler.cache_set(key=ctx_key, value=job.context, version=job.context_version)
@@ -145,8 +145,8 @@ class ServiceStub(object):
         self.address = "127.0.0.1"
         self.port = 0
 
-    def register_metrics(self, fields, data):
-        self.metrics[fields] += data
+    def register_metrics(self, table, data):
+        self.metrics[table] += data
 
 
 if __name__ == "__main__":

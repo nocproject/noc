@@ -38,7 +38,7 @@ from noc.core.quantile.monitor import apply_quantiles
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
-from noc.core.span import get_spans, SPAN_FIELDS
+from noc.core.span import get_spans, span_to_dict
 from noc.core.tz import setup_timezone
 from noc.core.backport.time import perf_counter
 from noc.core.nsq.topic import TopicQueue
@@ -53,8 +53,6 @@ from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
 from .loader import set_service
-
-CHWRITER = "chwriter"
 
 
 class Service(object):
@@ -142,10 +140,7 @@ class Service(object):
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
         self.startup_ts = None
-        # channel, fields -> data
-        self._metrics = defaultdict(list)
-        self.metrics_lock = threading.Lock()
-        self.metrics_callback = None
+        self.telemetry_callback = None
         self.dcs = None
         # Effective address and port
         self.server = None
@@ -158,11 +153,11 @@ class Service(object):
         # Depends on config
         topo = config.get_ch_topology_type()
         if topo == CH_UNCLUSTERED:
-            self.register_metrics = self.register_unclustered_metrics
+            self.register_metrics = self._register_unclustered_metrics
         elif topo == CH_REPLICATED:
-            self.register_metrics = self.register_replicated_metrics
+            self.register_metrics = self._register_replicated_metrics
         elif topo == CH_SHARDED:
-            self.register_metrics = self.register_sharded_metrics
+            self.register_metrics = self._register_sharded_metrics
             self.total_weight = 0
             self.get_shard = self.get_sharding_function()
         else:
@@ -461,9 +456,7 @@ class Service(object):
             )
         #
         if self.use_telemetry:
-            # Start sender callback
-            with self.metrics_lock:
-                self._ensure_metrics_sender()
+            self.start_telemetry_callback()
         self.ioloop.add_callback(self.on_register)
 
     @tornado.gen.coroutine
@@ -800,79 +793,76 @@ class Service(object):
             self.executors[name] = executor
         return executor
 
-    def _ensure_metrics_sender(self):
+    def register_metrics(self, table, metrics):
         """
-        Run metrics sender when necessary.
-        Must be called with metrics_lock held
-        :return:
-        """
-        if not self.metrics_callback:
-            self.metrics_callback = tornado.ioloop.PeriodicCallback(
-                self.send_metrics, 250, self.ioloop
-            )
-            self.metrics_callback.start()
+        Register metrics
 
-    def register_unclustered_metrics(self, fields, metrics):
-        """
-        Register metrics to send in non-clustered configuration
-        :param fields: String containing "<table>.<field1>...<fieldN>"
-        :param metrics: list of tab-separated strings with values
+        :param table: Table name
+        :param metrics: List of dicts containing metrics records
         :return:
         """
-        with self.metrics_lock:
-            self._ensure_metrics_sender()
-            self._metrics[CHWRITER, fields] += metrics
+        raise NotImplementedError()
 
-    def register_replicated_metrics(self, fields, metrics):
+    @staticmethod
+    def _iter_metrics_body(table, metrics):
+        yield table
+        for m in metrics:
+            yield ujson.dumps(m)
+
+    def _register_unclustered_metrics(self, table, metrics):
         """
-        Register metrics to send in non-sharded replicated configuration
-        :param fields: String containing "<table>.<field1>...<fieldN>"
-        :param metrics: list of tab-separated strings with values
+        Register metrics to send in non-clustered configuration.
+        Must be used via register_metrics only
+
+        :param fields: Table name
+        :param metrics: List of dicts containing metrics records
         :return:
         """
-        fields = "raw_%s" % fields
+        self.pub("chwriter", "\n".join(self._iter_metrics_body(table, metrics)), raw=True)
+
+    def _register_replicated_metrics(self, table, metrics):
+        """
+        Register metrics to send in non-sharded replicated configuration.
+        Must be used via register_metrics only
+
+        :param fields: Table name
+        :param metrics: List of dicts containing metrics records
+        :return:
+        """
+        table = "raw_%s" % table
         replicas = config.ch_cluster_topology[0].replicas
-        with self.metrics_lock:
-            self._ensure_metrics_sender()
-            for nr in range(replicas):
-                self._metrics["chwriter-1-%s" % (nr + 1), fields] += metrics
+        body = "\n".join(self._iter_metrics_body(table, metrics))
+        for nr in range(replicas):
+            self.pub("chwriter-1-%s" % (nr + 1), body, raw=True)
 
-    def register_sharded_metrics(self, fields, metrics):
+    def _register_sharded_metrics(self, table, metrics):
         """
         Register metrics to send in sharded replicated configuration
-        :param fields: String containing "<table>.<field1>...<fieldN>"
-        :param metrics: list of tab-separated strings with values
+        Must be used via register_metrics only
+
+        :param fields: Table name
+        :param metrics: List of dicts containing metrics records
         :return:
         """
-        # Get sharding key
-        f_parts = fields.split(".")
-        key = self.SHARDING_KEYS.get(f_parts[0], self.DEFAULT_SHARDING_KEY)
-        tw = self.total_weight
-        try:
-            fn = f_parts[1:].index(key)
 
-            def sf(x):
-                return int(x.split("\t")[fn]) % tw
-
-        except AttributeError:
-            # No sharding key, random sharding
-            def sf(x):
+        def shard_index(msg):
+            k = msg.get(key, None)
+            if k is None:
                 return random.randint(0, tw - 1)
+            return int(k) % tw
 
-        # Shards begins with raw_XXX
-        fields = "raw_%s" % fields
-        sx = self.get_shard
+        key = self.SHARDING_KEYS.get(table, self.DEFAULT_SHARDING_KEY)
+        tw = self.total_weight
+        table = "raw_%s" % table
+        # Distribute data to shards
         data = defaultdict(list)
-        # Shard and replicate
         for m in metrics:
-            sk = sf(m)
-            # Distribute to channels
-            for c in eval(sx, {"k": sk}):
-                data[c, fields] += [m]
-        with self.metrics_lock:
-            self._ensure_metrics_sender()
-            for k in data:
-                self._metrics[k] += data[k]
+            si = shard_index(m)
+            for ch in self.get_shard(si):
+                data[ch] += [m]
+        # Publish metrics
+        for ch in data:
+            self.pub(ch, "\n".join(self._iter_metrics_body(table, metrics)), raw=True)
 
     def get_sharding_function(self):
         """
@@ -901,25 +891,25 @@ class Service(object):
                 f = "%s else %r" % (f, channels)
         return compile(f, "<string>", "eval")
 
-    def send_metrics(self):
-        # Inject spans
+    def start_telemetry_callback(self):
+        """
+        Run telemetry callback
+        :return:
+        """
+        self.telemetry_callback = tornado.ioloop.PeriodicCallback(
+            self.send_telemetry, 250, self.ioloop
+        )
+        self.telemetry_callback.start()
+
+    def send_telemetry(self):
+        """
+        Publish telemetry data
+
+        :return:
+        """
         spans = get_spans()
         if spans:
-            self.register_metrics(SPAN_FIELDS, spans)
-        #
-        if not self._metrics:
-            return
-        with self.metrics_lock:
-            data = self._metrics
-            self._metrics = defaultdict(list)
-        for channel, fields in data:
-            to_send = data[channel, fields]
-            while to_send:
-                chunk, to_send = (
-                    to_send[: config.nsqd.ch_chunk_size],
-                    to_send[config.nsqd.ch_chunk_size :],
-                )
-                self.pub(channel, "%s\n%s\n" % (fields, "\n".join(chunk)), raw=True)
+            self.register_metrics("span", [span_to_dict(s) for s in spans])
 
     def log_request(self, handler):
         """

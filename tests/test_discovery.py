@@ -54,8 +54,8 @@ class ServiceStub(object):
         self.address = "127.0.0.1"
         self.port = 0
 
-    def register_metrics(self, fields, data):
-        self.metrics[fields] += data
+    def register_metrics(self, table, data):
+        self.metrics[table] += data
 
 
 class BeefCallWrapper(object):

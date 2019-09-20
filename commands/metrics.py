@@ -15,7 +15,7 @@ import os
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
-from noc.core.service.shard import Sharder
+from noc.core.clickhouse.shard import Sharder
 
 
 class Command(BaseCommand):

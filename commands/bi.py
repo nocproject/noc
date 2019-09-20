@@ -22,18 +22,12 @@ from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
 from noc.core.clickhouse.dictionary import Dictionary
 from noc.config import config
-from noc.core.service.shard import Sharder
+from noc.core.clickhouse.shard import Sharder
 
 
 class Command(BaseCommand):
     DATA_PREFIX = config.path.bi_data_prefix
-
-    TOPIC = "chwriter"
-    NSQ_CONNECT_TIMEOUT = config.nsqd.connect_timeout
-    NSQ_PUB_RETRY_DELAY = config.nsqd.pub_retry_delay
-
     EXTRACTORS = [RebootsExtractor, AlarmsExtractor, ManagedObjectsExtractor]
-
     # Extract by 1-day chunks
     EXTRACT_WINDOW = config.bi.extract_window
     MIN_WINDOW = datetime.timedelta(seconds=2)
@@ -104,8 +98,8 @@ class Command(BaseCommand):
                     window = window // 2
                     if window < self.MIN_WINDOW:
                         self.print(
-                            "[%s] Window less two seconds. Too many element in interval. Fix it manually"
-                            % e.name
+                            "[%s] Window less than %d seconds. Too many element in interval. Fix it manually"
+                            % (self.MIN_WINDOW.total_seconds(), e.name)
                         )
                         self.die("Too many elements per interval")
                     self.print(

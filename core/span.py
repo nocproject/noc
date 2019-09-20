@@ -14,6 +14,7 @@ import os
 import struct
 import logging
 import uuid
+from collections import namedtuple
 
 # Third-party modules
 import tornado.gen
@@ -22,18 +23,29 @@ import tornado.gen
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.text import ch_escape
 from noc.core.backport.time import perf_counter
 
 forensic_logger = logging.getLogger("noc.core.forensic")
-span_lock = threading.Lock()
 
+SpanItemFields = [
+    "date",
+    "ts",
+    "ctx",
+    "id",
+    "parent",
+    "server",
+    "service",
+    "client",
+    "duration",
+    "error_code",
+    "error_text",
+    "sample",
+    "in_label",
+    "out_label",
+]
+SpanItem = namedtuple("SpanItem", SpanItemFields)
 # Collected spans, protected by lock
-SPAN_FIELDS = (
-    "span.date.ts.ctx.id.parent.server.service.client"
-    ".duration.error_code.error_text.sample"
-    ".in_label.out_label"
-)
+span_lock = threading.Lock()
 tls = threading.local()
 spans = []
 
@@ -118,12 +130,6 @@ class Span(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        def q_tsv(s):
-            if not s:
-                return ""
-            else:
-                return str(s).encode("string_escape")
-
         global spans
         if self.is_sampled or self.hist or self.quantile:
             self.duration = int((perf_counter() - self.ts0) * US)
@@ -140,27 +146,25 @@ class Span(object):
             self.error_code = ERR_UNKNOWN
             self.error_text = str(exc_val).strip("\t").replace("\t", " ").replace("\n", " ")
         lt = time.localtime(self.start)
-        row = "\t".join(
-            str(x)
-            for x in [
-                time.strftime("%Y-%m-%d", lt),
-                time.strftime("%Y-%m-%d %H:%M:%S", lt),
-                self.span_context,
-                self.span_id,
-                self.parent,
-                q_tsv(self.server),
-                q_tsv(self.service),
-                q_tsv(self.client),
-                self.duration,
-                self.error_code or 0,
-                q_tsv(self.error_text),
-                self.sample,
-                ch_escape(q_tsv(self.in_label)),
-                ch_escape(q_tsv(self.out_label)),
-            ]
+        ft = time.strftime("%Y-%m-%d %H:%M:%S", lt)
+        span = SpanItem(
+            date=ft.split(" ")[0],
+            ts=ft,
+            ctx=self.span_context,
+            id=self.span_id,
+            parent=self.parent,
+            server=str(self.server or ""),
+            service=str(self.service or ""),
+            client=str(self.client or ""),
+            duration=self.duration,
+            error_code=self.error_code or 0,
+            error_text=str(self.error_text or ""),
+            sample=self.sample,
+            in_label=str(self.in_label or ""),
+            out_label=str(self.out_label or ""),
         )
         with span_lock:
-            spans += [row]
+            spans += [span]
         if self.span_parent == DEFAULT_ID:
             del tls.span_parent
             del tls.span_context
@@ -184,6 +188,15 @@ def get_spans():
         r = spans
         spans = []
     return r
+
+
+def span_to_dict(span):
+    """
+    Convert span to object
+    :param span:
+    :return:
+    """
+    return dict(zip(SpanItemFields, span))
 
 
 def get_current_span():

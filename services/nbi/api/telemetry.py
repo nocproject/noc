@@ -85,29 +85,17 @@ class TelemetryAPI(NBIAPI):
                 # @todo: Check value type
                 data[table, path, ts][field] = value
         # Prepare to send
-        chains = defaultdict(list)
+        chains = defaultdict(list)  # table -> metrics
         for (scope, path, ts), values in six.iteritems(data):
-            # @todo: Proper key fields
-            record_fields = ["%s.date.ts.managed_object" % scope]
-            if path:
-                record_fields += ["path"]
-            fields = sorted(values)
-            record_fields += fields
-            rf = ".".join(record_fields)
-            if isinstance(rf, unicode):
-                rf = rf.encode("utf-8")
             # Convert timestamp to CH format
             ts = ts.replace("T", " ")
             date = ts.split()[0]
-            # Build record
-            record = [date, ts, bi_id]
+            # Metric record
+            data = values  # Values first to protect critical fields
+            data.update({"date": date, "ts": ts, "managed_object": bi_id})
             if path:
-                record += [self.quote_path(path)]
-            record += [str(values[f]) for f in fields]
-            r = "\t".join(record)
-            if isinstance(r, unicode):
-                r = r.encode("utf-8")
-            chains[rf] += [r]
+                data["path"] = [str(x) for x in path]
+            chains[scope] += [data]
         # Spool metrics
         for f in chains:
             self.service.register_metrics(f, chains[f])

@@ -31,6 +31,7 @@ from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.handler import get_handler
+from noc.core.hash import hash_str
 
 
 MAX31 = 0x7FFFFFFF
@@ -323,7 +324,7 @@ class MetricsCheck(DiscoveryCheck):
             self.job.context["counters"] = {}
         counters = self.job.context["counters"]
         alarms = []
-        data = defaultdict(dict)
+        data = defaultdict(dict)  # table -> item hash -> {field:value, ...}
         n_metrics = 0
         mo_id = self.object.bi_id
         ts_cache = {}  # timestamp -> (date, ts)
@@ -397,24 +398,28 @@ class MetricsCheck(DiscoveryCheck):
             if cfg.is_stored:
                 tsc = ts_cache.get(m.ts)
                 if not tsc:
-                    lt = time.localtime(m.ts // 1000000000)
-                    tsc = (time.strftime("%Y-%m-%d", lt), time.strftime("%Y-%m-%d %H:%M:%S", lt))
+                    lt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(m.ts // 1000000000))
+                    tsc = (lt.split(" ")[0], lt)
                     ts_cache[m.ts] = tsc
                 if path:
-                    pk = "%s\t%s\t%d\t%s" % (tsc[0], tsc[1], mo_id, self.quote_path(path))
-                    table = "%s.date.ts.managed_object.path" % cfg.metric_type.scope.table_name
+                    item_hash = hash_str(str((tsc[1], mo_id, path)))
                 else:
-                    pk = "%s\t%s\t%d" % (tsc[0], tsc[1], mo_id)
-                    table = "%s.date.ts.managed_object" % cfg.metric_type.scope.table_name
+                    item_hash = hash_str(str((tsc[1], mo_id)))
+                record = data[cfg.metric_type.scope.table_name].get(item_hash)
+                if not record:
+                    record = {"date": tsc[0], "ts": tsc[1], "managed_object": mo_id}
+                    if path:
+                        record["path"] = path
+                    data[cfg.metric_type.scope.table_name][item_hash] = record
                 field = cfg.metric_type.field_name
                 try:
-                    data[table, pk][field] = cfg.metric_type.clean_value(m.abs_value)
+                    record[field] = cfg.metric_type.clean_value(m.abs_value)
                 except ValueError as e:
                     self.logger.info("[%s] Cannot clean value %s: %s", m.label, m.abs_value, e)
                     continue
                 # Attach time_delta, when required
                 if time_delta and cfg.metric_type.scope.enable_timedelta:
-                    data[table, pk]["time_delta"] = time_delta
+                    data[cfg.metric_type.scope.table_name][item_hash]["time_delta"] = time_delta
                 n_metrics += 1
             if cfg.threshold_profile and m.abs_value is not None:
                 alarms += self.process_thresholds(m, cfg)
@@ -444,7 +449,8 @@ class MetricsCheck(DiscoveryCheck):
         # Send metrics
         if n_metrics:
             self.logger.info("Spooling %d metrics", n_metrics)
-            self.send_metrics(data)
+            for table in data:
+                self.service.register_metrics(table, list(six.itervalues(data[table])))
         # Set up threshold alarms
         self.logger.info("%d alarms detected", len(alarms))
         self.job.update_umbrella(self.get_ac_pm_thresholds(), alarms)
@@ -635,30 +641,6 @@ class MetricsCheck(DiscoveryCheck):
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
                 break
         return alarms
-
-    def send_metrics(self, data):
-        """
-        Convert collected metrics to Service.register_metric format
-        :param data: (table fields, pk) -> field -> value
-        :return:
-        """
-        # Normalized data
-        # fields -> records
-        chains = defaultdict(list)
-        # Normalize data
-        for (fields, pk), values in six.iteritems(data):
-            # Sorted list of fields
-            f = sorted(values)
-            record_fields = "%s.%s" % (fields, ".".join(f))
-            if isinstance(record_fields, unicode):
-                record_fields = record_fields.encode("utf-8")
-            record = "%s\t%s" % (pk, "\t".join(str(values[fn]) for fn in f))
-            if isinstance(record, unicode):
-                record = record.encode("utf-8")
-            chains[record_fields] += [record]
-        # Spool data
-        for f in chains:
-            self.service.register_metrics(f, chains[f])
 
     def get_umbrella_alarm_cfg(self, metric_config, threshold, path, value):
         """
