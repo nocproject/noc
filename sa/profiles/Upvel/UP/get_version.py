@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Upvel.UP.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,13 +24,16 @@ class Script(BaseScript):
         r"^\s*Software Version\s+: \S+ \(standalone\)( dev-build by)? (?P<version>.+)\n",
         re.MULTILINE,
     )
+    rx_image = re.compile(r"^\s*Image\s+: (?P<image>\S+.dat)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show version", cached=True)
-        match1 = self.rx_platform.search(v)
-        match2 = self.rx_version.search(v)
-        return {
+        r = {
             "vendor": "Upvel",
-            "platform": match1.group("platform"),
-            "version": match2.group("version"),
+            "platform": self.rx_platform.search(v).group("platform"),
+            "version": self.rx_version.search(v).group("version"),
         }
+        match = self.rx_image.search(v)
+        if match:
+            r["image"] = match.group("image")
+        return r

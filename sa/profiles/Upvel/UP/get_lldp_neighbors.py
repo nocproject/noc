@@ -13,6 +13,15 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.validators import is_ipv4, is_ipv6, is_mac
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_BRIDGE,
+)
 
 
 class Script(BaseScript):
@@ -29,7 +38,7 @@ class Script(BaseScript):
         r"System Capabilities\s+:(?P<caps>.+)\n"
     )
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             v = self.cli("show lldp neighbors")
@@ -38,22 +47,22 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(v):
             chassis_id = match.group("chassis_id")
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
-                chassis_id_subtype = 5
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(chassis_id):
-                chassis_id_subtype = 4
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
             else:
-                chassis_id_subtype = 7
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
             port_id = match.group("port_id")
             if is_ipv4(port_id) or is_ipv6(port_id):
-                port_id_subtype = 4
+                port_id_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(port_id):
-                port_id_subtype = 3
+                port_id_subtype = LLDP_PORT_SUBTYPE_MAC
             else:
-                port_id_subtype = 7
+                port_id_subtype = LLDP_PORT_SUBTYPE_LOCAL
             caps = 0
             # Need more examples
             if "Bridge" in match.group("caps"):
-                caps += 4
+                caps += LLDP_CAP_BRIDGE
             neighbor = {
                 "remote_chassis_id": chassis_id,
                 "remote_chassis_id_subtype": chassis_id_subtype,

@@ -45,3 +45,14 @@ class Profile(BaseProfile):
         if s.startswith("10G G "):
             return "10GigabitEthernet %s" % s[4:].strip()
         return s
+
+    INTERFACE_TYPES = {
+        "Gi": "physical",  # GigabitEthernet
+        "2.": "physical",  # 2.5GigabitEthernet
+        "10": "physical",  # 10GigabitEthernet
+        "VL": "SVI",  # VLAN
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2])
