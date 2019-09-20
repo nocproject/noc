@@ -64,7 +64,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
+    def execute_cli(self):
         try:
             v = self.cli("show spanning-tree detail")
         except self.CLISyntaxError:
