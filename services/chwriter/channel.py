@@ -16,24 +16,19 @@ from noc.core.backport.time import perf_counter
 
 
 class Channel(object):
-    def __init__(self, service, fields, address, db):
+    def __init__(self, service, table, address, db):
         """
-        :param fields: <table>.<field1>. .. .<fieldN>
+        :param table: ClickHouse table name
+        :param address: ClickHouse address
+        :param db: ClickHouse database
+
         :return:
         """
-        self.name = fields
+        self.name = table
         self.service = service
         self.address = address
         self.db = db
-        if "|" in fields:
-            # New format. Separated by '|'.
-            # Nested fields are possible
-            parts = tuple(fields.split("|"))
-        else:
-            # Old format. Separated by '.'.
-            # Nested fields are not possible
-            parts = tuple(fields.split("."))
-        self.sql = "INSERT INTO %s(%s) FORMAT TabSeparated" % (parts[0], ",".join(parts[1:]))
+        self.sql = "INSERT INTO %s FORMAT JSONEachRow" % table
         self.encoded_sql = urllib_quote(self.sql.encode("utf8"))
         self.n = 0
         self.data = []
@@ -72,7 +67,7 @@ class Channel(object):
 
     def get_data(self):
         self.n = 0
-        data = "".join(self.data)
+        data = "\n".join(self.data)
         self.data = []
         return data
 

@@ -60,11 +60,11 @@ class CHWriterService(Service):
         )
         self.logger.info("Sending records to %s" % self.ch_address)
 
-    def get_channel(self, fields):
-        if fields not in self.channels:
-            self.channels[fields] = Channel(self, fields, self.ch_address, config.clickhouse.db)
+    def get_channel(self, table):
+        if table not in self.channels:
+            self.channels[table] = Channel(self, table, self.ch_address, config.clickhouse.db)
             metrics["channels_active"] += 1
-        return self.channels[fields]
+        return self.channels[table]
 
     def on_data(self, message, records, *args, **kwargs):
         """
@@ -89,9 +89,13 @@ class CHWriterService(Service):
             )
             metrics["deferred_messages"] += 1
             return False
-        fields, data = records.split("\n", 1)
-        self.logger.debug("Receiving %s", fields)
-        channel = self.get_channel(fields)
+        table, data = records.split("\n", 1)
+        self.logger.debug("Receiving %s", table)
+        if "." in table or "|" in table:
+            self.logger.error("Message in legacy format dropped: %s" % table)
+            metrics["dropped_legacy_messages"] += 1
+            return True
+        channel = self.get_channel(table)
         n = channel.feed(data)
         metrics["records_received"] += n
         metrics["records_buffered"] += n

@@ -63,5 +63,5 @@ class ServiceStub(object):
         for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
-    def register_metrics(self, fields, data):
-        self._metrics[fields] += data
+    def register_metrics(self, table, data):
+        self._metrics[table] += data

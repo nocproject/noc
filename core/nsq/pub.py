@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Simple HTTP client for NSQ pub/mpub
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import logging
 import struct
+import random
 
 # Third-party modules
 import ujson
@@ -23,7 +24,7 @@ from noc.config import config
 from noc.core.perf import metrics
 from .error import NSQPubError
 
-NSQ_HTTP_SERVICE = "nsqdhttp"
+nsqd_http_service_param = config.nsqd.__dict__["http_addresses"]
 logger = logging.getLogger(__name__)
 
 
@@ -60,6 +61,8 @@ def mpub_encode(messages):
         for msg in messages:
             if not isinstance(msg, six.string_types):
                 msg = ujson.dumps(msg)
+            if isinstance(msg, unicode):
+                msg = msg.encode("utf-8")
             yield struct.pack("!i", len(msg))
             yield msg
 
@@ -88,6 +91,13 @@ def mpub(topic, messages, dcs=None, io_loop=None, retries=None):
         dcs = get_dcs(ioloop=io_loop)
     # Build body
     msg = mpub_encode(messages)
+    # Setup resolver
+    services = nsqd_http_service_param.services
+    num_services = len(services)
+    if num_services > 1:
+        s_index = random.randint(0, num_services - 1)
+    else:
+        s_index = 0
     # Post message
     retries = retries or config.nsqd.pub_retries
     code = 200
@@ -95,7 +105,9 @@ def mpub(topic, messages, dcs=None, io_loop=None, retries=None):
     metrics["nsq_mpub", ("topic", topic)] += 1
     while retries > 0:
         # Get actual nsqd service's address and port
-        si = yield dcs.resolve(NSQ_HTTP_SERVICE, near=True)
+        si = services[s_index]
+        if not nsqd_http_service_param.is_static(si):
+            si = yield dcs.resolve(si, near=True)
         # Send message
         code, _, body = yield fetch(
             "http://%s/mpub?topic=%s&binary=true" % (si, topic),
@@ -112,6 +124,7 @@ def mpub(topic, messages, dcs=None, io_loop=None, retries=None):
         retries -= 1
         if retries > 0:
             yield tornado.gen.sleep(config.nsqd.pub_retry_delay)
+            s_index = (s_index + 1) % num_services
     if code != 200:
         logger.error("Failed to pub to topic '%s'. Giving up", topic)
         metrics["nsq_mpub_fail", ("topic", topic)] += 1

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MAC Check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,10 +28,6 @@ class MACCheck(DiscoveryCheck):
 
     name = "mac"
     required_script = "get_mac_address_table"
-
-    METRIC_FIELDS = (
-        "mac.date.ts.managed_object.mac" ".interface.interface_profile.segment.vlan.is_uni"
-    )
 
     def handler(self):
         # Build filter policy
@@ -69,10 +65,9 @@ class MACCheck(DiscoveryCheck):
         ts = time.strftime("%Y-%m-%d %H:%M:%S", now)
         unknown_interfaces = set()
         total_macs = 0
-        processed_macs = 0
         data = []
-        mo_bi_id = str(self.object.bi_id)
-        seg_bi_id = str(self.object.segment.bi_id)
+        mo_bi_id = self.object.bi_id
+        seg_bi_id = self.object.segment.bi_id
         collect_if_objects = self.object.enable_autosegmentation
         if_mac = defaultdict(set)  # interface -> [macs]
         # Collect and process MACs
@@ -96,29 +91,27 @@ class MACCheck(DiscoveryCheck):
                 continue
             ifprofile = iface.get_profile()
             data += [
-                "\t".join(
-                    (
-                        date,  # date
-                        ts,  # ts
-                        mo_bi_id,  # managed_object
-                        str(int(MAC(v["mac"]))),  # mac
-                        ifname,  # interface
-                        str(ifprofile.bi_id),  # interface_profile
-                        seg_bi_id,  # segment
-                        str(v.get("vlan_id", 0)),  # vlan
-                        "1" if ifprofile.is_uni else "0",  # is_uni
-                    )
-                )
+                {
+                    "date": date,
+                    "ts": ts,
+                    "managed_object": mo_bi_id,
+                    "mac": int(MAC(v["mac"])),
+                    "interface": ifname,
+                    "interface_profile": ifprofile.bi_id,
+                    "segment": seg_bi_id,
+                    "vlan": v.get("vlan_id", 0),
+                    "is_uni": 1 if ifprofile.is_uni else 0,
+                }
             ]
-            processed_macs += 1
         if unknown_interfaces:
             self.logger.info("Ignoring unknown interfaces: %s", ", ".join(unknown_interfaces))
+        processed_macs = len(data)
         metrics["discovery_mac_total_macs"] += total_macs
         metrics["discovery_mac_processed_macs"] += processed_macs
         metrics["discovery_mac_ignored_macs"] += total_macs - processed_macs
         if data:
             self.logger.info("%d MAC addresses are collected. Sending", processed_macs)
-            self.service.register_metrics(self.METRIC_FIELDS, data)
+            self.service.register_metrics("mac", data)
             if collect_if_objects:
                 self.build_seen_objects(if_mac)
         else:
