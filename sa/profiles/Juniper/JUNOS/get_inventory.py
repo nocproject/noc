@@ -40,7 +40,9 @@ class Script(BaseScript):
         "POWER SUPPLY": "PEM",
         "PSU": "PSU",
         "ROUTING ENGINE": "RE",
+        "AFEB": "AFEB",
         "CB": "SCB",
+        "MGMT BRD": "MGMT",
         "FPC": "FPC",
         "MPC": "FPC",
         "MIC": "MIC",
@@ -52,16 +54,20 @@ class Script(BaseScript):
 
     IGNORED = {
         "RE": {
-            "750-026468",  # EX2200-24T-4G
-            "750-026331",  # EX2200-48P-4G, POE
-            "750-033065",  # EX4200-24T, 8 POE
-            "750-021258",  # EX4200-24F
-            "750-034594",  # RE-SRX210HE
-            "710-017560",  # 710-017560
-            "750-021778",  # RE-SRX210B
             "710-015273",  # RE-J4350-2540
             "710-017560",  # RE-J2320-2000
-        }
+            "750-021258",  # EX4200-24F
+            "750-021778",  # RE-SRX210B
+            "750-026331",  # EX2200-48P-4G, POE
+            "750-026468",  # EX2200-24T-4G
+            "750-033063",  # EX4200-48T, 8 POE
+            "750-033065",  # EX4200-24T, 8 POE
+            "750-033073",  # EX4200-24T, 8 POE
+            "750-034594",  # RE-SRX210HE
+            "750-036562",  # 750-036562
+            "750-045404",  # EX4550-32F
+        },
+        "AFEB": {"BUILTIN"},  # Forwarding Engine Processor
     }
 
     def parse_hardware(self, v):
@@ -85,8 +91,9 @@ class Script(BaseScript):
                     rev = match.group("revision")
                     yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
-    def execute(self):
+    def execute_cli(self):
         self.chassis_no = None
+        self.virtual_chassis = None
         v = self.cli("show chassis hardware")
         objects = []
         chassis_sn = set()
@@ -102,6 +109,7 @@ class Script(BaseScript):
                 continue
             # Discard virtual chassis and ignored part numbers
             if description == "Virtual Chassis":
+                self.virtual_chassis = True
                 continue
             if t in self.IGNORED and part_no in self.IGNORED[t]:
                 continue
@@ -116,6 +124,15 @@ class Script(BaseScript):
                 chassis_sn.add(serial)
             elif t == "FPC":
                 if description.startswith("EX4"):
+                    # Avoid duplicate `CHASSIS` type on some EX switches
+                    has_chassis = False
+                    if not self.virtual_chassis:
+                        for i in objects:
+                            if i["type"] == "CHASSIS":
+                                has_chassis = True
+                                break
+                    if has_chassis:
+                        continue
                     t = "CHASSIS"
                     chassis_sn.add(serial)
             elif t == "XCVR":
@@ -124,7 +141,7 @@ class Script(BaseScript):
                         part_no = self.UNKNOWN_XCVR
                     else:
                         part_no = self.get_trans_part_no(serial, description)
-            elif serial == "BUILTIN" or serial in chassis_sn:
+            if serial == "BUILTIN" or serial in chassis_sn:
                 builtin = True
                 part_no = []
             if t == "CHASSIS" and number is None and self.chassis_no is not None:
