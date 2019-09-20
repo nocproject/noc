@@ -282,7 +282,7 @@ class Command(BaseCommand):
                 window = window // 2
                 if window < datetime.timedelta(hours=1):
                     self.die("Too many events for delete in interval %s" % window)
-                event_ts -= window
+                event_ts += window
         if force:
             self.print("All data before %s from active events will be Remove..\n" % before)
             for i in reversed(range(1, 10)):
