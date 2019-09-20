@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Alstec.ALS.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -34,7 +33,7 @@ class Script(BaseScript):
             v = round(mw2dbm(v), 2)
         return v
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         cmd = "show fiber-ports optical-transceiver detailed"
         if interface is not None:
             cmd += " interface %s" % interface

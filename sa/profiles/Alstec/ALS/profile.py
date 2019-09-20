@@ -20,3 +20,16 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal datadump"
     pattern_more = "More: <space>,  Quit: q or CTRL+Z, One line: <return>"
     command_more = "a"
+
+    INTERFACE_TYPES = {
+        "e": "physical",  # Ethernet
+        "g": "physical",  # GigabitEthernet
+        "t": "physical",  # TenGigabitEthernet
+        "p": "aggregated",  # Port-channel/Portgroup
+        "c": "aggregated",  # ch
+        "v": "SVI",  # vlan
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:1].lower())

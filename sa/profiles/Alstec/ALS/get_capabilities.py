@@ -19,7 +19,7 @@ class Script(BaseScript):
         """
         Check box has LLDP enabled
         """
-        cmd = self.cli("show lldp configuration")
+        cmd = self.cli("show lldp configuration", cached=True)
         return "LLDP state: Enabled" in cmd
 
     @false_on_cli_error
