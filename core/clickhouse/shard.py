@@ -106,7 +106,9 @@ class ShardingSharder(BaseSharder):
                 f = "%s else %r if k < %d" % (f, channels, w)
             else:
                 f = "%s else %r" % (f, channels)
-        return compile(f, "<string>", "eval")
+        fn = "def _ch_sharding_function(k):\n    return %s" % f
+        exec(compile(fn, "<string>", "exec"))
+        return _ch_sharding_function  # noqa
 
     def feed(self, records):
         key = self.SHARDING_KEYS.get(self.f_parts[0], self.DEFAULT_SHARDING_KEY)
@@ -122,14 +124,13 @@ class ShardingSharder(BaseSharder):
             def sf(x):
                 return random.randint(0, tw - 1)
 
-        sx = self.get_shard
         # Shard and replicate
         for m in records:
             if not m:
                 continue
             sk = sf(m)
             # Distribute to channels
-            for c in eval(sx, {"k": sk}):
+            for c in self.get_shard(sk):
                 self.records[c] += [m]
 
 

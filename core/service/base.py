@@ -44,6 +44,7 @@ from noc.core.backport.time import perf_counter
 from noc.core.nsq.topic import TopicQueue
 from noc.core.nsq.pub import mpub
 from noc.core.nsq.error import NSQPubError
+from noc.core.clickhouse.shard import Sharder
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -158,8 +159,9 @@ class Service(object):
             self.register_metrics = self._register_replicated_metrics
         elif topo == CH_SHARDED:
             self.register_metrics = self._register_sharded_metrics
-            self.total_weight = 0
-            self.get_shard = self.get_sharding_function()
+            sharder = Sharder("")
+            self.get_shard = sharder.get_sharding_function()
+            self.total_weight = sharder.total_weight
         else:
             self.die("Invalid ClickHouse cluster topology")
         # NSQ Topics
@@ -862,34 +864,7 @@ class Service(object):
                 data[ch] += [m]
         # Publish metrics
         for ch in data:
-            self.pub(ch, "\n".join(self._iter_metrics_body(table, metrics)), raw=True)
-
-    def get_sharding_function(self):
-        """
-        Returns expression to be evaluated for sharding
-        Build expression like
-        [1, 2] if k < 2 else [3, 4]
-        [1, 2] if k < 2 else [3, 4] if k < 3 else [5, 6]
-        [1, 2] if k < 2 else [3, 4] if k < 3 else [5, 6] if k < 4 else [7, 8]
-        :return:
-        """
-        topo = config.ch_cluster_topology
-        logging.info("Current cluster topology %s" % topo)
-        self.total_weight = 0
-        w = 0
-        f = ""
-        tl = len(topo) - 1
-        for sn, shard in enumerate(topo):
-            channels = ["chwriter-%s-%s" % (sn + 1, r + 1) for r in range(shard.replicas)]
-            self.total_weight += shard.weight
-            w += shard.weight
-            if not f:
-                f = "%r if k < %d" % (channels, w)
-            elif sn < tl:
-                f = "%s else %r if k < %d" % (f, channels, w)
-            else:
-                f = "%s else %r" % (f, channels)
-        return compile(f, "<string>", "eval")
+            self.pub(ch, "\n".join(self._iter_metrics_body(table, data[ch])), raw=True)
 
     def start_telemetry_callback(self):
         """
