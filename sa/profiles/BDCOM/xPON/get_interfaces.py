@@ -81,7 +81,7 @@ class Script(BaseScript):
             if i["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
                 c = self.cli("show vlan interface %s" % match.group("ifname"))
-                for r in parse_table(c, allow_wrap=True):
+                for r in parse_table(c, allow_wrap=True, n_row_delim=","):
                     if is_int(r[2]):
                         untagged = int(r[2])
                         sub["untagged_vlan"] = untagged
