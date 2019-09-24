@@ -3,6 +3,7 @@ const url = require('url');
 const request = require('sync-request');
 const tar = require('tar-fs');
 const bz2 = require('unbzip2-stream');
+const zlib = require("zlib");
 const content = fs.readFileSync('../../../requirements/web.json');
 const requirements = JSON.parse(content.toString());
 const reqUrl = url.parse(requirements.url);
@@ -16,11 +17,14 @@ if(['http', 'https'].includes(protocol)) {
     console.error(`Unknowns protocol: ${protocol}`);
 }
 
-function getPackage(url) {
+function getPackage(pkg) {
     return new Promise((resolve, reject) => {
+        const filename = `${pkg.name}@${pkg.version}.tar.bz2`;
+        const url = `${requirements.url}/${filename}`;
         client.get(url, (response) => {
-            // let chunks_of_data = [];
-            //
+            let chunks_of_data = [];
+            const output = fs.createWriteStream('xxx.tar.bz2');
+            // response.pipe(bz2()).write(output);
             // response.on('data', (fragments) => {
             //     chunks_of_data.push(fragments);
             // });
@@ -29,7 +33,8 @@ function getPackage(url) {
             //     let response_body = Buffer.concat(chunks_of_data);
             //     resolve(response_body.toString());
             // });
-
+            //
+            console.log('get done!');
             resolve(response.statusCode);
             response.on('error', (error) => {
                 reject(error);
@@ -58,10 +63,14 @@ function load() {
             let res = request('GET', url);
             console.log(url);
 
-            const input = fs.createReadStream(res.getBody());
-            const output = fs.createWriteStream(filename.replace('.bz2', ''), {flags: 'a'});
-            // input.pipe(bz2()).write(output);
-            input.write(output);
+            try {
+                // const input = fs.createReadStream(res.getBody());
+                const output = fs.createWriteStream(filename.replace('.bz2', ''), {flags: 'a'});
+                // input.pipe(bz2()).write(output);
+                res.getBody().write(output);
+            } catch(error) {
+                console.log(error);
+            }
             // output.write(res.getBody(), function() {
             //     // Now the data has been written.
             //     console.log('file closed');
@@ -88,7 +97,11 @@ function load() {
         }
     }
 
-    requirements.packages.forEach(pkg => loadPackage(pkg));
+    // requirements.packages.forEach(pkg => loadPackage(pkg));
+    // loadPackage(requirements.packages[0]);
+    getPackage(requirements.packages[0]).then(response => {
+        console.log(response);
+    });
     console.log('Done');
 }
 
