@@ -14,7 +14,6 @@ import signal
 import uuid
 import argparse
 from collections import defaultdict
-import random
 import time
 import threading
 
@@ -44,7 +43,7 @@ from noc.core.backport.time import perf_counter
 from noc.core.nsq.topic import TopicQueue
 from noc.core.nsq.pub import mpub
 from noc.core.nsq.error import NSQPubError
-from noc.core.clickhouse.shard import Sharder
+from noc.core.clickhouse.shard import ShardingFunction
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -159,9 +158,7 @@ class Service(object):
             self.register_metrics = self._register_replicated_metrics
         elif topo == CH_SHARDED:
             self.register_metrics = self._register_sharded_metrics
-            sharder = Sharder("")
-            self.get_shard = sharder.get_sharding_function()
-            self.total_weight = sharder.total_weight
+            self.get_shards = ShardingFunction()
         else:
             self.die("Invalid ClickHouse cluster topology")
         # NSQ Topics
@@ -846,22 +843,13 @@ class Service(object):
         :param metrics: List of dicts containing metrics records
         :return:
         """
-
-        def shard_index(msg):
-            k = msg.get(key, None)
-            if k is None:
-                return random.randint(0, tw - 1)
-            return int(k) % tw
-
-        key = self.SHARDING_KEYS.get(table, self.DEFAULT_SHARDING_KEY)
-        tw = self.total_weight
-        table = "raw_%s" % table
         # Distribute data to shards
         data = defaultdict(list)
         for m in metrics:
-            si = shard_index(m)
-            for ch in self.get_shard(si):
+            for ch in self.get_shards(table, m):
                 data[ch] += [m]
+        # Change table name to raw_*
+        table = "raw_%s" % table
         # Publish metrics
         for ch in data:
             self.pub(ch, "\n".join(self._iter_metrics_body(table, data[ch])), raw=True)
