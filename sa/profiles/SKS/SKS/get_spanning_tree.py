@@ -6,7 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
 # Python modules
 import re
 
@@ -96,7 +95,7 @@ class Script(BaseScript):
     PORT_STATE = {"Forwarding": "forwarding", "Blocking": "blocking"}
     PORT_ROLE = {"DesignatedPort": "designated"}
 
-    def execute(self):
+    def execute_cli(self):
         try:
             v = self.cli("show spanning-tree detail")
         except self.CLISyntaxError:
@@ -149,12 +148,15 @@ class Script(BaseScript):
                         inst["bridge_priority"] = inst["root_priority"]
                         inst["bridge_id"] = inst["root_id"]
                         inst["interfaces"] = []
-                        try:
-                            c = self.cli("show spanning-tree mst-configuration")
-                            match = self.rx_vlans.search(c)
-                            inst["vlans"] = match.group("vlans")
-                        except self.CLISyntaxError:
+                        if mode in ["STP", "RSTP"]:
                             inst["vlans"] = "1-4095"
+                        else:  # PVST ?
+                            try:
+                                c = self.cli("show spanning-tree mst-configuration")
+                                match = self.rx_vlans.search(c)
+                                inst["vlans"] = match.group("vlans")
+                            except self.CLISyntaxError:
+                                inst["vlans"] = "1-4095"
                     else:
                         match = self.rx_inst3.search(v)
                         if match:

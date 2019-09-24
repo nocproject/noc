@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
 
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -19,7 +21,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^(?:System|Base ethernet) MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         try:
             c = self.cli("show system", cached=True)
         except self.CLISyntaxError:

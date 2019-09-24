@@ -2,10 +2,9 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
 
 # Python modules
 import re
@@ -20,14 +19,14 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line1 = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+" r"(?P<iface>\S+)", re.MULTILINE
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<iface>\S+)", re.MULTILINE
     )
     rx_line2 = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+" r"(?P<type>\S+)", re.MULTILINE
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+(?P<type>\S+)", re.MULTILINE
     )
     rx_status = re.compile(r"Vlan\s+Mac Address\s+Type\s+Ports", re.MULTILINE)
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         r = []
         cmd = "show mac address-table"
         if mac is not None:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - http://skss.ru/)
+# Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - https://www.nposkss.ru)
 # OS:     SKS
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
@@ -17,7 +17,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "SKS.SKS"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
+    pattern_prompt = r"^(?P<hostname>[^#]\S+)(?:\(e1\))?\s*#"
     pattern_syntax_error = (
         r"% Unrecognized command|% Wrong number of parameters|"
         r"% Unrecognized host or address|"
@@ -59,3 +59,32 @@ class Profile(BaseProfile):
     def setup_session(self, script):
         # additional command to `terminal datadump`
         script.cli("terminal length 0", ignore_errors=True)
+
+    class e1(object):
+        """E1 context manager to use with "with" statement"""
+
+        def __init__(self, script):
+            self.script = script
+
+        def __enter__(self):
+            """Enter e1 context"""
+            self.script.cli("e1")
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            """Leave e1 context"""
+            if exc_type is None:
+                self.script.cli("end")
+
+    INTERFACE_TYPES = {
+        "fa": "physical",  # FastEthernet
+        "gi": "physical",  # GigabitEthernet
+        "te": "physical",  # TenGigabitEthernet
+        "tg": "physical",  # TenGigabitEthernet
+        "po": "aggregated",  # Port-Channel
+        "vl": "SVI",  # vlan
+        "nu": "null",  # Null
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2].lower())

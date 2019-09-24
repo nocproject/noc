@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_vlan = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
     rx_status = re.compile(r"VLAN\s+Status\s+Name\s+Ports", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         c = self.cli("show vlan")
         if bool(self.rx_status.search(c)):
