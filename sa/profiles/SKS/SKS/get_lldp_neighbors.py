@@ -6,7 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
 # Python modules
 import re
 
@@ -15,6 +14,23 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
+)
 
 
 class Script(BaseScript):
@@ -43,51 +59,31 @@ class Script(BaseScript):
         for i in t:
             chassis_id = i[1]
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
-                chassis_id_subtype = 5
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(chassis_id):
-                chassis_id_subtype = 4
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
             else:
-                chassis_id_subtype = 7
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
             port_id = i[2]
             if is_ipv4(port_id) or is_ipv6(port_id):
-                port_id_subtype = 4
+                port_id_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(port_id):
-                port_id_subtype = 3
+                port_id_subtype = LLDP_PORT_SUBTYPE_MAC
             else:
-                port_id_subtype = 7
-            caps = 0
-            for c in i[4].split(","):
-                c = c.strip()
-                if c and c != "not":
-                    caps |= {
-                        "O": 1,
-                        "P": 2,
-                        "B": 4,
-                        "W": 8,
-                        "R": 16,
-                        "r": 16,
-                        "T": 32,
-                        "C": 64,
-                        "S": 128,
-                    }[c]
-            """
-            if "O" in i[4]:
-                caps += 1
-            elif "r" in i[4]:
-                caps += 2
-            elif "B" in i[4]:
-                caps += 4
-            elif "W" in i[4]:
-                caps += 8
-            elif "R" in i[4]:
-                caps += 16
-            elif "T" in i[4]:
-                caps += 32
-            elif "D" in i[4]:
-                caps += 64
-            elif "H" in i[4]:
-                caps += 128
-            """
+                port_id_subtype = LLDP_PORT_SUBTYPE_LOCAL
+            caps = lldp_caps_to_bits(
+                i[4].split(","),
+                {
+                    "o": LLDP_CAP_OTHER,
+                    "p": LLDP_CAP_REPEATER,
+                    "b": LLDP_CAP_BRIDGE,
+                    "w": LLDP_CAP_WLAN_ACCESS_POINT,
+                    "r": LLDP_CAP_ROUTER,
+                    "t": LLDP_CAP_TELEPHONE,
+                    "c": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                    "s": LLDP_CAP_STATION_ONLY,
+                },
+            )
             neighbor = {
                 "remote_chassis_id": chassis_id,
                 "remote_chassis_id_subtype": chassis_id_subtype,

@@ -6,7 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
 # Python modules
 import re
 
@@ -26,18 +25,18 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_port1 = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+" r"(?P<admin_status>Up|Down)",
+        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<admin_status>Up|Down)",
         re.MULTILINE | re.IGNORECASE,
     )
     rx_descr = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?P<descr>.+)$", re.MULTILINE | re.IGNORECASE
     )
     rx_vlan = re.compile(
-        r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+" r"(?P<membership>\S+)\s*\n",
+        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+(?P<membership>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_vlan_ipif = re.compile(
-        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+" r"(?:Static|DHCP)\s+Valid"
+        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+(?:Static|DHCP)\s+Valid"
     )
     rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_enabled = re.compile(
@@ -58,19 +57,6 @@ class Script(BaseScript):
         r"(^\s+Members in this Aggregator: (?P<agg_list>.+)\n)?",
         re.MULTILINE,
     )
-
-    IFTYPES = {
-        "100BASE-TX": "physical",
-        "Giga-TX": "physical",
-        "Giga-FX": "physical",
-        "Giga-FX-SFP": "physical",
-        "Giga-Combo-TX": "physical",
-        "Giga-Combo-FX": "physical",
-        "10Giga-FX": "physical",
-        "EtherSVI": "SVI",
-        "PortAggregator": "aggregated",
-        "Null": "null",
-    }
 
     def get_gvrp(self):
         try:
@@ -99,7 +85,7 @@ class Script(BaseScript):
 
     def get_lldp(self):
         try:
-            v = self.cli("show lldp configuration")
+            v = self.cli("show lldp configuration", cached=True)
             if "LLDP state: Enabled" in v:
                 return self.rx_lldp.findall(v)
         except self.CLISyntaxError:
@@ -125,12 +111,9 @@ class Script(BaseScript):
             match = self.rx_port1.match(line.strip())
             if match:
                 adm_status += [match.groupdict()]
-        for match in self.rx_port.finditer(self.cli("show interfaces status")):
+        for match in self.rx_port.finditer(self.cli("show interfaces status", cached=True)):
             ifname = match.group("port")
-            if ifname.startswith("Po"):
-                iftype = "aggregated"
-            else:
-                iftype = "physical"
+            iftype = self.profile.get_interface_type(ifname)
             for i in adm_status:
                 if ifname == i["port"]:
                     st = bool(i["admin_status"] == "Up")
@@ -214,22 +197,23 @@ class Script(BaseScript):
     def get_new_sks(self):
         interfaces = []
         for match in self.rx_iface.finditer(self.cli("show interface")):
+            ifname = match.group("ifname")
             iface = {
-                "name": match.group("ifname"),
-                "type": self.IFTYPES[match.group("hardware")],
+                "name": ifname,
+                "type": self.profile.get_interface_type(ifname),
                 "admin_status": match.group("admin_status") == "up",
                 "oper_status": match.group("oper_status") == "up",
                 "snmp_ifindex": match.group("snmp_ifindex"),
             }
             sub = {
-                "name": match.group("ifname"),
+                "name": ifname,
                 "admin_status": match.group("admin_status") == "up",
                 "oper_status": match.group("oper_status") == "up",
                 "mtu": match.group("mtu"),
             }
             if iface["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
-                c = self.cli("show vlan interface %s" % iface["name"])
+                c = self.cli("show vlan interface %s" % ifname)
                 t = parse_table(c, allow_wrap=True, n_row_delim=",")
                 for i in t:
                     if i[1] == "Access":

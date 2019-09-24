@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
 from noc.lib.validators import is_ipv4, is_ipv6
-import re
 
 
 class Script(BaseScript):
@@ -28,7 +30,7 @@ class Script(BaseScript):
         r"(?P<success>\d+) packets received, \d+% packet loss"
     )
 
-    def execute(self, address, count=None, source_address=None, size=None):
+    def execute_cli(self, address, count=None, source_address=None, size=None):
         if is_ipv4(address):
             cmd = "ping ip %s" % address
         elif is_ipv6(address):

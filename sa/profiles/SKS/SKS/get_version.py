@@ -39,7 +39,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
         if match:
@@ -57,7 +57,7 @@ class Script(BaseScript):
             if platform == "SKS 10G":
                 platform = "SKS-16E1-IP-1U"
             elif platform.startswith("SKS"):
-                platform = "SW-24"
+                platform = "SKS-16E1-IP"
             r["platform"] = platform
             v = self.cli("show system id", cached=True)
             match = self.rx_serial.search(v)
@@ -94,7 +94,7 @@ class Script(BaseScript):
                 if platform == "SKS 10G":
                     platform = "SKS-16E1-IP-1U"
                 elif platform.startswith("SKS"):
-                    platform = "SW-24"
+                    platform = "SKS-16E1-IP"
                 r["platform"] = platform
                 v = self.cli("show system id", cached=True)
                 t = parse_table(v)
