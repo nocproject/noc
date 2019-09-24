@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         r = []
         c = self.cli("show arp")
         for match in self.rx_line1.finditer(c):

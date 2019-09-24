@@ -33,7 +33,7 @@ class Script(BaseScript):
             v = round(mw2dbm(v), 2)
         return v
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         cmd = "show fiber-ports optical-transceiver detailed"
         if interface is not None:
             cmd += " interface %s" % interface
