@@ -21,14 +21,14 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
                 {
                     text: __("Other Object"),
                     handler: Ext.pass(me.menuBtnFn, "object", me)
-                // },
-                // {
-                //     xtype: "checkbox",
-                //     boxLabel: __("Side-By-Side"),
-                //     boxLabelAlign: "before",
-                //     fieldCls: Ext.baseCSSPrefix + "menu-item",
-                //     // fieldCls: "",
-                //     formItemCls: Ext.baseCSSPrefix + "menu-item-default"
+                    // },
+                    // {
+                    //     xtype: "checkbox",
+                    //     boxLabel: __("Side-By-Side"),
+                    //     boxLabelAlign: "before",
+                    //     fieldCls: Ext.baseCSSPrefix + "menu-item",
+                    //     // fieldCls: "",
+                    //     formItemCls: Ext.baseCSSPrefix + "menu-item-default"
                 }
             ]
         });
@@ -53,12 +53,14 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
         me.diffCombo.setFieldLabel(__("Version"));
         me.swapRevButton.hide();
         me.diffCombo.hide();
-        me.prevDiffButton.hide();
-        me.nextDiffButton.hide();
+        // me.prevDiffButton.hide();
+        // me.nextDiffButton.hide();
         // me.sideBySideModeButton.hide();
         me.diffCombo.un("select", me.onSelectDiff, me);
         me.diffCombo.on("select", me.localListener(me.onSelectDiff), me);
         me.sideBySideModeButton.setHandler(me.localListener(me.onSideBySide), me);
+        me.prevDiffButton.setHandler(me.localListener(me.onPrevDiff, "button"), me);
+        me.nextDiffButton.setHandler(me.localListener(me.onNextDiff, "button"), me);
         me.resetButton.handler = function() {
             me.clearHideCombo(me.diffCombo);
             me.clearHideCombo(me.objectCombo);
@@ -98,16 +100,20 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
         combo.store.loadData([]);
         combo.hide();
     },
-    localListener: function(listener) {
+    localListener: function(listener, type) {
         var me = this, rev1, rev2, objectId;
         return function() {
             if(me.compareType === "version") {
                 listener.call(me);
             } else if(me.compareType === "object") {
-                rev1 = me.revCombo.getValue();
-                rev2 = me.diffCombo.getValue();
                 objectId = me.objectCombo.getValue();
-                me.requestDiff(rev1, rev2, objectId);
+                if(type === "button") {
+                    listener.call(me, objectId);
+                } else {
+                    rev1 = me.revCombo.getValue();
+                    rev2 = me.diffCombo.getValue();
+                    me.requestDiff(rev1, rev2, objectId);
+                }
             }
         }
     }

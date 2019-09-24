@@ -28,7 +28,7 @@ Ext.define('NOC.core.RepoPreview', {
         formulas: {
             canPrevChange: {
                 bind: {
-                    bindTo: "{currentSelection.selection}"
+                    bindTo: "{diffSelection.selection}"
                 },
                 get: function(t) {
                     return t && t.store.indexOf(t.data) < t.store.data.length - 1
@@ -36,7 +36,7 @@ Ext.define('NOC.core.RepoPreview', {
             },
             canNextChange: {
                 bind: {
-                    bindTo: "{currentSelection.selection}"
+                    bindTo: "{diffSelection.selection}"
                 },
                 get: function(t) {
                     return t && t.store.indexOf(t.data) > 0
@@ -491,11 +491,12 @@ Ext.define('NOC.core.RepoPreview', {
         me.requestRevision(records.get('id'));
     },
     //
-    requestCurrentDiff: function() {
+    requestCurrentDiff: function(objectId) {
         var me = this;
         me.requestDiff(
             me.diffCombo.getValue(),
-            me.revCombo.getValue()
+            me.revCombo.getValue(),
+            objectId
         );
     },
     //
@@ -527,31 +528,31 @@ Ext.define('NOC.core.RepoPreview', {
         combo.select([combo.store.getAt(index)]);
     },
     //
-    onPrevDiff: function() {
+    onPrevDiff: function(objectId) {
         var me = this,
-            rIndex = me.getRevIndex(me.revCombo),
+            // rIndex = me.getRevIndex(me.revCombo),
             dIndex = me.getRevIndex(me.diffCombo);
-        if(rIndex === dIndex - 1) {
-            me.setRevIndex(me.revCombo, rIndex + 1);
-            dIndex = rIndex + 2;
-        } else {
-            dIndex = rIndex + 1;
-        }
-        me.setRevIndex(me.diffCombo, dIndex);
-        me.requestCurrentDiff();
+        // if(rIndex === dIndex - 1) {
+        //     me.setRevIndex(me.revCombo, rIndex + 1);
+        //     dIndex = rIndex + 2;
+        // } else {
+        //     dIndex = rIndex + 1;
+        // }
+        me.setRevIndex(me.diffCombo, ++dIndex);
+        me.requestCurrentDiff(objectId);
     },
     //
-    onNextDiff: function() {
+    onNextDiff: function(objectId) {
         var me = this,
-            rIndex = me.getRevIndex(me.revCombo),
+            // rIndex = me.getRevIndex(me.revCombo),
             dIndex = me.getRevIndex(me.diffCombo);
-        if(rIndex === dIndex - 1) {
-            rIndex -= 1;
-            me.setRevIndex(me.revCombo, rIndex);
-        }
-        dIndex = rIndex + 1;
-        me.setRevIndex(me.diffCombo, dIndex);
-        me.requestCurrentDiff();
+        // if(rIndex === dIndex - 1) {
+        //     rIndex -= 1;
+        //     me.setRevIndex(me.revCombo, rIndex);
+        // }
+        // dIndex = rIndex + 1;
+        me.setRevIndex(me.diffCombo, --dIndex);
+        me.requestCurrentDiff(objectId);
     },
     //
     onSwapRev: function() {
