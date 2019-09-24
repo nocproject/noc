@@ -25,7 +25,7 @@ class Script(BaseScript):
         Check box has LLDP enabled
         """
         try:
-            cmd = self.cli("show lldp configuration")
+            cmd = self.cli("show lldp configuration", cached=True)
             return "LLDP state: Enabled" in cmd
         except self.CLISyntaxError:
             # On SKS-16E1-IP-I-4P Series Software, Version 2.2.0C Build 40897

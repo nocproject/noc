@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
 import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.lib.text import parse_table
@@ -20,7 +22,7 @@ class Script(BaseScript):
     rx_vlan = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
     rx_status = re.compile(r"VLAN\s+Status\s+Name\s+Ports", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         c = self.cli("show vlan")
         if bool(self.rx_status.search(c)):
