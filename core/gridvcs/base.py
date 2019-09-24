@@ -240,8 +240,8 @@ class GridVCS(object):
         :param rev2:
         :return:
         """
-        src = self.get(object, rev1)
-        dst = self.get(object, rev2)
+        src = self.get(object, rev1) or ""
+        dst = self.get(object, rev2) or ""
         return self._unified_diff(src, dst)
 
     def mdiff(self, obj1, rev1, obj2, rev2):
@@ -254,8 +254,8 @@ class GridVCS(object):
         :param rev2:
         :return:
         """
-        src = self.get(obj1, rev1)
-        dst = self.get(obj2, rev2)
+        src = self.get(obj1, rev1) or ""
+        dst = self.get(obj2, rev2) or ""
         return self._unified_diff(src, dst)
 
     def ensure_collection(self):

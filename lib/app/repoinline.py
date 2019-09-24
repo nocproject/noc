@@ -73,8 +73,11 @@ class RepoInline(object):
         self.parent_model = self.app.model
         self.check_access = getattr(self.app, "has_repo_%s_access" % self.field, None)
 
+    def clean_parent(self, v):
+        return int(v)
+
     def get_parent(self, user, parent):
-        o = self.app.get_object_or_404(self.parent_model, id=int(parent))
+        o = self.app.get_object_or_404(self.parent_model, id=self.clean_parent(parent))
         if self.check_access and not self.check_access(user, o):
             raise Http404("Not found")
         return o
@@ -97,5 +100,5 @@ class RepoInline(object):
         return c if c else "IS EQUAL"
 
     def api_get_mdiff(self, request, parent, rev1, obj2, rev2):
-        c = self.get_field(request.user, parent).mdiff(rev1, obj2, rev2)
+        c = self.get_field(request.user, parent).mdiff(rev1, self.clean_parent(obj2), rev2)
         return c if c else "IS EQUAL"
