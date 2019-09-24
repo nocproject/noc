@@ -35,6 +35,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobject.InteractionsPanel",
         "NOC.sa.managedobject.CapsPanel",
         "NOC.sa.managedobject.FactsPanel",
+        "NOC.sa.managedobject.RepoPreview",
         "NOC.main.pool.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.main.timepattern.LookupField",
@@ -228,7 +229,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         });
 
         me.ITEM_CONFIG = me.registerItem(
-            Ext.create("NOC.core.RepoPreview", {
+            Ext.create("NOC.sa.managedobject.RepoPreview", {
                 app: me,
                 previewName: "{0} config",
                 restUrl: "/sa/managedobject/{0}/repo/cfg/",
@@ -937,7 +938,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             ],
                             allowBlank: false,
                             uiStyle: "medium"
-                        },
+                        }
                     ]
                 },
                 {
@@ -1001,10 +1002,10 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     ],
                                     listeners: {
                                         scope: me,
-                                        change: function(combo, newValue, oldValue, eOpts) {
+                                        change: function(combo, newValue) {
                                             combo.nextSibling().setHidden(newValue !== "s");
                                         },
-                                        afterrender: function(combo, eOpts) {
+                                        afterrender: function(combo) {
                                             combo.nextSibling().setHidden(combo.value !== "s");
                                         }
                                     },
@@ -1046,10 +1047,10 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     ],
                                     listeners: {
                                         scope: me,
-                                        change: function(combo, newValue, oldValue, eOpts) {
+                                        change: function(combo, newValue) {
                                             combo.nextSibling().setHidden(newValue !== "s");
                                         },
-                                        afterrender: function(combo, eOpts) {
+                                        afterrender: function(combo) {
                                             combo.nextSibling().setHidden(combo.value !== "s");
                                         }
                                     },
@@ -1793,7 +1794,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         });
     },
     // Show ResourceGroup card
-    onShowResourceGroup: function(grid, rowIndex, colIndex) {
+    onShowResourceGroup: function(grid, rowIndex) {
         var me = this,
             r = me.store.getAt(rowIndex),
             id = r.get("group");
