@@ -17,6 +17,7 @@ class RepoInline(object):
         self.parent_model = None
         self.access = access
         self.check_access = None
+        self.logger = None
 
     def contribute_to_class(self, app, name):
         # Get last revision
@@ -55,6 +56,16 @@ class RepoInline(object):
             access=self.access,
             api=True,
         )
+        # Get mdiff
+        app.add_view(
+            "api_%s_mdiff" % name,
+            self.api_get_mdiff,
+            method=["GET"],
+            url="^(?P<parent>[^/]+)/repo/%s/(?P<rev1>[0-9a-f]{24})/(?P<obj2>[^/]+)/(?P<rev2>[0-9a-f]{24})/$"
+            % name,
+            access=self.access,
+            api=True,
+        )
 
     def set_app(self, app):
         self.app = app
@@ -83,4 +94,8 @@ class RepoInline(object):
 
     def api_get_diff(self, request, parent, rev1, rev2):
         c = self.get_field(request.user, parent).diff(rev1, rev2)
+        return c if c else "IS EQUAL"
+
+    def api_get_mdiff(self, request, parent, rev1, obj2, rev2):
+        c = self.get_field(request.user, parent).mdiff(rev1, obj2, rev2)
         return c if c else "IS EQUAL"

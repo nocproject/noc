@@ -118,3 +118,11 @@ class GridVCSObjectProxy(object):
         if isinstance(r2, six.string_types):
             r2 = g.find_revision(self.id, r2)
         return g.diff(self.id, r1, r2)
+
+    def mdiff(self, r1, obj2, r2):
+        g = self.get_gridvcs()
+        if isinstance(r1, six.string_types):
+            r1 = g.find_revision(self.id, r1)
+        if isinstance(r2, six.string_types):
+            r2 = g.find_revision(obj2, r2)
+        return g.mdiff(self.id, r1, obj2, r2)
