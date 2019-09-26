@@ -195,7 +195,7 @@ class CLI(object):
         cmd_next=None,
         cmd_stop=None,
         ignore_errors=False,
-        ignore_empty_cli_response=False,
+        allow_empty_response=True,
     ):
         if self.close_timeout:
             self.logger.debug("Removing close timeout")
@@ -205,7 +205,7 @@ class CLI(object):
         self.command = cmd
         self.error = None
         self.ignore_errors = ignore_errors
-        self.ignore_empty_cli_response = ignore_empty_cli_response
+        self.allow_empty_response = allow_empty_response
         if not self.ioloop:
             self.logger.debug("Creating IOLoop")
             self.ioloop = tornado.ioloop.IOLoop()
@@ -572,10 +572,10 @@ class CLI(object):
     @tornado.gen.coroutine
     def on_prompt(self, data, match):
         self.set_state("prompt")
-        if self.ignore_empty_cli_response and (
-            data.strip() == self.command.strip() or not data.strip()
-        ):
-            return None
+        if not self.allow_empty_response:
+            s_data = data.strip()
+            if not s_data or s_data == self.command.strip():
+                return None
         if not self.is_started:
             self.resolve_pattern_prompt(match)
         d = "".join(self.collected_data + [data])

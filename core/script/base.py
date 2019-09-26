@@ -775,7 +775,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         cached=False,
         file=None,
         ignore_errors=False,
-        ignore_empty_cli_response=False,
+        allow_empty_response=True,
         nowait=False,
         obj_parser=None,
         cmd_next=None,
@@ -791,8 +791,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         :param cached:
         :param file:
         :param ignore_errors:
-        :param ignore_empty_cli_response: Ignore pattern_prompt line when empty otput
-        :type ignore_empty_cli_response: bool
+        :param allow_empty_response: Allow empty output. If False - ignore prompt and wait output
+        :type allow_empty_response: bool
         :param nowait:
 
         Execute CLI command and return a result.
@@ -830,7 +830,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             cmd_next=cmd_next,
             cmd_stop=cmd_stop,
             ignore_errors=ignore_errors,
-            ignore_empty_cli_response=ignore_empty_cli_response,
+            allow_empty_response=allow_empty_response,
         )
         if isinstance(r, six.string_types):
             # Check for syntax errors
