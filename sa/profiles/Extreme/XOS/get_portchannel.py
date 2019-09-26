@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -49,6 +49,9 @@ class Script(BaseScript):
             for d in self.profile.parse_table_struct(
                 t, header_start="Config", table_start="=======", table_end="======="
             ):
+                # LAG list is empty
+                if not d["Config Master"]:
+                    break
                 r += [
                     {
                         "interface": "T%s" % d["Config Master"][0],
