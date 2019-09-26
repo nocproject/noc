@@ -775,6 +775,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         cached=False,
         file=None,
         ignore_errors=False,
+        allow_empty_response=True,
         nowait=False,
         obj_parser=None,
         cmd_next=None,
@@ -790,6 +791,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         :param cached:
         :param file:
         :param ignore_errors:
+        :param allow_empty_response: Allow empty output. If False - ignore prompt and wait output
+        :type allow_empty_response: bool
         :param nowait:
 
         Execute CLI command and return a result.
@@ -827,6 +830,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             cmd_next=cmd_next,
             cmd_stop=cmd_stop,
             ignore_errors=ignore_errors,
+            allow_empty_response=allow_empty_response,
         )
         if isinstance(r, six.string_types):
             # Check for syntax errors
