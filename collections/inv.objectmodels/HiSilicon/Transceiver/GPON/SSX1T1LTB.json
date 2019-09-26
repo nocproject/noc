@@ -1,0 +1,31 @@
+{
+    "name": "HiSilicon | Transceiver | GPON | SSX1T1LTB",
+    "$collection": "inv.objectmodels",
+    "uuid": "f48e7f44-bbe6-4020-9a7b-32dec352d4f3",
+    "vendor__code": "HISILICON",
+    "description": "GPON OLT CLASS B+, SSX1T1LTB, HSC , B+ PON SFP module",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1260_1360", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SSX1T1LTB"]
+        }
+    }
+}

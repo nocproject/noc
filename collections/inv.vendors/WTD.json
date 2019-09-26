@@ -1,0 +1,8 @@
+{
+    "name": "WTD",
+    "uuid": "d8450ffa-5a0b-4145-ad4b-f01e94e70d0d",
+    "full_name": "Wuhan Telecommunication Devices Co., Ltd.",
+    "code": ["WTD"],
+    "site": "http://www.wtd.com.cn",
+    "$collection": "inv.vendors"
+}
