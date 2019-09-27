@@ -65,7 +65,6 @@ class DirParser {
     }
 
     createNS(className) {
-        let arr = className.split('.');
         let obj = this.classMap;
         className.split('.').forEach(key => {
             if (key !=='*') {
@@ -92,7 +91,7 @@ class DirParser {
     }
 
     saveOverride(override, file) {
-        if (override.length == 0) {
+        if (override.length === 0) {
             return;
         }
         let obj = this.createNS(override);
@@ -162,16 +161,14 @@ class DirParser {
              break;*/
             case 'toolkit' :
                 return this.processPackage();
-                break;
             case 'code' :
                 return this.processPackage();
-                break;
         }
 
     }
 
     processPackage() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             return this.processSrc()
             .then(this.processOverride.bind(this))
             .then(resolve);
