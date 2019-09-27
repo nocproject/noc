@@ -28,7 +28,7 @@ class Script(BaseScript):
     rx_part = re.compile(
         r"^\s*(?P<name>\S+(?: \S+)+?)\s+"
         r"(?P<revision>rev \d+|\S{1,6})?\s+"
-        r"(?P<part_no>\d{3}-\d{6}|NON-JNPR|BUILTIN)\s+"
+        r"(?P<part_no>\d{3}-\d{6}|NON-JNPR|UNKNOWN|BUILTIN)\s+"
         r"(?P<serial>\S+)\s+"
         r"(?P<rest>.+)$",
         re.IGNORECASE,
@@ -62,7 +62,9 @@ class Script(BaseScript):
             "750-026468",  # EX2200-24T-4G
             "750-033063",  # EX4200-48T, 8 POE
             "750-033065",  # EX4200-24T, 8 POE
+            "750-033072",  # EX4200-48T, 8 POE
             "750-033073",  # EX4200-24T, 8 POE
+            "750-033075",  # EX4200-24F
             "750-034594",  # RE-SRX210HE
             "750-036562",  # 750-036562
             "750-045404",  # EX4550-32F
@@ -114,7 +116,7 @@ class Script(BaseScript):
             if t in self.IGNORED and part_no in self.IGNORED[t]:
                 continue
             # Detect vendor
-            if part_no == "NON-JNPR":
+            if part_no in ("NON-JNPR", "UNKNOWN"):
                 vendor = "NONAME"
             else:
                 vendor = "JUNIPER"
@@ -134,6 +136,7 @@ class Script(BaseScript):
                     if has_chassis:
                         continue
                     t = "CHASSIS"
+                    part_no = description.split()[0].upper()
                     chassis_sn.add(serial)
             elif t == "XCVR":
                 if vendor == "NONAME":
@@ -141,7 +144,7 @@ class Script(BaseScript):
                         part_no = self.UNKNOWN_XCVR
                     else:
                         part_no = self.get_trans_part_no(serial, description)
-            if serial == "BUILTIN" or serial in chassis_sn:
+            if serial == "BUILTIN" or serial in chassis_sn and t != "CHASSIS":
                 builtin = True
                 part_no = []
             if t == "CHASSIS" and number is None and self.chassis_no is not None:
@@ -185,6 +188,9 @@ class Script(BaseScript):
         elif len(n) == 3:
             # SFP+-10G-LR
             t, s, m = n
+        elif len(n) == 4 and description.startswith("SFP-1000BASE-BX10-"):
+            # SFP-1000BASE-BX10-U, SFP-1000BASE-BX10-D
+            return "NoName | Transceiver | 1G | SFP BX10%s" % n[-1]
         else:
             self.logger.error("Cannot detect transceiver type: '%s'", description)
             return self.UNKNOWN_XCVR
