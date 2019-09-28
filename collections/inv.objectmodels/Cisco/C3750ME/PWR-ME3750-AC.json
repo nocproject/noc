@@ -1,0 +1,31 @@
+{
+    "name": "Cisco | C3750ME | PWR-ME3750-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "945d8f32-972b-44de-8dc0-7e648800eb8f",
+    "vendor__code": "CISCO",
+    "description": "Cisco Catalyst 3750 Metro AC Power supply",
+    "cr_context": "PSU",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | C3750ME | PSU"
+        },
+        {
+            "description": "AC power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PWR-ME3750-AC", "PWR-ME3750-AC-R"]
+        }
+    }
+}
