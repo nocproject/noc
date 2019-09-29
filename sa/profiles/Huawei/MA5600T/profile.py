@@ -39,7 +39,9 @@ class Profile(BaseProfile):
         (r"\s*Are you sure to proceed\(y/n\)\[[yn]\]", "y\n"),
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
-    pattern_prompt = r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
+    pattern_prompt = (
+        r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?(\(diagnose\))?(#|%%)"
+    )
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
     pattern_operation_error = "Configuration console time out, please retry to log on"
     # Found on MA5616, V800R015C10
@@ -56,7 +58,10 @@ class Profile(BaseProfile):
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "#"}
 
-    matchers = {"is_gpon_uplink": {"platform": {"$in": ["MA5626G"]}}}
+    matchers = {
+        "is_gpon_uplink": {"platform": {"$in": ["MA5626G"]}},
+        "is_dslam": {"platform": {"$in": ["MA5600"]}},
+    }
 
     rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
     rx_ports = re.compile(
@@ -187,3 +192,67 @@ class Profile(BaseProfile):
             else:
                 r += [field]
         return r
+
+    # SmartAX MA5600T&MA5603T Multi-Service Access Module
+    # ifIndex MIB Encoding Rules
+    type = {
+        "other": 1,
+        "ATM": 4,
+        "ADSL": 6,
+        "Eth": 7,
+        "IMA": 39,
+        "SHDSL": 44,
+        "Vlan": 48,
+        "IMALink": 51,
+        "Trunk": 54,
+        "DOCSISup": 59,
+        "DOCSISdown": 60,
+        "DOCSISport": 61,
+        "BITS": 96,
+        "TDME1": 97,
+        "VDSL": 124,
+        "VDSL2": 124,
+        "xDSLchan": 123,
+        "GPON": 125,
+        "EPON": 126,
+        # Dummy rule, needed in MA5626
+        # IF-MIB::ifName.4261413120 = STRING: GPONNNI
+        "XG-PON": 127,
+    }
+
+    @classmethod
+    def snmp_index(cls, int_type, shelfID, slotID, intNum):
+        """
+        Huawei MA5600T&MA5603T port -> ifindex converter
+        """
+
+        type_id = cls.type[int_type]
+        index = type_id << 25
+        index += shelfID << 19
+        index += slotID << 13
+        if int_type in ["Vlan"]:
+            index += intNum
+        elif int_type in ["xDSLchan", "DOCSISup", "DOCSISdown"]:
+            index += intNum << 5
+        # https://gpon.kou.li/huawei/olt/snmp
+        elif int_type in ["GPON", "XG-PON"]:
+            index += intNum << 8
+        else:
+            index += intNum << 6
+        return index
+
+    class diagnose(object):
+        """Switch context manager to use with "with" statement"""
+
+        def __init__(self, script):
+            self.script = script
+
+        def __enter__(self):
+            """Enter diagnose context"""
+            self.script.logger.debug("Enter to diagnose mode")
+            self.script.cli("diagnose")
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            """Leave diagnose context"""
+            self.script.logger.debug("Quit diagnose mode")
+            self.script.cli("quit")
