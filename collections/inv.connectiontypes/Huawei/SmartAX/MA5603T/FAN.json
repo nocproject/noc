@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5603T | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "25c3843d-85f8-4862-bf05-62e50e9c270d",
+    "description": "MA5603T FAN module",
+    "c_group": [],
+    "genders": "mf"
+}

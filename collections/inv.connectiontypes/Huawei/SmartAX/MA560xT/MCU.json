@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | MCU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "107b2798-f825-440a-b26f-da14b18d3b12",
+    "description": "MA560xT Mini Control Board",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,52 @@
+{
+    "name": "Huawei | SmartAX",
+    "$collection": "inv.connectionrules",
+    "uuid": "3122f642-a3d0-4b54-b790-f49a0fbd30cd",
+    "description": "SmartAX connection rules",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "board",
+            "type": "BOARD"
+        },
+        {
+            "reset_scopes": ["board"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "PWR",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "board",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "BOARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "BOARD",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        }
+    ]
+}

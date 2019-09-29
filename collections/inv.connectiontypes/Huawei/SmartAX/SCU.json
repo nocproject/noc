@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | SCU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f65d82a3-d266-4cff-8c31-3ec1e0e21d6e",
+    "description": "MA5600 and MA5616 Super Control Board",
+    "c_group": [],
+    "genders": "mf"
+}
