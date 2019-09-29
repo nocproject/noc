@@ -8,10 +8,15 @@
 
 # Python modules
 import re
+from collections import namedtuple
+
+# Third party modules
+from dateutil.parser import parse
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.lib.text import parse_kv
 
 
 class Script(BaseScript):
@@ -29,32 +34,146 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
 
-    def execute(self):
+    rx_inv_item_split = re.compile(
+        r"\[(?P<role>Back[Pp]lane|FanFrame|Slot|Main_Board|Daughter_Board)(?:_(?P<num>\d+)|)\]\n"
+        r"\/\$\[(?:Archi(?:e|)ve(?:r|)s\s*Info|Board\s*Integration)\s*Version\]\n"
+        r"\/\$(?:Archi(?:e|)ve(?:r|)s\s*Info|Board\s*Integration)\s*Version=3\.0\n+",
+        re.MULTILINE,
+    )
+
+    rx_inv_port_split = re.compile(
+        r"\[[Pp]ort_(?P<name>\S+)\]\n"
+        r"\/\$\[(?:Archi(?:e|)ve(?:r|)s\s*Info|Board\s*Integration)\s*Version\]\n"
+        r"\/\$(?:Archi(?:e|)ve(?:r|)s\s*Info|Board\s*Integration)\s*Version=3\.0\n+",
+        re.MULTILINE,
+    )
+
+    rx_int_elabel = re.compile(
+        r"\[(?P<sec_name>"
+        r"(?P<role>Rack|Back[Pp]lane|FanFrame|Slot|Main_Board|Daughter_Board|[Pp]ort)(?:_(?P<num>\S+)|))\]\n"
+        r"\/\$\[(?:Archi(?:e|)ve(?:r|)s\s*Info|Board\s*Integration)\s*Version\]\n"
+        r"\/\$(?:Archi(?:e|)ve(?:r|)s\s*Info|Board\s*Integration)\s*Version=3\.0\n+"
+        r"(?P<properties>\[Board Properties\]\n(?:(?:\S+\=.*|[\w\s*,\(\)\*\/\-]+)\n)+)?",
+        re.MULTILINE,
+    )
+
+    rx_int_elabel_universal = re.compile(
+        r"\[(?P<sec_name>"
+        r"(?P<role>Rack|Back[Pp]lane|FanFrame|Slot|Main_Board|Daughter_Board|[Pp]ort)(?:_(?P<num>\S+)|))\]\n"
+        r"(?:\/\$\[.+\]\n"
+        r"+\/\$(?:\S+=.*)\n+)+"
+        r"(?P<properties>\[Board Properties\]\n(?:(?:\S+\=.*|[\w\s*,\(\)\*\/\-]+)\n)+)?",
+        re.MULTILINE,
+    )
+    inventory_item = namedtuple(
+        "InvItem", ["name", "num", "parent", "description", "type", "vendor", "barcode", "mnf_date"]
+    )
+
+    inv_property_map = {
+        "boardtype": "type",
+        "barcode": "barcode",
+        "description": "description",
+        "/edescription": "description",
+        "manufactured": "mnf_date",
+        "vendorname": "vendor",
+    }
+
+    def parse_elabel(self, out):
+        """
+        Function parse 'display elabel'
+        :param out: 'display elabel output'
+        :type out: str
+        :return:
+        :rtype: inventory_item
+        """
         r = []
-        v = self.scripts.get_version()
-        platform = v["platform"]
-        r += [{"type": "CHASSIS", "vendor": "HUAWEI", "part_no": platform}]
-        for i in range(self.profile.get_slots_n(self) + 1):
-            v = self.cli("display version 0/%d" % i)
-            match = self.rx_slot.search(v)
-            if match:
-                r += [
-                    {
-                        "type": "LINECARD",
-                        "number": i,
-                        "vendor": "HUAWEI",
-                        "part_no": match.group("part_no"),
-                        "revision": match.group("revision"),
+        parent = None
+        for match in self.rx_int_elabel_universal.finditer(out):
+            match = match.groupdict()
+            if not match:
+                continue
+            elif match["role"] in {"Slot", "Rack"}:
+                parent = match["sec_name"]
+            if not match["properties"]:
+                self.logger.debug(
+                    "[%s] Empty [Board Properties] section. Skipping...", match["sec_name"]
+                )
+                continue
+            p = parse_kv(self.inv_property_map, match["properties"], sep="=")
+            if "vendor" not in p and "type" not in p:
+                raise self.UnexpectedResultError("Partial parsed properties")
+            elif "vendor" not in p and p["type"].startswith("H"):
+                p["vendor"] = "Huawei"
+            elif not p["vendor"]:
+                self.logger.debug("[%s] Empty Vendor Properties. Skipping...", match["sec_name"])
+                continue
+            r += [
+                self.inventory_item(
+                    **{
+                        "name": match["sec_name"],
+                        "num": int(match["num"] or 0),
+                        "parent": parent,
+                        "description": p.get("description"),
+                        "type": p.get("type"),
+                        "vendor": p.get("vendor", "Unknown"),
+                        "barcode": p.get("barcode"),
+                        "mnf_date": p.get("mnf_date"),
                     }
-                ]
-            for match in self.rx_sub.finditer(v):
-                r += [
-                    {
-                        "type": "SUB",
-                        "number": int(match.group("number") or 0),
-                        "vendor": "HUAWEI",
-                        "part_no": match.group("part_no"),
-                        "revision": match.group("revision"),
-                    }
-                ]
+                )
+            ]
+        return r
+
+    def execute_cli(self, **kwargs):
+        r = []
+        if self.is_dslam:
+            # On MA5600 chassis and subboard serial is not supported
+            # frame = self.cli("display frame info 0")
+            # @todo subboard
+            r += [
+                {
+                    "type": "CHASSIS",
+                    "number": 0,
+                    "vendor": "Huawei",
+                    "part_no": "H511UPBA",
+                    "serial": None,
+                    "description": "MA5600's H511UPBA backplane, with double CELLBUS and GE bus",
+                }
+            ]
+        with self.profile.diagnose(self):
+            v = self.cli("display elabel 0", allow_empty_response=False)
+            if "This operation will take several seconds, please wait..." in v:
+                v = self.cli("", allow_empty_response=False)
+        if not v:
+            raise NotImplementedError("Not supported 'display elabel' command")
+        parse_result = self.parse_elabel(v)
+        for item in parse_result:
+            self.logger.debug("Inventory item: %s", item)
+            num = item.num
+            item_name = item.name.lower()
+            if num == 0 and item.parent:
+                num = item.parent.split("_")[-1]
+            if item_name.startswith("port"):
+                i_type = "XCVR"
+            elif item_name.startswith("fan"):
+                i_type = "FAN"
+            elif item_name.startswith("slot") and "PWC" in item.type:
+                i_type = "PWR"
+            elif item_name.startswith("main_board"):
+                i_type = "BOARD"
+            else:
+                i_type = "CHASSIS"
+            data = {
+                "type": i_type,
+                "number": num,
+                "vendor": item.vendor,
+                "part_no": item.type,
+                "serial": item.barcode,
+                "description": item.description,
+            }
+            try:
+                mfg_date = parse(item.mnf_date)
+                data["mfg_date"] = mfg_date.strftime("%Y-%m-%d")
+            except ValueError:
+                pass
+            r += [data]
         return r
