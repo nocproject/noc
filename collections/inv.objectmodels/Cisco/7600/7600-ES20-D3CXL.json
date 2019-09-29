@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 7600 | 7600-ES20-D3CXL",
+    "$collection": "inv.objectmodels",
+    "uuid": "15972f77-135c-47b7-bbb9-52df39ec661f",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7600-ES20-D3CXL Distributed Forwarding Card",
+    "cr_context": "DFC",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["7600-ES20-D3CXL"]
+        }
+    }
+}
