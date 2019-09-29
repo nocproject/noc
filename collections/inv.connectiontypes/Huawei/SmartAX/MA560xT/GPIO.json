@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | GPIO",
+    "$collection": "inv.connectiontypes",
+    "uuid": "4b4e4a05-177b-4eb1-859a-2dcb6e40bddc",
+    "description": "Universal interface board",
+    "c_group": [],
+    "genders": "mf"
+}
