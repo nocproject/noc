@@ -272,6 +272,7 @@ class CLI(object):
         ):
             error_text = self.result
             if self.profile.send_on_syntax_error and self.name != "beef_cli":
+                self.allow_empty_response = True
                 yield self.on_error_sequence(
                     self.profile.send_on_syntax_error, self.command, error_text
                 )
