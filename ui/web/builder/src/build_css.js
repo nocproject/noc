@@ -1,8 +1,3 @@
-// not found
-// ui/web/css/highlight.css
-// ui/web/css/diff.css
-// ui/web/css/pygments.css
-
 const fs = require('fs');
 const postcss = require('postcss');
 // processors
@@ -13,22 +8,23 @@ const autoprefixer = require('autoprefixer');
 const copyAssets = require('postcss-copy-assets');
 
 const bundleName = 'bundle_app';
-const prodName = `dist/${bundleName}.min.css`;
 
-const build = function() {
+const build = function(theme) {
+    const source = 'src/application.css';
+    const prodName = `dist/${bundleName}_${theme}.min.css`;
     const processors = [
         atImport,
-        autoprefixer,
+        // autoprefixer,
         mqpacker,
-        copyAssets({ base: 'dist'}),
+        copyAssets({base: 'dist'}),
         cssnano
     ];
-    fs.readFile('src/app.css', (err, css) => {
+    fs.readFile(source, (err, css) => {
         postcss(processors)
-        .process(css, { from: 'src/app.css', to: prodName })
+        .process(css.toString().replace(/{theme-name}/g, theme), {from: source, to: prodName})
         .then(result => {
             fs.writeFile(prodName, result.css, () => true);
-            if ( result.map ) {
+            if(result.map) {
                 fs.writeFile(`${prodName}.map`, result.map, () => true)
             }
         })

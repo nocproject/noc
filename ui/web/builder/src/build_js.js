@@ -3,6 +3,7 @@ const UglifyJS = require("uglify-js");
 const fs = require('fs');
 const apps = require('./applications');
 const vendors = require('./vendors');
+const boots = require('./boots');
 
 const cache = [];
 
@@ -36,7 +37,7 @@ function minify(bundleName, files) {
     fs.closeSync(bundle);
 }
 
-const application = function(bundleName) {
+const application = function(bundleName, theme) {
     apps.forEach(filename => {
         let requires = loader(filename);
         requires.order.forEach(file => {
@@ -49,8 +50,12 @@ const application = function(bundleName) {
     minify(bundleName, cache);
 };
 
-const vendor = function(bundleName) {
-    minify(bundleName, vendors);
+const vendor = function(bundleName, theme) {
+    minify(`${bundleName}_${theme}`, vendors(theme));
 };
 
-module.exports = {application, vendor};
+const boot = function(bundleName, theme) {
+    minify(bundleName, boots)
+};
+
+module.exports = {application, vendor, boot};

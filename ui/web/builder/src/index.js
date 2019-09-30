@@ -5,9 +5,11 @@ const load_packages = require('./load_packages');
 const tar = require('tar-fs');
 
 const destDir = 'dist';
+// const args = process.argv.slice(2);
+const themeName = 'gray';
 const assetDirs = [
     '.pkg_cache/ui/pkg/fontawesome/fonts',
-    '.pkg_cache/ui/pkg/extjs/classic/theme-gray/resources/images'
+    `.pkg_cache/ui/pkg/extjs/classic/theme-${themeName}/resources/images`
 ];
 let queue = load_packages();
 
@@ -20,9 +22,10 @@ Promise.all(queue)
             const name = dir.substr(dir.lastIndexOf('/') + 1);
             tar.pack(dir).pipe(tar.extract(`${destDir}/${name}`));
         });
-        build_css();
-        build_js.application('bundle_noc');
-        build_js.vendor('bundle_vendor');
+        build_css(themeName);
+        build_js.application('bundle_noc', themeName);
+        build_js.vendor('bundle_vendor', themeName);
+        build_js.boot('bundle_boot', themeName);
         fs.copyFileSync('src/desktop.html', `${destDir}/desktop.html`);
     },
     error => {

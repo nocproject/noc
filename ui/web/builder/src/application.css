@@ -1,4 +1,4 @@
-@import '../.pkg_cache/ui/pkg/extjs/classic/theme-gray/resources/theme-gray-all.css';
+@import '../.pkg_cache/ui/pkg/extjs/classic/theme-{theme-name}/resources/theme-{theme-name}-all.css';
 @import '../.pkg_cache/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css';
 @import '../../css/extjs.css';
 @import '../../css/ux.css';
