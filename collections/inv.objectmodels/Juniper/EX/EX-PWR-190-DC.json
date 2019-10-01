@@ -33,7 +33,11 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["740-023938"]
+            "part_no": ["740-023938"],
+            "order_part_no": ["EX-PWR-190-DC"],
+        },
+        "power": {
+            "power": 190.0
         }
     }
 }

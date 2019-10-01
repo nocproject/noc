@@ -28,6 +28,9 @@
             "description": ["JPSU-650W-AC-AFO"],
             "order_part_no": ["JPSU-650W-AC-AFO"],
             "part_no": ["740-041741"]
+        },
+        "power": {
+            "power": 650.0
         }
     }
 }

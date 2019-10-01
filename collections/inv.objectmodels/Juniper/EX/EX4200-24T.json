@@ -1,10 +1,10 @@
 {
-    "name": "Juniper | EX | EX4200-T",
+    "name": "Juniper | EX | EX4200-24T",
     "$collection": "inv.objectmodels",
     "uuid": "e390fc44-9d33-4378-8501-184302aca58d",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T",
-    "connection_rule__name": "Juniper | EX4200",
+    "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -22,7 +22,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -31,7 +31,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -40,7 +40,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -49,7 +49,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,7 +58,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -67,7 +67,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +76,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -85,7 +85,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -251,8 +251,8 @@
     "data": {
         "asset": {
             "description": ["EX4200-24T"],
-            "order_part_no": ["EX4200-24T"],
-            "part_no": ["EX4200-24T", "750-033065"]
+            "order_part_no": ["EX4200-24T", "EX4200-24T-DC"],
+            "part_no": ["EX4200-24T", "750-033065", "750-033073"]
         },
         "management": {
             "managed": true
@@ -261,9 +261,6 @@
             "depth": 417,
             "height": 43,
             "width": 442
-        },
-        "power": {
-            "power": 320.0
         },
         "rackmount": {
             "units": 1.0

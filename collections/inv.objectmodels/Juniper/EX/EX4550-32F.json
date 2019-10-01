@@ -4,7 +4,7 @@
     "uuid": "b6675fda-3136-4733-a9f9-ed7097d1e9dc",
     "vendor__code": "JUNIPER",
     "description": "32-port 1000BASE/10000BASE-F",
-    "connection_rule__name": "Juniper | EX4550",
+    "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -359,9 +359,6 @@
             "depth": 470,
             "height": 43,
             "width": 483
-        },
-        "power": {
-            "power": 650.0
         },
         "rackmount": {
             "units": 1.0

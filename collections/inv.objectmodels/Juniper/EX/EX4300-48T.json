@@ -4,7 +4,7 @@
     "uuid": "28a035a9-e1bf-4f43-8633-8143e119ccb2",
     "vendor__code": "JUNIPER",
     "description": "48-port 10/100/1000BASE-T with slot for uplink modules",
-    "connection_rule__name": "Juniper | EX4300",
+    "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -522,9 +522,6 @@
             "depth": 442,
             "height": 43,
             "width": 417
-        },
-        "power": {
-            "power": 350.0
         },
         "rackmount": {
             "units": 1.0

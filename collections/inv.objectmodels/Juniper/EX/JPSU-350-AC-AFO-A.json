@@ -28,6 +28,9 @@
             "description": ["JPSU-350-AC-AFO-A"],
             "order_part_no": ["JPSU-350-AC-AFO"],
             "part_no": ["740-046873"]
+        },
+        "power": {
+            "power": 350.0
         }
     }
 }
