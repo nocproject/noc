@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | C3750 | WS-C3750G-48TS-S",
+    "name": "Cisco | C3750 | WS-C3750G-48TS",
     "$collection": "inv.objectmodels",
     "uuid": "677fdbe2-02e5-4093-9eef-c9c0c41d17eb",
     "vendor__code": "CISCO",
-    "description": "48 Ethernet 10/100/1000 ports, 4 SFP-based Gigabit Ethernet ports",
+    "description": "Cisco Catalyst 3750 switch with 48 Ethernet 10/100/1000 ports, 4 SFP-based Gigabit Ethernet ports",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [
@@ -17,7 +17,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/1 port",
+            "description": "GigabitEthernet 0/1",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -26,7 +26,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/2 port",
+            "description": "GigabitEthernet 0/2",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -35,7 +35,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/3 port",
+            "description": "GigabitEthernet 0/3",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -44,7 +44,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/4 port",
+            "description": "GigabitEthernet 0/4",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -53,7 +53,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/5 port",
+            "description": "GigabitEthernet 0/5",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -62,7 +62,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/6 port",
+            "description": "GigabitEthernet 0/6",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -71,7 +71,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/7 port",
+            "description": "GigabitEthernet 0/7",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -80,7 +80,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/8 port",
+            "description": "GigabitEthernet 0/8",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -89,7 +89,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/9 port",
+            "description": "GigabitEthernet 0/9",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -98,7 +98,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/10 port",
+            "description": "GigabitEthernet 0/10",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -107,7 +107,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/11 port",
+            "description": "GigabitEthernet 0/11",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -116,7 +116,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/12 port",
+            "description": "GigabitEthernet 0/12",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -125,7 +125,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/13 port",
+            "description": "GigabitEthernet 0/13",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -134,7 +134,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/14 port",
+            "description": "GigabitEthernet 0/14",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -143,7 +143,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/15 port",
+            "description": "GigabitEthernet 0/15",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -152,7 +152,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/16 port",
+            "description": "GigabitEthernet 0/16",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -161,7 +161,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/17 port",
+            "description": "GigabitEthernet 0/17",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -170,7 +170,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/18 port",
+            "description": "GigabitEthernet 0/18",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -179,7 +179,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/19 port",
+            "description": "GigabitEthernet 0/19",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -188,7 +188,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/20 port",
+            "description": "GigabitEthernet 0/20",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -197,7 +197,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/21 port",
+            "description": "GigabitEthernet 0/21",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -206,7 +206,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/22 port",
+            "description": "GigabitEthernet 0/22",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -215,7 +215,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/23 port",
+            "description": "GigabitEthernet 0/23",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -224,7 +224,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/24 port",
+            "description": "GigabitEthernet 0/24",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -233,7 +233,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/25 port",
+            "description": "GigabitEthernet 0/25",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -242,7 +242,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/26 port",
+            "description": "GigabitEthernet 0/26",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -251,7 +251,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/27 port",
+            "description": "GigabitEthernet 0/27",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -260,7 +260,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/28 port",
+            "description": "GigabitEthernet 0/28",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -269,7 +269,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/29 port",
+            "description": "GigabitEthernet 0/29",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -278,7 +278,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/30 port",
+            "description": "GigabitEthernet 0/30",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -287,7 +287,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/31 port",
+            "description": "GigabitEthernet 0/31",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -296,7 +296,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/32 port",
+            "description": "GigabitEthernet 0/32",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -305,7 +305,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/33 port",
+            "description": "GigabitEthernet 0/33",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -314,7 +314,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/34 port",
+            "description": "GigabitEthernet 0/34",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -323,7 +323,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/35 port",
+            "description": "GigabitEthernet 0/35",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -332,7 +332,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/36 port",
+            "description": "GigabitEthernet 0/36",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -341,7 +341,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/37 port",
+            "description": "GigabitEthernet 0/37",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -350,7 +350,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/38 port",
+            "description": "GigabitEthernet 0/38",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -359,7 +359,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/39 port",
+            "description": "GigabitEthernet 0/39",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -368,7 +368,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/40 port",
+            "description": "GigabitEthernet 0/40",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -377,7 +377,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/41 port",
+            "description": "GigabitEthernet 0/41",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -386,7 +386,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/42 port",
+            "description": "GigabitEthernet 0/42",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -395,7 +395,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/43 port",
+            "description": "GigabitEthernet 0/43",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -404,7 +404,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/44 port",
+            "description": "GigabitEthernet 0/44",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -413,7 +413,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/45 port",
+            "description": "GigabitEthernet 0/45",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -422,7 +422,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/46 port",
+            "description": "GigabitEthernet 0/46",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -431,7 +431,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/47 port",
+            "description": "GigabitEthernet 0/47",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -440,7 +440,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FastEthernet 0/48 port",
+            "description": "GigabitEthernet 0/48",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -496,7 +496,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750G-48TS-S"]
+            "part_no": ["WS-C3750G-48TS-S", "WS-C3750G-48TS-E"]
         },
         "management": {
             "managed": true
