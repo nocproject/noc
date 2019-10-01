@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | EX | EX8200-PWR-DC3KR",
+    "$collection": "inv.objectmodels",
+    "uuid": "601927c9-9bb2-4df5-a3c0-05a6e5513985",
+    "vendor__code": "JUNIPER",
+    "description": "DC Power Supply with dual redundant inputs, 3000W at -48V",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 8200 PWR"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["740-025782"]
+        }
+    }
+}
