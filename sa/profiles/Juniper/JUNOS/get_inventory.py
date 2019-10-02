@@ -180,17 +180,20 @@ class Script(BaseScript):
         """
         n = description.split()[0].split("-")
         if len(n) == 2:
-            # SFP-LX
+            # SFP-LX, SFP-LH, SFP-EX, SFP-T
             t, m = n
             s = "1G"
             if m == "LX10":
                 m = "LX"
         elif len(n) == 3:
-            # SFP+-10G-LR
+            # SFP+-10G-LR, SFP+-10G-ER
             t, s, m = n
         elif len(n) == 4 and description.startswith("SFP-1000BASE-BX10-"):
             # SFP-1000BASE-BX10-U, SFP-1000BASE-BX10-D
             return "NoName | Transceiver | 1G | SFP BX10%s" % n[-1]
+        elif len(n) == 4 and description.startswith("SFP-1000BASE-BX40-"):
+            # SFP-1000BASE-BX40-U, SFP-1000BASE-BX40-D
+            return "NoName | Transceiver | 1G | SFP BX%s" % n[-1]
         else:
             self.logger.error("Cannot detect transceiver type: '%s'", description)
             return self.UNKNOWN_XCVR
