@@ -17,7 +17,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "SKS.SKS"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>[^#]\S+)(?:\(e1\))?\s*#"
+    pattern_prompt = r"^(?P<hostname>[^#\n]\S+)(?:\(e1\))?\s*#"
     pattern_syntax_error = (
         r"% Unrecognized command|% Wrong number of parameters|"
         r"% Unrecognized host or address|"
