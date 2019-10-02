@@ -496,7 +496,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750G-48TS-S", "WS-C3750G-48TS-E"]
+            "part_no": ["WS-C3750G-48TS", "WS-C3750G-48TS-S", "WS-C3750G-48TS-E"]
         },
         "management": {
             "managed": true

@@ -17,434 +17,434 @@
             "type__name": "Power | IEC 60320 C14"
         },
         {
-            "description": "Fa0/1 port",
+            "description": "FastEthernet 0/1 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa1",
+            "name": "Fa0/1",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/2 port",
+            "description": "FastEthernet 0/2 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa2",
+            "name": "Fa0/2",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/3 port",
+            "description": "FastEthernet 0/3 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa3",
+            "name": "Fa0/3",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/4 port",
+            "description": "FastEthernet 0/4 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa4",
+            "name": "Fa0/4",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/5 port",
+            "description": "FastEthernet 0/5 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa5",
+            "name": "Fa0/5",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/6 port",
+            "description": "FastEthernet 0/6 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa6",
+            "name": "Fa0/6",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/7 port",
+            "description": "FastEthernet 0/7 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa7",
+            "name": "Fa0/7",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/8 port",
+            "description": "FastEthernet 0/8 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa8",
+            "name": "Fa0/8",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/9 port",
+            "description": "FastEthernet 0/9 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa9",
+            "name": "Fa0/9",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/10 port",
+            "description": "FastEthernet 0/10 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa10",
+            "name": "Fa0/10",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/11 port",
+            "description": "FastEthernet 0/11 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa11",
+            "name": "Fa0/11",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/12 port",
+            "description": "FastEthernet 0/12 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa12",
+            "name": "Fa0/12",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/13 port",
+            "description": "FastEthernet 0/13 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa13",
+            "name": "Fa0/13",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/14 port",
+            "description": "FastEthernet 0/14 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa14",
+            "name": "Fa0/14",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/15 port",
+            "description": "FastEthernet 0/15 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa15",
+            "name": "Fa0/15",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/16 port",
+            "description": "FastEthernet 0/16 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa16",
+            "name": "Fa0/16",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/17 port",
+            "description": "FastEthernet 0/17 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa17",
+            "name": "Fa0/17",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/18 port",
+            "description": "FastEthernet 0/18 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa18",
+            "name": "Fa0/18",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/19 port",
+            "description": "FastEthernet 0/19 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa19",
+            "name": "Fa0/19",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/20 port",
+            "description": "FastEthernet 0/20 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa20",
+            "name": "Fa0/20",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/21 port",
+            "description": "FastEthernet 0/21 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa21",
+            "name": "Fa0/21",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/22 port",
+            "description": "FastEthernet 0/22 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa22",
+            "name": "Fa0/22",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/23 port",
+            "description": "FastEthernet 0/23 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa23",
+            "name": "Fa0/23",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/24 port",
+            "description": "FastEthernet 0/24 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa24",
+            "name": "Fa0/24",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/25 port",
+            "description": "FastEthernet 0/25 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa25",
+            "name": "Fa0/25",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/26 port",
+            "description": "FastEthernet 0/26 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa26",
+            "name": "Fa0/26",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/27 port",
+            "description": "FastEthernet 0/27 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa27",
+            "name": "Fa0/27",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/28 port",
+            "description": "FastEthernet 0/28 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa28",
+            "name": "Fa0/28",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/29 port",
+            "description": "FastEthernet 0/29 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa29",
+            "name": "Fa0/29",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/30 port",
+            "description": "FastEthernet 0/30 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa30",
+            "name": "Fa0/30",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/31 port",
+            "description": "FastEthernet 0/31 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa31",
+            "name": "Fa0/31",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/32 port",
+            "description": "FastEthernet 0/32 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa32",
+            "name": "Fa0/32",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/33 port",
+            "description": "FastEthernet 0/33 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa33",
+            "name": "Fa0/33",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/34 port",
+            "description": "FastEthernet 0/34 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa34",
+            "name": "Fa0/34",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/35 port",
+            "description": "FastEthernet 0/35 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa35",
+            "name": "Fa0/35",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/36 port",
+            "description": "FastEthernet 0/36 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa36",
+            "name": "Fa0/36",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/37 port",
+            "description": "FastEthernet 0/37 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa37",
+            "name": "Fa0/37",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/38 port",
+            "description": "FastEthernet 0/38 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa38",
+            "name": "Fa0/38",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/39 port",
+            "description": "FastEthernet 0/39 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa39",
+            "name": "Fa0/39",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/40 port",
+            "description": "FastEthernet 0/40 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa40",
+            "name": "Fa0/40",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/41 port",
+            "description": "FastEthernet 0/41 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa41",
+            "name": "Fa0/41",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/42 port",
+            "description": "FastEthernet 0/42 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa42",
+            "name": "Fa0/42",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/43 port",
+            "description": "FastEthernet 0/43 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa43",
+            "name": "Fa0/43",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/44 port",
+            "description": "FastEthernet 0/44 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa44",
+            "name": "Fa0/44",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/45 port",
+            "description": "FastEthernet 0/45 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa45",
+            "name": "Fa0/45",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/46 port",
+            "description": "FastEthernet 0/46 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa46",
+            "name": "Fa0/46",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/47 port",
+            "description": "FastEthernet 0/47 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa47",
+            "name": "Fa0/47",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fa0/48 port",
+            "description": "FastEthernet 0/48 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Fa48",
+            "name": "Fa0/48",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -482,10 +482,21 @@
             "intake": "l"
         },
         "asset": {
-            "part_no": ["WS-C3550-48-SMI", "WS-C3550-48"]
+            "part_no": ["WS-C3550-48-SMI", "WS-C3550-48", "WS-C3550-48-EMI"]
         },
         "management": {
             "managed": true
+        },
+        "power": {
+            "power": 110.0
+        },
+        "weight": {
+            "weight": 5.9
+        },
+        "dimensions": {
+            "depth": 413,
+            "height": 44,
+            "width": 445
         },
         "rackmount": {
             "units": 1.0

@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | C3500 | WS-C3550-24",
+    "name": "Cisco | C3500 | WS-C2950G-24-EI",
     "$collection": "inv.objectmodels",
-    "uuid": "c37323d6-e520-42d9-9194-5d5a3b36502b",
+    "uuid": "6ed3881d-65cc-465f-a86b-be9108815026",
     "vendor__code": "CISCO",
-    "description": "Cisco Catalyst 3550 24 10/100 baseT ports + 2 Gig uplinks fixed configuration Layer 2/3 Ethernet Switch with AC power",
+    "description": "Cisco Catalyst 2950 with 24 10/100 + 2 1000BASE-X. AC power",
     "connection_rule__name": "Generic | Switch GBIC Prefixed",
     "cr_context": "CHASSIS",
     "connections": [
@@ -261,12 +261,8 @@
         }
     ],
     "data": {
-        "airflow": {
-            "exhaust": "r",
-            "intake": "l"
-        },
         "asset": {
-            "part_no": ["WS-C3550-24-SMI", "WS-C3550-24", "WS-C3550-24-EMI"]
+            "part_no": ["WS-C2950G-24-EI", "WS-C2950G-24"]
         },
         "management": {
             "managed": true
@@ -275,13 +271,13 @@
             "units": 1.0
         },
         "power": {
-            "power": 65.0
+            "power": 30.0
         },
         "weight": {
-            "weight": 5.0
+            "weight": 3.0
         },
         "dimensions": {
-            "depth": 366,
+            "depth": 241,
             "height": 44,
             "width": 445
         }
