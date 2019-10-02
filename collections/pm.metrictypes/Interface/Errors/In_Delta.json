@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Errors | In | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "f94eaf80-c508-4853-b63a-d4bf7193d071",
+    "scope__name": "Interface",
+    "field_name": "errors_in_delta",
+    "field_type": "UInt32",
+    "description": "Errors when receive packet (delta)",
+    "measure": "packets"
+}
