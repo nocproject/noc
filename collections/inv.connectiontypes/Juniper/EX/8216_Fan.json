@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 8216 Fan",
+    "$collection": "inv.connectiontypes",
+    "uuid": "1f86938a-94f1-4d31-949b-d6c95c827f13",
+    "description": "Juniper EX8216 Fan Tray",
+    "c_group": [],
+    "genders": "mf"
+}

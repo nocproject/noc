@@ -12,21 +12,21 @@
             "direction": "i",
             "gender": "f",
             "name": "cb0",
-            "type__name": "Juniper | EX | 8200 SRE"
+            "type__name": "Juniper | EX | 8208 SRE"
         },
         {
             "description": "SRE Slot 1",
             "direction": "i",
             "gender": "f",
             "name": "cb1",
-            "type__name": "Juniper | EX | 8200 SRE"
+            "type__name": "Juniper | EX | 8208 SRE"
         },
         {
             "description": "SRE Slot 2",
             "direction": "i",
             "gender": "f",
             "name": "cb2",
-            "type__name": "Juniper | EX | 8200 SRE"
+            "type__name": "Juniper | EX | 8208 SRE"
         },
         {
             "description": "Linecard 0",

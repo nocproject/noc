@@ -1,0 +1,32 @@
+{
+    "name": "Juniper | MX | PWR-MX104-AC-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "edfac497-27a8-4551-abf6-e72382f8be17",
+    "vendor__code": "JUNIPER",
+    "description": "MX104 AC Power Supply",
+    "cr_context": "PEM",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX104 PEM"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["PWR-MX104-AC-S"],
+            "part_no": ["740-045933"]
+        }
+    }
+}

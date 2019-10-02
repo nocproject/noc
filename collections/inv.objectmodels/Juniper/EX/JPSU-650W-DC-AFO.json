@@ -1,0 +1,44 @@
+{
+    "name": "Juniper | EX | JPSU-650W-DC-AFO",
+    "$collection": "inv.objectmodels",
+    "uuid": "adc5853f-f169-452d-89a9-6b361d3fd74b",
+    "vendor__code": "JUNIPER",
+    "description": "DC Power Supply, 650W at 220V",
+    "cr_context": "PEM",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 4550 PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["JPSU-650W-DC-AFO"],
+            "order_part_no": ["JPSU-650W-DC-AFO"],
+            "part_no": ["740-043886"]
+        },
+        "power": {
+            "power": 650.0
+        }
+    }
+}
