@@ -1,14 +1,14 @@
 {
-    "name": "Cisco | 7200 | PWR-7201-DC",
+    "name": "Cisco | 7200 | PWR-7201-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "00e43bca-1294-4034-be19-502c23aae5a4",
+    "uuid": "d9eae30f-0fe5-45da-abe5-f2d0cae01b47",
     "vendor__code": "CISCO",
-    "description": "Cisco 7201 DC Power Supply",
+    "description": "Cisco 7201 AC Power Supply",
     "cr_context": "PSU",
     "tags": ["psu"],
     "connections": [
         {
-            "description": "DC power inlet",
+            "description": "AC power inlet",
             "direction": "s",
             "gender": "f",
             "name": "power",
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["PWR-7201-DC", "PWR-7201-DC="]
+            "part_no": ["PWR-7201-AC", "PWR-7201-AC="]
         }
     }
 }

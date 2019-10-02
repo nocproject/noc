@@ -1,21 +1,12 @@
 {
-    "name": "Cisco | C3500 | WS-C3550-24",
+    "name": "Cisco | C3500 | WS-C2950G-24-EI-DC",
     "$collection": "inv.objectmodels",
-    "uuid": "c37323d6-e520-42d9-9194-5d5a3b36502b",
+    "uuid": "0d26d232-7d57-4eab-a1c1-633e64b03a3c",
     "vendor__code": "CISCO",
-    "description": "Cisco Catalyst 3550 24 10/100 baseT ports + 2 Gig uplinks fixed configuration Layer 2/3 Ethernet Switch with AC power",
+    "description": "Cisco Catalyst 2950 with 24 10/100 + 2 1000BASE-X. DC power",
     "connection_rule__name": "Generic | Switch GBIC Prefixed",
     "cr_context": "CHASSIS",
     "connections": [
-        {
-            "description": "Power inlet",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "Power",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
-        },
         {
             "description": "FastEthernet 0/1 port",
             "direction": "s",
@@ -251,6 +242,38 @@
             "type__name": "Transceiver | GBIC"
         },
         {
+            "description": "DC A input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "DC A input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "DC B input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "DC B input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
@@ -261,12 +284,8 @@
         }
     ],
     "data": {
-        "airflow": {
-            "exhaust": "r",
-            "intake": "l"
-        },
         "asset": {
-            "part_no": ["WS-C3550-24-SMI", "WS-C3550-24", "WS-C3550-24-EMI"]
+            "part_no": ["WS-C2950G-24-EI-DC"]
         },
         "management": {
             "managed": true
@@ -275,13 +294,13 @@
             "units": 1.0
         },
         "power": {
-            "power": 65.0
+            "power": 30.0
         },
         "weight": {
-            "weight": 5.0
+            "weight": 3.0
         },
         "dimensions": {
-            "depth": 366,
+            "depth": 241,
             "height": 44,
             "width": 445
         }

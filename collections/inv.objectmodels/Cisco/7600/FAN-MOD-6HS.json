@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | 7600 | FAN-MOD-6SHS",
+    "name": "Cisco | 7600 | FAN-MOD-6HS",
     "$collection": "inv.objectmodels",
-    "uuid": "f9a56c2a-e431-4031-9b10-c352a06f37b9",
+    "uuid": "e47b5289-174f-45d6-a122-cc5ea17af869",
     "vendor__code": "CISCO",
-    "description": "High Speed Fan Module for Cisco 7606-S",
+    "description": "High Speed Fan Module for Cisco 7606",
     "cr_context": "FAN",
     "tags": ["fan"],
     "connections": [
@@ -12,12 +12,12 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Cisco | 7600 | 7606-S Fan"
+            "type__name": "Cisco | 7600 | 7606 Fan"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["FAN-MOD-6SHS", "FAN-MOD-6SHS="]
+            "part_no": ["FAN-MOD-6HS", "FAN-MOD-6HS="]
         }
     }
 }
