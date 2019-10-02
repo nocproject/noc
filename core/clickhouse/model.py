@@ -2,37 +2,34 @@
 # ----------------------------------------------------------------------
 # Clickhouse models
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import, print_function
-import hashlib
-from collections import OrderedDict
+import operator
 
 # Third-party modules
 import six
 
 # NOC modules
-from .fields import BaseField, NestedField
-from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.backport.time import perf_counter
+from .fields import BaseField
+from .connect import connection
 
 __all__ = ["Model", "NestedModel"]
 
 
 class ModelBase(type):
     def __new__(mcs, name, bases, attrs):
+        # Initialize class
         cls = type.__new__(mcs, name, bases, attrs)
-        cls._fields = {}
-        cls._display_fields = OrderedDict()
-        cls._model_field = {}
-        cls._tsv_encoders = {}
+        # Append _meta
         cls._meta = ModelMeta(
             engine=getattr(cls.Meta, "engine", None),
             db_table=getattr(cls.Meta, "db_table", None),
@@ -41,16 +38,12 @@ class ModelBase(type):
             tags=getattr(cls.Meta, "tags", None),
             managed=getattr(cls.Meta, "managed", True),
         )
+        # Call field.contribute_to_class() for all fields
         for k in attrs:
             if isinstance(attrs[k], BaseField):
-                attrs[k].contribute_to_class(cls, k)
-                cls._model_field[k] = attrs[k]
-                cls._model_field[k].name = k
-        cls._fields_order = sorted(cls._fields, key=lambda x: cls._fields[x].field_number)
-        for f in sorted(cls._model_field, key=lambda x: cls._model_field[x].field_number):
-            cls._display_fields[f] = cls._model_field[f]
-            cls._display_fields[f].name = f
-        cls._tsv_order = [cls._tsv_encoders[f] for f in cls._fields_order]
+                cls._meta.register_field(k, attrs[k])
+        # Fill _meta.ordered_fields
+        cls._meta.order_fields()
         return cls
 
 
@@ -64,6 +57,24 @@ class ModelMeta(object):
         self.sample = sample
         self.tags = tags
         self.managed = managed
+        self.fields = {}  # name -> Field
+        self.ordered_fields = []  # fields in order
+
+    def register_field(self, name, field):
+        self.fields[name] = field
+        field.set_name(name)
+
+    def get_field(self, name):
+        return self.fields[name]
+
+    def order_fields(self):
+        """
+        Fill `ordered_fields`
+        :return:
+        """
+        self.ordered_fields = list(
+            sorted(six.itervalues(self.fields), key=operator.attrgetter("field_number"))
+        )
 
 
 class Model(six.with_metaclass(ModelBase)):
@@ -86,8 +97,7 @@ class Model(six.with_metaclass(ModelBase)):
     def _get_raw_db_table(cls):
         if config.clickhouse.cluster:
             return "raw_%s" % cls._meta.db_table
-        else:
-            return cls._meta.db_table
+        return cls._meta.db_table
 
     @classmethod
     def wrap_table(cls, table_name):
@@ -97,12 +107,48 @@ class Model(six.with_metaclass(ModelBase)):
 
         return WrapClass
 
+    @staticmethod
+    def quote_name(name):
+        """
+        Clickhouse-safe field names
+
+        :param name:
+        :return:
+        """
+        if "." in name:
+            return "`%s`" % name
+        return name
+
+    @classmethod
+    def iter_create_sql(cls):
+        """
+        Yields (field name, db  type) for all model's fields
+        :return:
+        """
+        for field in cls._meta.ordered_fields:
+            for fn, db_type in field.iter_create_sql():
+                yield fn, db_type
+
+    @classmethod
+    def get_create_fields_sql(cls):
+        """
+        Fields creation statements
+
+        :return: SQL code with field creation statements
+        """
+        return ",\n".join(
+            "%s %s" % (cls.quote_name(name), db_type) for name, db_type in cls.iter_create_sql()
+        )
+
     @classmethod
     def get_create_sql(cls):
-        r = ["CREATE TABLE IF NOT EXISTS %s (" % cls._get_raw_db_table()]
-        r += [",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)]
-        r += [") ENGINE = %s;" % cls._meta.engine.get_create_sql()]
-        return "\n".join(r)
+        return "\n".join(
+            [
+                "CREATE TABLE IF NOT EXISTS %s (" % cls._get_raw_db_table(),
+                cls.get_create_fields_sql(),
+                ") ENGINE = %s;" % cls._meta.engine.get_create_sql(),
+            ]
+        )
 
     @classmethod
     def get_create_distributed_sql(cls):
@@ -124,32 +170,73 @@ class Model(six.with_metaclass(ModelBase)):
         )
 
     @classmethod
-    def to_tsv(cls, **kwargs):
-        return "\t".join(f(kwargs) for f in cls._tsv_order) + "\n"
+    def to_json(cls, **kwargs):
+        """
+        Convert dict of kwargs to JSON-serializable dict
 
-    @classmethod
-    def to_python(cls, row, **kwargs):
+        :param kwargs:
+        :return:
+        """
         r = {}
-        for num, f in enumerate(cls._display_fields):
-            # print(num, f)
-            r[f] = cls._model_field[f].to_python(row[num])
+        for f in kwargs:
+            cls._meta.fields[f].apply_json(r, kwargs[f])
         return r
 
     @classmethod
-    def get_fingerprint(cls):
-        field_list = []
-        for f in cls._fields_order:
-            if isinstance(cls._fields[f], NestedField):
-                field_list += ["%s.%s" % (f, nf) for nf in cls._fields[f].field_type._fields_order]
-            else:
-                field_list += [f]
-        return "%s|%s" % (cls._get_db_table(), "|".join(field_list))
+    def to_python(cls, row, **kwargs):
+        return {
+            field.name: field.to_python(row[num])
+            for num, field in enumerate(cls._meta.ordered_fields)
+        }
 
     @classmethod
-    def get_short_fingerprint(cls):
-        seed = ".".join(cls._fields_order)
-        h = hashlib.sha256(seed).hexdigest()[:8]
-        return "%s.%s" % (cls._get_db_table(), h)
+    def ensure_columns(cls, connect, table_name):
+        """
+        Create necessary table columns
+
+        :param connect: ClickHouse client
+        :param table_name: Database table name
+        :return: True, if any column has been altered
+        """
+        c = False  # Changed indicator
+        # Get existing columns
+        existing = {}
+        for name, type in connect.execute(
+            """
+            SELECT name, type
+            FROM system.columns
+            WHERE
+              database=%s
+              AND table=%s
+            """,
+            [config.clickhouse.db, table_name],
+        ):
+            existing[name] = type
+        # Check
+        after = None
+        for field_name, db_type in cls.iter_create_sql():
+            if field_name in existing:
+                # Check types
+                name, nested_name = BaseField.nested_path(field_name)
+                c_type = cls._meta.fields[name].get_db_type(nested_name)
+                if existing[field_name] != c_type:
+                    print(
+                        "Warning! Type mismatch for column %s: %s <> %s"
+                        % (field_name, existing[field_name], c_type)
+                    )
+                    print(
+                        "Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s"
+                        % (table_name, field_name, c_type)
+                    )
+
+            else:
+                connect.execute(
+                    post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s"
+                    % (table_name, cls.quote_name(field_name), db_type, cls.quote_name(after))
+                )
+                c = True
+            after = field_name
+        return c
 
     @classmethod
     def ensure_table(cls, connect=None):
@@ -158,49 +245,9 @@ class Model(six.with_metaclass(ModelBase)):
         :param connect:
         :return: True, if table has been altered, False otherwise
         """
-
-        def ensure_columns(table_name):
-            c = False
-            # Alter when necessary
-            existing = {}
-            for name, type in ch.execute(
-                """
-                SELECT name, type
-                FROM system.columns
-                WHERE
-                  database=%s
-                  AND table=%s
-                """,
-                [config.clickhouse.db, table_name],
-            ):
-                existing[name] = type
-            after = None
-            for f in cls._fields_order:
-                if f not in existing:
-                    ch.execute(
-                        post="ALTER TABLE %s ADD COLUMN %s AFTER %s"
-                        % (table_name, cls._fields[f].get_create_sql(), after)
-                    )
-                    c = True
-                if "." in f:
-                    # For Nested field
-                    c_type = "Array(%s)" % cls._fields[f].get_db_type()
-                else:
-                    c_type = cls._fields[f].get_db_type()
-                if f in existing and existing[f] != c_type:
-                    print(
-                        "Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], c_type)
-                    )
-                    print(
-                        "Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s"
-                        % (table_name, f, c_type)
-                    )
-                after = f
-            return c
-
-        changed = False
         if not cls._meta.managed:
             return False
+        changed = False
         ch = connect or connection()
         if not ch.has_table(cls._get_raw_db_table()):
             # Create new table
@@ -210,14 +257,14 @@ class Model(six.with_metaclass(ModelBase)):
                 ch.execute(post=cls.get_create_sql())
             changed = True
         else:
-            changed |= ensure_columns(cls._get_raw_db_table())
+            changed |= cls.ensure_columns(ch, cls._get_raw_db_table())
         # Check for distributed table
         if config.clickhouse.cluster:
             if not ch.has_table(cls._meta.db_table):
                 ch.execute(post=cls.get_create_distributed_sql())
                 changed = True
             else:
-                changed |= ensure_columns(cls._meta.db_table)
+                changed |= cls.ensure_columns(ch, cls._meta.db_table)
         return changed
 
     @classmethod
@@ -346,12 +393,17 @@ class Model(six.with_metaclass(ModelBase)):
             dt = perf_counter() - t0
         return {"fields": aliases, "result": r, "duration": dt, "sql": sql}
 
+    @classmethod
+    def get_pk_name(cls):
+        """
+        Get primary key's name
+
+        :return: Field name
+        """
+        return cls._meta.ordered_fields[0].name
+
 
 class NestedModel(Model):
     @classmethod
     def get_create_sql(cls):
-        return ",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)
-
-    @classmethod
-    def get_fingerprint(cls):
-        return ["%s.%s" % (cls._fields[f].name, f) for f in cls._fields_order]
+        return cls.get_create_fields_sql()

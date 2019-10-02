@@ -10,6 +10,7 @@ import tempfile
 import hashlib
 import tarfile
 import gzip
+import shutil
 
 # Third-party modules
 import six
@@ -220,3 +221,15 @@ def iter_open(path):
         f = open(path, "r")
         yield f
         f.close()
+
+
+def make_persistent(path, tmp_suffix=".tmp"):
+    """
+    Make file persistent removing `tmp_suffix` suffix
+
+    :param path: File path
+    :return: True if file has been moved, false otherwise
+    """
+    if not path.endswith(tmp_suffix):
+        return False
+    shutil.move(path, path[: -len(tmp_suffix)])

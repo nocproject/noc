@@ -14,6 +14,9 @@ import gzip
 import time
 from pymongo.errors import OperationFailure
 
+# Third-party modules
+import ujson
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import get_db, connect
@@ -26,7 +29,6 @@ from noc.core.clickhouse.shard import Sharder
 
 
 class Command(BaseCommand):
-    DATA_PREFIX = config.path.bi_data_prefix
     EXTRACTORS = [RebootsExtractor, AlarmsExtractor, ManagedObjectsExtractor]
     # Extract by 1-day chunks
     EXTRACT_WINDOW = config.bi.extract_window
@@ -35,7 +37,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # Args
-        parser.add_argument("--data-prefix", default=self.DATA_PREFIX, help="Show only summary")
+        parser.add_argument(
+            "--data-prefix", default=config.path.bi_data_prefix, help="Show only summary"
+        )
         # extract command
         extract = subparsers.add_parser("extract")
         extract.add_argument(
@@ -51,7 +55,7 @@ class Command(BaseCommand):
         subparsers.add_parser("load")
 
     def handle(self, cmd, data_prefix, *args, **options):
-        self.DATA_PREFIX = data_prefix
+        self.data_prefix = data_prefix
         connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
@@ -87,10 +91,10 @@ class Command(BaseCommand):
                 end = min(start + window, stop)
                 if hasattr(ecls, "use_archive"):
                     e = ecls(
-                        start=start, stop=end, prefix=self.DATA_PREFIX, use_archive=use_archive
+                        start=start, stop=end, prefix=self.data_prefix, use_archive=use_archive
                     )
                 else:
-                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
+                    e = ecls(start=start, stop=end, prefix=self.data_prefix)
                 t0 = time.time()
                 try:
                     nr = e.extract()
@@ -151,7 +155,7 @@ class Command(BaseCommand):
             if not stop:
                 continue
             force = options.get("force")
-            e = ecls(start=stop, stop=stop, prefix=self.DATA_PREFIX)
+            e = ecls(start=stop, stop=stop, prefix=self.data_prefix)
             self.print(
                 "[%s] Cleaned before %s ... \n"
                 % (e.name, stop - datetime.timedelta(seconds=ecls.clean_delay)),
@@ -169,22 +173,18 @@ class Command(BaseCommand):
             e.clean(force=force)
 
     def handle_load(self):
-        for fn in sorted(os.listdir(self.DATA_PREFIX)):
-            if not fn.endswith(".tsv.gz"):
+        for fn in sorted(os.listdir(self.data_prefix)):
+            if not fn.endswith(".jsonl.gz"):
                 continue
-            path = os.path.join(self.DATA_PREFIX, fn)
-            meta_path = path[:-7] + ".meta"
-            # Read fields
-            with open(meta_path) as f:
-                fields = f.read()
+            path = os.path.join(self.data_prefix, fn)
             # Read data
             with gzip.open(path, "rb") as f:
-                data = f.read().splitlines()
-            sharder = Sharder(fields)
+                data = [ujson.loads(line) for line in f.read().splitlines() if line]
+            table = fn.split("-", 1)[0]
+            sharder = Sharder(table)
             sharder.feed(data)
             sharder.pub()
             os.unlink(path)
-            os.unlink(meta_path)
 
 
 if __name__ == "__main__":

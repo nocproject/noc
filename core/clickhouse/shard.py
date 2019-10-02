@@ -22,10 +22,8 @@ from noc.core.service.pub import pub
 class BaseSharder(object):
     TOPIC = "chwriter"
 
-    def __init__(self, fields, chunk=None):
-        parts = fields.split(".")
-        self.table = parts[0]
-        self.fields = fields[1:]
+    def __init__(self, table=None, chunk=None):
+        self.table = table
         self.records = defaultdict(list)
         self.chunk = chunk or config.nsqd.ch_chunk_size
 
@@ -41,10 +39,7 @@ class BaseSharder(object):
             data = self.records[topic]
             while data:
                 chunk, data = data[: self.chunk], data[self.chunk :]
-                yield topic, "%s\n%s" % (
-                    self.table,
-                    "\n".join(ujson.dumps(dict(zip(self.fields, s.split("\t")))) for s in chunk),
-                )
+                yield topic, "%s\n%s" % (self.table, "\n".join(ujson.dumps(s) for s in chunk))
         self.records = defaultdict(list)
 
     def pub(self):
@@ -55,9 +50,8 @@ class BaseSharder(object):
 class ReplicatedSharder(BaseSharder):
     TOPIC = "chwriter-1-%s"
 
-    def __init__(self, fields, chunk=None):
-        super(ReplicatedSharder, self).__init__(fields, chunk=chunk)
-        self.fields = "raw_%s" % fields
+    def __init__(self, table=None, chunk=None):
+        super(ReplicatedSharder, self).__init__(table="raw_%s" % table, chunk=chunk)
         self.n_replicas = config.ch_cluster_topology[0].replicas
 
     def feed(self, records):
@@ -130,11 +124,8 @@ class ShardingSharder(BaseSharder):
 
     SHARDING_KEYS = {"span": "ctx"}
 
-    def __init__(self, fields, chunk=None):
-        super(ShardingSharder, self).__init__(fields, chunk=chunk)
-        self.f_parts = fields.split(".")
-        self.table = self.f_parts[0]
-        self.fields = "raw_%s" % fields
+    def __init__(self, table=None, chunk=None):
+        super(ShardingSharder, self).__init__(table="raw_%s" % table, chunk=chunk)
         self.get_shards = ShardingFunction()
 
     def feed(self, records):
