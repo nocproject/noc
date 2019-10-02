@@ -1,8 +1,8 @@
 {
-    "name": "Juniper | EX8200",
+    "name": "Juniper | MX104",
     "$collection": "inv.connectionrules",
-    "uuid": "b3c79076-96d9-486a-86d8-57b338c68dbe",
-    "description": "Juniper EX8200 Connection rules",
+    "uuid": "3ff0f46d-6ffb-46c2-9b19-a12b99484435",
+    "description": "Juniper MX104 connection rules",
     "context": [
         {
             "reset_scopes": ["fpc", "pic"],
@@ -18,6 +18,11 @@
             "reset_scopes": [],
             "scope": "pic",
             "type": "PIC"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "mic",
+            "type": "MIC"
         }
     ],
     "rules": [
@@ -31,17 +36,9 @@
         },
         {
             "match_connection": "in",
-            "match_type": "PSU",
+            "match_type": "PEM",
             "scope": "chassis",
-            "target_connection": "psu{N}",
-            "target_number": "",
-            "target_type": "CHASSIS"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "SCB",
-            "scope": "chassis",
-            "target_connection": "cb{N}",
+            "target_connection": "pem{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         },
@@ -49,41 +46,33 @@
             "match_connection": "in",
             "match_type": "RE",
             "scope": "chassis",
-            "target_connection": "re{N}",
-            "target_number": "",
+            "target_connection": "re",
+            "target_number": "{N}",
             "target_type": "CHASSIS"
         },
         {
             "match_connection": "in",
-            "match_type": "SIB",
+            "match_type": "MIC",
             "scope": "chassis",
-            "target_connection": "sib{N}",
+            "target_connection": "mic{N}",
             "target_number": "",
             "target_type": "CHASSIS"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "FPC",
-            "scope": "chassis",
-            "target_connection": "fpc{N}",
-            "target_number": "",
-            "target_type": "CHASSIS"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "PIC",
-            "scope": "fpc",
-            "target_connection": "pic{N}",
-            "target_number": "",
-            "target_type": "FPC"
         },
         {
             "match_connection": "in",
             "match_type": "XCVR",
-            "scope": "fpc",
-            "target_connection": "{pic}/{N}",
+            "scope": "mic",
+            "target_connection": "{Npic}/{N}",
             "target_number": "",
-            "target_type": "FPC"
+            "target_type": "MIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "2/0/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
         }
     ]
 }

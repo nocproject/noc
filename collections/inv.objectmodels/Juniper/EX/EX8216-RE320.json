@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | EX | EX8208-SRE320",
+    "name": "Juniper | EX | EX8216-RE320",
     "$collection": "inv.objectmodels",
     "uuid": "7fc9f054-ce83-43e4-8107-9b1457c47ff4",
     "vendor__code": "JUNIPER",
-    "description": "Switch and Routing Engine for EX8208",
+    "description": "Routing Engine for EX8216",
     "connections": [
         {
             "description": "Managemen Ethernet",
@@ -42,12 +42,12 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Juniper | EX | 8208 SRE"
+            "type__name": "Juniper | EX | 8216 RE"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["710-020635"]
+            "part_no": ["710-020771"]
         }
     }
 }

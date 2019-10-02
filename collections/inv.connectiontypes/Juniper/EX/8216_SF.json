@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 8216 SF",
+    "$collection": "inv.connectiontypes",
+    "uuid": "eb60d3ea-b9bc-47e3-93ce-cff87f8580f0",
+    "description": "Juniper EX8216 Switch Fabric",
+    "c_group": [],
+    "genders": "mf"
+}

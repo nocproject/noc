@@ -1,0 +1,232 @@
+{
+    "name": "Juniper | EX | EX8216 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "4de16482-ab79-482c-a971-7b67f5eb8033",
+    "vendor__code": "JUNIPER",
+    "description": "EX8216 system configuration: 16-slot chassis with passive midplane",
+    "connection_rule__name": "Juniper | EX8200",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "RE Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "re0",
+            "type__name": "Juniper | EX | 8216 RE"
+        },
+        {
+            "description": "RE Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "re1",
+            "type__name": "Juniper | EX | 8216 RE"
+        },
+        {
+            "description": "SF Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib0",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "SF Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib1",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "SF Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib2",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "SF Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib3",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "SF Slot 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib4",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "SF Slot 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib5",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "SF Slot 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib6",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "SF Slot 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "sib7",
+            "type__name": "Juniper | EX | 8216 SF"
+        },
+        {
+            "description": "Linecard 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc0",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc1",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc2",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc3",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc4",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc5",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc6",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc7",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc8",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 9",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc9",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 10",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc10",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 11",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc11",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 12",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc12",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 13",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc13",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 14",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc14",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "Linecard 15",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc15",
+            "type__name": "Juniper | EX | 8200 FPC"
+        },
+        {
+            "description": "PSU 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu0",
+            "type__name": "Juniper | EX | 8200 PWR"
+        },
+        {
+            "description": "PSU 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Juniper | EX | 8200 PWR"
+        },
+        {
+            "description": "Fan Tray 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan0",
+            "type__name": "Juniper | EX | 8216 Fan"
+        },
+        {
+            "description": "Fan Tray 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Juniper | EX | 8216 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["EX8216"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 14
+        }
+    }
+}

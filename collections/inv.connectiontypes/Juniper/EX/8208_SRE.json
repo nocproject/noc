@@ -1,8 +1,8 @@
 {
-    "name": "Juniper | EX | 8200 SRE",
+    "name": "Juniper | EX | 8208 SRE",
     "$collection": "inv.connectiontypes",
     "uuid": "52a42d8c-778f-4105-b218-0b264d98fdee",
-    "description": "Juniper EX8200 Switch and Routing Engine",
+    "description": "Juniper EX8208 Switch and Routing Engine",
     "c_group": [],
     "genders": "mf"
 }
