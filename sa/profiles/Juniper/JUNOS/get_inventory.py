@@ -89,7 +89,7 @@ class Script(BaseScript):
                 continue
             match = self.rx_part.search(line)
             if match:
-                yield match.groups()
+                yield [chassis_no] + list(match.groups())
             else:
                 match = self.rx_chassis.search(line)
                 if match:
