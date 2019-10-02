@@ -34,21 +34,26 @@ class MyModel(Model):
     pairs = NestedField(Pair)
 
 
-def test_mymodel_fingerprint():
-    # Check field order and fingerprint
-    assert MyModel.get_fingerprint() == "mymodel|date|text|pairs.index|pairs.text"
-
-
-def test_mymodel_to_tsv():
-    # Check TSV conversion
-    today = datetime.date.today()
-    tsv = MyModel.to_tsv(
-        date=today,
-        text="Test",
-        pairs=[{"index": 1, "text": "First"}, {"index": 2, "text": "Second"}],
-    )
-    valid_tsv = "%s\tTest\t[1,2]\t['First','Second']\n" % today.isoformat()
-    assert tsv == valid_tsv
+@pytest.mark.parametrize(
+    "data,expected",
+    [
+        (
+            {
+                "date": datetime.date(year=2019, month=9, day=26),
+                "text": "Test",
+                "pairs": [{"index": 1, "text": "First"}, {"index": "2", "text": "Second"}],
+            },
+            {
+                "date": "2019-09-26",
+                "pairs.index": [1, 2],
+                "pairs.text": ["First", "Second"],
+                "text": "Test",
+            },
+        )
+    ],
+)
+def test_to_json(data, expected):
+    assert MyModel.to_json(**data) == expected
 
 
 @pytest.mark.xfail

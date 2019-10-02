@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Clickhouse field types
+# ClickHouse field types
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -10,9 +10,9 @@
 from ast import literal_eval
 from datetime import datetime
 import itertools
-from functools import partial
 import socket
 import struct
+from collections import defaultdict
 
 # Third-party modules
 import six
@@ -44,31 +44,28 @@ class BaseField(object):
         self.is_agg = False
         self.low_cardinality = config.clickhouse.enable_low_cardinality and low_cardinality
 
-    def contribute_to_class(self, cls, name):
+    def set_name(self, name):
         """
-        Install field to model
-        :param cls:
-        :param name:
+        Set field name according to model
+
+        :param name: Field name
         :return:
         """
-        cls._fields[name] = self
-        cls._fields[name].name = name
-        cls._tsv_encoders[name] = lambda record: self.to_tsv(record.get(name))
+        self.name = name
 
-    def get_create_sql(self):
+    def iter_create_sql(self):
         """
-        Return query for table create query. Example:
-
-            CounterID UInt32,
-            StartDate Date,
+        Yields (field name, db type) for all nested fields
 
         :return:
         """
-        return "%s %s" % (self.name, self.get_db_type())
+        yield self.name, self.get_db_type()
 
-    def get_db_type(self):
+    def get_db_type(self, name=None):
         """
         Return Field type. Use it in create query
+
+        :param name: Optional nested field name
         :return:
         """
         if self.low_cardinality:
@@ -82,24 +79,26 @@ class BaseField(object):
         """
         return self.db_type
 
-    def to_tsv(self, value):
+    def apply_json(self, row_json, value):
         """
-        Use method when field convert to tsv format (ex. export)
-        :param value:
+        Append converted `value` to `row _json` dict
+
+        :param json: Row dict
+        :param value: Raw value
         :return:
+        """
+        row_json[self.name] = self.to_json(value)
+
+    def to_json(self, value):
+        """
+        Convert `value` to JSON-serializeable format
+
+        :param value: Input value
+        :return: JSON-serializable value
         """
         if value is None:
-            return str(self.default_value)
-        else:
-            return str(value)
-
-    def to_tsv_array(self, value):
-        """
-        Use method when field include in array
-        :param value:
-        :return:
-        """
-        return "'%s'" % self.to_tsv(value)
+            return self.default_value
+        return str(value)
 
     def to_python(self, value):
         """
@@ -112,6 +111,19 @@ class BaseField(object):
     def get_select_sql(self):
         return self.name
 
+    @staticmethod
+    def nested_path(name):
+        """
+        Split nested path to field name and nested name
+
+        :param name: Nested field name
+        :return: (Field name, Nested name)
+        """
+        name = name.strip("`")
+        if "." in name:
+            return name.split(".", 1)
+        return name, None
+
 
 class StringField(BaseField):
     db_type = "String"
@@ -122,11 +134,10 @@ class DateField(BaseField):
     db_type = "Date"
     default_value = "0000-00-00"
 
-    def to_tsv(self, value):
+    def to_json(self, value):
         if value is None:
             return self.default_value
-        else:
-            return value.strftime("%Y-%m-%d")
+        return value.strftime("%Y-%m-%d")
 
     def to_python(self, value):
         if not value or value == self.default_value:
@@ -139,11 +150,10 @@ class DateTimeField(BaseField):
     db_type = "DateTime"
     default_value = "0000-00-00 00:00:00"
 
-    def to_tsv(self, value):
+    def to_json(self, value):
         if value is None:
             return self.default_value
-        else:
-            return value.strftime("%Y-%m-%d %H:%M:%S")
+        return value.strftime("%Y-%m-%d %H:%M:%S")
 
     def to_python(self, value):
         if not value or value == self.default_value:
@@ -156,17 +166,15 @@ class UInt8Field(BaseField):
     db_type = "UInt8"
     default_value = 0
 
-    def to_tsv_array(self, value):
+    def to_json(self, value):
         if value is None:
-            return str(self.default_value)
-        else:
-            return str(value)
+            return self.default_value
+        return int(value)
 
     def to_python(self, value):
         if not value:
             return self.default_value
-        else:
-            return int(value)
+        return int(value)
 
 
 class UInt16Field(UInt8Field):
@@ -199,19 +207,17 @@ class Int64Field(UInt8Field):
 
 class Float32Field(BaseField):
     db_type = "Float32"
-    default_value = 0
+    default_value = 0.0
 
-    def to_tsv_array(self, value):
+    def to_json(self, value):
         if value is None:
-            return str(self.default_value)
-        else:
-            return str(value)
+            return self.default_value
+        return float(value)
 
     def to_python(self, value):
         if not value:
             return self.default_value
-        else:
-            return float(value)
+        return float(value)
 
 
 class Float64Field(Float32Field):
@@ -219,17 +225,13 @@ class Float64Field(Float32Field):
 
 
 class BooleanField(UInt8Field):
-    def to_tsv(self, value):
-        return "1" if value else "0"
-
-    def to_tsv_array(self, value):
-        return "'1'" if value else "'0'"
+    def to_json(self, value):
+        return 1 if value else 0
 
     def to_python(self, value):
         if not value:
             return False
-        else:
-            return value == "1"
+        return value == "1"
 
 
 class ArrayField(BaseField):
@@ -237,13 +239,10 @@ class ArrayField(BaseField):
         super(ArrayField, self).__init__(description=description)
         self.field_type = field_type
 
-    def to_tsv(self, value):
-        r = ["["]
-        r += [",".join(self.field_type.to_tsv_array(v) for v in value)]
-        r += ["]"]
-        return "".join(r)
+    def to_json(self, value):
+        return [self.field_type.to_json(v) for v in value]
 
-    def get_db_type(self):
+    def get_db_type(self, name=None):
         return "Array(%s)" % self.field_type.get_db_type()
 
     def get_displayed_type(self):
@@ -252,8 +251,7 @@ class ArrayField(BaseField):
     def to_python(self, value):
         if not value or value == "[]":
             return []
-        else:
-            return [self.field_type.to_python(x.strip("'\" ")) for x in value[1:-1].split(",")]
+        return [self.field_type.to_python(x.strip("'\" ")) for x in value[1:-1].split(",")]
 
 
 class ReferenceField(BaseField):
@@ -271,34 +269,32 @@ class ReferenceField(BaseField):
         if self.low_cardinality:
             self.db_type = "String"
 
-    def to_tsv(self, value):
+    def to_json(self, value):
         if value is None:
-            return str(self.default_value)
-        elif self.low_cardinality:
-            return str(value)
-        else:
-            return str(value.bi_id)
+            return self.default_value
+        if self.low_cardinality:
+            return value
+        return value.bi_id
 
 
 class IPv4Field(BaseField):
     db_type = "UInt32"
 
-    def to_tsv(self, value):
+    def to_json(self, value):
         """
         Convert IPv4 as integer
+
         :param value:
         :return:
         """
         if value is None:
-            return "0"
-        else:
-            return str(struct.unpack("!I", socket.inet_aton(value))[0])
+            return 0
+        return struct.unpack("!I", socket.inet_aton(value))[0]
 
     def to_python(self, value):
         if value is None:
             return "0"
-        else:
-            return socket.inet_ntoa(struct.pack("!I", int(value)))
+        return socket.inet_ntoa(struct.pack("!I", int(value)))
 
     def get_displayed_type(self):
         return "IPv4"
@@ -312,8 +308,8 @@ class AggregatedField(BaseField):
         self.agg_functions = agg_functions
         self.f_expr = f_expr
 
-    def to_tsv(self, value):
-        return self.field_type.to_tsv()
+    def to_json(self, value):
+        return self.field_type.to_json(value)
 
     @property
     def db_type(self):
@@ -329,55 +325,28 @@ class AggregatedField(BaseField):
 class NestedField(ArrayField):
     db_type = "Nested"
 
-    def __init__(self, field_type, description=None, *args):
-        super(NestedField, self).__init__(field_type=field_type, description=description)
-        # Skip field counters for nested fields
-        for n in self.field_type._fields:
-            next(self.FIELD_NUMBER)
+    def iter_create_sql(self):
+        for nested_field in self.field_type._meta.ordered_fields:
+            yield "%s.%s" % (self.name, nested_field.name), self.get_db_type(nested_field.name)
 
-    def contribute_to_class(self, cls, name):
-        def get_tsv_encoder(fld, name, nested_name):
-            def get(record):
-                data = record.get(name, [])
-                r = ["[", ",".join(fld.to_tsv_array(x.get(nested_name)) for x in data), "]"]
-                return "".join(r)
+    def apply_json(self, row_json, value):
+        arrays = defaultdict(list)
+        for item in value:
+            row = {}
+            for f in item:
+                self.field_type._meta.fields[f].apply_json(row, item[f])
+            for nested_name in row:
+                full_name = "%s.%s" % (self.name, nested_name)
+                arrays[full_name] += [row[nested_name]]
+        row_json.update(arrays)
 
-            return get
-
-        n_attrs = self.field_type._fields_order
-        for n, nested_name in enumerate(n_attrs):
-            field = "%s.%s" % (name, nested_name)
-            cls._fields[field] = self.field_type._fields[nested_name]
-            cls._fields[field].name = field
-            cls._fields[field].field_number = self.field_number + n + 1
-            cls._fields[field].get_create_sql = partial(
-                self.get_create_nested_sql, field, cls._fields[field].db_type
-            )
-            cls._tsv_encoders[field] = get_tsv_encoder(cls._fields[field], name, nested_name)
-
-    def to_tsv(self, value):
-        out = []
-        for field_type in self.field_type._fields_order:
-            r = ["["]
-            r += [
-                ",".join(
-                    self.field_type._fields[field_type].to_tsv_array(v[field_type]) for v in value
-                )
-            ]
-            r += ["]"]
-            out += ["".join(r)]
-        # r = r[:-1]
-        return "\t".join(out)
-
-    def get_db_type(self):
-        return "Nested (\n%s \n)" % self.field_type.get_create_sql()
+    def get_db_type(self, name=None):
+        if name is None:
+            return "Nested (\n%s \n)" % self.field_type.get_create_sql()
+        return "Array(%s)" % self.field_type._meta.fields[name].get_db_type()
 
     def get_displayed_type(self):
         return "Nested (\n%s \n)" % self.field_type.get_create_sql()
-
-    @staticmethod
-    def get_create_nested_sql(name, type):
-        return "`%s` Array(%s)" % (name, type)
 
     def to_python(self, value):
         if not value or value == "[]":
@@ -385,16 +354,18 @@ class NestedField(ArrayField):
         value = literal_eval(value)
         return [
             {
-                k: self.field_type._fields[k].to_python(v.strip("'"))
-                for k, v in six.iteritems(dict(zip(self.field_type._fields_order, v)))
+                f.name: f.to_python(v.strip("'"))
+                for f, v in six.iteritems(dict(zip(self.field_type._meta.ordered_fields, v)))
             }
             for v in value
         ]
 
     def get_select_sql(self):
-        m = ["toString(%s.%s[x])" % (self.name, x) for x in self.field_type._fields_order]
+        m = [
+            "toString(%s.%s[x])" % (self.name, f.name) for f in self.field_type._meta.ordered_fields
+        ]
         r = [
             "arrayMap(x -> [%s], arrayEnumerate(%s.%s))"
-            % (",".join(m), self.name, self.field_type._fields_order[0])
+            % (",".join(m), self.name, self.field_type.get_pk_name())
         ]
         return "".join(r)

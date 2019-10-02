@@ -11,8 +11,13 @@ import os
 import datetime
 import itertools
 import gzip
-import shutil
+
+# Third-party modules
+import ujson
+
+# NOC modules
 from noc.config import config
+from noc.core.fileutils import make_persistent
 
 
 class Stream(object):
@@ -26,13 +31,9 @@ class Stream(object):
         self.out = None
         self.out_path = None
         now = datetime.datetime.now()
-        self.fs = "%s-%s" % (
-            self.model.get_short_fingerprint(),
-            now.strftime("%Y-%m-%d-%H-%M-%S-%f"),
-        )
-        self.meta = self.model.get_fingerprint()
+        self.fs = "%s-%s" % (self.model._meta.db_table, now.strftime("%Y-%m-%d-%H-%M-%S-%f"))
         self.chunk_size = 0
-        self.ts_field = self.model._fields_order[1]
+        self.ts_field = self.model._meta.ordered_fields[1].name
 
     def __del__(self):
         if self.out:
@@ -45,22 +46,20 @@ class Stream(object):
                 date = datetime.date(year=ts.year, month=ts.month, day=ts.day)
         if not self.out:
             self.out_path = os.path.join(
-                self.prefix, "%s-%06d.tsv.gz.tmp" % (self.fs, next(self.chunk_count))
+                self.prefix, "%s-%06d.jsonl.gz.tmp" % (self.fs, next(self.chunk_count))
             )
-            meta_path = self.out_path[:-11] + ".meta"
-            with open(meta_path, "w") as f:
-                f.write(self.meta)
             self.out = gzip.open(self.out_path, "wb")
             self.chunk_size = 0
-        self.out.write(self.model.to_tsv(date=date, **kwargs))
+        self.out.write(ujson.dumps(self.model.to_json(date=date, **kwargs)))
+        self.out.write("\n")
         self.chunk_size += 1
         if self.chunk_size == self.CHUNK_SIZE:
             self.out.close()
-            shutil.move(self.out_path, self.out_path[:-4])
+            make_persistent(self.out_path)
             self.out = None
 
     def finish(self):
         if self.out:
             self.out.close()
-            shutil.move(self.out_path, self.out_path[:-4])
+            make_persistent(self.out_path)
             self.out = None

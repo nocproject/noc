@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Clickhouse Dictionaries
+# ClickHouse Dictionaries
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 import os
+import operator
 
 # Third-party modules
 import six
@@ -33,8 +34,9 @@ class DictionaryBase(type):
         assert cls._meta.layout in (None, "flat", "hashed")
         for k in attrs:
             if isinstance(attrs[k], BaseField):
-                attrs[k].contribute_to_class(cls, k)
-        cls._fields_order = sorted(cls._fields, key=lambda x: cls._fields[x].field_number)
+                cls._meta.register_field(k, attrs[k])
+        # Fill _meta.ordered_fields
+        cls._meta.order_fields()
         return cls
 
 
@@ -44,6 +46,24 @@ class DictionaryMeta(object):
         self.layout = layout
         self.lifetime_min = lifetime_min
         self.lifetime_max = lifetime_max
+        self.fields = {}  # name -> field
+        self.ordered_fields = []  # fields in order
+
+    def register_field(self, name, field):
+        self.fields[name] = field
+        field.set_name(name)
+
+    def get_field(self, name):
+        return self.fields[name]
+
+    def order_fields(self):
+        """
+        Fill `ordered_fields`
+        :return:
+        """
+        self.ordered_fields = list(
+            sorted(six.itervalues(self.fields), key=operator.attrgetter("field_number"))
+        )
 
 
 class Dictionary(six.with_metaclass(DictionaryBase)):
@@ -102,13 +122,12 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "                 <hierarchical>false</hierarchical>",
             "             </attribute>",
         ]
-        for f in cls._fields_order:
-            ff = cls._fields[f]
-            hier = getattr(cls._fields[f], "is_self_reference", False)
+        for field in cls._meta.ordered_fields:
+            hier = getattr(field, "is_self_reference", False)
             x += [
                 "             <attribute>",
-                "                 <name>%s</name>" % ff.name,
-                "                 <type>%s</type>" % ff.db_type,
+                "                 <name>%s</name>" % field.name,
+                "                 <type>%s</type>" % field.get_db_type(),
                 "                 <null_value>Unknown</null_value>",
                 "                 <hierarchical>%s</hierarchical>" % ("true" if hier else "false"),
                 "             </attribute>",
@@ -141,7 +160,16 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         :param name:
         :return:
         """
-        return cls._fields[name].db_type
+        return cls._meta.fields[name].get_db_type()
+
+    @classmethod
+    def get_pk_name(cls):
+        """
+        Get primary key's name
+
+        :return: Field name
+        """
+        return cls._meta.ordered_fields[0].name
 
     @classmethod
     def dump(cls, out):

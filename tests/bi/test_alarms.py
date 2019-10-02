@@ -8,9 +8,9 @@
 
 # Third-party modules
 import pytest
-from six.moves import zip_longest
 
 # NOC modules
+from noc.core.clickhouse.fields import BaseField
 from noc.bi.models.alarms import Alarms
 
 MODEL = Alarms
@@ -45,10 +45,10 @@ FIELDS = [
     ("container", "UInt64"),
     ("x", "Float64"),
     ("y", "Float64"),
-    ("services.profile", "String"),
-    ("services.summary", "UInt32"),
-    ("subscribers.profile", "String"),
-    ("subscribers.summary", "UInt32"),
+    ("services.profile", "Array(String)"),
+    ("services.summary", "Array(UInt32)"),
+    ("subscribers.profile", "Array(String)"),
+    ("subscribers.summary", "Array(UInt32)"),
     ("ack_user", "String"),
     ("ack_ts", "DateTime"),
 ]
@@ -92,26 +92,24 @@ ack_ts DateTime
 ) ENGINE = MergeTree(date, (ts, managed_object), 8192);"""
 
 
-def test_fields_test():
-    assert len(FIELDS) == len(MODEL._fields_order)
+@pytest.mark.parametrize("name,db_type", FIELDS)
+def test_field_db_type(name, db_type):
+    field_name, nested_name = BaseField.nested_path(name)
+    assert MODEL._meta.fields[field_name].get_db_type(nested_name) == db_type
 
 
-def test_sql():
+def test_iter_create_sql():
+    assert list(MODEL.iter_create_sql()) == FIELDS
+
+
+def test_get_create_fields_sql():
+    expected = "\n".join(SQL.splitlines()[1:-1])
+    assert MODEL.get_create_fields_sql() == expected
+
+
+def test_get_create_sql():
     assert MODEL.get_create_sql() == SQL
 
 
-@pytest.mark.parametrize("name,db_type", FIELDS)
-def test_field_name(name, db_type):
-    assert name in MODEL._fields
-
-
-@pytest.mark.parametrize("name,db_type", FIELDS)
-def test_field_db_type(name, db_type):
-    assert MODEL._fields[name].get_db_type() == db_type
-
-
-@pytest.mark.parametrize("order,fields", list(zip_longest(MODEL._fields_order, FIELDS)))
-def test_field_order(order, fields):
-    assert fields is not None
-    name, db_type = fields
-    assert order == name
+def test_create_distributed_sql():
+    assert MODEL.get_create_distributed_sql()

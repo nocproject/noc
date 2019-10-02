@@ -59,7 +59,7 @@ def f_lookup(seq, model=None):
     dict_name = seq[0]
     dc = Dictionary.get_dictionary_class(dict_name)
     if len(seq) == 2:
-        field_name = dc._fields_order[0]
+        field_name = dc.get_pk_name()
     else:
         field_name = seq[2]
     t = dc.get_field_type(field_name)
