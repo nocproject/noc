@@ -41,7 +41,7 @@ Promise.all(queue)
         console.error(error);
     })
 .finally(() => {
-    const output = fs.createWriteStream(`ui-web-${version}.tgz`);
+    const output = fs.createWriteStream(`ui-web@${version}.tgz`);
     tar.pack(distDir).pipe(zlib.createGzip()).pipe(output);
     console.log('Done');
 });
