@@ -1,3 +1,4 @@
+const version = '0.0.2';
 const build_css = require('./build_css');
 const build_js = require('./build_js');
 const fs = require('fs');
@@ -40,7 +41,7 @@ Promise.all(queue)
         console.error(error);
     })
 .finally(() => {
-    const output = fs.createWriteStream('archive.tgz');
+    const output = fs.createWriteStream(`ui-web-${version}.tgz`);
     tar.pack(distDir).pipe(zlib.createGzip()).pipe(output);
     console.log('Done');
 });
