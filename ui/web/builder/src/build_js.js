@@ -13,16 +13,15 @@ function appendFile(name, file) {
     fs.appendFileSync(name, content);
 }
 
-function makeNames(name) {
-    const dir = 'dist';
+function makeNames(dir, name) {
     return {
         prod: `${dir}/${name}.min.js`,
         dev: `${dir}/${name}.js`
     }
 }
 
-function minify(bundleName, files) {
-    const {prod: prodName, dev: devName} = makeNames(bundleName);
+function minify(destDir, bundleName, files) {
+    const {prod: prodName, dev: devName} = makeNames(destDir, bundleName);
     let bundle = fs.openSync(devName, 'w');
 
     files.forEach(file => {
@@ -37,7 +36,7 @@ function minify(bundleName, files) {
     fs.closeSync(bundle);
 }
 
-const application = function(bundleName, theme) {
+const application = function(bundleName, destDir, theme) {
     apps.forEach(filename => {
         let requires = loader(filename);
         requires.order.forEach(file => {
@@ -47,15 +46,15 @@ const application = function(bundleName, theme) {
         });
     });
 
-    minify(bundleName, cache);
+    minify(destDir, bundleName, cache);
 };
 
-const vendor = function(bundleName, theme) {
-    minify(`${bundleName}_${theme}`, vendors(theme));
+const vendor = function(bundleName, destDir, theme) {
+    minify(destDir, `${bundleName}_${theme}`, vendors(theme));
 };
 
-const boot = function(bundleName, theme) {
-    minify(bundleName, boots)
+const boot = function(bundleName, destDir, theme) {
+    minify(destDir, bundleName, boots)
 };
 
 module.exports = {application, vendor, boot};

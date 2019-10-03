@@ -4,19 +4,19 @@ const postcss = require('postcss');
 const atImport = require('postcss-import');
 const mqpacker = require('css-mqpacker');
 const cssnano = require('cssnano');
-const autoprefixer = require('autoprefixer');
+// const autoprefixer = require('autoprefixer');
 const copyAssets = require('postcss-copy-assets');
 
 const bundleName = 'bundle_app';
 
-const build = function(theme) {
+const build = function(destDir, theme) {
     const source = 'src/application.css';
-    const prodName = `dist/${bundleName}_${theme}.min.css`;
+    const prodName = `${destDir}/${bundleName}_${theme}.min.css`;
     const processors = [
         atImport,
         // autoprefixer,
         mqpacker,
-        copyAssets({base: 'dist'}),
+        copyAssets({base: `${destDir}`}),
         cssnano
     ];
     fs.readFile(source, (err, css) => {
