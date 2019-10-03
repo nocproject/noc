@@ -49,8 +49,8 @@ const application = function(bundleName, destDir, theme) {
     minify(destDir, bundleName, cache);
 };
 
-const vendor = function(bundleName, destDir, theme) {
-    minify(destDir, `${bundleName}_${theme}`, vendors(theme));
+const vendor = function(bundleName, destDir, themes) {
+    themes.forEach(theme => minify(destDir, `${bundleName}_${theme}`, vendors(theme)));
 };
 
 const boot = function(bundleName, destDir, theme) {
