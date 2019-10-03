@@ -10,7 +10,10 @@ const distDir = 'dist';
 const destDir = `${distDir}/ui/pkg/noc`;
 // const args = process.argv.slice(2);
 const themeName = 'gray';
-let queue = load_packages();
+const queue = [
+    ...load_packages('../../../requirements/web.json'),
+    ...load_packages('../../../requirements/theme-noc.json')
+];
 
 fs.mkdirSync(destDir, {recursive: true});
 
