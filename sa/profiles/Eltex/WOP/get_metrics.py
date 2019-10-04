@@ -8,7 +8,6 @@
 
 # Python modules
 from __future__ import division
-import six
 from collections import defaultdict
 
 # NOC modules
@@ -88,6 +87,7 @@ class Script(GetMetricsScript):
                 s["status"] = data["status"]
                 s["radio"] = data["radio"]
 
+    """
     @metrics(
         [
             "Interface | Load | In",
@@ -148,6 +148,7 @@ class Script(GetMetricsScript):
                     id=("Radio | TxPower", ["", "", "", iface]),
                     value=radio_metrics[data["radio"]]["tx-power"],
                 )
+    """
 
     @metrics(
         ["Radio | TxPower", "Radio | Quality"],
