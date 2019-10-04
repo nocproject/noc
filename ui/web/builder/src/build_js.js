@@ -1,10 +1,12 @@
-const loader = require('./loader');
+const loaderJS = require('./loader');
 const UglifyJS = require("uglify-js");
 const fs = require('fs');
 const apps = require('./applications');
 const vendors = require('./vendors');
 const boots = require('./boots');
 
+const loader = loaderJS.parse;
+const sha1 = loaderJS.sha1;
 const cache = [];
 
 function appendFile(name, file) {
@@ -13,15 +15,15 @@ function appendFile(name, file) {
     fs.appendFileSync(name, content);
 }
 
-function makeNames(dir, name) {
+function makeNames(dir, name, theme) {
     return {
-        prod: `${dir}/${name}.min.js`,
+        prod: `${dir}/${name}_{hash}${theme}.min.js`,
         dev: `${dir}/${name}.js`
     }
 }
 
-function minify(destDir, bundleName, files) {
-    const {prod: prodName, dev: devName} = makeNames(destDir, bundleName);
+function minify(destDir, bundleName, files, theme) {
+    const {prod: prodName, dev: devName} = makeNames(destDir, bundleName, theme);
     let bundle = fs.openSync(devName, 'w');
 
     files.forEach(file => {
@@ -31,9 +33,12 @@ function minify(destDir, bundleName, files) {
     fs.closeSync(bundle);
 
     const code = fs.readFileSync(devName, "utf8");
-    bundle = fs.openSync(prodName, 'w');
-    fs.appendFileSync(prodName, UglifyJS.minify(code).code);
+    const minified = UglifyJS.minify(code).code;
+    const hash = sha1(minified);
+    bundle = fs.openSync(prodName.replace(/{hash}/, hash), 'w');
+    fs.appendFileSync(prodName.replace(/{hash}/, hash), minified);
     fs.closeSync(bundle);
+    return new Promise((resolve, reject) => resolve({name: `${bundleName}_{hash}`, theme: `${theme.replace(/_/, '')}`, hash: hash}));
 }
 
 const application = function(bundleName, destDir, theme) {
@@ -46,15 +51,15 @@ const application = function(bundleName, destDir, theme) {
         });
     });
 
-    minify(destDir, bundleName, cache);
+    return [minify(destDir, bundleName, cache, '')];
 };
 
 const vendor = function(bundleName, destDir, themes) {
-    themes.forEach(theme => minify(destDir, `${bundleName}_${theme}`, vendors(theme)));
+    return themes.map(theme => minify(destDir, bundleName, vendors(theme), `_${theme}`));
 };
 
 const boot = function(bundleName, destDir, theme) {
-    minify(destDir, bundleName, boots)
+    return [minify(destDir, bundleName, boots, '')];
 };
 
 module.exports = {application, vendor, boot};

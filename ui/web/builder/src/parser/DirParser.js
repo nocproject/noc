@@ -2,7 +2,6 @@
 /**
  * Parse Ext source directory.
  */
-// import { FileParser } from './FileParser';
 let FileParser = require('./FileParser');
 let Path = require('path');
 let Glob = require('glob');
@@ -26,7 +25,7 @@ class DirParser {
             let packageJson = require(this.getPath() + '/package.json');
             packageJson = packageJson.sencha || packageJson;
             this.type = packageJson.type;
-            this.packageJson = packageJson;
+            // this.packageJson = packageJson;
             if (packageJson.classpath && packageJson.type !== 'framework') {
                 if (typeof packageJson.classpath == 'string') {
                     this.classPath = Path.normalize(packageJson.classpath.replace('${package.dir}', this.getPath()));
@@ -100,7 +99,6 @@ class DirParser {
         }
     }
 
-
     parse() {
         return this.processPackages(this.packages)
         .then(() => {
@@ -172,7 +170,6 @@ class DirParser {
             return this.processSrc()
             .then(this.processOverride.bind(this))
             .then(resolve);
-
         });
     }
 
@@ -226,4 +223,3 @@ class DirParser {
 }
 
 module.exports = DirParser;
-// export { DirParser };

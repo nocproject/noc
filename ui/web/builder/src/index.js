@@ -22,28 +22,55 @@ function assets(dest, theme) {
     const assetDirs = [
         '.pkg_cache/ui/pkg/fontawesome/fonts'
     ];
-    assetDirs.forEach(dir => {
-        const name = dir.substr(dir.lastIndexOf('/') + 1);
-        tar.pack(dir).pipe(tar.extract(`${dest}/${name}`));
-    });
+    return assetDirs.map(dir =>
+        new Promise((resolve, reject) => {
+            const name = dir.substr(dir.lastIndexOf('/') + 1);
+            tar.pack(dir).pipe(
+                tar.extract(`${dest}/${name}`, {
+                    finish: () => resolve({name: name, hash: null})
+                })
+            );
+        })
+    );
 }
 
-Promise.all(queue)
-.then(values => {
+function writeDesktop(data) {
+    const dest = `${distDir}/services/web/apps/main/desktop/templates`;
+    fs.mkdirSync(dest, {recursive: true});
+    fs.writeFileSync(`${dest}/desktop.html`, data);
+}
+
+Promise.all(queue).then(values => {
         console.log(values);
-        console.log('loading done');
-        assets(destDir, themes);
-        build_css(destDir, themes);
-        build_js.application('bundle_noc', destDir, themes);
-        build_js.vendor('bundle_vendor', destDir, themes);
-        build_js.boot('bundle_boot', destDir, themes);
-        fs.copyFileSync('src/desktop.html', `${destDir}/desktop.html`);
+        let stages = [
+            ...assets(destDir, themes),
+            ...build_css(destDir, themes),
+            ...build_js.application('bundle_noc', destDir, themes),
+            ...build_js.vendor('bundle_vendor', destDir, themes),
+            ...build_js.boot('bundle_boot', destDir, themes),
+        ];
+        Promise.all(stages).then(values => {
+                console.log(values);
+                const output = fs.createWriteStream(`ui-web@${version}.tgz`);
+                let content = fs.readFileSync('src/desktop.html').toString();
+
+                // make desktop.html only for gray theme
+                values
+                .filter(value => value.hash | value.theme === '' | value.theme === 'gray')
+                .forEach(value => {
+                    const file = value.name.replace(/{hash}/, value.hash);
+                    content = content.toString().replace(value.name, file);
+                });
+                writeDesktop(content);
+                tar.pack(distDir).pipe(zlib.createGzip()).pipe(output);
+                console.log('Done');
+            },
+            error => {
+                console.error(error);
+            }
+        ).catch(console.error);
     },
     error => {
         console.error(error);
-    })
-.finally(() => {
-    // const output = fs.createWriteStream(`ui-web@${version}.tgz`);
-    // tar.pack(distDir).pipe(zlib.createGzip()).pipe(output);
-    console.log('Done');
-});
+    }
+);
