@@ -15,7 +15,7 @@ from .base import BaseDataSource
 from noc.inv.models.networksegment import NetworkSegment
 
 
-class CHAdministrativeDomainDataSource(BaseDataSource):
+class CHNetworkSegmentDataSource(BaseDataSource):
     name = "ch_networksegment"
 
     def extract(self):

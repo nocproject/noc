@@ -15,7 +15,7 @@ from .base import BaseDataSource
 from noc.sa.models.serviceprofile import ServiceProfile
 
 
-class CHProfileClassDataSource(BaseDataSource):
+class CHServiceProfileClassDataSource(BaseDataSource):
     name = "ch_serviceprofile"
 
     def extract(self):
