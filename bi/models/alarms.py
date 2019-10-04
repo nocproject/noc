@@ -27,6 +27,7 @@ from noc.core.bi.dictionaries.vendor import Vendor
 from noc.core.bi.dictionaries.platform import Platform
 from noc.core.bi.dictionaries.version import Version
 from noc.core.bi.dictionaries.profile import Profile
+from noc.core.bi.dictionaries.objectprofile import ObjectProfile
 from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
@@ -74,6 +75,7 @@ class Alarms(Model):
     #
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
+    object_profile = ReferenceField(ObjectProfile, description=_("Object Profile"))
     ip = IPv4Field(description=_("IP Address"))
     profile = ReferenceField(Profile, description=_("Profile"))
     vendor = ReferenceField(Vendor, description=_("Vendor Name"))

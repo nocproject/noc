@@ -16,7 +16,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
 
 
-class CHManagedObjectDataSource(BaseDataSource):
+class CHInterfaceDescriptionDataSource(BaseDataSource):
     name = "ch_interfacedescription"
 
     def extract(self):

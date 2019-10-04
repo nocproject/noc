@@ -15,7 +15,7 @@ from .base import BaseDataSource
 from noc.sa.models.cpestatus import CPEStatus
 
 
-class CHInterfaceAttributesDataSource(BaseDataSource):
+class CHCPEDataSource(BaseDataSource):
     name = "ch_cpe"
 
     def extract(self):
