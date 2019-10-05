@@ -1,4 +1,4 @@
-const version = '0.0.2';
+const version = '0.0.3';
 const build_css = require('./build_css');
 const build_js = require('./build_js');
 const fs = require('fs');
@@ -14,6 +14,11 @@ const queue = [
     ...load_packages('../../../requirements/web.json'),
     ...load_packages('../../../requirements/theme-noc.json')
 ];
+
+const template = '{% if setup.theme == {theme} %}\n' +
+    '<link rel="stylesheet" type="text/css" href="/ui/pkg/noc/bundle_app_{app_hash}_{theme}.min.css " />\n' +
+    '<script type="text/javascript" src="/ui/pkg/noc/bundle_vendor_{vendor_hash}_{theme}.min.js"></script>\n' +
+    '{% endif %}\n';
 
 fs.mkdirSync(destDir, {recursive: true});
 
@@ -53,14 +58,23 @@ Promise.all(queue).then(values => {
                 console.log(values);
                 const output = fs.createWriteStream(`ui-web@${version}.tgz`);
                 let content = fs.readFileSync('src/desktop.html').toString();
-
-                // make desktop.html only for gray theme
-                values
-                .filter(value => value.hash | value.theme === '' | value.theme === 'gray')
+                let themeSpecific = '';
+                // make desktop.html add hash
+                values.filter(value => value.hash | value.theme === '')
                 .forEach(value => {
                     const file = value.name.replace(/{hash}/, value.hash);
-                    content = content.toString().replace(value.name, file);
+                    content = content.replace(value.name, file);
                 });
+                // add hash to theme specific files
+                themes.forEach(theme => {
+                    const appHash = values.filter(i => i.theme === theme && i.name === 'bundle_app_{hash}')[0].hash;
+                    const vendorHash = values.filter(i => i.theme === theme && i.name === 'bundle_vendor_{hash}')[0].hash;
+                    let body;
+                    body = template.replace(/{theme}/g, theme);
+                    body = body.replace(/{app_hash}/, appHash);
+                    themeSpecific += body.replace(/{vendor_hash}/, vendorHash);
+                });
+                content.replace(/{theme_specific}/, themeSpecific);
                 writeDesktop(content);
                 tar.pack(distDir).pipe(zlib.createGzip()).pipe(output);
                 console.log('Done');
