@@ -10,7 +10,6 @@ const sha1 = loaderJS.sha1;
 const cache = [];
 
 function appendFile(name, file) {
-    console.log(`append file : ${file}`);
     let content = fs.readFileSync(file);
     fs.appendFileSync(name, content);
 }
@@ -29,7 +28,7 @@ function minify(destDir, bundleName, files, theme) {
     files.forEach(file => {
         appendFile(devName, file);
     });
-    console.log(`Cache size is ${files.length} file(s)`);
+    // console.log(`Cache size is ${files.length} file(s)`);
     fs.closeSync(bundle);
 
     const code = fs.readFileSync(devName, "utf8");

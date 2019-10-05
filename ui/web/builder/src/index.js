@@ -15,10 +15,10 @@ const queue = [
     ...load_packages('../../../requirements/theme-noc.json')
 ];
 
-const template = '{% if setup.theme == {theme} %}\n' +
+const template = '{% if setup.theme == "{theme}" %}\n' +
     '<link rel="stylesheet" type="text/css" href="/ui/pkg/noc/bundle_app_{app_hash}_{theme}.min.css " />\n' +
     '<script type="text/javascript" src="/ui/pkg/noc/bundle_vendor_{vendor_hash}_{theme}.min.js"></script>\n' +
-    '{% endif %}\n';
+    '{% endif %}';
 
 fs.mkdirSync(destDir, {recursive: true});
 
@@ -46,7 +46,6 @@ function writeDesktop(data) {
 }
 
 Promise.all(queue).then(values => {
-        console.log(values);
         let stages = [
             ...assets(destDir, themes),
             ...build_css(destDir, themes),
@@ -55,10 +54,9 @@ Promise.all(queue).then(values => {
             ...build_js.boot('bundle_boot', destDir, themes),
         ];
         Promise.all(stages).then(values => {
-                console.log(values);
                 const output = fs.createWriteStream(`ui-web@${version}.tgz`);
                 let content = fs.readFileSync('src/desktop.html').toString();
-                let themeSpecific = '';
+                let themeSpecific = [];
                 // make desktop.html add hash
                 values.filter(value => value.hash | value.theme === '')
                 .forEach(value => {
@@ -72,9 +70,9 @@ Promise.all(queue).then(values => {
                     let body;
                     body = template.replace(/{theme}/g, theme);
                     body = body.replace(/{app_hash}/, appHash);
-                    themeSpecific += body.replace(/{vendor_hash}/, vendorHash);
+                    themeSpecific.push(body.replace(/{vendor_hash}/, vendorHash));
                 });
-                content.replace(/{theme_specific}/, themeSpecific);
+                content = content.replace(/{theme_specific}/, themeSpecific.join('\n'));
                 writeDesktop(content);
                 tar.pack(distDir).pipe(zlib.createGzip()).pipe(output);
                 console.log('Done');

@@ -7,13 +7,11 @@
         <title id="title">{{ setup.brand }}|{{ setup.installation_name }}</title>
         <!-- favicon -->
         {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
-        <!-- CSS -->
-        <link rel="stylesheet" type="text/css" href="/main/style/css/" />
-        <link rel="stylesheet" type="text/css" href="/ui/pkg/noc/bundle_app_{hash}_{{ setup.theme }}.min.css " />
         <!-- l10n -->
         <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}">
-        <!-- JS -->
-        <script type="text/javascript" src="/ui/pkg/noc/bundle_vendor_{hash}_{{ setup.theme }}.min.js"></script>
+        <!-- CSS -->
+        <link rel="stylesheet" type="text/css" href="/main/style/css/" />
+        {theme_specific}
         <!-- page specific -->
         <script type="text/javascript">
             //

@@ -42,7 +42,7 @@ class DirParser {
             this.packages = [...options.packages ? options.packages : []];
             this.toolkit = options.toolkit;
         } catch (e) {
-            console.log('error', e);
+            console.error('error', e);
             throw new Error(e);
         }
         this.toolkit = options.toolkit;
@@ -177,7 +177,6 @@ class DirParser {
         return new Promise((resolve, reject) => {
             (Array.isArray(this.classPath) ? this.classPath : [this.classPath])
             .forEach((path) => {
-                console.log('Processing src', path);
                 Glob(path + '/**/*.js', {}, (err, files) => {
                     if (err) {
                         return reject(err);
