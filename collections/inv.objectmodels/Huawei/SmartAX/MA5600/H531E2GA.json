@@ -1,0 +1,38 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H531E2GA",
+    "$collection": "inv.objectmodels",
+    "uuid": "65b89cca-1940-466c-bc12-d4345790a7aa",
+    "vendor__code": "HUAWEI",
+    "description": "2-портовая электрическая плата GE/FE ",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SubB"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H531E2GA"]
+        }
+    }
+}

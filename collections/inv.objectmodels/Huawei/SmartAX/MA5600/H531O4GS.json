@@ -1,0 +1,54 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H531O4GS",
+    "$collection": "inv.objectmodels",
+    "uuid": "d509b14f-4e73-485b-be27-0e4b61a1ff35",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei 4-port GE Optical Interface Pinch Board ",
+    "tags": ["port"],
+    "connections": [
+        {
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SubB"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H531O4GS"]
+        }
+    }
+}

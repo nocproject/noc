@@ -1,55 +1,76 @@
 {
-    "name": "Huawei | SmartAX | Upstream Interface Board | H801GICD",
+    "name": "Huawei | SmartAX | Universal interface board | H801CITD",
     "$collection": "inv.objectmodels",
-    "uuid": "7c8fb8b1-617f-4272-9396-abb591adbfdb",
+    "uuid": "31d0e5c3-8a54-43c7-8a71-018d8a56056b",
     "vendor__code": "HUAWEI",
-    "description": "The H801X2CS board is a 4-port GE uplink interface card that provides two 10GE upstream or cascading optical ports.",
-    "connection_rule__name": "Huawei | SmartAX",
+    "description": "The H801CITD board is a combo interface transfer board. It provides the input and output clock source for the system and supports functions such as input and output of alarm digital parameters.",
     "cr_context": "BOARD",
     "connections": [
         {
-            "description": "Chassis connector",
+            "description": null,
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+            "type__name": "Huawei | SmartAX | MA560xT | GPIO"
         },
         {
-            "description": "GE upstream or cascaded port (SFP)",
-            "direction": "i",
+            "description": "BITS/TOD In port",
+            "direction": "s",
             "gender": "f",
-            "name": "0",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "IN0",
+            "protocols": ["BITS"],
+            "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GE upstream or cascaded port (SFP)",
-            "direction": "i",
+            "description": "BITS/TOD In port",
+            "direction": "s",
             "gender": "f",
-            "name": "1",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "IN1",
+            "protocols": ["BITS"],
+            "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GE upstream or cascaded port (SFP)",
-            "direction": "i",
+            "description": "BITS/TOD Out port",
+            "direction": "s",
             "gender": "f",
-            "name": "2",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "OUT",
+            "protocols": ["BITS"],
+            "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GE upstream or cascaded port (SFP)",
-            "direction": "i",
+            "description": "ETH port",
+            "direction": "s",
             "gender": "f",
-            "name": "3",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "COM port",
+            "direction": "s",
+            "gender": "f",
+            "name": "con",
+            "protocols": ["<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DIgital alarm  interface (upper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "ALM_upper",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DIgital alarm  interface (lower)",
+            "direction": "s",
+            "gender": "f",
+            "name": "ALM_lower",
+            "type__name": "Electrical | RJ45"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["H801GICD", "H801GICD0"]
+            "part_no": ["H801CITD"]
         },
         "dimensions": {
             "depth": 237,
@@ -57,7 +78,7 @@
             "width": 25
         },
         "power": {
-            "power": 5.3
+            "power": 4.55
         },
         "weight": {
             "weight": 2.0

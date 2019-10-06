@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | MA560xT | H831FCBB0",
+    "name": "Huawei | SmartAX | MA560xT | H831FCBB",
     "$collection": "inv.objectmodels",
     "uuid": "809e8cb4-dc62-402c-9249-f31d66d2e532",
     "vendor__code": "HUAWEI",
@@ -17,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["H831FCBB0"]
+            "part_no": ["H831FCBB","H831FCBB0"]
         }
     }
 }
