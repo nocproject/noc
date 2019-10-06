@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | SubB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "0e220067-73dd-4664-be8b-c4efd3b645f1",
+    "description": "MA5600 and MA5616 SubBoard",
+    "c_group": [],
+    "genders": "mf"
+}

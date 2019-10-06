@@ -6,6 +6,11 @@
     "context": [
         {
             "reset_scopes": [],
+            "scope": "subboard",
+            "type": "SUBBOARD"
+        },
+        {
+            "reset_scopes": ["subboard"],
             "scope": "board",
             "type": "BOARD"
         },
@@ -16,6 +21,22 @@
         }
     ],
     "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "DAUGHTERBOARD",
+            "scope": "board",
+            "target_connection": "db{N}",
+            "target_number": null,
+            "target_type": "BOARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SUBBOARD",
+            "scope": "board",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "BOARD"
+        },
         {
             "match_connection": "in",
             "match_type": "PWR",

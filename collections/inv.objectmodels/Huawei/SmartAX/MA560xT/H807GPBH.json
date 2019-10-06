@@ -9,6 +9,13 @@
     "tags": ["lc", "port"],
     "connections": [
         {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
             "description": "gpon 1",
             "direction": "i",
             "gender": "f",
@@ -71,18 +78,16 @@
             "name": "8",
             "protocols": ["GPON"],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Chassis connection",
-            "direction": "o",
-            "gender": "m",
-            "name": "in",
-            "type__name": "Huawei | SmartAX | MA560xT | SB"
         }
     ],
     "data": {
         "asset": {
             "part_no": ["H807GPBH"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
         }
     }
 }
