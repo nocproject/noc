@@ -1,0 +1,70 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H561SCUK",
+    "$collection": "inv.objectmodels",
+    "uuid": "8bf09169-479e-4248-ae18-e2ff029e5f08",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei MA5600 super control unit board integrated with 2-port GE uplink port, RS-232 serial port",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SCU"
+        },
+        {
+            "description": "TL1 monitoring port",
+            "direction": "s",
+            "gender": "f",
+            "name": "mon",
+            "protocols": [">TL1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "100M Base-T maintenance network port",
+            "direction": "s",
+            "gender": "f",
+            "name": "meth0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "RS-232 serial port,RS-485 monitoring serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Sub Board 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "type__name": "Huawei | SmartAX | SubB"
+        },
+        {
+            "description": "Sub Board 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | SmartAX | SubB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H561SCUK", "H561SCUK1"]
+        },
+        "dimensions": {
+            "depth": 372,
+            "height": 400,
+            "width": 26
+        },
+        "power": {
+            "power": 50.0
+        }
+    }
+}

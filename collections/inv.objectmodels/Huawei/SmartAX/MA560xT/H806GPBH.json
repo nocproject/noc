@@ -83,6 +83,11 @@
     "data": {
         "asset": {
             "part_no": ["H806GPBH"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
         }
     }
 }

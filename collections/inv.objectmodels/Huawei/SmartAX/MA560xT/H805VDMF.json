@@ -1,0 +1,48 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H805VDMF",
+    "$collection": "inv.objectmodels",
+    "uuid": "38efd3d5-3b76-4219-bc6e-6c235a6fe7d0",
+    "vendor__code": "HUAWEI",
+    "description": "The H801ASPB board is a 48-port VDSL2 over POTS service board",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["lc"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "VDSL 0-23",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL0",
+            "protocols": ["VDSL2"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "VDSL 24-47",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL1",
+            "protocols": ["VDSL2"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H805VDMF"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
+        },
+        "power": {
+            "power": 31.0
+        }
+    }
+}

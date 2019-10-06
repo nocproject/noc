@@ -147,6 +147,11 @@
     "data": {
         "asset": {
             "part_no": ["H805GPFD"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
         }
     }
 }

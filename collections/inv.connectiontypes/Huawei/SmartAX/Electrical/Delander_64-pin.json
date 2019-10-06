@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | Electrical | Delander 64-pin",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b8afce27-a18d-443a-adf8-d5765d4b8b2c",
+    "description": "Huawei Delander 64-pin connector",
+    "c_group": [],
+    "genders": "mf"
+}
