@@ -102,7 +102,7 @@ class SyslogCollectorService(Service):
             metrics["events_archived"] += 1
             now = datetime.datetime.now()
             ts = now.strftime("%Y-%m-%d %H:%M:%S")
-            date = ts.split(" "[0])
+            date = ts.split(" ")[0]
             self.register_metrics(
                 "syslog",
                 [
