@@ -17,6 +17,14 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "Management ethernet port",
+            "direction": "s",
+            "gender": "f",
+            "name": "ethernet",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "description": "xe-X/0/0 port",
             "direction": "i",
             "gender": "f",

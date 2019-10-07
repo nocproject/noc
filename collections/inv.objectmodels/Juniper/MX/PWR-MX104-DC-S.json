@@ -1,0 +1,40 @@
+{
+    "name": "Juniper | MX | PWR-MX104-DC-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "b1b15038-d4e2-48bd-9be7-57312d46e026",
+    "vendor__code": "JUNIPER",
+    "description": "MX104 DC Power Supply",
+    "cr_context": "PEM",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX104 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["PWR-MX104-DC-S"],
+            "part_no": ["740-045932"]
+        }
+    }
+}

@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | EX | EX3300-48T",
+    "name": "Juniper | EX | EX3300-24T-DC",
     "$collection": "inv.objectmodels",
-    "uuid": "ae566f15-6402-42dc-8ebc-50840e4476d1",
+    "uuid": "ddc40a77-5cb2-479d-b5f9-8d7f8eb73517",
     "vendor__code": "JUNIPER",
-    "description": "EX 3300, 48-port 10/100/1000BaseT with 4 SFP uplink ports\n",
+    "description": "24-port 10/100/1000BASE-T with 4 SFP uplink ports",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "connections": [
@@ -233,231 +233,6 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/24 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/24",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/25 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/25",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/26 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/26",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/27 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/27",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/28 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/28",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/29 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/29",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/30 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/30",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/31 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/31",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/32 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/32",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/33 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/33",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/34 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/34",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/35 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/35",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/36 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/36",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/37 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/37",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/38 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/38",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/39 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/39",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/40 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/40",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/41 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/41",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/42 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/42",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/43 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/43",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/44 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/44",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/45 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/45",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/46 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/46",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/47 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/47",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Power outlet",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
-        },
-        {
             "description": "ge-X/1/0 SFP",
             "direction": "i",
             "gender": "f",
@@ -530,19 +305,27 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": "Power inlet",
+            "description": "-48V",
             "direction": "s",
-            "gender": "f",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C20"
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
         }
     ],
     "data": {
         "asset": {
-            "description": ["EX3300-48T"],
-            "order_part_no": ["EX3300-48T"],
-            "part_no": ["EX3300-48T"]
+            "description": ["EX3300-24T-DC"],
+            "order_part_no": ["EX3300-24T-DC"],
+            "part_no": ["750-034256", "EX3300-24T-DC"]
         },
         "dimensions": {
             "depth": 331,
