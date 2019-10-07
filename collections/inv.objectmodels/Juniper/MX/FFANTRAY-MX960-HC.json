@@ -17,8 +17,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["FFANTRAY-MX960-HC"],
-            "part_no": ["740-031521"]
+            "order_part_no": ["FFANTRAY-MX960-HC", "FFANTRAY-MX960-HC-S"],
+            "part_no": ["740-031521", "740-057995"]
         }
     }
 }

@@ -12,14 +12,14 @@
             "direction": "i",
             "gender": "f",
             "name": "re0",
-            "type__name": "Juniper | MX | RE"
+            "type__name": "Juniper | MX | MX104 RE"
         },
         {
             "description": "RE Slot #1",
             "direction": "i",
             "gender": "f",
             "name": "re1",
-            "type__name": "Juniper | MX | RE"
+            "type__name": "Juniper | MX | MX104 RE"
         },
         {
             "description": "FPC Slot #0",

@@ -1,0 +1,55 @@
+{
+    "name": "Juniper | EX | EX9200-RE",
+    "$collection": "inv.objectmodels",
+    "uuid": "d12d0acf-33b1-45b4-9119-4e451ef83eef",
+    "vendor__code": "JUNIPER",
+    "description": "Routing Engine for EX9200",
+    "connections": [
+        {
+            "description": "Managemen Ethernet",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "AUX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 9200 RE"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["RE-S-EX9200-1800X4"],
+            "order_part_no": ["EX9200-RE"],
+            "part_no": ["740-049603"]
+        }
+    }
+}

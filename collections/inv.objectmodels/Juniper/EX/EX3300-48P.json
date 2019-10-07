@@ -528,6 +528,14 @@
             "name": "1/3",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
         }
     ],
     "data": {
