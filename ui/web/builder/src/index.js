@@ -45,6 +45,15 @@ function writeDesktop(data) {
     fs.writeFileSync(`${dest}/desktop.html`, data);
 }
 
+function hash(values, file, theme) {
+    for(let i = 0; i < values.length; i++) {
+        if(values[i].file === file && values[i].theme === theme) {
+            return values[i].hash;
+        }
+    }
+    return null;
+}
+
 Promise.all(queue).then(values => {
         let stages = [
             ...assets(destDir, themes),
@@ -65,8 +74,8 @@ Promise.all(queue).then(values => {
                 });
                 // add hash to theme specific files
                 themes.forEach(theme => {
-                    const appHash = values.filter(i => i.theme === theme && i.name === 'bundle_app_{hash}')[0].hash;
-                    const vendorHash = values.filter(i => i.theme === theme && i.name === 'bundle_vendor_{hash}')[0].hash;
+                    const appHash = hash(values,'bundle_app_{hash}', theme);
+                    const vendorHash = hash(values, 'bundle_vendor_{hash}', theme);
                     let body;
                     body = template.replace(/{theme}/g, theme);
                     body = body.replace(/{app_hash}/, appHash);
