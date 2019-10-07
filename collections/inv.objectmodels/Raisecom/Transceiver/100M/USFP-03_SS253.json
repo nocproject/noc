@@ -1,5 +1,5 @@
 {
-    "name": "Raisecom | Transceiver | 100M | USFP-03/SS253",
+    "name": "Raisecom | Transceiver | 100M | USFP-03/SS253-D-R",
     "$collection": "inv.objectmodels",
     "uuid": "d07dc81d-1fd5-490b-bb48-73bcb242515d",
     "vendor__code": "RAISECOM",
@@ -15,19 +15,11 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RX Port",
+            "description": "TX/RX LC",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">100BASEFX-1550"],
-            "type__name": "Optical | LC"
-        },
-        {
-            "description": "TX Port",
-            "direction": "s",
-            "gender": "f",
-            "name": "tx",
-            "protocols": ["<100BASEFX-1550"],
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1550", ">1000BASELX-1310"],
             "type__name": "Optical | LC"
         }
     ],
