@@ -18,7 +18,6 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.validators import is_int, is_ipv4, is_ipv6, is_mac
-from noc.core.text import parse_table
 from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.lldp import (
@@ -55,6 +54,127 @@ class Script(BaseScript):
         r"^Port description:(?P<port_descr>.*)\n",
         re.MULTILINE,
     )
+
+    rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
+    rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
+
+    def parse_table(
+        self,
+        s,
+        allow_wrap=False,
+        allow_extend=False,
+        expand_columns=False,
+        max_width=0,
+        footer=None,
+        n_row_delim="",
+        expand_tabs=True,
+        strip_rows=False,
+    ):
+        """
+        Parse string containing table an return a list of table rows.
+        Each row is a list of cells.
+        Columns are determined by a sequences of ---- or ==== which are
+        determines rows bounds.
+        Examples:
+        First Second Third
+        ----- ------ -----
+        a     b       c
+        ddd   eee     fff
+        Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
+
+        :param s: Table for parsing
+        :type s: str
+        :param allow_wrap: Union if cell contins multiple line
+        :type allow_wrap: bool
+        :param allow_extend: Check if column on row longest then column width, enlarge it and shift rest of columns
+        :type allow_extend: bool
+        :param expand_columns: Expand columns covering all available width
+        :type expand_columns: bool
+        :param max_width: Max table width, if table width < max_width extend length, else - nothing
+        :type max_width: int
+        :param footer: stop iteration if match expression footer
+        :type footer: string
+        :param n_row_delim: Append delimiter to next cell line
+        :type n_row_delim: string
+        :param expand_tabs: Apply expandtabs() to each line
+        :type expand_tabs: bool
+        :param strip_rows: Apply strip() to rest rows in column, if allow_wrap set to True
+        :type strip_rows: bool
+        """
+        r = []
+        columns = []
+        if footer is not None:
+            rx_footer = re.compile(footer)
+        for line in s.splitlines():
+            if expand_tabs:
+                # Replace tabs with spaces with step 8
+                line = line.expandtabs()
+            if not line.strip() and footer is None:
+                columns = []
+                continue
+            if footer is not None and rx_footer.search(line):
+                break  # Footer reached, stop
+            if not columns and self.rx_header_start.match(line):
+                # Column delimiters found. try to determine column's width
+                columns = []
+                x = 0
+                while line:
+                    match = self.rx_col.match(line)
+                    if not match:
+                        break
+                    spaces = len(match.group(1))
+                    dashes = len(match.group(2))
+                    columns += [(x + spaces, x + spaces + dashes)]
+                    x += match.end()
+                    line = line[match.end() :]
+                if max_width and columns[-1][-1] < max_width:
+                    columns[-1] = (columns[-1][0], max_width)
+                if expand_columns:
+                    columns = [(cc[0], nc[0] - 1) for cc, nc in zip(columns, columns[1:])] + [
+                        columns[-1]
+                    ]
+            elif columns:  # Fetch cells
+                if allow_extend:
+                    # Find which spaces between column not empty
+                    ll = len(line)
+                    for i, (f, t) in enumerate(columns):
+                        if t < ll and line[t].strip():
+                            # If spaces not empty - shift column width equal size row
+                            shift = len(line[f:].split()[0]) - (t - f)
+                            # Enlarge column
+                            columns[i] = (f, t + shift)
+                            # Shift rest
+                            columns[i + 1 :] = [
+                                (v[0] + shift, v[1] + shift) for v in columns[i + 1 :]
+                            ]
+                            break
+                if allow_wrap:
+                    row = [line[f:t] for f, t in columns]
+                    if r and not row[0].strip():
+                        # first column is empty
+                        for i, x in enumerate(row):
+                            if (
+                                x.strip()
+                                and not r[-1][i].endswith(n_row_delim)
+                                and not x.startswith(n_row_delim)
+                            ):
+                                if strip_rows:
+                                    r[-1][i] += "%s%s" % (n_row_delim, x.strip())
+                                else:
+                                    r[-1][i] += "%s%s" % (n_row_delim, x)
+                            else:
+                                if strip_rows:
+                                    r[-1][i] += x.strip()
+                                else:
+                                    r[-1][i] += x
+                    else:
+                        r += [row]
+                else:
+                    r += [[line[f:t].strip() for f, t in columns]]
+        if allow_wrap:
+            return [[x.strip() for x in rr] for rr in r]
+        else:
+            return r
 
     def get_local_iface(self):
         r = {}
@@ -142,7 +262,7 @@ class Script(BaseScript):
         r = []
         # Fallback to CLI
         lldp = self.cli("show lldp neighbors")
-        for link in parse_table(lldp, allow_wrap=True, expand_tabs=False):
+        for link in self.parse_table(lldp, allow_wrap=True, expand_tabs=False, strip_rows=True):
             local_interface = link[0]
             remote_chassis_id = link[1]
             remote_port = link[2]
