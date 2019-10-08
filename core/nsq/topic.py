@@ -18,6 +18,7 @@ import tornado.gen
 import tornado.locks
 
 # NOC modules
+from noc.config import config
 from noc.core.backport.time import perf_counter
 
 
@@ -38,6 +39,37 @@ class TopicQueue(object):
         self.msg_get_size = 0
         self.msg_requeued = 0
         self.msg_requeued_size = 0
+
+    @staticmethod
+    def iter_encode_chunks(message, limit=config.nsqd.mpub_size - 8):
+        """
+        Encode data to iterable atomic chunks of up to limit size
+
+        :param message: Input data
+        :param limit: Chunk limit
+        :return: Yields JSON-encoded chunks
+        :raises ValueError: If message cannot be encoded or too big
+        """
+        if isinstance(message, six.string_types):
+            if len(message) > limit:
+                raise ValueError("Message too big")
+            yield message
+        else:
+            data = ujson.dumps(message)
+            if len(data) <= limit:
+                yield data
+            elif isinstance(message, (list, tuple)):
+                # Try to split in parts
+                n_chunks = len(data) // limit + 1
+                chunk_size = len(message) // n_chunks
+                while message:
+                    chunk, message = message[:chunk_size], message[chunk_size:]
+                    chunk_data = ujson.dumps(chunk)
+                    if len(chunk_data) > limit:
+                        raise ValueError("Message too big")
+                    yield chunk_data
+            else:
+                raise ValueError("Message too big")
 
     def put(self, message, fifo=True):
         """

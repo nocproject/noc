@@ -765,9 +765,12 @@ class Service(object):
           otherwise
         :param raw: True - pass message as-is, False - convert to JSON
         """
-        if not raw:
-            data = ujson.dumps(data)
-        self.get_topic_queue(topic).put(data)
+        q = self.get_topic_queue(topic)
+        if raw:
+            q.put(data)
+        else:
+            for chunk in q.iter_encode_chunks(data):
+                q.put(chunk)
 
     def mpub(self, topic, messages):
         """
@@ -775,7 +778,8 @@ class Service(object):
         """
         q = self.get_topic_queue(topic)
         for m in messages:
-            q.put(ujson.dumps(m))
+            for chunk in q.iter_encode_chunks(m):
+                q.put(chunk)
 
     def get_executor(self, name):
         """
