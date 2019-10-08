@@ -1,8 +1,8 @@
 {
-    "name": "Huawei | SmartAX | MA5600T | FAN",
+    "name": "Huawei | SmartAX | MA5600T | FAN-ETSI",
     "$collection": "inv.connectiontypes",
     "uuid": "a94b09f2-c753-42f1-8c35-fc64889f1466",
-    "description": "MA5600T FAN module",
+    "description": "MA5600T  ETSI Fan Tray",
     "c_group": [],
     "genders": "mf"
 }

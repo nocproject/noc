@@ -1,0 +1,45 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H83DCCME",
+    "$collection": "inv.objectmodels",
+    "uuid": "3ac07164-99bc-4762-90a0-6c5b732be629",
+    "vendor__code": "HUAWEI",
+    "description": "H83DCCME is a 48-channel VDSL2 and POTS combo service board that provides VDSL2 and POTS integrated access services. It has an embedded splitter .",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "48 channels of POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "48 channels of DSL",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE1",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H83DCCME"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 32.0
+        }
+    }
+}

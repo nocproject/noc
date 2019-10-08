@@ -1,0 +1,45 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H836ADLE",
+    "$collection": "inv.objectmodels",
+    "uuid": "7d8fa751-c9ff-4185-9f9e-09747873273f",
+    "vendor__code": "HUAWEI",
+    "description": "H836ADLE is a 32-channel ADSL2+ over POTS service board that provides the ADSL2+ over POTS access services. It has an embedded splitter with 600-ohm impedance.",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "32 channels of POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "32 channels of DSL",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE0",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H836ADLE"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 32.0
+        }
+    }
+}
