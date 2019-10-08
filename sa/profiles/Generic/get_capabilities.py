@@ -31,6 +31,8 @@ class Script(BaseScript):
 
     # Dict of capability -> oid to check against snmp GET
     CHECK_SNMP_GET = {}
+    # Dict of capability -> oid to check against snmp GETNEXT
+    CHECK_SNMP_GETNEXT = {}
     #
     SNMP_CAPS = {SNMP_v1: "SNMP | v1", SNMP_v2c: "SNMP | v2c", SNMP_v3: "SNMP | v3"}
 
@@ -346,6 +348,9 @@ class Script(BaseScript):
                         caps["SNMP | IF-MIB | HC"] = True
                 for cap, oid in six.iteritems(self.CHECK_SNMP_GET):
                     if self.check_snmp_get(oid, version=snmp_version):
+                        caps[cap] = True
+                for cap, oid in six.iteritems(self.CHECK_SNMP_GETNEXT):
+                    if self.check_snmp_getnext(oid, version=snmp_version):
                         caps[cap] = True
             else:
                 caps["SNMP"] = False

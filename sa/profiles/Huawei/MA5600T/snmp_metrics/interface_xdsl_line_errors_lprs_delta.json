@@ -1,0 +1,11 @@
+{
+  "$metric": "Interface | xDSL | Line | Errors | LPRS | Delta",
+  "$type": "caps",
+  "oids": [[
+    "SNMP | MIB | ADSL-MIB", {
+      "$type": "ifindex",
+      "oid": "ADSL-LINE-MIB::adslAtucPerfLprs.{{ ifIndex }}",
+      "type": "delta"
+    }
+  ]]
+}

@@ -18,6 +18,8 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Huawei.MA5600T.get_capabilities"
 
+    CHECK_SNMP_GETNEXT = {"SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"]}
+
     rx_lacp_id = re.compile(r"^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
 
     @false_on_cli_error

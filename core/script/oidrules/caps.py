@@ -38,4 +38,4 @@ class CapabilityRule(object):
             raise ValueError("oids is required")
         if not isinstance(data["oids"], list):
             raise ValueError("oids must be list")
-        return CapabilityRule(oids=[load_rule(d) for d in data["oids"]])
+        return CapabilityRule(oids=[(caps, load_rule(rule)) for caps, rule in data["oids"]])
