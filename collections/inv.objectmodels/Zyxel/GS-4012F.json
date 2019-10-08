@@ -103,26 +103,20 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Port 9 (Copper)",
-            "direction": "s",
-            "gender": "f",
-            "name": "9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "Port 9 (SFP)",
             "direction": "i",
             "gender": "f",
+            "group": "9",
             "name": "sfp9",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Port 10 (Copper)",
+            "description": "Port 9 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "10",
+            "group": "9",
+            "name": "9",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -130,15 +124,17 @@
             "description": "Port 10 (SFP)",
             "direction": "i",
             "gender": "f",
+            "group": "10",
             "name": "sfp10",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Port 11 (Copper)",
+            "description": "Port 10 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "11",
+            "group": "10",
+            "name": "10",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -146,15 +142,17 @@
             "description": "Port 11 (SFP)",
             "direction": "i",
             "gender": "f",
+            "group": "11",
             "name": "sfp11",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Port 12 (Copper)",
+            "description": "Port 11 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "12",
+            "group": "11",
+            "name": "11",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -162,9 +160,19 @@
             "description": "Port 12 (SFP)",
             "direction": "i",
             "gender": "f",
+            "group": "12",
             "name": "sfp12",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 12 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "12",
+            "name": "12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         }
     ],
     "data": {

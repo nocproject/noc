@@ -1,9 +1,9 @@
 {
-    "name": "Zyxel | ES-2024A",
+    "name": "Zyxel | MES-3528",
     "$collection": "inv.objectmodels",
-    "uuid": "dfdd4064-fb61-4e04-9333-c5f60a298878",
+    "uuid": "781ec9bd-b5d5-4564-8816-910e11c31245",
     "vendor__code": "ZYXEL",
-    "description": "L2+ switch with 24 ports 10/100Base-TX, 2 combo ports 10/100/1000Base-TX / SFP",
+    "description": "L2+ switch with 24 ports 10/100Base-TX, 4 combo ports 10/100/1000Base-TX / SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -219,7 +219,6 @@
             "description": "Port 25 (Copper)",
             "direction": "s",
             "gender": "f",
-            "group": "25",
             "name": "25",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -228,16 +227,14 @@
             "description": "Port 25 (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "25",
             "name": "sfp25",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Port 26 (Copper)",
+            "description": "Port 25 (Copper)",
             "direction": "s",
             "gender": "f",
-            "group": "26",
             "name": "26",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -246,18 +243,49 @@
             "description": "Port 26 (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "26",
             "name": "sfp26",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 27 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "27",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 27 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp27",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 28 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "28",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 28 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp28",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ES-2024A"]
+            "part_no": ["MES-3528"]
         },
         "dimensions": {
-            "depth": 75,
+            "depth": 200,
             "height": 44,
             "width": 440
         },
@@ -265,7 +293,7 @@
             "managed": true
         },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         },
         "weight": {
             "is_recursive": true,
