@@ -13,7 +13,7 @@
             "direction": "i",
             "gender": "f",
             "name": "fan",
-            "type__name": "Huawei | SmartAX | MA5600T | FAN"
+            "type__name": "Huawei | SmartAX | MA5603T | FAN"
         },
         {
             "description": "Service board",
@@ -109,7 +109,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["MA5603T", "H802MABO"]
+            "part_no": ["H802MABO", "MA5603T"]
         },
         "dimensions": {
             "depth": 283,

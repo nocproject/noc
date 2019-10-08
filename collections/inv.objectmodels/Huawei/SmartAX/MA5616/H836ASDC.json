@@ -1,0 +1,22 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H836ASDC",
+    "$collection": "inv.objectmodels",
+    "uuid": "1c24d82c-4451-4337-b1f7-a180f2ef6ad0",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei MA5616 Analog Subscriber DSP Card",
+    "tags": ["dsp"],
+    "connections": [
+        {
+            "description": "Voice Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | VDB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H836ASDC"]
+        }
+    }
+}
