@@ -1,0 +1,12 @@
+{
+  "$metric": "Interface | xDSL | Line | SNR | Upstream",
+  "$type": "caps",
+  "oids": [[
+    "SNMP | MIB | ADSL-MIB", {
+      "$type": "ifindex",
+      "oid": ["ADSL-LINE-MIB::adslAtucCurrSnrMgn.{{ ifIndex }}", "ADSL-LINE-MIB::adslAtucCurrAtn.{{ ifIndex }}"],
+      "type": "gauge",
+      "scale": "sum"
+    }
+  ]]
+}
