@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "7c8fb8b1-617f-4272-9396-abb591adbfdb",
     "vendor__code": "HUAWEI",
-    "description": "The H801X2CS board is a 4-port GE uplink interface card that provides two 10GE upstream or cascading optical ports.",
+    "description": "The H801GICD board is a 4-port GE optical interface card, providing upstream or cascading optical ports.",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
     "connections": [

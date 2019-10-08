@@ -4,6 +4,7 @@
     "uuid": "04d89045-b732-475b-a135-cc6f816b19e7",
     "vendor__code": "HUAWEI",
     "description": "H836ADPE is a 64-channel ADSL2+ over POTS service board that provides the ADSL2+ over POTS access services. It has an embedded splitter with 600-ohm impedance.",
+    "cr_context": "BOARD",
     "connections": [
         {
             "description": "Chassis connector",

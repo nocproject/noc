@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | SmartAX | MA5616 | H83DCCME",
+    "name": "Huawei | SmartAX | MA5616 | H835ADLE",
     "$collection": "inv.objectmodels",
-    "uuid": "3ac07164-99bc-4762-90a0-6c5b732be629",
+    "uuid": "a6e1627b-8ea1-4295-b40b-31205410b7d1",
     "vendor__code": "HUAWEI",
-    "description": "H83DCCME is a 48-channel VDSL2 and POTS combo service board that provides VDSL2 and POTS integrated access services. It has an embedded splitter .",
+    "description": "H836ADLE is a 32-channel ADSL2+ over POTS service board that provides the ADSL2+ over POTS access services. It has an embedded splitter with 600-ohm impedance. G.INP  supported.",
     "cr_context": "BOARD",
     "connections": [
         {
@@ -14,25 +14,25 @@
             "type__name": "Huawei | SmartAX | MA5616 | SB"
         },
         {
-            "description": "48 channels of POTS",
+            "description": "32 channels of POTS",
             "direction": "s",
             "gender": "f",
-            "name": "LINE0",
+            "name": "PSTN0",
             "protocols": ["PSTN"],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
-            "description": "48 channels of DSL",
+            "description": "32 channels of DSL",
             "direction": "s",
             "gender": "f",
-            "name": "LINE1",
+            "name": "LINE0",
             "protocols": ["ADSL2+"],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["H83DCCME"]
+            "part_no": ["H835ADLE"]
         },
         "dimensions": {
             "depth": 21,

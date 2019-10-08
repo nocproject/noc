@@ -1,0 +1,32 @@
+{
+    "name": "WTD | Transceiver | GPON | RTXM167-527",
+    "$collection": "inv.objectmodels",
+    "uuid": "369940ae-3737-4109-b4d3-5964b7d1d51e",
+    "vendor__code": "WTD",
+    "description": "RTXM167-527 GPON OLT Class C+ 40km DDM SFP optical module",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1260_1360", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["RTXM167-527"]
+        }
+    }
+}

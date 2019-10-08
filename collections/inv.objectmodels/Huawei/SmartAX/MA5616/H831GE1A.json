@@ -1,0 +1,23 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H831GE1A",
+    "$collection": "inv.objectmodels",
+    "uuid": "d3186ecd-f883-454d-85a6-e94e19eba44d",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei MA5616 GE Interface Card",
+    "cr_context": "DAUGHTERBOARD",
+    "tags": ["dsp"],
+    "connections": [
+        {
+            "description": "Interface Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | UDB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H831GE1A"]
+        }
+    }
+}

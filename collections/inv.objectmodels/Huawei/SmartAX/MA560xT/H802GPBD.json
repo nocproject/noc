@@ -1,0 +1,93 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H802GPBD",
+    "$collection": "inv.objectmodels",
+    "uuid": "5d60d42d-1750-4858-a053-c825e2d5655d",
+    "vendor__code": "HUAWEI",
+    "description": "8-port GPON OLT interface board",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H802GPBD"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
+        }
+    }
+}

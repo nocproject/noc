@@ -1,0 +1,34 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H83E1FCBA",
+    "$collection": "inv.objectmodels",
+    "uuid": "a21688b6-499a-40e4-b715-5516150d9c0e",
+    "vendor__code": "HUAWEI",
+    "description": "MA5610&MA5616 Fan Tray Assembly",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H83E1FCBA"]
+        },
+        "dimensions": {
+            "depth": 220,
+            "height": 86,
+            "width": 29
+        },
+        "power": {
+            "power": 18.0
+        },
+        "weight": {
+            "weight": 0.5
+        }
+    }
+}
