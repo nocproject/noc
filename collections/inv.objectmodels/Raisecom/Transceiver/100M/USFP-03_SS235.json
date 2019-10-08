@@ -1,5 +1,5 @@
 {
-    "name": "Raisecom | Transceiver | 100M | USFP-03/SS235",
+    "name": "Raisecom | Transceiver | 100M | USFP-03/SS235-D-R",
     "$collection": "inv.objectmodels",
     "uuid": "92af861e-188b-4c1f-b0cd-3ef3b7fb29ba",
     "vendor__code": "RAISECOM",
@@ -15,19 +15,11 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RX Port",
+            "description": "TX/RX LC",
             "direction": "s",
             "gender": "f",
-            "name": "rx",
-            "protocols": [">100BASEFX-1310"],
-            "type__name": "Optical | LC"
-        },
-        {
-            "description": "TX Port",
-            "direction": "s",
-            "gender": "f",
-            "name": "tx",
-            "protocols": ["<100BASEFX-1310"],
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1310", ">1000BASELX-1550"],
             "type__name": "Optical | LC"
         }
     ],

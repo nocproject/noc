@@ -1,9 +1,9 @@
 {
-    "name": "Raisecom | Transceiver | 100M | USFP-03/SS135-D-R",
+    "name": "Raisecom | Transceiver | 1G | USFP-Gb/SS25-D-R",
     "$collection": "inv.objectmodels",
-    "uuid": "9b57f934-b756-4e3e-812d-1ae7ffc4c9e7",
+    "uuid": "8d935bdc-cbfa-43b1-afd3-163e0f2c23b4",
     "vendor__code": "RAISECOM",
-    "description": "Wavelength: 1310TX nm FP; RX sensitivity:<-34dBm; TX power: -15 ~ -8 dBm; Distance:15 km ; DDMI; RoHS;Bitrate: 155M, LC",
+    "description": "Wavelength: 1550 nm DFB; RX sensitivity:< -23 dBm; TX power: -3~3 dBm; Distance: 40 km; DDMI; RoHS;Bitrate: 1.25G, LC",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -11,7 +11,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "protocols": ["TransEth100M"],
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -19,13 +19,13 @@
             "direction": "s",
             "gender": "f",
             "name": "txrx",
-            "protocols": ["<1000BASELX-1310", ">1000BASELX-1550"],
+            "protocols": ["<1000BASELX-1550", ">1000BASELX-1490"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["USFP-03/SS135"]
+            "part_no": ["USFP-GB/SS25", "USFP-Gb/SS25"]
         }
     }
 }
