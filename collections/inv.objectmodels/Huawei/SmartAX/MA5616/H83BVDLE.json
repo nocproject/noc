@@ -3,7 +3,8 @@
     "$collection": "inv.objectmodels",
     "uuid": "744c221c-9cad-4b81-b2f7-ae8b5e378ecd",
     "vendor__code": "HUAWEI",
-    "description": "H83BVDLE is a 32-channel VDSL2 and POTS combo service board that provides VDSL2 and POTS integrated access services. It has an embedded splitter .",
+    "description": "H83BVDLE is a 32-channel VDSL2 and POTS combo service board that provides VDSL2 and POTS integrated access services. It has an embedded splitter . Vectoring not supported.",
+    "cr_context": "BOARD",
     "connections": [
         {
             "description": "Chassis connector",

@@ -4,6 +4,7 @@
     "uuid": "b0075730-8bb1-49a1-ad59-24346e59ec28",
     "vendor__code": "HUAWEI",
     "description": "MA5600,H565ADEF1,64-channel ADSL2+ Board, (over POTS) (ext. Splitter)",
+    "cr_context": "BOARD",
     "connections": [
         {
             "description": "Chassis connector",

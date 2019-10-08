@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | SmartAX | MA5616 | H83DCCME",
+    "name": "Huawei | SmartAX | MA5616 | H839ASPB",
     "$collection": "inv.objectmodels",
-    "uuid": "3ac07164-99bc-4762-90a0-6c5b732be629",
+    "uuid": "8e86f38f-b3da-4edc-9f63-77e9a09c3824",
     "vendor__code": "HUAWEI",
-    "description": "H83DCCME is a 48-channel VDSL2 and POTS combo service board that provides VDSL2 and POTS integrated access services. It has an embedded splitter .",
+    "description": "The H839ASPB board is a 64-channel VoIP subscriber board, providing 64-channels VoIP POTS services. Compared with H837ASPB/H838ASPB, H839ASPB supports a new function: direct current-isolated (DC-I) grounding.",
     "cr_context": "BOARD",
     "connections": [
         {
@@ -14,25 +14,25 @@
             "type__name": "Huawei | SmartAX | MA5616 | SB"
         },
         {
-            "description": "48 channels of POTS",
+            "description": "32 channels of POTS",
             "direction": "s",
             "gender": "f",
-            "name": "LINE0",
+            "name": "PSTN0",
             "protocols": ["PSTN"],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
-            "description": "48 channels of DSL",
+            "description": "32 channels of POTS",
             "direction": "s",
             "gender": "f",
-            "name": "LINE1",
-            "protocols": ["ADSL2+"],
+            "name": "PSTN1",
+            "protocols": ["PSTN"],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["H83DCCME"]
+            "part_no": ["H839ASPB"]
         },
         "dimensions": {
             "depth": 21,
@@ -40,7 +40,7 @@
             "width": 220
         },
         "power": {
-            "power": 32.0
+            "power": 46.0
         }
     }
 }

@@ -3,7 +3,8 @@
     "$collection": "inv.objectmodels",
     "uuid": "2b996a5d-a4a2-4efa-9ae0-94fe7ace85e1",
     "vendor__code": "HUAWEI",
-    "description": "H836ADPE is a 64-channel ADSL2+ over POTS service board that provides the ADSL2+ over POTS access services. It has an embedded splitter with 600-ohm impedance.",
+    "description": "The H838ASPB board is a 64-channel VoIP subscriber board, providing 64-channels VoIP POTS services.",
+    "cr_context": "BOARD",
     "connections": [
         {
             "description": "Chassis connector",

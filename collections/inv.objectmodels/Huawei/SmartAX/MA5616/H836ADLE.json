@@ -3,7 +3,8 @@
     "$collection": "inv.objectmodels",
     "uuid": "7d8fa751-c9ff-4185-9f9e-09747873273f",
     "vendor__code": "HUAWEI",
-    "description": "H836ADLE is a 32-channel ADSL2+ over POTS service board that provides the ADSL2+ over POTS access services. It has an embedded splitter with 600-ohm impedance.",
+    "description": "H836ADLE is a 32-channel ADSL2+ over POTS service board that provides the ADSL2+ over POTS access services. It has an embedded splitter with 600-ohm impedance. G.INP  not supported.",
+    "cr_context": "BOARD",
     "connections": [
         {
             "description": "Chassis connector",

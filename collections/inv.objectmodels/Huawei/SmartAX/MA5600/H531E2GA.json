@@ -4,6 +4,7 @@
     "uuid": "65b89cca-1940-466c-bc12-d4345790a7aa",
     "vendor__code": "HUAWEI",
     "description": "2-портовая электрическая плата GE/FE ",
+    "cr_context": "SUBBOARD",
     "tags": ["lc", "port"],
     "connections": [
         {
