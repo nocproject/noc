@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | SNR | Upstream",
+    "$collection": "pm.metrictypes",
+    "uuid": "6254d37b-7c85-4826-b237-6364add8d54d",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_snr_up",
+    "field_type": "UInt16",
+    "description": "(Signal-to-noise ratio) Measured difference in level of a desired signal to the level of background noise.",
+    "measure": "dB"
+}

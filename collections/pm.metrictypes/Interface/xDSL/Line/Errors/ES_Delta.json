@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | Errors | ES | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "22718067-e7d7-4c55-8eda-80e5a89d4865",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_errors_es_delta",
+    "field_type": "UInt32",
+    "description": "Count of the number of Errored Seconds since agent reset.  The errored second parameter is a count of one-second intervals containing one or more crc anomalies, or one or more los or sef defects.",
+    "measure": "count"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | Errors | LOF | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "86388bff-fdc6-412b-bf20-f675061328bc",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_errors_lof_delta",
+    "field_type": "UInt32",
+    "description": "Count of the number of Loss of Framing failures since agent reset.",
+    "measure": "count"
+}

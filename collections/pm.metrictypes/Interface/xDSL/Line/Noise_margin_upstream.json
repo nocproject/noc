@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | Noise Margin | Upstream",
+    "$collection": "pm.metrictypes",
+    "uuid": "f5d8aba6-6397-4f8f-b369-d945425d6290",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_noise_margin_up",
+    "field_type": "Int16",
+    "description": "Noise Margin as seen by this ATU with respect to its received signal in tenth dB.",
+    "measure": "dB"
+}

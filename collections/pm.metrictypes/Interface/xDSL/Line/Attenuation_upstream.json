@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | Attenuation | Upstream",
+    "$collection": "pm.metrictypes",
+    "uuid": "92efe881-dc6f-4b5a-9e02-b59fb52178a0",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_attenuation_up",
+    "field_type": "UInt16",
+    "description": "Measured difference in the total power transmitted by the peer ATU and the total power received by this ATU.",
+    "measure": "dB"
+}
