@@ -1,0 +1,31 @@
+{
+    "name": "DLink | Transceiver | 1G | DEM-302S-BXD",
+    "$collection": "inv.objectmodels",
+    "uuid": "52d0f83b-e9c0-442d-9cfc-34cc13f6baa7",
+    "vendor__code": "DLINK",
+    "description": "WDM SFP Transciever 2km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DEM-302S-BXD"]
+        }
+    }
+}
