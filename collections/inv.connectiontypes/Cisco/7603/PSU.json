@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 7603 | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "eb5cd764-41f2-4b81-ba18-850cf55af47c",
+    "description": "Cisco 7603 PSU connection",
+    "c_group": [],
+    "genders": "mf"
+}
