@@ -8,12 +8,35 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "description": "DC power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power DC",
+            "type__name": "Zyxel | BPS-120 Connector"
+        },
+        {
+            "description": "AC power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power AC",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Outband management",
+            "direction": "s",
+            "gender": "f",
+            "name": "Management",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "Port 1",
@@ -227,6 +250,7 @@
             "description": "Port 27",
             "direction": "s",
             "gender": "f",
+            "group": "27",
             "name": "27",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -235,14 +259,16 @@
             "description": "Port 27 (SFP)",
             "direction": "i",
             "gender": "f",
+            "group": "27",
             "name": "sfp27",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "Port 28",
             "direction": "s",
             "gender": "f",
+            "group": "28",
             "name": "28",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -251,28 +277,30 @@
             "description": "Port 28 (SFP)",
             "direction": "i",
             "gender": "f",
+            "group": "28",
             "name": "sfp28",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Power inlet",
-            "direction": "s",
-            "gender": "f",
-            "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
         }
     ],
     "data": {
         "asset": {
             "part_no": ["ES-4124"]
         },
+        "dimensions": {
+            "depth": 270,
+            "height": 45,
+            "width": 440
+        },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 4.0
         }
     }
 }

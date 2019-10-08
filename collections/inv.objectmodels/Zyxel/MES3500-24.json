@@ -1,9 +1,9 @@
 {
-    "name": "Zyxel | ES-2024A",
+    "name": "Zyxel | MES3500-24",
     "$collection": "inv.objectmodels",
-    "uuid": "dfdd4064-fb61-4e04-9333-c5f60a298878",
+    "uuid": "751649e6-69d1-49c2-9407-1fff505d8017",
     "vendor__code": "ZYXEL",
-    "description": "L2+ switch with 24 ports 10/100Base-TX, 2 combo ports 10/100/1000Base-TX / SFP",
+    "description": "L2+ switch with 24 ports 10/100Base-TX, 4 combo ports 10/100/1000Base-TX / SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -250,14 +250,50 @@
             "name": "sfp26",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 27 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "27",
+            "name": "27",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 27 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "27",
+            "name": "sfp27",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 28 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "28",
+            "name": "28",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 28 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "28",
+            "name": "sfp28",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ES-2024A"]
+            "part_no": ["MES3500-24"]
         },
         "dimensions": {
-            "depth": 75,
+            "depth": 200,
             "height": 44,
             "width": 440
         },
@@ -265,11 +301,11 @@
             "managed": true
         },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         },
         "weight": {
             "is_recursive": true,
-            "weight": 2.0
+            "weight": 2.6
         }
     }
 }
