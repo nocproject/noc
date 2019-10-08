@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | VS-F6K-MSFC3",
+    "$collection": "inv.objectmodels",
+    "uuid": "00ed68c4-1edb-44a6-91eb-82e855db3724",
+    "vendor__code": "CISCO",
+    "description": "Cisco VS-F6K-MSFC3 Daughterboard",
+    "cr_context": "MSFC",
+    "connections": [
+        {
+            "description": "MSFC3 Daughterboard",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500-7600 | MSFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["VS-F6K-MSFC3"]
+        }
+    }
+}

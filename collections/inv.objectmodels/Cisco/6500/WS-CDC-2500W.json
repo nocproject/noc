@@ -1,0 +1,46 @@
+{
+    "name": "Cisco | 6500 | WS-CDC-2500W",
+    "$collection": "inv.objectmodels",
+    "uuid": "03385557-1f87-4642-b05e-5240bd7b2556",
+    "vendor__code": "CISCO",
+    "description": "Cisco 48v DC power supply, 2500 watt",
+    "cr_context": "PSU",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "DC 1 input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "DC 1 input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Ground connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "GND",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-CDC-2500W"]
+        }
+    }
+}
