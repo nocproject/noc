@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | MA5616 | H831PDIA1",
+    "name": "Huawei | SmartAX | MA5616 | H831PDIA",
     "$collection": "inv.objectmodels",
     "uuid": "c25ab8b6-4c47-4219-ae2d-7150f39e52ae",
     "vendor__code": "HUAWEI",
@@ -33,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["H831PDIA1"]
+            "part_no": ["H831PDIA", "H831PDIA1"]
         },
         "dimensions": {
             "depth": 442,

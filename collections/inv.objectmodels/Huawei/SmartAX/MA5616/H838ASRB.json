@@ -1,0 +1,38 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H838ASRB",
+    "$collection": "inv.objectmodels",
+    "uuid": "8b916e33-41fa-4490-813c-668575b8d037",
+    "vendor__code": "HUAWEI",
+    "description": "The H838ASRB board is a 32-channel VoIP subscriber board, providing 32-channels VoIP POTS services.",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "32 channels of POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H838ASRB"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 46.0
+        }
+    }
+}
