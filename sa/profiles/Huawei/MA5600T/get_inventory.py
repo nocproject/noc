@@ -8,7 +8,7 @@
 
 # Python modules
 import re
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 # Third party modules
 from dateutil.parser import parse
@@ -17,6 +17,7 @@ from dateutil.parser import parse
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_kv
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -123,12 +124,126 @@ class Script(BaseScript):
             ]
         return r
 
+    tc_type_map = {"767": "BOARD", "146021": "BOARD"}
+
+    def get_ma5600_subboard(self):
+        # SubBoard
+        subboard = defaultdict(list)
+        for (slot_index, slot_type, slot_ver, slot_descr) in self.snmp.get_tables(
+            [
+                mib["HUAWEI-DEVICE-MIB::hwSubslotType"],
+                mib["HUAWEI-DEVICE-MIB::hwSubslotVersion"],
+                mib["HUAWEI-DEVICE-MIB::hwSubSlotDesc"],
+            ],
+            bulk=False,
+        ):
+            if not slot_descr:
+                continue
+            _, slot_num, board_num = slot_index.rsplit(".", 2)
+            if board_num == "65535":
+                continue
+            part_no = slot_descr[:-1]
+            subboard[int(slot_num)] += [
+                {
+                    "type": "SUBBOARD",
+                    "number": board_num,
+                    "vendor": "Huawei",
+                    "part_no": part_no,
+                    "description": slot_descr,
+                }
+            ]
+        return subboard
+
+    def execute_snmp(self, **kwargs):
+        """
+        Slot part_no is not full (ex. ADFE)
+        :param kwargs:
+        :return:
+        """
+        r = []
+        # Chassis
+        for oid, frame_descr in self.snmp.getnext(mib["HUAWEI-DEVICE-MIB::hwFrameDesc"]):
+            r += [
+                {
+                    "type": "CHASSIS",
+                    "number": 0,
+                    "vendor": "Huawei",
+                    "part_no": frame_descr.split("_")[0],
+                    "serial": None,
+                    "description": "",
+                    "mnf_date": None,
+                }
+            ]
+        subboard = self.get_ma5600_subboard()
+        # Slots
+        for (
+            slot_index,
+            slot_type,
+            slot_descr,
+            slot_subs,
+            slot_phys_serial,
+        ) in self.snmp.get_tables(
+            [
+                mib["HUAWEI-DEVICE-MIB::hwSlotType"],
+                mib["HUAWEI-DEVICE-MIB::hwSlotDesc"],
+                mib["HUAWEI-DEVICE-MIB::hwSubSlots"],
+                mib["HUAWEI-DEVICE-MIB::hwSlotPhySerialNum"],
+            ],
+            bulk=False,
+        ):
+            _, slot_num = slot_index.rsplit(".", 1)
+            part_no, _, _ = slot_descr.split("_")
+            r += [
+                {
+                    "type": self.tc_type_map.get(slot_type, "BOARD"),
+                    "number": slot_num,
+                    "vendor": "Huawei",
+                    "part_no": part_no.strip(),
+                    "serial": slot_phys_serial,
+                    "description": slot_descr,
+                }
+            ]
+            if int(slot_num) in subboard:
+                r += subboard[slot_num]
+        return r
+
+    def execute_inventory_board(self, **kwargs):
+        """
+        Uses if display elabel command unsupported
+        :param kwargs:
+        :return:
+        """
+        r = []
+        serial = {}
+        for oid, phys_num in self.snmp.getnext(
+            mib["HUAWEI-DEVICE-MIB::hwSlotPhySerialNum"], bulk=False
+        ):
+            _, slot_num = oid.rsplit(".", 1)
+            serial[int(slot_num)] = phys_num
+        max_slot, boards = self.profile.get_board(self)
+        for board in boards:
+            r += [
+                self.inventory_item(
+                    **{
+                        "name": "main_board",
+                        "num": int(board["num"] or 0),
+                        "parent": None,
+                        "description": "",
+                        "type": board["name"],
+                        "vendor": "Huawei",
+                        "barcode": serial[board["num"]],
+                        "mnf_date": None,
+                    }
+                )
+            ]
+        return r
+
     def execute_cli(self, **kwargs):
         r = []
+        subboards = None
         if self.is_dslam:
             # On MA5600 chassis and subboard serial is not supported
             # frame = self.cli("display frame info 0")
-            # @todo subboard
             r += [
                 {
                     "type": "CHASSIS",
@@ -139,27 +254,34 @@ class Script(BaseScript):
                     "description": "MA5600's H511UPBA backplane, with double CELLBUS and GE bus",
                 }
             ]
+            subboards = self.get_ma5600_subboard()
         with self.profile.diagnose(self):
-            v = self.cli("display elabel 0", allow_empty_response=False)
-            if "This operation will take several seconds, please wait..." in v:
-                v = self.cli("", allow_empty_response=False)
+            try:
+                v = self.cli("display elabel 0", allow_empty_response=False)
+                if "This operation will take several seconds, please wait..." in v:
+                    v = self.cli("", allow_empty_response=False)
+                parse_result = self.parse_elabel(v)
+            except self.CLISyntaxError:
+                v = ""
         if not v:
-            raise NotImplementedError("Not supported 'display elabel' command")
-        parse_result = self.parse_elabel(v)
+            parse_result = self.execute_inventory_board()
+        #     raise NotImplementedError("Not supported 'display elabel' command")
         for item in parse_result:
             self.logger.debug("Inventory item: %s", item)
             num = item.num
             item_name = item.name.lower()
             if num == 0 and item.parent:
-                num = item.parent.split("_")[-1]
+                num = int(item.parent.split("_")[-1])
             if item_name.startswith("port"):
                 i_type = "XCVR"
             elif item_name.startswith("fan"):
                 i_type = "FAN"
             elif item_name.startswith("slot") and "PWC" in item.type:
                 i_type = "PWR"
-            elif item_name.startswith("main_board"):
+            elif item_name.startswith("main_board") and "Assembly Chassis" not in item.description:
                 i_type = "BOARD"
+            elif item_name.startswith("daughter_board"):
+                i_type = "DAUGHTERBOARD"
             else:
                 i_type = "CHASSIS"
             data = {
@@ -170,10 +292,13 @@ class Script(BaseScript):
                 "serial": item.barcode,
                 "description": item.description,
             }
-            try:
-                mfg_date = parse(item.mnf_date)
-                data["mfg_date"] = mfg_date.strftime("%Y-%m-%d")
-            except ValueError:
-                pass
+            if item.mnf_date:
+                try:
+                    mfg_date = parse(item.mnf_date)
+                    data["mfg_date"] = mfg_date.strftime("%Y-%m-%d")
+                except ValueError:
+                    pass
             r += [data]
+            if subboards and data["number"] in subboards:
+                r += subboards[data["number"]]
         return r
