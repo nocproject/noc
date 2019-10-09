@@ -1,9 +1,9 @@
 {
-    "name": "Qtech | QSW | QSW-3470-10T-AC-POE",
+    "name": "Qtech | QSW | QSW-3400-10T-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "e90ec0f2-dcae-4fd0-89c5-89bbdf8013a4",
+    "uuid": "c428c197-cac1-4184-9236-3257767f3714",
     "vendor__code": "QTECH",
-    "description": "Управляемый коммутатор уровня L2+ с поддержкой PoE 802.3af/at, 8 портов 10/100/1000BASE-T PoE, 2 порта 100/1000BASE-X SFP, 4K VLAN, 8K MAC адресов, консольный порт, встроенный БП разъем питания на передней панели, 100-240В AC, размеры ШхГхВ (335x220x44 мм)",
+    "description": "8 портов 10/100/1000BASE-T, 2 комбо-порта 10/100/1000BASE-T или 100/1000BASE-X SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -12,7 +12,7 @@
             "direction": "s",
             "gender": "f",
             "name": "1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -20,7 +20,7 @@
             "direction": "s",
             "gender": "f",
             "name": "2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +28,7 @@
             "direction": "s",
             "gender": "f",
             "name": "3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +36,7 @@
             "direction": "s",
             "gender": "f",
             "name": "4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +44,7 @@
             "direction": "s",
             "gender": "f",
             "name": "5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +52,7 @@
             "direction": "s",
             "gender": "f",
             "name": "6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +60,7 @@
             "direction": "s",
             "gender": "f",
             "name": "7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +68,16 @@
             "direction": "s",
             "gender": "f",
             "name": "8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "9",
+            "direction": "s",
+            "gender": "f",
+            "group": "9",
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -79,6 +88,15 @@
             "name": "sfp9",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "10",
+            "direction": "s",
+            "gender": "f",
+            "group": "10",
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "Fiber port 10",
@@ -98,6 +116,14 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "USB Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "usb",
+            "protocols": [">USB10", ">USB11", ">USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
@@ -108,25 +134,25 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["QSW-3470-10T-POE-AC", "QSW-3470-10T-AC-POE"]
+            "part_no": ["QSW-3400-10T-AC"]
+        },
+        "dimensions": {
+            "depth": 204,
+            "height": 44,
+            "width": 330
         },
         "management": {
             "managed": true
         },
+        "power": {
+            "power": 25.0
+        },
         "rackmount": {
             "units": 1.0
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 44,
-            "width": 335
-        },
-        "power": {
-            "power": 144.0
-        },
         "weight": {
             "is_recursive": true,
-            "weight": 2.2
+            "weight": 1.7
         }
     }
 }
