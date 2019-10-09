@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5105 | CB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "68fa9331-6d82-4ebb-9758-185126acd13b",
+    "description": "Huawei MA5105&5605 Control Board",
+    "c_group": [],
+    "genders": "mf"
+}

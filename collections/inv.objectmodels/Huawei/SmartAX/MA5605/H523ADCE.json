@@ -1,0 +1,30 @@
+{
+    "name": "Huawei | SmartAX | MA5605 | H523ADCE",
+    "$collection": "inv.objectmodels",
+    "uuid": "9e68b9ae-1315-4352-bf14-2f459d672205",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei ADCE H523ADCE0 16-channel ADSL2+ board for Huawei MA5605 MA5105 MA5615 ",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5105 | SB"
+        },
+        {
+            "description": "16-channel ADSL2+",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H523ADCE"]
+        }
+    }
+}

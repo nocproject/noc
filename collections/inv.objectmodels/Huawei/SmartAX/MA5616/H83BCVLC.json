@@ -1,0 +1,38 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H83BCVLC",
+    "$collection": "inv.objectmodels",
+    "uuid": "a10af9c9-34b6-46aa-906e-822c6ef0420d",
+    "vendor__code": "HUAWEI",
+    "description": "H83BCVLC is a 32-channel VDSL2 and POTS combo service board that provides VDSL2 and POTS integrated access services. It has an embedded splitter . Vectoring  supported.",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "32 channels of  POTS+VDSL2",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE",
+            "protocols": ["VDSL2", "PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H83BCVLC"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 32.0
+        }
+    }
+}

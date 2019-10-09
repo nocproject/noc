@@ -1,0 +1,74 @@
+{
+    "name": "Huawei | SmartAX | MA5605",
+    "$collection": "inv.objectmodels",
+    "uuid": "07c99b40-89bd-405c-9873-999f88ba7976",
+    "vendor__code": "HUAWEI",
+    "description": null,
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "DC Power",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": ["48V DC"],
+            "type__name": "Electrical | MRJ21"
+        },
+        {
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "type__name": "Huawei | SmartAX | MA5105 | CB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | SmartAX | MA5105 | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | SmartAX | MA5105 | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | SmartAX | MA5105 | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | SmartAX | MA5105 | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MA5605"]
+        },
+        "dimensions": {
+            "depth": 245,
+            "height": 88,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 4.8
+        }
+    }
+}
