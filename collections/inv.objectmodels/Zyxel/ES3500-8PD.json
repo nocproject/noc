@@ -1,9 +1,9 @@
 {
-    "name": "Zyxel | ES-2108-G",
+    "name": "Zyxel | ES3500-8PD",
     "$collection": "inv.objectmodels",
-    "uuid": "a151ed35-0649-4cc3-8936-a2d200aa1d31",
+    "uuid": "133a3d47-5c92-4a7f-8f4c-ed4712d0aa1f",
     "vendor__code": "ZYXEL",
-    "description": "L2+ switch with 8 ports 10/100Base-TX, 1 combo ports 10/100/1000Base-TX / SFP",
+    "description": "L2+ switch with 8 ports 10/100Base-TX, 2 combo ports 10/100/1000Base-TX / SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -93,7 +93,7 @@
             "gender": "f",
             "group": "9",
             "name": "9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -104,26 +104,44 @@
             "name": "sfp9",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 10 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "10",
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 10 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "10",
+            "name": "sfp10",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ES-2108-G"]
+            "part_no": ["ES3500-8PD"]
         },
         "dimensions": {
-            "depth": 135,
-            "height": 35,
-            "width": 250
+            "depth": 123,
+            "height": 44,
+            "width": 216
         },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         },
         "weight": {
             "is_recursive": true,
-            "weight": 1.2
+            "weight": 1.6
         }
     }
 }
