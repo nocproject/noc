@@ -1,9 +1,9 @@
 {
-    "name": "Zyxel | ES-2108-G",
+    "name": "Zyxel | ES-2108PWR",
     "$collection": "inv.objectmodels",
-    "uuid": "a151ed35-0649-4cc3-8936-a2d200aa1d31",
+    "uuid": "129a5966-1bf9-43f1-b379-b09d9ac1c253",
     "vendor__code": "ZYXEL",
-    "description": "L2+ switch with 8 ports 10/100Base-TX, 1 combo ports 10/100/1000Base-TX / SFP",
+    "description": "L2+ switch with 8 ports 10/100Base-TX  PoE, 1 combo ports 100/1000Base-TX / SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -28,7 +28,7 @@
             "direction": "s",
             "gender": "f",
             "name": "1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +36,7 @@
             "direction": "s",
             "gender": "f",
             "name": "2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +44,7 @@
             "direction": "s",
             "gender": "f",
             "name": "3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +52,7 @@
             "direction": "s",
             "gender": "f",
             "name": "4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +60,7 @@
             "direction": "s",
             "gender": "f",
             "name": "5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +68,7 @@
             "direction": "s",
             "gender": "f",
             "name": "6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +76,7 @@
             "direction": "s",
             "gender": "f",
             "name": "7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -84,23 +84,21 @@
             "direction": "s",
             "gender": "f",
             "name": "8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "Port 9 (Copper)",
             "direction": "s",
             "gender": "f",
-            "group": "9",
             "name": "9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "Port 9 (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "9",
             "name": "sfp9",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -108,22 +106,22 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ES-2108-G"]
+            "part_no": ["ES-2108PWR"]
         },
         "dimensions": {
-            "depth": 135,
-            "height": 35,
+            "depth": 234,
+            "height": 44,
             "width": 250
         },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         },
         "weight": {
             "is_recursive": true,
-            "weight": 1.2
+            "weight": 2.4
         }
     }
 }

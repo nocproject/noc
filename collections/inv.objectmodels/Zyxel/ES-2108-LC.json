@@ -1,9 +1,9 @@
 {
-    "name": "Zyxel | ES-2108-G",
+    "name": "Zyxel | ES-2108-LC",
     "$collection": "inv.objectmodels",
-    "uuid": "a151ed35-0649-4cc3-8936-a2d200aa1d31",
+    "uuid": "3f9d07ed-3bd3-40ac-bc86-d39ca0856a9b",
     "vendor__code": "ZYXEL",
-    "description": "L2+ switch with 8 ports 10/100Base-TX, 1 combo ports 10/100/1000Base-TX / SFP",
+    "description": "L2+ switch with 8 ports 10/100Base-TX, 1 combo ports 100/1000Base-TX / SFP, 1 port 100-Base FX",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -88,27 +88,25 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Port 9 (Copper)",
-            "direction": "s",
-            "gender": "f",
-            "group": "9",
-            "name": "9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "Port 9 (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "9",
             "name": "sfp9",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1310", ">1000BASELX-1310"],
+            "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ES-2108-G"]
+            "part_no": ["ES-2108-LC"]
         },
         "dimensions": {
             "depth": 135,
@@ -119,7 +117,7 @@
             "managed": true
         },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         },
         "weight": {
             "is_recursive": true,
