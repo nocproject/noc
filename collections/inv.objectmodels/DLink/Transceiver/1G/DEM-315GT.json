@@ -1,0 +1,39 @@
+{
+    "name": "DLink | Transceiver | 1G | DEM-315GT",
+    "$collection": "inv.objectmodels",
+    "uuid": "fd6b50fc-7b5d-4399-8bf6-afd0160e07fc",
+    "vendor__code": "DLINK",
+    "description": "DLink SFP ZX transceiver 80km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DEM-315GT"]
+        }
+    }
+}
