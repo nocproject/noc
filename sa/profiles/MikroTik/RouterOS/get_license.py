@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_license
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -28,7 +28,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("system license print")
         match = self.re_search(self.rx_lic, v)
         if match.group("nlevel"):
@@ -40,7 +40,7 @@ class Script(BaseScript):
             "upgradable-to": match.group("upto"),
             "nlevel": level,
         }
-        features = match.group("features").strip()
-        if features:
+        if match.group("features"):
+            features = match.group("features").strip()
             r.update({"features": features})
         return r
