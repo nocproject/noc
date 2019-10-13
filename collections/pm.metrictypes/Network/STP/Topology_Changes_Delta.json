@@ -1,0 +1,10 @@
+{
+    "name": "Network | STP | Topology Changes | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "a8c9585b-c258-4bc7-807a-2ee995c2644e",
+    "scope__name": "Routing",
+    "field_name": "stp_topology_changes_delta",
+    "field_type": "UInt32",
+    "description": "The delta of topology changes detected by this bridge since the management entity was last collect.",
+    "measure": "C"
+}
