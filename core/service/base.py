@@ -810,7 +810,7 @@ class Service(object):
     def _iter_metrics_raw_chunks(table, metrics):
         start = 0
         while start < len(metrics):
-            limit = config.nsqd.ch_chunk_size
+            limit = config.nsqd.mpub_size - 8
             r = [table]
             limit -= len(table) + 1
             for m in metrics[start:]:
