@@ -27,7 +27,7 @@ class RebootsExtractor(BaseExtractor):
         super(RebootsExtractor, self).__init__(prefix, start, stop)
         self.reboot_stream = Stream(Reboots, prefix)
 
-    def extract(self):
+    def extract(self, *args, **options):
         nr = 0
         for d in (
             Reboot._get_collection()

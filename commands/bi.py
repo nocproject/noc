@@ -97,7 +97,7 @@ class Command(BaseCommand):
                     e = ecls(start=start, stop=end, prefix=self.data_prefix)
                 t0 = time.time()
                 try:
-                    nr = e.extract()
+                    nr = e.extract(*args, **options)
                 except OperationFailure as ex:
                     window = window // 2
                     if window < self.MIN_WINDOW:
@@ -111,7 +111,6 @@ class Command(BaseCommand):
                     )
                     is_exception = True
                     continue
-
                 self.print(
                     "[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True
                 )
