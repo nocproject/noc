@@ -807,10 +807,21 @@ class Service(object):
         raise NotImplementedError()
 
     @staticmethod
-    def _iter_metrics_body(table, metrics):
-        yield table
-        for m in metrics:
-            yield ujson.dumps(m)
+    def _iter_metrics_raw_chunks(table, metrics):
+        start = 0
+        while start < len(metrics):
+            limit = config.nsqd.ch_chunk_size
+            r = [table]
+            limit -= len(table) + 1
+            for m in metrics[start:]:
+                jm = ujson.dumps(m)
+                js = len(jm) + 1
+                if limit < js:
+                    break
+                r += [jm]
+                limit -= js
+                start += 1
+            yield "\n".join(r)
 
     def _register_unclustered_metrics(self, table, metrics):
         """
@@ -821,7 +832,8 @@ class Service(object):
         :param metrics: List of dicts containing metrics records
         :return:
         """
-        self.pub("chwriter", "\n".join(self._iter_metrics_body(table, metrics)), raw=True)
+        for chunk in self._iter_metrics_raw_chunks(table, metrics):
+            self.pub("chwriter", chunk, raw=True)
 
     def _register_replicated_metrics(self, table, metrics):
         """
@@ -832,18 +844,20 @@ class Service(object):
         :param metrics: List of dicts containing metrics records
         :return:
         """
+        # Change table name to raw_*
         table = "raw_%s" % table
+        # Split and publish parts
         replicas = config.ch_cluster_topology[0].replicas
-        body = "\n".join(self._iter_metrics_body(table, metrics))
-        for nr in range(replicas):
-            self.pub("chwriter-1-%s" % (nr + 1), body, raw=True)
+        for chunk in self._iter_metrics_raw_chunks(table, metrics):
+            for nr in range(replicas):
+                self.pub("chwriter-1-%s" % (nr + 1), chunk, raw=True)
 
     def _register_sharded_metrics(self, table, metrics):
         """
         Register metrics to send in sharded replicated configuration
         Must be used via register_metrics only
 
-        :param fields: Table name
+        :param table: Table name
         :param metrics: List of dicts containing metrics records
         :return:
         """
@@ -856,7 +870,8 @@ class Service(object):
         table = "raw_%s" % table
         # Publish metrics
         for ch in data:
-            self.pub(ch, "\n".join(self._iter_metrics_body(table, data[ch])), raw=True)
+            for chunk in self._iter_metrics_raw_chunks(table, data[ch]):
+                self.pub(ch, chunk, raw=True)
 
     def start_telemetry_callback(self):
         """
