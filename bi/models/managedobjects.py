@@ -15,6 +15,7 @@ from noc.core.clickhouse.fields import (
     Int32Field,
     BooleanField,
     StringField,
+    Float32Field,
     Float64Field,
     ReferenceField,
     IPv4Field,
@@ -85,6 +86,13 @@ class ManagedObject(Model):
     has_snmp_v2c = BooleanField(description=_("Has SNMP v2c"))
     # Counter
     uptime = Float64Field(description=_("Uptime"))
+    # Stats
+    n_reboots = UInt16Field(description=_("Reboots by period"))
+    availability = Float32Field(description=_("Availability by period (%)"))
+    total_unavailability = UInt16Field(description=_("Unavailability (sec.)"))
+    n_outages = UInt16Field(description=_("Outagees count by period"))
+    # Metrics stats
+    n_stp_topo_changes = UInt16Field(description=_("STP Topology Changes by period"))
     # SerialNumber
     serials = ArrayField(StringField(), description=_("Serial Numbers"))
     # Tags
