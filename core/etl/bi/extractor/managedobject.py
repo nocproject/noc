@@ -43,7 +43,7 @@ class ManagedObjectsExtractor(BaseExtractor):
         super(ManagedObjectsExtractor, self).__init__(prefix, start, stop)
         self.mo_stream = Stream(ManagedObjectBI, prefix)
 
-    def extract(self):
+    def extract(self, *args, **options):
         nr = 0
         ts = datetime.datetime.now()
         # External data

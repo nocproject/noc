@@ -52,7 +52,7 @@ class AlarmsExtractor(ArchivingExtractor):
             ).sort("clear_timestamp"):
                 yield d
 
-    def extract(self):
+    def extract(self, *args, **options):
         nr = 0
         # Get reboots
         r = Reboot._get_collection().aggregate(
