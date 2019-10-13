@@ -38,11 +38,15 @@ class Script(BaseScript):
         "CHASSIS": "CHASSIS",
         "PEM": "PEM",
         "POWER SUPPLY": "PEM",
+        "PDM": "PEM",  # Power Distribution Module
         "PSU": "PSU",
         "ROUTING ENGINE": "RE",
         "AFEB": "AFEB",
         "CB": "SCB",
         "MGMT BRD": "MGMT",
+        "FPM BOARD": "FPM",  # Front Panel Display
+        "QXM": "QXM",  # QX chip (Dense Queuing Block)
+        "CPU": "CPU",  # MPC CPU
         "FPC": "FPC",
         "MPC": "FPC",
         "MIC": "MIC",
@@ -149,6 +153,8 @@ class Script(BaseScript):
                 part_no = []
             if t == "CHASSIS" and number is None and self.chassis_no is not None:
                 number = self.chassis_no
+            if t in ["QXM", "CPU"]:
+                builtin = True
             # Submit object
             objects += [
                 {
