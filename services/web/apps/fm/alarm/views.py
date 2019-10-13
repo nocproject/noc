@@ -569,6 +569,8 @@ class AlarmApplication(ExtApplication):
     @view(url=r"^(?P<id>[a-z0-9]{24})/clear/", method=["POST"], api=True, access="launch")
     def api_clear(self, request, id):
         alarm = get_alarm(id)
+        if not alarm.alarm_class.user_clearable:
+            return {"status": False, "error": "Deny clear alarm by user"}
         if alarm.status == "A":
             alarm.clear_alarm("Cleared by %s" % request.user)
         return True
