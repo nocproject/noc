@@ -821,7 +821,22 @@ class Service(object):
         :param metrics: List of dicts containing metrics records
         :return:
         """
-        self.pub("chwriter", "\n".join(self._iter_metrics_body(table, metrics)), raw=True)
+        n_chunks = len(metrics) // config.nsqd.ch_chunk_size + 1
+        for chunk in range(0, n_chunks):
+            self.pub(
+                "chwriter",
+                "\n".join(
+                    self._iter_metrics_body(
+                        table,
+                        metrics[
+                            config.nsqd.ch_chunk_size
+                            * chunk : config.nsqd.ch_chunk_size
+                            * (chunk + 1)
+                        ],
+                    )
+                ),
+                raw=True,
+            )
 
     def _register_replicated_metrics(self, table, metrics):
         """
@@ -834,9 +849,18 @@ class Service(object):
         """
         table = "raw_%s" % table
         replicas = config.ch_cluster_topology[0].replicas
-        body = "\n".join(self._iter_metrics_body(table, metrics))
-        for nr in range(replicas):
-            self.pub("chwriter-1-%s" % (nr + 1), body, raw=True)
+        n_chunks = len(metrics) // config.nsqd.ch_chunk_size + 1
+        for chunk in range(0, n_chunks):
+            body = "\n".join(
+                self._iter_metrics_body(
+                    table,
+                    metrics[
+                        config.nsqd.ch_chunk_size * chunk : config.nsqd.ch_chunk_size * (chunk + 1)
+                    ],
+                )
+            )
+            for nr in range(replicas):
+                self.pub("chwriter-1-%s" % (nr + 1), body, raw=True)
 
     def _register_sharded_metrics(self, table, metrics):
         """
@@ -856,7 +880,9 @@ class Service(object):
         table = "raw_%s" % table
         # Publish metrics
         for ch in data:
-            self.pub(ch, "\n".join(self._iter_metrics_body(table, data[ch])), raw=True)
+            n_chunks = len(data) // config.nsqd.ch_chunk_size + 1
+            for chunk in range(0, n_chunks):
+                self.pub(ch, "\n".join(self._iter_metrics_body(table, data[ch])), raw=True)
 
     def start_telemetry_callback(self):
         """
