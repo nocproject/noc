@@ -9,35 +9,23 @@ console.debug("Defining NOC.sa.managedobject.RepoPreview");
 Ext.define("NOC.sa.managedobject.RepoPreview", {
     extend: "NOC.core.RepoPreview",
     initComponent: function() {
-        var me = this, toolbarItems, index;
+        var me = this, topBar, index;
+        me.callParent();
         me.menuBtn = Ext.create("Ext.button.Split", {
             itemId: "menuBtn",
-            text: "Compare By",
             menu: [
                 {
-                    text: __("Version"),
-                    handler: Ext.pass(me.menuBtnFn, "version", me)
+                    text: __("Revision"),
+                    handler: Ext.pass(me.menuBtnFn, "revision", me)
                 },
                 {
-                    text: __("Other Object"),
+                    text: __("Object"),
                     handler: Ext.pass(me.menuBtnFn, "object", me)
-                    // },
-                    // {
-                    //     xtype: "checkbox",
-                    //     boxLabel: __("Side-By-Side"),
-                    //     boxLabelAlign: "before",
-                    //     fieldCls: Ext.baseCSSPrefix + "menu-item",
-                    //     // fieldCls: "",
-                    //     formItemCls: Ext.baseCSSPrefix + "menu-item-default"
                 }
             ]
         });
         me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
             itemId: "objectCombo",
-            fieldLabel: __("Object"),
-            labelPad: 5,
-            labelWidth: undefined,
-            labelCls: Ext.baseCSSPrefix + "form-item-label " + Ext.baseCSSPrefix + "form-item-label-toolbar",
             hidden: true,
             listeners: {
                 scope: me,
@@ -45,17 +33,13 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
                 clear: me.onClearObject
             }
         });
-        me.callParent();
-        toolbarItems = me.dockedItems.items[0].items;
-        index = toolbarItems.indexOfKey("swapRevBtn");
-        toolbarItems.insert(index, me.menuBtn);
-        toolbarItems.insert(index + 3, me.objectCombo);
-        me.diffCombo.setFieldLabel(__("Version"));
+        topBar = me.getDockedItems()[0];
+        index = topBar.items.indexOfKey("swapRevBtn");
+        topBar.insert(index, me.menuBtn);
+        topBar.insert(index + 3, me.objectCombo);
+        me.diffCombo.setFieldLabel(null);
         me.swapRevButton.hide();
         me.diffCombo.hide();
-        // me.prevDiffButton.hide();
-        // me.nextDiffButton.hide();
-        // me.sideBySideModeButton.hide();
         me.diffCombo.un("select", me.onSelectDiff, me);
         me.diffCombo.on("select", me.localListener(me.onSelectDiff), me);
         me.sideBySideModeButton.setHandler(me.localListener(me.onSideBySide), me);
@@ -66,22 +50,30 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
             me.clearHideCombo(me.objectCombo);
             this.requestText();
             this.requestRevisions();
+            me.menuBtnFn("revision", me.currentRecord.get("id"));
         }
     },
-    menuBtnFn: function(type) {
+    preview: function(record, backItem) {
+        var me = this;
+        me.callParent(arguments);
+        me.menuBtnFn("revision", record.get("id"));
+    },
+    menuBtnFn: function(type, id) {
         var me = this;
         me.compareType = type;
         switch(type) {
             case "object": {
                 me.clearHideCombo(me.diffCombo);
                 me.objectCombo.show();
+                me.menuBtn.setText(Ext.String.format("{0} {1}", __("Compare With"), __("Object")));
                 break;
             }
-            case "version": {
+            case "revision": {
                 me.clearHideCombo(me.objectCombo);
                 me.diffCombo.setValue(null);
-                me.requestRevisions();
+                me.requestRevisions(id);
                 me.diffCombo.show();
+                me.menuBtn.setText(Ext.String.format("{0} {1}", __("Compare With"), __("Revision")));
                 break;
             }
         }
@@ -103,7 +95,7 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
     localListener: function(listener, type) {
         var me = this, rev1, rev2, objectId;
         return function() {
-            if(me.compareType === "version") {
+            if(me.compareType === "revision") {
                 listener.call(me);
             } else if(me.compareType === "object") {
                 objectId = me.objectCombo.getValue();
