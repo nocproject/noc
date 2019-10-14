@@ -1,0 +1,107 @@
+{
+    "name": "Eltex | xPON | PP4X",
+    "$collection": "inv.objectmodels",
+    "uuid": "01d15312-41fb-416b-a454-a5ccff7a2e67",
+    "vendor__code": "ELTEX",
+    "description": "Eltex MA4000 плата управления и коммутации PP4X 4x10GBase-X(SFP+), 2x (10/100/1000Base-T/1000Base-X (SFP))",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "front-port X/0",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "front-port X/0",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "front-port X/1",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "1_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "front-port X/1",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "front-port X/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "front-port X/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "front-port X/4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "front-port X/5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb",
+            "protocols": [">USB10", ">USB11", ">USB20"],
+            "type__name": "Electrical | USB-type-B"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PP4X"]
+        }
+    }
+}
