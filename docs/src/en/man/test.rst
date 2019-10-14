@@ -20,7 +20,6 @@ Synopsis
     noc test run [-v|--verbose]
                  [--test-db=DBNAME]
                  [--coverage-report=PATH]
-                 [--test-report=PATH]
                  [--idea-bookmarks=PATH]
                  [--statistics]
                  [TEST_NAME ...]

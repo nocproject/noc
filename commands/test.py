@@ -33,7 +33,6 @@ class Command(BaseCommand):
         run_parser.add_argument(
             "--coverage-report", help="Write coverage report to specified directory"
         )
-        run_parser.add_argument("--test-report", help="Write HTML error report to specified path")
         run_parser.add_argument("--idea-bookmarks", help="Dump warnings as IDEA bookmarks XML")
         run_parser.add_argument("--statistics", action="store_true", help="Dump statistics")
         run_parser.add_argument("tests", nargs=argparse.REMAINDER, help="Paths to tests")
@@ -51,7 +50,6 @@ class Command(BaseCommand):
         test_db=None,
         statistics=False,
         coverage_report=False,
-        test_report=None,
         idea_bookmarks=None,
         *args,
         **options
@@ -78,8 +76,6 @@ class Command(BaseCommand):
         args = []
         if verbose:
             args += ["-" + ("v" * verbose)]
-        if test_report:
-            args += ["--html=%s" % test_report, "--self-contained-html"]
         if tests:
             args += tests
         else:
