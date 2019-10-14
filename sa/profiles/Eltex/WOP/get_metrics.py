@@ -10,6 +10,9 @@
 from __future__ import division
 from collections import defaultdict
 
+# Third-party modules
+# import six
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.core.validators import is_ipv4
@@ -87,7 +90,6 @@ class Script(GetMetricsScript):
                 s["status"] = data["status"]
                 s["radio"] = data["radio"]
 
-    """
     @metrics(
         [
             "Interface | Load | In",
@@ -104,14 +106,14 @@ class Script(GetMetricsScript):
     def get_interface_metrics(self, metrics):
         ifaces = []
         radio_metrics = self.get_radio_metrics(metrics)
-        iface_metric_map = {
-            "rx-bytes": "Interface | Load | In",
-            "tx-bytes": "Interface | Load | Out",
-            "rx-packets": "Interface | Packets | In",
-            "tx-packets": "Interface | Packets | Out",
-            "rx-errors": "Interface | Errors | In",
-            "tx-errors": "Interface | Errors | Out",
-        }
+        # iface_metric_map = {
+        #     "rx-bytes": "Interface | Load | In",
+        #     "tx-bytes": "Interface | Load | Out",
+        #     "rx-packets": "Interface | Packets | In",
+        #     "tx-packets": "Interface | Packets | Out",
+        #     "rx-errors": "Interface | Errors | In",
+        #     "tx-errors": "Interface | Errors | Out",
+        # }
         c = self.cli("get interface all detail")
         for block in c.split("\n\n"):
             ifaces += [
@@ -134,21 +136,20 @@ class Script(GetMetricsScript):
                 iface = "%s.%s" % (data["name"], ssid)
             else:
                 iface = data["name"]
-            for field, metric in six.iteritems(iface_metric_map):
-                if data.get(field) is not None:
-                    self.set_metric(
-                        id=(metric, ["", "", "", iface]),
-                        value=data[field],
-                        type="counter",
-                        scale=8 if metric in self.scale_x8 else 1,
-                    )
+            # for field, metric in six.iteritems(iface_metric_map):
+            #     if data.get(field) is not None:
+            #         self.set_metric(
+            #             id=(metric, ["", "", "", iface]),
+            #             value=data[field],
+            #             type="counter",
+            #             scale=8 if metric in self.scale_x8 else 1,
+            #         )
             # LifeHack. Set Radio interface metrics to SSID
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(
                     id=("Radio | TxPower", ["", "", "", iface]),
                     value=radio_metrics[data["radio"]]["tx-power"],
                 )
-    """
 
     @metrics(
         ["Radio | TxPower", "Radio | Quality"],
