@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | MX | MIC-3D-2XGE-XFP",
+    "name": "Juniper | MX | MIC3-3D-2X40GE-QSFPP",
     "$collection": "inv.objectmodels",
-    "uuid": "e069556f-34e9-49f1-8b6c-53fefd140f66",
+    "uuid": "14946b4f-fee6-47b6-8b40-b8f425a9bdd2",
     "vendor__code": "JUNIPER",
-    "description": "2x10G MIC for MX",
+    "description": "2x40G MIC for MX",
     "cr_context": "MIC",
     "connections": [
         {
@@ -18,22 +18,22 @@
             "direction": "i",
             "gender": "f",
             "name": "0/0",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
         },
         {
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
             "name": "1/0",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["MIC-3D-2XGE-XFP"],
-            "part_no": ["750-028380"]
+            "order_part_no": ["MIC3-3D-2X40GE-QSFPP"],
+            "part_no": ["750-036233"]
         }
     }
 }

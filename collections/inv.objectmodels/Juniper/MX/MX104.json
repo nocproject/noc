@@ -80,6 +80,13 @@
             "gender": "f",
             "name": "pem1",
             "type__name": "Juniper | MX | MX104 PEM"
+        },
+        {
+            "description": "Fan Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan0",
+            "type__name": "Juniper | MX | MX104 Fan"
         }
     ],
     "data": {

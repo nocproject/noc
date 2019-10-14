@@ -9,6 +9,13 @@
     "tags": ["chassis"],
     "connections": [
         {
+            "description": "Front Panel Display",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpm",
+            "type__name": "Juniper | MX | FPM"
+        },
+        {
             "description": "Fan Slot #0",
             "direction": "i",
             "gender": "f",
@@ -30,42 +37,42 @@
             "type__name": "Juniper | MX | SCB"
         },
         {
-            "description": "DPC Slot #0",
+            "description": "FPC/DPC Slot #0",
             "direction": "i",
             "gender": "f",
             "name": "fpc0",
             "type__name": "Juniper | MX | FPC"
         },
         {
-            "description": "DPC Slot#1",
+            "description": "FPC/DPC Slot#1",
             "direction": "i",
             "gender": "f",
             "name": "fpc1",
             "type__name": "Juniper | MX | FPC"
         },
         {
-            "description": "DPC Slot #2",
+            "description": "FPC/DPC Slot #2",
             "direction": "i",
             "gender": "f",
             "name": "fpc2",
             "type__name": "Juniper | MX | FPC"
         },
         {
-            "description": "DPC Slot #3",
+            "description": "FPC/DPC Slot #3",
             "direction": "i",
             "gender": "f",
             "name": "fpc3",
             "type__name": "Juniper | MX | FPC"
         },
         {
-            "description": "DPC Slot #4",
+            "description": "FPC/DPC Slot #4",
             "direction": "i",
             "gender": "f",
             "name": "fpc4",
             "type__name": "Juniper | MX | FPC"
         },
         {
-            "description": "DPC Slot #5",
+            "description": "FPC/DPC Slot #5",
             "direction": "i",
             "gender": "f",
             "name": "fpc5",
