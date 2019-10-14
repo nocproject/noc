@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["PM150(75)", "PM75-48/12"]
+            "order_part_no": ["PM150(75)", "PM75", "PM75-48/12"]
         },
         "weight": {
             "is_recursive": true,
