@@ -1,0 +1,146 @@
+{
+    "name": "Eltex | xPON | MA4000-PX",
+    "$collection": "inv.objectmodels",
+    "uuid": "8f78eca3-b65b-455d-bf37-3e2fa88a9c27",
+    "vendor__code": "ELTEX",
+    "description": "GPON OLT MA4000-PX",
+    "connection_rule__name": "Eltex | MA4000",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard1",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard3",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 4 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard4",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 5 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard5",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 6 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard6",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 7 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard7",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 8 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard8",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 9 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard9",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 10 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard10",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 11 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard11",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 12 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard12",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 13 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard13",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 14 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard14",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 15 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard15",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "Linecard 16 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard16",
+            "type__name": "Eltex | MA4000 | Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MA4000"]
+        },
+        "dimensions": {
+            "depth": 400,
+            "height": 350,
+            "width": 480
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 850.0
+        },
+        "rackmount": {
+            "units": 9.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 25.0
+        }
+    }
+}
