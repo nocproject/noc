@@ -10,7 +10,7 @@
             "type": "CHASSIS"
         },
         {
-            "reset_scopes": ["pic"],
+            "reset_scopes": ["pic", "qxm"],
             "scope": "fpc",
             "type": "FPC"
         },
@@ -23,6 +23,11 @@
             "reset_scopes": [],
             "scope": "mic",
             "type": "MIC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "qxm",
+            "type": "QXM"
         }
     ],
     "rules": [
@@ -79,6 +84,14 @@
             "match_type": "PIC",
             "scope": "fpc",
             "target_connection": "pic{N}",
+            "target_number": "",
+            "target_type": "FPC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "QXM",
+            "scope": "fpc",
+            "target_connection": "qxm{N}",
             "target_number": "",
             "target_type": "FPC"
         },

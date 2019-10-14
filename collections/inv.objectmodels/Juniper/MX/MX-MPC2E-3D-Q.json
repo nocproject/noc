@@ -27,6 +27,27 @@
             "gender": "f",
             "name": "mic1",
             "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "CPU",
+            "direction": "i",
+            "gender": "f",
+            "name": "cpu",
+            "type__name": "Juniper | MX | CPU"
+        },
+        {
+            "description": "QXM #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "qxm0",
+            "type__name": "Juniper | MX | QXM"
+        },
+        {
+            "description": "QXM #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "qxm1",
+            "type__name": "Juniper | MX | QXM"
         }
     ],
     "data": {
