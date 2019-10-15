@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.lib.validators import is_int
+from noc.core.validators import is_int
 
 
 class Profile(BaseProfile):
@@ -28,6 +28,7 @@ class Profile(BaseProfile):
         re.compile(r"\s*\x1b\[27m"),
         re.compile(r"\x1b\r\s+\r\x1b\[K"),
         re.compile(r"\x1b\[K"),
+        re.compile(r"\r"),
     ]
 
     INTERFACE_TYPES = {
