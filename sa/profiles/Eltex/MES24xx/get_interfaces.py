@@ -25,7 +25,7 @@ class Script(BaseScript):
         r"(?:^Bridge Port Type: .+\n)?"
         r"(?:^\s*\n)?"
         r"^Interface SubType: .+\n"
-        r"^Interface Alias: (?P<descr>.+)\n"
+        r"(^(?:Interface Alias|Description): (?P<descr>.+)\n)?"
         r"(?:^\s*\n)?"
         r"(^Hardware Address is (?P<mac>\S+)\s*\n)?"
         r"(^MTU\s+(?P<mtu>\d+) bytes,.+\s*\n)?",
@@ -44,20 +44,13 @@ class Script(BaseScript):
             ifname = match.group("ifname")
             admin_status = match.group("admin_status") == "up"
             oper_status = match.group("oper_status") == "up"
-            descr = match.group("descr").strip()
             iface = {
                 "name": ifname,
                 "type": self.profile.get_interface_type(ifname),
                 "admin_status": admin_status,
                 "oper_status": oper_status,
-                "description": descr,
             }
-            sub = {
-                "name": ifname,
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "description": descr,
-            }
+            sub = {"name": ifname, "admin_status": admin_status, "oper_status": oper_status}
             if iface["type"] == "physical":
                 sub["enable_afi"] = ["BRIDGE"]
                 if ifname.startswith("Gi"):
@@ -82,6 +75,10 @@ class Script(BaseScript):
                 mac = match.group("mac").strip()
                 iface["mac"] = mac
                 sub["mac"] = mac
+            if match.group("descr"):
+                descr = match.group("descr").strip()
+                iface["description"] = descr
+                sub["description"] = descr
             iface["subinterfaces"] = [sub]
             interfaces += [iface]
         v = self.cli("show ip interface")
