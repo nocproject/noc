@@ -28,6 +28,7 @@ class Profile(BaseProfile):
         re.compile(r"\s*\x1b\[27m"),
         re.compile(r"\x1b\r\s+\r\x1b\[K"),
         re.compile(r"\x1b\[K"),
+        re.compile(r"\r"),
     ]
 
     INTERFACE_TYPES = {
