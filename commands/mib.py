@@ -32,7 +32,7 @@ class Command(BaseCommand):
     svc = open_sync_rpc("mib")
 
     def add_arguments(self, parser):
-        parser.add_argument("--local", action="store_false", help="Not use mib service for import")
+        parser.add_argument("--local", action="store_true", help="Not use mib service for import")
         subparsers = parser.add_subparsers(dest="cmd")
         # get
         get_parser = subparsers.add_parser("get")
@@ -88,7 +88,7 @@ class Command(BaseCommand):
             self.die("")
         if kwargs["output"]:
             self.prepare_dirs(kwargs["output"])
-            self.print("Opening file %s", kwargs["output"])
+            self.print("Opening file %s" % kwargs["output"])
             f = open(kwargs["output"], "w")
             f = f.write
         else:
@@ -165,6 +165,7 @@ class Command(BaseCommand):
             if r.get("status"):
                 return True
             if r.get("code") == ERR_MIB_MISSED:
+                self.print("Cannot upload %s: MIB Missed - %s" % (path, r.get("msg")))
                 return False
             self.die("Cannot upload %s: %s" % (path, r.get("msg")))
         except RPCError as e:
