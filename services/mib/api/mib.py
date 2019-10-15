@@ -70,6 +70,7 @@ class MIBAPI(API):
         # Put data to temporary file
         with temporary_file(data) as tmp_path:
             # Pass MIB through smilint to detect missed modules
+            self.logger.debug("Pass MIB through smilint to detect missed modules")
             f = subprocess.Popen(
                 [config.path.smilint, "-m", tmp_path], stderr=subprocess.PIPE, env=self.SMI_ENV
             ).stderr
@@ -81,6 +82,7 @@ class MIBAPI(API):
                         "msg": "Required MIB missed: %s" % match.group(1),
                         "code": ERR_MIB_MISSED,
                     }
+            self.logger.debug("Convert MIB to python module and load")
             # Convert MIB to python module and load
             with temporary_file() as py_path:
                 subprocess.check_call(
@@ -88,14 +90,15 @@ class MIBAPI(API):
                     env=self.SMI_ENV,
                 )
                 with open(py_path) as f:
-                    data = unicode(f.read(), "ascii", "ignore").encode("ascii")
+                    p_data = unicode(f.read(), "ascii", "ignore").encode("ascii")
                 with open(py_path, "w") as f:
-                    f.write(data)
+                    f.write(p_data)
                 m = imp.load_source("mib", py_path)
             # NOW we can deduce module name
             mib_name = m.MIB["moduleName"]
             # Check module dependencies
             depends_on = {}  # MIB Name -> Object ID
+            self.logger.debug("Check module dependencies: %s", m.MIB.get("imports", ""))
             if "imports" in m.MIB:
                 for i in m.MIB["imports"]:
                     if "module" not in i:
@@ -118,6 +121,7 @@ class MIBAPI(API):
                 )
             except ValueError:
                 last_updated = datetime.datetime(year=1970, month=1, day=1)
+            self.logger.debug("Extract MIB typedefs")
             # Extract MIB typedefs
             typedefs = {}
             if "typedefs" in m.MIB:
