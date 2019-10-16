@@ -101,11 +101,7 @@ Ext.define('NOC.core.RepoPreview', {
                         type: 'date'
                     },
                     {
-                        name: 'ts_label',
-                        mapping: 'ts',
-                        convert: function(v, record) {
-                            return NOC.render.DateTime(record.get('ts'));
-                        }
+                        name: 'ts_label'
                     }
                 ],
                 data: []
@@ -135,11 +131,7 @@ Ext.define('NOC.core.RepoPreview', {
                         type: 'date'
                     },
                     {
-                        name: 'ts_label',
-                        mapping: 'ts',
-                        convert: function(v, record) {
-                            return NOC.render.DateTime(record.get('ts'));
-                        }
+                        name: 'ts_label'
                     }
                 ],
                 data: []
@@ -345,13 +337,20 @@ Ext.define('NOC.core.RepoPreview', {
     //
     requestRevisions: function(id) {
         var me = this,
+            currentTZ = moment.tz.guess(),
             url = (id ? Ext.String.format(me.restUrl, id) : me.rootUrl) + 'revisions/';
         Ext.Ajax.request({
             url: url,
             method: 'GET',
             scope: me,
             success: function(response) {
-                var data = Ext.decode(response.responseText);
+                var data = Ext.decode(response.responseText).map(function(item) {
+                    return {
+                        id: item.id,
+                        ts_label: moment.tz(item.ts, NOC.settings.timezone).clone().tz(currentTZ).format("YYYY-MM-DD HH:mm:ss"),
+                        ts: item.ts
+                    }
+                });
 
                 if(id === undefined) {
                     me.revCombo.setValue(null);
@@ -396,7 +395,7 @@ Ext.define('NOC.core.RepoPreview', {
         if(me.sideBySideModeButton.pressed) {
             var getRev = function(objectId, revId) {
                 var deferred = new Ext.Deferred(),
-                    url = Ext.String.format(me.restUrl, objectId)  + revId + '/';
+                    url = Ext.String.format(me.restUrl, objectId) + revId + '/';
                 Ext.Ajax.request({
                     url: url,
                     method: 'GET',
