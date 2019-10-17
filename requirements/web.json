@@ -80,6 +80,14 @@
     {
       "name": "django-media",
       "version": "1.11.22"
+    },
+    {
+      "name": "moment",
+      "version": "2.24.0"
+    },
+    {
+      "name": "moment-timezone",
+      "version": "0.5.25-2019a"
     }
   ]
 }
