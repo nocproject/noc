@@ -4,7 +4,7 @@
     "uuid": "16483f7f-0726-4e06-8dc2-e63e6cefaf59",
     "vendor__code": "ELTEX",
     "description": "Eltex MA4000 модуль PLC8",
-    "connection_rule__name": "Generic | Switch SFP",
+    "connection_rule__name": "Eltex | MA4000",
     "cr_context": "LINECARD",
     "connections": [
         {
