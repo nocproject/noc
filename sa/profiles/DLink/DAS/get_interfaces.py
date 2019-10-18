@@ -55,7 +55,7 @@ class Script(BaseScript):
         "Interleaved": "unknown",
         "AAL5": "unknown",
         "Fast": "unknown",
-        "ATM": "physical",
+        "ATM": "unknown",
     }
 
     def execute(self):
@@ -78,6 +78,9 @@ class Script(BaseScript):
                     }
                 ],
             }
+            ifindex = self.profile.get_ifindexes(match.group("name"))
+            if ifindex:
+                i["ifindex"] = ifindex
             if match.group("mtu") != "0":
                 i["subinterfaces"][0]["mtu"] = match.group("mtu")
             if match.group("mac") != "00:00:00:00:00:00":
