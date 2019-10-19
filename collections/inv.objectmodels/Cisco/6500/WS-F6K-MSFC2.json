@@ -7,7 +7,7 @@
     "cr_context": "MSFC",
     "connections": [
         {
-            "description": "MSFC3 Daughterboard",
+            "description": "MSFC2 Daughterboard",
             "direction": "o",
             "gender": "m",
             "name": "in",
