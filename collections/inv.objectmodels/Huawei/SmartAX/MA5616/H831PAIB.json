@@ -1,0 +1,59 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H831PAIB",
+    "$collection": "inv.objectmodels",
+    "uuid": "d5a38e4b-b8f3-4eca-883d-edeecfd5b7cb",
+    "vendor__code": "HUAWEI",
+    "description": "MA5616  is an AC power board (with power backup)",
+    "cr_context": "PWR",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | PWR"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "(lead-acid battery or Felithium battery) input for power backup",
+            "direction": "s",
+            "gender": "m",
+            "name": " BAT-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "description": "(lead-acid battery or Felithium battery) input for power backup",
+            "direction": "s",
+            "gender": "m",
+            "name": "BAT+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "description": "Detects the temperature of a lead-acid battery or activates a Fe-lithium battery",
+            "direction": "s",
+            "gender": "f",
+            "name": "sensor",
+            "type__name": "Electrical | micro JST XH 2-pin "
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H831PAIB"]
+        },
+        "dimensions": {
+            "depth": 442,
+            "height": 245,
+            "width": 88
+        }
+    }
+}
