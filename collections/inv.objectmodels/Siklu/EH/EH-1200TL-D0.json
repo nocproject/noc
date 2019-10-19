@@ -1,0 +1,70 @@
+{
+    "name": "Siklu | EH | EH-1200TL-D0",
+    "$collection": "inv.objectmodels",
+    "uuid": "571bf35d-5170-4394-abdf-101b72d53788",
+    "vendor__code": "SIKLU",
+    "description": "Siklu EH 1200L, 2 SFP slots, 71-76Ghz, FDD, Antenna 1ft 43dBi, 32/16/8 non-overlapping channels, 125/250/500MHz wide",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "RF Board 71-76Ghz TDD",
+            "direction": "s",
+            "gender": "s",
+            "name": "eth0",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        },
+        {
+            "description": "SFP1 eth1",
+            "direction": "i",
+            "gender": "f",
+            "name": "eth1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "SFP2 eth2",
+            "direction": "i",
+            "gender": "f",
+            "name": "eth2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ground connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "GND",
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        },
+        {
+            "description": "DC input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        },
+        {
+            "description": "DC input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["EH-1200TL-ODU-1ft-D0"]
+        },
+        "management": {
+            "managed": true
+        },
+        "dimensions": {
+            "depth": 130,
+            "height": 310,
+            "width": 225
+        }
+    }
+}
