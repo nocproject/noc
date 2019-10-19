@@ -1,0 +1,46 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H563ADGE",
+    "$collection": "inv.objectmodels",
+    "uuid": "a17c441a-5dd7-41db-85b7-3a324b44b278",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600,H563ADGE,32-channel ADSL2+ Board(with 600 ohm Splitter),1*1 (over POTS) SPLF + ADEE",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SB"
+        },
+        {
+            "description": "32-channel POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
+            "description": "32-channel ADSL2",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE0",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H563ADGE", "H563ADGE1", "H563ADGE2"]
+        },
+        "dimensions": {
+            "depth": 372,
+            "height": 400,
+            "width": 26
+        },
+        "power": {
+            "power": 32.0
+        }
+    }
+}

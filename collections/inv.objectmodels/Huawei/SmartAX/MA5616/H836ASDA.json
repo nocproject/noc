@@ -1,0 +1,26 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H836ASDA",
+    "$collection": "inv.objectmodels",
+    "uuid": "28ddd74d-2597-441f-9260-beab53917e5c",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei MA5616 Analog Subscriber DSP Card",
+    "cr_context": "DAUGHTERBOARD",
+    "tags": ["dsp"],
+    "connections": [
+        {
+            "description": "Voice Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | VDB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H836ASDA"]
+        },
+        "power": {
+            "power": 7.0
+        }
+    }
+}

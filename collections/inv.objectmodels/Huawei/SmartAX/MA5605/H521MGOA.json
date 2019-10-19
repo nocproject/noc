@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | SmartAX | MA5605 | H521MFEA",
+    "name": "Huawei | SmartAX | MA5605 | H521MGOA",
     "$collection": "inv.objectmodels",
-    "uuid": "bcdba95d-995e-4a92-91d5-23314f5ff5ae",
+    "uuid": "781b33e7-554f-4c53-85b7-db541bff8677",
     "vendor__code": "HUAWEI",
-    "description": "MA5605 It is system control and FE subtending/uplink interface board, providing 2×100Base-TX interfaces (uplink and subtending), with reach of 100 m.",
+    "description": "MA5605 It is system control and GE Uplink Optical Interface Board, providing 2×SFP 1G interfaces (uplink and subtending).",
     "cr_context": "BOARD",
     "connections": [
         {
@@ -23,24 +23,24 @@
         },
         {
             "description": "Uplink port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Uplink",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "Downlink port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Downlink",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["H521MFEA"]
+            "part_no": ["H521MGOA"]
         }
     }
 }

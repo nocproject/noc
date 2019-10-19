@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | SmartAX | MA5616 (H831MABB)",
+    "name": "Huawei | SmartAX | MA5616 (H831MABA)",
     "$collection": "inv.objectmodels",
-    "uuid": "6a928927-4146-4026-8f62-f86c6fd2a001",
+    "uuid": "89b91567-817d-48a7-b2e7-8a1a09557cf4",
     "vendor__code": "HUAWEI",
-    "description": "Huawei mini ADSL VDSL IP DSLAM  MA5616 (with H831MABA backplane)  vectoring supported",
+    "description": "Huawei mini ADSL VDSL IP DSLAM  MA5616 (with H831MABA backplane) ",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
     "connections": [
@@ -59,7 +59,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["H831MABB"]
+            "part_no": ["H831MABA", "MA5616"]
         },
         "dimensions": {
             "depth": 245,

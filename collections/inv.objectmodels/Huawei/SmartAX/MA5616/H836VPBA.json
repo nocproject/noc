@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "8a366a80-8209-4968-8441-5149c6281b74",
     "vendor__code": "HUAWEI",
-    "description": "Huawei MA5616 Analog Subscriber DSP Card",
+    "description": "Huawei MA5616  The H836VPBA daughter board implements the vectoring function for calculating and canceling the crosstalk on narrowband lines.",
     "connections": [
         {
             "description": "Power Board connector",
