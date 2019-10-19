@@ -1,0 +1,65 @@
+{
+    "name": "Cisco | C6500ME",
+    "$collection": "inv.connectionrules",
+    "uuid": "a126f83b-b634-42a9-b023-750c056e3aa5",
+    "description": "Fixed 24 GiN/giN_sfp ports. \nPower Supply: psuN.\n Fan tray: fanN",
+    "context": [
+        {
+            "reset_scopes": ["pfc", "dfc"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "msfc",
+            "type": "MSFC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pfc",
+            "type": "PFC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "MSFC",
+            "scope": "chassis",
+            "target_connection": "msfc",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PFC",
+            "scope": "chassis",
+            "target_connection": "pfc",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

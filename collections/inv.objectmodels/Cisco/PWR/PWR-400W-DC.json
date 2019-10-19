@@ -36,12 +36,12 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Cisco | 6500 | PSU"
+            "type__name": "Cisco | C6500ME | PSU"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["PWR-400W-DC"]
+            "part_no": ["PWR-400W-DC", "PWR-400W-DC="]
         }
     }
 }

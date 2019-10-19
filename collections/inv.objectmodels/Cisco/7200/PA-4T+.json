@@ -1,0 +1,55 @@
+{
+    "name": "Cisco | 7200 | PA-4T+",
+    "$collection": "inv.objectmodels",
+    "uuid": "3742e954-bb5d-4982-8766-aa4ebfea5926",
+    "vendor__code": "CISCO",
+    "description": "PA-4T+ Synchronous Serial Port Adapter",
+    "connection_rule__name": "Cisco | 7200",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["T1", "E1"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["T1", "E1"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se2",
+            "protocols": ["T1", "E1"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se3",
+            "protocols": ["T1", "E1"],
+            "type__name": "Electrical | DB60"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PA-4T+", "PA-4T+="]
+        }
+    }
+}
