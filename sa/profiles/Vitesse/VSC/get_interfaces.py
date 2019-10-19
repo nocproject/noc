@@ -19,11 +19,6 @@ class Script(BaseScript):
     name = "Vitesse.VSC.get_interfaces"
     interface = IGetInterfaces
 
-    rx_port = re.compile(
-        r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s+(?P<admin_status>\S+)\s+"
-        r"\S+\s+(?:\S+\s+)?\d+\s+\S+\s+(?P<oper_status>\S+)\s*\n",
-        re.MULTILINE,
-    )
     rx_stp = re.compile(r"^(?P<port>(?:Gi|2.5G|10G) \S+)\s+", re.MULTILINE)
     rx_ctp = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n" r"^\-+\s*\n" r"^\s+Loop protect mode is enabled",
@@ -109,13 +104,14 @@ class Script(BaseScript):
                     "ifname": row[2].strip(),
                 }
             ]
-        for match in self.rx_port.finditer(self.cli("show interface * status")):
-            ifname = match.group("port")
+        v = self.cli("show interface * status")
+        for row in parse_table(v, max_width=85):
+            ifname = row[0]
             iface = {
                 "name": ifname,
                 "type": "physical",
-                "admin_status": match.group("admin_status") != "Down",
-                "oper_status": match.group("oper_status") != "Down",
+                "admin_status": row[1] != "Down",
+                "oper_status": row[5] != "Down",
                 "enabled_protocols": [],
                 "subinterfaces": [],
             }
@@ -136,8 +132,8 @@ class Script(BaseScript):
                     break
             sub = {
                 "name": ifname,
-                "admin_status": match.group("admin_status") != "Down",
-                "oper_status": match.group("oper_status") == "Up",
+                "admin_status": row[1] != "Down",
+                "oper_status": row[5] != "Down",
                 "enabled_afi": ["BRIDGE"],
                 "tagged_vlans": [],
             }
