@@ -1,0 +1,38 @@
+{
+    "name": "Iskratel | SI3000 | SGT (SBB1908BA)",
+    "$collection": "inv.objectmodels",
+    "uuid": "8f66ce1f-21aa-433e-a319-b0396a5cf342",
+    "vendor__code": "ISKRATEL",
+    "description": "Универсальная плата ADSL2+/VDSL2, 64 порта, готовность к векторингу, поверх POTS и ISDN -SGT для MEC и МЕА",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Iskratel | SI3000 | SB"
+        },
+        {
+            "description": "32-channel VDSL2 ",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE1",
+            "protocols": ["VDSL", "ADSL2+"],
+            "type__name": "Electrical | CENC-64"
+        },
+        {
+            "description": "32-channel VDSL2 ",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE2",
+            "protocols": ["VDSL", "ADSL2+"],
+            "type__name": "Electrical | CENC-64"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["UTA6107AA", "UTA6107AA070"]
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Iskratel | SI2000 | SB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "3c609a9c-7d24-490c-95e9-d94df2eec049",
+    "description": "Iskratel SI2000 blade connection",
+    "c_group": [],
+    "genders": "mf"
+}

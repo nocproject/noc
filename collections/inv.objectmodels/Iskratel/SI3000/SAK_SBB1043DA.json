@@ -1,0 +1,50 @@
+{
+    "name": "Iskratel | SI3000 | SAK (SBB1043DA)",
+    "$collection": "inv.objectmodels",
+    "uuid": "a286dd9c-de84-4df6-98b8-08b350a36289",
+    "vendor__code": "ISKRATEL",
+    "description": "Lumia ПОТС плата, 64 порта, PTC, 12/16 КГц, 8/16 – SAK для МЕА/МЕC",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Consile port",
+            "direction": "i",
+            "gender": "m",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Iskratel | SI3000 | SB"
+        },
+        {
+            "description": "32-channel POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "POTS1",
+            "protocols": ["POTS"],
+            "type__name": "Electrical | CENC-64"
+        },
+        {
+            "description": "32-channel POTS ",
+            "direction": "s",
+            "gender": "f",
+            "name": "POTS2",
+            "protocols": ["POTS"],
+            "type__name": "Electrical | CENC-64"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["SBB1043DA"]
+        },
+        "dimensions": {
+            "height": 380,
+            "width": 210
+        }
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "name": "Iskratel | SI2000 | SGN",
+    "$collection": "inv.objectmodels",
+    "uuid": "d2b80bfc-15d3-452f-beb9-b99f0869b4b5",
+    "vendor__code": "ISKRATEL",
+    "description": "ADSL2+ board",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Iskratel | SI2000 | SB"
+        },
+        {
+            "description": "32-channel VDSL2 ",
+            "direction": "s",
+            "gender": "m",
+            "name": "LINE",
+            "protocols": ["ADSL2+"],
+            "type__name": "Electrical | CENC-64"
+        },
+        {
+            "description": "32-channel VDSL2 ",
+            "direction": "s",
+            "gender": "m",
+            "name": "LINE",
+            "protocols": ["ADSL2+"],
+            "type__name": "Electrical | CENC-64"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["UTA6044AD"]
+        }
+    }
+}
