@@ -5,11 +5,13 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -22,8 +24,8 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
-        macs = sorted(self.rx_mac.findall(self.cli("get system manuf info")))
+    def execute_cli(self, **kwargs):
+        macs = sorted(self.rx_mac.findall(self.cli("get system manuf info", cached=True)))
         return [
             {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
         ]
