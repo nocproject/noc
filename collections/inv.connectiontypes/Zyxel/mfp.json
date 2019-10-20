@@ -1,0 +1,8 @@
+{
+    "name": "Zyxel | MSAN | MFP",
+    "$collection": "inv.connectiontypes",
+    "uuid": "143135b2-dce9-4435-b3aa-98289fd78b3c",
+    "description": "Zyxel Module Front Panel",
+    "c_group": [],
+    "genders": "mf"
+}
