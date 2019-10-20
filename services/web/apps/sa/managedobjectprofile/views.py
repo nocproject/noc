@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobjectprofile application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,6 +22,8 @@ class ManagedObjectProfileApplication(ExtModelApplication):
     title = _("Managed Object Profile")
     menu = [_("Setup"), _("Managed Object Profiles")]
     model = ManagedObjectProfile
+    query_condition = "icontains"
+    query_fields = ["name", "description"]
 
     implied_permissions = {"launch": ["ip:addressprofile:lookup"]}
 

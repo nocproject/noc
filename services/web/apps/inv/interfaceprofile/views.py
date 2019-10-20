@@ -20,6 +20,8 @@ class InterfaceProfileApplication(ExtDocApplication):
     title = _("Interface Profile")
     menu = [_("Setup"), _("Interface Profiles")]
     model = InterfaceProfile
+    query_condition = "icontains"
+    query_fields = ["name", "description"]
 
     def field_row_class(self, o):
         return o.style.css_class_name if o.style else ""
