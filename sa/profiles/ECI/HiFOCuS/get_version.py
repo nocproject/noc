@@ -1,0 +1,68 @@
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# ECI.HiFOCuS.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
+import re
+
+
+class Script(BaseScript):
+    name = "ECI.HiFOCuS.get_version"
+    cache = True
+    interface = IGetVersion
+    reuse_cli_session = False
+    keep_cli_session = False
+
+    rx_platform = re.compile(r"\|\|\s+0\s+\|\|\s+(?P<platform>.+)\s*\n")
+
+    rx_ver = re.compile(
+        r"^\s*NI CARD TYPE\s+: (?P<cardtype>.+)\n" r"^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
+        re.MULTILINE,
+    )
+
+    """
+       shelfType:rs
+    1-SAM_120
+    2-SAM_240
+    3-SAM_480
+    4-FLEX_RAM
+    7-SAM_960
+    11-HF_M82
+    12-HF_M41
+    14-HF_M82C
+    15-HF_M61
+    19-SAM_960E
+    20-MINI_RAM_24V
+    21-GPOWER_RAM_24V
+    22-GPOWER_RAM_48V
+    23-HF F152
+    24-HF F61
+    25-HF F52
+    """
+
+    # def execute_snmp(self, **kwargs):
+    #     ".1.3.6.1.4.1.1286.1.3.3.1.1.2.131072"
+    #     pass
+
+    def execute_cli(self, **kwargs):
+        try:
+            c = self.cli("EXISTSH ALL")
+            match = self.rx_platform.search(c)
+            platform = match.group("platform")
+        except self.CLISyntaxError:
+            raise NotImplementedError
+        match = self.rx_ver.search(self.cli("ver"))
+        version = match.group("version").strip()
+        cardtype = match.group("cardtype").strip()
+
+        return {
+            "vendor": "ECI",
+            "platform": platform,
+            "version": version,
+            "attributes": {"cardtype": cardtype},
+        }
