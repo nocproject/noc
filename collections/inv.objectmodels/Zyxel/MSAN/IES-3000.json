@@ -1,0 +1,146 @@
+{
+    "name": "Zyxel | MSAN | IES-3000",
+    "$collection": "inv.objectmodels",
+    "uuid": "5836110a-146e-44ed-ae88-8c2398424741",
+    "vendor__code": "ZYXEL",
+    "description": "IES-3000 main chassis with 16 slots, 1 for management and switching card (MSC) and 15 for line cards, or 2 slots for MSC cards with redundancy and 14 for line cards, DC power input",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 4 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 5 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 6 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 7 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 8 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 9 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 10 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 11 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "11",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 12 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "12",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 13 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "13",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 14 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "14",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 15 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "15",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 16 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "16",
+            "type__name": "Zyxel | MSAN | Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["IES-3000"]
+        },
+        "dimensions": {
+            "depth": 268,
+            "height": 482,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 800.0
+        },
+        "rackmount": {
+            "units": 11.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 22.8
+        }
+    }
+}

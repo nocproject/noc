@@ -1,0 +1,34 @@
+{
+    "name": "Zyxel | MSAN | ALC1024",
+    "$collection": "inv.objectmodels",
+    "uuid": "c2adc143-a889-421e-89f1-3158eebaf42b",
+    "vendor__code": "ZYXEL",
+    "description": "24-port Annex A ADSL line card (over POTS)",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "ADSL ports",
+            "direction": "s",
+            "gender": "f",
+            "name": "adsl",
+            "protocols": ["ADSL"],
+            "type__name": "Electrical | Telco-50"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["alc-61"]
+        },
+        "weight": {
+            "weight": 1.8
+        }
+    }
+}
