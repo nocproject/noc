@@ -1,0 +1,11 @@
+{
+  "$metric": "Interface | xDSL | Line | Errors | ES | Delta",
+  "$type": "caps",
+  "oids": [[
+    "SNMP | MIB | ADSL-MIB", {
+      "$type": "ifindex",
+      "oid": "VDSL2-LINE-MIB::xdsl2PMLCurr15MEs.{{ ifIndex }}.1",
+      "type": "delta"
+    }
+  ]]
+}

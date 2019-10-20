@@ -17,6 +17,10 @@ class Script(BaseScript):
 
     SNMP_GET_CHECK_OID = mib["SNMPv2-MIB::sysDescr", 0]
 
+    CHECK_SNMP_GETNEXT = {
+        "SNMP | MIB | VDSL2-LINE-MIB": mib["VDSL2-LINE-MIB::xdsl2LineBandStatusLnAtten"]
+    }
+
     @false_on_cli_error
     def has_lldp_cli(self):
         """

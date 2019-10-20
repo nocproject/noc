@@ -1,0 +1,11 @@
+{
+  "$metric": "Interface | xDSL | Line | Noise Margin | Upstream",
+  "$type": "caps",
+  "oids": [[
+    "SNMP | MIB | VDSL2-LINE-MIB", {
+      "$type": "ifindex",
+      "oid": "VDSL2-LINE-MIB::xdsl2LineBandStatusSnrMargin.{{ ifIndex }}.1",
+      "type": "gauge"
+    }
+  ]]
+}
