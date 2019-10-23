@@ -19,11 +19,15 @@ class Profile(BaseProfile):
     name = "Eltex.MES24xx"
     pattern_more = [(r"--More--", " ")]
     pattern_prompt = r"(?P<hostname>\S+)#\s*"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = r"^% Invalid (?:Command|input detected at)$"
     # command_disable_pager = "set cli pagination off"  - need conf t mode
     config_tokenizer = "line"
     config_tokenizer_settings = {"line_comment": "!"}
     command_submit = "\r"
+    command_super = "enable"
+    command_enter_config = "configure"
+    command_leave_config = "end"
     rogue_chars = [
         re.compile(r"\s*\x1b\[27m"),
         re.compile(r"\x1b\r\s+\r\x1b\[K"),
