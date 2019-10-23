@@ -114,7 +114,7 @@ class Script(BaseScript):
                     elif mbd >= 1200 and nm == 1490:
                         part_no = part_no + "1G | SFP BX10D"
                     elif mbd == 10300 and nm == 0 and description.startswith("unkn"):
-                        part_no = part_no + "1G | SFP"
+                        part_no = part_no + "10G | SFP+ Twinax"
                     elif mbd == 10300 and description.startswith("10G"):
                         if description.endswith(tuple([" ER", "-ER"])):
                             part_no = part_no + "10G | SFP+ ER"
@@ -127,7 +127,7 @@ class Script(BaseScript):
                         else:
                             part_no = part_no + "10G | SFP+"
                     elif mbd == 12000 and nm == 0:
-                        part_no = part_no + "10G | SFP+ Copper DAC"
+                        part_no = part_no + "10G | SFP+ Twinax"
                     elif mbd >= 1000 and mbd <= 1300 and nm == 0:
                         if description.endswith(tuple([" EX", "-EX"])):
                             part_no = part_no + "1G | SFP EX"
