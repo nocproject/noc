@@ -2,3 +2,4 @@
 ---
 consul_control_venv: /usr/local/pyconsul
 consul_control_python: "{{ consul_control_venv }}/bin/python"
+virtualenv_executable: /usr/local/bin/virtualenv-2.7
