@@ -27,17 +27,28 @@ class Script(BaseScript):
     )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):
-        cmd = "ping %s" % address
-        if count:
-            cmd += " count %d" % int(count)
-        if size:
-            cmd += " size %d" % int(size)
+        try:
+            # Linux mode
+            cmd = "ping "
+            if count:
+                cmd += "-c %d " % count
+            if size:
+                cmd += "-s %d " % size
+            cmd += address
+            ping = self.cli(cmd)
+        except self.CLISyntaxError:
+            cmd = "ping %s" % address
+            ping = self.cli(cmd)
+        # Not works
+        # if count:
+        #     cmd += " count %d" % int(count)
+        # if size:
+        #     cmd += " size %d" % int(size)
         # Don't implemented, may be in future firmware revisions ?
         # if source_address:
         #    cmd+=" source %s" % source_address
         # if df:
         #    cmd+=" df-bit"
-        ping = self.cli(cmd)
         result = self.rx_result.search(ping)
         r = {"success": result.group("success"), "count": result.group("count")}
         stat = self.rx_stat.search(ping)

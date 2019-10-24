@@ -30,7 +30,7 @@ class Script(GetMetricsScript):
                 check_rtt = m.id
         for ip in self.credentials["path"].split(","):
             if is_ipv4(ip.strip()):
-                result = self.scripts.ping(address=ip)
+                result = self.scripts.ping(address=ip, count=4)
                 self.set_metric(
                     id=check_id,
                     metric="Check | Result",

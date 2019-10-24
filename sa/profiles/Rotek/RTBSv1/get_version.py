@@ -9,6 +9,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -17,27 +18,23 @@ class Script(BaseScript):
     interface = IGetVersion
     reuse_cli_session = False
     keep_cli_session = False
+    always_prefer = "S"
 
-    def execute(self):
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                oid = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-                platform = "%s.%s" % (oid.split(" ")[0].strip(), oid.split(" ")[1].strip())
-                version = oid.split(" ")[2].strip()
+    def execute_snmp(self, **kwargs):
+        oid = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
+        platform = "%s.%s" % (oid.split(" ")[0].strip(), oid.split(" ")[1].strip())
+        version = oid.split(" ")[2].strip()
 
-                result = {
-                    "vendor": "Rotek",
-                    "version": version,
-                    "platform": platform,
-                    # "attributes": {
-                    # "HW version": hwversion}
-                }
-                return result
-            except self.snmp.TimeOutError:
-                pass
+        result = {
+            "vendor": "Rotek",
+            "version": version,
+            "platform": platform,
+            # "attributes": {
+            # "HW version": hwversion}
+        }
+        return result
 
-                # Fallback to CLI
+    def execute_cli(self, **kwargs):
         try:
             c = self.cli("show software version")
         except self.CLISyntaxError:
