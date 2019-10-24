@@ -20,6 +20,7 @@ class Script(BaseScript):
     name = "Rotek.RTBSv1.get_chassis_id"
     cache = True
     interface = IGetChassisID
+    always_prefer = "S"
 
     rx_iface = re.compile(r"^\s*WAN:\s+(?P<ifname>br\d+)", re.MULTILINE)
     rx_mac = re.compile(r"^\s*br\d+ mac:\s+(?P<mac>\S+)", re.MULTILINE)

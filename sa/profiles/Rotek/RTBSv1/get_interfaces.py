@@ -45,7 +45,14 @@ class Script(BaseScript):
             ieee_mode = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.2.%s" % sifindex)
             freq = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.6.%s" % sifindex)
             channel = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.7.%s" % sifindex)
-            ss[sifindex] = {"ssid": sname, "ieee_mode": ieee_mode, "channel": channel, "freq": freq}
+            broadcast = self.snmp.get("1.2.840.10036.1.1.1.7.%s" % sifindex)
+            ss[sifindex] = {
+                "ssid": sname,
+                "ieee_mode": ieee_mode,
+                "channel": channel,
+                "freq": freq,
+                "broadcast": "enable" if broadcast else "disable",
+            }
         for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
             ifindex = v[1]
             name = self.snmp.get("1.3.6.1.2.1.2.2.1.2.%s" % str(ifindex))
@@ -91,16 +98,6 @@ class Script(BaseScript):
             if self.is_platform_BS24:
                 for i in six.iteritems(ss):
                     if int(i[0]) == ifindex:
-                        a = self.cli("show interface %s ssid-broadcast" % name)
-                        if len(a.strip()) != 0:
-                            sb = a.split(":")[1].strip()
-                            if sb == "on":
-                                ssid_broadcast = "enable"
-                            else:
-                                ssid_broadcast = "disable"
-                                oper_status = False  # Do not touch !!!
-                        else:
-                            ssid_broadcast = "None"
                         vname = "%s.%s" % (name, i[1]["ssid"])
                         iface = {
                             "type": iftype,
@@ -109,7 +106,7 @@ class Script(BaseScript):
                             "oper_status": oper_status,
                             "snmp_ifindex": ifindex,
                             "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz"
-                            % (ssid_broadcast, i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"]),
+                            % (i[1]["broadcast"], i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"]),
                             "subinterfaces": [
                                 {
                                     "name": vname,
@@ -156,7 +153,6 @@ class Script(BaseScript):
                     "channel": channel,
                     "freq": freq,
                 }
-
         with self.profile.shell(self):
             v = self.cli("ip a", cached=True)
             for match in self.rx_sh_int.finditer(v):
