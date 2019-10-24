@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Zyxel.MSAN.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -57,7 +56,7 @@ class Script(BaseScript):
     def execute(self):
         slots = self.profile.get_slots_n(self)
         try:
-            c = self.cli("sys version")
+            c = self.cli("sys version", cached=True)
             match = self.rx_ver1.search(c)
         except self.CLISyntaxError:
             c = self.cli("sys info show", cached=True)
@@ -69,7 +68,7 @@ class Script(BaseScript):
         else:
             match = self.rx_ver4.search(self.cli("sys info show", cached=True))
             if match:
-                match1 = self.rx_chips.search(self.cli("chips info"))
+                match1 = self.rx_chips.search(self.cli("chips info", cached=True))
                 r = {
                     "vendor": "ZyXEL",
                     "platform": match1.group("platform"),
@@ -86,7 +85,7 @@ class Script(BaseScript):
                 if match.group("serial") != "not defined":
                     if "attributes" not in r:
                         r["attributes"] = {}
-                    r["attributes"]["Serial Number"] = match.group("serial")
+                    r["attributes"]["Serial Number"] = match.group("serial").strip()
                 return r
             else:
                 raise self.NotSupportedError()
