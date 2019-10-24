@@ -6,8 +6,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -92,6 +91,8 @@ class Profile(BaseProfile):
         if slot_no == 1:
             if hw in ["IES1248-51", "IES1248-71"]:
                 return "IES-1248"
+            if hw == "AAM1212-51":
+                return "IES-1000"
             # Need more examples
             if hw == "IES-612":
                 return "IES-612"
