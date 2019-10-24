@@ -93,15 +93,23 @@ def csv_export(model, queryset=None, first_row_only=False):
     if queryset is None:
         queryset = model.objects.all()
         # Write rows
-    for r in queryset.select_related():
+    for r in queryset.select_related().iterator():
         row = []
         # Format row
         for f, required, rel, rf in fields:
             v = getattr(r, f)
             if v is None:
                 v = ""
-            if f == "tags":
+            if f in {
+                "tags",
+                "static_service_groups",
+                "effective_service_groups",
+                "static_client_groups",
+                "effective_client_groups",
+            }:
                 row += [",".join(v)]
+            elif f in {"vendor"} and v.code:
+                row += v.code
             elif rel is None or not v:
                 row += [v]
             else:
@@ -165,8 +173,9 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
         count += 1
         if len(row) != l_header:
             return None, "Invalid row size. line %d" % count
-        vars = dict(zip(header, row))
-        for h, v in six.iteritems(vars):
+        variables = dict(zip(header, row))
+        for h in list(variables):
+            v = variables[h]
             if v in ("None", ""):
                 v = None
             # Check required field is not none
@@ -174,7 +183,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                 return None, "Required field '%s' is empty at line %d" % (h, count)
             # Delete empty values
             if not v:
-                del vars[h]
+                del variables[h]
             else:
                 if h in fk:
                     # reference foreign keys
@@ -197,26 +206,33 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                                 None,
                                 "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count),
                             )
-                    vars[h] = ro
+                    variables[h] = ro
                 elif h in booleans:
                     # Convert booleans
-                    vars[h] = v.lower() in ["t", "true", "yes", "y"]
+                    variables[h] = v.lower() in ["t", "true", "yes", "y"]
                 elif h in integers:
                     # Convert integers
                     try:
-                        vars[h] = int(v)
+                        variables[h] = int(v)
                     except ValueError as e:
                         raise ValueError("Invalid integer: %s" % e)
-                elif h == "tags":
-                    vars[h] = [x.strip() for x in v.split(",") if x.strip()]
+                elif h in {
+                    "tags",
+                    "static_service_groups",
+                    "effective_service_groups",
+                    "static_client_groups",
+                    "effective_client_groups",
+                    "vendor",
+                }:
+                    variables[h] = [x.strip() for x in v.split(",") if x.strip()]
         # Find object
         o = None
         for f in u_fields:
-            if f not in vars:
+            if f not in variables:
                 continue
             # Find by unique fields
             try:
-                o = model.objects.get(**{f: vars[f]})
+                o = model.objects.get(**{f: variables[f]})
                 break
             except model.DoesNotExist:
                 pass
@@ -224,7 +240,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Find by composite unique keys
             for fs in ut_fields:
                 try:
-                    o = model.objects.get(**dict([(f, vars[f]) for f in fs if f in vars]))
+                    o = model.objects.get(**dict([(f, variables[f]) for f in fs if f in variables]))
                     break
                 except model.DoesNotExist:
                     pass
@@ -234,14 +250,15 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                 # Fail
                 return (
                     None,
-                    "Failed to save line %d: Object %s is already exists" % (count, repr(vars)),
+                    "Failed to save line %d: Object %s is already exists"
+                    % (count, repr(variables)),
                 )
             elif resolution == IR_SKIP:
                 # Skip line
                 count -= 1
                 continue
             elif resolution == IR_UPDATE:
-                c = update_if_changed(o, vars)
+                c = update_if_changed(o, variables)
                 if not c:
                     count -= 1
                 continue
@@ -249,11 +266,11 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Create object
             o = model()
         # Set attributes
-        for k, v in six.iteritems(vars):
+        for k, v in six.iteritems(variables):
             setattr(o, k, v)
         # Save
         try:
             o.save()
         except Exception as e:
-            return None, "Failed to save line %d: %s. %r" % (count, e, vars)
+            return None, "Failed to save line %d: %s. %r" % (count, e, variables)
     return count, None
