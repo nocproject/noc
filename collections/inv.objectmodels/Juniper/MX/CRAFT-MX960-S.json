@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | MX | CRAFT-MX480-S",
+    "name": "Juniper | MX | CRAFT-MX960-S",
     "$collection": "inv.objectmodels",
-    "uuid": "78c50959-16bb-4b06-b255-e23b4d5a97fb",
+    "uuid": "9c440a4f-0086-422e-8fbb-c75ce0ce43b4",
     "vendor__code": "JUNIPER",
-    "description": "MX480 Front Panel Display",
+    "description": "MX960 Front Panel Display",
     "cr_context": "FPC",
     "connections": [
         {
@@ -16,8 +16,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["CRAFT-MX480-S"],
-            "part_no": ["710-017254"]
+            "order_part_no": ["CRAFT-MX960-S"],
+            "part_no": ["710-014974"]
         }
     }
 }
