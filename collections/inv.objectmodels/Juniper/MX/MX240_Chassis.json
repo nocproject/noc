@@ -9,6 +9,13 @@
     "tags": ["chassis"],
     "connections": [
         {
+            "description": "Front Panel Display",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpm",
+            "type__name": "Juniper | MX | FPM"
+        },
+        {
             "description": "Fan Slot #0",
             "direction": "i",
             "gender": "f",

@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | MX | CRAFT-MX480-S",
+    "name": "Juniper | EX | EX8208-FPM",
     "$collection": "inv.objectmodels",
-    "uuid": "78c50959-16bb-4b06-b255-e23b4d5a97fb",
+    "uuid": "4568c3fb-84b9-46a1-9dee-52843b34893b",
     "vendor__code": "JUNIPER",
-    "description": "MX480 Front Panel Display",
+    "description": "Front Panel Display",
     "cr_context": "FPC",
     "connections": [
         {
@@ -16,8 +16,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["CRAFT-MX480-S"],
-            "part_no": ["710-017254"]
+            "part_no": ["760-049617"]
         }
     }
 }
