@@ -1,0 +1,134 @@
+{
+    "name": "Zyxel | MSAN | MSC1024G",
+    "$collection": "inv.objectmodels",
+    "uuid": "4dcdc70e-4f8b-4433-a01a-3d1ddbcca55a",
+    "vendor__code": "ZYXEL",
+    "description": "management switch card 6 Gigabit Ethernet uplink & subtending ports\n",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Port 1 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 2 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 3 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 4 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp4",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 5 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "5",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 5 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "5",
+            "name": "sfp5",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 6 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "6",
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 6 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "6",
+            "name": "sfp6",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 7 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 8 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "mgmt port",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MSC1024G"]
+        },
+        "dimensions": {
+            "depth": 231,
+            "height": 24,
+            "width": 390
+        },
+        "power": {
+            "power": 20.0
+        },
+        "weight": {
+            "weight": 0.6
+        }
+    }
+}
