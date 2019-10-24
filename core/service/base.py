@@ -26,6 +26,7 @@ import tornado.httpserver
 import tornado.locks
 import setproctitle
 import ujson
+from typing import Dict, List, Generator
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
@@ -44,7 +45,7 @@ from noc.core.nsq.topic import TopicQueue
 from noc.core.nsq.pub import mpub
 from noc.core.nsq.error import NSQPubError
 from noc.core.clickhouse.shard import ShardingFunction
-from .api import APIRequestHandler
+from .api import API, APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
 from .metrics import MetricsHandler
@@ -87,7 +88,7 @@ class Service(object):
     # Connect to MongoDB on activate
     use_mongo = False
     # List of API instances
-    api = []
+    api = []  # type: List[API]
     # Request handler class
     api_request_handler = APIRequestHandler
     # Initialize gettext and process *language* configuration
@@ -162,9 +163,9 @@ class Service(object):
         else:
             self.die("Invalid ClickHouse cluster topology")
         # NSQ Topics
-        self.topic_queues = {}  # name -> TopicQueue()
+        # name -> TopicQueue()
+        self.topic_queues = {}  # type: Dict[str, TopicQueue]
         self.topic_queue_lock = threading.Lock()
-        self.topic_shutdown = {}  # name -> event
 
     def create_parser(self):
         """
@@ -699,24 +700,33 @@ class Service(object):
             q = self.topic_queues.get(topic)
             if q:
                 return q  # Created in concurrent task
-            q = TopicQueue(topic)
+            q = TopicQueue(topic, io_loop=self.ioloop)
             self.topic_queues[topic] = q
-            self.topic_shutdown[topic] = tornado.locks.Lock()
-            self.ioloop.add_callback(self.nsq_publisher, topic)
+            self.ioloop.add_callback(self.nsq_publisher_guard, q)
             return q
 
     @tornado.gen.coroutine
-    def nsq_publisher(self, topic):
+    def nsq_publisher_guard(self, queue):
+        # type: (TopicQueue) -> Generator
+        while not queue.to_shutdown:
+            try:
+                yield self.nsq_publisher(queue)
+            except Exception as e:
+                self.logger.error("Unhandled exception in NSQ publisher, restarting: %s", e)
+        queue.shutdown_complete.set()
+
+    @tornado.gen.coroutine
+    def nsq_publisher(self, queue):
         """
         Publisher for NSQ topic
 
         :return:
         """
+        topic = queue.topic
         self.logger.info("[nsq|%s] Starting NSQ publisher", topic)
-        queue = self.topic_queues[topic]
         while not queue.to_shutdown:
             # Message throttling. Wait and allow to collect more messages
-            yield queue.wait_async(rate=config.nsqd.topic_mpub_rate)
+            yield queue.wait(timeout=10, rate=config.nsqd.topic_mpub_rate)
             # Get next batch up to `mpub_messages` messages or up to `mpub_size` size
             messages = list(
                 queue.iter_get(
@@ -726,6 +736,8 @@ class Service(object):
                     message_overhead=4,
                 )
             )
+            if not messages:
+                continue
             try:
                 self.logger.debug("[nsq|%s] Publishing %d messages", topic, len(messages))
                 yield mpub(topic, messages, dcs=self.dcs, io_loop=self.ioloop)
@@ -736,7 +748,7 @@ class Service(object):
                     )
                 else:
                     # Return to queue
-                    self.logger.debug(
+                    self.logger.info(
                         "[nsq|%s] Failed to publish. %d messages returned to queue",
                         topic,
                         len(messages),
@@ -744,7 +756,6 @@ class Service(object):
                     queue.return_messages(messages)
             del messages  # Release memory
         self.logger.info("[nsq|%s] Stopping NSQ publisher", topic)
-        self.topic_shutdown[topic].set()
 
     @tornado.gen.coroutine
     def shutdown_topic_queues(self):
@@ -752,9 +763,9 @@ class Service(object):
             # Send shutdown signal
             for topic in self.topic_queues:
                 self.topic_queues[topic].shutdown()
-            # Wait for queue
+            # Wait for queue guards
             for topic in self.topic_queues:
-                yield self.topic_queues[topic].wait()
+                yield self.topic_queues[topic].shutdown_complete.wait(5)
 
     def pub(self, topic, data, raw=False):
         """

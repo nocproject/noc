@@ -6,10 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import time
-from threading import Thread
-
 # Third-party modules
 import pytest
 import tornado.gen
@@ -154,34 +150,6 @@ def test_shutdown():
 
 
 def test_wait():
-    def producer():
-        for msg in to_produce:
-            queue.put(msg)
-            time.sleep(sleep_timeout)
-        queue.shutdown()
-
-    def consumer():
-        while not queue.to_shutdown or queue.qsize()[0]:
-            queue.wait()
-            consumed["data"] += list(queue.iter_get(100))
-
-    sleep_timeout = 0.1
-    join_timeout = 10
-    to_produce = ["%04d" % i for i in range(10)]
-    consumed = {"data": []}
-    queue = TopicQueue("test_wait")
-    p_thread = Thread(target=producer)
-    c_thread = Thread(target=consumer)
-    p_thread.setDaemon(True)
-    c_thread.setDaemon(True)
-    c_thread.start()
-    p_thread.start()
-    p_thread.join(join_timeout)
-    c_thread.join(join_timeout)
-    assert to_produce == consumed["data"]
-
-
-def test_wait_async():
     @tornado.gen.coroutine
     def producer():
         for msg in to_produce:
@@ -192,7 +160,7 @@ def test_wait_async():
     @tornado.gen.coroutine
     def consumer():
         while not queue.to_shutdown or queue.qsize()[0]:
-            yield queue.wait_async(1)
+            yield queue.wait(1)
             consumed["data"] += list(queue.iter_get(100))
         io_loop.stop()
 
@@ -205,6 +173,37 @@ def test_wait_async():
     io_loop.add_callback(consumer)
     io_loop.start()
     assert to_produce == consumed["data"]
+
+
+@pytest.mark.parametrize("sleep_timeout", [0.1, 0.55])
+def test_wait_throttling(sleep_timeout):
+    @tornado.gen.coroutine
+    def producer():
+        for msg in to_produce:
+            queue.put(msg)
+            yield tornado.gen.sleep(sleep_timeout)
+        queue.shutdown()
+
+    @tornado.gen.coroutine
+    def consumer():
+        while not queue.to_shutdown or queue.qsize()[0]:
+            yield queue.wait(rate=rate)
+            consumed["data"] += list(queue.iter_get(100))
+            consumed["n_reads"] += 1
+        io_loop.stop()
+
+    rate = 4
+    n_writes = 10
+    dt = n_writes * sleep_timeout
+    to_produce = ["%04d" % i for i in range(n_writes)]
+    consumed = {"data": [], "n_reads": 0}
+    queue = TopicQueue("test_wait")
+    io_loop = tornado.ioloop.IOLoop()
+    io_loop.add_callback(producer)
+    io_loop.add_callback(consumer)
+    io_loop.start()
+    assert to_produce == consumed["data"]
+    assert consumed["n_reads"] <= dt * rate + 2
 
 
 def test_metrics():
