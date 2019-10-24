@@ -1,0 +1,86 @@
+{
+    "name": "Cisco | ISR | Module | NM-8A-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "13131770-b709-4860-a94e-c61174aba81e",
+    "vendor__code": "CISCO",
+    "description": "8 port Async/Sync Network Module",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se2",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se3",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se4",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se5",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se6",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se7",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NM-8A/S", "NM-8A/S="]
+        }
+    }
+}

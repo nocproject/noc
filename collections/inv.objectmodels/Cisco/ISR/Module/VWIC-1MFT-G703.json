@@ -1,0 +1,31 @@
+{
+    "name": "Cisco | ISR | Module | VWIC-1MFT-G703",
+    "$collection": "inv.objectmodels",
+    "uuid": "dd5bcc03-54f6-486b-affd-1c4d3fe98b25",
+    "vendor__code": "CISCO",
+    "description": "1-Port E1 Multiflex Trunk for unstructured G.703",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "description": "Voice WAN Interface Card slot connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "Serial N/X/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ48"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["VWIC-1MFT-G703", "VWIC-1MFT-G703="]
+        }
+    }
+}
