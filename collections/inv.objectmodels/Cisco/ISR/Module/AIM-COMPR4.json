@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | ISR | Module | AIM-COMPR4",
+    "$collection": "inv.objectmodels",
+    "uuid": "ce0402cc-c110-4f37-92d7-2523883e8c69",
+    "vendor__code": "CISCO",
+    "description": "16-Mbps data Compression Advanced Integration Modules",
+    "cr_context": "AIM",
+    "connections": [
+        {
+            "description": "AIM Slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | AIM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["AIM-COMPR4"]
+        }
+    }
+}

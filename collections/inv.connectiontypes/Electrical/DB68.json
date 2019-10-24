@@ -1,0 +1,8 @@
+{
+    "name": "Electrical | DB68",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c409e6c6-1dc5-4e36-ba21-210771040b5a",
+    "description": "DB-68 (SCSI II) connector on the Cisco end and eight RJ-45 connectors on the network end",
+    "c_group": [],
+    "genders": "mf"
+}

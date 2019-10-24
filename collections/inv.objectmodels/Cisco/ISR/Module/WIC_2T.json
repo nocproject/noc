@@ -33,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WIC-2T="]
+            "part_no": ["WIC-2T", "WIC-2T="]
         }
     }
 }

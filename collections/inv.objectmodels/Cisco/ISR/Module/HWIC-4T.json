@@ -1,0 +1,55 @@
+{
+    "name": "Cisco | ISR | Module | HWIC-4T",
+    "$collection": "inv.objectmodels",
+    "uuid": "32e402d5-16e5-4b53-a5d1-1a3b126588cc",
+    "vendor__code": "CISCO",
+    "description": "Cisco 4-Port Serial High-Speed WAN Interface Card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "Serial1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "Serial2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se2",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "Serial3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se3",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "WAN Interface Card slot connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["HWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["HWIC-4T"]
+        }
+    }
+}

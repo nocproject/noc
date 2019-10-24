@@ -1,0 +1,40 @@
+{
+    "name": "Cisco | ME3600 | PWR-ME3KX-DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "56607c75-78e6-4edd-91a8-2b72f9f05e15",
+    "vendor__code": "CISCO",
+    "description": "Cisco ME 3600X/ME 3800X Series field- replaceable DC power supply and fan module",
+    "cr_context": "PSU",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | ME3600 | PSU"
+        },
+        {
+            "description": "DC input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "description": "DC input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PWR-ME3KX-DC", "PWR-ME3KX-DC="]
+        }
+    }
+}

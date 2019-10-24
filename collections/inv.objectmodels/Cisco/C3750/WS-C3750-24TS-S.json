@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | C3750 | WS-C3750-24TS-S",
+    "name": "Cisco | C3750 | WS-C3750-24TS",
     "$collection": "inv.objectmodels",
     "uuid": "bc1fe78c-c5fb-4a87-a485-b8ef1cfc2258",
     "vendor__code": "CISCO",
@@ -262,7 +262,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750-24TS-S"]
+            "part_no": ["WS-C3750-24TS", "WS-C3750-24TS-S", "WS-C3750-24TS-E"]
         },
         "management": {
             "managed": true
@@ -277,6 +277,12 @@
         },
         "stack": {
             "stackable": true
+        },
+        "weight": {
+            "weight": 3.6
+        },
+        "power": {
+            "power": 50.0
         }
     }
 }
