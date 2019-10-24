@@ -40,7 +40,7 @@ class Script(BaseScript):
         r"^\s*Hardware Version: (?P<revision>\S+)\s*\n" r"^\s*Serial Number: (?P<serial>\S+)\s*\n",
         re.MULTILINE,
     )
-    rx_chips = re.compile(r"^\s*(?P<platform>\S+?)(/(?P<module>\S+))?\s+")
+    rx_chips = re.compile(r"^\s*(?P<platform>\S+?)([/ ](?P<module>\S+))?\s+")
 
     M_TYPE = {
         "IES-2000": "MSC1000",
@@ -74,7 +74,7 @@ class Script(BaseScript):
                             r.insert(0, {"type": "CHASSIS", "vendor": "ZYXEL", "part_no": c})
             else:
                 r += [{"type": "CHASSIS", "vendor": "ZYXEL", "part_no": version["platform"]}]
-                t = parse_table(self.cli("lcman show"))
+                t = parse_table(self.cli("lcman show", cached=True))
                 for i in t:
                     if i[1] == "-":
                         continue
@@ -89,8 +89,10 @@ class Script(BaseScript):
             match = self.rx_hw.search(self.cli("sys info show", cached=True))
             if match:
                 c = self.profile.get_platform(self, slots, match.group("part_no"))
+                if match.group("part_no").startswith("AAM"):
+                    module = match.group("part_no")
             else:
-                match1 = self.rx_chips.search(self.cli("chips info"))
+                match1 = self.rx_chips.search(self.cli("chips info", cached=True))
                 c = match1.group("platform")
                 module = match1.group("module")
                 match = self.rx_hw2.search(self.cli("sys info show", cached=True))
