@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.MSAN.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -244,8 +244,19 @@ class Script(BaseScript):
                 for match in self.rx_ipif_mac.finditer(v):
                     iface_mac += [match.groupdict()]
         else:
+            # We are not use `matchers`, because it not have `Boot PROM` field
             ver = self.scripts.get_version()
-            if ver["platform"] in ["IES-1248", "IES-612"]:
+            if (
+                ver["platform"] == "IES-1000"
+                and "attributes" in ver
+                and "Boot PROM" in ver["attributes"]
+                and "AAM1212" in ver["attributes"]["Boot PROM"]
+            ):
+                new_syntax = True
+            else:
+                new_syntax = False
+
+            if ver["platform"] in ["IES-1248", "IES-612"] or new_syntax:
                 v = self.cli("switch vlan show *")
                 for match in self.rx_vlan2.finditer(v):
                     vlans += [
@@ -291,7 +302,7 @@ class Script(BaseScript):
                             i["subinterfaces"] += [sub]
                 match = self.rx_mac.search(self.cli("sys info show"))
                 iface_mac += [{"ifname": "Ethernet", "mac": match.group("mac")}]
-            if ver["platform"] in ["IES-1000"]:
+            elif ver["platform"] in ["IES-1000"]:
                 try:
                     adsl = self.cli("adsl show ports")
                 except self.CLISyntaxError:
