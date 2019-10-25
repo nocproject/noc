@@ -29,7 +29,7 @@ forms:
       default: 1
       label: "Additional Instances"
       type: int
-      max: 999
+      max: 64
       min: 0
     max_threads:
       default: 10
