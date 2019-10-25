@@ -29,7 +29,7 @@ forms:
       default: 1
       label: "Additional Instances"
       type: int
-      max: 999
+      max: 16
       min: 0
     restore_threshold:
       default: 0
