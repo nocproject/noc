@@ -14,6 +14,14 @@ NOC 19.4
 
     Upcoming release.
 
+Highlights
+----------
+DataStream improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+:ref:`managedobject DataStream<api-datastream-managedobject>` got
+additional `tags` attribute exposing ManagedObjects's tags. Tags allow
+to pass unstructured metadata to external system.
+
 Development Process Changes
 ---------------------------
 
