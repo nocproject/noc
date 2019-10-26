@@ -398,6 +398,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Interval, sec"),
                                                     uiStyle: "small",
+                                                    minValue: 0,
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {
@@ -449,6 +450,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Packet size, bytes"),
                                                     labelWidth: 220,
+                                                    minValue: 0,
                                                     uiStyle: "small",
                                                     defautlValue: 64,
                                                     minValue: 64
@@ -468,6 +470,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     fieldLabel: __("Packets count"),
                                                     labelWidth: 220,
                                                     defautlValue: 3,
+                                                    minValue: 0,
                                                     uiStyle: "small"
                                                 }
                                             ]
@@ -484,6 +487,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Timeout, msec"),
                                                     defaultValue: 1000,
+                                                    minValue: 0,
                                                     labelWidth: 220,
                                                     uiStyle: "small",
                                                     listeners: {
@@ -618,6 +622,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     labelWidth: 200,
                                                     allowBlank: false,
                                                     uiStyle: "small",
+                                                    minValue: 0,
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {
@@ -644,6 +649,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Failed Interval, sec"),
                                                     labelWidth: 200,
+                                                    minValue: 0,
                                                     allowBlank: false,
                                                     uiStyle: "small",
                                                     listeners: {
@@ -676,6 +682,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_system_start_delay",
                                                     xtype: "numberfield",
+                                                    minValue: 0,
                                                     allowBlank: false,
                                                     uiStyle: "small"
                                                 },
@@ -702,6 +709,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_config_changed_delay",
                                                     xtype: "numberfield",
+                                                    minValue: 0,
                                                     allowBlank: false,
                                                     uiStyle: "small"
                                                 },
@@ -953,6 +961,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     fieldLabel: __("Cache neighbors for"),
                                                     allowBlank: false,
                                                     labelWidth: 130,
+                                                    minValue: 0,
                                                     uiStyle: "small",
                                                     align: "right",
                                                     listeners: {
@@ -1591,6 +1600,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     fieldLabel: __("Interval, sec"),
                                                     allowBlank: false,
                                                     uiStyle: "small",
+                                                    minValue: 0,
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {
@@ -2189,7 +2199,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     tooltip: __("Jinja template for creating segment name. <br/>" +
                                         "Worked with \"Segmentate for object's segment\" and " +
                                         "\"Segmentate for child segment\" options"),
-                                    tooltip: __(""),
                                     labelWidth: 150,
                                     fieldLabel: __("Segment Name"),
                                     allowBlank: true,
@@ -2278,6 +2287,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         "1 - all jobs will saved, 0 - Not collect telemetry, <br/>" +
                                         " 0,99 ... 0,1 - chance to save"),
                                     labelWidth: 150,
+                                    minValue: 0,
+                                    maxValue: 1,
                                     fieldLabel: __("Box Sample"),
                                     allowBlank: false,
                                     uiStyle: "medium",
@@ -2292,6 +2303,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         '1 - all jobs will saved, 0 - Not collect telemetry, ' +
                                         ' 0,99 ... 0,1 - chance to save'),
                                     labelWidth: 150,
+                                    minValue: 0,
+                                    maxValue: 1,
                                     fieldLabel: __("Periodic Sample"),
                                     allowBlank: false,
                                     uiStyle: "medium",
