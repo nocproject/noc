@@ -33,7 +33,7 @@ def get_nodes():
 
 def get_path(path):
     def q(n):
-        if n.token:
+        if not isinstance(n.token, type):
             return n.token
         elif n.name:
             return "<%s>" % n.name
