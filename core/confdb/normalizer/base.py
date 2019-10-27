@@ -17,7 +17,7 @@ import six
 
 # NOC modules
 from noc.core.ip import IPv4
-from ..syntax.patterns import ANY, REST, Token, BasePattern
+from ..syntax.patterns import ANY, REST, BOOL, Token, BasePattern
 from ..syntax.base import SYNTAX
 
 _match_seq = itertools.count()
@@ -167,7 +167,7 @@ class BaseNormalizerMetaclass(type):
             r += [str(kw)]
         body = "def %s(self, %s):\n    return %s" % (sdef.gen, ", ".join(args), ", ".join(r))
         ctx = {}
-        exec(body, {}, ctx)
+        exec(body, {"BOOL": BOOL}, ctx)
         setattr(ncls, sdef.gen, ctx[sdef.gen])
 
 
