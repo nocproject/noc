@@ -7,7 +7,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from collections import namedtuple
+
 
 SyntaxDef = namedtuple(
     "SyntaxDef", ["token", "children", "required", "name", "multi", "default", "gen"]
