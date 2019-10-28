@@ -13,6 +13,7 @@ from .https.base import HTTPS_SYNTAX
 from .igmpsnooping.base import IGMP_SNOOPING_SYNTAX
 from .isis.base import ISIS_SYNTAX
 from .ldp.base import LDP_SYNTAX
+from .mpls.base import MPLS_SYNTAX
 from .ospf.base import OSPF_SYNTAX
 from .pim.base import PIM_SYNTAX
 from .rsvp.base import RSVP_SYNTAX
@@ -34,5 +35,6 @@ VR_PROTOCOLS_SYNTAX = DEF(
         RSVP_SYNTAX,
         PIM_SYNTAX,
         IGMP_SNOOPING_SYNTAX,
+        MPLS_SYNTAX,
     ],
 )
