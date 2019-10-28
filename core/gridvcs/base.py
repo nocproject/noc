@@ -170,9 +170,9 @@ class GridVCS(object):
     def get(self, object, revision=None):
         """
         Get data
-        :param object:
-        :param revision:
-        :return:
+        :param object: Object id
+        :param revision: Revision instance
+        :return: Revision text
         """
         if not revision:
             try:
@@ -221,6 +221,17 @@ class GridVCS(object):
         else:
             return None
 
+    @staticmethod
+    def _unified_diff(src, dst):
+        """
+        Returns unified diff between src and dest
+
+        :param src: Source text
+        :param dst: Destination text
+        :return: Unified diff text
+        """
+        return "\n".join(difflib.unified_diff(src.splitlines(), dst.splitlines(), lineterm=""))
+
     def diff(self, object, rev1, rev2):
         """
         Get unified diff between revisions
@@ -229,9 +240,23 @@ class GridVCS(object):
         :param rev2:
         :return:
         """
-        src = self.get(object, rev1)
-        dst = self.get(object, rev2)
-        return "\n".join(difflib.unified_diff(src.splitlines(), dst.splitlines(), lineterm=""))
+        src = self.get(object, rev1) or ""
+        dst = self.get(object, rev2) or ""
+        return self._unified_diff(src, dst)
+
+    def mdiff(self, obj1, rev1, obj2, rev2):
+        """
+        Get unified diff between multiple object's revisions
+
+        :param obj1:
+        :param rev1:
+        :param obj2:
+        :param rev2:
+        :return:
+        """
+        src = self.get(obj1, rev1) or ""
+        dst = self.get(obj2, rev2) or ""
+        return self._unified_diff(src, dst)
 
     def ensure_collection(self):
         self.files.create_index([("object", 1), ("ft", 1)])

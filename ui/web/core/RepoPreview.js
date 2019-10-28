@@ -28,7 +28,7 @@ Ext.define('NOC.core.RepoPreview', {
         formulas: {
             canPrevChange: {
                 bind: {
-                    bindTo: "{currentSelection.selection}"
+                    bindTo: "{diffSelection.selection}"
                 },
                 get: function(t) {
                     return t && t.store.indexOf(t.data) < t.store.data.length - 1
@@ -36,7 +36,7 @@ Ext.define('NOC.core.RepoPreview', {
             },
             canNextChange: {
                 bind: {
-                    bindTo: "{currentSelection.selection}"
+                    bindTo: "{diffSelection.selection}"
                 },
                 get: function(t) {
                     return t && t.store.indexOf(t.data) > 0
@@ -60,7 +60,7 @@ Ext.define('NOC.core.RepoPreview', {
             }
         }
     },
-
+    //
     initComponent: function() {
         var me = this;
 
@@ -87,9 +87,6 @@ Ext.define('NOC.core.RepoPreview', {
 
         me.revCombo = Ext.create('Ext.form.ComboBox', {
             fieldLabel: __('Version'),
-            labelWidth: 45,
-            labelAlign: 'right',
-            width: 210,
             queryMode: 'local',
             displayField: 'ts_label',
             valueField: 'id',
@@ -104,11 +101,7 @@ Ext.define('NOC.core.RepoPreview', {
                         type: 'date'
                     },
                     {
-                        name: 'ts_label',
-                        mapping: 'ts',
-                        convert: function(v, record) {
-                            return NOC.render.DateTime(record.get('ts'));
-                        }
+                        name: 'ts_label'
                     }
                 ],
                 data: []
@@ -122,10 +115,8 @@ Ext.define('NOC.core.RepoPreview', {
         });
 
         me.diffCombo = Ext.create('Ext.form.ComboBox', {
+            itemId: 'diffCombo',
             fieldLabel: __('Compare'),
-            labelWidth: 45,
-            labelAlign: 'right',
-            width: 210,
             queryMode: 'local',
             displayField: 'ts_label',
             valueField: 'id',
@@ -140,11 +131,7 @@ Ext.define('NOC.core.RepoPreview', {
                         type: 'date'
                     },
                     {
-                        name: 'ts_label',
-                        mapping: 'ts',
-                        convert: function(v, record) {
-                            return NOC.render.DateTime(record.get('ts'));
-                        }
+                        name: 'ts_label'
                     }
                 ],
                 data: []
@@ -166,6 +153,7 @@ Ext.define('NOC.core.RepoPreview', {
         });
 
         me.nextDiffButton = Ext.create('Ext.button.Button', {
+            itemId: 'nextDiffBtn',
             glyph: NOC.glyph.arrow_up,
             tooltip: __('Next change'),
             scope: me,
@@ -176,6 +164,7 @@ Ext.define('NOC.core.RepoPreview', {
         });
         //
         me.prevDiffButton = Ext.create('Ext.button.Button', {
+            itemId: 'prevDiffBtn',
             glyph: NOC.glyph.arrow_down,
             tooltip: __('Previous change'),
             scope: me,
@@ -186,6 +175,7 @@ Ext.define('NOC.core.RepoPreview', {
         });
         //
         me.swapRevButton = Ext.create('Ext.button.Button', {
+            itemId: 'swapRevBtn',
             glyph: NOC.glyph.exchange,
             tooltip: __('Swap revisions'),
             scope: me,
@@ -203,6 +193,10 @@ Ext.define('NOC.core.RepoPreview', {
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
+                defaults: {
+                    labelPad: 5,
+                    labelWidth: undefined
+                },
                 items: [
                     {
                         itemId: 'close',
@@ -241,6 +235,7 @@ Ext.define('NOC.core.RepoPreview', {
         me.initViewer();
         me.onResize();
     },
+    //
     onResize: function() {
         var me = this;
         if(me.viewer && Ext.isFunction(me.viewer.refresh)) {
@@ -340,24 +335,33 @@ Ext.define('NOC.core.RepoPreview', {
         });
     },
     //
-    requestRevisions: function(callback) {
-        var me = this;
+    requestRevisions: function(id) {
+        var me = this,
+            currentTZ = moment.tz.guess(),
+            url = (id ? Ext.String.format(me.restUrl, id) : me.rootUrl) + 'revisions/';
         Ext.Ajax.request({
-            url: me.rootUrl + 'revisions/',
+            url: url,
             method: 'GET',
             scope: me,
             success: function(response) {
-                var data = Ext.decode(response.responseText);
+                var data = Ext.decode(response.responseText).map(function(item) {
+                    return {
+                        id: item.id,
+                        ts_label: moment.tz(item.ts, NOC.settings.timezone).clone().tz(currentTZ).format("YYYY-MM-DD HH:mm:ss"),
+                        ts: item.ts
+                    }
+                });
 
-                me.diffCombo.setValue(null);
-                me.revCombo.setValue(null);
-                me.sideBySideModeButton.toggle(false);
-                me.revCombo.store.loadData(data);
-                me.diffCombo.store.loadData(data);
-                if(data.length > 0) {
-                    me.revCombo.select([me.revCombo.store.getAt(0)]);
+                if(id === undefined) {
+                    me.revCombo.setValue(null);
+                    me.revCombo.store.loadData(data);
+                    if(data.length > 0) {
+                        me.revCombo.select([me.revCombo.store.getAt(0)]);
+                    }
                 }
-                Ext.callback(callback, me);
+                me.diffCombo.setValue(null);
+                me.sideBySideModeButton.toggle(false);
+                me.diffCombo.store.loadData(data);
             },
             failure: function() {
                 NOC.error(__('Failed to get revisions'));
@@ -383,15 +387,17 @@ Ext.define('NOC.core.RepoPreview', {
         });
     },
     //
-    requestDiff: function(rev1, rev2) {
-        var me = this,
-            mask = me.setLoading({msg: 'Loading'});
+    requestDiff: function(rev1, rev2, objectId) {
+        var me = this, url,
+            mask = me.setLoading({msg: 'Loading'}),
+            object1 = me.currentRecord.get('id'),
+            object2 = objectId || object1;
         if(me.sideBySideModeButton.pressed) {
-            var getRev = function(id) {
-                var deferred = new Ext.Deferred();
-
+            var getRev = function(objectId, revId) {
+                var deferred = new Ext.Deferred(),
+                    url = Ext.String.format(me.restUrl, objectId) + revId + '/';
                 Ext.Ajax.request({
-                    url: me.rootUrl + id + '/',
+                    url: url,
                     method: 'GET',
                     scope: me,
                     success: function(response) {
@@ -405,8 +411,8 @@ Ext.define('NOC.core.RepoPreview', {
             };
 
             // ToDo refactor!
-            getRev(rev1).then(function(rev1Text) {
-                getRev(rev2).then(function(rev2Text) {
+            getRev(object1, rev1).then(function(rev1Text) {
+                getRev(object2, rev2).then(function(rev2Text) {
                         me.renderText(rev2Text, 'merge', rev1Text);
                         mask.hide();
                     }, function(error) {
@@ -419,8 +425,12 @@ Ext.define('NOC.core.RepoPreview', {
                 mask.hide();
             });
         } else {
+            url = me.rootUrl + rev1 + '/' + rev2 + '/';
+            if(objectId) {
+                url = me.rootUrl + rev1 + '/' + objectId + '/' + rev2 + '/';
+            }
             Ext.Ajax.request({
-                url: me.rootUrl + rev1 + '/' + rev2 + '/',
+                url: url,
                 method: 'GET',
                 scope: me,
                 success: function(response) {
@@ -475,32 +485,32 @@ Ext.define('NOC.core.RepoPreview', {
         me.onResize();
     },
     //
-    onSelectRev: function(combo, records, eOpts) {
+    onSelectRev: function(combo, records) {
         var me = this;
         me.requestRevision(records.get('id'));
     },
     //
-    requestCurrentDiff: function() {
+    requestCurrentDiff: function(objectId) {
         var me = this;
         me.requestDiff(
             me.diffCombo.getValue(),
-            me.revCombo.getValue()
+            me.revCombo.getValue(),
+            objectId
         );
     },
     //
-    onSelectDiff: function(combo, records, eOpts) {
+    onSelectDiff: function() {
         var me = this;
         me.requestCurrentDiff();
     },
     //
-    onRevSpecialKey: function(combo, evt, opts) {
-        var me = this;
+    onRevSpecialKey: function(combo, evt) {
         if(evt.getKey() === evt.ESC) {
             combo.clearValue();
         }
     },
     //
-    onDiffSpecialKey: function(combo, evt, opts) {
+    onDiffSpecialKey: function(combo, evt) {
         var me = this;
         if(evt.getKey() === evt.ESC) {
             combo.clearValue();
@@ -509,41 +519,39 @@ Ext.define('NOC.core.RepoPreview', {
     },
     // Returns current selection index or null
     getRevIndex: function(combo) {
-        var me = this,
-            v = combo.getValue();
+        var v = combo.getValue();
         return combo.store.findExact('id', v);
     },
     //
     setRevIndex: function(combo, index) {
-        var me = this;
         combo.select([combo.store.getAt(index)]);
     },
     //
-    onPrevDiff: function() {
+    onPrevDiff: function(objectId) {
         var me = this,
-            rIndex = me.getRevIndex(me.revCombo),
+            // rIndex = me.getRevIndex(me.revCombo),
             dIndex = me.getRevIndex(me.diffCombo);
-        if(rIndex === dIndex - 1) {
-            me.setRevIndex(me.revCombo, rIndex + 1);
-            dIndex = rIndex + 2;
-        } else {
-            dIndex = rIndex + 1;
-        }
-        me.setRevIndex(me.diffCombo, dIndex);
-        me.requestCurrentDiff();
+        // if(rIndex === dIndex - 1) {
+        //     me.setRevIndex(me.revCombo, rIndex + 1);
+        //     dIndex = rIndex + 2;
+        // } else {
+        //     dIndex = rIndex + 1;
+        // }
+        me.setRevIndex(me.diffCombo, ++dIndex);
+        me.requestCurrentDiff(objectId);
     },
     //
-    onNextDiff: function() {
+    onNextDiff: function(objectId) {
         var me = this,
-            rIndex = me.getRevIndex(me.revCombo),
+            // rIndex = me.getRevIndex(me.revCombo),
             dIndex = me.getRevIndex(me.diffCombo);
-        if(rIndex === dIndex - 1) {
-            rIndex -= 1;
-            me.setRevIndex(me.revCombo, rIndex);
-        }
-        dIndex = rIndex + 1;
-        me.setRevIndex(me.diffCombo, dIndex);
-        me.requestCurrentDiff();
+        // if(rIndex === dIndex - 1) {
+        //     rIndex -= 1;
+        //     me.setRevIndex(me.revCombo, rIndex);
+        // }
+        // dIndex = rIndex + 1;
+        me.setRevIndex(me.diffCombo, --dIndex);
+        me.requestCurrentDiff(objectId);
     },
     //
     onSwapRev: function() {
@@ -554,7 +562,7 @@ Ext.define('NOC.core.RepoPreview', {
         me.setRevIndex(me.diffCombo, rIndex);
         me.requestCurrentDiff();
     },
-
+    //
     onReset: function() {
         var me = this;
         me.requestText();

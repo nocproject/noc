@@ -106,6 +106,7 @@ class DesktopApplication(ExtApplication):
             "help_branch": config.help.branch,
             "help_language": config.help.language,
             "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
+            "timezone": config.timezone,
         }
         return self.render(
             request, "desktop.html", language=self.get_language(request), apps=apps, setup=setup
