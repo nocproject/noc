@@ -1,9 +1,9 @@
 {
-    "name": "Sumitomo | Transceiver | 1G | SCP6894-C1-BNE",
+    "name": "Agilent | Transceiver | 1G | HFBR-5710L",
     "$collection": "inv.objectmodels",
-    "uuid": "66477c00-71e1-4c31-9518-f1048a267637",
-    "vendor__code": "SUMITOMO",
-    "description": "1000BaseZX SFP Transceiver",
+    "uuid": "2d85f3d6-aabd-44ab-9282-d9b225d43dae",
+    "vendor__code": "AGILENT",
+    "description": "1000BASE-SX short wavelength",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -12,28 +12,29 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RX LC",
+            "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASEZX-1550"],
+            "protocols": [">1000BASESX"],
             "type__name": "Optical | LC"
         },
         {
-            "description": "TX LC",
+            "description": "TX Port",
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASEZX-1550"],
+            "protocols": ["<1000BASESX"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["SCP6894-C1-BNE", "SCP6894-C8-BNE"]
+            "order_part_no": ["HFBR-5710LP"],
+            "part_no": ["HFBR-5710L"]
         }
     }
 }

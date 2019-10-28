@@ -1,9 +1,9 @@
 {
-    "name": "Sumitomo | Transceiver | 1G | SCP6894-C1-BNE",
+    "name": "Finisar | Transceiver | 1G | FTRJ15197D",
     "$collection": "inv.objectmodels",
-    "uuid": "66477c00-71e1-4c31-9518-f1048a267637",
-    "vendor__code": "SUMITOMO",
-    "description": "1000BaseZX SFP Transceiver",
+    "uuid": "61cd1724-9dca-41b0-bd2b-5f18c1737b96",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-ZX, Small Form-factor Pluggable (SFP), 1550nm Transmitter Wavelength, Single-mode Fiber (SMF), 1x, 2x Fibre Channel, Digital Diagnostics Function (DDM)",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,7 +15,7 @@
             "type__name": "Transceiver | SFP | Cisco"
         },
         {
-            "description": "RX LC",
+            "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
@@ -23,7 +23,7 @@
             "type__name": "Optical | LC"
         },
         {
-            "description": "TX LC",
+            "description": "TX Port",
             "direction": "s",
             "gender": "f",
             "name": "tx",
@@ -33,7 +33,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SCP6894-C1-BNE", "SCP6894-C8-BNE"]
+            "order_part_no": ["FTRJ-1319-7D-CS", "FTRJ-1519-7D-CSC"],
+            "part_no": ["FTRJ-1319-7D-C"]
         }
     }
 }
