@@ -1,9 +1,9 @@
 {
-    "name": "Sumitomo | Transceiver | 1G | SCP6894-C1-BNE",
+    "name": "Finisar | Transceiver | 1G | GLC-EX-SMD",
     "$collection": "inv.objectmodels",
-    "uuid": "66477c00-71e1-4c31-9518-f1048a267637",
-    "vendor__code": "SUMITOMO",
-    "description": "1000BaseZX SFP Transceiver",
+    "uuid": "f51f745c-a4b2-43a6-a6c6-8fe4816d0143",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-EX long-wavelength, 40km, with DOM",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,25 +15,25 @@
             "type__name": "Transceiver | SFP | Cisco"
         },
         {
-            "description": "RX LC",
+            "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASEZX-1550"],
+            "protocols": [">1000BASEEX-1310"],
             "type__name": "Optical | LC"
         },
         {
-            "description": "TX LC",
+            "description": "TX Port",
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASEZX-1550"],
+            "protocols": ["<1000BASEEX-1310"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["SCP6894-C1-BNE", "SCP6894-C8-BNE"]
+            "part_no": ["GLC-EX-SMD"]
         }
     }
 }

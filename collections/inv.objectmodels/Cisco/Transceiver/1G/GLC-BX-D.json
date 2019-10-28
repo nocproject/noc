@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "c51048d8-9b4e-44ca-9734-4c9330ca4dc0",
     "vendor__code": "CISCO",
-    "description": "1000BASE-BX-D",
+    "description": "1000BASE-BX-D SFP, SMF, 1490nm-TX/1310nm-RX, 10km, LC, DOM",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["GLC-BX-D"]
+            "part_no": ["GLC-BX-D", "GLC-BX-D3"]
         }
     }
 }
