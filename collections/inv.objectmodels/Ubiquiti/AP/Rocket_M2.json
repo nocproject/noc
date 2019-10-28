@@ -1,0 +1,50 @@
+{
+    "name": "Ubiquiti | AP | Rocket M2",
+    "$collection": "inv.objectmodels",
+    "uuid": "bd0708f2-ab7c-4833-b3ea-4159cc5058c3",
+    "vendor__code": "UBIQUITI",
+    "description": "Радиоустройство 2.4 ГГц, PtP/PtMP, airMAX, 2x RP-SMA, MIMO 2x2, 28 дБм",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Main port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth1",
+            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "MIMO 2x2 2.4GHz",
+            "direction": "s",
+            "gender": "f",
+            "name": "rf1",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | RP SMA"
+        },
+        {
+            "description": "MIMO 2x2 2.4GHz",
+            "direction": "s",
+            "gender": "f",
+            "name": "rf2",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | RP SMA"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["Ubiquiti Rocket M2"]
+        },
+        "dimensions": {
+            "depth": 80,
+            "height": 44,
+            "width": 160
+        },
+        "power": {
+            "power": 6.5
+        },
+        "weight": {
+            "weight": 0.35
+        }
+    }
+}
