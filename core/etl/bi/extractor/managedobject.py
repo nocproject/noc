@@ -2,27 +2,35 @@
 # ----------------------------------------------------------------------
 # Managed Object Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 import datetime
-from noc.lib.text import ch_escape
 from collections import defaultdict
+
+# Third-party modules
+from pymongo import ReadPreference
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from .base import BaseExtractor
-from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
-from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
+from noc.lib.text import ch_escape
 from noc.core.etl.bi.stream import Stream
+from noc.core.clickhouse.connect import connection
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.models.servicesummary import ServiceSummary
+from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.capability import Capability
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.fm.models.uptime import Uptime
+from noc.fm.models.reboot import Reboot
+from noc.fm.models.outage import Outage
 
 
 class ManagedObjectsExtractor(BaseExtractor):
@@ -43,11 +51,20 @@ class ManagedObjectsExtractor(BaseExtractor):
         super(ManagedObjectsExtractor, self).__init__(prefix, start, stop)
         self.mo_stream = Stream(ManagedObjectBI, prefix)
 
-    def extract(self):
+    def extract(self, *args, **options):
         nr = 0
         ts = datetime.datetime.now()
         # External data
-        x_data = [self.get_interfaces(), self.get_links(), self.get_caps()]
+        stats_start = self.start - datetime.timedelta(days=1)  # configuration ?
+        x_data = [
+            self.get_interfaces(),
+            self.get_links(),
+            self.get_caps(),
+            self.get_n_subs_n_serv(),
+            self.get_reboots(stats_start, self.stop),
+            self.get_availability(stats_start, self.stop),
+            self.get_object_metrics(stats_start, self.stop),
+        ]
         sn = self.get_mo_sn()
         # Extract managed objects
         for mo in ManagedObject.objects.all().iterator():
@@ -83,6 +100,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "is_managed": mo.is_managed,
                 "location": ch_escape(location) if location else "",
                 "uptime": uptime.last_value if uptime else 0.0,
+                "availability": 100.0,
                 "tags": [str(t) for t in mo.tags if "{" not in t] if mo.tags else [],  # { - bug
                 "serials": list(set(serials))
                 # subscribers
@@ -174,4 +192,94 @@ class ManagedObjectsExtractor(BaseExtractor):
                 key="Serial Number"
             ).values_list("managed_object", "value")
         }
+        return r
+
+    @staticmethod
+    def get_reboots(start_date=None, stop_date=None):
+        match = {"ts": {"$gte": start_date, "$lte": stop_date}}
+        pipeline = [
+            {"$match": match},
+            {"$group": {"_id": "$object", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+        ]
+        data = (
+            Reboot._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .aggregate(pipeline)
+        )
+        # data = data["result"]
+        return {rb["_id"]: {"n_reboots": rb["count"]} for rb in data}
+
+    @staticmethod
+    def get_availability(start_date, stop_date, skip_zero_avail=False):
+        # now = datetime.datetime.now()
+        b = start_date
+        d = stop_date
+        outages = defaultdict(list)
+        td = (d - b).total_seconds()
+        # q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
+        q = (Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)) & Q(start__lt=d)
+        for o in Outage.objects.filter(q):
+            start = max(o.start, b)
+            stop = o.stop if (o.stop and o.stop < d) else d
+            if (stop - start).total_seconds() == td and skip_zero_avail:
+                continue
+            outages[o.object] += [(stop - start).total_seconds()]
+        # Normalize to percents
+        return {
+            o: {
+                "availability": (td - sum(outages[o])) * 100.0 / td,
+                "total_unavailability": int(sum(outages[o])),
+                "n_outages": len(outages[o]),
+            }
+            for o in outages
+        }
+
+    @staticmethod
+    def get_n_subs_n_serv():
+        r = defaultdict(dict)
+        service_pipeline = [
+            {"$unwind": "$service"},
+            {"$group": {"_id": "$managed_object", "service_sum": {"$sum": "$service.summary"}}},
+        ]
+        for doc in ServiceSummary._get_collection().aggregate(service_pipeline):
+            r[doc["_id"]]["n_services"] = doc["service_sum"]
+        subscriber_pipeline = [
+            {"$unwind": "$subscriber"},
+            {
+                "$group": {
+                    "_id": "$managed_object",
+                    "subscriber_sum": {"$sum": "$subscriber.summary"},
+                }
+            },
+        ]
+        for doc in ServiceSummary._get_collection().aggregate(subscriber_pipeline):
+            r[doc["_id"]]["n_subscribers"] = doc["subscriber_sum"]
+        return r
+
+    @staticmethod
+    def get_object_metrics(start, stop):
+        """
+
+        :param start:
+        :type stop: datetime.datetime
+        :param stop:
+        :type stop: datetime.datetime
+        :return:
+        """
+        r = {}
+        bi_map = {
+            str(bi_id): mo_id for mo_id, bi_id in ManagedObject.objects.values_list("id", "bi_id")
+        }
+        ch = connection()
+        for row in ch.execute(
+            "SELECT managed_object, sum(stp_topology_changes_delta) "
+            "FROM routing WHERE ts > '%s' and ts < '%s' GROUP BY managed_object"
+            % (
+                start.replace(microsecond=0).isoformat(sep=" "),
+                stop.replace(microsecond=0).isoformat(sep=" "),
+            )
+        ):  # delta
+            r[bi_map[row[0]]] = {"n_stp_topo_changes": row[1]}
+        del bi_map
         return r
