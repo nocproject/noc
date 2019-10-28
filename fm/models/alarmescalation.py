@@ -150,3 +150,5 @@ class AlarmEscalation(Document):
                     escalation_id=esc.id,
                     escalation_delay=e_item.delay,
                 )
+                if e_item.stop_processing:
+                    break
