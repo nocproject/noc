@@ -100,6 +100,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "is_managed": mo.is_managed,
                 "location": ch_escape(location) if location else "",
                 "uptime": uptime.last_value if uptime else 0.0,
+                "availability": 100.0,
                 "tags": [str(t) for t in mo.tags if "{" not in t] if mo.tags else [],  # { - bug
                 "serials": list(set(serials))
                 # subscribers
