@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IGetMPLSVPN interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,11 @@ class IGetMPLSVPN(BaseInterface):
         element=DictParameter(
             attrs={
                 # VPN type
-                "type": StringParameter(choices=["VRF", "VPLS", "VLL", "EVPN"]),
+                "type": StringParameter(
+                    choices=["table", "bridge", "vrf", "vll", "vpls", "evpn", "vxlan"],
+                    default="table",
+                    aliases={"ip": "table", "VRF": "vrf", "VPLS": "vpls", "VLL": "vll"},
+                ),
                 # VPN state. True - active, False - inactive
                 "status": BooleanParameter(default=True),
                 # Box-unique VPN name

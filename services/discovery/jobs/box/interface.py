@@ -79,6 +79,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 name=fi["forwarding_instance"],
                 type=fi["type"],
                 rd=fi.get("rd"),
+                rt_export=fi.get("rt_export"),
+                rt_import=fi.get("rt_import"),
                 vr=fi.get("vr"),
                 vpn_id=vpn_id,
             )
@@ -167,24 +169,46 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.set_artefact("interface_vpn", self.vrf_artefact)
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
 
-    def submit_forwarding_instance(self, name, type, rd, vr, vpn_id=None):
+    def submit_forwarding_instance(self, name, type, rd, rt_export, rt_import, vr, vpn_id=None):
         if name == "default":
             return None
+        rt_export = rt_export or []
+        rt_import = rt_import or []
         forwarding_instance = ForwardingInstance.objects.filter(
             managed_object=self.object.id, name=name
         ).first()
         if forwarding_instance:
             changes = self.update_if_changed(
-                forwarding_instance, {"type": type, "name": name, "rd": rd}
+                forwarding_instance,
+                {
+                    "type": type,
+                    "name": name,
+                    "rd": rd,
+                    "rt_export": rt_export,
+                    "rt_import": rt_import,
+                },
             )
             self.log_changes("Forwarding instance '%s' has been changed" % name, changes)
         else:
             self.logger.info("Create forwarding instance '%s' (%s)", name, type)
             forwarding_instance = ForwardingInstance(
-                managed_object=self.object.id, name=name, type=type, rd=rd, virtual_router=vr
+                managed_object=self.object.id,
+                name=name,
+                type=type,
+                rd=rd,
+                rt_export=rt_export,
+                rt_import=rt_import,
+                virtual_router=vr,
             )
             forwarding_instance.save()
-        self.vrf_artefact[name] = {"name": name, "type": type, "rd": rd, "vpn_id": vpn_id}
+        self.vrf_artefact[name] = {
+            "name": name,
+            "type": type,
+            "rd": rd,
+            "vpn_id": vpn_id,
+            "rt_export": rt_export,
+            "rt_import": rt_import,
+        }
         return forwarding_instance
 
     def submit_interface(

@@ -8,6 +8,11 @@
 
 # Python modules
 from collections import defaultdict
+import operator
+
+# Third-party modules
+from typing import DefaultDict, List
+from bson import ObjectId
 
 # NOC modules
 from noc.core.datastream.base import DataStream
@@ -15,6 +20,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
@@ -61,6 +67,7 @@ class ManagedObjectDataStream(DataStream):
         cls._apply_administrative_domain(mo, r)
         cls._apply_object_profile(mo, r)
         cls._apply_chassis_id(mo, r)
+        cls._apply_forwarding_instances(mo, r)
         cls._apply_interfaces(mo, r)
         cls._apply_resource_groups(mo, r)
         cls._apply_asset(mo, r)
@@ -134,6 +141,40 @@ class ManagedObjectDataStream(DataStream):
         for cname in sorted(cdata):
             caps += [{"name": cname, "value": str(cdata[cname])}]
         r["capabilities"] = caps
+
+    @staticmethod
+    def _apply_forwarding_instances(mo, r):
+        instances = list(
+            sorted(
+                ForwardingInstance._get_collection().find({"managed_object": mo.id}),
+                key=operator.itemgetter("ma,e"),
+            )
+        )
+        if not instances:
+            return
+        si_map = defaultdict(list)  # type: DefaultDict[ObjectId, List[str]]
+        for doc in SubInterface._get_collection().find(
+            {"managed_object": mo.id}, {"_id": 0, "name": 1, "forwarding_instance": 1}
+        ):
+            fi = doc.get("forwarding_instance", "default")
+            si_map[fi] += [doc["name"]]
+        result = []
+        for fi in instances:
+            item = {"name": fi["name"], "type": fi["type"], "subinterfaces": si_map[fi["name"]]}
+            rd = fi.get("rd")
+            if rd:
+                item["rd"] = rd
+            vpn_id = fi.get("vpn_id")
+            if vpn_id:
+                item["vpn_id"] = vpn_id
+            rt_export = fi.get("rt_export")
+            if rt_export:
+                item["rt_export"] = rt_export
+            rt_import = fi.get("rt_import")
+            if rt_import:
+                item["rt_import"] = rt_import
+            result += [item]
+        r["forwarding_instances"] = result
 
     @staticmethod
     def _apply_interfaces(mo, r):
