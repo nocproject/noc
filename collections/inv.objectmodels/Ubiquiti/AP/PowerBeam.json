@@ -1,0 +1,23 @@
+{
+    "name": "Ubiquiti | AP | PowerBeam",
+    "$collection": "inv.objectmodels",
+    "uuid": "b7edc9e6-3d25-43a0-9a03-9c41e8ec1adf",
+    "vendor__code": "UBIQUITI",
+    "description": "Радиоустройство 2.4 ГГц, PtP/CPE, airMAX ac, MIMO 2х2, 18 дБи, 27 дБм",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["Ubiquiti PowerBeam M2", "Ubiquiti PowerBeam M5"]
+        }
+    }
+}

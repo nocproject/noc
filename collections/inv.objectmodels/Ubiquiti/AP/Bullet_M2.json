@@ -1,0 +1,39 @@
+{
+    "name": "Ubiquiti | AP | Bullet M2",
+    "$collection": "inv.objectmodels",
+    "uuid": "10e533cf-4b3c-437f-a236-7fa3a303733e",
+    "vendor__code": "UBIQUITI",
+    "description": "Радиоустройство 2.4 ГГц (b/g/n), PtP/PtMP, airMAX, 28 дБм, 1x N-type, PoE-питание ",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2.4G antenna interface 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "2.4G",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["Ubiquiti Bullet M2"]
+        },
+        "dimensions": {
+            "depth": 31,
+            "height": 37,
+            "width": 152
+        },
+        "weight": {
+            "weight": 0.18
+        }
+    }
+}
