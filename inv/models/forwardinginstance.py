@@ -19,6 +19,7 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
+from noc.config import config
 
 
 @datastream
@@ -50,6 +51,10 @@ class ForwardingInstance(Document):
 
     def __str__(self):
         return "%s: %s" % (self.managed_object.name, self.name if self.name else "default")
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.managed_object.id
 
     def delete(self, *args, **kwargs):
         # Delete subinterfaces
