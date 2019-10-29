@@ -51,10 +51,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     VRF_QUERY = """(Match("virtual-router", vr, "forwarding-instance", instance) or
         Match("virtual-router", vr, "forwarding-instance", instance, "type", type) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "vpn-id", vpn_id) or
         Match("virtual-router", vr, "forwarding-instance", instance, "route-distinguisher", rd) or
         Match("virtual-router", vr, "forwarding-instance", instance, "vrf-target", "export", rt_export) or
         Match("virtual-router", vr, "forwarding-instance", instance, "vrf-target", "import", rt_import)
-    ) and Group("vr", "instance", stack={"rt_export"})"""
+    ) and Group("vr", "instance", stack={"rt_export", "rt_import"})"""
 
     def __init__(self, *args, **kwargs):
         super(InterfaceCheck, self).__init__(*args, **kwargs)
@@ -472,16 +473,25 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 if vrfs and (d["vr"], d["instance"]) in vrfs:
                     try:
                         vrf = vrfs[d["vr"], d["instance"]]
-                        r["vpn_id"] = get_vpn_id(
-                            {
-                                "name": vrf["instance"],
-                                "rd": vrf.get("rd"),
-                                "rt_export": vrf.get("rt_export", []),
-                                "type": vrf["type"].upper()
-                                if vrf["type"] in ["vrf", "vpls"]
-                                else vrf["type"],
-                            }
-                        )
+                        r["type"] = vrf["type"]
+                        if vrf.get("rd"):
+                            r["rd"] = vrf["rd"]
+                        r["rt_export"] = vrf.get("rt_export", [])
+                        if vrf.get("rt_import"):
+                            r["rt_import"] = vrf["rt_import"]
+                        if "vpn_id" in vrf:
+                            r["vpn_id"] = vrf["vpn_id"]
+                        else:
+                            r["vpn_id"] = get_vpn_id(
+                                {
+                                    "name": vrf["instance"],
+                                    "rd": vrf.get("rd"),
+                                    "rt_export": vrf.get("rt_export", []),
+                                    "type": vrf["type"].upper()
+                                    if vrf["type"] in ["vrf", "vpls", "vll"]
+                                    else vrf["type"],
+                                }
+                            )
                     except ValueError:
                         pass
             if "interfaces" not in r:

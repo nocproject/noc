@@ -17,9 +17,11 @@ from mongoengine.fields import StringField, ListField
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
 
 
+@datastream
 @on_delete_check(ignore=[("inv.SubInterface", "forwarding_instance")])
 @six.python_2_unicode_compatible
 class ForwardingInstance(Document):
