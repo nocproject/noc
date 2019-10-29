@@ -41,6 +41,7 @@ class ForwardingInstance(Document):
     virtual_router = StringField(required=False)
     name = StringField()
     # VRF/VPLS
+    vpn_id = StringField(required=False)
     rd = StringField(required=False)
     rt_export = ListField(StringField(required=False))
     rt_import = ListField(StringField(required=False))

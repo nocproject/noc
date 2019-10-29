@@ -147,7 +147,7 @@ class ManagedObjectDataStream(DataStream):
         instances = list(
             sorted(
                 ForwardingInstance._get_collection().find({"managed_object": mo.id}),
-                key=operator.itemgetter("ma,e"),
+                key=operator.itemgetter("name"),
             )
         )
         if not instances:
@@ -156,11 +156,12 @@ class ManagedObjectDataStream(DataStream):
         for doc in SubInterface._get_collection().find(
             {"managed_object": mo.id}, {"_id": 0, "name": 1, "forwarding_instance": 1}
         ):
-            fi = doc.get("forwarding_instance", "default")
-            si_map[fi] += [doc["name"]]
+            fi = doc.get("forwarding_instance")
+            if fi:
+                si_map[fi] += [doc["name"]]
         result = []
         for fi in instances:
-            item = {"name": fi["name"], "type": fi["type"], "subinterfaces": si_map[fi["name"]]}
+            item = {"name": fi["name"], "type": fi["type"], "subinterfaces": si_map[fi["_id"]]}
             rd = fi.get("rd")
             if rd:
                 item["rd"] = rd

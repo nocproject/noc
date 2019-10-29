@@ -183,6 +183,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 {
                     "type": type,
                     "name": name,
+                    "vpn_id": vpn_id,
                     "rd": rd,
                     "rt_export": rt_export,
                     "rt_import": rt_import,
@@ -195,6 +196,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 managed_object=self.object.id,
                 name=name,
                 type=type,
+                vpn_id=vpn_id,
                 rd=rd,
                 rt_export=rt_export,
                 rt_import=rt_import,
