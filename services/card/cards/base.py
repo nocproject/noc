@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Base card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import operator
 # Third-party modules
 import six
 from jinja2 import Template, Environment
+from typing import Dict, Any
 
 # NOC modules
 from noc.core.translation import ugettext as _
@@ -80,7 +81,7 @@ class BaseCard(object):
         :param id:
         :return:
         """
-        if self.model:
+        if self.model and id != "ajax":
             try:
                 return self.get_object(id)
             except self.model.DoesNotExist:
@@ -89,6 +90,7 @@ class BaseCard(object):
         return None
 
     def get_data(self):
+        # type: () -> Dict[str, Any]
         """
         Returns template data
         """

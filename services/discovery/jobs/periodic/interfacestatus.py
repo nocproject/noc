@@ -95,7 +95,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
                 iface.set_oper_status(ostatus)
         if bulk:
-            self.logger.info("Commiting changes to database")
+            self.logger.info("Committing changes to database")
             try:
                 collection.bulk_write(bulk, ordered=False)
                 # 1 bulk operations complete in 0ms: inserted=0, updated=1, removed=0
