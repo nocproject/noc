@@ -82,6 +82,8 @@ class Profile(BaseProfile):
         "is_ar": {"platform": {"$regex": r"^AR\d+.+"}},
         "is_extended_entity_mib_supported": {"caps": {"$in": ["Huawei | MIB | ENTITY-EXTENT-MIB"]}},
         "is_stack": {"caps": {"$in": ["Stack | Members"]}},
+        "is_s85xx": {"platform": {"$regex": r"^(S85.+)$"}},
+        "is_ar12_93xx": {"platform": {"$regex": "^(S93..|AR[12].+)$"}},
     }
 
     rx_ver = re.compile(
