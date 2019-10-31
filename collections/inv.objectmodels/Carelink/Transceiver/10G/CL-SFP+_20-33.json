@@ -1,0 +1,31 @@
+{
+    "name": "Carelink | Transceiver | 10G | CL-SFP+_20-33",
+    "$collection": "inv.objectmodels",
+    "uuid": "9be01d95-62ab-48af-b6c1-1ddbe58d5c7a",
+    "vendor__code": "CARELINK",
+    "description": "Carelink SFP transceiver 20km (1270 rx, 1330 tx)",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": ["<10GBASELR-1330", ">10GBASELR-1270"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CL-SFP+_20-33", "CL-SFP+-20-33"]
+        }
+    }
+}

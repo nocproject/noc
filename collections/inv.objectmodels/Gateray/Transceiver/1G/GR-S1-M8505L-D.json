@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | Transceiver | 1G | GLC-LH-SMD",
+    "name": "Gateray | Transceiver | 1G | GR-S1-M8505L-D",
     "$collection": "inv.objectmodels",
-    "uuid": "1724b01e-e07c-47ad-a4e7-5dce23000251",
-    "vendor__code": "CISCO",
-    "description": "Cisco SFP LH/LX transceiver with DOM support",
+    "uuid": "99be19b5-4a65-4678-a7c5-c2e8b5fc58b5",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP, MMF, 850nm, LC, 0.5km",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -12,14 +12,14 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [">1000BASELX-850"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,14 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASELX-1310"],
+            "protocols": ["<1000BASELX-850"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["SFCT-5716PZ", "SFCT-5716PZ-CS1"],
-            "part_no": ["GLC-LH-SMD"]
+            "part_no": ["GR-S1-M8505L-D"]
         }
     }
 }

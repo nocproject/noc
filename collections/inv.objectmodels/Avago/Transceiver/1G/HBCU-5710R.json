@@ -12,7 +12,7 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "TX Port",
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ABCU-5710RZ-CS4", "ABCU-5710RZ-CS2", "ABCU-5710RZ-CS4B", "ABCU-5710RZ", "ABCU-5712RZ-HP1"]
+            "part_no": ["HBCU-5710R", "ABCU-5710RZ-CS4", "ABCU-5710RZ-CS2", "ABCU-5710RZ-CS4B", "ABCU-5710RZ", "ABCU-5712RZ-HP1"]
         }
     }
 }
