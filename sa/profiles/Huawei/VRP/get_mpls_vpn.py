@@ -28,6 +28,8 @@ class Script(BaseScript):
     rx_export = re.compile(
         r"^\s+Export VPN Targets :\s+(?P<rt_export>(\S+:\S+\s*){1,}|<not set>)\s*", re.IGNORECASE
     )
+    rx_rt_format = re.compile(r"(\d+\:\d+,?)+")
+    rx_iface_format = re.compile(r"(\S+,?)+")
     rx_vpn = re.compile(
         r"^VPN\-Instance :\s+(?P<vrf>\S+)\s*\n"
         r"^\s+(?P<description>.*)\n"
@@ -52,6 +54,7 @@ class Script(BaseScript):
         vpns = []
         block = None
         block_splitter = None
+        line_format = None
         for line in v.splitlines():
             match = self.rx_line.search(line)
             if match:
@@ -65,11 +68,12 @@ class Script(BaseScript):
                     }
                 ]
             elif vpns:
-                if block and line.startswith("    "):
+                if block and line.startswith("    ") and line_format.match(line):
                     vpns[-1][block] += line.strip(" ,\n").split(block_splitter)
                     continue
                 block = None
                 block_splitter = None
+                line_format = None
                 match_rd = self.rx_rd.match(line)
                 if match_rd:
                     rd = match_rd.group("rd")
@@ -80,6 +84,7 @@ class Script(BaseScript):
                 if match_int:
                     vpns[-1]["interfaces"] += [match_int.group("iface").strip("\n")]
                     block, block_splitter = "interfaces", ","
+                    line_format = self.rx_iface_format
                     continue
                 match_desc = self.rx_desc.match(line)
                 if match_desc:
@@ -89,11 +94,12 @@ class Script(BaseScript):
                 if match_export:
                     vpns[-1]["rt_export"] = match_export.group("rt_export").split()
                     block = "rt_export"
+                    line_format = self.rx_rt_format
                 match_import = self.rx_import.match(line)
                 if match_import:
                     vpns[-1]["rt_import"] = match_import.group("rt_import").split()
                     block = "rt_import"
-
+                    line_format = self.rx_rt_format
         if vpns:
             return vpns
         # Second attempt
