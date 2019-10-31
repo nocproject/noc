@@ -38,11 +38,15 @@ class Script(BaseScript):
         "CHASSIS": "CHASSIS",
         "PEM": "PEM",
         "POWER SUPPLY": "PEM",
+        "PDM": "PDM",  # Power Distribution Module
         "PSU": "PSU",
         "ROUTING ENGINE": "RE",
         "AFEB": "AFEB",
         "CB": "SCB",
         "MGMT BRD": "MGMT",
+        "FPM BOARD": "FPM",  # Front Panel Display
+        "QXM": "QXM",  # QX chip (Dense Queuing Block)
+        "CPU": "CPU",  # MPC CPU
         "FPC": "FPC",
         "MPC": "FPC",
         "MIC": "MIC",
@@ -77,37 +81,30 @@ class Script(BaseScript):
         Parse "show chassis hardware"
         and yeld name, revision, part_no, serial, description
         """
-        chassis_no = None
         for line in v.splitlines():
             line = line.strip()
             if not line:
                 continue
             if line.startswith("node"):
-                chassis_no = line[4:-1]
+                self.chassis_no = line[4:-1]
                 continue
             match = self.rx_part.search(line)
             if match:
-                yield [chassis_no] + list(match.groups())
+                yield match.groups()
             else:
                 match = self.rx_chassis.search(line)
                 if match:
                     rev = match.group("revision")
-                    yield (
-                        chassis_no,
-                        "Chassis",
-                        rev,
-                        None,
-                        match.group("serial"),
-                        match.group("rest"),
-                    )
+                    yield ("Chassis", rev, None, match.group("serial"), match.group("rest"))
 
     def execute_cli(self):
-        virtual_chassis = None
+        self.chassis_no = None
+        self.virtual_chassis = None
         v = self.cli("show chassis hardware")
         objects = []
         chassis_sn = set()
         p_hardware = self.parse_hardware(v)
-        for chassis_no, name, revision, part_no, serial, description in p_hardware:
+        for name, revision, part_no, serial, description in p_hardware:
             builtin = False
             # Detect type
             t, number = self.get_type(name)
@@ -118,7 +115,7 @@ class Script(BaseScript):
                 continue
             # Discard virtual chassis and ignored part numbers
             if description == "Virtual Chassis":
-                virtual_chassis = True
+                self.virtual_chassis = True
                 continue
             if t in self.IGNORED and part_no in self.IGNORED[t]:
                 continue
@@ -130,12 +127,14 @@ class Script(BaseScript):
             # Get chassis part number from description
             if t == "CHASSIS":
                 part_no = description.split()[0].upper()
+                if part_no.endswith(","):  # EX4200-48T, 8 POE
+                    part_no = part_no[:-1]
                 chassis_sn.add(serial)
             elif t == "FPC":
                 if description.startswith("EX4"):
                     # Avoid duplicate `CHASSIS` type on some EX switches
                     has_chassis = False
-                    if not virtual_chassis:
+                    if not self.virtual_chassis:
                         for i in objects:
                             if i["type"] == "CHASSIS":
                                 has_chassis = True
@@ -144,6 +143,8 @@ class Script(BaseScript):
                         continue
                     t = "CHASSIS"
                     part_no = description.split()[0].upper()
+                    if part_no.endswith(","):  # EX4200-48T, 8 POE
+                        part_no = part_no[:-1]
                     chassis_sn.add(serial)
             elif t == "XCVR":
                 if vendor == "NONAME":
@@ -154,8 +155,10 @@ class Script(BaseScript):
             if serial == "BUILTIN" or serial in chassis_sn and t != "CHASSIS":
                 builtin = True
                 part_no = []
-            if t == "CHASSIS" and number is None and chassis_no is not None:
-                number = chassis_no
+            if t == "CHASSIS" and number is None and self.chassis_no is not None:
+                number = self.chassis_no
+            if t in ["QXM", "CPU", "PDM"]:
+                builtin = True
             # Submit object
             objects += [
                 {
@@ -187,17 +190,20 @@ class Script(BaseScript):
         """
         n = description.split()[0].split("-")
         if len(n) == 2:
-            # SFP-LX
+            # SFP-LX, SFP-LH, SFP-EX, SFP-T
             t, m = n
             s = "1G"
             if m == "LX10":
                 m = "LX"
         elif len(n) == 3:
-            # SFP+-10G-LR
+            # SFP+-10G-LR, SFP+-10G-ER
             t, s, m = n
         elif len(n) == 4 and description.startswith("SFP-1000BASE-BX10-"):
             # SFP-1000BASE-BX10-U, SFP-1000BASE-BX10-D
             return "NoName | Transceiver | 1G | SFP BX10%s" % n[-1]
+        elif len(n) == 4 and description.startswith("SFP-1000BASE-BX40-"):
+            # SFP-1000BASE-BX40-U, SFP-1000BASE-BX40-D
+            return "NoName | Transceiver | 1G | SFP BX%s" % n[-1]
         else:
             self.logger.error("Cannot detect transceiver type: '%s'", description)
             return self.UNKNOWN_XCVR
