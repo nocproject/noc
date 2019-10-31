@@ -14,6 +14,7 @@ import datetime
 import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
+from typing import List, Dict
 
 # NOC modules
 from noc.fm.models.outage import Outage
@@ -61,6 +62,7 @@ class ObjectStatus(Document):
 
     @classmethod
     def get_statuses(cls, objects):
+        # type: (List[int]) -> Dict[int, bool]
         """
         Returns a map of object id -> status
         for a list od object ids

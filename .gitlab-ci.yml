@@ -57,6 +57,26 @@ black:
     - docker
   allow_failure: false
 
+mypy:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/mypy:master
+  script:
+    - set -x
+    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        mypy --py2 --follow-imports=skip --ignore-missing-imports $FLIST;
+      else
+        echo "No files to lint"
+        true;
+      fi
+  only:
+    - merge_requests
+  tags:
+    - docker
+  allow_failure: true
+
 prettier:
   stage: lint
   image: registry.getnoc.com/infrastructure/prettier:master

@@ -375,7 +375,9 @@
                     <tbody>
                         {% for i in interfaces %}
                         <tr>
-                            <td>{{ i["name"] }}</td>
+                            <td>{{ i["name"] }}
+                            <a href="/api/card/view/interfacepath/{{ i["id"] }}/" target="_"><i class="fa fa-road" title="{{ _("trace vpn") }}"></i></a>
+                            </td>
                             <td{% if not i["oper_status"] %} class="danger"{% endif %}>
                                 {{ {True: "<i class='text-success fa fa-circle' title='Admin Up'></i>", False: "<i class='text-danger fa fa-circle' title='Admin Down'></i>"}[i["admin_status"]] }}&nbsp;
                                 {{ {True: "<i class='text-success fa fa-circle' title='Oper Up'></i>", False: "<i class='text-danger fa fa-circle' title='Oper Down'></i>"}[i["oper_status"]] }}
@@ -417,6 +419,7 @@
                             </td>
                             <td>
                                 <span class="small">{{ i["mac"] }}</span>
+                                <a href="/api/card/view/interfacepath/{{ i["id"] }}/" target="_">TRACE</a>
                             </td>
                             <td>
                                 {% if i["untagged_vlan"] %}<span class="small">U: {{ i["untagged_vlan"] }}</span>{% endif %}

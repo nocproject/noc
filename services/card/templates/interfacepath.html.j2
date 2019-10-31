@@ -1,0 +1,307 @@
+<style>
+    .path:not(:last-child) {
+        margin-bottom: 8px;
+/*       border-bottom: 2px dashed #808080; */
+    }
+
+    .ruler {
+        display: flex;
+        flex-direction: row;
+        font-weight: bold;
+    }
+
+    .object {
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding: 5px;
+        hyphens: auto;
+        -ms-hyphens: auto;
+        -webkit-hyphens: auto;
+    }
+
+    .hw-data {
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding: 5px;
+        hyphens: auto;
+        -ms-hyphens: auto;
+        -webkit-hyphens: auto;
+    }
+
+    .links-data {
+        border: 1px solid black;
+    }
+
+    .link-set {
+        border: 1px solid black;
+        flex-grow: 1;
+    }
+
+    .ruler .object {
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+    .ruler .hw-data {
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+    .ruler .link-set {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ruler .link-set .level {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .ruler .link-set .level:not(:last-child) {
+        border-bottom: 1px solid #808080;
+    }
+
+    .ruler .link-set .level div:not(:last-child) {
+        border-right: 1px solid #808080;
+    }
+
+    .ruler .interface {
+        min-width: 150px;
+    }
+
+    .item {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .item:hover,
+    .item>.links-data:hover {
+        background-color: #f5f5f5;
+    }
+
+    .item .object {
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+    .item .hw-data {
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+    .item .links-data {
+        flex-grow: 1;
+    }
+
+    .links-data .links {
+    }
+
+    .links .link {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .link .interface {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .link .interface div {
+        padding: 4px;
+    }
+/*
+    .link .interface div:not(:last-child) {
+        border-left: 1px solid #c0c0c0;
+    }
+*/
+    .ingress {
+        border-bottom: 2px solid #c0c0c0;
+    }
+
+    .interface .name {
+        text-align: right;
+    }
+
+    .x1 {
+        min-width: 75px;
+        flex-grow: 0.75;
+    }
+
+    .x2 {
+        min-width: 150px;
+        flex-grow: 1.5;
+    }
+
+    .center {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .right {
+        text-align: right;
+    }
+
+    .ingress .dir-in:after {
+        font: normal normal normal 14px/1 FontAwesome;
+        content: "\f175";
+    }
+
+    .ingress .dir-out:after {
+        content: "\f176";
+        font: normal normal normal 14px/1 FontAwesome;
+    }
+
+    .egress .dir-in:after {
+        content: "\f176";
+        font: normal normal normal 14px/1 FontAwesome;
+    }
+
+    .egress .dir-out:after {
+        content: "\f175";
+        font: normal normal normal 14px/1 FontAwesome;
+    }
+
+    .alert {
+        background-color: #c0392b;
+        color: #ecf0f1;
+    }
+
+    .warn {
+        background-color: #f39c12;
+        color: #ecf0f1;
+    }
+
+    .adm-down {
+        background-color: #7f8c8d;
+        color: #ecf0f1;
+    }
+
+    .header {
+        color: #0066CC;
+    }
+</style>
+
+<h3 class="header">Path from {{ object.managed_object.name }}&nbsp;:&nbsp;{{ object.name }} upwards</h3>
+{% if error %}Ошибка: {{ error }}
+{% else %}
+{% for path in paths %}
+<div class="path">
+    <h4 class="header">{{ _("Alternative path") }} {{ loop.index }}</h4>
+    <div class="ruler">
+        <div class="object">{{ _("Object Name") }}<br/>{{ _("IP Address") }}</div>
+        <div class="hw-data">{{ _("Platform Name") }}<br/>{{ _("Soft Version") }}</div>
+        <div class="link-set">
+            <div class="level center">1</div>
+            <div class="level">
+                <div class="x2 center">{{ _("Interface") }}</div>
+                <div class="x2 center">{{ _("State") }}</div>
+                <div class="x2 center">{{ _("Utilization") }}</div>
+                <div class="x2 center">{{ _("Packets") }}</div>
+                <div class="x2 center">{{ _("Errors") }}</div>
+            </div>
+            <div class="level">
+                <div class="x2"></div>
+                <div class="x1 center">{{ _("Speed") }}</div>
+                <div class="x1 center">{{ _("Duplex") }}</div>
+                <div class="x1 center">{{ _("In") }}</div>
+                <div class="x1 center">{{ _("Out") }}</div>
+                <div class="x1 center">{{ _("In") }}</div>
+                <div class="x1 center">{{ _("Out") }}</div>
+                <div class="x1 center">{{ _("In") }}</div>
+                <div class="x1 center">{{ _("Out") }}</div>
+            </div>
+        </div>
+    </div>
+  {%  for item in path %}
+    <div class="item obj-{{ item["object"].bi_id }}">
+        <div class="x2 object">
+            <div class="name"><a href="/api/card/view/managedobject/{{ item["object"].id }}/">{{ item["object"].name }}</a></div>
+            <div class="address">{{ item["object"].address }}</div>
+        </div>
+        <div class="x2 hw-data">
+            <div class="platform">{{ item["object"].platform.name }}</div>
+            <div class="version">{{ item["object"].version.version }}</div>
+        </div>
+        <div class="links-data">
+            {% for direction in ["ingress", "egress"] %}
+                <div class="{{ direction }} links">
+                    {% for link in item[direction] %}
+                        <div class="link">
+                            {% for iface in link %}
+                            <div class="interface iface-{{ if_hash[iface.name] }}">
+                                <div class="x2 name">
+                                    <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ item["object"].id }}&extra_template={'type': 'iface', 'name': '{{iface.name}}'}">
+                                    <i class="fa fa-dashboard"></i>&nbsp;-&nbsp;{{ iface.name }}</a>
+                                </div>
+                                <div class="x1 right m-speed">-</div>
+                                <div class="x1 right m-duplex">-</div>
+                                <div class="x1 right m-load_in dir-in">-</div>
+                                <div class="x1 right m-load_out dir-out">-</div>
+                                <div class="x1 right m-packets_in dir-in">-</div>
+                                <div class="x1 right m-packets_out dir-out">-</div>
+                                <div class="x1 right m-errors_in dir-in">-</div>
+                                <div class="x1 right m-errors_out dir-out">-</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+  {% endfor %}
+</div>
+{% endfor %}
+<script>
+    var queryKey = "{{ ajax_query_key | urlencode }}";
+    var mLevelPrefixes = ["obj-", "iface-", "m-"];
+
+    function getMetrics() {
+        $.ajax("/api/card/view/interfacepath/ajax/?key=" + queryKey).done(function(data) {
+            function setMetrics(root, item, idx) {
+                var lCls = mLevelPrefixes[idx] + item[idx];
+                var elements = root.getElementsByClassName(lCls);
+                for(var i = 0; i < elements.length; i++) {
+                    var el = elements[i];
+                    if(idx === 2) {
+                        el.innerHTML = item[3];
+                    } else {
+                        setMetrics(el, item, idx + 1);
+                    }
+                }
+            }
+            function setStatuses(statuses) {
+                for(var i = 0; i < statuses.length; i++) {
+                    var item = statuses[i],
+                        objId = item[0],
+                        status = item[1];
+                    var elements = document.getElementsByClassName("item obj-" + objId);
+                    for(var j = 0; j < elements.length; j++) {
+                        var el = elements[j],
+                            hasAlert = el.classList.contains("alert");
+                        if(status && hasAlert) {
+                            // Remove alert
+                            el.classList.remove("alert");
+                        }
+                        if(!status && !hasAlert) {
+                            // Add alert
+                            el.classList.add("alert");
+                        }
+                    }
+                }
+            }
+
+            // Set metrics
+            for(var i = 0; i < data.metrics.length; i++) {
+                // obj, iface, metric, value
+                setMetrics(document, data.metrics[i], 0);
+            }
+            // Set statuses
+            setStatuses(data.statuses);
+        })
+    }
+
+    $(document).ready(getMetrics);
+</script>
+{% endif %}

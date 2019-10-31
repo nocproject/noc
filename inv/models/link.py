@@ -106,6 +106,7 @@ class Link(Document):
 
     @property
     def is_ptp(self):
+        # type: () -> bool
         """
         Check link is point-to-point link
         :return:
@@ -114,6 +115,7 @@ class Link(Document):
 
     @property
     def is_lag(self):
+        # type: () -> bool
         """
         Check link is unresolved LAG
         :return:
@@ -122,6 +124,7 @@ class Link(Document):
 
     @property
     def is_broadcast(self):
+        # type: () -> bool
         """
         Check link is broadcast media
         :return:
@@ -130,6 +133,7 @@ class Link(Document):
 
     @property
     def is_loop(self):
+        # type: () -> bool
         """
         Check link is looping to same object
         :return:

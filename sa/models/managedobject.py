@@ -32,6 +32,7 @@ from django.db.models import (
 )
 import cachetools
 import six
+from typing import Optional
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -515,11 +516,17 @@ class ManagedObject(NOCModel):
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
     def get_by_id(cls, id):
+        # type: (int) -> Optional[ManagedObject]
+        """
+        Get ManagedObject by id. Cache returned instance for future use.
+
+        :param id: Managed Object's id
+        :return: ManagedObject instance
+        """
         mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
             return mo[0]
-        else:
-            return None
+        return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
