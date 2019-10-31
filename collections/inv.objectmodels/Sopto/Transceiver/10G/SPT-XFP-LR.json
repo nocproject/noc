@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | Transceiver | 1G | GLC-LH-SMD",
+    "name": "Sopto | Transceiver | 10G | SPT-XFP-LR",
     "$collection": "inv.objectmodels",
-    "uuid": "1724b01e-e07c-47ad-a4e7-5dce23000251",
-    "vendor__code": "CISCO",
-    "description": "Cisco SFP LH/LX transceiver with DOM support",
+    "uuid": "12995673-a7fe-4d54-b430-6b364c3f425c",
+    "vendor__code": "SOPTO",
+    "description": "10G 1310nm 10km XFP Optical Transceiver, ddm",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -11,15 +11,15 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [">10GBASELR-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,14 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASELX-1310"],
+            "protocols": ["<10GBASELR-1310"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["SFCT-5716PZ", "SFCT-5716PZ-CS1"],
-            "part_no": ["GLC-LH-SMD"]
+            "part_no": ["SPT-XFP-LR", "SPT-SFP+LR"]
         }
     }
 }

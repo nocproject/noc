@@ -1,0 +1,31 @@
+{
+    "name": "Gateray | Transceiver | 1G | GR-S1-W5520L-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "26812a89-6a2f-4515-b03b-065d54ace616",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP, 1550 tx, 1310 rx, LC, 20km, DOM",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": ["<1000BASELX-1310", ">1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-S1-W5520L-D"]
+        }
+    }
+}

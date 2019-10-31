@@ -1,0 +1,31 @@
+{
+    "name": "Gateray | Transceiver | 10G | GR-XF-W2740L-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "157cfa44-fa04-4c76-9c1e-a1532daa441c",
+    "vendor__code": "GATERAY",
+    "description": "GateRay SFP WDM transceiver 40km (1270 tx, 1330 rx) with ddm",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1330", "<10GBASEER-1270"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-XF-W2740L-D"]
+        }
+    }
+}

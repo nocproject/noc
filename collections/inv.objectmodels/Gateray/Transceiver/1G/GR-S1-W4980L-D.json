@@ -1,0 +1,31 @@
+{
+    "name": "Gateray | Transceiver | 1G | GR-S1-W4980L-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "6a2caa59-4d3f-4df6-a227-c6dc265233cd",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP, 1550 rx, 1490 tx, LC, 80km, DOM",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1490", "<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-S1-W4980L-D"]
+        }
+    }
+}
