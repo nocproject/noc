@@ -161,9 +161,6 @@ class Config(BaseConfig):
         #   second shard has 2 replicas and weight 1
         cluster_topology = StringParameter(default="1")
 
-    class cm(ConfigSection):
-        vcs_type = StringParameter(default="gridvcs", choices=["hg", "CVS", "gridvcs"])
-
     class collections(ConfigSection):
         allow_sharing = BooleanParameter(default=True)
         project_id = IntParameter(default=59)
