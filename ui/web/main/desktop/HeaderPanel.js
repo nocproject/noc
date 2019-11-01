@@ -72,7 +72,13 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 }
             ]
         });
-        //
+        // fix: fake field for Chrome ignores autocomplete=“off”
+        me.emptyField = Ext.create("Ext.form.field.Text", {
+            itemId: "empty",
+            name: "empty",
+            inputType: "password",
+            hidden: true
+        });
         Ext.apply(me, {
             items: [
                 // NOC logo
@@ -103,6 +109,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                     },
                     border: false
                 },
+                me.emptyField,
                 // Last update
                 me.lastUpdateButton,
                 // User menu
