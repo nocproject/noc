@@ -1,0 +1,115 @@
+{
+    "name": "Huawei | CX",
+    "$collection": "inv.connectionrules",
+    "uuid": "329cea3b-fd10-4b7a-92ee-15f9f8f264f1",
+    "description": "CX connection rules",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "mpu",
+            "type": "MPU"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "npu",
+            "type": "NPU"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "lpu",
+            "type": "LPU"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        },
+        {
+            "reset_scopes": ["pic", "npu", "mpu", "lpu"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "pic",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "PIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "mpu",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "MPU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "npu",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "NPU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PIC",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PIC",
+            "scope": "lpu",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "LPU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PIC",
+            "scope": "npu",
+            "target_connection": "{Npic}",
+            "target_number": null,
+            "target_type": "NPU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MPU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "NPU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        }
+    ]
+}

@@ -1,0 +1,79 @@
+{
+    "name": "Huawei | CX600-X1-X2 | NPU-120",
+    "$collection": "inv.objectmodels",
+    "uuid": "cb2d3d5c-898a-4f95-ad4a-49df574274f9",
+    "vendor__code": "HUAWEI",
+    "description": "CX600,CX67NPUI20,Network Processing Unit Integrated with 2-Port 10GBase LAN/WAN-XFP",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "NPU",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX600-X1-X2 | NPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "PIC Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | CX600-X1-X2 | PIC"
+        },
+        {
+            "description": "PIC Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | CX600-X1-X2 | PIC"
+        },
+        {
+            "description": "PIC Slot #3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | CX600-X1-X2 | PIC"
+        },
+        {
+            "description": "PIC Slot #4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | CX600-X1-X2 | PIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03030MDQ"],
+            "part_no": ["CX67NPUI20"]
+        },
+        "dimensions": {
+            "depth": 226,
+            "height": 20,
+            "width": 194
+        },
+        "power": {
+            "power": 200.0
+        },
+        "weight": {
+            "weight": 2.6
+        }
+    }
+}

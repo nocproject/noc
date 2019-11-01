@@ -1,0 +1,71 @@
+{
+    "name": "Huawei | CX600-X1-X2 | CR51L4XFD0",
+    "$collection": "inv.objectmodels",
+    "uuid": "ae947ae8-6355-46ce-9c4d-82824c3c65c6",
+    "vendor__code": "HUAWEI",
+    "description": "4-Port 10GBase LAN/WAN-SFP+ Physical Interface Card(PIC)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "PIC",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX600-X1-X2 | PIC"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "name": "TenGigabitEthernet1/X/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "TenGigabitEthernet1/X/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "TenGigabitEthernet1/X/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_3",
+            "name": "TenGigabitEthernet1/X/3",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03031DJM"],
+            "part_no": ["CR51L4XFD0"]
+        },
+        "dimensions": {
+            "depth": 226,
+            "height": 20,
+            "width": 194
+        },
+        "power": {
+            "power": 11.0
+        },
+        "weight": {
+            "weight": 0.6
+        }
+    }
+}

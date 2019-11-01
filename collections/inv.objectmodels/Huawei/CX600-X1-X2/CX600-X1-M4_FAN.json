@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | CX600-X1-X2 | CX600-X1-M4 FAN",
+    "$collection": "inv.objectmodels",
+    "uuid": "b38d4358-c87b-4041-aa3f-3d133f5b5a5c",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X1-M4 fan module CX6M01FBX70",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX600-X1-X2 | CX600-X1-M4 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02310AGJ"],
+            "part_no": ["CX6M01FBX70"]
+        },
+        "dimensions": {
+            "depth": 226,
+            "height": 130,
+            "width": 50
+        },
+        "power": {
+            "power": 118.0
+        },
+        "weight": {
+            "weight": 1.2
+        }
+    }
+}
