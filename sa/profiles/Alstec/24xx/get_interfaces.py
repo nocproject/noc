@@ -5,12 +5,14 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -18,11 +20,11 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_port = re.compile(
-        r"^\s*(?P<port>\d+/\d+)\s+(?P<admin_status>\S+)\s+\S+\s+" r"(?P<oper_status>\S+)",
+        r"^\s*(?P<port>\d+/\d+|\d+/\d+/\d+)\s+(?P<admin_status>\S+)\s+\S+\s+(?P<oper_status>\S+)",
         re.MULTILINE,
     )
     rx_desc = re.compile(
-        r"^\s*(?P<port>\d+/\d+)\s+(?:Enable|Disable)\s+(?:Up|Down)\s+" r"(?P<desc>\S+)$",
+        r"^\s*(?P<port>\d+/\d+|\d+/\d+/\d+)\s+(?:Enable|Disable)\s+(?:Up|Down)\s+(?P<desc>\S+)$",
         re.MULTILINE,
     )
     rx_vlan = re.compile(
