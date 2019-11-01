@@ -1,0 +1,398 @@
+{
+    "name": "Huawei | Quidway S5300 | S5320-36C-EI-DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "5ea66770-cb02-4ad8-86a2-63b3178e0774",
+    "vendor__code": "HUAWEI",
+    "description": "Quidway S5320-36C-EI-DC(28 Ethernet 10/100/1000 ports,4 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+, 1 interface slot,with 150W DC)",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "fan", "ports"],
+    "connections": [
+        {
+            "description": "PSU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pwr1",
+            "type__name": "Huawei | Quidway S5300 | PSU"
+        },
+        {
+            "description": "PSU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "pwr2",
+            "type__name": "Huawei | Quidway S5300 | PSU"
+        },
+        {
+            "description": "Fan slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan",
+            "type__name": "Huawei | Quidway | FAN"
+        },
+        {
+            "description": "Fan slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card",
+            "type__name": "Huawei | Quidway S5300 | Rear slot"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["USB10", "USB11", "USB20"],
+            "type__name": "Electrical | mini-USB"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "MEth0/0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["USB10", "USB11", "USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "GigabitEthernet 0/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/11 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/12 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/13 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/14 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/15 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/16 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/17 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/18 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/19 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/20 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/21 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/22 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/23 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/25",
+            "name": "GigabitEthernet0/0/25",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/25 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/25",
+            "internal_name": "Port_GigabitEthernet0/0/25",
+            "name": "GigabitEthernet0/0/25",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/26",
+            "name": "GigabitEthernet0/0/26",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/26 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/26",
+            "internal_name": "Port_GigabitEthernet0/0/26",
+            "name": "GigabitEthernet0/0/26",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/27",
+            "name": "GigabitEthernet0/0/27",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/27 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/27",
+            "internal_name": "Port_GigabitEthernet0/0/27",
+            "name": "GigabitEthernet0/0/27",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/28",
+            "name": "GigabitEthernet0/0/28",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/28 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/28",
+            "internal_name": "Port_GigabitEthernet0/0/28",
+            "name": "GigabitEthernet0/0/28",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "XGigabitEthernet 0/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernet0/0/1",
+            "name": "XGigabitEthernet0/0/1",
+            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "XGigabitEthernet 0/0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernet0/0/2",
+            "name": "XGigabitEthernet0/0/2",
+            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "XGigabitEthernet 0/0/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernet0/0/3",
+            "name": "XGigabitEthernet0/0/3",
+            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "XGigabitEthernet 0/0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernet0/0/4",
+            "name": "XGigabitEthernet0/0/4",
+            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["S5320-36C-EI-DC"]
+        },
+        "dimensions": {
+            "depth": 420,
+            "height": 43,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 75.8
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "weight": 1.4
+        }
+    }
+}

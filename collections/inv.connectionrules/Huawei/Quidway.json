@@ -6,11 +6,11 @@
     "context": [
         {
             "reset_scopes": [],
-            "scope": "em",
-            "type": "EM"
+            "scope": "card",
+            "type": "CARD"
         },
         {
-            "reset_scopes": ["em"],
+            "reset_scopes": ["card"],
             "scope": "chassis",
             "type": "CHASSIS"
         }
@@ -20,6 +20,22 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "chassis",
+            "target_connection": "Port{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
             "target_connection": "GigabitEthernetX/0/{N}_sfp",
             "target_number": "",
             "target_type": "CHASSIS"
@@ -42,25 +58,41 @@
         },
         {
             "match_connection": "in",
-            "match_type": "EM",
-            "scope": "chassis",
-            "target_connection": "em{N}",
-            "target_number": null,
-            "target_type": "CHASSIS"
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "EM"
         },
         {
             "match_connection": "in",
-            "match_type": "TPB",
-            "scope": "chassis",
-            "target_connection": "tpb{N}",
-            "target_number": null,
-            "target_type": "CHASSIS"
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "GigabitEthernetX/0/{N}_sfp",
+            "target_number": "",
+            "target_type": "EM"
         },
         {
             "match_connection": "in",
-            "match_type": "POWER",
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "XGigabitEthernetX/0/{N}_xfp",
+            "target_number": "",
+            "target_type": "EM"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "XGigabitEthernetX/0/{N}_sfp+",
+            "target_number": "",
+            "target_type": "EM"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PWR",
             "scope": "chassis",
-            "target_connection": "psu{N}",
+            "target_connection": "{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         },
@@ -68,33 +100,17 @@
             "match_connection": "in",
             "match_type": "FAN",
             "scope": "chassis",
-            "target_connection": "fan{N}",
+            "target_connection": "{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         },
         {
             "match_connection": "in",
-            "match_type": "XCVR",
-            "scope": "em",
-            "target_connection": "GigabitEthernetX/0/{N}_sfp",
+            "match_type": "CARD",
+            "scope": "chassis",
+            "target_connection": "{N}",
             "target_number": "",
-            "target_type": "EM"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "XCVR",
-            "scope": "em",
-            "target_connection": "XGigabitEthernetX/0/{N}_xfp",
-            "target_number": "",
-            "target_type": "EM"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "XCVR",
-            "scope": "em",
-            "target_connection": "XGigabitEthernetX/0/{N}_sfp+",
-            "target_number": "",
-            "target_type": "EM"
+            "target_type": "CHASSIS"
         }
     ]
 }
