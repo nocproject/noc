@@ -1,0 +1,73 @@
+{
+    "name": "Huawei | CX600 | CX600-X1-M4",
+    "$collection": "inv.objectmodels",
+    "uuid": "7d8265e1-01b8-4f30-8ac8-912904f3207d",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X1-M4 Integrated Chassis Components",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "NPU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | CX600-X1-X2 | NPU"
+        },
+        {
+            "description": "MPU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Huawei | CX600-X1-X2 | MPU"
+        },
+        {
+            "description": "MPU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Huawei | CX600-X1-X2 | MPU"
+        },
+        {
+            "description": "PSU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Huawei | CX600-X1-X2 | CX600-X1-M4 PSU"
+        },
+        {
+            "description": "PSU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Huawei | CX600-X1-X2 | CX600-X1-M4 PSU"
+        },
+        {
+            "description": "FAN Slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Huawei | CX600-X1-X2 | CX600-X1-M4 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CX6Z02BKP1"]
+        },
+        "dimensions": {
+            "depth": 220,
+            "height": 442,
+            "width": 132
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 350.0
+        },
+        "weight": {
+            "weight": 13.0
+        }
+    }
+}

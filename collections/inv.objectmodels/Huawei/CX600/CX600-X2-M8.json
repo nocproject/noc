@@ -1,0 +1,84 @@
+{
+    "name": "Huawei | CX600 | CX600-X2-M8",
+    "$collection": "inv.objectmodels",
+    "uuid": "52891317-bd5c-4932-8206-1ef6b1ca4ea2",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X2-M8 Integrated Chassis Components",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "NPU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Huawei | CX600-X1-X2 | NPU"
+        },
+        {
+            "description": "NPU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Huawei | CX600-X1-X2 | NPU"
+        },
+        {
+            "description": "MPU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "11",
+            "type__name": "Huawei | CX600-X1-X2 | MPU"
+        },
+        {
+            "description": "MPU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "12",
+            "type__name": "Huawei | CX600-X1-X2 | MPU"
+        },
+        {
+            "description": "PSU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "13",
+            "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 PSU"
+        },
+        {
+            "description": "PSU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "14",
+            "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 PSU"
+        },
+        {
+            "description": "FAN Slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "15",
+            "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02355502"],
+            "part_no": ["CX6B0BKP0271"]
+        },
+        "dimensions": {
+            "depth": 222,
+            "height": 442,
+            "width": 220
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 550.0
+        },
+        "rackmount": {
+            "units": 5.0
+        },
+        "weight": {
+            "weight": 22.0
+        }
+    }
+}
