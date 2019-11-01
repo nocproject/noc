@@ -24,6 +24,9 @@
     "data": {
         "asset": {
             "part_no": ["LS5M100PWA00"]
+        },
+        "power": {
+            "power": 100.0
         }
     }
 }

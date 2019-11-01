@@ -4,19 +4,22 @@
     "uuid": "4420bda2-606e-481f-925b-04b9f5cb85f7",
     "vendor__code": "HUAWEI",
     "description": "Interface card with 4 GE SFP ports",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "CARD",
     "connections": [
         {
             "description": "Extension slot",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | Quidway S5300 | Extension slot"
+            "type__name": "Huawei | Quidway S5300 | Front slot"
         },
         {
             "description": "SFP port 1",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 1",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernet0/0/1",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -24,7 +27,8 @@
             "description": "SFP port 2",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 2",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernet0/0/2",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -32,7 +36,8 @@
             "description": "SFP port 3",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 3",
+            "internal_name": "Port_3",
+            "name": "GigabitEthernet0/0/3",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -40,7 +45,8 @@
             "description": "SFP port 4",
             "direction": "i",
             "gender": "f",
-            "name": "sfp 4",
+            "internal_name": "Port_4",
+            "name": "GigabitEthernet0/0/4",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
@@ -50,15 +56,15 @@
             "part_no": ["LS5D00E4GF00"]
         },
         "dimensions": {
-            "depth": "69",
-            "height": "22",
-            "width": "200"
+            "depth": 69,
+            "height": 22,
+            "width": 200
         },
         "power": {
-            "power": "6"
+            "power": 6.0
         },
         "weight": {
-            "weight": "0.2"
+            "weight": 0.2
         }
     }
 }

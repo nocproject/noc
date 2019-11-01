@@ -4,18 +4,21 @@
     "uuid": "fc15b762-6c94-4034-b760-9a06a99637b9",
     "vendor__code": "HUAWEI",
     "description": "Interface card with 2 10GE XFP ports",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "CARD",
     "connections": [
         {
             "description": "Extension slot",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | Quidway S5300 | Extension slot"
+            "type__name": "Huawei | Quidway S5300 | Front slot"
         },
         {
             "description": "XFP port 1",
             "direction": "i",
             "gender": "f",
+            "internal_name": "Port_1",
             "name": "xfp 1",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
@@ -24,6 +27,7 @@
             "description": "XFP port 2",
             "direction": "i",
             "gender": "f",
+            "internal_name": "Port_2",
             "name": "xfp 2",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
@@ -31,18 +35,19 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["LS5D00E2XX00"]
+            "order_part_no": ["03020LUB"],
+            "part_no": ["CX22E2XX", "LS5D00E2XX00"]
         },
         "dimensions": {
-            "depth": "69",
-            "height": "22",
-            "width": "200"
+            "depth": 69,
+            "height": 22,
+            "width": 200
         },
         "power": {
-            "power": "11"
+            "power": 11.0
         },
         "weight": {
-            "weight": "0.2"
+            "weight": 0.2
         }
     }
 }
