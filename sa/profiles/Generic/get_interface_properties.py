@@ -21,6 +21,11 @@ class Script(BaseScript):
     MAX_REPETITIONS = 40
     MAX_GETNEXT_RETIRES = 0
 
+    SNMP_NAME_TABLE = "IF-MIB::ifName"
+    SNMP_MAC_TABLE = "IF-MIB::ifPhysAddress"
+    SNMP_ADMIN_STATUS_TABLE = "IF-MIB::ifAdminStatus"
+    SNMP_OPER_STATUS_TABLE = "IF-MIB::ifOperStatus"
+
     def execute_snmp(
         self,
         interface=None,
@@ -35,14 +40,14 @@ class Script(BaseScript):
             ifindex = self.get_interface_ifindex(interface)
             iter_tables += [self.iter_interface_ifindex(interface, ifindex)]
         else:
-            iter_tables += [self.iter_iftable("name", mib["IF-MIB::ifName"])]
+            iter_tables += [self.iter_iftable("name", mib[self.SNMP_NAME_TABLE])]
         if enable_interface_mac:
-            iter_tables += [self.iter_iftable("mac", mib["IF-MIB::ifPhysAddress"], ifindex=ifindex)]
+            iter_tables += [self.iter_iftable("mac", mib[self.SNMP_MAC_TABLE], ifindex=ifindex)]
         if enable_admin_status:
             iter_tables += [
                 self.iter_iftable(
                     "admin_status",
-                    mib["IF-MIB::ifAdminStatus"],
+                    mib[self.SNMP_ADMIN_STATUS_TABLE],
                     ifindex=ifindex,
                     clean=self.clean_status,
                 )
@@ -51,7 +56,7 @@ class Script(BaseScript):
             iter_tables += [
                 self.iter_iftable(
                     "oper_status",
-                    mib["IF-MIB::ifOperStatus"],
+                    mib[self.SNMP_OPER_STATUS_TABLE],
                     ifindex=ifindex,
                     clean=self.clean_status,
                 )
@@ -149,7 +154,7 @@ class Script(BaseScript):
         :return:
         """
         for r_oid, v in self.snmp.getnext(
-            mib["IF-MIB::ifName"],
+            mib[self.SNMP_NAME_TABLE],
             max_repetitions=self.get_max_repetitions(),
             max_retries=self.get_getnext_retires(),
         ):
