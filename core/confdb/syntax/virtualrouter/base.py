@@ -32,7 +32,15 @@ VIRTUAL_ROUTER_SYNTAX = DEF(
                                     "type",
                                     [
                                         DEF(
-                                            CHOICES("table", "vrf", "vpls"),
+                                            CHOICES(
+                                                "table",
+                                                "bridge",
+                                                "vrf",
+                                                "vll",
+                                                "vpls",
+                                                "evpn",
+                                                "vxlan",
+                                            ),
                                             required=True,
                                             name="type",
                                             gen="make_forwarding_instance_type",

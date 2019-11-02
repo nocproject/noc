@@ -51,10 +51,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     VRF_QUERY = """(Match("virtual-router", vr, "forwarding-instance", instance) or
         Match("virtual-router", vr, "forwarding-instance", instance, "type", type) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "vpn-id", vpn_id) or
         Match("virtual-router", vr, "forwarding-instance", instance, "route-distinguisher", rd) or
         Match("virtual-router", vr, "forwarding-instance", instance, "vrf-target", "export", rt_export) or
         Match("virtual-router", vr, "forwarding-instance", instance, "vrf-target", "import", rt_import)
-    ) and Group("vr", "instance", stack={"rt_export"})"""
+    ) and Group("vr", "instance", stack={"rt_export", "rt_import"})"""
 
     def __init__(self, *args, **kwargs):
         super(InterfaceCheck, self).__init__(*args, **kwargs)
@@ -79,6 +80,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 name=fi["forwarding_instance"],
                 type=fi["type"],
                 rd=fi.get("rd"),
+                rt_export=fi.get("rt_export"),
+                rt_import=fi.get("rt_import"),
                 vr=fi.get("vr"),
                 vpn_id=vpn_id,
             )
@@ -167,24 +170,48 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.set_artefact("interface_vpn", self.vrf_artefact)
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
 
-    def submit_forwarding_instance(self, name, type, rd, vr, vpn_id=None):
+    def submit_forwarding_instance(self, name, type, rd, rt_export, rt_import, vr, vpn_id=None):
         if name == "default":
             return None
+        rt_export = rt_export or []
+        rt_import = rt_import or []
         forwarding_instance = ForwardingInstance.objects.filter(
             managed_object=self.object.id, name=name
         ).first()
         if forwarding_instance:
             changes = self.update_if_changed(
-                forwarding_instance, {"type": type, "name": name, "rd": rd}
+                forwarding_instance,
+                {
+                    "type": type,
+                    "name": name,
+                    "vpn_id": vpn_id,
+                    "rd": rd,
+                    "rt_export": rt_export,
+                    "rt_import": rt_import,
+                },
             )
             self.log_changes("Forwarding instance '%s' has been changed" % name, changes)
         else:
             self.logger.info("Create forwarding instance '%s' (%s)", name, type)
             forwarding_instance = ForwardingInstance(
-                managed_object=self.object.id, name=name, type=type, rd=rd, virtual_router=vr
+                managed_object=self.object.id,
+                name=name,
+                type=type,
+                vpn_id=vpn_id,
+                rd=rd,
+                rt_export=rt_export,
+                rt_import=rt_import,
+                virtual_router=vr,
             )
             forwarding_instance.save()
-        self.vrf_artefact[name] = {"name": name, "type": type, "rd": rd, "vpn_id": vpn_id}
+        self.vrf_artefact[name] = {
+            "name": name,
+            "type": type,
+            "rd": rd,
+            "vpn_id": vpn_id,
+            "rt_export": rt_export,
+            "rt_import": rt_import,
+        }
         return forwarding_instance
 
     def submit_interface(
@@ -446,16 +473,25 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 if vrfs and (d["vr"], d["instance"]) in vrfs:
                     try:
                         vrf = vrfs[d["vr"], d["instance"]]
-                        r["vpn_id"] = get_vpn_id(
-                            {
-                                "name": vrf["instance"],
-                                "rd": vrf.get("rd"),
-                                "rt_export": vrf.get("rt_export", []),
-                                "type": vrf["type"].upper()
-                                if vrf["type"] in ["vrf", "vpls"]
-                                else vrf["type"],
-                            }
-                        )
+                        r["type"] = vrf["type"]
+                        if vrf.get("rd"):
+                            r["rd"] = vrf["rd"]
+                        r["rt_export"] = vrf.get("rt_export", [])
+                        if vrf.get("rt_import"):
+                            r["rt_import"] = vrf["rt_import"]
+                        if "vpn_id" in vrf:
+                            r["vpn_id"] = vrf["vpn_id"]
+                        else:
+                            r["vpn_id"] = get_vpn_id(
+                                {
+                                    "name": vrf["instance"],
+                                    "rd": vrf.get("rd"),
+                                    "rt_export": vrf.get("rt_export", []),
+                                    "type": vrf["type"].upper()
+                                    if vrf["type"] in ["vrf", "vpls", "vll"]
+                                    else vrf["type"],
+                                }
+                            )
                     except ValueError:
                         pass
             if "interfaces" not in r:

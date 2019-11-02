@@ -310,8 +310,16 @@ class IGetInterfaces(BaseInterface):
             # Name of the forwarding instance
             "forwarding_instance": StringParameter(default="default"),
             "virtual_router": StringParameter(required=False),
-            "type": StringParameter(choices=["ip", "bridge", "VRF", "VPLS", "VLL"], default="ip"),
+            "type": StringParameter(
+                choices=["table", "bridge", "vrf", "vll", "vpls", "evpn", "vxlan"],
+                default="table",
+                aliases={"ip": "table", "VRF": "vrf", "VPLS": "vpls", "VLL": "vll"},
+            ),
             "rd": RDParameter(required=False),
+            # Route-target export for VRF
+            "rt_export": ListOfParameter(element=RDParameter(), required=False),
+            # Route-target import for VRF
+            "rt_import": ListOfParameter(element=RDParameter(), required=False),
             # Refer IGetMPLSVPN.vpn_id for details
             "vpn_id": StringParameter(required=False),
             "interfaces": DictListParameter(
