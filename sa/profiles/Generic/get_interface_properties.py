@@ -13,6 +13,7 @@ from typing import Dict, Optional, Union, Iterable, Tuple, Callable
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaceproperties import IGetInterfaceProperties
 from noc.core.mib import mib
+from noc.core.validators import is_mac
 
 
 class Script(BaseScript):
@@ -21,7 +22,7 @@ class Script(BaseScript):
     MAX_REPETITIONS = 40
     MAX_GETNEXT_RETIRES = 0
 
-    SNMP_NAME_TABLE = "IF-MIB::ifName"
+    SNMP_NAME_TABLE = "IF-MIB::ifDescr"
     SNMP_MAC_TABLE = "IF-MIB::ifPhysAddress"
     SNMP_ADMIN_STATUS_TABLE = "IF-MIB::ifAdminStatus"
     SNMP_OPER_STATUS_TABLE = "IF-MIB::ifOperStatus"
@@ -72,7 +73,7 @@ class Script(BaseScript):
             item = {"interface": v["name"]}
             if enable_ifindex and "ifindex" in v:
                 item["ifindex"] = v["ifindex"]
-            if enable_interface_mac and "mac" in v:
+            if enable_interface_mac and "mac" in v and is_mac(v["mac"]):
                 item["mac"] = v["mac"]
             if enable_admin_status and "admin_status" in v:
                 item["admin_status"] = v["admin_status"]
