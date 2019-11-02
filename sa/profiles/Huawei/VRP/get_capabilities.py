@@ -78,6 +78,14 @@ class Script(BaseScript):
         return "Global DLDP is not enabled" not in r and "DLDP global status : disable" not in r
 
     @false_on_cli_error
+    def has_ldp_cli(self):
+        """
+        Check box has UDLD enabled
+        """
+        r = self.cli("display mpls ldp")
+        return "Global LDP is not enabled" not in r or "Instance Status         : Active " not in r
+
+    @false_on_cli_error
     def has_stack(self):
         """
         Check stack members
@@ -116,9 +124,7 @@ class Script(BaseScript):
                         s_pos = entity_pos
                     elif entity_type == 9:
                         slots.add(s_pos)
-
             return [str(x) for x in slots if x <= n]
-
         return slots
 
     @false_on_cli_error
