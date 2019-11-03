@@ -45,9 +45,9 @@ class Script(BaseScript):
     rx_detail = re.compile(
         r".*Chassis I(d|D)\s+:\s(?P<id>\S+).*?Port(|\s+)ID Type\s+:\s"
         r"(?P<p_type>[^\n]+).*?Port(|\s+)ID\s+:\s(?P<p_id>[^\n]+).*?"
-        r"Sys(|tem\s+)Name\s+:\s(?P<name>\S*).*?"
-        r"(SystemCapSupported|System\sCapabilities)\s+:\s"
-        r"(?P<capability>[^\n]*).*",
+        r"(Sys(|tem\s+)Name\s+:\s(?P<name>\S*)|).*?"
+        r"((SystemCapSupported|System\sCapabilities)\s+:\s"
+        r"(?P<capability>[^\n]*)|).*",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_port_descr = re.compile(r"^\s*Port Description\s+:\s+(?P<descr>.+)\n", re.MULTILINE)
@@ -91,33 +91,35 @@ class Script(BaseScript):
                     remote_port = MACAddressParameter().clean(match.group("p_id"))
                 elif n["remote_port_subtype"] == LLDP_PORT_SUBTYPE_NAME:
                     remote_port = match.group("p_id").strip()
-                else:
+                elif "-" in match.group("p_id"):
                     # Removing bug
                     try:
                         remote_port = binascii.unhexlify("".join(match.group("p_id").split("-")))
                     except TypeError:
                         remote_port = str(match.group("p_id"))
                     remote_port = remote_port.rstrip("\x00")
+                else:
+                    remote_port = match.group("p_id").strip()
                 n["remote_chassis_id"] = match.group("id")
                 if match.group("name"):
                     n["remote_system_name"] = match.group("name")
-                n["remote_port"] = remote_port
-
-                caps = lldp_caps_to_bits(
-                    match.group("capability").strip().split(", "),
-                    {
-                        "other": LLDP_CAP_OTHER,
-                        "repeater": LLDP_CAP_REPEATER,
-                        "bridge": LLDP_CAP_BRIDGE,
-                        "wlan": LLDP_CAP_WLAN_ACCESS_POINT,
-                        "wlan access point": LLDP_CAP_WLAN_ACCESS_POINT,
-                        "router": LLDP_CAP_ROUTER,
-                        "telephone": LLDP_CAP_TELEPHONE,
-                        "cable": LLDP_CAP_DOCSIS_CABLE_DEVICE,
-                        "station": LLDP_CAP_STATION_ONLY,
-                    },
-                )
-                n["remote_capabilities"] = caps
+                n["remote_port"] = str(remote_port)
+                if match.group("capability"):
+                    caps = lldp_caps_to_bits(
+                        match.group("capability").strip().split(", "),
+                        {
+                            "other": LLDP_CAP_OTHER,
+                            "repeater": LLDP_CAP_REPEATER,
+                            "bridge": LLDP_CAP_BRIDGE,
+                            "wlan": LLDP_CAP_WLAN_ACCESS_POINT,
+                            "wlan access point": LLDP_CAP_WLAN_ACCESS_POINT,
+                            "router": LLDP_CAP_ROUTER,
+                            "telephone": LLDP_CAP_TELEPHONE,
+                            "cable": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                            "station": LLDP_CAP_STATION_ONLY,
+                        },
+                    )
+                    n["remote_capabilities"] = caps
                 match = self.rx_system_descr.search(v)
                 if match:
                     n["remote_system_description"] = match.group("descr")
