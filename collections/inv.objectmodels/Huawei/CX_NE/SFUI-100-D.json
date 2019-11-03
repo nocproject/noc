@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | CX&NE | SFUI-100-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "4019642e-979a-403a-a90d-d05b36d0bb83",
+    "vendor__code": "HUAWEI",
+    "description": "100Gbps Switch Fabric Unit D(SFUI-100-D)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "SFU",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | SFU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03054231"],
+            "part_no": ["CX61SFU100D0"]
+        },
+        "dimensions": {
+            "depth": 536,
+            "height": 36,
+            "width": 400
+        },
+        "power": {
+            "power": 46.0
+        },
+        "weight": {
+            "weight": 3.8
+        }
+    }
+}

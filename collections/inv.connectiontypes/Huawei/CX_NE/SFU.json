@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX&NE | SFU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "27aafb63-3b5a-4765-bd60-d684daff24fd",
+    "description": "NE40E&CX600&ME60&NE20E Switch Fabric Unit (SFU)",
+    "c_group": [],
+    "genders": "mf"
+}

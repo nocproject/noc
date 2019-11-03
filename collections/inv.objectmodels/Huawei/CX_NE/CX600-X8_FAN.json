@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | CX&NE | CX600-X8 FAN",
+    "$collection": "inv.objectmodels",
+    "uuid": "0399c674-84b1-41fc-a306-5acdca9fd7ef",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X8 fan module ",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | CX600 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02120562"],
+            "part_no": ["CR52FCBE", "CR52FCBH"]
+        },
+        "dimensions": {
+            "depth": 100,
+            "height": 244,
+            "width": 211
+        },
+        "power": {
+            "power": 100.0
+        },
+        "weight": {
+            "weight": 2.0
+        }
+    }
+}

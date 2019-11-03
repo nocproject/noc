@@ -6,16 +6,31 @@
     "context": [
         {
             "reset_scopes": [],
+            "scope": "sfu",
+            "type": "SFU"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "sru",
+            "type": "SRU"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "fpic",
+            "type": "FPIC"
+        },
+        {
+            "reset_scopes": [],
             "scope": "mpu",
             "type": "MPU"
         },
         {
-            "reset_scopes": ["pic"],
+            "reset_scopes": ["pic", "fpic"],
             "scope": "npu",
             "type": "NPU"
         },
         {
-            "reset_scopes": ["pic"],
+            "reset_scopes": ["pic", "fpic"],
             "scope": "lpu",
             "type": "LPU"
         },
@@ -25,7 +40,7 @@
             "type": "PIC"
         },
         {
-            "reset_scopes": ["pic", "npu", "mpu", "lpu"],
+            "reset_scopes": ["pic", "npu", "mpu", "lpu", "fpic", "sfu"],
             "scope": "chassis",
             "type": "CHASSIS"
         }
@@ -33,7 +48,7 @@
     "rules": [
         {
             "match_connection": "in",
-            "match_type": "PSU",
+            "match_type": "PWR",
             "scope": "chassis",
             "target_connection": "{N}",
             "target_number": "",
@@ -54,6 +69,14 @@
             "target_connection": "Port_{N}",
             "target_number": "",
             "target_type": "PIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "fpic",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "FPIC"
         },
         {
             "match_connection": "in",
@@ -89,6 +112,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "FPIC",
+            "scope": "lpu",
+            "target_connection": "{Nfpic}",
+            "target_number": null,
+            "target_type": "LPU"
+        },
+        {
+            "match_connection": "in",
             "match_type": "PIC",
             "scope": "npu",
             "target_connection": "{Npic}",
@@ -106,6 +137,30 @@
         {
             "match_connection": "in",
             "match_type": "NPU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SRU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SFU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "LPU",
             "scope": "chassis",
             "target_connection": "{N}",
             "target_number": null,

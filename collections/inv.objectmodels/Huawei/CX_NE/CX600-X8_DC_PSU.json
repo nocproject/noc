@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | CX&NE | CX600-X8 DC PSU",
+    "$collection": "inv.objectmodels",
+    "uuid": "a7224499-c2cc-4434-925d-2421ce6fc08d",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X8 48V DC Power Entry Module",
+    "cr_context": "PWR",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | CX600 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02120560"],
+            "part_no": ["CR52PEMB"]
+        },
+        "dimensions": {
+            "depth": 115,
+            "height": 220,
+            "width": 58
+        },
+        "power": {
+            "power": 2800.0
+        },
+        "weight": {
+            "weight": 1.4
+        }
+    }
+}

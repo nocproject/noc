@@ -1,0 +1,53 @@
+{
+    "name": "Huawei | CX&NE | P51-2x10GBase LAN/WAN-SFP+ -A",
+    "$collection": "inv.objectmodels",
+    "uuid": "b0bfbc62-fbdf-4c1e-9bf0-b8e4c442d8e4",
+    "vendor__code": "HUAWEI",
+    "description": "CX600,CR57L2XFC0,2-Port 10GBase LAN/WAN-SFP+ Flexible Card A(P51-A)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "PIC",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | FPIC"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "name": "0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03030PME"],
+            "part_no": ["CR57L2XFC0"]
+        },
+        "dimensions": {
+            "depth": 193,
+            "height": 37,
+            "width": 179
+        },
+        "power": {
+            "power": 25.0
+        },
+        "weight": {
+            "weight": 0.9
+        }
+    }
+}
