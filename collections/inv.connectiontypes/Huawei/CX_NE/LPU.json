@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX&NE | LPU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "712b6b80-dec2-44b4-8181-7ecfdd1e60a8",
+    "description": "NE40E&CX600&ME60&NE20E Line  Processing  Units  (LPU)",
+    "c_group": [],
+    "genders": "mf"
+}
