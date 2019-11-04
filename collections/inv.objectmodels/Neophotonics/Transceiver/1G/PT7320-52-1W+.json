@@ -1,0 +1,39 @@
+{
+    "name": "Neophotonics | Transceiver | 1G | PT7320-52-1W+",
+    "$collection": "inv.objectmodels",
+    "uuid": "dd456aed-fd2a-4537-8351-41e0614f7beb",
+    "vendor__code": "NEOPHOTONICS",
+    "description": "Wavelength:1310 nm VCSEL; RX sensitivity:<-20 dBm; TX power: -9~3 dBm; Distance: 10 km; DDMI; RoHS-6; Bitrate: 1.25G, LC",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELH-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELH-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PT7320-52-1W+"]
+        }
+    }
+}

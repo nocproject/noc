@@ -1,0 +1,39 @@
+{
+    "name": "WTD | Transceiver | 1G | RTXM191-500",
+    "$collection": "inv.objectmodels",
+    "uuid": "f2bf92d8-4bf9-4621-b8c8-a2aa211ec79b",
+    "vendor__code": "WTD",
+    "description": "Wavelength:1550 nm DFB; RX sensitivity:<-20 dBm; TX power: -4~1 dBm; Distance: 40 km; DDMI; RoHS; Bitrate: 1.25G, LC",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELH-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELH-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["RTXM191-500"]
+        }
+    }
+}
