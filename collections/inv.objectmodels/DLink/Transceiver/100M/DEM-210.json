@@ -1,0 +1,39 @@
+{
+    "name": "DLink | Transceiver | 100M | DEM-210",
+    "$collection": "inv.objectmodels",
+    "uuid": "a6c2960c-42c9-4cdf-b63f-fc409c284142",
+    "vendor__code": "DLINK",
+    "description": "100Base-FX SFP Transciever 15km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">100BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<100BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DEM-210"]
+        }
+    }
+}

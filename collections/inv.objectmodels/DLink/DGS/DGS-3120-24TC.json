@@ -275,7 +275,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["DGS-3120-24TC"]
+            "part_no": ["DGS-3120-24TC", "DGS-3120-24TC/A1", "DGS-3120-24TC/A2", "DGS-3120-24TC/B1"]
         },
         "management": {
             "managed": true
