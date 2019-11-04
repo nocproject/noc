@@ -1,0 +1,221 @@
+{
+    "name": "Huawei | S8500 | LSB1GP24CA0",
+    "$collection": "inv.objectmodels",
+    "uuid": "14abe5e7-413e-481b-8c2b-b976b0338214",
+    "vendor__code": "HUAWEI",
+    "description": "The GP12 module provides 24 × 1000 Mbps SFP optical ports.",
+    "cr_context": "LSB",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/4",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/5",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/6",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/7",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/8",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/9",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/10",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/11",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/12",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/13",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/14",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/15",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/16",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/17",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/18",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/19",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/20",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/21",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/22",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/23",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/1/24",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LSB1GP24CA0"]
+        },
+        "dimensions": {
+            "depth": 367,
+            "width": 340
+        },
+        "power": {
+            "power": 100.0
+        }
+    }
+}

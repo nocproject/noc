@@ -6,6 +6,11 @@
     "context": [
         {
             "reset_scopes": [],
+            "scope": "lsb",
+            "type": "LSB"
+        },
+        {
+            "reset_scopes": [],
             "scope": "sfu",
             "type": "SFU"
         },
@@ -40,12 +45,20 @@
             "type": "PIC"
         },
         {
-            "reset_scopes": ["pic", "npu", "mpu", "lpu", "fpic", "sfu"],
+            "reset_scopes": ["pic", "npu", "mpu", "lpu", "fpic", "sfu", "lsb"],
             "scope": "chassis",
             "type": "CHASSIS"
         }
     ],
     "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "LSB",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
         {
             "match_connection": "in",
             "match_type": "PWR",
