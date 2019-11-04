@@ -1,0 +1,39 @@
+{
+    "name": "Neophotonics | Transceiver | 10G | PT7620-81-1D-HW+",
+    "$collection": "inv.objectmodels",
+    "uuid": "47959d5f-86fc-4bbf-a9c8-9ab72b215c38",
+    "vendor__code": "NEOPHOTONICS",
+    "description": "Wavelength:1550 nm VCSEL; RX sensitivity:<-16 dBm; TX power: -1~2 dBm; Distance: 40 km; DDMI; RoHS-6; Bitrate: 10G, LC",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PT7620-81-1D-HW+"]
+        }
+    }
+}

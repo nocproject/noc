@@ -1,0 +1,23 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H801FMCA",
+    "$collection": "inv.objectmodels",
+    "uuid": "4d853778-9811-49ef-a77b-128c13ff5abf",
+    "vendor__code": "HUAWEI",
+    "description": "Fan Box for Huawei 5603T (6 Fan)",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5603T | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801FMCA"]
+        }
+    }
+}
