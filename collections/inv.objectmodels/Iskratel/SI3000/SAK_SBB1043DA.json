@@ -7,8 +7,8 @@
     "cr_context": "BOARD",
     "connections": [
         {
-            "description": "Consile port",
-            "direction": "i",
+            "description": "Console port",
+            "direction": "s",
             "gender": "m",
             "name": "console",
             "protocols": [">RS232"],

@@ -29,18 +29,19 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["LS5DSTACK200"]
+            "order_part_no": ["03020NPW"],
+            "part_no": ["CX22ETPC", "LS5DSTACK200"]
         },
         "dimensions": {
-            "depth": "69",
-            "height": "22",
-            "width": "200"
+            "depth": 69,
+            "height": 22,
+            "width": 200
         },
         "power": {
-            "power": "0.5"
+            "power": 0.5
         },
         "weight": {
-            "weight": "0.2"
+            "weight": 0.2
         }
     }
 }
