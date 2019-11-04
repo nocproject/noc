@@ -1,0 +1,104 @@
+{
+    "name": "Huawei | S8500 | S8508",
+    "$collection": "inv.objectmodels",
+    "uuid": "253cb519-d35e-4945-9411-5675b8cd01e2",
+    "vendor__code": "HUAWEI",
+    "description": "S8508",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | S8500 | SRPU"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Huawei | S8500 | SRPU"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Huawei | S8500 | LSB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LS-8502-AC-OVS", "S8508"]
+        },
+        "dimensions": {
+            "depth": 450,
+            "height": 619,
+            "width": 436
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 2000.0
+        },
+        "rackmount": {
+            "units": 10.0
+        },
+        "weight": {
+            "weight": 80.0
+        }
+    }
+}

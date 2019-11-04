@@ -1,0 +1,45 @@
+{
+    "name": "Huawei | S8500 | LSB1XP2CA0",
+    "$collection": "inv.objectmodels",
+    "uuid": "8d5c9f9b-504c-4770-b6a2-89baf7d4de72",
+    "vendor__code": "HUAWEI",
+    "description": "The XP2 module provides two 10 Gbps XFP optical ports.",
+    "cr_context": "LSB",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEtherntX/1/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEtherntX/1/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LSB1XP2CA0"]
+        },
+        "dimensions": {
+            "depth": 367,
+            "width": 340
+        },
+        "power": {
+            "power": 45.0
+        }
+    }
+}
