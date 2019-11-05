@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S9300 | SRU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "7399f6e9-60ff-46f6-a339-d46685823046",
+    "description": "S9300 series Switch Router Units (SRUs)",
+    "c_group": [],
+    "genders": "mf"
+}

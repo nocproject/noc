@@ -1,0 +1,72 @@
+{
+    "name": "Huawei | S9300 | LE02X4UXC",
+    "$collection": "inv.objectmodels",
+    "uuid": "5dbd16ae-f280-456d-a5ef-7443460b1797",
+    "vendor__code": "HUAWEI",
+    "description": "4-Port 10GBASE-X Interface Card(EA,XFP),128K MAC,1*1",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "LPU",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernetX/0/0",
+            "name": "XGigabitEthernetX/0/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernetX/0/1",
+            "name": "XGigabitEthernetX/0/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernetX/0/2",
+            "name": "XGigabitEthernetX/0/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_XGigabitEthernetX/0/3",
+            "name": "XGigabitEthernetX/0/3",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020KYC"],
+            "part_no": ["LE02X4UXC"]
+        },
+        "dimensions": {
+            "depth": 427,
+            "height": 35,
+            "width": 395
+        },
+        "power": {
+            "power": 75.0
+        },
+        "weight": {
+            "weight": 2.28
+        }
+    }
+}

@@ -1,0 +1,147 @@
+{
+    "name": "Huawei | S9300 | S9306",
+    "$collection": "inv.objectmodels",
+    "uuid": "0e9dd558-f393-43bf-bef8-4b4348286904",
+    "vendor__code": "HUAWEI",
+    "description": "S9306 Chassis backplane",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Huawei | S9300 | SRU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Huawei | S9300 | SRU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Huawei | S9300 | CMU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Huawei | S9300 | CMU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "11",
+            "type__name": "Huawei | S9300 | S9300 FAN"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "12",
+            "type__name": "Huawei | S9300 | S9300 FAN"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "13",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "14",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "15",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "16",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02113090"],
+            "part_no": ["LE0B1SA10"]
+        },
+        "dimensions": {
+            "depth": 585,
+            "height": 442,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 2200.0
+        },
+        "rackmount": {
+            "units": 10.0
+        },
+        "weight": {
+            "weight": 62.0
+        }
+    }
+}
