@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S9300 | CMU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f88dbce9-e8c9-4b4c-8e32-ff65184361c9",
+    "description": "S9300 series Centralized Monitoring Unit (CMUs)",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S9300 | SC",
+    "$collection": "inv.connectiontypes",
+    "uuid": "7cfaf5cc-69db-4dee-a842-4c9e712e0bb8",
+    "description": "S9300 series Line Processing Units (SRUs) SubCards",
+    "c_group": [],
+    "genders": "mf"
+}

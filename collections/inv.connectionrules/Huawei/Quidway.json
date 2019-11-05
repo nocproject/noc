@@ -10,9 +10,24 @@
             "type": "CARD"
         },
         {
-            "reset_scopes": ["card"],
+            "reset_scopes": ["card", "mpu", "lpu", "sru"],
             "scope": "chassis",
             "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "lpu",
+            "type": "LPU"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "mpu",
+            "type": "MPU"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "sru",
+            "type": "SRU"
         }
     ],
     "rules": [
@@ -107,9 +122,33 @@
         {
             "match_connection": "in",
             "match_type": "CARD",
+            "scope": "sru",
+            "target_connection": "sc",
+            "target_number": "",
+            "target_type": "SRU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "LPU",
             "scope": "chassis",
             "target_connection": "{N}",
-            "target_number": "",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SRU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MPU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
             "target_type": "CHASSIS"
         }
     ]
