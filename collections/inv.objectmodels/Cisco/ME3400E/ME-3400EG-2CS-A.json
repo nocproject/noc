@@ -1,0 +1,105 @@
+{
+    "name": "Cisco | ME3400E | ME-3400EG-2CS-A",
+    "$collection": "inv.objectmodels",
+    "uuid": "364d4aeb-a5c3-40a4-814e-f7165bea0da0",
+    "vendor__code": "CISCO",
+    "description": "Cisco ME3400E Series Metro Ethernet access switch, 2 dual-purpose ports (10/100/1000 and SFP) and 2 SFP uplinks",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Dry contacts",
+            "direction": "s",
+            "gender": "f",
+            "name": "Alarms",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/2 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "Gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/3 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Power input AC",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power AC",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ME-3400EG-2CS-A"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        }
+    }
+}
