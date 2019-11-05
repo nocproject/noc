@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | CX&NE | SFUI-40-B",
+    "$collection": "inv.objectmodels",
+    "uuid": "3f5043f8-6aa9-4c1f-8d6c-73c18a53e617",
+    "vendor__code": "HUAWEI",
+    "description": "40Gbps Switch Fabric Unit B(SFUI-40-B)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "SFU",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | SFU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03053060"],
+            "part_no": ["CX61SFU40B1"]
+        },
+        "dimensions": {
+            "depth": 551,
+            "height": 36,
+            "width": 400
+        },
+        "power": {
+            "power": 40.0
+        },
+        "weight": {
+            "weight": 3.2
+        }
+    }
+}

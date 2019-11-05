@@ -127,7 +127,7 @@
             "match_connection": "in",
             "match_type": "FPIC",
             "scope": "lpu",
-            "target_connection": "{Nfpic}",
+            "target_connection": "{N}",
             "target_number": null,
             "target_type": "LPU"
         },

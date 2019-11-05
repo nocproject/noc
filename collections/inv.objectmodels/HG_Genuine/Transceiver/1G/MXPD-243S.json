@@ -1,0 +1,39 @@
+{
+    "name": "HG Genuine | Transceiver | 1G | MXPD-243S",
+    "$collection": "inv.objectmodels",
+    "uuid": "93caf734-bbbd-4d99-9d6c-81a927060bf0",
+    "vendor__code": "HG GENUINE",
+    "description": "1000BASE-LX, SFP+, SMF, 1310nm, 10km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASE-LX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASE-LX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MXPD-243S"]
+        }
+    }
+}

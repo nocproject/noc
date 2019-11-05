@@ -1,80 +1,80 @@
 {
-    "name": "Huawei | CX&NE | P51-5x10GBase LAN/WAN-SFP+ -A",
+    "name": "Huawei | CX&NE | LPUI-51-E 5x10GBase LAN/WAN-SFP+ -E",
     "$collection": "inv.objectmodels",
-    "uuid": "5248b86c-1f47-45db-8942-8c0db9dd5cf4",
+    "uuid": "c00ef492-fee9-4b95-ac18-b1dfb4ca1cb6",
     "vendor__code": "HUAWEI",
-    "description": "CX600,CR57L5XFB0,5-Port 10GBase LAN/WAN-SFP+ Flexible Card A(P51-A, Occupy two slots)",
+    "description": "5-Port 10GBase LAN/WAN-SFP+ Integrated Line Processing Unit E(LPUI-51-E,Enhanced HQos)",
     "connection_rule__name": "Huawei | CX",
-    "cr_context": "FPIC",
+    "cr_context": "LPU",
     "connections": [
         {
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | CX&NE | FPIC"
+            "type__name": "Huawei | CX&NE | LPU"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "name": "0",
-            "protocols": ["TransEth10G"],
+            "name": "GigabitEthernetX/0/0",
+            "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "name": "1",
-            "protocols": ["TransEth10G"],
+            "name": "GigabitEthernetX/0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_2",
-            "name": "2",
-            "protocols": ["TransEth10G"],
+            "name": "GigabitEthernetX/0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_3",
-            "name": "3",
-            "protocols": ["TransEth10G"],
+            "name": "GigabitEthernetX/0/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_4",
-            "name": "4",
-            "protocols": ["TransEth10G"],
+            "name": "GigabitEthernetX/0/4",
+            "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP+"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03030PMC"],
-            "part_no": ["CR57L5XFB0"]
+            "order_part_no": ["03055051"],
+            "part_no": ["CR57L5XFB23"]
         },
         "dimensions": {
-            "depth": 193,
-            "height": 37,
-            "width": 179
+            "depth": 536,
+            "height": 41,
+            "width": 400
         },
         "power": {
-            "power": 25.0
+            "power": 209.0
         },
         "weight": {
-            "weight": 0.9
+            "weight": 8.0
         }
     }
 }
