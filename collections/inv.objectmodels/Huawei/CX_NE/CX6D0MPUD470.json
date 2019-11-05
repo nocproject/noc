@@ -1,0 +1,75 @@
+{
+    "name": "Huawei | CX&NE | CX6D0MPUD470",
+    "$collection": "inv.objectmodels",
+    "uuid": "2b0a5ba4-c5a0-4a1b-b448-e64ad0c3359b",
+    "vendor__code": "HUAWEI",
+    "description": "CX600,CX6D0MPUD470,Main Processing Unit D4",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "MPU",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | MPU"
+        },
+        {
+            "description": "Management Ethernet",
+            "direction": "s",
+            "gender": "f",
+            "name": "MEth0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "RS-232 serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": " input one channel or output one channel 2-Mbit/s clock signals, or one channel 2-MHz clock signals",
+            "direction": "s",
+            "gender": "f",
+            "name": "clk",
+            "protocols": ["G.703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "1 output of 1PPS+TOD time signals",
+            "direction": "s",
+            "gender": "f",
+            "name": "tod",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03056582"],
+            "part_no": ["CX6D0MPUD470"]
+        },
+        "dimensions": {
+            "depth": 226,
+            "height": 20,
+            "width": 194
+        },
+        "power": {
+            "power": 20.0
+        },
+        "weight": {
+            "weight": 0.6
+        }
+    }
+}

@@ -254,7 +254,7 @@
     "data": {
         "asset": {
             "order_part_no": ["02351610"],
-            "part_no": ["S5328C-EI"]
+            "part_no": ["CX7Z128CM", "S5328C-EI"]
         },
         "dimensions": {
             "depth": 420,

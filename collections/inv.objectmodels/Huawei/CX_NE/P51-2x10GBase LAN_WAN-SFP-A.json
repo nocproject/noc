@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "CX600,CR57L2XFC0,2-Port 10GBase LAN/WAN-SFP+ Flexible Card A(P51-A)",
     "connection_rule__name": "Huawei | CX",
-    "cr_context": "PIC",
+    "cr_context": "FPIC",
     "connections": [
         {
             "description": "Chassis connector",
