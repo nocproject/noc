@@ -201,7 +201,9 @@ class Script(BaseScript):
                 r += [self.profile.convert_interface_name(match.group("name").strip())]
         return r
 
-    rx_ifindex = re.compile(r"^(?P<interface>\S+): Ifindex = (?P<ifindex>\d+)")
+    rx_ifindex = re.compile(
+        r"^(?P<interface>.+?)(?:-802\.1Q vLAN subif)?: Ifindex = (?P<ifindex>\d+)"
+    )
 
     def get_ifindex(self):
         try:
