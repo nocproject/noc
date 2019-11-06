@@ -1,18 +1,19 @@
 {
-    "name": "Huawei | CX&NE | P101-6x10GBase LAN/WAN-SFP+ -A",
+    "name": "Huawei | CX&NE | P100-5x10GBase LAN/WAN-SFP+ -A",
     "$collection": "inv.objectmodels",
-    "uuid": "6476235f-78f3-4dc3-acdf-1e5f3d63ad3c",
+    "uuid": "d6984ee2-bcaa-4e25-ac8f-b5fd6ae323df",
     "vendor__code": "HUAWEI",
-    "description": "6-Port 10GBase LAN/WAN-SFP+ Flexible Card A(P120-A)",
+    "description": "5-Port 10GBase LAN/WAN-XFP Flexible Card A(P100-A,Supporting 1588v2,Occupy two sub-slots)",
     "connection_rule__name": "Huawei | CX",
-    "cr_context": "LPU",
+    "cr_context": "FPIC",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | CX&NE | LPU"
+            "type__name": "Huawei | CX&NE | FPIC"
         },
         {
             "description": "",
@@ -58,21 +59,12 @@
             "name": "GigabitEthernetX/0/4",
             "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "",
-            "direction": "i",
-            "gender": "f",
-            "internal_name": "Port_5",
-            "name": "GigabitEthernetX/0/5",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03054485"],
-            "part_no": ["CR57L5XFB21"]
+            "order_part_no": ["03030MXM"],
+            "part_no": ["CR57L5XXA0"]
         },
         "dimensions": {
             "depth": 194,

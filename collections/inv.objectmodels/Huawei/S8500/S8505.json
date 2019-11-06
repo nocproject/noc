@@ -1,0 +1,83 @@
+{
+    "name": "Huawei | S8500 | S8505",
+    "$collection": "inv.objectmodels",
+    "uuid": "b7dea622-b6fd-4c4b-95a0-a56244d96dde",
+    "vendor__code": "HUAWEI",
+    "description": "S8505",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "SRPU Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "type__name": "Huawei | S8500 | SRPU"
+        },
+        {
+            "description": "SRPU Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | S8500 | SRPU"
+        },
+        {
+            "description": "LSB Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#2",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#3",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#4",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "LSB Slot#5",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Huawei | S8500 | LSB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LS-8502-AC-OVS", "S8508"]
+        },
+        "dimensions": {
+            "depth": 450,
+            "height": 619,
+            "width": 436
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 2000.0
+        },
+        "rackmount": {
+            "units": 10.0
+        },
+        "weight": {
+            "weight": 80.0
+        }
+    }
+}
