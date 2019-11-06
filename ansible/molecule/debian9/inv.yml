@@ -3,7 +3,7 @@ all:
   children:
     dc-DC:
       hosts:
-        noc_node_debian9:
+        noc-node-debian9:
           activator_loglevel: info
           activator_power: 2
           activator_script_threads: 20
@@ -736,7 +736,7 @@ all:
               pool: null
           noc_user: noc
           noc_version: microservices
-          noc_web_host: noc_node_debian9
+          noc_web_host: noc-node-debian9
           node_id: 1
           nsqd_max_messages_in_memory: 10000
           nsqd_max_msg_size: 1048576
@@ -782,340 +782,340 @@ all:
           web_loglevel: info
           web_max_threads: 10
           web_power: 2
-    noc-config-noc_node_debian9:
+    noc-config-noc-node-debian9:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     nodes:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-activator:
       children:
-        cfg-activator-default-noc_node_debian9:
+        cfg-activator-default-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-activator-read: {}
     svc-activator-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-bi:
       children:
-        cfg-bi-noc_node_debian9:
+        cfg-bi-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-bi-read: {}
     svc-bi-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-card:
       children:
-        cfg-card-noc_node_debian9:
+        cfg-card-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-card-read: {}
     svc-card-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-ch_datasource:
       children:
-        cfg-ch_datasource-noc_node_debian9:
+        cfg-ch_datasource-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-ch_datasource-read: {}
     svc-ch_datasource-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-chwriter:
       children:
-        cfg-chwriter-noc_node_debian9:
+        cfg-chwriter-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-chwriter-read: {}
     svc-chwriter-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-classifier:
       children:
-        cfg-classifier-default-noc_node_debian9:
+        cfg-classifier-default-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-classifier-read: {}
     svc-classifier-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-clickhouse:
       children:
-        cfg-clickhouse-noc_node_debian9:
+        cfg-clickhouse-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-clickhouse-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-clickhouse-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-consul:
       children:
-        cfg-consul-noc_node_debian9:
+        cfg-consul-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-consul-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-consul-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-consul-template:
       children:
-        cfg-consul-template-noc_node_debian9:
+        cfg-consul-template-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-consul-template-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-consul-template-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-correlator:
       children:
-        cfg-correlator-default-noc_node_debian9:
+        cfg-correlator-default-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-correlator-read: {}
     svc-correlator-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-datastream:
       children:
-        cfg-datastream-noc_node_debian9:
+        cfg-datastream-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-datastream-read: {}
     svc-datastream-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-discovery:
       children:
-        cfg-discovery-default-noc_node_debian9:
+        cfg-discovery-default-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-discovery-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-discovery-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-escalator:
       children:
-        cfg-escalator-noc_node_debian9:
+        cfg-escalator-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-escalator-read: {}
     svc-escalator-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-goss:
       children:
-        cfg-goss-noc_node_debian9:
+        cfg-goss-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-goss-read: {}
     svc-goss-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-grafana:
       children:
-        cfg-grafana-noc_node_debian9:
+        cfg-grafana-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-grafana-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-grafana-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-grafanads:
       children:
-        cfg-grafanads-noc_node_debian9:
+        cfg-grafanads-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-grafanads-read: {}
     svc-grafanads-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-login:
       children:
-        cfg-login-noc_node_debian9:
+        cfg-login-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-login-read: {}
     svc-login-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-mailsender:
       children:
-        cfg-mailsender-noc_node_debian9:
+        cfg-mailsender-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-mailsender-read: {}
     svc-mailsender-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-memcached:
       children:
-        cfg-memcached-noc_node_debian9:
+        cfg-memcached-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-memcached-read: {}
     svc-memcached-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-mongod:
       children:
-        cfg-mongod-noc_node_debian9:
+        cfg-mongod-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-mongod-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-mongod-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-mrt:
       children:
-        cfg-mrt-noc_node_debian9:
+        cfg-mrt-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-mrt-read: {}
     svc-mrt-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-nbi:
       children:
-        cfg-nbi-noc_node_debian9:
+        cfg-nbi-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-nbi-read: {}
     svc-nbi-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-nginx:
       children:
-        cfg-nginx-noc_node_debian9:
+        cfg-nginx-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-nginx-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-nginx-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-noc:
       children:
-        cfg-noc-noc_node_debian9:
+        cfg-noc-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-noc-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-noc-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-nsqd:
       children:
-        cfg-nsqd-noc_node_debian9:
+        cfg-nsqd-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-nsqd-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-nsqd-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-nsqlookupd:
       children:
-        cfg-nsqlookupd-noc_node_debian9:
+        cfg-nsqlookupd-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-nsqlookupd-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-nsqlookupd-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-pgbouncer:
       children:
-        cfg-pgbouncer-noc_node_debian9:
+        cfg-pgbouncer-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-pgbouncer-read: {}
     svc-pgbouncer-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-ping:
       children:
-        cfg-ping-default-noc_node_debian9:
+        cfg-ping-default-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-ping-read: {}
     svc-ping-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-postgres:
       children:
-        cfg-postgres-noc_node_debian9:
+        cfg-postgres-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-postgres-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-postgres-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-sae:
       children:
-        cfg-sae-noc_node_debian9:
+        cfg-sae-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-sae-read:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
     svc-sae-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-scheduler:
       children:
-        cfg-scheduler-noc_node_debian9:
+        cfg-scheduler-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-scheduler-read: {}
     svc-scheduler-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-syslogcollector:
       children:
-        cfg-syslogcollector-default-noc_node_debian9:
+        cfg-syslogcollector-default-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-syslogcollector-read: {}
     svc-syslogcollector-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-trapcollector:
       children:
-        cfg-trapcollector-default-noc_node_debian9:
+        cfg-trapcollector-default-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-trapcollector-read: {}
     svc-trapcollector-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     svc-web:
       children:
-        cfg-web-noc_node_debian9:
+        cfg-web-noc-node-debian9:
           hosts:
-            noc_node_debian9: {}
+            noc-node-debian9: {}
         svc-web-read: {}
     svc-web-exec:
       hosts:
-        noc_node_debian9: {}
+        noc-node-debian9: {}
     ungrouped: {}

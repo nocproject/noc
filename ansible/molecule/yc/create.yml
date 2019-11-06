@@ -1,0 +1,52 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+
+    - name: Generate terraform file
+      template:
+        src: templates/template.tf
+        dest: "../yc/{{ item.distr }}.tf"
+      with_items: "{{ molecule_yml.platforms }}"
+
+    - name: Create molecule instance(s)
+      terraform:
+        project_path: "../yc/"
+        state: present
+        force_init: true
+      register: server
+      with_items: "{{ molecule_yml.platforms }}"
+
+    - name: Populate instance config dict
+      set_fact:
+        instance_config_dict:
+          'instance': "{{ item.item.name }}"
+          'address': "{{ item.outputs.internal_ip_address_vm_1.value }}"
+          'external_address': "{{ item.outputs.external_ip_address_vm_1.value }}"
+          'user': "{{ item.item.ssh_user }}"
+          'port': "22"
+          'identity_file': "{{ molecule_yml.driver.ssh_identity_file }}"
+      register: instance_config_dict
+      with_items: "{{ server.results }}"
+
+    - name: Create instance config
+      set_fact:
+        instance_conf: "{{ instance_conf|default([]) + [ instance_config_dict ] }}"
+
+    - name: Dump instance config
+      copy:
+        # NOTE(retr0h): Workaround for Ansible 2.2.
+        #               https://github.com/ansible/ansible/issues/20885
+        content: "{{ instance_conf | to_json | from_json | molecule_to_yaml | molecule_header }}"
+        dest: "{{ molecule_instance_config }}"
+
+    - name: Wait for SSH
+      wait_for:
+        port: "22"
+        host: "{{ item.address }}"
+        search_regex: SSH
+        delay: 10
+        timeout: 600
+      with_items: "{{ lookup('file', molecule_instance_config) | molecule_from_yaml }}"
