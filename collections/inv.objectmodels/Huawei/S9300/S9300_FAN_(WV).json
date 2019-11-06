@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | S9300 FAN",
+    "name": "Huawei | S9300 | S9300 FAN (WV)",
     "$collection": "inv.objectmodels",
-    "uuid": "768f1957-81ba-4fbd-a379-03d0e08de3b6",
+    "uuid": "864eb594-0548-4eb3-b431-7df58542e0e1",
     "vendor__code": "HUAWEI",
-    "description": "Quidway S9300,LE0E1FBX, Fan Box",
+    "description": "Quidway S9300,LE0E2FBX,Wide Voltage Fan Box",
     "cr_context": "FAN",
     "tags": ["fan"],
     "connections": [
@@ -18,7 +18,7 @@
     "data": {
         "asset": {
             "order_part_no": ["02120554"],
-            "part_no": ["LE0E1FBX"]
+            "part_no": ["LE0E2FBX"]
         },
         "dimensions": {
             "depth": 75,
