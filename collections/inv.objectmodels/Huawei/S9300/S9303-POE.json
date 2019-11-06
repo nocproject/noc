@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | S9303",
+    "name": "Huawei | S9300 | S9303-POE",
     "$collection": "inv.objectmodels",
-    "uuid": "71b58e16-4354-4681-b552-9b6c8fbc2645",
+    "uuid": "f48510ff-b442-46c0-9c82-b3d2425cf71d",
     "vendor__code": "HUAWEI",
-    "description": "S9303 Chassis backplane",
+    "description": "S9303 POE Chassis Backplane",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "tags": ["chassis"],
@@ -67,8 +67,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["02113089", "03020LLC"],
-            "part_no": ["LE02BAKM", "LE0B1SA04"]
+            "order_part_no": ["03020PBT"],
+            "part_no": ["LE02BAKN"]
         },
         "dimensions": {
             "depth": 585,
