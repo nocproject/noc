@@ -19,7 +19,7 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "internal_name": "Port_XGigabitEthernetX/0/0",
+            "internal_name": "Port_0",
             "name": "XGigabitEthernetX/0/0",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
@@ -28,7 +28,7 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "internal_name": "Port_XGigabitEthernetX/0/1",
+            "internal_name": "Port_1",
             "name": "XGigabitEthernetX/0/1",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
@@ -37,7 +37,7 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "internal_name": "Port_XGigabitEthernetX/0/2",
+            "internal_name": "Port_2",
             "name": "XGigabitEthernetX/0/2",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
@@ -46,7 +46,7 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "internal_name": "Port_XGigabitEthernetX/0/3",
+            "internal_name": "Port_3",
             "name": "XGigabitEthernetX/0/3",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"

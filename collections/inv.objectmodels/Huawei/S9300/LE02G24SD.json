@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | LE02G24SC",
+    "name": "Huawei | S9300 | LE02G24SD",
     "$collection": "inv.objectmodels",
-    "uuid": "93ec56b8-2d7b-4f41-aad4-c21931a8e0c0",
+    "uuid": "439be268-5967-47ff-9479-3fa0a6f3374a",
     "vendor__code": "HUAWEI",
-    "description": "24-Port 100/1000BASE-X Interface Card(ED,SFP),128K MAC,1*1",
+    "description": "24-Port 100/1000BASE-X Interface Card(ED,SFP),512K MAC,1*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "LPU",
     "tags": ["sup"],
@@ -234,8 +234,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03020PRW"],
-            "part_no": ["LE02G24SC"]
+            "order_part_no": ["03020QES"],
+            "part_no": ["LE02G24SD"]
         },
         "dimensions": {
             "depth": 427,
@@ -243,7 +243,7 @@
             "width": 395
         },
         "power": {
-            "power": 63.0
+            "power": 75.0
         },
         "weight": {
             "weight": 2.66

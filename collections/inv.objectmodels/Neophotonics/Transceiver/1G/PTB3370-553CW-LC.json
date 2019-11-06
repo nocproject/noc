@@ -1,0 +1,31 @@
+{
+    "name": "Neophotonics | Transceiver | 1G | PTB3370-553CW-LC",
+    "$collection": "inv.objectmodels",
+    "uuid": "6672bfdb-52e1-4ff4-b666-0c7121bba1bc",
+    "vendor__code": "NEOPHOTONICS",
+    "description": "Wavelength: 1490-1310 nm FP; RX sensitivity:<-19.5 dBm FP; TX power: -9~-3 dBm; Distance: 10 km; DDMI; RoHS;BiDi; Bitrate: 1.25G, LC",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1310", ">1000BASELX-1490"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PTB3370-553CW-LC"]
+        }
+    }
+}

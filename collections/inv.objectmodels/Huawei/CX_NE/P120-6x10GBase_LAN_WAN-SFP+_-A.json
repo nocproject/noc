@@ -1,7 +1,7 @@
 {
-    "name": "Huawei | CX&NE | P101-6x10GBase LAN/WAN-SFP+ -A",
+    "name": "Huawei | CX&NE | P120-6x10GBase LAN/WAN-SFP+ -A",
     "$collection": "inv.objectmodels",
-    "uuid": "6476235f-78f3-4dc3-acdf-1e5f3d63ad3c",
+    "uuid": "4692a561-40f5-4c8c-94aa-8f9a0cf9cda9",
     "vendor__code": "HUAWEI",
     "description": "6-Port 10GBase LAN/WAN-SFP+ Flexible Card A(P120-A)",
     "connection_rule__name": "Huawei | CX",
@@ -12,7 +12,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | CX&NE | LPU"
+            "type__name": "Huawei | CX&NE | FPIC"
         },
         {
             "description": "",
@@ -71,8 +71,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03054485"],
-            "part_no": ["CR57L5XFB21"]
+            "order_part_no": ["03030QDE"],
+            "part_no": ["CR57L6XF0"]
         },
         "dimensions": {
             "depth": 194,

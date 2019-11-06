@@ -1,9 +1,9 @@
-         {
-    "name": "Huawei | CX600-X1-X2 | MPUK",
+{
+    "name": "Huawei | CX600-X1-X2 | MPUG",
     "$collection": "inv.objectmodels",
-    "uuid": "820368a6-55f8-43d4-b17d-b6f3fe12f3b1",
+    "uuid": "98856323-b4cf-4cef-ae09-a2373c9b7e35",
     "vendor__code": "HUAWEI",
-    "description": "CX600,CX67MPUK0,Main Processing Unit K(Including 1*1G CF Card)",
+    "description": "CX600,CX67MPUG0,Main Processing Unit G(Including 1*1G CF Card)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "MPU",
     "connections": [
@@ -65,8 +65,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03030QAB"],
-            "part_no": ["CX67MPUK0"]
+            "order_part_no": ["03030MDB"],
+            "part_no": ["CX67MPUG0"]
         },
         "dimensions": {
             "depth": 226,

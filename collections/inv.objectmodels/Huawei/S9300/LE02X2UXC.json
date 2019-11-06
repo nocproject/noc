@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | LE02X4UXC",
+    "name": "Huawei | S9300 | LE02X2UXC",
     "$collection": "inv.objectmodels",
-    "uuid": "5dbd16ae-f280-456d-a5ef-7443460b1797",
+    "uuid": "1732b2eb-bad2-42cb-a32b-5f1ba32c4f70",
     "vendor__code": "HUAWEI",
-    "description": "4-Port 10GBASE-X Interface Card(EA,XFP),128K MAC,1*1",
+    "description": "2-Port 10GBASE-X Interface Card(EC,XFP),128K MAC,1*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "LPU",
     "tags": ["sup"],
@@ -32,30 +32,12 @@
             "name": "XGigabitEthernetX/0/1",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
-        },
-        {
-            "description": "",
-            "direction": "i",
-            "gender": "f",
-            "internal_name": "Port_2",
-            "name": "XGigabitEthernetX/0/2",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
-        },
-        {
-            "description": "",
-            "direction": "i",
-            "gender": "f",
-            "internal_name": "Port_3",
-            "name": "XGigabitEthernetX/0/3",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03020KYC"],
-            "part_no": ["LE02X4UXC"]
+            "order_part_no": ["03020MUS"],
+            "part_no": ["LE02X2UXC"]
         },
         "dimensions": {
             "depth": 427,
@@ -63,10 +45,10 @@
             "width": 395
         },
         "power": {
-            "power": 75.0
+            "power": 61.0
         },
         "weight": {
-            "weight": 2.28
+            "weight": 2.26
         }
     }
 }
