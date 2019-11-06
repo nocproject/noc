@@ -1,0 +1,23 @@
+{
+    "name": "Juniper | MX | MS-DPC",
+    "$collection": "inv.objectmodels",
+    "uuid": "7257958d-f018-46d4-b4f8-414415b148bd",
+    "vendor__code": "JUNIPER",
+    "description": "Multiservices DPC",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "DPC connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["MS-DPC"],
+            "part_no": ["750-024064"]
+        }
+    }
+}
