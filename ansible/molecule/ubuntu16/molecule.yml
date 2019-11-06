@@ -4,24 +4,22 @@ dependency:
 
 driver:
   name: delegated
-  hostname: ${vsphere_hostname}
-  esxi_hostname: ${esxi_hostname}
-  username: ${vsphere_username}
-  password: ${vsphere_password}
-  datacenter: ${datacenter}
-  validate_certs: "no"
-  resource_pool: ${resource_pool}
-  folder: ${folder}
   ssh_identity_file: "/tmp/temporary_ssh_key"
-  ssh_user: vagrant
+  ssh_identity_file_pub: "/tmp/temporary_ssh_key_pub"
   ssh_port: 22
+  token: ${yc_token}
+  cloud_id: ${yc_cloud_id}
+  folder_id: ${yc_folder_id}
+  zone: ${yc_zone}
+  network_id: ${yc_network_id}
+  subnet_id: ${yc_subnet_id}
+  image_id: ${yc_ub16_disk}
 lint:
   name: yamllint
 platforms:
-  - name: noc_node_ubuntu16
-    template: packer-ubuntu16
-    memory: 4128
-    cpu: 2
+  - name: noc-node-ubuntu16
+    distr: ubuntu16
+    ssh_user: ubuntu
 provisioner:
   name: ansible
   config_options:
@@ -38,12 +36,12 @@ provisioner:
     ANSIBLE_TIMEOUT: "30"
     DIFF_ALWAYS: "True"
   playbooks:
-    create: ../common/create.yml
-    prepare: ../common/prepare.yml
-    converge: ../common/playbook.yml
+    create: ../yc/create.yml
+    prepare: ../yc/prepare.yml
+    converge: ../yc/playbook.yml
     verify: ../common/verify.yml
     side_effect: ../common/cache.yml
-    destroy: ../common/destroy.yml
+    destroy: ../yc/destroy.yml
   options:
     i: inv.yml
     extra-vars: tower_dist_dir=/tmp noc_version=${NOC_BRANCH}
@@ -57,7 +55,6 @@ scenario:
     - prepare
     - converge
     - verify
-    - side_effect
     - destroy
 verifier:
   name: goss
