@@ -170,6 +170,8 @@ class Script(BaseScript):
                 part_no = "NoName | Transceiver | 1G | SFP T"
             elif code == "10GBASE-LR":
                 part_no = "NoName | Transceiver | 10G | SFP+ LR"
+            elif code == "10GBASE-ER":
+                part_no = "NoName | Transceiver | 10G | SFP+ ER"
             elif code == "unknown":
                 part_no = "NoName | Transceiver | 1G | SFP"
             else:
