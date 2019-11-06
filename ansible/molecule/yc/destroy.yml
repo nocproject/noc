@@ -1,0 +1,13 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Destroy molecule instance(s)
+      terraform:
+        project_path: "../yc/"
+        state: absent
+        force_init: true  # yamllint disable-line rule:truthy
+        purge_workspace: true  # yamllint disable-line rule:truthy
+      with_items: "{{ molecule_yml.platforms }}"

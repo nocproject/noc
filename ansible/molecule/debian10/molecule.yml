@@ -13,13 +13,13 @@ driver:
   zone: ${yc_zone}
   network_id: ${yc_network_id}
   subnet_id: ${yc_subnet_id}
-  image_id: ${yc_cen7_disk}
+  image_id: ${yc_deb10_disk}
 lint:
   name: yamllint
 platforms:
-  - name: noc-node-centos7
-    distr: centos7
-    ssh_user: centos
+  - name: noc-node-debian10
+    distr: debian10
+    ssh_user: debian
 provisioner:
   name: ansible
   config_options:
@@ -48,7 +48,7 @@ provisioner:
   lint:
     name: ansible-lint
 scenario:
-  name: default
+  name: debian10
   test_sequence:
     - destroy
     - create
