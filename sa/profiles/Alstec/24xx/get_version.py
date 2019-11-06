@@ -5,8 +5,8 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 
@@ -18,6 +18,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 class Script(BaseScript):
     name = "Alstec.24xx.get_version"
     interface = IGetVersion
+    always_prefer = "S"
     cache = True
 
     rx_ver = re.compile(
@@ -28,9 +29,9 @@ class Script(BaseScript):
         r"Software type\s+:\s+(?P<fwt>\S+)\s*\n",
         re.MULTILINE,
     )
-    rx_serial = re.compile("Serial Number\.+ (?P<serial>\S+)")
-    rx_platform = re.compile("Machine Model\.+ (?P<platform>\S+)")
-    rx_version = re.compile("Software Version\.+ (?P<version>\S+)")
+    rx_serial = re.compile(r"Serial Number\.+ (?P<serial>\S+)")
+    rx_platform = re.compile(r"Machine Model\.+ (?P<platform>\S+)")
+    rx_version = re.compile(r"Software Version\.+ (?P<version>\S+)")
     rx_ver2 = re.compile(
         r"^Machine Model\.+\s*(?P<platform>\S+)"
         r"^Serial Number\.+\s*(?P<serial>\S+).*"
@@ -40,7 +41,21 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        try:
+            platform = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.3.0", cached=True)
+            serial = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.4.0", cached=True)
+            version = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.13.0")
+        except Exception:
+            raise NotImplementedError
+        return {
+            "vendor": "Alstec",
+            "platform": platform,
+            "version": version,
+            "attributes": {"Serial Number": serial},
+        }
+
+    def execute_cli(self, **kwargs):
         v = self.cli("show sysinfo", cached=True)
         match = self.rx_ver.search(v)
         if match:
