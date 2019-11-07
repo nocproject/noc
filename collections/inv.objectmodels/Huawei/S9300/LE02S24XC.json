@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | LE02S24XA",
+    "name": "Huawei | S9300 | LE02S24XC",
     "$collection": "inv.objectmodels",
-    "uuid": "719a3810-d82b-4ce3-8b95-8fdcd6acd1c4",
+    "uuid": "915fec7f-b774-4f86-a96c-fea91e280d74",
     "vendor__code": "HUAWEI",
-    "description": "24-Port 100/1000BASE-X and 2-Port 10GBASE-X Interface Card(EA,SFP/XFP),32K MAC,1*1",
+    "description": "24-Port 100/1000BASE-X and 2-Port 10GBASE-X Interface Card(EC,SFP/XFP),128K MAC,1*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "LPU",
     "tags": ["lc", "port"],
@@ -228,8 +228,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03020NNQ"],
-            "part_no": ["LE02S24XA"]
+            "order_part_no": ["03021BKJ"],
+            "part_no": ["LE02S24XC"]
         },
         "dimensions": {
             "depth": 427,
@@ -237,10 +237,10 @@
             "width": 395
         },
         "power": {
-            "power": 65.0
+            "power": 81.0
         },
         "weight": {
-            "weight": 2.3
+            "weight": 5.51
         }
     }
 }

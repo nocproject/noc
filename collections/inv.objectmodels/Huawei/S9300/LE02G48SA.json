@@ -6,7 +6,7 @@
     "description": "48-Port 100/1000BASE-X Interface Card (EA, SFP)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "LPU",
-    "tags": ["sup"],
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",

@@ -1,0 +1,40 @@
+{
+    "name": "Huawei | Quidway S5300 | PSU DC 170W",
+    "$collection": "inv.objectmodels",
+    "uuid": "a2a3e2bc-edc1-4b42-a914-868d80a5968d",
+    "vendor__code": "HUAWEI",
+    "description": "Quidway S5300,LS5MPSD17,170W DC power module",
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "group": "0",
+            "name": "-48V",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "group": "0",
+            "name": "RTN",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | Quidway S5300 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02310CNK"],
+            "part_no": ["LS5MPSD17"]
+        }
+    }
+}

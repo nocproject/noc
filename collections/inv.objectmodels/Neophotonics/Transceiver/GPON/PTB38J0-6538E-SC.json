@@ -1,0 +1,32 @@
+{
+    "name": "Neophotonics | Transceiver | GPON | PTB38J0-6538E-SC",
+    "$collection": "inv.objectmodels",
+    "uuid": "507e67ba-ec15-4742-885c-8d287ebf0b92",
+    "vendor__code": "NEOPHOTONICS",
+    "description": "PTB38J0-6538E-SC GPON OLT Class C+ 40km DDM SFP optical module",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1260_1360", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PTB38J0-6538E-SC"]
+        }
+    }
+}
