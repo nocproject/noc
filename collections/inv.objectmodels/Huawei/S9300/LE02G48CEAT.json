@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | LE02G48TC",
+    "name": "Huawei | S9300 | LE02G48CEAT",
     "$collection": "inv.objectmodels",
-    "uuid": "995acffb-32e5-4d30-8d1b-57d02936d616",
+    "uuid": "f31f1bfc-9a18-4085-92fe-f4993ae6cada",
     "vendor__code": "HUAWEI",
-    "description": "48-Port 10/100/1000BASE-T Interface Card(EC,RJ45),128K MAC,1*1",
+    "description": "36-Port 10/100/1000BASE-T and 12-Port 100/1000BASE-X Interface Card(EA,RJ45/SFP),32K MAC,1*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "LPU",
     "tags": ["lc", "port"],
@@ -17,99 +17,111 @@
         },
         {
             "description": "GigabitEthernetX/0/0 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_0",
             "name": "GigabitEthernetX/0/0",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/1 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_1",
             "name": "GigabitEthernetX/0/1",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/2 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_2",
             "name": "GigabitEthernetX/0/2",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/3 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_3",
             "name": "GigabitEthernetX/0/3",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/4 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_4",
             "name": "GigabitEthernetX/0/4",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/5 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_5",
             "name": "GigabitEthernetX/0/5",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/6 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_6",
             "name": "GigabitEthernetX/0/6",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/7 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_7",
             "name": "GigabitEthernetX/0/7",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/8 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_8",
             "name": "GigabitEthernetX/0/8",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/9 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_9",
             "name": "GigabitEthernetX/0/9",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/10 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_10",
             "name": "GigabitEthernetX/0/10",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/11 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
+            "internal_name": "Port_11",
             "name": "GigabitEthernetX/0/11",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/12 port",
@@ -305,105 +317,105 @@
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/36",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/37",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/38",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/39",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/40",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/41",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/42",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/43",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/44",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/45",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/46",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernetX/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/47",
             "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03020NER"],
-            "part_no": ["LE02G48TC", "LE0MG48TC"]
+            "order_part_no": ["03020DND"],
+            "part_no": ["LE0DG48CEAT"]
         },
         "dimensions": {
             "depth": 427,
@@ -411,10 +423,10 @@
             "width": 395
         },
         "power": {
-            "power": 68.0
+            "power": 62.0
         },
         "weight": {
-            "weight": 2.66
+            "weight": 2.5
         }
     }
 }

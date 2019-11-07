@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | LE02G48TC",
+    "name": "Huawei | S9300 | LE02G48TA",
     "$collection": "inv.objectmodels",
-    "uuid": "995acffb-32e5-4d30-8d1b-57d02936d616",
+    "uuid": "4347cc9d-cf24-4c2a-9c8c-dcf7b61a862c",
     "vendor__code": "HUAWEI",
-    "description": "48-Port 10/100/1000BASE-T Interface Card(EC,RJ45),128K MAC,1*1",
+    "description": "48-Port 10/100/1000BASE-T Interface Card(EA,RJ45),32K MAC,1*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "LPU",
     "tags": ["lc", "port"],
@@ -208,7 +208,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/25 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/24",
@@ -216,7 +216,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/26 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/25",
@@ -224,7 +224,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/27 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/26",
@@ -232,7 +232,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/28 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/27",
@@ -240,7 +240,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/29 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/28",
@@ -248,7 +248,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/30 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/29",
@@ -256,7 +256,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/31 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/30",
@@ -264,7 +264,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/32 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/31",
@@ -272,7 +272,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/33 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/32",
@@ -280,7 +280,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/34 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/33",
@@ -288,7 +288,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/35 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/34",
@@ -296,7 +296,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/36 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/35",
@@ -304,7 +304,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/37 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/36",
@@ -312,7 +312,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/38 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/37",
@@ -320,7 +320,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/39 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/38",
@@ -328,7 +328,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/40 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/39",
@@ -336,7 +336,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/41 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/40",
@@ -344,7 +344,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/42 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/41",
@@ -352,7 +352,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/42 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/42",
@@ -360,7 +360,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/43 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/43",
@@ -368,7 +368,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/44 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/44",
@@ -376,7 +376,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/45 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/45",
@@ -384,7 +384,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/46 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/46",
@@ -392,7 +392,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernetX/0/24 port",
+            "description": "GigabitEthernetX/0/47 port",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernetX/0/47",
@@ -402,8 +402,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03020NER"],
-            "part_no": ["LE02G48TC", "LE0MG48TC"]
+            "order_part_no": ["03020LTY"],
+            "part_no": ["LE02G48TA"]
         },
         "dimensions": {
             "depth": 427,

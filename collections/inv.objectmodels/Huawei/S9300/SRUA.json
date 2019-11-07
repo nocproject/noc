@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | S9300 | SRUB",
+    "name": "Huawei | S9300 | SRUA",
     "$collection": "inv.objectmodels",
-    "uuid": "2780ecbe-c44b-46e8-93ac-dcbc3fc66f39",
+    "uuid": "08e29521-6429-4286-b579-336d093e17b8",
     "vendor__code": "HUAWEI",
-    "description": "S9306/S9312 Main Control Unit B,Supporting Clock,1*1",
+    "description": "Quidway S9306/S9312 Main Control Unit A,1*1 (256G Switch Capacity)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "SRU",
     "tags": ["sup"],
@@ -37,28 +37,12 @@
             "name": "console",
             "protocols": ["<RS232"],
             "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "BITS port",
-            "direction": "s",
-            "gender": "f",
-            "name": "clk1",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "BITS port",
-            "direction": "s",
-            "gender": "f",
-            "name": "clk2",
-            "protocols": ["G.703"],
-            "type__name": "Electrical | RJ45"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["03020MMJ"],
-            "part_no": ["LE02SRUB"]
+            "order_part_no": ["03020KQR"],
+            "part_no": ["LE02SRUA"]
         },
         "dimensions": {
             "depth": 427,
@@ -66,10 +50,10 @@
             "width": 395
         },
         "power": {
-            "power": 105.0
+            "power": 81.0
         },
         "weight": {
-            "weight": 2.9
+            "weight": 6.17
         }
     }
 }
