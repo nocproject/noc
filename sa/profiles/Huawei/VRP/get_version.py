@@ -88,7 +88,29 @@ class Script(BaseScript):
         r"Patch Package Name\s*:(?P<patch_name>.+)\n"
         r"Patch Package Version\s*:(?P<patch_version>\S+)"
     )
+    rx_hw_version = re.compile(r"HUAWEI\s(?P<platform>\S+)\s")
+    rx_hw_extended_platform = re.compile(r"(?P<platform>\S+)[-,]CX\S+[-,].+")
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
+    hw_series = {"S2300", "S5300"}
+
+    def fix_platform_name(self, platform):
+        """
+        Extended detect platfrom name for old releases
+        :param platform:
+        :return:
+        """
+        try:
+            # v = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 150994945])
+            r = self.snmp.getnext(
+                mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityBomEnDesc"], only_first=True
+            )
+            if r:
+                oid, r = r[0]
+                r = self.rx_hw_extended_platform.search(r)
+                return r.group("platform")
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
+            pass
+        return platform
 
     def parse_serial(self):
         r = []
@@ -148,6 +170,7 @@ class Script(BaseScript):
             self.rx_ver_snmp3,
             self.rx_ver_snmp5,
         ]
+        platform = None
         if "NetEngine" in v or "MultiserviceEngine" in v or "HUAWEINE" in v or "HUAWEI NE" in v:
             # Use specified regex for this platform
             match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
@@ -155,13 +178,16 @@ class Script(BaseScript):
             match_re_list.insert(0, self.rx_ver_snmp7_eudemon)
         elif "Quidway S5600-HI" in v:  # Bad platform
             return "Quidway S5600-HI", None, None
+        elif self.rx_hw_version.search(v):
+            # For HUAWEI CX600-X2-M8 string
+            platform = self.rx_hw_version.search(v).group("platform")
         try:
             rx = self.find_re(match_re_list, v)
         except self.UnexpectedResultError:
             raise NotImplementedError
         match = rx.search(v)
         image = None
-        platform = match.group("platform")
+        platform = platform or match.group("platform")
         # Convert NetEngine to NE
         if platform.lower().startswith("netengine"):
             n, p = platform.split(" ", 1)
@@ -200,6 +226,9 @@ class Script(BaseScript):
             if not x:
                 continue
             serial += [x.strip(" \x00")]
+        if platform in self.hw_series:
+            # series name, fix
+            platform = self.fix_platform_name(platform)
         r = {"vendor": "Huawei", "platform": platform, "version": version}
         attributes = {}
         if image:
