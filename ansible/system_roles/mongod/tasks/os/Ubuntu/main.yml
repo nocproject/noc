@@ -1,13 +1,12 @@
 ---
 - name: Add MongoDB apt key
   apt_key:
-    keyserver: keyserver.ubuntu.com
-    id: "{{ item }}"
+    url: "{{ item.url }}"
+    id: "{{ item.id }}"
+    state: present
   with_items:
-    - 7F0CEB10
-    - EA312927
-    - 0C49F3730359A14518585931BC711F9BA15703C6
-    - 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+    - { url: "https://www.mongodb.org/static/pgp/server-3.6.asc", id: 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5 }
+    - { url: "https://www.mongodb.org/static/pgp/server-4.0.asc", id: 9DA31620334BD75D9DCB49F368818C72E52529D4 }
   environment:
     https_proxy: "{ {http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -23,24 +22,6 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version != "18.04"
-  tags:
-    - repo
-
-- name: Add MongoDB repository on Ubuntu-18
-  apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/{{ mongod_version }} multiverse"
-    state: present
-    update_cache: "True"
-  register: mongo_repo_stat
-  environment:
-    https_proxy: "{{ http_proxy }}"
-    http_proxy: "{{ http_proxy }}"
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "18.04"
   tags:
     - repo
 
