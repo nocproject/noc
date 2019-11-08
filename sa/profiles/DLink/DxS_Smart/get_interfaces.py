@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -28,28 +29,37 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        # Get portchannes
+        # Get portchannels
         portchannel_members = {}  # member -> (portchannel, type)
-        # with self.cached():
-        #    for pc in self.scripts.get_portchannel():
-        #        i = pc["interface"]
-        #        t = pc["type"] == "L"
-        #        for m in pc["members"]:
-        #            portchannel_members[m] = (i, t)
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
         admin_status = {}
-        if self.has_snmp():
-            try:
-                for n, s in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.7"
-                ):  # IF-MIB
-                    if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
-                        continue
-                    else:
-                        if n[:6] == "Slot0/":
-                            n = n[6:]
-                        admin_status.update({n: int(s) == 1})
-            except self.snmp.TimeOutError:
-                pass
+        try:
+            for n, s in self.snmp.join_tables(
+                "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.7"
+            ):  # IF-MIB
+                if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
+                    continue
+                else:
+                    if n[:6] == "Slot0/":
+                        n = n[6:]
+                    admin_status.update({n: int(s) == 1})
+        except self.snmp.TimeOutError:
+            pass
+        mac = {}
+        try:
+            for i, m in self.snmp.join_tables(
+                "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.6"
+            ):  # IF-MIB
+                if i[:6] == "Slot0/":
+                    i = i[6:]
+                mac.update({i: MAC(m)})
+        except self.snmp.TimeOutError:
+            pass
+
         else:
             ports = self.profile.get_ports(self)
             for p in ports:
@@ -58,21 +68,22 @@ class Script(BaseScript):
         # Get switchports
         for swp in self.scripts.get_switchport():
             admin = admin_status[swp["interface"]]
+            ma = mac[swp["interface"]]
             name = swp["interface"]
             iface = {
                 "name": name,
-                "type": "aggregated" if len(swp["members"]) > 0 else "physical",
+                "mac": ma,
+                "type": "physical",
                 "admin_status": admin,
                 "oper_status": swp["status"],
-                # "mac": mac,
+                "enabled_protocols": [],
                 "subinterfaces": [
                     {
                         "name": name,
+                        "mac": ma,
                         "admin_status": admin,
                         "oper_status": swp["status"],
                         "enabled_afi": ["BRIDGE"],
-                        # "mac": mac,
-                        # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
                     }
                 ],
             }
@@ -87,7 +98,7 @@ class Script(BaseScript):
             if name in portchannel_members:
                 iface["aggregated_interface"] = portchannel_members[name][0]
                 if portchannel_members[name][1]:
-                    n["enabled_protocols"] = ["LACP"]
+                    iface["enabled_protocols"] += ["LACP"]
             interfaces += [iface]
 
         ipif = self.cli("show ipif")
@@ -115,8 +126,8 @@ class Script(BaseScript):
             i["mac"] = ch_id[0]["first_chassis_mac"]
             i["subinterfaces"][0]["mac"] = ch_id[0]["first_chassis_mac"]
             mgmt_vlan = 1
-            self.cli("show switch", cached=True)
-            match = self.rx_mgmt_vlan.search(ipif)
+            sw = self.cli("show switch", cached=True)
+            match = self.rx_mgmt_vlan.search(sw)
             if match:
                 vlan = match.group("vlan")
                 if vlan != "Disabled":
@@ -128,5 +139,24 @@ class Script(BaseScript):
             # Need hardware to testing
             i["subinterfaces"][0].update({"vlan_ids": [mgmt_vlan]})
             interfaces += [i]
+
+        for pchn in self.scripts.get_portchannel():
+            if len(pchn["members"]) == 0:
+                continue
+            pch = {
+                "name": pchn["interface"],
+                "type": "aggregated",
+                "admin_status": True,
+                "oper_status": True,
+                "subinterfaces": [
+                    {
+                        "name": pchn["interface"],
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
+            }
+            interfaces += [pch]
 
         return [{"interfaces": interfaces}]
