@@ -148,6 +148,14 @@ class Script(BaseScript):
         r = self.cli("show rep topology")
         return bool(r)
 
+    @false_on_cli_error
+    def has_ldp_cli(self):
+        """
+        Check box has LDP enabled
+        """
+        self.cli("show mpls ldp parameters")
+        return True
+
     def execute_platform_cli(self, caps):
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
