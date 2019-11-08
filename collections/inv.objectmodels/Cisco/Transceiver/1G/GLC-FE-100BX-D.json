@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 1G | GLC-FE-100BX-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "ac0456c3-7091-4626-9f3e-cfeb64ea7cd5",
+    "vendor__code": "CISCO",
+    "description": "Cisco SFP LH transceiver, DOM support, 10km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">100BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<100BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GLC-FE-100BX-D"]
+        }
+    }
+}
