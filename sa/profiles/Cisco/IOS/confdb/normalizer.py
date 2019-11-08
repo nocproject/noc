@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
 
 
 class CiscoIOSNormalizer(BaseNormalizer):
@@ -44,20 +44,22 @@ class CiscoIOSNormalizer(BaseNormalizer):
     @match("interface", ANY)
     def normalize_interface_name(self, tokens):
         if "." in tokens[1]:
-            ifname, unit = tokens[1].split(".")
-            yield self.make_unit_description(
-                interface=self.interface_name(ifname),
-                unit=self.interface_name(tokens[1]),
-                description="",
-            )
+            pass
+        #     ifname, unit = tokens[1].split(".")
+        #     yield self.make_unit_description(
+        #         interface=self.interface_name(ifname),
+        #         unit=self.interface_name(tokens[1]),
+        #         description="",
+        #     )
         else:
             yield self.make_interface(interface=self.interface_name(tokens[1]))
 
     @match("interface", ANY, "shutdown")
     def normalize_interface_status(self, tokens):
-        yield self.make_interface_admin_status(
-            interface=self.interface_name(tokens[1]), admin_status=False
-        )
+        if "." not in tokens[1]:
+            yield self.make_interface_admin_status(
+                interface=self.interface_name(tokens[1]), admin_status=False
+            )
 
     @match("interface", ANY, "mtu", ANY)
     def normalize_interface_mtu(self, tokens):
@@ -66,11 +68,20 @@ class CiscoIOSNormalizer(BaseNormalizer):
     @match("interface", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
         if "." in tokens[1]:
-            ifname, unit = tokens[1].split(".")
-            yield self.make_unit_description(
-                interface=self.interface_name(ifname),
+            # ifname, unit = tokens[1].split(".")
+            # yield self.make_unit_description(
+            #     interface=self.interface_name(ifname),
+            #     unit=self.interface_name(tokens[1]),
+            #     description=" ".join(tokens[3:]),
+            # )
+            if_name = self.interface_name(tokens[1])
+            yield self.defer(
+                "fi.iface.%s" % if_name,
+                self.make_unit_description,
+                instance=deferable("instance"),
+                interface=if_name,
                 unit=self.interface_name(tokens[1]),
-                description=" ".join(tokens[3:]),
+                description=" ".join(tokens[5:]),
             )
         else:
             yield self.make_interface_description(
@@ -129,18 +140,38 @@ class CiscoIOSNormalizer(BaseNormalizer):
     @match("interface", ANY, "switchport", "trunk", "allowed", "vlan", REST)
     def normalize_switchport_tagged(self, tokens):
         if_name = self.interface_name(tokens[1])
-        yield self.make_switchport_tagged(interface=if_name, unit=if_name, vlan_filter=tokens[6])
+        vlan_filter = tokens[6]
+        if tokens[6] == "add":
+            vlan_filter = tokens[7]
+        if tokens[6] != "none":
+            yield self.make_switchport_tagged(
+                interface=if_name, unit=if_name, vlan_filter=vlan_filter
+            )
 
     @match("interface", ANY, "ip", "address", ANY, ANY)
     def normalize_interface_ip(self, tokens):
-        ifname = tokens[1]
-        if "." in ifname:
-            ifname, unit = tokens[1].split(".")
-        yield self.make_unit_inet_address(
-            interface=self.interface_name(ifname),
-            unit=self.interface_name(tokens[1]),
+        # ifname = tokens[1]
+        # if "." in ifname:
+        #    ifname, unit = tokens[1].split(".")
+        if_name = self.interface_name(tokens[1])
+        yield self.defer(
+            "fi.iface.%s" % if_name,
+            self.make_unit_inet_address,
+            instance=deferable("instance"),
+            interface=if_name,
+            unit=if_name,
             address=self.to_prefix(tokens[4], tokens[5]),
         )
+
+        # yield self.make_unit_inet_address(
+        #     interface=self.interface_name(ifname),
+        #     unit=self.interface_name(tokens[1]),
+        #     address=self.to_prefix(tokens[4], tokens[5]),
+        # )
+
+    @match("ip", "vrf", ANY)
+    def normalize_routing_instances(self, tokens):
+        yield self.make_forwarding_instance_type(instance=tokens[2], type="vrf")
 
     @match("ip", "vrf", ANY, "rd", ANY)
     def normalize_routing_instances_rd(self, tokens):
@@ -185,3 +216,16 @@ class CiscoIOSNormalizer(BaseNormalizer):
     @match("interface", ANY, "no", "cdp", "enable")
     def normalize_cdp_interface_disable(self, tokens):
         yield self.make_cdp_interface_disable(interface=self.interface_name(tokens[1]))
+
+    @match("interface", ANY, "ip", "vrf", "forwarding", ANY)
+    def normalize_interface_fi(self, tokens):
+        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
+
+    @match("interface", ANY, "xconnect", ANY, ANY, "encapsulation", "mpls")
+    def normalize_interface_xconnect(self, tokens):
+        yield self.make_forwarding_instance_type(instance=tokens[4], type="vll")
+        yield self.make_forwarding_instance_vpn_id(instance=tokens[4], vpn_id=tokens[4])
+        # yield self.make_mpls_lsp_to_address(
+        #     instance=tokens[4], address=tokens[3]
+        # )
+        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[4])

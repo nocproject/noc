@@ -23,9 +23,9 @@ class Script(BaseScript):
     cache = True
 
     rx_line = re.compile(
-        r"^\s+(?P<vrf>.+?)\s+" r"(?P<rd>\S+:\S+|<not set>)\s+" "(?P<iface>.*?)\s*$", re.IGNORECASE
+        r"^\s+(?P<vrf>.+?)\s+" r"(?P<rd>\S+:\S+|<not set>)\s+(?P<iface>.*?)\s*$", re.IGNORECASE
     )
-    rx_cont = re.compile("^\s{6,}(?P<iface>.+?)\s*$")
+    rx_cont = re.compile(r"^\s{6,}(?P<iface>.+?)\s*$")
     rx_portchannel = re.compile(r"^Po\s*\d+(?:A|B)?$")
 
     rx_vrf = re.compile(
@@ -33,6 +33,22 @@ class Script(BaseScript):
         r"(?P<rd>\d+:\d+|<not set>);\s*default\s*VPNID\s*(?P<vpnid>\S+|<not set>)"
     )
 
+    rx_vfi = re.compile(
+        r"^VFI name\s*:\s*(?P<name>\S+),\s*state\s*:\s*(?P<state>\S+),"
+        r"\s*type:\s*(?P<vpn_type>\S+),\s*signaling:\s(?P<signalling>\S+)\n"
+        r"\s+VPN ID\s*:\s*(?P<vpn_id>\S+)\n"
+        r"\s+(?:Bridge-Domain\s+\d+|Local)\s+attachment circuits:\n"
+        r"\s+(?P<ifaces>(?:\s+.+\n)+)\s+ Neighbors connected via pseudowires:\n"
+        r"\s+Peer Address\s+VC ID\s+S\s*\n"
+        r"(?P<neighbor_tables>(?:\s+\S+\s+\S+\s+\S+\s*\n)+)"
+    )
+
+    rx_xconnect = re.compile(
+        r"(?P<xc_state>\S\S)\s+(?P<xc_mode>\S+)\s+(?P<xc_type1>\S+)\s+"
+        r"(?P<segment1>\S+\(.+\)|\S+)\s+(?P<state1>..)\s+(?P<xc_type2>\S+)\s+"
+        r"(?P<segment2>\S+)\s+(?P<state2>\S\S)",
+        re.MULTILINE,
+    )
     portchannel_members = {}
 
     def _get_portchannel_members(self, iface):
@@ -46,8 +62,60 @@ class Script(BaseScript):
         else:
             return []
 
+    def get_mpls_vpn(self):
+        r = []
+        # VPLS
+        try:
+            v = self.cli("show vfi")
+        except self.CLISyntaxError:
+            return []
+        for vfi in v.split("\n\n"):
+            match = self.rx_vfi.match(vfi)
+            if not match:
+                continue
+            r += [
+                {
+                    "type": "VPLS",
+                    "status": match.group("state") == "up",
+                    "name": match.group("name"),
+                    "vpn_id": match.group("vpn_id"),
+                    "interfaces": [
+                        self.profile.convert_interface_name(x)
+                        for x in match.group("ifaces").split()
+                    ]
+                    if match.group("ifaces")
+                    else [],
+                }
+            ]
+        # VPWS
+        try:
+            v = self.cli("show xconnect all")
+        except self.CLISyntaxError:
+            return []
+        for match in self.rx_xconnect.finditer(v):
+            if (
+                match.group("xc_type1") != "ac"
+                or match.group("xc_type2") != "mpls"
+                or match.group("xc_mode") != "pri"
+            ):
+                continue
+            remote_address, vc_id = match.group("segment2").split(":")
+            iface = match.group("segment1").split(":")[0]
+            r += [
+                {
+                    "type": "VLL",
+                    "status": match.group("xc_state") == "up",
+                    "name": vc_id,
+                    "vpn_id": vc_id,
+                    "interfaces": [self.profile.convert_interface_name(iface)],
+                }
+            ]
+        return r
+
     def execute_cli(self, **kwargs):
         vpns = []
+        if self.capabilities.get("Network | LDP"):
+            vpns += self.get_mpls_vpn()
         try:
             v = self.cli("show ip vrf detail")
         except self.CLISyntaxError:
@@ -145,7 +213,6 @@ class Script(BaseScript):
                         for lll in vrf_block["import vpn route-target communities"][:]
                         if lll
                     ]
-
         return vpns
 
     def execute_vrf(self, **kwargs):
