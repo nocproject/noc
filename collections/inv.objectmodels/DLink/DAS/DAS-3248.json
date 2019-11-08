@@ -1,0 +1,96 @@
+{
+    "name": "DLink | DAS | DAS-3248",
+    "$collection": "inv.objectmodels",
+    "uuid": "6db0b93a-2fec-4d24-b52e-99db9f636fd2",
+    "vendor__code": "DLINK",
+    "description": "DAS-3224 24-Port IP DSLAM",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "DSL port",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE1",
+            "protocols": ["ADSL/ADSL2/ADSL2+"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "DSL port",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE2",
+            "protocols": ["ADSL/ADSL2/ADSL2+"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Splitter",
+            "direction": "s",
+            "gender": "f",
+            "name": "POTS1",
+            "protocols": ["POTS"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Splitter",
+            "direction": "s",
+            "gender": "f",
+            "name": "POTS2",
+            "protocols": ["POTS"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DAS-3248"]
+        },
+        "dimensions": {
+            "depth": 400,
+            "height": 44,
+            "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 150.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "weight": 6.8
+        }
+    }
+}
