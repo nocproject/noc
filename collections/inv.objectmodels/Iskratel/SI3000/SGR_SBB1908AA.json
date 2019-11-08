@@ -27,10 +27,24 @@
             "order_part_no": ["SBB1908AA"],
             "part_no": [
                 "UTA6067EA",
+                "UTA6067EA010",
+                "UTA6067EA020",
+                "UTA6067EA021",
+                "UTA6067EA022",
                 "UTA6067EA02A",
+                "UTA6067EA02E",
                 "UTA6067EA02P",
+                "UTA6067EA030",
+                "UTA6067EA03A",
+                "UTA6067EA03B",
+                "UTA6067EA03E",
                 "UTA6067EA03P",
-                "UTA6067EA04P"
+                "UTA6067EA04E",
+                "UTA6067EA04P",
+                "UTA6067EA05E",
+                "UTA6067EA05P",
+                "UTA6067EA06E",
+                "UTA6067EA06P"
             ]
         }
     }

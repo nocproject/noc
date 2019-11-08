@@ -1,10 +1,11 @@
 {
-    "name": "Alstec | 24110 | ALS-24110LVT-02",
+    "name": "Alstec | 241XX | ALS-24110LVT-02",
     "$collection": "inv.objectmodels",
     "uuid": "dedb5a94-d039-46a0-8a5e-70bca1878047",
     "vendor__code": "ALSTEC",
     "description": "16xFE, 2xGE SFP, alarm/sensor, AC 220 В, 0..60С",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "port"],
     "connections": [
         {
             "description": "FE port 1",
@@ -135,33 +136,25 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FE port 21",
-            "direction": "s",
-            "gender": "f",
-            "name": "0/21",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "SFP Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "0/25",
+            "name": "0/17",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "SFP Port 1",
+            "description": "SFP Port 2",
             "direction": "i",
             "gender": "f",
-            "name": "0/26",
+            "name": "0/18",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ALS-24110LVT-02"]
+            "part_no": ["ALS-24110LVT-02", "ALS24110LVT-02"]
         },
         "dimensions": {
             "depth": 95,

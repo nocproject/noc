@@ -1,0 +1,8 @@
+{
+    "name": "Alstec | CB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "680aaaa8-9033-4f14-9997-591536fa302c",
+    "description": "Alstec Control Board connecton",
+    "c_group": [],
+    "genders": "mf"
+}

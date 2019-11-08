@@ -415,7 +415,7 @@
     "data": {
         "asset": {
             "order_part_no": ["03020DND"],
-            "part_no": ["LE0DG48CEAT"]
+            "part_no": ["LE0DG48CEAT", "LE02G48CEAT"]
         },
         "dimensions": {
             "depth": 427,

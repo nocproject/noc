@@ -1,7 +1,7 @@
 {
-    "name": "Alstec | 241XX | ALS-24110LVT-03",
+    "name": "Alstec | 241XX | ALS-24100LVT-03",
     "$collection": "inv.objectmodels",
-    "uuid": "34d51871-8129-48a9-b723-58a2157c5f09",
+    "uuid": "899a3ad4-e44f-44db-bf3b-adad8105a9a4",
     "vendor__code": "ALSTEC",
     "description": "8xFE, 2xGE SFP, alarm/sensor, AC 220 В, 0..60С",
     "cr_context": "CHASSIS",
