@@ -46,6 +46,19 @@ class Profile(BaseProfile):
             return "10GigabitEthernet %s" % s[4:].strip()
         return s
 
+    def get_interface_names(self, name):
+        """
+        LLDP port format is number: 1, 17 etc...
+        :param name:
+        :return:
+        """
+
+        return [
+            "GigabitEthernet 1/%s" % name,
+            "2.5GigabitEthernet 1/%s" % name,
+            "10GigabitEthernet 1/%s" % name,
+        ]
+
     INTERFACE_TYPES = {
         "Gi": "physical",  # GigabitEthernet
         "2.": "physical",  # 2.5GigabitEthernet
