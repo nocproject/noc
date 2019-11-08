@@ -40,7 +40,7 @@
     http_proxy: "{{ http_proxy }}"
   when:
     - ansible_distribution == "Debian"
-    - ansible_distribution_version | version_compare('10.0', '>')
+    - ansible_distribution_version | version_compare('10.0', '>=')
   tags:
     - repo
 
