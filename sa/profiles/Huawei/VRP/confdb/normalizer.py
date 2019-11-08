@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
 from noc.core.confdb.syntax.defs import DEF
 from noc.core.confdb.syntax.patterns import IF_NAME, BOOL
 
@@ -75,14 +75,38 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("interface", ANY)
     def normalize_interface(self, tokens):
-        if_name = self.interface_name(tokens[1])
-        yield self.make_interface(interface=if_name)
+        if "." not in tokens[1]:
+            if_name = self.interface_name(tokens[1])
+            yield self.make_interface(interface=if_name)
+
+    @match("interface", ANY, "mpls")
+    def normalize_interface_mpls(self, tokens):
+        if "." not in tokens[1]:
+            if_name = self.interface_name(tokens[1])
+            yield self.make_unit_mpls(interface=if_name, unit=if_name)
+
+    @match("interface", ANY, "mpls", "ldp")
+    def normalize_interface_mpls_ldp(self, tokens):
+        if "." not in tokens[1]:
+            if_name = self.interface_name(tokens[1])
+            yield self.make_ldp_interface(interface=if_name)
 
     @match("interface", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
-        yield self.make_interface_description(
-            interface=self.interface_name(tokens[1]), description=" ".join(tokens[2:])
+        if_name = self.interface_name(tokens[1])
+        # if "." in tokens[1]:
+        yield self.defer(
+            "fi.iface.%s" % if_name,
+            self.make_unit_description,
+            instance=deferable("instance"),
+            interface=if_name,
+            unit=if_name,
+            description=" ".join(tokens[3:]),
         )
+        # else:
+        #    yield self.make_interface_description(
+        #        interface=self.interface_name(tokens[1]), description=" ".join(tokens[2:])
+        #    )
 
     @match("interface", ANY, "port-security", "max-mac-num", ANY)
     def normalize_port_security(self, tokens):
@@ -173,12 +197,79 @@ class VRPNormalizer(BaseNormalizer):
     @match("interface", ANY, "ip", "address", ANY, ANY)
     def normalize_vlan_ip(self, tokens):
         if_name = self.interface_name(tokens[1])
-        yield self.make_unit_inet_address(
-            interface=if_name, unit=if_name, address=self.to_prefix(tokens[4], tokens[5])
+        yield self.defer(
+            "fi.iface.%s" % if_name,
+            self.make_unit_inet_address,
+            instance=deferable("instance"),
+            interface=if_name,
+            unit=if_name,
+            address=self.to_prefix(tokens[4], tokens[5]),
         )
+
+    @match("interface", ANY, "l2", "binding", "vsi", ANY)
+    def normalize_interface_vsi_binding(self, tokens):
+        # yield self.defer("fi.iface.%s" % self.interface_name(tokens[5]), instance=tokens[1])
+        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
+
+    @match("interface", ANY, "ip", "binding", "vpn-instance", ANY)
+    def normalize_interface_vpn_instance_binding(self, tokens):
+        # yield self.defer("fi.iface.%s" % self.interface_name(tokens[5]), instance=tokens[1])
+        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
 
     @match("ip", "route-static", ANY, ANY, ANY)
     def normalize_default_gateway(self, tokens):
         yield self.make_inet_static_route_next_hop(
             route=self.to_prefix(tokens[2], tokens[3]), next_hop=tokens[4]
         )
+
+    @match("ip", "vpn-instance", ANY)
+    def normalize_vpn_instance(self, tokens):
+        yield self.make_forwarding_instance_type(instance=tokens[2], type="vrf")
+
+    @match("ip", "vpn-instance", ANY, "route-distinguisher", ANY)
+    @match("ip", "vpn-instance", ANY, "ipv4-family", "route-distinguisher", ANY)
+    def normalize_vpn_instance_rd(self, tokens):
+        if tokens[3] == "ipv4-family":
+            yield self.make_forwarding_instance_rd(instance=tokens[2], rd=tokens[5])
+        else:
+            yield self.make_forwarding_instance_rd(instance=tokens[2], rd=tokens[4])
+
+    @match("ip", "vpn-instance", ANY, "ipv4-family", "vpn-target", REST)
+    def normalize_vpn_instance_ipv4_rt(self, tokens):
+        if tokens[-1] == "import-extcommunity":
+            for token in tokens[5:-1]:
+                yield self.make_forwarding_instance_import_target(instance=tokens[2], target=token)
+        elif tokens[-1] == "export-extcommunity":
+            for token in tokens[5:-1]:
+                yield self.make_forwarding_instance_export_target(instance=tokens[2], target=token)
+
+    @match("ip", "vpn-instance", ANY, "vpn-target", REST)
+    def normalize_vpn_instance_rt(self, tokens):
+        if tokens[-1] == "import-extcommunity":
+            for token in tokens[4:-1]:
+                yield self.make_forwarding_instance_import_target(instance=tokens[2], target=token)
+        elif tokens[-1] == "export-extcommunity":
+            for token in tokens[4:-1]:
+                yield self.make_forwarding_instance_export_target(instance=tokens[2], target=token)
+
+    @match("vsi", ANY)
+    @match("vsi", ANY, ANY)
+    def normalize_vsi_instance(self, tokens):
+        yield self.make_forwarding_instance_type(instance=tokens[1], type="vpls")
+
+    @match("vsi", ANY, ANY, "pwsignal", "ldp", "vsi-id", ANY)
+    def normalize_vsi_vpn_id(self, tokens):
+        yield self.make_forwarding_instance_vpn_id(instance=tokens[1], vpn_id=tokens[6])
+
+    @match("vsi", ANY, ANY, "pwsignal", "ldp", "peer", ANY)
+    def normalize_vsi_ldp_lsp_address(self, tokens):
+        yield self.make_mpls_lsp_to_address(instance=tokens[1], address=tokens[6])
+
+    @match("interface", ANY, "mpls", "l2vc", ANY, ANY)
+    def normalize_interface_l2vc(self, tokens):
+        yield self.make_forwarding_instance_type(instance=tokens[5], type="vll")
+        yield self.make_forwarding_instance_vpn_id(instance=tokens[5], vpn_id=tokens[5])
+        # yield self.make_mpls_lsp_to_address(
+        #     instance=tokens[5], address=self.to_prefix(tokens[4], None)
+        # )
+        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])

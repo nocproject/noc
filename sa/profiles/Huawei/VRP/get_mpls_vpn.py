@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_mpls_vpn import Script as BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
+from noc.core.text import parse_kv
 
 
 class Script(BaseScript):
@@ -39,6 +40,23 @@ class Script(BaseScript):
         r"^\s+(?P<ifaces>.+)\s*\n",
         re.MULTILINE,
     )
+    rx_vsi_split = re.compile(r"^\s+\*\*\*", re.MULTILINE)
+    rx_vsi_pw_split = re.compile(r"^\s+\*\*", re.MULTILINE)
+    rx_l2vc_split = re.compile(r"^\s+\*", re.MULTILINE)
+    l2vc_map = {
+        "client interface": "interface",
+        "vc id": "vpn_id",
+        "vc type": "vc_type",
+        "destination": "destination",
+        "link state": "state",
+    }
+
+    vsi_instance_map = {
+        "vsi name": "name",
+        "vsi id": "vpn_id",
+        "interface name": "interface",
+        "state": "state",
+    }
 
     def execute_snmp(self, **kwargs):
         if self.is_ne_platform:
@@ -46,12 +64,56 @@ class Script(BaseScript):
             self.VRF_TYPE_MAP = {"rt_export": {"2"}, "rt_import": {"1", "3"}}
         return super(Script, self).execute_snmp(**kwargs)
 
+    def get_mpls_vpn(self):
+        r = []
+        # VPLS
+        try:
+            v = self.cli("display vsi verbose")
+        except self.CLISyntaxError:
+            return []
+        for block in self.rx_vsi_split.split(v)[1:]:
+            block, pw_info = self.rx_vsi_pw_split.split(block)
+            p = {}
+            # vsi, pwsignal, iface = block.split("\n\n")
+            for b in block.split("\n\n"):
+                p.update(parse_kv(self.vsi_instance_map, b))
+            r += [
+                {
+                    "type": "VPLS",
+                    "status": p["state"] == "up",
+                    "name": p["name"],
+                    "vpn_id": p.get("vpn_id"),
+                    "interfaces": [self.profile.convert_interface_name(p["interface"])]
+                    if "interface" in p
+                    else [],
+                }
+            ]
+        # VPWS
+        try:
+            v = self.cli("display mpls l2vc brief")
+        except self.CLISyntaxError:
+            return []
+        for block in self.rx_l2vc_split.split(v)[1:]:
+            p = parse_kv(self.l2vc_map, block)
+            r += [
+                {
+                    "type": "VLL",
+                    "status": p["state"] == "up",
+                    "name": p["vpn_id"],
+                    "vpn_id": p["vpn_id"],
+                    "interfaces": [self.profile.convert_interface_name(p["interface"])],
+                }
+            ]
+        return r
+
     def execute_cli(self, **kwargs):
+        vpns = []
+        if self.capabilities.get("Network | LDP"):
+            vpns += self.get_mpls_vpn()
         try:
             v = self.cli("display ip vpn-instance verbose")
         except self.CLISyntaxError:
             return []
-        vpns = []
         block = None
         block_splitter = None
         line_format = None
