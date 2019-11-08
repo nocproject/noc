@@ -1,9 +1,9 @@
 {
-    "name": "Iskratel | SI3000 | SGT (SBB1908BA)",
+    "name": "Iskratel | SI3000 | SGN (SBB1049AD)",
     "$collection": "inv.objectmodels",
-    "uuid": "8f66ce1f-21aa-433e-a319-b0396a5cf342",
+    "uuid": "5383f951-bf2e-45d0-968a-9e020fd3c75c",
     "vendor__code": "ISKRATEL",
-    "description": "Универсальная плата ADSL2+/VDSL2, 64 порта, готовность к векторингу, поверх POTS и ISDN -SGT для MEC и МЕА",
+    "description": "Плата абонентского ADSL 2+доступа SGN (48 абонентов)",
     "cr_context": "BOARD",
     "connections": [
         {
@@ -14,32 +14,33 @@
             "type__name": "Iskratel | SI3000 | SB"
         },
         {
-            "description": "32-channel VDSL2 ",
+            "description": "24-channel ADSL",
             "direction": "s",
             "gender": "f",
             "name": "LINE1",
-            "protocols": ["VDSL", "ADSL2+"],
+            "protocols": ["ADSL", "АDSL2", "АDSL2+"],
             "type__name": "Electrical | CENC-64"
         },
         {
-            "description": "32-channel VDSL2 ",
+            "description": "24-channel ADSL",
             "direction": "s",
             "gender": "f",
             "name": "LINE2",
-            "protocols": ["VDSL", "ADSL2+"],
+            "protocols": ["ADSL", "АDSL2", "АDSL2+"],
             "type__name": "Electrical | CENC-64"
         }
     ],
     "data": {
         "asset": {
             "part_no": [
-                "UTA6107AA",
-                "UTA6107AA050",
-                "UTA6107AA060",
-                "UTA6107AA070",
-                "UTA6107AA080",
-                "UTA6107BA010",
-                "UTA6107BA030"
+                "UTA6044AD",
+                "UTA6044AD05M",
+                "UTA6044AD05P",
+                "UTA6044AD070",
+                "UTA6044AD09M",
+                "UTA6044AD09N",
+                "UTA6044AD16M",
+                "UTA6044DD010"
             ]
         }
     }

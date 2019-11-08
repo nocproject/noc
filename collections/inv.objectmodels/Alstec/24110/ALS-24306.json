@@ -1,18 +1,33 @@
 {
-    "name": "Alstec | 241XX | ALS-24110LVT-01",
+    "name": "Alstec | 241XX | ALS-24306",
     "$collection": "inv.objectmodels",
-    "uuid": "0a9107ea-3778-4510-8ee9-ad0d7dc3e941",
+    "uuid": "b01f3c8d-8856-4ea3-bd04-e07db36ffcb0",
     "vendor__code": "ALSTEC",
-    "description": "24xFE, 2xGE SFP, alarm/sensor, AC 220 В, 0..60С",
+    "description": "16xGE, 4xGE Combo port (SFP)",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "port"],
+    "tags": ["lc", "port"],
     "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alstec | CB"
+        },
+        {
+            "description": "Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": ["<RS232"],
+            "type__name": "Electrical | DB9"
+        },
         {
             "description": "FE port 1",
             "direction": "s",
             "gender": "f",
             "name": "0/1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -20,7 +35,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +43,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +51,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +59,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +67,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +75,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +83,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +91,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/9",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -84,7 +99,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/10",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -92,7 +107,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/11",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -100,7 +115,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/12",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -108,7 +123,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/13",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -116,7 +131,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/14",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -124,7 +139,7 @@
             "direction": "s",
             "gender": "f",
             "name": "0/15",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -132,107 +147,94 @@
             "direction": "s",
             "gender": "f",
             "name": "0/16",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "FE port 17",
             "direction": "s",
             "gender": "f",
+            "group": "0/17",
             "name": "0/17",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FE port 18",
+            "description": "SFP Port 18",
+            "direction": "i",
+            "gender": "f",
+            "group": "0/17",
+            "name": "0/17",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "FE port 17",
             "direction": "s",
             "gender": "f",
+            "group": "0/18",
             "name": "0/18",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "SFP Port 18",
+            "direction": "i",
+            "gender": "f",
+            "group": "0/18",
+            "name": "0/18",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "description": "FE port 19",
             "direction": "s",
             "gender": "f",
+            "group": "0/19",
             "name": "0/19",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FE port 20",
+            "description": "SFP Port 20",
+            "direction": "i",
+            "gender": "f",
+            "group": "0/19",
+            "name": "0/19",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "FE port 19",
             "direction": "s",
             "gender": "f",
+            "group": "0/20",
             "name": "0/20",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "FE port 21",
-            "direction": "s",
-            "gender": "f",
-            "name": "0/21",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "FE port 22",
-            "direction": "s",
-            "gender": "f",
-            "name": "0/22",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "FE port 23",
-            "direction": "s",
-            "gender": "f",
-            "name": "0/23",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "FE port 24",
-            "direction": "s",
-            "gender": "f",
-            "name": "0/24",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "SFP Port 1",
+            "description": "SFP Port 20",
             "direction": "i",
             "gender": "f",
-            "name": "0/25",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "SFP Port 1",
-            "direction": "i",
-            "gender": "f",
-            "name": "0/26",
+            "group": "0/20",
+            "name": "0/20",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ALS-24110LVT-01", "ALS24110LVT-01"]
-        },
-        "dimensions": {
-            "depth": 95,
-            "height": 410,
-            "width": 365
+            "part_no": ["ALS-24306"]
         },
         "management": {
             "managed": true
         },
         "power": {
-            "power": 25.0
+            "power": 24.0
         },
         "weight": {
-            "weight": 10.0
+            "weight": 1.0
         }
     }
 }

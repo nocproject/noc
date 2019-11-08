@@ -1,14 +1,14 @@
 {
-    "name": "Raisecom | ROS | ISCOM2128EA-MA-AC",
+    "name": "Raisecom | ROS | ISCOM2118EA-MA-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "cb59d6c2-d2da-4b7b-bf3b-47187f9c4ded",
+    "uuid": "a83a8565-6042-4815-9090-3d6957275ab1",
     "vendor__code": "RAISECOM",
-    "description": "The ISCOM2100 series offers 24 Fast Ethernet downlink access interfaces with 2/4 x Gigabit combo uplinks and a power supply for power demand (PD) devices",
+    "description": "The ISCOM2100 series offers 16 Fast Ethernet downlink access interfaces with 2 SFP uplinks and a power supply for power demand (PD) devices",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
         {
-            "description": "port 1",
+            "description": "1",
             "direction": "s",
             "gender": "f",
             "name": "1",
@@ -16,7 +16,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 2",
+            "description": "2",
             "direction": "s",
             "gender": "f",
             "name": "2",
@@ -24,7 +24,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 3",
+            "description": "3",
             "direction": "s",
             "gender": "f",
             "name": "3",
@@ -32,7 +32,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 4",
+            "description": "4",
             "direction": "s",
             "gender": "f",
             "name": "4",
@@ -40,7 +40,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 5",
+            "description": "5",
             "direction": "s",
             "gender": "f",
             "name": "5",
@@ -48,7 +48,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 6",
+            "description": "6",
             "direction": "s",
             "gender": "f",
             "name": "6",
@@ -56,7 +56,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 7",
+            "description": "7",
             "direction": "s",
             "gender": "f",
             "name": "7",
@@ -64,7 +64,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 8",
+            "description": "8",
             "direction": "s",
             "gender": "f",
             "name": "8",
@@ -72,7 +72,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 9",
+            "description": "9",
             "direction": "s",
             "gender": "f",
             "name": "9",
@@ -80,7 +80,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 10",
+            "description": "10",
             "direction": "s",
             "gender": "f",
             "name": "10",
@@ -88,7 +88,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 11",
+            "description": "11",
             "direction": "s",
             "gender": "f",
             "name": "11",
@@ -96,7 +96,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 12",
+            "description": "12",
             "direction": "s",
             "gender": "f",
             "name": "12",
@@ -104,7 +104,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 13",
+            "description": "13",
             "direction": "s",
             "gender": "f",
             "name": "13",
@@ -112,7 +112,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 14",
+            "description": "14",
             "direction": "s",
             "gender": "f",
             "name": "14",
@@ -120,7 +120,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 15",
+            "description": "15",
             "direction": "s",
             "gender": "f",
             "name": "15",
@@ -128,7 +128,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 16",
+            "description": "16",
             "direction": "s",
             "gender": "f",
             "name": "16",
@@ -136,138 +136,18 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "port 17",
-            "direction": "s",
-            "gender": "f",
-            "name": "17",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 18",
-            "direction": "s",
-            "gender": "f",
-            "name": "18",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 19",
-            "direction": "s",
-            "gender": "f",
-            "name": "19",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 20",
-            "direction": "s",
-            "gender": "f",
-            "name": "20",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 21",
-            "direction": "s",
-            "gender": "f",
-            "name": "21",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 22",
-            "direction": "s",
-            "gender": "f",
-            "name": "22",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 23",
-            "direction": "s",
-            "gender": "f",
-            "name": "23",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 24",
-            "direction": "s",
-            "gender": "f",
-            "name": "24",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "port 25",
-            "direction": "s",
-            "gender": "f",
-            "group": "25",
-            "name": "25",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Fiber port 25",
+            "description": "Fiber port 17",
             "direction": "i",
             "gender": "f",
-            "group": "25",
-            "name": "sfp25",
+            "name": "sfp17",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "port 26",
-            "direction": "s",
-            "gender": "f",
-            "group": "26",
-            "name": "26",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Fiber port 26",
+            "description": "Fiber port 18",
             "direction": "i",
             "gender": "f",
-            "group": "26",
-            "name": "sfp26",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "port 27",
-            "direction": "s",
-            "gender": "f",
-            "group": "27",
-            "name": "27",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Fiber port 27",
-            "direction": "i",
-            "gender": "f",
-            "group": "27",
-            "name": "sfp27",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "port 28",
-            "direction": "s",
-            "gender": "f",
-            "group": "28",
-            "name": "28",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Fiber port 28",
-            "direction": "i",
-            "gender": "f",
-            "group": "28",
-            "name": "sfp28",
+            "name": "sfp18",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -290,7 +170,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ISCOM2128EA-MA-AC"]
+            "part_no": ["ISCOM2118EA-MA-AC"]
         },
         "dimensions": {
             "depth": 220,
@@ -301,13 +181,13 @@
             "managed": true
         },
         "power": {
-            "power": 15.0
+            "power": 9.4
         },
         "rackmount": {
             "units": 1.0
         },
         "weight": {
-            "weight": 3.0
+            "weight": 2.5
         }
     }
 }

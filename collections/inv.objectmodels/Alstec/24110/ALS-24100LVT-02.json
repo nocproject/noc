@@ -1,9 +1,9 @@
 {
-    "name": "Alstec | 241XX | ALS-24110LVT-03",
+    "name": "Alstec | 241XX | ALS-24100LVT-02",
     "$collection": "inv.objectmodels",
-    "uuid": "34d51871-8129-48a9-b723-58a2157c5f09",
+    "uuid": "ea75b889-6cb9-463c-914f-1ee527180e5c",
     "vendor__code": "ALSTEC",
-    "description": "8xFE, 2xGE SFP, alarm/sensor, AC 220 В, 0..60С",
+    "description": "16xFE, 2xGE SFP, alarm/sensor, AC 220 В, 0..60С",
     "cr_context": "CHASSIS",
     "tags": ["chassis", "port"],
     "connections": [
@@ -72,10 +72,74 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "FE port 9",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FE port 10",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FE port 11",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FE port 12",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FE port 13",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FE port 14",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FE port 15",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FE port 16",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "description": "SFP Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "0/9",
+            "name": "0/17",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -83,14 +147,14 @@
             "description": "SFP Port 2",
             "direction": "i",
             "gender": "f",
-            "name": "0/10",
+            "name": "0/18",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ALS-24110LVT-03", "ALS24110LVT-03"]
+            "part_no": ["ALS-24100LVT-02", "ALS24100LVT-02"]
         },
         "dimensions": {
             "depth": 95,
@@ -101,7 +165,7 @@
             "managed": true
         },
         "power": {
-            "power": 21.0
+            "power": 23.0
         },
         "weight": {
             "weight": 10.0
