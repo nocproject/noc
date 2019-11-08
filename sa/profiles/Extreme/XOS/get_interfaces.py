@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,10 +19,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    """
-    Extreme.XOS.get_interfaces
-    """
-
     name = "Extreme.XOS.get_interfaces"
     interface = IGetInterfaces
 
@@ -50,7 +46,7 @@ class Script(BaseScript):
         r"^Secondary\s+IPs(\s+)?:\s+(?P<address>.+?)IPv6", re.MULTILINE | re.DOTALL
     )
 
-    def execute(self):
+    def execute_cli(self):
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         portchannel_members = {}  # member -> (portchannel, type)
         portchan_masters = {}
@@ -84,7 +80,7 @@ class Script(BaseScript):
             switchports[swp["interface"]] = (
                 swp["untagged"] if "untagged" in swp else None,
                 swp["tagged"],
-                swp["description"],
+                swp["description"] if "description" in swp else "",
                 swp["status"],
             )
 
