@@ -1,0 +1,54 @@
+{
+    "name": "Huawei | S9300 | LE02X2UXA",
+    "$collection": "inv.objectmodels",
+    "uuid": "8e064d3c-5155-4184-aaaf-03e34deb6a1e",
+    "vendor__code": "HUAWEI",
+    "description": "2-Port 10GBASE-X Interface Card(EA,XFP),32K MAC,1*1",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "LPU",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "name": "XGigabitEthernetX/0/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "XGigabitEthernetX/0/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020MUS"],
+            "part_no": ["LE02X2UXA"]
+        },
+        "dimensions": {
+            "depth": 427,
+            "height": 35,
+            "width": 395
+        },
+        "power": {
+            "power": 52.0
+        },
+        "weight": {
+            "weight": 2.14
+        }
+    }
+}
