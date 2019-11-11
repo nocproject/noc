@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zhone.Bitstorm.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):
@@ -32,7 +33,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_dsl = re.compile(
-        r"^(?P<port>\d+) Configuration\s*\n"
+        r"^(?: DSL Port )?(?P<port>\d+(?:/\d+)?) Configuration\s*\n"
         r"^\s*\n"
         r"(^\s*name(?P<name>.*)\n)?"
         r"(^\s*state\s+(?P<admin_status>enabled|disabled)\s*\n)?",
@@ -40,7 +41,7 @@ class Script(BaseScript):
     )
     rx_dsl_vpi_vci = re.compile(
         r"^\s*(?P<name>\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+llc-bridged\s+"
-        r"((?P<vlan_ids>\d+(, \d+)*)\s*)?\S*\s*\n",
+        r"((?P<vlan_ids>\d+(, \d+)*)\s*)?\S*\s*\S*\s*\n",
         re.MULTILINE,
     )
     rx_inband = re.compile(
@@ -72,8 +73,28 @@ class Script(BaseScript):
         r"^\s*UnTagged Members(?P<untagged>.*)\n",
         re.MULTILINE,
     )
+    rx_slot = re.compile(r"Slot (\d+) ")
 
-    def execute(self):
+    def get_dsl(self, p):
+        match = self.rx_dsl.search(p)
+        if not match:
+            return None
+        iface = {"name": match.group("port"), "type": "physical", "subinterfaces": []}
+        if match.group("admin_status"):
+            iface["admin_status"] = match.group("admin_status") == "enabled"
+        if match.group("name") and match.group("name").strip():
+            iface["description"] = match.group("name").strip()
+        for match in self.rx_dsl_vpi_vci.finditer(p):
+            sub = match.groupdict()
+            sub["name"] = "%s/%s" % (iface["name"], sub["name"])
+            sub["admin_status"] = iface["admin_status"]
+            sub["enabled_afi"] = ["BRIDGE", "ATM"]
+            if sub["vlan_ids"]:
+                sub["vlan_ids"] = [int(x) for x in sub["vlan_ids"].split(", ") if int(x) > 0]
+            iface["subinterfaces"] += [sub]
+        return iface
+
+    def execute_cli(self):
         interfaces = []
         v = self.cli("show interface ethernet all configuration")
         for match in self.rx_eth.finditer(v):
@@ -90,25 +111,26 @@ class Script(BaseScript):
             interfaces += [iface]
 
         v = self.cli("show interface dsl all configuration")
-        for p in v.split("\n DSL Port "):
-            match = self.rx_dsl.search(p)
-            if not match:
-                continue
-            iface = {"name": match.group("port"), "type": "physical", "subinterfaces": []}
-            if match.group("admin_status"):
-                iface["admin_status"] = match.group("admin_status") == "enabled"
-            if match.group("name") and match.group("name").strip():
-                iface["description"] = match.group("name").strip()
-            for match in self.rx_dsl_vpi_vci.finditer(p):
-                sub = match.groupdict()
-                sub["name"] = "%s/%s" % (iface["name"], sub["name"])
-                sub["admin_status"] = iface["admin_status"]
-                sub["enabled_afi"] = ["BRIDGE", "ATM"]
-                if sub["vlan_ids"]:
-                    sub["vlan_ids"] = [int(x) for x in sub["vlan_ids"].split(", ") if int(x) > 0]
-                iface["subinterfaces"] += [sub]
-
-            interfaces += [iface]
+        if "You need to enter a valid DSL port ID." not in v:
+            for p in v.split("\n DSL Port "):
+                iface = self.get_dsl(p)
+                if iface:
+                    interfaces += [iface]
+        else:
+            v = self.cli("show system status", cached=True)
+            v = parse_table(v)
+            for l in v:
+                # if "Slot A (SCP)" in l[0]:
+                if "DSL" in l[0]:
+                    slot_no = self.rx_slot.search(l[0]).group(1)
+                    for i in range(1, 64):
+                        c = self.cli("show interface dsl %s/%s configuration" % (slot_no, i))
+                        if "You need to enter a valid DSL port ID." not in c:
+                            iface = self.get_dsl(c)
+                            if iface:
+                                interfaces += [iface]
+                        else:
+                            break  # End of list
 
         v = self.cli("show management inband")
         for match in self.rx_inband.finditer(v):
