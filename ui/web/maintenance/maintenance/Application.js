@@ -13,7 +13,7 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         "NOC.maintenance.maintenance.ObjectsPanel",
         "NOC.maintenance.maintenancetype.LookupField",
         "NOC.sa.managedobject.LookupField",
-        "NOC.inv.networksegment.LookupField",
+        "NOC.inv.networksegment.ComboTree",
         "NOC.main.timepattern.LookupField",
         "NOC.maintenance.maintenance.DirectObjectsModel",
         "NOC.maintenance.maintenance.DirectSegmentsModel",
@@ -203,7 +203,7 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                 {
                     text: __("Segment"),
                     dataIndex: "segment",
-                    editor: "inv.networksegment.LookupField",
+                    editor: "inv.networksegment.ComboTree",
                     flex: 1,
                     renderer: NOC.render.Lookup("segment")
                 }
