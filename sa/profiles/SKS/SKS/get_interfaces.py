@@ -18,6 +18,9 @@ from noc.core.text import parse_table
 class Script(BaseScript):
     name = "SKS.SKS.get_interfaces"
     interface = IGetInterfaces
+    reuse_cli_session = (
+        False  # Fix stuck CLI after execute command show interface vlan GigaEthernet1/0/20
+    )
 
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
