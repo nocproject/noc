@@ -10,9 +10,9 @@
 import re
 
 # NOC modules
-from noc.core.text import parse_table
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):
@@ -45,7 +45,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show system information", cached=True)
         platform = "Unknown"
         version = ""
