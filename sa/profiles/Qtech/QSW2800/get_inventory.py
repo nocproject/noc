@@ -36,18 +36,12 @@ class Script(BaseScript):
         v = self.scripts.get_version()
         if "platform" not in v:
             return []
+        r["part_no"] = v["platform"]
         if "attributes" in v:
-            r.update(
-                {
-                    "part_no": [v["platform"]],
-                    "revision": v["attributes"]["HW version"],
-                    "serial": v["attributes"]["Serial Number"],
-                }
-            )
-        else:
-            r.update({"part_no": [v["platform"]]})
+            r["serial"] = v["attributes"]["Serial Number"]
+            if "HW version" in v["attributes"]:
+                r["revision"] = v["attributes"]["HW version"]
         r = [r]
-
         v = self.cli("show interface")
         for iface in self.rx_iface_split.split(v):
             if not iface:
