@@ -14,7 +14,6 @@ import itertools
 from collections import defaultdict
 
 # Third-party modules
-import networkx as nx
 import cachetools
 import six
 
@@ -24,6 +23,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ip import IP
+from noc.core.graph.nexthop import iter_next_hops
 from .base import BaseTopology
 
 logger = logging.getLogger(__name__)
@@ -262,19 +262,6 @@ class SegmentTopology(BaseTopology):
                 )
                 pn += 2
 
-    def max_uplink_path_len(self):
-        """
-        Returns a maximum path length to uplink
-        """
-        n = 0
-        uplinks = self.get_uplinks()
-        for u in uplinks:
-            for o in self.G.node:
-                if o not in uplinks:
-                    for p in nx.all_simple_paths(self.G, o, u):
-                        n = max(n, len(p))
-        return n
-
     def iter_uplinks(self):
         """
         Yields ObjectUplinks items for segment
@@ -295,10 +282,11 @@ class SegmentTopology(BaseTopology):
             # Segment role and clouds
             ups = {}
             for u in uplinks:
-                for path in nx.all_simple_paths(self.G, node, u):
-                    lp = len(path)
-                    p = path[1]
-                    ups[p] = min(lp, ups.get(p, lp))
+                if u == node:
+                    # skip self
+                    continue
+                for next_hop, path_len in iter_next_hops(self.G, node, u):
+                    ups[next_hop] = min(path_len, ups.get(next_hop, path_len))
             # Shortest path first
             return sorted(ups, key=lambda x: ups[x])
 
