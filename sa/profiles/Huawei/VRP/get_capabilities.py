@@ -2,9 +2,12 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
@@ -15,14 +18,16 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Huawei.VRP.get_capabilities"
 
+    rx_stp = re.compile(r"Protocol Status\s+:\s*Enabled")
+
     @false_on_cli_error
     def has_stp_cli(self):
         """
         Check box has STP enabled
         """
         try:
-            r = self.cli("display stp global | include Enabled")
-            return "Enabled" in r
+            r = self.cli("display stp global")
+            return self.rx_stp.search(r) is not None
         except self.CLISyntaxError:
             try:
                 r = self.cli("display stp | include isabled")
