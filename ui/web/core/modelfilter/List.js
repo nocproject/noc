@@ -10,8 +10,6 @@ console.debug("Defining NOC.core.modelfilter.List");
 Ext.define("NOC.core.modelfilter.List", {
     extend: "NOC.core.modelfilter.Base",
 
-    padding: 10,
-
     constructor: function(config) {
         Ext.apply(this, config);
         this.callParent();
