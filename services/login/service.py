@@ -77,7 +77,9 @@ class LoginService(UIService):
             self.logger.info("Authorized credentials %s as user %s", c, user)
             metrics["auth_success", ("method", method)] += 1
             # Set cookie
-            handler.set_secure_cookie("noc_user", user, expires_days=config.login.session_ttl)
+            handler.set_secure_cookie(
+                "noc_user", user, expires_days=config.login.session_ttl, httponly=True, secure=True
+            )
             # Register last login
             if config.login.register_last_login:
                 u = User.get_by_username(user)
