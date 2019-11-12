@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW8200.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -59,16 +59,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    IFTYPES = {
-        "fastethernet": "physical",
-        "gigaethernet": "physical",
-        "tengigabitethernet": "physical",
-        "trunk": "aggregated",
-        "vlan-interface": "SVI",
-        "unknown": "unknown",
-    }
-
-    def execute(self):
+    def execute_cli(self):
         r = []
         for l in self.cli("show interface").split("\n\n"):
             match = self.rx_interface.search(l)
@@ -87,12 +78,12 @@ class Script(BaseScript):
                 "enabled_afi": [],
             }
             match = self.rx_hw_mac.search(l)
-            if ifname.startswith("loopback"):
+            if ifname.startswith("loopback"):  # loopback has no iftype
                 iface["type"] = "loopback"
-            elif ifname.startswith("NULL"):
+            elif ifname.startswith("NULL"):  # NULL has iftype `unknown`
                 iface["type"] = "null"
             else:
-                iface["type"] = self.IFTYPES[match.group("iftype")]
+                iface["type"] = self.profile.get_interface_type(ifname)
                 iface["mac"] = match.group("mac")
                 sub["mac"] = match.group("mac")
             if iface["type"] == "physical":
