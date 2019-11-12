@@ -51,7 +51,7 @@ class Node(object):
         :return: Node instance or None
         """
         for n in self.children:
-            if repr(n.token) == repr(token):  # Fix for Token compare
+            if n.match(token):
                 return n
         return None
 
