@@ -88,6 +88,18 @@ class INTEGER(ANY):
         return "int(%s)" % name
 
 
+class FLOAT(ANY):
+    @staticmethod
+    def compile_gen_kwarg(name, value=None):
+        if value is None:
+            return "%s=None" % name
+        return "%s=%s" % (name, float(value))
+
+    @staticmethod
+    def compile_value(name):
+        return "float(%s)" % name
+
+
 # Matches any token value
 VR_NAME = ANY
 FI_NAME = ANY
@@ -101,7 +113,7 @@ IPv6_PREFIX = ANY
 IP_ADDRESS = ANY
 ISO_ADDRESS = ANY
 # INTEGER = ANY
-FLOAT = ANY
+# FLOAT = ANY
 # BOOL = ANY
 ETHER_MODE = ANY
 STP_MODE = ANY
