@@ -17,7 +17,7 @@ import six
 
 # NOC modules
 from noc.core.ip import IPv4
-from ..syntax.patterns import ANY, REST
+from ..syntax.patterns import ANY, REST, BOOL, Token, BasePattern
 from ..syntax.base import SYNTAX
 
 _match_seq = itertools.count()
@@ -31,21 +31,18 @@ class Node(object):
     __slots__ = ["token", "handler", "children", "matcher"]
 
     def __init__(self, token):
-        self.token = token
+        if isinstance(token, six.string_types):
+            self.token = Token(token)
+        else:
+            self.token = token
         self.handler = None
         self.children = []
         self.matcher = None
 
     def __repr__(self):
-        if self.token is None:
-            token = "ANY"
-        elif self.token is True:
-            token = "REST"
-        else:
-            token = "'%s'" % self.token
         if self.handler:
-            return "<Node %s (%s)>" % (token, self.handler.__name__)
-        return "<Node %s>" % token
+            return "<Node %s (%s)>" % (repr(self.token), self.handler.__name__)
+        return "<Node %s>" % repr(self.token)
 
     def get_children(self, token):
         """
@@ -54,15 +51,15 @@ class Node(object):
         :return: Node instance or None
         """
         for n in self.children:
-            if n.token == token:
+            if n.match(token):
                 return n
         return None
 
     def match(self, token):
-        return self.token is None or self.token is True or token == self.token
+        return self.token.match(token)
 
     def iter_matched(self, tokens):
-        if (not tokens and self.handler) or self.token is True:
+        if (not tokens and self.handler) or self.token.match_rest:
             yield self
         elif tokens:
             for c in self.children:
@@ -84,11 +81,35 @@ class Node(object):
             self.matcher = matcher
 
 
+class RootNode(Node):
+    __slots__ = ["token", "handler", "children", "matcher"]
+
+    def __init__(self):
+        self.token = None
+        self.handler = None
+        self.children = []
+        self.matcher = None
+
+    def __repr__(self):
+        return "<RootNode>"
+
+    def match(self, token):
+        return True
+
+    def iter_matched(self, tokens):
+        if tokens:
+            for c in self.children:
+                if c.match(tokens[0]):
+                    for t in c.iter_matched(tokens[1:]):
+                        yield t
+                    break
+
+
 class BaseNormalizerMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         # Process matchers
-        n.mtree = Node(None)
+        n.mtree = RootNode()
         for k in attrs:
             f = attrs[k]
             if not callable(f) or not hasattr(f, "_seq"):
@@ -132,11 +153,12 @@ class BaseNormalizerMetaclass(type):
         r = []
         for p in path:
             if p.name:
-                if p.default:
-                    args += ["%s='%s'" % (p.name, p.default.replace("'", "\\'"))]
+                if isinstance(p.token, six.string_types):
+                    args += [BasePattern.compile_gen_kwarg(p.name, p.default)]
+                    r += [p.name]
                 else:
-                    args += ["%s=None" % p.name]
-                r += [p.name]
+                    args += [p.token.compile_gen_kwarg(p.name, p.default)]
+                    r += [p.token.compile_value(p.name)]
             else:
                 r += ["'%s'" % p.token]
         if replace:
@@ -145,9 +167,8 @@ class BaseNormalizerMetaclass(type):
             r += [str(kw)]
         body = "def %s(self, %s):\n    return %s" % (sdef.gen, ", ".join(args), ", ".join(r))
         ctx = {}
-        exec(body, {}, ctx)
-        f = ctx[sdef.gen]
-        setattr(ncls, sdef.gen, f)
+        exec(body, {"BOOL": BOOL}, ctx)
+        setattr(ncls, sdef.gen, ctx[sdef.gen])
 
 
 class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):

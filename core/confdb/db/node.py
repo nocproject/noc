@@ -55,9 +55,7 @@ class Node(object):
 
     @staticmethod
     def clean_token(token):
-        if isinstance(token, bool):
-            return "on" if token else "off"
-        return str(token)
+        return token
 
     def insert(self, tokens):
         """
