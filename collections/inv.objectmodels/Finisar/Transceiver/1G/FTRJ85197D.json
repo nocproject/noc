@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | SFP LH",
+    "name": "Finisar | Transceiver | 1G | FTRJ85197D",
     "$collection": "inv.objectmodels",
-    "uuid": "bb81c014-4d71-451d-aa13-eadfaef53869",
+    "uuid": "5c6d0579-1e06-46c4-9b0a-ef09cb1d2229",
     "vendor__code": "FINISAR",
-    "description": "LH/LX transceiver without DOM support",
+    "description": "Ethernet 1000Base-SX SFP Optical Transceiver, 850nm, ",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [">1000BASESX"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,15 +27,14 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASELX-1310"],
+            "protocols": ["<1000BASESX"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": [
-                "FT-SFP-WDM-1.25G"
-            ]
+	        "order_part_no": ["FTRJ-8519-7D-NT", "FTRJ-8519-7D-CSC"],
+            "part_no": ["FTRJ-8519-7D"]
         }
     }
 }

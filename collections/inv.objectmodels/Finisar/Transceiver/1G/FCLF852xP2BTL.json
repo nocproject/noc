@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "c34873ee-58dc-48ab-9090-d871047cb0c6",
     "vendor__code": "FINISAR",
-    "description": "Finisar SFP TX transceiver",
+    "description": "1000BASE-T, Small Form-factor Pluggable (SFP), Copper, RJ45 Connector, up to 100 meter reach",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FCLF8520P2BTL", "FCLF8520P2BTL-J1", "FCLF8521P2BTL", "FCLF8521P2BTL-A5", "FCLF-8521-3", "GE-GB-P1RC"]
+            "part_no": ["FCLF8520P2BTL", "FCLF8520P2BTL-J1", "FCLF8521P2BTL", "FCLF8521P2BTL-A5", "FCLF-8521-3", "FCLF-8521-3-EI", "FCMJ-8521-3", "GE-GB-P1RC"]
         }
     }
 }

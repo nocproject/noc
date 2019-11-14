@@ -33,7 +33,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FTRJ8519P1BNL-C5"]
+	        "order_part_no": ["FTRJ8519P1BNL-HW", "FTRJ8519P1BNL-C5"],
+            "part_no": ["FTRJ8519P1BNL"]
         }
     }
 }

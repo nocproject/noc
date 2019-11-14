@@ -33,7 +33,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FTRJ1319P1BTL-C6", "FTRJ1319P1BTL-PT", "FTRJ-1319-7D"]
+            "order_part_no": ["FTRJ1319P1BTL-C6", "FTRJ1319P1BTL-PT", "FTRJ1319P1BTL-J2", "FTRJ1319P1BTL-J4", "FTRJ1319P1BTL-AT"],
+            "part_no": ["FTRJ1319P1BTL"]
         }
     }
 }

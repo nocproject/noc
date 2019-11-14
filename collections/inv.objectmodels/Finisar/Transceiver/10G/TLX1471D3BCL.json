@@ -1,5 +1,5 @@
 {
-    "name": "Finisar | Transceiver | 10G | FTLX1471D3BCL-HW",
+    "name": "Finisar | Transceiver | 10G | FTLX1471D3BCL",
     "$collection": "inv.objectmodels",
     "uuid": "a0c3befd-6838-47a2-ba19-5a2a912378f9",
     "vendor__code": "FINISAR",
@@ -33,7 +33,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLX1471D3BCL-HW"]
+            "order_part_no": ["FTLX1471D3BCL-HW", "FTLX1471D3BCL-J1", "FTLX1471D3BCL-A5"],
+            "part_no": ["FTLX1471D3BCL"]
         }
     }
 }

@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "61cd1724-9dca-41b0-bd2b-5f18c1737b96",
     "vendor__code": "FINISAR",
-    "description": "1000BASE-ZX, Small Form-factor Pluggable (SFP), 1550nm Transmitter Wavelength, Single-mode Fiber (SMF), 1x, 2x Fibre Channel, Digital Diagnostics Function (DDM)",
+    "description": "1000BASE-LX, Small Form-factor Pluggable (SFP), 1550nm Transmitter Wavelength, Single-mode Fiber (SMF), 1x, 2x Fibre Channel, Digital Diagnostics Function (DDM)",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -33,8 +33,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["FTRJ-1319-7D-CS", "FTRJ-1519-7D-CSC"],
-            "part_no": ["FTRJ-1319-7D-C"]
+            "order_part_no": ["FTRJ-1519-7D-CS", "FTRJ-1519-7D-CSC", "FTRJ-1519-7D-C"],
+            "part_no": ["FTRJ-1519-7D"]
         }
     }
 }
