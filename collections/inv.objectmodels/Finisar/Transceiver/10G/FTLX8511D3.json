@@ -1,0 +1,40 @@
+{
+    "name": "Finisar | Transceiver | 10G | FTLX8511D3",
+    "$collection": "inv.objectmodels",
+    "uuid": "efd334da-d002-4943-9d20-cb1e55704ecd",
+    "vendor__code": "FINISAR",
+    "description": "FTLX8511D3, XFP, 10GBase-SR, LC, 850nm, 300m",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "TX",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part": ["FTLX8511D3-HW"],
+            "part_no": ["FTLX8511D3"]
+        }
+    }
+}
