@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTLF1318P2xCL",
+    "name": "Finisar | Transceiver | 1G | FTLF1318P2BTL",
     "$collection": "inv.objectmodels",
-    "uuid": "a36d670d-b902-4a5c-bbcb-7f0db27025bd",
+    "uuid": "e3643477-c214-4d88-adf2-586d081123c7",
     "vendor__code": "FINISAR",
-    "description": "1000BASE-LX and 1G Fibre Channel (1GFC) 10km SFP Optical Transceiver\n",
+    "description": "Fiber Optic Transceiver Module Ethernet 1.25Gbps 1310nm 3V ~ 3.6V LC Duplex Pluggable, SFP",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -33,7 +33,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLF1318P2BCL-CS", "FTLF1318P2BCL-C9", "FTLF1318P2BCL-C", "FTLF1318P2BCL-C4"]
+            "order_part_no": ["FTLF1318P2BTL-J3"],
+            "part_no": ["FTLF1318P2BTL"]
         }
     }
 }

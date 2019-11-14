@@ -33,7 +33,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLF8519P2BCL-CS", "FTLF8519P2BCL-C4"]
+            "order_part_no": ["FTLF8519P2BCL-CS", "FTLF8519P2BCL-C4", "FTLF8519P2BCL-C5", "FTLF8519P2BCL-C"],
+	        "part_no": ["FTLF8519P2BCL"]
         }
     }
 }

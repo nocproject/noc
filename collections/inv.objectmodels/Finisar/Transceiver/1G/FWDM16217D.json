@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | SFP LH",
+    "name": "Finisar | Transceiver | 1G | FWDM16217D",
     "$collection": "inv.objectmodels",
-    "uuid": "bb81c014-4d71-451d-aa13-eadfaef53869",
-    "vendor__code": "FINISAR",
-    "description": "LH/LX transceiver without DOM support",
+    "uuid": "d71e8dba-cb60-4235-aa87-5de7dc571d70",
+    "vendor__code": "OPTICIN",
+    "description": "SFP (mini-GBIC) transceiver module - GigE, Fibre Channel, 1610nm, DDM, LC",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -12,14 +12,14 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [">1000BASEZX-1610"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,15 +27,14 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASELX-1310"],
+            "protocols": ["<1000BASEZX-1610"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": [
-                "FT-SFP-WDM-1.25G"
-            ]
+            "order_part_no": ["FWDM-16217D51CSC", "FWDM-16217D55CSC", "FWDM-1621-7D-55"],
+            "part_no": ["FWDM-1621-7D"]
         }
     }
 }
