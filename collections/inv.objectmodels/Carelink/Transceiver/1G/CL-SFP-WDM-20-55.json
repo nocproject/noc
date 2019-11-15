@@ -25,6 +25,7 @@
     ],
     "data": {
         "asset": {
+            "order_part_no": ["CL-SFPWDM-20-55D, ","CLSFPWDM2055DD"],
             "part_no": ["CL-SFP-WDM-20-55"]
         }
     }
