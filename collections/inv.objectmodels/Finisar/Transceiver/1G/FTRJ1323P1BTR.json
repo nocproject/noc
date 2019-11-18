@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTRJ1319P1BTL",
+    "name": "Finisar | Transceiver | 1G | FTRJ1323P1BTR",
     "$collection": "inv.objectmodels",
-    "uuid": "e2665247-4955-478e-a5d2-368a3f317f5b",
+    "uuid": "fee79b87-588a-4754-a2ce-db743c87110a",
     "vendor__code": "FINISAR",
-    "description": "1000BASE-LX and 1G Fibre Channel (1GFC) 10km Industrial Temperature Gen 3 SFP Optical Transceiver\n",
+    "description": "OC-3/STM-1 IR-1, Small Form-factor Pluggable (SFP), 1310nm, LC, DDM, 15km ",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -33,8 +33,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["FTRJ1319P1BTL-C6", "FTRJ1319P1BTL-PT", "FTRJ1319P1BTL-J2", "FTRJ1319P1BTL-J4", "FTRJ1319P1BTL-AT", "FTRJ1319P1BTL-C7", "FTRJ1319P1BTL-CB"],
-            "part_no": ["FTRJ1319P1BTL"]
+            "order_part_no": ["FTRJ1323P1BTR-M1"],
+            "part_no": ["FTRJ1323P1BTR"]
         }
     }
 }

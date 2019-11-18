@@ -1,5 +1,5 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTRJ1519P1xCL",
+    "name": "Finisar | Transceiver | 1G | FTRJ1519P1BCL",
     "$collection": "inv.objectmodels",
     "uuid": "cd43843e-c3b5-4754-8190-63bc8ed94077",
     "vendor__code": "FINISAR",
@@ -33,7 +33,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FTRJ1519P1BCL-C1", "FTRJ1519P1BCL-CS", "FTRJ1519P1BCL-C"]
+            "order_part_no": ["FTRJ1519P1BCL-C1", "FTRJ1519P1BCL-CS", "FTRJ1519P1BCL-C"],
+            "part_no": ["FTRJ1519P1BCL"]
         }
     }
 }
