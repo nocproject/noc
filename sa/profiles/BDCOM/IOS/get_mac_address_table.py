@@ -26,6 +26,6 @@ class Script(BaseScript):
         if mac is not None:
             cmd += " %s" % MAC(mac).to_cisco()
         r = []
-        for i in parse_table(self.cli(cmd), allow_extend=True):
+        for i in parse_table(self.cli(cmd), expand_columns=True):
             r += [{"vlan_id": i[0], "mac": i[1], "interfaces": [i[3]], "type": "D"}]
         return r
