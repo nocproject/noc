@@ -6,6 +6,7 @@
     "description": "24 SPF/SFP+ port and 4 QSFP port with 2 EM slot",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "Console port",

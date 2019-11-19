@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "4x1/10G Uplink module for EX4300",
     "cr_context": "PIC",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connection",

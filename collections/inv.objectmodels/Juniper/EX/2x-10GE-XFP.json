@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "2x10G Uplink module for EX",
     "cr_context": "PIC",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connection",

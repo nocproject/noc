@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "2x 32GE Virtual Chassis Module",
     "cr_context": "PIC",
+    "tags": ["lc", "fabric"],
     "connections": [
         {
             "description": "Chassis connection",

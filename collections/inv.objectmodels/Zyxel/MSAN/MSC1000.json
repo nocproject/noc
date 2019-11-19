@@ -6,6 +6,7 @@
     "description": "Management and switching card with 4 FE/GE uplink/subtending",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "LINECARD",
+    "tags": ["lc", "sum", "port"],
     "connections": [
         {
             "description": "Chassis connection",

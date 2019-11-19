@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "EX9200 Enhanced Switch Control Board",
     "cr_context": "SCB",
+    "tags": ["lc", "sup"],
     "connections": [
         {
             "description": "Routing Engine slot",
