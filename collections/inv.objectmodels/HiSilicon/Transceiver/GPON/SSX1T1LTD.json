@@ -5,6 +5,7 @@
     "vendor__code": "HISILICON",
     "description": "GPON OLT CLASS C+, SSX1T1LTD, HSC , C+ PON SFP module",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

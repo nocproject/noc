@@ -6,6 +6,7 @@
     "description": "48x (10G Base-X (SFP+)/1000Base-X (SFP))",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "USB Port",

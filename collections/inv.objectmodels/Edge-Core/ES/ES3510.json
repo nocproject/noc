@@ -4,6 +4,7 @@
     "uuid": "e4935dff-8f94-407b-a1d3-419ec5027565",
     "vendor__code": "EDGECORE",
     "description": "ES3510 L2 Switch with 8 RJ-45 10/100Base-T +2 Combo Gigabit (RJ-45/SFP)",
+    "tags": ["chassis", "sup", "psu", "fabric", "port"],
     "connections": [
         {
             "description": "Power input",

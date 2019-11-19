@@ -6,6 +6,7 @@
     "description": "DGS-3212SR L2 Managed Switch witch 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "1",

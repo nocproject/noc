@@ -6,7 +6,7 @@
     "description": "200Gbps Switch Fabric Unit C(SFUI-200-C)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "SFU",
-    "tags": ["fabric"],
+    "tags": ["lc", "fabric"],
     "connections": [
         {
             "description": "Chassis connector",

@@ -5,6 +5,7 @@
     "vendor__code": "CARELINK",
     "description": "Carelink SFP TX transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

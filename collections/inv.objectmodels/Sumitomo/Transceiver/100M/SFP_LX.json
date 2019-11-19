@@ -5,6 +5,7 @@
     "vendor__code": "SUMITOMO",
     "description": "100BaseLX-FE SFP",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

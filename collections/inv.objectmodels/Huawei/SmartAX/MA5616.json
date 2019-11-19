@@ -6,6 +6,7 @@
     "description": "Huawei mini ADSL VDSL IP DSLAM  MA5616 (with H831MABA backplane)  vectoring supported",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
+    "tags": ["chassis"],
     "connections": [
         {
             "description": "Fan tray",

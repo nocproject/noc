@@ -5,6 +5,7 @@
     "vendor__code": "ISKRATEL",
     "description": "Плата VDSL2, 32 порта, поверх POTS - SGR",
     "cr_context": "BOARD",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",

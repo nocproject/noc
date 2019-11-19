@@ -6,6 +6,7 @@
     "description": "24x 1000Base-X (SFP),4x Combo 10/100/1000Base-T/1000Base-X",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "Power outlet",

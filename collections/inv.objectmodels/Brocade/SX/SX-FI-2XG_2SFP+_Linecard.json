@@ -6,6 +6,7 @@
     "description": "SX-FI-2XG 2SFP+ Linecard",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "sfp port",

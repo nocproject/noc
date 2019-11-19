@@ -5,6 +5,7 @@
     "vendor__code": "QTECH",
     "description": "Qtech SFP, 1310nm, LC, 40km, LX transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

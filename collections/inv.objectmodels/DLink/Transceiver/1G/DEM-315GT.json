@@ -5,6 +5,7 @@
     "vendor__code": "DLINK",
     "description": "DLink SFP ZX transceiver 80km",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

@@ -5,6 +5,7 @@
     "vendor__code": "MLAXLINK",
     "description": "MlaxLink SFP TX transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

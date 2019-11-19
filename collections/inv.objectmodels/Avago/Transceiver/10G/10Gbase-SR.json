@@ -5,6 +5,7 @@
     "vendor__code": "AVAGO",
     "description": "Avago SFP+ SR transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP+ Connector",

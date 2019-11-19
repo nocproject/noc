@@ -5,6 +5,7 @@
     "vendor__code": "TYCO",
     "description": "Tyco 10GBASE-CR twinax copper cable with SFP+ connectors on both ends (10m)\n",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "cross": "in2",

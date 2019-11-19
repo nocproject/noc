@@ -3,8 +3,9 @@
     "$collection": "inv.objectmodels",
     "uuid": "b202b8ad-5f97-4ab4-aa51-ab1da5d70d69",
     "vendor__code": "FINISAR",
-    "description": "1000BASE-SX SFP Optical Transceiver\n",
+    "description": "1000BASE-SX SFP Optical Transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

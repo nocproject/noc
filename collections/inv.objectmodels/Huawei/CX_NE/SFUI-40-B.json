@@ -6,6 +6,7 @@
     "description": "40Gbps Switch Fabric Unit B(SFUI-40-B)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "SFU",
+    "tags": ["lc", "fabric"],
     "connections": [
         {
             "description": "Chassis connector",

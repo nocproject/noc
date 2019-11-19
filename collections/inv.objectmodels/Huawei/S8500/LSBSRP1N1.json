@@ -5,6 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": null,
     "cr_context": "LSB",
+    "tags": ["lc", "sup"],
     "connections": [
         {
             "description": "Chassis connector",

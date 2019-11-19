@@ -6,6 +6,7 @@
     "description": "Interface card with 2 10GE XFP ports",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CARD",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Extension slot",

@@ -5,6 +5,7 @@
     "vendor__code": "SOPTO",
     "description": "10G 1310nm 10km XFP Optical Transceiver, ddm",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

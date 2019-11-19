@@ -5,6 +5,7 @@
     "vendor__code": "ARISTA",
     "description": "Arista 10GBASE-CR twinax copper cable with SFP+ connectors on both ends (3m)",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "cross": "in2",

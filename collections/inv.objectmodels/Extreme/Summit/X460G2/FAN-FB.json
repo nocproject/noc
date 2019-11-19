@@ -5,6 +5,7 @@
     "vendor__code": "EXTREME",
     "description": "Front-to-back airflow fan module for X460-G2 series switches",
     "cr_context": "FAN",
+    "tags": ["fan"],
     "connections": [
         {
             "description": "",

@@ -6,6 +6,7 @@
     "description": "Juniper 100-Gigabit Ethernet CFP transceivers",
     "connection_rule__name": "Juniper | MX",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "XFP Connector",

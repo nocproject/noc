@@ -5,6 +5,7 @@
     "vendor__code": "CARELINK",
     "description": "Carelink SFP LH/LX transceiver with DOM support",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

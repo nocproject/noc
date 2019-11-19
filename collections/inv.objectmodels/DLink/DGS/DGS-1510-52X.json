@@ -6,6 +6,7 @@
     "description": "DGS-1510-52X Gigabit Ethernet Switch",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "49",

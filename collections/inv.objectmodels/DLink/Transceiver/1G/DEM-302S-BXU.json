@@ -5,6 +5,7 @@
     "vendor__code": "DLINK",
     "description": "WDM SFP Transciever 2km",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

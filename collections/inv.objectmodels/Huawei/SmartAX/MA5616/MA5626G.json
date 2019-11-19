@@ -5,6 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "GPON Remote Optical Access  Equipment(with 24-port FE Interface",
     "cr_context": "CHASSIS",
+    "tags": ["chassis"],
     "connections": [
         {
             "description": "Power outlet",

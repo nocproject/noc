@@ -5,6 +5,7 @@
     "vendor__code": "METHODE",
     "description": "SFP T transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

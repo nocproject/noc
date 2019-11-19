@@ -5,6 +5,7 @@
     "vendor__code": "NONAME",
     "description": "NoName Transceiver 1G GBIC SX",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "GBIC Connector",

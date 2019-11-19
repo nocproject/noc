@@ -5,6 +5,7 @@
     "vendor__code": "AGILENT",
     "description": "1000BASE-SX short wavelength",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

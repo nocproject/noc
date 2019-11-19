@@ -6,6 +6,7 @@
     "description": "DES-3018 L2 Managed Switch witch 16 ports 10/100BASE-TX and 2 expansion slots",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "1",

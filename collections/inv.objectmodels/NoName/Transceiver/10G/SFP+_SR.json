@@ -5,6 +5,7 @@
     "vendor__code": "NONAME",
     "description": "NoName SFP+ SR transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP+ Connector",

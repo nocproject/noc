@@ -5,6 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "10GBASE-LR, SFP+, SFM, 1310nm, 10km",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP+ Connector",

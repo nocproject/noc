@@ -6,6 +6,7 @@
     "description": "24-Port 100/1000Base-X-SFP Flexible Card(P100,Occupy two sub-slots)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "FPIC",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",
