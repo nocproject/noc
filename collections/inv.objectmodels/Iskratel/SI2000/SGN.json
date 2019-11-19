@@ -5,6 +5,7 @@
     "vendor__code": "ISKRATEL",
     "description": "ADSL2+ board",
     "cr_context": "BOARD",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",

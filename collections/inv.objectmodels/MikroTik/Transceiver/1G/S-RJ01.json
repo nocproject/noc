@@ -5,6 +5,7 @@
     "vendor__code": "MIKROTIK",
     "description": "MikroTik SFP TX transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

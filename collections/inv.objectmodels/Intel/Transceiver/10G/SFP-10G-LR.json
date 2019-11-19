@@ -5,6 +5,7 @@
     "vendor__code": "INTEL",
     "description": "Intel SFP+ 10G LR transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP connector",

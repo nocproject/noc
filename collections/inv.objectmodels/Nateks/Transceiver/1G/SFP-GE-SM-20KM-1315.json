@@ -5,6 +5,7 @@
     "vendor__code": "NATEKS",
     "description": "Nateks SFP WDM 20km transceiver 1310",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

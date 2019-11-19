@@ -6,6 +6,7 @@
     "description": "4-Port 10GE SFP+ Optical Interface Card,3*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CARD",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Extension slot",

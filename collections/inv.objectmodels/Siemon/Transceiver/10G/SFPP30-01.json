@@ -5,6 +5,7 @@
     "vendor__code": "SIEMON",
     "description": "Siemon Interconnect Solutions SFP+Copper (twinax copper cable) 1 m",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "cross": "in2",

@@ -5,6 +5,7 @@
     "vendor__code": "NEWSTAR",
     "description": "Cisco-compatible X2 10G LR transciever",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "X2 Connector",

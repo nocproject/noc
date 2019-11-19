@@ -6,6 +6,7 @@
     "description": "DGS-1210-28XS/ME L2 Managed Switch with 20 SFP ports and 4 x 10 Gbps SFP+ ports",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "1",

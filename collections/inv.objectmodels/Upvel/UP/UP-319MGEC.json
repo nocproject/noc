@@ -6,6 +6,7 @@
     "description": "16x 10/100/1000Base-T/POE+, 2x Combo 10/100/1000Base-T/1000Base-X",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "Power outlet",

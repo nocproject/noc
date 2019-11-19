@@ -6,6 +6,7 @@
     "description": "8x10/100/1000BASE-T(PoE/PoE+) , 2x10/100/1000BASE-T(RJ-45), 2x1000BASE-X (SFP)",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "Power outlet",

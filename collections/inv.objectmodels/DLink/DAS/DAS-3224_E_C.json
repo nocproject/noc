@@ -5,6 +5,7 @@
     "vendor__code": "DLINK",
     "description": "DAS-3224/E 24-Port IP DSLAM",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "port", "fan"],
     "connections": [
         {
             "description": "1",

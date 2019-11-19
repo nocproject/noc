@@ -6,6 +6,7 @@
     "description": "8-Port 100/1000Base-X-SFP Physical Interface Card(PIC)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "PIC",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",

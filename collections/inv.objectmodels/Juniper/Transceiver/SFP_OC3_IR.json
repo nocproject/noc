@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "Juniper OC-3 SFP 1310 nm 15 km reach single-mode",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

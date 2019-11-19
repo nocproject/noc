@@ -5,6 +5,7 @@
     "vendor__code": "VIMCOM",
     "description": "Vimcom SFP LX transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

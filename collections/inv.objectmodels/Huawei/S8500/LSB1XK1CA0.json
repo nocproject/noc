@@ -5,6 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "The XK1 module provides one 10 Gbps XENPAK optical or electrical port.",
     "cr_context": "LSB",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",

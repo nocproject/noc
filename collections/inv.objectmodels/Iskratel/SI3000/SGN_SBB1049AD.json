@@ -5,6 +5,7 @@
     "vendor__code": "ISKRATEL",
     "description": "Плата абонентского ADSL 2+доступа SGN (48 абонентов)",
     "cr_context": "BOARD",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connector",

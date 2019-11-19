@@ -6,6 +6,7 @@
     "description": "J-BxGMR4 - 4 gen FastIron mgmt",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "sfp port 1",

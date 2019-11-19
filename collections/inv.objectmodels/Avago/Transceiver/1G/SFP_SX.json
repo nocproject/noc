@@ -5,6 +5,7 @@
     "vendor__code": "AVAGO",
     "description": "1000BASE-SX SFP transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

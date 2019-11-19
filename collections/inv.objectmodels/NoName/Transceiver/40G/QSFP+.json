@@ -4,6 +4,7 @@
     "uuid": "583eac62-9f6e-4121-87a2-53efc44a86cf",
     "vendor__code": "NONAME",
     "description": "NoName QSFP+ transceiver",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "QSFP+ Connector",

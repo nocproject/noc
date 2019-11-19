@@ -5,6 +5,7 @@
     "vendor__code": "CARELINK",
     "description": "Carelink SFP transceiver 20km (1270 rx, 1330 tx)",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

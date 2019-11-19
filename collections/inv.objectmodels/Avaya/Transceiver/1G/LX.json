@@ -5,6 +5,7 @@
     "vendor__code": "AVAYA",
     "description": "1000BASE-LX, SFP, SFM, 1310, 10km",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

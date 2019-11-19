@@ -5,6 +5,7 @@
     "vendor__code": "FIBOTELECOM",
     "description": "FiboTelecom SFP WDM transceiver (1310 tx, 1550 rx) 20km without ddm",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

@@ -5,6 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "The VPLS service processor card provides no external port",
     "cr_context": "LSB",
+    "tags": ["lc", "soft"],
     "connections": [
         {
             "description": "Chassis connector",

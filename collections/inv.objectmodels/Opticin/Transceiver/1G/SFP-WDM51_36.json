@@ -5,6 +5,7 @@
     "vendor__code": "OPTICIN",
     "description": "Opticin SFP WDM transceiver, 1510 tx, 1570 rx, LC, sm, 140km",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

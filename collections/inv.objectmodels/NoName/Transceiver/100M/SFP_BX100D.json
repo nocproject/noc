@@ -5,6 +5,7 @@
     "vendor__code": "NONAME",
     "description": "NoName SFP BX100-D (tx 1550nm) transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

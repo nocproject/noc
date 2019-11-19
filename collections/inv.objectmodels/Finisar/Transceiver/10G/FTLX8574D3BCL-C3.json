@@ -5,6 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "10GBASE-SR  850nm MMF / 300m SFP+ transceiver",
     "cr_context": "XCVR",
+    "tags": ["xcvr"],
     "connections": [
         {
             "description": "TX",

@@ -6,6 +6,7 @@
     "description": "16-sfp jetcore line card",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "sfp port",
