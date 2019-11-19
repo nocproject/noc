@@ -133,21 +133,19 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             r = []
         for v in r:
-            if v["type"] == "VRF":
-                vrfs[v["name"]] = {
-                    "forwarding_instance": v["name"],
-                    "type": "VRF",
-                    "interfaces": [],
-                }
-                rd = v.get("rd")
-                if rd:
-                    vrfs[v["name"]]["rd"] = rd
-                vpn_id = v.get("vpn_id")
-                if vpn_id:
-                    vrfs[v["name"]]["vpn_id"] = vpn_id
-                for i in v["interfaces"]:
-                    imap[i] = v["name"]
-
+            vrfs[v["name"]] = {
+                "forwarding_instance": v["name"],
+                "type": v["type"],
+                "interfaces": [],
+            }
+            rd = v.get("rd")
+            if rd:
+                vrfs[v["name"]]["rd"] = rd
+            vpn_id = v.get("vpn_id")
+            if vpn_id:
+                vrfs[v["name"]]["vpn_id"] = vpn_id
+            for i in v["interfaces"]:
+                imap[i] = v["name"]
         return vrfs, imap
 
     def execute_snmp(self):
@@ -189,7 +187,6 @@ class Script(BaseScript):
                 sp["untagged"] if "untagged" in sp else None,
                 sp["tagged"],
             )
-
         # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -197,7 +194,6 @@ class Script(BaseScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
-
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
@@ -212,9 +208,8 @@ class Script(BaseScript):
                 continue
             ip = match.group("ip")
             ipv4_interfaces[c_iface] += [ip]
-
         #
-        interfaces = []
+        interfaces = {}
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
         # Get NDP interfaces
@@ -348,7 +343,6 @@ class Script(BaseScript):
                 if ifname in lldps:
                     # LLDP
                     iface["enabled_protocols"] += ["LLDP"]
-
                 # Portchannel member
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
@@ -356,12 +350,12 @@ class Script(BaseScript):
                     iface["subinterfaces"] = []
                     if is_lacp:
                         iface["enabled_protocols"] += ["LACP"]
-                interfaces += [iface]
+                interfaces[ifname] = iface
             else:
-                iface, vlan_id = ifname.split(".")
+                ifname, vlan_id = ifname.split(".")
                 if is_vlan(vlan_id):
                     sub["vlan_ids"] = [vlan_id]
-                interfaces[-1]["subinterfaces"] += [sub]
+                interfaces[ifname]["subinterfaces"] += [sub]
         # Process VRFs
         vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         imap = {}  # interface -> VRF
@@ -370,27 +364,36 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             r = []
         for v in r:
-            if v["type"] == "VRF":
-                vrfs[v["name"]] = {
-                    "forwarding_instance": v["name"],
-                    "type": "VRF",
-                    "vpn_id": v.get("vpn_id"),
-                    "interfaces": [],
-                }
-                rd = v.get("rd")
-                if rd:
-                    vrfs[v["name"]]["rd"] = rd
-                for i in v["interfaces"]:
-                    imap[i] = v["name"]
-        for i in interfaces:
-            subs = i["subinterfaces"]
-            if subs:
-                for vrf in set(imap.get(si["name"], "default") for si in subs):
-                    c = i.copy()
-                    c["subinterfaces"] = [
-                        si for si in subs if imap.get(si["name"], "default") == vrf
+            vrfs[v["name"]] = {
+                "forwarding_instance": v["name"],
+                "type": v["type"],
+                "vpn_id": v.get("vpn_id"),
+                "interfaces": [],
+            }
+            rd = v.get("rd")
+            if rd:
+                vrfs[v["name"]]["rd"] = rd
+            for i in v["interfaces"]:
+                imap[i] = v["name"]
+        for i in interfaces.keys():
+            iface_vrf = "default"
+            subs = interfaces[i]["subinterfaces"]
+            interfaces[i]["subinterfaces"] = []
+            if i in imap:
+                iface_vrf = imap[i]
+                vrfs[imap[i]]["interfaces"] += [interfaces[i]]
+            else:
+                vrfs["default"]["interfaces"] += [interfaces[i]]
+            for s in subs:
+                if s["name"] in imap and imap[s["name"]] != iface_vrf:
+                    vrfs[imap[s["name"]]]["interfaces"] += [
+                        {
+                            "name": s["name"],
+                            "type": "other",
+                            "enabled_protocols": [],
+                            "subinterfaces": [s],
+                        }
                     ]
-                    vrfs[vrf]["interfaces"] += [c]
-            elif i.get("aggregated_interface"):
-                vrfs["default"]["interfaces"] += [i]
+                else:
+                    interfaces[i]["subinterfaces"] += [s]
         return list(six.itervalues(vrfs))
