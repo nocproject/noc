@@ -5,6 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "32x10GE line card, price includes full scale L2/L3 features",
     "cr_context": "FPC",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connection",

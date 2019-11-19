@@ -6,6 +6,7 @@
     "description": "L2+ switch with 20 ports 10/100/1000Base-TX, 4 combo ports 10/100/1000Base-TX / SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
     "connections": [
         {
             "description": "managment port",

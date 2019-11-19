@@ -6,6 +6,7 @@
     "description": "management switch card 6 Gigabit Ethernet uplink & subtending ports\n",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "LINECARD",
+    "tags": ["lc", "sup", "port"],
     "connections": [
         {
             "description": "Chassis connection",

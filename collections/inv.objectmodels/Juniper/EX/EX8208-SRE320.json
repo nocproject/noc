@@ -4,6 +4,7 @@
     "uuid": "7fc9f054-ce83-43e4-8107-9b1457c47ff4",
     "vendor__code": "JUNIPER",
     "description": "Switch and Routing Engine for EX8208",
+    "tags": ["lc", "fabric"],
     "connections": [
         {
             "description": "Managemen Ethernet",

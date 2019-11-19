@@ -6,6 +6,7 @@
     "description": "Hot swappable 72-port ADSL2/ADSL2+ Annex A line card",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "LINECARD",
+    "tags": ["lc", "port"],
     "connections": [
         {
             "description": "Chassis connection",
