@@ -111,12 +111,12 @@ class Script(BaseScript):
             if amode in ("trunk", "general"):
                 is_trunk = True
                 is_qnq = False
-            elif amode in "access":
+            elif amode == "access":
                 if "avlan" in match.groups():
                     untagged = match.group("avlan")
                 is_trunk = False
                 is_qnq = False
-            elif amode in "customer":
+            elif amode in ("customer",):
                 is_qnq = True
                 is_trunk = True
 
@@ -132,7 +132,7 @@ class Script(BaseScript):
                         if match:
                             vid = int(match.group("vid"))
                             erule = match.group("erule").lower()
-                            if erule in "tagged":
+                            if erule in ("tagged",):
                                 tagged.append(vid)
 
             iface = {
