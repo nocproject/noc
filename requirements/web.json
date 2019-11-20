@@ -75,10 +75,14 @@
     },
     {
       "name": "noc-stencils-cisco",
-      "version": "1.0.4"
+      "version": "1.0.5"
     },
     {
       "name": "noc-stencils-juniper",
+      "version": "1.0.1"
+    },
+    {
+      "name": "noc-stencils-flaticon",
       "version": "1.0.1"
     },
     {
