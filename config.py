@@ -315,6 +315,7 @@ class Config(BaseConfig):
 
     thread_stack_size = IntParameter(default=0)
     gitlab_url = StringParameter("https://code.getnoc.com/")
+    version_format = StringParameter(default="%(version)s+%(branch)s.%(number)s.%(changeset)s")
 
     class logging(ConfigSection):
         log_api_calls = BooleanParameter(default=False)
