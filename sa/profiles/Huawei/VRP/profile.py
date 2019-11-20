@@ -166,7 +166,7 @@ class Profile(BaseProfile):
         "MTunnel": None,
         "Ring-if": "physical",
         "Tunnel": "tunnel",
-        "Virtual-Ethernet": None,
+        "Virtual-Ethernet": "SVI",
         "Virtual-Template": "template",
         "Bridge-Template": "template",
         "Bridge-template": "template",

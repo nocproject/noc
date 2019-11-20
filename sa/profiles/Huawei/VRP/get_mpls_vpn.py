@@ -43,6 +43,15 @@ class Script(BaseScript):
     rx_vsi_split = re.compile(r"^\s+\*\*\*", re.MULTILINE)
     rx_vsi_pw_split = re.compile(r"^\s+\*\*", re.MULTILINE)
     rx_l2vc_split = re.compile(r"^\s+\*", re.MULTILINE)
+    rx_l2vc_iface = re.compile(
+        r"Interface Name\s+:\s*(?P<iface_name>\S+)\n"
+        r"\s+State\s+:\s*\S+\n"
+        r"\s+Access Port\s+:\s*\S+\n"
+        r"\s+Last Up Time\s+:\s*\S+\s\S+\n"
+        r"\s+Total Up Time\s+:\s*.+\n",
+        re.MULTILINE,
+    )
+
     l2vc_map = {
         "client interface": "interface",
         "vc id": "vpn_id",
@@ -54,8 +63,9 @@ class Script(BaseScript):
     vsi_instance_map = {
         "vsi name": "name",
         "vsi id": "vpn_id",
-        "interface name": "interface",
-        "state": "state",
+        # "interface name": "interface",
+        # "state": "state",
+        "vsi state": "vsi_state",
     }
 
     def execute_snmp(self, **kwargs):
@@ -72,20 +82,25 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return []
         for block in self.rx_vsi_split.split(v)[1:]:
-            block, pw_info = self.rx_vsi_pw_split.split(block)
+            block = self.rx_vsi_pw_split.split(block)
+            if len(block) == 2:
+                block, pw_info = block
+            else:
+                block = block[0]
             p = {}
+            ifaces = []
+            for iface in self.rx_l2vc_iface.finditer(block):
+                ifaces += [self.profile.convert_interface_name(iface.group("iface_name"))]
             # vsi, pwsignal, iface = block.split("\n\n")
-            for b in block.split("\n\n"):
-                p.update(parse_kv(self.vsi_instance_map, b))
+            # for b in block.split("\n\n"):
+            p.update(parse_kv(self.vsi_instance_map, block))
             r += [
                 {
                     "type": "VPLS",
-                    "status": p["state"] == "up",
+                    "status": p.get("vsi_state") == "up",
                     "name": p["name"],
                     "vpn_id": p.get("vpn_id"),
-                    "interfaces": [self.profile.convert_interface_name(p["interface"])]
-                    if "interface" in p
-                    else [],
+                    "interfaces": ifaces,
                 }
             ]
         # VPWS
