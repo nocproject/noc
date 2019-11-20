@@ -28,7 +28,7 @@ class Command(BaseCommand):
     jcls = {
         "box": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
         "periodic": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-        "segment": "noc.services.discovery.jobs.segment.job.SegmentDiscoveryJob"
+        "segment": "noc.services.discovery.jobs.segment.job.SegmentDiscoveryJob",
     }
 
     checks = {
