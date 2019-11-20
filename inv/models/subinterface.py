@@ -64,6 +64,7 @@ class SubInterface(Document):
             "untagged_vlan",
             "tagged_vlans",
             "enabled_afi",
+            "forwarding_instance",
             {"fields": ["ipv4_addresses"], "sparse": True},
         ],
     }
