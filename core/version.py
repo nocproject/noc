@@ -81,7 +81,13 @@ class Version(object):
             if len(r) < 3:
                 return v.strip()
             v, n, cs = r
-            return "%s+%s.%s.%s" % (v, self.branch, n, cs[1 : CHANGESET_LEN + 1])
+            kw = {
+                "version": v,
+                "branch": self.branch,
+                "number": n,
+                "changeset": cs[1 : CHANGESET_LEN + 1],
+            }
+            return config.version_format % kw
         else:
             # Productive, get version from VERSION file
             with open("VERSION") as f:
