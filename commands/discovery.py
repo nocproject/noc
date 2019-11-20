@@ -17,6 +17,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.core.handler import get_handler
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.networksegment import NetworkSegment
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
 from noc.core.cache.base import cache
@@ -27,6 +28,7 @@ class Command(BaseCommand):
     jcls = {
         "box": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
         "periodic": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+        "segment": "noc.services.discovery.jobs.segment.job.SegmentDiscoveryJob",
     }
 
     checks = {
@@ -63,6 +65,7 @@ class Command(BaseCommand):
             "metrics",
         ],
         "periodic": ["uptime", "interfacestatus", "mac", "metrics", "cpestatus"],
+        "segment": ["mac"],
     }
 
     def add_arguments(self, parser):
@@ -85,9 +88,12 @@ class Command(BaseCommand):
         job = job[0]
         mos = []
         for x in managed_objects:
-            for mo in ManagedObjectSelector.get_objects_from_expression(x):
-                if mo not in mos:
-                    mos += [mo]
+            if job == "segment":
+                mos = [NetworkSegment.objects.get(name=x)]
+            else:
+                for mo in ManagedObjectSelector.get_objects_from_expression(x):
+                    if mo not in mos:
+                        mos += [mo]
         checks = set()
         for c in check:
             checks.update(c.split(","))
@@ -101,7 +107,10 @@ class Command(BaseCommand):
             self.run_job(job, mo, checks)
 
     def run_job(self, job, mo, checks):
-        scheduler = Scheduler("discovery", pool=mo.pool.name, service=ServiceStub())
+        if job == "segment":
+            scheduler = Scheduler("scheduler", pool=None, service=ServiceStub())
+        else:
+            scheduler = Scheduler("discovery", pool=mo.pool.name, service=ServiceStub())
         jcls = self.jcls[job]
         # Try to dereference job
         job_args = scheduler.get_collection().find_one({Job.ATTR_CLASS: jcls, Job.ATTR_KEY: mo.id})
