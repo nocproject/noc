@@ -112,9 +112,8 @@ class MESNormalizer(BaseNormalizer):
     @match("interface", ANY, "switchport", ANY, "allowed", "vlan", "add", ANY)
     def normalize_switchport_tagged(self, tokens):
         if_name = self.interface_name(tokens[1])
-        yield self.make_switchport_tagged(
-            interface=if_name, unit=if_name, vlan_filter=ranges_to_list(tokens[7])
-        )
+        for vlan in ranges_to_list(tokens[7]):
+            yield self.make_switchport_tagged(interface=if_name, unit=if_name, vlan_filter=vlan)
 
     @match("interface", ANY, "switchport", ANY, "allowed", "vlan", "add", ANY, "untagged")
     def normalize_switchport_untagged(self, tokens):
