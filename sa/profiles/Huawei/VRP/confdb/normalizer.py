@@ -62,8 +62,24 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("vlan", "batch", REST)
     def normalize_vlan_id_batch(self, tokens):
+        """
+        vlan batch 3 99 102 401 to 448 501 to 549  format
+        :param tokens:
+        :return:
+        """
+        r = []
+        left = None
         for vlan in tokens[2:]:
-            yield self.make_vlan_id(vlan_id=vlan)
+            if vlan == "to":
+                left = r.pop()
+                continue
+            if left:
+                r += list(range(int(left), int(vlan) + 1))
+                left = None
+                continue
+            r += [vlan]
+        for v in r:
+            yield self.make_vlan_id(vlan_id=v)
 
     @match("vlan", ANY)
     def normalize_vlan_id(self, tokens):
