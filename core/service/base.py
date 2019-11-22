@@ -27,6 +27,7 @@ import tornado.locks
 import setproctitle
 import ujson
 from typing import Dict, List, Generator
+import six
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
@@ -480,14 +481,7 @@ class Service(object):
             except tornado.gen.TimeoutError:
                 self.logger.info("Timed out when shutting down scheduler")
         # Shutdown executors
-        if self.executors:
-            self.logger.info("Shutting down executors")
-            for x in self.executors:
-                try:
-                    self.logger.info("Shutting down %s", x)
-                    yield self.executors[x].shutdown()
-                except tornado.gen.TimeoutError:
-                    self.logger.info("Timed out when shutting down %s", x)
+        yield self.shutdown_executors()
         # Custom deactivation
         yield self.on_deactivate()
         # Shutdown NSQ topics
@@ -758,14 +752,37 @@ class Service(object):
         self.logger.info("[nsq|%s] Stopping NSQ publisher", topic)
 
     @tornado.gen.coroutine
+    def shutdown_executors(self):
+        if self.executors:
+            self.logger.info("Shutting down executors")
+            for x in self.executors:
+                try:
+                    self.logger.info("Shutting down %s", x)
+                    yield self.executors[x].shutdown()
+                except tornado.gen.TimeoutError:
+                    self.logger.info("Timed out when shutting down %s", x)
+
+    @tornado.gen.coroutine
     def shutdown_topic_queues(self):
+        # Issue shutdown
         with self.topic_queue_lock:
-            # Send shutdown signal
+            has_topics = bool(self.topic_queues)
+            if has_topics:
+                self.logger.info("Shutting down topic queues")
             for topic in self.topic_queues:
                 self.topic_queues[topic].shutdown()
-            # Wait for queue guards
-            for topic in self.topic_queues:
-                yield self.topic_queues[topic].shutdown_complete.wait(5)
+        # Wait for shutdown
+        while has_topics:
+            with self.topic_queue_lock:
+                topic = next(six.iterkeys(self.topic_queues))
+                queue = self.topic_queues[topic]
+                del self.topic_queues[topic]
+                has_topics = bool(self.topic_queues)
+            try:
+                self.logger.info("Waiting shutdown of topic queue %s", topic)
+                yield queue.shutdown_complete.wait(5)
+            except tornado.gen.TimeoutError:
+                self.logger.info("Failed to shutdown topic queue %s: Timed out", topic)
 
     def pub(self, topic, data, raw=False):
         """
