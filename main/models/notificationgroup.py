@@ -31,7 +31,7 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
-NOTIFICATION_TOPICS = {"mail": "mailsender", "tg": "tgsender"}
+NOTIFICATION_TOPICS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
 
 NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_TOPICS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES

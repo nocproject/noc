@@ -85,6 +85,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
                         store: [
                             ["mail", "Mail"],
                             ["tg", "Telegram"],
+                            ["icq", "ICQ"],
                             ["file", "File"],
                             ["xmpp", "Jabber"]
                         ]
