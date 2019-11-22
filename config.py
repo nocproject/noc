@@ -507,6 +507,11 @@ class Config(BaseConfig):
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
 
+    class icqsender(ConfigSection):
+        token = SecretParameter()
+        retry_timeout = IntParameter(default=2)
+        use_proxy = BooleanParameter(default=False)
+
     class tgsender(ConfigSection):
         token = SecretParameter()
         retry_timeout = IntParameter(default=2)
