@@ -16,6 +16,7 @@ import ujson
 # NOC modules
 from noc.core.http.client import fetch, ERR_READ_TIMEOUT, ERR_TIMEOUT
 from noc.core.error import NOCError, ERR_DS_BAD_CODE, ERR_DS_PARSE_ERROR
+from noc.core.dcs.error import ResolutionError
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +99,9 @@ class DataStreamClient(object):
 
     @tornado.gen.coroutine
     def resolve(self, host):
-        svc = yield self.service.dcs.resolve(host)
+        try:
+            svc = yield self.service.dcs.resolve(host)
+        except ResolutionError:
+            raise tornado.gen.Return(None)
         host, port = svc.split(":")
         raise tornado.gen.Return((host, int(port)))
