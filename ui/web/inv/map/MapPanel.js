@@ -219,7 +219,6 @@ Ext.define("NOC.inv.map.MapPanel", {
             "/ui/pkg/joint/joint.min.js"
         ], me, me.initMap);
     },
-
     // Initialize JointJS Map
     initMap: function() {
         var me = this,
@@ -252,15 +251,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
         me.paper.on("cell:pointerdblclick", Ext.bind(me.onCellDoubleClick, me));
         me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
-        me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight));
-        me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
+        me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight, me));
+        me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight, me));
         me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
         me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
         me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
         me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
         me.fireEvent("mapready");
     },
-
     // Load segment data
     loadSegment: function(segmentId, forceSpring) {
         var me = this,
@@ -269,6 +267,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             url += "?force=spring"
         }
         me.segmentId = segmentId;
+        me.mask(__("Map loading ..."));
         Ext.Ajax.request({
             url: url,
             method: "GET",
@@ -280,13 +279,13 @@ Ext.define("NOC.inv.map.MapPanel", {
                 } else {
                     me.renderMap(data);
                 }
+                me.unmask();
             },
             failure: function() {
                 NOC.error(__("Failed to get data"));
             }
         });
     },
-
     //
     renderMap: function(data) {
         var me = this,
@@ -345,7 +344,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.setPaperDimension();
         me.fireEvent("renderdone");
     },
-
     //
     createNode: function(data) {
         var me = this,
@@ -964,11 +962,13 @@ Ext.define("NOC.inv.map.MapPanel", {
     onCellHighlight: function(view, el) {
         var me = this;
         V(el).attr("filter", "url(#highlight)");
+        me.fireEvent("onSelectCell", view.model.get("data").id);
     },
 
     onCellUnhighlight: function(view, el) {
         var me = this;
         V(el).attr("filter", "");
+        me.fireEvent("onUnselectCell", null);
     },
 
     resetLayout: function(forceSpring) {

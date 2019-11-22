@@ -18,7 +18,7 @@ Ext.define("NOC.inv.map.Application", {
         "NOC.inv.map.Legend",
         "NOC.inv.map.MiniMap",
         "NOC.inv.map.Basket",
-        "Ext.ux.form.SearchField",
+        "Ext.ux.form.SearchField"
     ],
     rightWidth: 250,
     zoomLevels: [
@@ -32,7 +32,6 @@ Ext.define("NOC.inv.map.Application", {
         [3.0, "300%"],
         [4.0, "400%"]
     ],
-
     initComponent: function() {
         var me = this;
 
@@ -254,7 +253,9 @@ Ext.define("NOC.inv.map.Application", {
                     if(me.selectedObjectId) {
                         me.selectCell(me.mapPanel.objectNodes[me.selectedObjectId]);
                     }
-                }
+                },
+                onSelectCell: me.selected,
+                onUnselectCell: me.selected
             }
         });
 
@@ -389,10 +390,16 @@ Ext.define("NOC.inv.map.Application", {
     },
 
     onMapReady: function() {
-        var me = this;
+        var me = this, hash, segmentId;
 
         if(me.getCmd() === "history") {
-            me.loadSegment(me.noc.cmd.args[0]);
+            segmentId = me.noc.cmd.args[0];
+            if(segmentId.indexOf(":") !== -1) {
+                hash = segmentId.split(":");
+                segmentId = hash[0];
+                me.selectedObjectId = hash[1];
+            }
+            me.loadSegment(segmentId);
             if(me.noc.cmd.args.length > 1) {
                 me.selectedObjectId = me.noc.cmd.args[1];
             }
@@ -580,6 +587,7 @@ Ext.define("NOC.inv.map.Application", {
                 var value = pos * zoom - offset;
                 return value > 0 ? value : 0;
             };
+        this.selectedObjectId = null;
         if(searched && searched.isElement()) {
             var offsetX = this.mapPanel.getWidth() / 2,
                 offsetY = this.mapPanel.getHeight() / 2;
@@ -587,11 +595,13 @@ Ext.define("NOC.inv.map.Application", {
             scrollX = getScroll(searched.attributes.position.x, offsetX);
             scrollY = getScroll(searched.attributes.position.y, offsetY);
             this.mapPanel.onCellSelected(this.mapPanel.paper.findViewByModel(searched));
+            this.selectedObjectId = searched.attributes.data.id;
         } else {
             scrollX = scrollY = 0;
             this.mapPanel.unhighlight();
             this.searchButton.setText(__("Not found"));
         }
+        this.setHistoryHash(this.currentSegmentId);
         this.mapPanel.setPaperDimension();
         this.mapPanel.scrollTo(scrollX, scrollY);
     },
@@ -599,5 +609,28 @@ Ext.define("NOC.inv.map.Application", {
     resetSearchButton: function() {
         this.searchButton.setText(__("Search"));
         this.mapPanel.setPaperDimension();
+    },
+
+    selected: function(objectId) {
+        var me = this;
+        me.selectedObjectId = objectId;
+        me.setHistoryHash(me.currentSegmentId);
+    },
+
+    getHistoryHash: function() {
+        var me = this;
+        if(me.currentSegmentId) {
+            me.mapPanel.loadSegment(me.currentSegmentId);
+        }
+        return me.currentHistoryHash;
+    },
+
+    setHistoryHash: function() {
+        var me = this;
+        me.currentHistoryHash = [me.appId].concat([].slice.call(arguments, 0)).join("/");
+        if(me.selectedObjectId) {
+            me.currentHistoryHash += ":" + me.selectedObjectId;
+        }
+        Ext.History.setHash(me.currentHistoryHash);
     }
 });

@@ -29,7 +29,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             listeners: {
                 scope: me,
                 tabchange: me.onTabChange,
-                afterrender: me.onAfterRender
+                afterrender: Ext.emptyFn
             }
         });
         me.callParent();
@@ -60,7 +60,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         });
         // Close Welcome tab, if any
         var first = me.items.first();
-        if(first && first.title != title && first.title == "Welcome") {
+        if(first && first.title !== title && first.title === "Welcome") {
             first.close();
         }
         //
@@ -92,9 +92,6 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             // Except *Expand* button
             Ext.History.setHash("");
         }
-    },
-    // Process history
-    onAfterRender: function() {
     },
     //
     onExpand: function() {
