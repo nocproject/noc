@@ -235,6 +235,7 @@ def test_encode_null(value):
         ("1.3.6.268435455", "\x06\x06+\x06\xff\xff\xff\x7f"),
         ("1.3.6.268435456", "\x06\x07+\x06\x81\x80\x80\x80\x00"),
         ("1.3.6.2147483647", "\x06\x07+\x06\x87\xff\xff\xff\x7f"),
+        ("1.3.6.4160759936", "\x06\x07+\x06\x8f\xc0\x80\xd1\x00"),
     ],
 )
 def test_encode_oid(oid, raw):
