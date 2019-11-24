@@ -108,7 +108,7 @@ def parse_p_oid(bytes msg):
     return out
 
 
-cdef inline char* _write_int(char* ptr, int v):
+cdef inline char* _write_int(char* ptr, long v):
     if v < 0x80:  # 1 block
         ptr[0] = v
         return ptr + 1
@@ -144,7 +144,7 @@ def encode_oid(bytes msg):
     :param msg:
     :return:
     """
-    cdef int v = 0
+    cdef long v = 0
     cdef int nv = 0
     cdef int sn = 0
     cdef unsigned char *ptr = msg
