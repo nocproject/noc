@@ -22,6 +22,6 @@ class Script(BaseScript):
                 "type": "CHASSIS",
                 "vendor": "Rubytech",
                 "part_no": [v["platform"]],
-                "serial": v["attributes"]["Serial Number"],
+                "serial": v["attributes"]["SN"],
             }
         ]
