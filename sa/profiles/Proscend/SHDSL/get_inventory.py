@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Proscend.SHDSL.get_inventory"
     interface = IGetInventory
 
-    def execute_snmp(self):
+    def execute(self):
         v = self.scripts.get_version()
         return [
             {
