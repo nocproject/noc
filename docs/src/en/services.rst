@@ -16,6 +16,7 @@ Services
     /services/discovery
     /services/escalator
     /services/grafanads
+    /services/icqsender
     /services/login
     /services/mailsender
     /services/mrt
