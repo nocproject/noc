@@ -100,4 +100,34 @@ use_proxy
 **Default Value**   False
 ==================  ======================
 
+icqsender
+--------
+
+
+.. _config-icqsender-token:
+
+token
+~~~~~
+
+==================  ==================
+**YAML Path**       icqsender.token
+**Key-Value Path**  icqsender/token
+**Environment**     NOC_ICQSENDER_TOKEN
+**Default Value**   SecretParameter()
+==================  ==================
+
+
+.. _config-icqsender-retry_timeout:
+
+retry_timeout
+~~~~~~~~~~~~~
+
+==================  ==========================
+**YAML Path**       icqsender.retry_timeout
+**Key-Value Path**  icqsender/retry_timeout
+**Environment**     NOC_ICQSENDER_RETRY_TIMEOUT
+**Default Value**   2
+==================  ==========================
+
+
 
