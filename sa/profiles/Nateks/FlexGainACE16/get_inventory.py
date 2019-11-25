@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Nateks.FlexGainACE16.get_inventory"
     interface = IGetInventory
 
-    def execute_snmp(self):
+    def execute(self):
         v = self.scripts.get_version()
         return [
             {

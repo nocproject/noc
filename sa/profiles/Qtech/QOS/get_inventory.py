@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Qtech.QOS.get_inventory"
     interface = IGetInventory
 
-    def execute_snmp(self):
+    def execute(self):
         v = self.scripts.get_version()
         return [
             {
