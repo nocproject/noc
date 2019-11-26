@@ -31,7 +31,7 @@
 
 - name: Add MongoDB repository on Debian 10
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/{{ mongod_version }} main"
+    repo: "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/4.2 main"
     state: present
     update_cache: "True"
   register: mongo_repo_stat
