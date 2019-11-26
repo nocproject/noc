@@ -1,6 +1,6 @@
 # mongodb debian
 ---
-- name: "Add MongoDB apt key"
+- name: Add MongoDB apt key
   apt_key:
     url: "{{ item.url }}"
     id: "{{ item.id }}"

@@ -8,7 +8,7 @@
     - { url: "https://www.mongodb.org/static/pgp/server-3.6.asc", id: 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5 }
     - { url: "https://www.mongodb.org/static/pgp/server-4.0.asc", id: 9DA31620334BD75D9DCB49F368818C72E52529D4 }
   environment:
-    https_proxy: "{ {http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
