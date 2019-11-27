@@ -62,18 +62,14 @@ class Script(BaseScript):
         self.cli("system", cached=True)
 
         ver = self.cli("show", cached=True)
-        #        print (ver)
         match = self.re_search(self.rx_ver, ver)
-
-        #        print (match.group("platform"))
-
         return {
             "vendor": "Rubytech",
             "platform": match.group("platform"),
             "version": match.group("version"),
             "attributes": {
-                "HW": match.group("hwversion"),
-                "SN": match.group("sn"),
+                "HW version": match.group("hwversion"),
+                "Serial Number": match.group("sn"),
                 "Bios": match.group("biosversion"),
             },
         }
