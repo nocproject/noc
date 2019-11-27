@@ -56,6 +56,22 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         return cls.INTERFACE_TYPES.get((name[:2]).lower())
 
+    rx_snmp_iface = re.compile(
+        r".+:\s*Shelf-(?P<shelf>\d+)\s*Interface-(?P<slot>\d+)\s*"
+        r"Port-(?P<port>\d+)\s*Mani-(?P<mani>\d+)\s*"
+        r"Layer-(?P<layer>\d+)\s*Loc-(?P<loc>\d+)\s*Uni-(?P<uni>\d+)\s*"
+    )
+
+    def convert_interface_name(self, s):
+        match = self.rx_snmp_iface.match(s)
+        # if s.startswith("ATM If"):
+        if match:
+            # SNMP format
+            if int(match.group("uni")) == 0:
+                return "%(shelf)s/%(slot)s/%(port)s/%(mani)s" % match.groupdict()
+            return "%(shelf)s/%(slot)s/%(port)s/%(mani)s.%(layer)s:%(uni)s" % match.groupdict()
+        return s
+
     rx_header = re.compile(r"(?:\=+\|?)+")
 
     rx_column_split = re.compile(r"\s*\|\s*")

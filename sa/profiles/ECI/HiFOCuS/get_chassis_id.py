@@ -10,7 +10,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
     )
     rx_mac2 = re.compile(r"^\s*(?:[\S ]+)\s+\s(?P<mac>\S+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         cmd = self.cli("MACREAD")
         match = self.rx_mac1.search(cmd)
         if match:
