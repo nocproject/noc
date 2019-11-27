@@ -1,7 +1,7 @@
 ---
 mongod_logging_destination: "syslog"
 mongo_path: /usr/bin/mongo
-mongod_version: "3.6"
+mongod_version: "4.0"
 noc_mongo_admin_user: "root"
 mongod_db: "noc"
 mongod_password: "noc"
