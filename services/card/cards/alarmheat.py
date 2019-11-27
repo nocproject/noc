@@ -22,6 +22,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.maintenance.models.maintenance import Maintenance
+from noc.core.geo import get_bbox
 from noc.config import config
 
 
@@ -114,9 +115,7 @@ class AlarmHeatCard(BaseCard):
         o_data = {}
         if t_data and active_layers:
             # Create lines
-            bbox = geojson.Polygon(
-                [[[west, north], [east, north], [east, south], [west, south], [west, north]]]
-            )
+            bbox = get_bbox(west, east, north, south)
             lines = []
             for d in ObjectConnection._get_collection().find(
                 {

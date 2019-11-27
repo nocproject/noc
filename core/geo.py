@@ -77,3 +77,33 @@ def bearing_sym(p1, p2):
     b = bearing(p1, p2)
     ob = (b + 360 + BS / 2) % 360
     return BEARINGS[int(math.floor(ob / BS))]
+
+
+def get_bbox(x0, x1, y0, y1):
+    # type: (float, float, float, float) -> geojson.Polygon
+    """
+    Get normalized bounding box
+    :param x0:
+    :param x1:
+    :param y0:
+    :param y1:
+    :return:
+    """
+
+    def bound_x(x):
+        return max(min(x, 180), -180)
+
+    def bound_y(y):
+        return max(min(y, 90), -90)
+
+    x0 = bound_x(x0)
+    x1 = bound_x(x1)
+    y0 = bound_y(y0)
+    y1 = bound_y(y1)
+
+    if x1 < x0:
+        x0, x1 = x1, x0
+    if y1 < y0:
+        y0, y1 = y1, y0
+
+    return geojson.Polygon([[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]])

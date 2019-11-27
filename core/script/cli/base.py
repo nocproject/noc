@@ -132,16 +132,22 @@ class CLI(object):
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if self.tos:
+            self.logger.debug("Setting IP ToS to %d", self.tos)
             s.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, self.tos)
         if self.HAS_TCP_NODELAY:
+            self.logger.info("Setting TCP NODELAY")
             s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         if self.HAS_TCP_KEEPALIVE:
+            self.logger.info("Settings KEEPALIVE")
             s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
             if self.HAS_TCP_KEEPIDLE:
+                self.logger.info("Setting TCP KEEPIDLE to %d", self.KEEP_IDLE)
                 s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, self.KEEP_IDLE)
             if self.HAS_TCP_KEEPINTVL:
+                self.logger.info("Setting TCP KEEPINTVL to %d", self.KEEP_INTVL)
                 s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPINTVL, self.KEEP_INTVL)
             if self.HAS_TCP_KEEPCNT:
+                self.logger.info("Setting TCP KEEPCNT to %d", self.KEEP_CNT)
                 s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
 
