@@ -5,7 +5,7 @@ http-parser==0.8.3
 psycopg2==2.7.3.2
 pymongo==3.8.0
 geopy==0.97
-geojson==1.0.9
+geojson==2.5.0
 Cython>=0.24
 Django==1.11.24
 blinker==1.3

@@ -14,7 +14,7 @@ import geojson
 from noc.gis.models.layer import Layer
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.core.geo import distance
+from noc.core.geo import distance, get_bbox
 
 
 class Map(object):
@@ -72,8 +72,7 @@ class Map(object):
         src_proj = self.get_proj(srid)
         cx0, cy0 = pyproj.transform(src_proj, self.db_proj, x0, y0)
         cx1, cy1 = pyproj.transform(src_proj, self.db_proj, x1, y1)
-        bbox = geojson.Polygon([[[cx0, cy0], [cx1, cy0], [cx1, cy1], [cx0, cy1], [cx0, cy0]]])
-        return bbox
+        return get_bbox(cx0, cx1, cy0, cy1)
 
     def get_layer_objects(self, layer, x0, y0, x1, y1, srid):
         """
