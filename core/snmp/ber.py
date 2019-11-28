@@ -11,7 +11,7 @@ import math
 import struct
 
 # NOC modules
-from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int
+from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int, encode_oid
 
 
 def did(tag_class, is_constructed, tag_id):
@@ -446,20 +446,7 @@ class BEREncoder(object):
         :param data:
         :return:
         """
-        d = [int(x) for x in data.split(".")]
-        r = [chr(d[0] * 40 + d[1])]
-        for v in d[2:]:
-            if v < 0x7F:
-                r += [chr(v)]
-            else:
-                rr = []
-                while v:
-                    rr += [(v & 0x7F) | 0x80]
-                    v >>= 7
-                rr.reverse()
-                rr[-1] &= 0x7F
-                r += [chr(x) for x in rr]
-        return self.encode_tlv(6, True, "".join(r))
+        return encode_oid(data)
 
 
 decoder = BERDecoder()

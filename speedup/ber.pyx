@@ -145,7 +145,7 @@ def encode_oid(bytes msg):
     :return:
     """
     cdef long v = 0
-    cdef int nv = 0
+    cdef long nv = 0
     cdef int sn = 0
     cdef unsigned char *ptr = msg
     cdef unsigned char x
