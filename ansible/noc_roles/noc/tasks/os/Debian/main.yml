@@ -1,5 +1,5 @@
 ---
-- name: Install Debian system packages
+- name: Install Debian 10- system packages
   apt:
     name: "{{ packages }}"
     update_cache: "True"
@@ -23,6 +23,39 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version | version_compare('10.0', '<')
+  tags:
+    - requirements
+
+- name: Install Debian 10+ system packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: "True"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  vars:
+    packages:
+      - python
+      - python-dev
+      - python-virtualenv
+      - git
+      - libjemalloc2
+      - gcc
+      - libpq-dev
+      - libffi6
+      - libffi-dev
+      - libmemcached11
+      - libmemcached-dev
+      - zlib1g-dev
+      - patch
+      - bzip2
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version | version_compare('10.0', '>=')
   tags:
     - requirements
 

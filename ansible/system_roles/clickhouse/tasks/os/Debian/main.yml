@@ -41,3 +41,14 @@
     http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
+
+- name: Patch openssl.conf on Debian10
+  replace:
+    path: /etc/ssl/openssl.cnf
+    regexp: '^ssl_conf = ssl_sect$'
+    replace: '#ssl_conf = ssl_sect'
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version | version_compare('10.0', '>=')
+  tags:
+    - requirements
