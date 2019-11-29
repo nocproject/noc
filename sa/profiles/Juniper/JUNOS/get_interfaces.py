@@ -149,7 +149,7 @@ class Script(BaseScript):
         tagged = {}
         l3_ids = {}
         vlans_requested = False
-        interfaces = []
+        interfaces = {}
         ifaces = []
 
         q = self.cli("show interfaces media | match interface:")
@@ -360,41 +360,46 @@ class Script(BaseScript):
                 subs += [def_si]
             # Append to collected interfaces
             iface["subinterfaces"] = subs
-            interfaces += [iface]
+            interfaces[name] = iface
             time.sleep(1)
         # Process VRFs
         vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         imap = {}  # interface -> VRF
         r = self.get_vrf()
         for v in r:
-            if v["type"] == "VRF":
-                vrfs[v["name"]] = {
-                    "forwarding_instance": v["name"],
-                    "virtual_router": v["virtual_router"],
-                    "type": "VRF",
-                    "rd": v["rd"],
-                    "vpn_id": v.get("vpn_id"),
-                    "interfaces": [],
-                }
-                for i in v["interfaces"]:
-                    imap[i] = v["name"]
-            if v["type"] == "ip":
-                vrfs[v["name"]] = {
-                    "forwarding_instance": v["name"],
-                    "virtual_router": v["virtual_router"],
-                    "type": "ip",
-                    "interfaces": [],
-                }
-                for i in v["interfaces"]:
-                    imap[i] = v["name"]
-        for i in interfaces:
-            subs = i["subinterfaces"]
-            for vrf in set(imap.get(si["name"], "default") for si in subs):
-                c = i.copy()
-                c["subinterfaces"] = [
-                    si for si in subs if imap.get(si["name"], "default") == vrf  # noqa
-                ]
-                vrfs[vrf]["interfaces"] += [c]
+            vrfs[v["name"]] = {
+                "forwarding_instance": v["name"],
+                "virtual_router": v["virtual_router"],
+                "type": v["type"],
+                "vpn_id": v.get("vpn_id"),
+                "interfaces": [],
+            }
+            rd = v.get("rd")
+            if rd:
+                vrfs[v["name"]]["rd"] = rd
+            for i in v["interfaces"]:
+                imap[i] = v["name"]
+        for i in interfaces.keys():
+            iface_vrf = "default"
+            subs = interfaces[i]["subinterfaces"]
+            interfaces[i]["subinterfaces"] = []
+            if i in imap:
+                iface_vrf = imap[i]
+                vrfs[imap[i]]["interfaces"] += [interfaces[i]]
+            else:
+                vrfs["default"]["interfaces"] += [interfaces[i]]
+            for s in subs:
+                if s["name"] in imap and imap[s["name"]] != iface_vrf:
+                    vrfs[imap[s["name"]]]["interfaces"] += [
+                        {
+                            "name": s["name"],
+                            "type": "other",
+                            "enabled_protocols": [],
+                            "subinterfaces": [s],
+                        }
+                    ]
+                else:
+                    interfaces[i]["subinterfaces"] += [s]
         return list(six.itervalues(vrfs))
 
     rx_vlan_sep = re.compile(r"^VLAN:", re.MULTILINE)
