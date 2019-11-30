@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interfaceclassificationrule application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interfaceclassificationrule.Application");
@@ -116,7 +116,8 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                                     ["description", "Description"],
                                     ["ip", "IP Address"],
                                     ["tagged", "Tagged VLAN"],
-                                    ["untagged", "Untagged VLAN"]
+                                    ["untagged", "Untagged VLAN"],
+                                    ["hints", "hints"]
                                 ]
                             }
                         },

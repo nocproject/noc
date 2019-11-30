@@ -34,6 +34,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             ("ip", "ip"),
             ("tagged", "tagged vlan"),
             ("untagged", "untagged vlan"),
+            ("hints", "hints"),
         ]
     )
     # Operation
@@ -181,6 +182,10 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "                return True",
             "    return False",
         ]
+        return "\n".join(r)
+
+    def compile_hints_eq(self, f_name):
+        r = ["def %s(iface):" % f_name, "  return iface.hints and %r in iface.hints" % self.value]
         return "\n".join(r)
 
 
