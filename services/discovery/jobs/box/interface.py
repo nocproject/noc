@@ -224,6 +224,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         aggregated_interface=None,
         enabled_protocols=None,
         ifindex=None,
+        hints=None,
     ):
         enabled_protocols = enabled_protocols or []
         iface = self.get_interface_by_name(name)
@@ -238,6 +239,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "aggregated_interface": aggregated_interface,
                     "enabled_protocols": enabled_protocols,
                     "ifindex": ifindex,
+                    "hints": hints or [],
                 },
                 ignore_empty=["ifindex"],
             )
