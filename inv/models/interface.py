@@ -104,6 +104,8 @@ class Interface(Document):
     in_speed = IntField(required=False)  # Input speed, kbit/s
     out_speed = IntField(required=False)  # Output speed, kbit/s
     bandwidth = IntField(required=False)  # Configured bandwidth, kbit/s
+    # Interface hints: uplink, uni, nni
+    hints = ListField(StringField(required=False))
     # Coverage
     coverage = PlainReferenceField(Coverage)
     technologies = ListField(StringField())

@@ -111,6 +111,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     aggregated_interface=agg,
                     enabled_protocols=i.get("enabled_protocols", []),
                     ifindex=i.get("snmp_ifindex"),
+                    hints=i.get("hints", []),
                 )
                 icache[i["name"]] = iface
                 # Submit subinterfaces
