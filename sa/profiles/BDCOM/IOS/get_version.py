@@ -34,6 +34,7 @@ class Script(BaseScript):
         bootprom = match.group("bootprom")
         match = self.rx_serial.search(c)
         serial = match.group("serial")
+        serial = serial.strip(",")
         match = self.rx_hardware.search(c)
         hardware = match.group("hardware")
         return {
