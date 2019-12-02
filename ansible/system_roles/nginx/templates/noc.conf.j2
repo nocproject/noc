@@ -81,9 +81,6 @@ server {
     access_log  {{ nginx_log_dir }}/noc.access.log noc_format;
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
-    # Proxy authentication settings
-    error_page 401 = @error401;
-
     location @error401 {
         return 302 /api/login/index.html?uri=$request_uri;
     }
@@ -114,6 +111,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Original-URI $request_uri;
         proxy_set_header Content-Length '0';
+        error_page 401 = @error401;
     }
 
     # Login service api
@@ -125,6 +123,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Original-URI $request_uri;
+        error_page 401 = @error401;
     }
 {% endif %}
 
@@ -135,6 +134,7 @@ server {
         auth_request /api/auth/auth/;
         auth_request_set $user $upstream_http_remote_user;
         auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
     }
 {% endif %}
 
@@ -145,6 +145,7 @@ server {
         auth_request /api/auth/auth/;
         auth_request_set $user $upstream_http_remote_user;
         auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
     }
 {% endif %}
 
@@ -155,6 +156,7 @@ server {
         auth_request /api/auth/auth/;
         auth_request_set $user $upstream_http_remote_user;
         auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
     }
 
     location /ui/bi2/ {
@@ -171,6 +173,7 @@ server {
         auth_request /api/auth/auth/;
         auth_request_set $user $upstream_http_remote_user;
         auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
     }
 {% endif %}
 
@@ -218,6 +221,7 @@ server {
         expires max;
         add_header Cache-Control public;
         add_header Pragma public;
+        error_page 401 = @error401;
     }
 
     # Legacy static resources
@@ -234,6 +238,7 @@ server {
         add_header Cache-Control public;
         add_header Pragma public;
         expires 1w;
+        error_page 401 = @error401;
     }
 
 {% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
@@ -243,6 +248,7 @@ server {
         add_header Cache-Control public;
         add_header Pragma public;
         expires 1w;
+        error_page 401 = @error401;
     }
 {% endif %}
 
@@ -261,6 +267,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Authorization "";
+        error_page 401 = @error401;
     }
 {% endif %}
 
@@ -271,6 +278,7 @@ server {
 
         auth_request_set $user $upstream_http_remote_user;
         auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
     }
 }
 {% if ansible_distribution == "FreeBSD" %}
