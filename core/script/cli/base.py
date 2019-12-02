@@ -14,6 +14,7 @@ import functools
 import datetime
 from functools import reduce
 import sys
+from threading import Lock
 
 # Third-party modules
 import tornado.gen
@@ -85,6 +86,7 @@ class CLI(object):
         self.current_timeout = None
         self.is_closed = False
         self.close_timeout = None
+        self.close_timeout_lock = Lock()
         self.setup_complete = False
         self.to_raise_privileges = script.credentials.get("raise_privileges", True)
         self.state = "start"
@@ -110,6 +112,22 @@ class CLI(object):
         self.logger.debug("Changing state to <%s>", state)
         self.state = state
 
+    def maybe_close(self):
+        with self.close_timeout_lock:
+            if not self.close_timeout:
+                return  # Race with execute(), no need to close
+            if self.ioloop:
+                self.ioloop.remove_timeout(self.close_timeout)
+            self.close_timeout = None
+            self.close()
+
+    def reset_close_timeout(self):
+        with self.close_timeout_lock:
+            if self.close_timeout:
+                self.logger.debug("Removing close timeout")
+                self.ioloop.remove_timeout(self.close_timeout)
+                self.close_timeout = None
+
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:
             return
@@ -125,9 +143,10 @@ class CLI(object):
         :param session_timeout:
         :return:
         """
-        self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
-            session_timeout, self.close
-        )
+        with self.close_timeout_lock:
+            self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
+                session_timeout, self.maybe_close
+            )
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -203,10 +222,7 @@ class CLI(object):
         ignore_errors=False,
         allow_empty_response=True,
     ):
-        if self.close_timeout:
-            self.logger.debug("Removing close timeout")
-            self.ioloop.remove_timeout(self.close_timeout)
-            self.close_timeout = None
+        self.reset_close_timeout()
         self.buffer = ""
         self.command = cmd
         self.error = None
@@ -708,9 +724,7 @@ class CLI(object):
     def set_script(self, script):
         self.script = script
         self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
-        if self.close_timeout:
-            tornado.ioloop.IOLoop.instance().remove_timeout(self.close_timeout)
-            self.close_timeout = None
+        self.reset_close_timeout()
         if self.motd:
             self.script.set_motd(self.motd)
 
