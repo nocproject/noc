@@ -23,7 +23,9 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_exit = "exit"
-    pattern_syntax_error = r"% \".+\"  (?:Unknown command.)|Error input in the position marked by"
+    pattern_syntax_error = (
+        r"(% \".+\"  (?:Unknown command.)|Error input in the position marke[dt] by)"
+    )
     pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
     config_volatile = [
@@ -191,6 +193,7 @@ class Profile(BaseProfile):
         "ge": "physical",  # gigaethernet
         "lo": "loopback",  # Loopback
         "tr": "aggregated",  #
+        "po": "aggregated",  # port-channel
         "mn": "management",  # Stack-port
         # "te": "physical",  # TenGigabitEthernet
         "vl": "SVI",  # vlan
@@ -199,4 +202,4 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
-        return cls.INTERFACE_TYPES.get((name[:2]).lower())
+        return cls.INTERFACE_TYPES.get(name[:2].lower())
