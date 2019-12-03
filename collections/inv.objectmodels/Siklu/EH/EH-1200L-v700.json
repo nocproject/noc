@@ -1,9 +1,9 @@
 {
-    "name": "Siklu | EH | EH-1200TL-D0",
+    "name": "Siklu | EH | EH-1200L-v700",
     "$collection": "inv.objectmodels",
-    "uuid": "571bf35d-5170-4394-abdf-101b72d53788",
+    "uuid": "5d43e3ba-51c8-41c4-857d-22199c549e34",
     "vendor__code": "SIKLU",
-    "description": "Siklu EH 1200L, 2 SFP slots, 71-76Ghz, FDD, Antenna 1ft 43dBi, 32/16/8 non-overlapping channels, 125/250/500MHz wide",
+    "description": "Siklu EH 1200L, 2 SFP slots, 71-76Ghz, TDD, Antenna 1ft 43dBi, 700 Mbps",
     "cr_context": "CHASSIS",
     "tags": ["chassis", "sup", "psu", "port"],
     "connections": [
@@ -57,7 +57,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["EH-1200TL-ODU-1ft-D0"]
+            "part_no": ["EH-1200L.v700-ODU-1ft"]
         },
         "management": {
             "managed": true
