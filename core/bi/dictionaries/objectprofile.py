@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.core.clickhouse.dictionary import Dictionary
-from noc.core.clickhouse.fields import StringField, UInt8Field
+from noc.core.clickhouse.fields import StringField, UInt8Field, BooleanField
 
 
 class ObjectProfile(Dictionary):
@@ -19,3 +19,6 @@ class ObjectProfile(Dictionary):
     name = StringField()
     # ObjectProfile Level
     level = UInt8Field()
+    enable_ping = BooleanField()
+    enable_box_discovery = BooleanField()
+    enable_periodic_discovery = BooleanField()

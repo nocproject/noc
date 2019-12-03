@@ -88,7 +88,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "x": mo.x,
                 "y": mo.y,
                 "pool": mo.pool,
-                # "object_profile": mo.object_profile,
+                "object_profile": mo.object_profile,
                 "vendor": mo.vendor,
                 "platform": mo.platform,
                 "hw_version": mo.get_attr("HW version", default=None),
