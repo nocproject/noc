@@ -28,8 +28,29 @@ class Script(BaseScript):
 
     rx_version = re.compile(r"^Eltex \S+ software version\s+(?P<version>\S+\s+build\s+\d+)")
 
-    def execute(self):
-        plat = self.cli("show system environment", cached=True)
+    rx_snmp_version = re.compile(
+        r"^Eltex (?P<platform>\S+)" r" software version (?P<version>\S+\s+build\s+\d+)\s+"
+    )
+
+    def execute_snmp(self, **kwargs):
+        v = self.snmp.get("1.3.6.1.4.1.35265.1.22.1.1.6.0")
+        match = self.rx_snmp_version.search(v)
+        platform = match.group("platform")
+        version = match.group("version")
+        hardware = self.snmp.get("1.3.6.1.4.1.35265.1.22.1.1.8.0")
+        serial = self.snmp.get("1.3.6.1.4.1.35265.1.22.1.18.4.0")
+        return {
+            "vendor": "Eltex",
+            "platform": platform,
+            "version": version,
+            "attributes": {"HW version": hardware, "Serial Number": serial},
+        }
+
+    def execute_cli(self, **kwargs):
+        try:
+            plat = self.cli("show system environment", cached=True)
+        except self.CLISyntaxError:
+            raise NotImplementedError
         match = self.rx_platform.search(plat)
         platform = match.group("platform")
         hardware = match.group("hardware")
