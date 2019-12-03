@@ -25,6 +25,7 @@ class Profile(BaseProfile):
         (r"q or <ctrl>+z", " "),
         (r"Overwrite file \[startup-config\].... \(Y\/N\)", "Y"),
         (r"Would you like to continue \? \(Y\/N\)\[N\]", "Y"),
+        (r"Clear Logging File \? \(Y\/N\)\[N\]", "Y"),
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = (
