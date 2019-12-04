@@ -58,6 +58,7 @@ class Profile(BaseProfile):
         "DGS-1500-28": "1.3.6.1.4.1.171.10.126.2.1",
         "DGS-1500-28P": "1.3.6.1.4.1.171.10.126.3.1",
         "DGS-1500-52": "1.3.6.1.4.1.171.10.126.4.1",
+        "DXS-1210-10TS": "1.3.6.1.4.1.171.10.139.2.1",
     }
 
     def cmp_version(self, x, y):
@@ -233,6 +234,11 @@ def DES1210(v):
 # DGS-1210-series
 def DGS1210(v):
     return v["platform"].startswith("DGS-1210")
+
+
+# DXS-1210-series
+def DXS1210(v):
+    return v["platform"].startswith("DXS-1210")
 
 
 # DGS-1500-series

@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.sa.profiles.DLink.DxS_Smart.profile import DES1210, DGS1210, DGS1500
+from noc.sa.profiles.DLink.DxS_Smart.profile import DES1210, DGS1210, DXS1210, DGS1500
 
 
 class Script(BaseScript):
@@ -21,11 +21,11 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"system hardware version\s+:\s+(?P<hardware>\S+).+"
-        r"system firmware version\s+:\s+(?P<version>\S+).+"
-        r"system boot version\s+:\s+(?P<bootprom>\S+).+"
+        r"system hardware version\s+:\s*(?P<hardware>\S+).+"
+        r"system firmware version\s+:\s*(?P<version>\S+).+"
+        r"system boot( prom)? version\s+:\s*(?P<bootprom>\S+).+"
         r"(system protocol version\s+:\s+(?P<protover>\S+).+)?"
-        r"system serial number\s+:\s+(?P<serial>\S+)",
+        r"system serial number\s+:\s*(?P<serial>\S+)",
         re.MULTILINE | re.DOTALL | re.I,
     )
     rx_snmp_ver = re.compile(r"^(?P<platform>\S+)\s*", re.DOTALL)
@@ -41,7 +41,7 @@ class Script(BaseScript):
                 pass
         else:
             raise self.NotSupportedError()
-        if DES1210(r) or DGS1210(r) or DGS1500(r):
+        if DES1210(r) or DGS1210(r) or DXS1210(r) or DGS1500(r):
             s = self.cli("show switch", cached=True)
             match = self.re_search(self.rx_ver, s)
             r.update(
