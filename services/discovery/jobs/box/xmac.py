@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from typing import List
+from typing import List, Dict, Tuple
 
 # NOC modules
 from noc.core.mac import MAC
@@ -36,7 +36,7 @@ class XMACCheck(TopologyDiscoveryCheck):
             elif policy == "c":
                 self.process_chained_downlink(iface, macs[if_name])
 
-    def process_direct_downlink(self, iface, macs):
+    def process_direct_downlink(self, iface, macs, name=None):
         # type: (Interface,  List[MAC]) -> None
         """
         Direct downlink method. When:
@@ -49,10 +49,13 @@ class XMACCheck(TopologyDiscoveryCheck):
 
         :param iface: Interface instance
         :param macs: List of MACs seen on interface
+        :param name: Optional method name
         """
+        name = name or "direct"
         if len(macs) != 1:
             self.logger.info(
-                "[direct downlink][%s] Exactly one MAC address on port required. %d seen. Skipping",
+                "[%s][%s] Exactly one MAC address on port required. %d seen. Skipping",
+                name,
                 iface.name,
                 len(macs),
             )
@@ -60,27 +63,109 @@ class XMACCheck(TopologyDiscoveryCheck):
         mac = macs[0]
         ro = self.get_neighbor_by_mac(mac)
         if not ro:
-            self.logger.info(
-                "[direct downlink][%s] No neighbor found for %s. Skipping", iface.name, mac
-            )
+            self.logger.info("[%s][%s] No neighbor found for %s. Skipping", name, iface.name, mac)
             return
-        self.logger.info(
-            "[direct downlink][%s] Neighbor %s is found for %s", iface.name, ro.name, mac
-        )
+        self.logger.info("[%s][%s] Neighbor %s is found for %s", name, iface.name, ro.name, mac)
         ris = self.find_direct_uplinks(ro)
         if len(ris) != 1:
             self.logger.info(
-                "[direct downlink][%s] Exactly one direct downlink interface required. "
-                "%d found. Skipping",
+                "[%s][%s] Exactly one direct downlink interface required. " "%d found. Skipping",
+                name,
                 iface.name,
                 len(ris),
             )
         ri = ris[0]
         self.confirm_interface_link(iface, ri)
 
-    def process_chained_downlink(self, iface, macs):
+    def process_chained_downlink(self, iface, macs, name=None):
         # type: (Interface,  List[MAC]) -> None
-        pass
+        """
+        Chained downlink method. When:
+
+        * Only one mac
+            * Fallback to direct downlink method
+        * Multiple MACs
+            * All MACs belongs to known chassis ids
+            * Exactly one `direct uplink` port for each object
+            * All objects has different managed object levels
+
+        Then:
+
+        * Order objects by level in descendant order
+        * Check all objects excluding last has exactly one `direct downlink` port
+        * Connect all the chain by downlink-uplink
+
+        :param iface: Interface instance
+        :param macs: List of MACs seen on interface
+        :param name: Optional method name
+        """
+        name = "chained" or None
+        if len(macs) == 1:
+            return self.process_direct_downlink(iface, macs, name)
+        # Get all downlink objects
+        chain = []  # type: List[ManagedObject]
+        for mac in macs:
+            ro = self.get_neighbor_by_mac(mac)
+            if not ro:
+                self.logger.info(
+                    "[%s][%s] No neighbor found for %s. Cannot link.", name, iface.name, mac
+                )
+                return
+            self.logger.info("[%s][%s] Neighbor %s is found for %s", name, iface.name, ro.name, mac)
+            chain += [ro]
+        # Check all objects has different levels
+        levels = {}  # type: Dict[int, ManagedObject]
+        for ro in chain:
+            level = ro.object_profile.level
+            if level in levels:
+                self.logger.info(
+                    "[%s][%s] Neighbors %s and %s has same level of %d. Cannot link.",
+                    name,
+                    iface.name,
+                    levels[level].name,
+                    ro.name,
+                    level,
+                )
+                return
+            levels[level] = ro
+        # Arrange objects
+        chain = list(sorted(chain, key=lambda x: x.object_profile.level, reverse=True))
+        # Check uplinks/downlinks
+        ports = self.find_direct_uplinks_downlins(chain)
+        ports[self.object] = ([], [iface])
+        links = []  # type: List[Tuple[Interface, Interface]]
+        for p, n in zip([self.object] + chain, chain):
+            if len(ports[p][1]) != 1:
+                self.logger.info(
+                    "[%s][%s] Neighbor %s must have exactly one direct downlin port. %d found. Cannot link.",
+                    name,
+                    iface.name,
+                    n.name,
+                    len(ports[p][1]),
+                )
+            downlink = ports[p][1][0]
+            if n not in ports:
+                self.logger.info(
+                    "[%s][%s] Neighbor %s has no direct uplink ports. Cannot link.",
+                    name,
+                    iface.name,
+                    n.name,
+                )
+                return
+            if len(ports[n][0]) != 1:
+                self.logger.info(
+                    "[%s][%s] Neighbor %s must have exactly one direct uplink port. %d found. Cannot link.",
+                    name,
+                    iface.name,
+                    n.name,
+                    len(ports[n][0]),
+                )
+                return
+            uplink = ports[n][0][0]
+            links += [(downlink, uplink)]
+        # Link all ports
+        for link in links:
+            self.confirm_interface_link(*link)
 
     @staticmethod
     def find_direct_uplinks(mo):
@@ -96,3 +181,26 @@ class XMACCheck(TopologyDiscoveryCheck):
             for iface in Interface.objects.filter(managed_object=mo.id, type="physical")
             if iface.get_profile().mac_discovery_policy == "u"
         ]
+
+    @staticmethod
+    def find_direct_uplinks_downlins(objects):
+        # type: (List[ManagedObject]) -> Dict[ManagedObject, Tuple[List[Interface], List[Interface]]]
+        """
+        For all given objects return all direct uplink/direct downlink ports
+
+        :param objects: List of Managed Objects
+        :returns: Dict of ManagedObject -> (List of direct uplinks, List of direct downlinks)
+        """
+        r = {}
+        for iface in Interface.objects.filter(
+            managed_object__in=[mo.id for mo in objects], type="physical"
+        ):
+            mo = iface.managed_object
+            if mo not in r:
+                r[mo] = ([], [])
+            policy = iface.get_profile().mac_discovery_policy
+            if policy == "u":
+                r[mo][0] += [iface]
+            elif policy == "i":
+                r[mo][1] += [iface]
+        return r
