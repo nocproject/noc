@@ -66,7 +66,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
     rx_sh_int_des = rx_in = re.compile(
-        r"^(?P<ifname>\S+)\s+(?:(?:General|Trunk|Access|Customer( \(\d+\))?)\s+)?(?P<oper_status>Up|Down)\s+"
+        r"^(?P<ifname>\S+)\s+(?:(?:General|Trunk|Access|Customer)(?: \(\d+\))?\s+)?(?P<oper_status>Up|Down)\s+"
         r"(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
         re.MULTILINE,
     )
