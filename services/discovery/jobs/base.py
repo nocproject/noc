@@ -725,7 +725,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.logger.info("Checking %s topology", self.name)
         # Check object has interfaces
         if not self.has_capability("DB | Interfaces"):
-            self.logger.info("No interfaces has been discovered. " "Skipping topology check")
+            self.logger.info("No interfaces has been discovered. Skipping topology check")
             return
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
@@ -962,6 +962,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         return interface
 
     def confirm_link(self, local_object, local_interface, remote_object, remote_interface):
+        # type: (ManagedObject, str, ManagedObject, str) -> None
         self.logger.info(
             "Confirm link: %s:%s -- %s:%s",
             local_object,
@@ -994,6 +995,17 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_interface,
             )
             return
+        self.confirm_interface_link(li, ri)
+
+    def confirm_interface_link(self, li, ri):
+        # type: (Interface, Interface) -> None
+        """
+        Confirm links between interfaces
+        """
+        local_object = li.managed_object
+        local_interface = li.name
+        remote_object = ri.managed_object
+        remote_interface = ri.name
         # Check LAGs
         if (
             li.type == "aggregated"

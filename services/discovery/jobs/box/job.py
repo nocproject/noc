@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Box Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ from .lldp import LLDPCheck
 from .lacp import LACPCheck
 from .stp import STPCheck
 from .udld import UDLDCheck
+from .xmac import XMACCheck
 from .nri_portmap import NRIPortmapperCheck
 from .nri import NRICheck
 from .nri_service import NRIServiceCheck
@@ -72,6 +73,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             HuaweiNDPCheck,
             REPCheck,
             STPCheck,
+            XMACCheck,
         ]
     )
 

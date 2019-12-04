@@ -146,6 +146,7 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                                     ["fdp", "FDP"],
                                     ["bfd", "BFD"],
                                     ["mac", "MAC"],
+                                    ["xmac", "xMAC"],
                                     ["nri", "NRI"]
                                 ]
                             }

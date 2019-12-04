@@ -54,6 +54,7 @@ class SegmentTopologySettings(EmbeddedDocument):
             ("fdp", "FDP"),
             ("bfd", "BFD"),
             ("mac", "MAC"),
+            ("xmac", "xMAC"),
             ("nri", "NRI"),
         ]
     )

@@ -55,6 +55,7 @@ class Command(BaseCommand):
             "lacp",
             "hk",
             "mac",
+            "xmac",
             "bfd",
             "fdp",
             "vpn",
