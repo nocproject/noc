@@ -39,6 +39,7 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)?" r"(?:\(config[^\)]*\))?#"
+    rogue_chars = [re.compile(r"\d+-\w+-\d+\s\d+:\d+:\d+\s\%\S+\:.+"), "\r"]
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
     config_tokenizer = "indent"
