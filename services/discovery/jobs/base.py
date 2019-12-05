@@ -21,6 +21,8 @@ import cachetools
 import six
 from six import StringIO
 from pymongo import UpdateOne
+from builtins import str
+from builtins import object
 
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
@@ -254,6 +256,9 @@ class MODiscoveryJob(PeriodicJob):
                 self.logger.info("Create detail alarm to path %s", d_key)
                 v = d.get("vars", {})
                 v["path"] = d_path
+                clear_notification_group = d.get("clear_notification_group")
+                clear_template = d.get("clear_template")
+                log = d.get("log")
                 da = ActiveAlarm(
                     timestamp=now,
                     managed_object=self.object.id,
@@ -261,6 +266,9 @@ class MODiscoveryJob(PeriodicJob):
                     severity=d_sev,
                     vars=v,
                     root=umbrella.id,
+                    clear_notification_group=clear_notification_group,
+                    clear_template=clear_template,
+                    log=log,
                 )
                 da.save()
                 self.logger.info(
