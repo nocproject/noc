@@ -7,7 +7,7 @@ forms:
       <strong>Long description</strong>: Nginx upstream to show web interface<br/>
       <strong>Scale Recommendations</strong>: At least two per system. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/web/ target=_blank>Web</a><br/>
-      <strong>Placement constraint</strong>: On node with activator<br/>
+      <strong>Placement constraint</strong>: On node with service Nginx <br/>
     power:
       default: 2
       label: "Instances"
@@ -33,6 +33,13 @@ forms:
         - "en-us"
         - "ru"
         - "pt_BR"
+    theme:
+      default: "gray"
+      label: "NOC web theme"
+      type: list
+      options:
+        - "gray"
+        - "noc"
     max_threads:
       default: 10
       label: "Web threads"
