@@ -1,11 +1,15 @@
 <style>
     .path:not(:last-child) {
         margin-bottom: 8px;
-/*       border-bottom: 2px dashed #808080; */
     }
 
     .ruler {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
         flex-direction: row;
         font-weight: bold;
     }
@@ -35,6 +39,8 @@
 
     .link-set {
         border: 1px solid black;
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
         flex-grow: 1;
     }
 
@@ -49,13 +55,24 @@
     }
 
     .ruler .link-set {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
         flex-direction: column;
     }
 
     .ruler .link-set .level {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
         flex-direction: row;
+        align-items: center;
     }
 
     .ruler .link-set .level:not(:last-child) {
@@ -63,7 +80,6 @@
     }
 
     .ruler .link-set .level div:not(:last-child) {
-        border-right: 1px solid #808080;
     }
 
     .ruler .interface {
@@ -71,7 +87,12 @@
     }
 
     .item {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
         flex-direction: row;
     }
 
@@ -91,6 +112,8 @@
     }
 
     .item .links-data {
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
         flex-grow: 1;
     }
 
@@ -98,23 +121,29 @@
     }
 
     .links .link {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
         flex-direction: column;
     }
 
     .link .interface {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
         flex-direction: row;
     }
 
     .link .interface div {
         padding: 4px;
     }
-/*
-    .link .interface div:not(:last-child) {
-        border-left: 1px solid #c0c0c0;
-    }
-*/
+
     .ingress {
         border-bottom: 2px solid #c0c0c0;
     }
@@ -125,17 +154,33 @@
 
     .x1 {
         min-width: 75px;
+        flex-basis: 75px;
+        -webkit-box-flex: 0.75;
+        -ms-flex-positive: 0.75;
         flex-grow: 0.75;
     }
 
     .x2 {
         min-width: 150px;
+        flex-basis: 150px;
+        -webkit-box-flex: 1.5;
+        -ms-flex-positive: 1.5;
         flex-grow: 1.5;
     }
 
     .center {
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
         justify-content: center;
         text-align: center;
+    }
+
+    .h-border-b {
+      border-bottom: 1px solid black;
+    }
+
+    .h-border-l {
+      border-left: 1px solid #808080;
     }
 
     .right {
@@ -192,24 +237,37 @@
         <div class="object">{{ _("Object Name") }}<br/>{{ _("IP Address") }}</div>
         <div class="hw-data">{{ _("Platform Name") }}<br/>{{ _("Soft Version") }}</div>
         <div class="link-set">
-            <div class="level center">1</div>
+            <div class="center h-border-b">1</div>
             <div class="level">
                 <div class="x2 center">{{ _("Interface") }}</div>
-                <div class="x2 center">{{ _("State") }}</div>
-                <div class="x2 center">{{ _("Utilization") }}</div>
-                <div class="x2 center">{{ _("Packets") }}</div>
-                <div class="x2 center">{{ _("Errors") }}</div>
-            </div>
-            <div class="level">
-                <div class="x2"></div>
-                <div class="x1 center">{{ _("Speed") }}</div>
-                <div class="x1 center">{{ _("Duplex") }}</div>
-                <div class="x1 center">{{ _("In") }}</div>
-                <div class="x1 center">{{ _("Out") }}</div>
-                <div class="x1 center">{{ _("In") }}</div>
-                <div class="x1 center">{{ _("Out") }}</div>
-                <div class="x1 center">{{ _("In") }}</div>
-                <div class="x1 center">{{ _("Out") }}</div>
+                <div class="x2">
+                    <div class="center h-border-l h-border-b">{{ _("State") }}</div>
+                    <div class="level">
+                        <div class="x1 center h-border-l">{{ _("Speed") }}</div>
+                        <div class="x1 center h-border-l">{{ _("Duplex") }}</div>
+                    </div>
+                </div>
+                <div class="x2">
+                    <div class="center h-border-l h-border-b">{{ _("Utilization") }}</div>
+                    <div class="level">
+                        <div class="x1 center h-border-l">{{ _("In") }}</div>
+                        <div class="x1 center hh-border-l">{{ _("Out") }}</div>
+                    </div>
+                </div>
+                <div class="x2">
+                  <div class="center h-border-l h-border-b">{{ _("Packets") }}</div>
+                  <div class="level">
+                    <div class="x1 center h-border-l">{{ _("In") }}</div>
+                    <div class="x1 center h-border-l">{{ _("Out") }}</div>
+                  </div>
+                </div>
+                <div class="x2">
+                  <div class="center h-border-l h-border-b">{{ _("Errors") }}</div>
+                  <div class="level">
+                    <div class="x1 center h-border-l">{{ _("In") }}</div>
+                    <div class="x1 center h-border-l">{{ _("Out") }}</div>
+                  </div>
+                </div>
             </div>
         </div>
     </div>
