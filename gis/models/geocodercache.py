@@ -21,7 +21,7 @@ from mongoengine.fields import StringField, FloatField, ListField, DateTimeField
 # NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
 from noc.config import config
-from noc.core.handler import get_handler
+from noc.core.geocoding.loader import loader as geocoding_loader
 
 logger = logging.getLogger(__name__)
 
@@ -53,25 +53,19 @@ class GeocoderCache(Document):
     rx_slash = re.compile(r"\s+/")
     rx_dots = re.compile(r"\.\.+")
     rx_sep = re.compile(r"[ \t;:!]+")
-    rx_comma = re.compile("(\s*,)+")
+    rx_comma = re.compile(r"(\s*,)+")
     rx_dotcomma = re.compile(r",\s*\.,")
 
     geocoders = []
-
-    gcls = {
-        "yandex": "noc.core.geocoding.yandex.YandexGeocoder",
-        "google": "noc.core.geocoding.google.GoogleGeocoder",
-    }
 
     @classmethod
     def iter_geocoders(cls):
         if not cls.geocoders:
             for gc in config.geocoding.order.split(","):
                 gc = gc.strip()
-                if gc in cls.gcls:
-                    h = get_handler(cls.gcls[gc])
-                    if h:
-                        cls.geocoders += [h]
+                h = geocoding_loader[gc]
+                if h:
+                    cls.geocoders += [h]
         for h in cls.geocoders:
             yield h
 
