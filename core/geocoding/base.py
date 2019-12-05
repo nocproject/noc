@@ -34,6 +34,7 @@ class BaseGeocoder(object):
         """
         Forward lookup
         :param query: Address as string
+        :type query: str
         :return: GeoCoderResult or None
         """
 
@@ -41,6 +42,7 @@ class BaseGeocoder(object):
         """
         Perform get request
         :param url:
+        :type url: str
         :return:
         """
         code, headers, body = fetch_sync(
