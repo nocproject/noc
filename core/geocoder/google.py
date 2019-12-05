@@ -14,8 +14,9 @@ from six.moves.urllib.parse import quote as urllib_quote
 import ujson
 
 # NOC modules
-from ..base import BaseGeocoder, GeoCoderError, GeoCoderResult
 from noc.config import config
+from .base import BaseGeocoder, GeoCoderResult
+from .errors import GeoCoderError
 
 
 class GoogleGeocoder(BaseGeocoder):

@@ -104,7 +104,7 @@ class BaseLoader(object):
                     if kls:
                         break
                 if not kls:
-                    logger.error("DataStream not found: %s", name)
+                    logger.error("%s not found: %s", self.name, name)
                 self.classes[name] = kls
             return kls
 

@@ -8,21 +8,17 @@
 
 # Python modules
 from __future__ import absolute_import
-import logging
-import os
 
 # NOC modules
 from noc.core.loader.base import BaseLoader
-from noc.core.geocoding.base import BaseGeocoder
-
-logger = logging.getLogger(__name__)
-BASE_PREFIX = os.path.join("core", "geocoding")
+from .base import BaseGeocoder
 
 
 class GeocoderLoader(BaseLoader):
     name = "geocoder"
     base_cls = BaseGeocoder
-    base_path = ("core", "geocoding", "providers")
+    base_path = ("core", "geocoder")
+    ignored_names = {"base", "errors", "loader"}
 
 
 # Create singleton object

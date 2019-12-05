@@ -1,27 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Base geocoding class
+# BaseGeocoder class
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from collections import namedtuple
 
 # NOC modules
 from noc.core.http.client import fetch_sync
+from .errors import GeoCoderError
 
 
 GeoCoderResult = namedtuple("GeoCoderResult", ["exact", "query", "path", "lon", "lat"])
-
-
-class GeoCoderError(Exception):
-    pass
-
-
-class GeoCoderLimitExceeded(GeoCoderError):
-    pass
 
 
 class BaseGeocoder(object):
