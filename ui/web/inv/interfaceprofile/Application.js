@@ -84,7 +84,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             m: __("Management VLAN"),
                             i: __("Direct Downlink"),
                             c: __("Chained Downlink"),
-                            u: __("Direct Uplink")
+                            u: __("Direct Uplink"),
+                            C: __("Cloud Downlink")
                         }),
                         width: 50
                     },
@@ -171,7 +172,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             ["m", __("Management VLAN")],
                             ["i", __("Direct Downlink")],
                             ["c", __("Chained Downlink")],
-                            ["u", __("Direct Uplink")]
+                            ["u", __("Direct Uplink")],
+                            ["C", __("Cloud Downlink")]
                         ],
                         uiStyle: "medium"
                     },

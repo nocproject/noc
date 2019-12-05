@@ -35,6 +35,8 @@ class XMACCheck(TopologyDiscoveryCheck):
                 self.process_direct_downlink(iface, macs[if_name])
             elif policy == "c":
                 self.process_chained_downlink(iface, macs[if_name])
+            elif policy == "C":
+                self.process_cloud(iface, macs[if_name])
 
     def process_direct_downlink(self, iface, macs, name=None):
         # type: (Interface,  List[MAC]) -> None
@@ -137,12 +139,13 @@ class XMACCheck(TopologyDiscoveryCheck):
         for p, n in zip([self.object] + chain, chain):
             if len(ports[p][1]) != 1:
                 self.logger.info(
-                    "[%s][%s] Neighbor %s must have exactly one direct downlin port. %d found. Cannot link.",
+                    "[%s][%s] Neighbor %s must have exactly one direct downlink port. %d found. Cannot link.",
                     name,
                     iface.name,
                     n.name,
                     len(ports[p][1]),
                 )
+                return
             downlink = ports[p][1][0]
             if n not in ports:
                 self.logger.info(
@@ -166,6 +169,54 @@ class XMACCheck(TopologyDiscoveryCheck):
         # Link all ports
         for link in links:
             self.confirm_interface_link(*link)
+
+    def process_cloud(self, iface, macs, name=None):
+        # type: (Interface,  List[MAC]) -> None
+        """
+        Cloud downlink methods. When:
+
+        * All MACs belongs to known chassis ids
+        * Exactly one `direct uplink` port for each object
+
+        Then connect all of them to cloud
+
+        :param iface: Interface instance
+        :param macs: List of MACs seen on interface
+        :param name: Optional method name
+        """
+        name = name or "cloud"
+        # Get all downlink objects
+        cloud = []  # type: List[ManagedObject]
+        for mac in macs:
+            ro = self.get_neighbor_by_mac(mac)
+            if not ro:
+                self.logger.info(
+                    "[%s][%s] No neighbor found for %s. Cannot link.", name, iface.name, mac
+                )
+                return
+            self.logger.info("[%s][%s] Neighbor %s is found for %s", name, iface.name, ro.name, mac)
+            cloud += [ro]
+        # Get all cloud uplinks
+        ports = self.find_direct_uplinks_downlins(cloud)
+        # Connect all interfaces to cloud link
+        cloud_ifaces = []  # type: List[Interface]
+        for ro in cloud:
+            if ro in ports:
+                uplinks = ports[ro][0]
+            else:
+                uplinks = []
+            if len(uplinks) != 1:
+                self.logger.info(
+                    "[%s][%s] Neighbor %s must have exactly one direct uplink port. %d found. Cannot link.",
+                    name,
+                    iface.name,
+                    ro.name,
+                    len(uplinks),
+                )
+                return
+            cloud_ifaces += [uplinks[0]]
+        # Refresh cloud
+        self.confirm_cloud(iface, cloud_ifaces)
 
     @staticmethod
     def find_direct_uplinks(mo):

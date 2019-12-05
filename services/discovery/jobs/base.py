@@ -21,6 +21,7 @@ import cachetools
 import six
 from six import StringIO
 from pymongo import UpdateOne
+from typing import List
 
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
@@ -31,6 +32,7 @@ from noc.core.debug import error_report
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
 from noc.core.mongo.connection import get_db
 from noc.core.service.error import RPCError, RPCRemoteError
 from noc.core.error import (
@@ -1074,7 +1076,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
             else:
                 self.logger.info(
-                    "Not linking: %s:%s -- %s:%s. " "'%s' method is preferable over '%s'",
+                    "Not linking: %s:%s -- %s:%s. '%s' method is preferable over '%s'",
                     local_object.name,
                     local_interface,
                     remote_object.name,
@@ -1093,7 +1095,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
             else:
                 self.logger.info(
-                    "Not linking: %s:%s -- %s:%s. " "'%s' method is preferable over '%s'",
+                    "Not linking: %s:%s -- %s:%s. '%s' method is preferable over '%s'",
                     local_object.name,
                     local_interface,
                     remote_object.name,
@@ -1114,7 +1116,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # Check if either policy set to ignore
         if lpolicy == "I" or rpolicy == "I":
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. " "'Ignore' interface discovery policy set",
+                "Not linking: %s:%s -- %s:%s. 'Ignore' interface discovery policy set",
                 local_object.name,
                 local_interface,
                 remote_object.name,
@@ -1137,7 +1139,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # Do not allow merging clouds
         if lpolicy == "C" and rpolicy == "C":
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. " "Cloud merging is forbidden",
+                "Not linking: %s:%s -- %s:%s. Cloud merging is forbidden",
                 local_object.name,
                 local_interface,
                 remote_object.name,
@@ -1158,7 +1160,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # *Create new* policy blocks other side relinking
         if lrpolicy == "O" or rrpolicy == "O":
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. " "Blocked by 'Create new' policy on existing link",
+                "Not linking: %s:%s -- %s:%s. Blocked by 'Create new' policy on existing link",
                 local_object.name,
                 local_interface,
                 remote_object.name,
@@ -1293,7 +1295,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         li = self.get_interface_by_name(mo=local_object, name=local_interface)
         if not li:
             self.logger.info(
-                "Cannot unlink: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                "Cannot unlink: %s:%s -- %s:%s. Interface %s:%s is not discovered",
                 local_object.name,
                 local_interface,
                 remote_object.name,
@@ -1305,7 +1307,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         ri = self.get_interface_by_name(mo=remote_object, name=remote_interface)
         if not ri:
             self.logger.info(
-                "Cannot unlink: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                "Cannot unlink: %s:%s -- %s:%s. Interface %s:%s is not discovered",
                 local_object.name,
                 local_interface,
                 remote_object.name,
@@ -1330,7 +1332,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 llink.delete()
             else:
                 self.logger.info(
-                    "Cannot unlink: %s:%s -- %s:%s. " "Created by other discovery method (%s)",
+                    "Cannot unlink: %s:%s -- %s:%s. Created by other discovery method (%s)",
                     local_object.name,
                     local_interface,
                     remote_object.name,
@@ -1339,12 +1341,100 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
         else:
             self.logger.info(
-                "Cannot unlink: %s:%s -- %s:%s. " "Not linked yet",
+                "Cannot unlink: %s:%s -- %s:%s. Not linked yet",
                 local_object.name,
                 local_interface,
                 remote_object.name,
                 remote_interface,
             )
+
+    def confirm_cloud(self, root_interface, interfaces):
+        # type: (Interface, List[Interface]) -> None
+        """
+        Ensure `root_interface` and `interfaces` are connected to same cloud link
+
+        :param root_interface: Root `Interface` of the cloud
+        :param interfaces: List of `Interface`
+        """
+        if not interfaces:
+            return
+        # get existing links
+        links = {}  # type: Dict[Interface, Link]
+        for link in Link.objects.filter(
+            interfaces__in=[root_interface.id] + [i.id for i in interfaces]
+        ):
+            for i in link.interfaces:
+                links[i] = link
+        # Get or create cloud
+        root_link = links.get(root_interface)
+        if root_link:
+            if root_link.discovery_method != self.name:
+                if not root_link.is_preferable_method(self.name):
+                    self.logger.info(
+                        "Cannot create cloud on %s:%s. Existing method '%s' is preferable over '%s'",
+                        root_interface.managed_object.name,
+                        root_interface.name,
+                        root_link.discovery_method,
+                        self.name,
+                    )
+                    return
+                self.logger.info(
+                    "Changing cloud on %s:%s method to %s",
+                    root_interface.managed_object.name,
+                    root_interface.name,
+                    self.name,
+                )
+                root_link.discovery_method = self.name
+            else:
+                self.logger.info(
+                    "Using existent cloud on %s:%s",
+                    root_interface.managed_object.name,
+                    root_interface.name,
+                )
+        else:
+            # Create one
+            self.logger.info(
+                "Creating cloud on %s:%s", root_interface.managed_object.name, root_interface.name
+            )
+            root_link = Link(interfaces, discovery_method=self.name)
+        # Check all interfaces
+        for iface in interfaces:
+            if_link = links.get(iface)
+            if if_link:
+                if if_link.id == root_link.id:
+                    self.logger.info(
+                        "%s:%s is already linked", iface.managed_object.name, iface.name
+                    )
+                    continue
+                elif not if_link.is_preferable_method(self.name):
+                    self.logger.info(
+                        "Cannot unlink %s:%s. Method %s is preferable over %s",
+                        iface.managed_object.name,
+                        iface.name,
+                        if_link.discovery_method,
+                        self.name,
+                    )
+                    continue
+                else:
+                    self.logger.info(
+                        "Relinking %s:%s to cloud %s:%s",
+                        iface.managed_object.name,
+                        iface.name,
+                        root_interface.managed_object.name,
+                        root_interface.name,
+                    )
+                    iface.unlink()
+                    root_link.interfaces += [iface]
+            else:
+                self.logger.info(
+                    "Linking %s:%s to cloud %s:%s",
+                    iface.managed_object.name,
+                    iface.name,
+                    root_interface.managed_object.name,
+                    root_interface.name,
+                )
+                root_link.interfaces += [iface]
+        root_link.save()
 
     def is_preferable_over(self, mo1, mo2, link):
         """

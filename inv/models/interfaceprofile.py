@@ -95,6 +95,7 @@ class InterfaceProfile(Document):
             ("i", "Direct Downlink"),
             ("c", "Chained Downlink"),
             ("u", "Direct Uplink"),
+            ("C", "Cloud Downlink"),
         ],
         default="d",
     )

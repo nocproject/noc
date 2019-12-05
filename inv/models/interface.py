@@ -186,8 +186,12 @@ class Interface(Document):
             raise ValueError("Interface is not linked")
         if link.is_ptp or link.is_lag:
             link.delete()
+        elif len(link.interfaces) == 2:
+            # Depleted cloud
+            link.delete()
         else:
-            raise ValueError("Cannot unlink non p-t-p link")
+            link.interfaces = [i for i in link.interfaces if i.id != self.id]
+            link.save()
 
     def link_ptp(self, other, method=""):
         """
