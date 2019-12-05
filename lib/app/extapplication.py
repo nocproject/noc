@@ -50,6 +50,7 @@ class ExtApplication(Application):
     query_param = "__query"
     only_param = "__only"
     in_param = "__in"
+    group_param = "__group"
     fav_status = "fav_status"
     default_ordering = []
 
@@ -170,13 +171,8 @@ class ExtApplication(Application):
         only = q.get(self.only_param)
         if only:
             only = only.split(",")
-        ordering = []
-        if request.is_extjs and self.sort_param in q:
-            for r in self.deserialize(q[self.sort_param]):
-                if r["direction"] == "DESC":
-                    ordering += ["-%s" % r["property"]]
-                else:
-                    ordering += [r["property"]]
+        ordering = self.get_param(q, self.sort_param, request)
+        grouping = self.get_param(q, self.group_param, request)
         fs = None
         fav_items = None
         if self.fav_status in q:
@@ -220,12 +216,15 @@ class ExtApplication(Application):
         ordering = ordering or self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
+        # Apply grouping
+        if grouping:
+            ordering.insert(0, grouping)
         # Apply row limit if necessary
         if self.row_limit:
             limit = min(limit or self.row_limit, self.row_limit + 1)
         # Apply paging
         if limit:
-            data = data[start : start + limit]
+            data = data[start: start + limit]
         # Fetch and format data
         out = [formatter(o, fields=only) for o in data]
         if self.row_limit and len(out) > self.row_limit + 1:
@@ -249,6 +248,23 @@ class ExtApplication(Application):
                 total = ld
             out = {"total": total, "success": True, "data": out}
         return self.response(out, status=self.OK)
+
+    def get_param(self, q, param, request):
+        def get_properties(r, result):
+            if r["direction"] == "DESC":
+                result += ["-%s" % r["property"]]
+            else:
+                result += [r["property"]]
+            return result
+        result = []
+        if request.is_extjs and param in q:
+            p = self.deserialize(q[param])
+            if type(p) == list:
+                for r in p:
+                    result = get_properties(r, result)
+            else:
+                result = get_properties(p, result)
+        return result
 
     def clean_list_data(self, data):
         """

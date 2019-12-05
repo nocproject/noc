@@ -1,14 +1,15 @@
 //---------------------------------------------------------------------
 // ip.ipam Delete Prefix Panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.ip.ipam.DeletePrefixPanel");
+console.debug("Defining NOC.ip.ipam.view.forms.prefix.PrefixDeletePanel");
 
-Ext.define("NOC.ip.ipam.DeletePrefixPanel", {
+Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixDeletePanel", {
     extend: "Ext.form.Panel",
     layout: "vbox",
+    alias: "widget.ip.ipam.form.delete.prefix",
     style: "border: none",
     app: undefined,
     viewModel: {
@@ -96,17 +97,15 @@ Ext.define("NOC.ip.ipam.DeletePrefixPanel", {
         me.callParent();
     },
 
-
-    preview: function (record, backItem) {
+    preview: function (id) {
         var me = this;
         Ext.Ajax.request({
-            url: "/ip/prefix/" + record.id + "/",
+            url: "/ip/prefix/" + id + "/",
             method: "GET",
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                console.log(data);
-                me.currentPrefixId = record.id;
+                me.currentPrefixId = id;
                 me.parentPrefixId = data.parent;
                 me.viewModel.set("prefix", data.prefix);
                 me.viewModel.set("description", data.description);
@@ -119,7 +118,7 @@ Ext.define("NOC.ip.ipam.DeletePrefixPanel", {
 
     onClose: function() {
         var me = this;
-        me.app.showCurrentPrefix()
+        me.fireEvent("ipIPAMPrefixDeleteFormClose", {id: me.currentPrefixId});
     },
 
     onDelete: function() {
@@ -129,26 +128,13 @@ Ext.define("NOC.ip.ipam.DeletePrefixPanel", {
         if(isRecursive) {
             url += "recursive/"
         }
-        console.log(isRecursive, url, me.viewModel.get("deleteType"));
         Ext.Ajax.request({
             url: url,
             method: "DELETE",
             scope: me,
-            success: function(response) {
+            success: function() {
                 NOC.info(__("Prefix Deleted"));
-                // Get parent prefix
-                Ext.Ajax.request({
-                    url: "/ip/prefix/" + me.parentPrefixId + "/",
-                    method: "GET",
-                    scope: me,
-                    success: function (response) {
-                        var data = Ext.decode(response.responseText);
-                        me.app.showPrefix(data.vrf, data.afi, data.prefix);
-                    },
-                    failure: function (response) {
-                        NOC.error(__("Failed to open parent prefix"))
-                    }
-                })
+                me.fireEvent("ipIPAMParentPrefixOpen");
             },
             failure: function() {
                 NOC.error(__("Failed to load data"))

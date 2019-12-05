@@ -270,6 +270,7 @@ class ExtModelApplication(ExtApplication):
                 self.start_param,
                 self.format_param,
                 self.sort_param,
+                self.group_param,
                 self.query_param,
                 self.only_param,
             ):
