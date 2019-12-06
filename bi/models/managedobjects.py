@@ -25,6 +25,7 @@ from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject as ManagedObjectDict
 from noc.core.bi.dictionaries.pool import Pool
 from noc.core.bi.dictionaries.profile import Profile
+from noc.core.bi.dictionaries.objectprofile import ObjectProfile
 from noc.core.bi.dictionaries.vendor import Vendor
 from noc.core.bi.dictionaries.platform import Platform
 from noc.core.bi.dictionaries.version import Version
@@ -55,6 +56,7 @@ class ManagedObject(Model):
     y = Float64Field(description=_("Latitude"))
     # Management
     pool = ReferenceField(Pool, description=_("Pool Name"))
+    object_profile = ReferenceField(ObjectProfile, description=_("Object Profile"))
     name = StringField(description=_("Name"))
     hostname = StringField(description=_("Hostaname"))
     ip = IPv4Field(description=_("IP Address"))

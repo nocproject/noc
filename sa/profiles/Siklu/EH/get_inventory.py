@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Siklu.EH.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,18 +19,18 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_component = re.compile(
-        r"^\s*inventory (?P<number>\d+) desc\s+: (?P<description>.*)\n"
-        r"^\s*inventory \d+ cont-in\s+: .*\n"
-        r"^\s*inventory \d+ class\s+: (?P<type>\S+)\n"
-        r"^\s*inventory \d+ rel-pos\s+: .*\n"
-        r"^\s*inventory \d+ name\s+: .*\n"
-        r"^\s*inventory \d+ hw-rev\s+: (?P<revision>\S+)?\n"
-        r"^\s*inventory \d+ fw-rev\s+: .*\n"
-        r"^\s*inventory \d+ sw-rev\s+: .*\n"
-        r"^\s*inventory \d+ serial\s+: (?P<serial>\S+)?\n"
-        r"^\s*inventory \d+ mfg-name\s+: (?P<vendor>\S+)?\n"
-        r"^\s*inventory \d+ model-name\s+: (?P<part_no>\S+)?\n"
-        r"^\s*inventory \d+ fru\s+: (?P<fru>\S+)\n",
+        r"\s*inventory (?P<number>\d+) desc\s+: (?P<description>.*)"
+        r"\s*inventory \d+ cont-in\s+: .*"
+        r"\s*inventory \d+ class\s+: (?P<type>\S+)"
+        r"\s*inventory \d+ rel-pos\s+: .*"
+        r"\s*inventory \d+ name\s+: (?P<name>.*)"
+        r"\s*inventory \d+ hw-rev\s+: (?P<revision>(\S+|\S+\s\S+))?\s*"
+        r"\s*inventory \d+ fw-rev\s+: (?P<fwrevision>.*)"
+        r"\s*inventory \d+ sw-rev\s+: (?P<swrevision>.*)"
+        r"\s*inventory \d+ serial\s+: (?P<serial>\S+)?\s*"
+        r"\s*inventory \d+ mfg-name\s+: (?P<vendor>\S+)?\s*"
+        r"\s*inventory \d+ model-name\s+: (?P<part_no>\S+)?\s*"
+        r"\s*inventory \d+ fru\s+: (?P<fru>.*)",
         re.MULTILINE,
     )
 
@@ -43,14 +43,17 @@ class Script(BaseScript):
             else:
                 vendor = "NONAME"
             part_no = match.group("part_no")
-            if not part_no:
+            if not part_no or part_no == "default":
                 continue
+            revision = match.group("revision")
+            if part_no == "EH-1200TL-ODU-1ft" and revision == "F0":
+                part_no = "EH-1200TL-ODU-1ft-F0"
             p = {
                 "type": match.group("type").upper(),
                 "number": int(match.group("number") or 0),
                 "vendor": vendor,
                 "part_no": part_no,
-                "revision": match.group("revision"),
+                "revision": revision,
                 "description": match.group("description"),
             }
             if match.group("fru") == "false":

@@ -33,7 +33,7 @@ class Profile(BaseProfile):
         (r"unchanged press the enter key\)\:", "\n"),
     ]
     pattern_prompt = (
-        r"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)"
+        r"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=\+]+)"
         r"(?:-[a-zA-Z0-9/\_]+)*[>#\]\)]"
     )
     pattern_syntax_error = (
@@ -78,12 +78,13 @@ class Profile(BaseProfile):
             "version": {"$regex": r"5.20.+"},
             "platform": {"$in": ["S5628F", "S5628F-HI"]},
         },
-        "is_ne_platform": {"platform": {"$regex": "^NE"}},
+        "is_ne_platform": {"platform": {"$regex": r"^NE"}},
         "is_ar": {"platform": {"$regex": r"^AR\d+.+"}},
         "is_extended_entity_mib_supported": {"caps": {"$in": ["Huawei | MIB | ENTITY-EXTENT-MIB"]}},
         "is_stack": {"caps": {"$in": ["Stack | Members"]}},
         "is_s85xx": {"platform": {"$regex": r"^(S85.+)$"}},
-        "is_ar12_93xx": {"platform": {"$regex": "^(S93..|AR[12].+)$"}},
+        "is_ar12_93xx": {"platform": {"$regex": r"^(S93..|AR[12].+)$"}},
+        "is_cloud_engine": {"platform": {"$regex": r"^CE\S+"}},
     }
 
     rx_ver = re.compile(
@@ -396,85 +397,3 @@ class Profile(BaseProfile):
             header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
 
         return header
-
-    def parse_block(self, block):
-        """
-        Block1:
-        Local:
-        LAG ID: 8                   WorkingMode: LACP
-        Preempt Delay: Disabled     Hash arithmetic: According to SIP-XOR-DIP
-        System Priority: 32768      System ID: 5489-9875-1457
-        Least Active-linknumber: 1  Max Active-linknumber: 8
-        Operate status: up          Number Of Up Port In Trunk: 2
-        --------------------------------------------------------------------------------
-        ActorPortName          Status   PortType PortPri PortNo PortKey PortState Weight
-        XGigabitEthernet10/0/4 Selected 10GE     32768   95     2113    10111100  1
-        XGigabitEthernet10/0/5 Selected 10GE     32768   96     2113    10111100  1
-
-        Block2:
-        Partner:
-        --------------------------------------------------------------------------------
-        ActorPortName          SysPri   SystemID        PortPri PortNo PortKey PortState
-        XGigabitEthernet10/0/4 65535    0011-bbbb-ddda  255     1      33      10111100
-        XGigabitEthernet10/0/5 65535    0011-bbbb-ddda  255     2      33      10111100
-
-        :param block:
-        :return:
-        """
-
-        r = defaultdict(dict)
-        part_name = ""
-        k_v_splitter = re.compile(r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
-        part_splitter = re.compile(r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
-
-        # r = {}
-        is_table = False  # Table block, start after -----
-        is_table_header = False  # table header first line after ----
-        k_v_list = []
-        ph = {}
-        for line in block.splitlines(True):
-            # print l
-            # Part section
-            if "-" * 5 in line:
-                # -- - starting table and end key-value lines
-                is_table = True
-                is_table_header = True
-                r[part_name]["table"] = []
-                if k_v_list:
-                    r[part_name].update(dict(k_v_list))
-                    k_v_list = []
-                # print("Table start")
-                continue
-            if is_table_header:
-                # Parse table header for detect column border
-                # If needed more than one line - needed count
-                ph = self.parse_header([line])
-                is_table_header = False
-                continue
-            if part_splitter.match(line):
-                # Part spliter (Local:\n, Partner:\n)
-                # or (is_table and not line.strip())
-                # @todo many table in part ?
-                is_table = False
-                ph = {}
-                part_name = part_splitter.match(line).group(1)
-                continue
-            if ":" in line and not is_table:
-                # Key-value block
-                k_v_list.extend(k_v_splitter.findall(line))
-            elif ph and is_table:
-                # parse table row
-                i = 0
-                field = {}
-                for num in sorted(ph):
-                    # Shift column border
-                    left = i
-                    right = num
-                    v = line[left:right].strip()
-                    field[ph[num]] = [v] if v else []
-                    i = num
-                if not field[ph[min(ph)]] and r[part_name]["table"]:
-                    self.update_dict(r[part_name]["table"][-1], field)
-                else:
-                    r[part_name]["table"] += [field]
-        return r

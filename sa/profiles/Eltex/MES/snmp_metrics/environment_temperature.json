@@ -9,7 +9,7 @@
     },
     "is_MES23": {
       "platform": {
-        "$regex": "MES-23"
+        "$regex": "MES-(2|3|5)3"
       }
     }
   },

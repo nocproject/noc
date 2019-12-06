@@ -20,9 +20,10 @@ class Profile(BaseProfile):
     pattern_more = [(r"--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
     pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = (
-        r"^(Command not found. Use '?' to view available commands|"
-        + "Incomplete command\s+|Invalid argument\s+)"
+        r"(Command not found. Use '?' to view available commands|"
+        r"Incomplete command\s+|Invalid argument\s+|Unknown command)"
     )
+
     #    command_disable_pager = "terminal datadump"
     #    command_super = "enable"
     username_submit = "\r"
