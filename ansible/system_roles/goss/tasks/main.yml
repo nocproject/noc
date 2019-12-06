@@ -2,11 +2,14 @@
 - block:
   - name: "Include OS-specific tasks"
     include_tasks: "os/{{ ansible_distribution }}/main.yml"
+    when:
+      - has_svc_goss is defined
 
   - name: "install Goss"
     import_tasks: "install.yml"
     when:
       - ansible_distribution != 'FreeBSD'
+      - has_svc_goss is defined
 
   # yamllint disable rule:indentation
   - name: place main check file
@@ -20,12 +23,16 @@
 
   when:
     - goss_complete is not defined
+    - has_svc_goss is defined
 
 - name: "Include service"
   import_tasks: service.yml
   when:
     - goss_service_name is defined
+    - has_svc_goss is defined
 
 - name: set goss complete
   set_fact:
     goss_complete: "True"
+  when:
+    - has_svc_goss is defined

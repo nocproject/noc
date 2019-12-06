@@ -12,8 +12,14 @@
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: goss
-      when: goss_complete is not defined
+      when:
+        - goss_complete is not defined
+        - has_svc_goss is defined
     - role: goss
       vars: { goss_service_name: ansible }
+      when:
+        - has_svc_goss is defined
     - role: goss
       vars: { goss_service_name: time }
+      when:
+        - has_svc_goss is defined
