@@ -95,5 +95,5 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
 
 
 class ConsulClient(consul.base.Consul):
-    def connect(self, host, port, scheme, verify=True):
-        return ConsulHTTPClient(host, port, scheme, verify=verify)
+    def connect(self, host, port, scheme, verify=True, cert=None):
+        return ConsulHTTPClient(host, port, scheme, verify=verify, cert=cert)
