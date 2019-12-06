@@ -23,7 +23,6 @@ from six import StringIO
 from pymongo import UpdateOne
 from typing import List, Dict
 from builtins import str, object
-from builtins import object
 
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
