@@ -18,12 +18,7 @@ import ujson
 from noc.core.management.base import BaseCommand
 from noc.core.datastream.loader import loader
 from noc.core.mongo.connection import connect
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.dns.models.dnszone import DNSZone
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.models import get_model
 from noc.models import is_document
 
 BATCH_SIZE = 20000
@@ -31,14 +26,17 @@ BATCH_SIZE = 20000
 
 class Command(BaseCommand):
     MODELS = {
-        "managedobject": ManagedObject,
-        "administrativedomain": AdministrativeDomain,
-        "cfgping": ManagedObject,
-        "cfgsyslog": ManagedObject,
-        "cfgtrap": ManagedObject,
-        "dnszone": DNSZone,
-        "resourcegroup": ResourceGroup,
-        "alarm": (ActiveAlarm, ArchivedAlarm),
+        "managedobject": "sa.ManagedObject",
+        "administrativedomain": "sa.AdministrativeDomain",
+        "cfgping": "sa.ManagedObject",
+        "cfgsyslog": "sa.ManagedObject",
+        "cfgtrap": "sa.ManagedObject",
+        "dnszone": "dns.DNSZone",
+        "resourcegroup": "inv.ResourceGroup",
+        "alarm": ("fm.ActiveAlarm", "fm.ArchivedAlarm"),
+        "vrf": "ip.VRF",
+        "prefix": "ip.Prefix",
+        "address": "ip.Address",
     }
 
     def add_arguments(self, parser):
@@ -58,7 +56,7 @@ class Command(BaseCommand):
         getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_list(self):
-        for ds_name in sorted(loader.iter_datastreams()):
+        for ds_name in sorted(loader.iter_classes()):
             self.print(ds_name)
 
     def iter_id(self, model):
@@ -92,12 +90,21 @@ class Command(BaseCommand):
             return c
         return model.objects.count()
 
+    def get_model(self, datastream):
+        if isinstance(datastream, tuple):
+            return tuple(self.get_model(ds) for ds in datastream)
+        model_id = self.MODELS.get(datastream)
+        if not model_id:
+            self.die("Unsupported datastream")
+        model = get_model(model_id)
+        if not model:
+            self.die("Invalid model")
+        return model
+
     def handle_rebuild(self, datastream, *args, **kwargs):
         if not datastream:
             self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
-        model = self.MODELS.get(datastream)
-        if not model:
-            self.die("Unsupported datastream")
+        model = self.get_model(datastream)
         connect()
         ds = loader[datastream]
         if not ds:

@@ -18,6 +18,7 @@ from django.db import models, connection
 import cachetools
 
 # NOC modules
+from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.project.models.project import Project
@@ -32,6 +33,7 @@ from noc.core.translation import ugettext as _
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_delete_check
 from noc.wf.models.state import State
+from noc.core.datastream.decorator import datastream
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
@@ -41,6 +43,7 @@ id_lock = Lock()
 
 @full_text_search
 @workflow
+@datastream
 @on_delete_check(
     ignore=[
         ("ip.PrefixBookmark", "prefix"),
@@ -156,8 +159,7 @@ class Prefix(NOCModel):
         mo = Prefix.objects.filter(id=id)[:1]
         if mo:
             return mo[0]
-        else:
-            return None
+        return None
 
     def get_absolute_url(self):
         return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi, self.prefix)
@@ -231,6 +233,10 @@ class Prefix(NOCModel):
         # Check root prefix have no parent
         if self.is_root and self.parent:
             raise ValidationError("Root prefix cannot have parent")
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_prefix:
+            yield "prefix", self.id
 
     def save(self, *args, **kwargs):
         """

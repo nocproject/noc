@@ -589,6 +589,19 @@ class Config(BaseConfig):
             default=True,
             help="Activate Wait Mode for ResourceGroup datastream (Mongo greater 3.6 needed)",
         )
+        enable_vrf = BooleanParameter(default=False)
+        enable_vrf_wait = BooleanParameter(
+            default=True, help="Activate Wait Mode for VRF datastream (Mongo greater 3.6 needed)"
+        )
+        enable_prefix = BooleanParameter(default=False)
+        enable_prefix_wait = BooleanParameter(
+            default=True, help="Activate Wait Mode for Prefix datastream (Mongo greater 3.6 needed)"
+        )
+        enable_address = BooleanParameter(default=False)
+        enable_address_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for Address datastream (Mongo greater 3.6 needed)",
+        )
 
     class help(ConfigSection):
         base_url = StringParameter(default="https://docs.getnoc.com")
