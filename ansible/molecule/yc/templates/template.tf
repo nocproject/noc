@@ -6,7 +6,7 @@ provider "yandex" {
 }
 
 resource "yandex_compute_instance" "vm-1" {
-  name = "noc-node-{{ item.distr }}-{{ lookup('env','CI_JOB_ID') }}"
+  name = "noc-node-{{ item.distr }}-{{ lookup('env','CI_JOB_ID') | default(60|random,true) }}"
 
   resources {
     cores         = 4
