@@ -35,8 +35,12 @@ class Script(BaseScript):
         r"Bootloader:\s+(?P<bootprom>\S+)\s*\n\s+Runtime:\s+(?P<version>\S+)",
         re.MULTILINE | re.DOTALL,
     )
+    rx_snmp = re.compile(
+        r"\d+",
+        re.MULTILINE | re.DOTALL
+    )
 
-    def execute(self):
+    def execute_cli(self):
         c = self.cli("show version", cached=True)
         match = self.rx_ver.search(c)
         if match:
@@ -46,7 +50,7 @@ class Script(BaseScript):
                 else None
             )
             if snmp_sn is not None:
-                snmp_sn = (re.search(r"\d+", snmp_sn)).group(0)
+                snmp_sn = self.rx_snmp.search(snmp_sn).group(0)
             return {
                 "vendor": "DLink",
                 "platform": match.group("platform"),
