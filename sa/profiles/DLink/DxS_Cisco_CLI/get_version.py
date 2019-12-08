@@ -35,10 +35,7 @@ class Script(BaseScript):
         r"Bootloader:\s+(?P<bootprom>\S+)\s*\n\s+Runtime:\s+(?P<version>\S+)",
         re.MULTILINE | re.DOTALL,
     )
-    rx_snmp = re.compile(
-        r"\d+",
-        re.MULTILINE | re.DOTALL
-    )
+    rx_snmp = re.compile(r"\d+", re.MULTILINE | re.DOTALL)
 
     def execute_cli(self):
         c = self.cli("show version", cached=True)
