@@ -255,7 +255,9 @@ class XMACCheck(TopologyDiscoveryCheck):
                 r[mo] = ([], [])
             policy = iface.get_profile().mac_discovery_policy
             if policy == "u":
-                r[mo][0] += [iface]
+                uplinks = r[mo][0]
+                uplinks += [iface]
             elif policy == "i":
-                r[mo][1] += [iface]
+                downlinks = r[mo][1]
+                downlinks += [iface]
         return r
