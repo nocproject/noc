@@ -2,14 +2,17 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -32,16 +35,24 @@ class Script(BaseScript):
         r"Bootloader:\s+(?P<bootprom>\S+)\s*\n\s+Runtime:\s+(?P<version>\S+)",
         re.MULTILINE | re.DOTALL,
     )
+    rx_snmp = re.compile(r"\d+", re.MULTILINE | re.DOTALL)
 
-    def execute(self):
+    def execute_cli(self):
         c = self.cli("show version", cached=True)
         match = self.rx_ver.search(c)
         if match:
+            snmp_sn = (
+                self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
+                if self.has_snmp()
+                else None
+            )
+            if snmp_sn is not None:
+                snmp_sn = self.rx_snmp.search(snmp_sn).group(0)
             return {
                 "vendor": "DLink",
                 "platform": match.group("platform"),
                 "version": match.group("version"),
-                "attributes": {"HW version": match.group("hversion")},
+                "attributes": {"HW version": match.group("hversion"), "Serial Number": snmp_sn},
             }
         else:
             match = self.rx_ver1.search(c)
