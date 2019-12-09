@@ -1405,7 +1405,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             self.logger.info(
                 "Creating cloud on %s:%s", root_interface.managed_object.name, root_interface.name
             )
-            root_link = Link(interfaces, discovery_method=self.name)
+            root_link = Link(interfaces=[root_interface], discovery_method=self.name)
         # Check all interfaces
         for iface in interfaces:
             if_link = links.get(iface)
