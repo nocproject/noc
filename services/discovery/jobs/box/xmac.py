@@ -191,10 +191,20 @@ class XMACCheck(TopologyDiscoveryCheck):
             ro = self.get_neighbor_by_mac(mac)
             if not ro:
                 self.logger.info(
-                    "[%s][%s] No neighbor found for %s. Cannot link.", name, iface.name, mac
+                    "[%s][%s] No neighbor found for %s. Skipping.", name, iface.name, mac
+                )
+                continue
+            self.logger.info("[%s][%s] Neighbor %s is found for %s", name, iface.name, ro.name, mac)
+            if ro.object_profile.level > self.object.object_profile.level:
+                self.logger.info(
+                    "[%s][%s] Neighbor's %s level is greater than of root object (%d > %d).  "
+                    "Malformed cloud. Skipping.",
+                    name,
+                    iface.name,
+                    ro.object_profile.level,
+                    self.object.object_profile.level,
                 )
                 return
-            self.logger.info("[%s][%s] Neighbor %s is found for %s", name, iface.name, ro.name, mac)
             cloud += [ro]
         # Get all cloud uplinks
         ports = self.find_direct_uplinks_downlins(cloud)
