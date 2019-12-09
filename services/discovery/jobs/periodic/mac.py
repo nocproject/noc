@@ -29,6 +29,7 @@ class MACCheck(DiscoveryCheck):
 
     name = "mac"
     required_script = "get_mac_address_table"
+    XMAC_POLICIES = ("i", "c", "C")
 
     def handler(self):
         # Build filter policy
@@ -75,7 +76,7 @@ class MACCheck(DiscoveryCheck):
         mac_direct_downlink = defaultdict(list)  # type: DefaultDict[str, List[MAC]]
         mac_downlink_policy = tuple()  # type: Tuple[str, ...]
         if self.object.object_profile.enable_box_discovery_xmac:
-            mac_downlink_policy = ("i", "c")
+            mac_downlink_policy = self.XMAC_POLICIES
         result = self.object.scripts.get_mac_address_table()
         for v in result:
             total_macs += 1
