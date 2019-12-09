@@ -1,0 +1,8 @@
+{
+    "name": "Intracom",
+    "uuid": "0b0a831b-e5eb-4f4b-8033-612e27c3c546",
+    "full_name": "Intracom S.A. Telecom Solutions",
+    "code": ["INTRACOM"],
+    "site": "http://www.intracom-telecom.com/",
+    "$collection": "inv.vendors"
+}
