@@ -207,16 +207,20 @@ class XMACCheck(TopologyDiscoveryCheck):
                 uplinks = []
             if len(uplinks) != 1:
                 self.logger.info(
-                    "[%s][%s] Neighbor %s must have exactly one direct uplink port. %d found. Cannot link.",
+                    "[%s][%s] Neighbor %s must have exactly one direct uplink port. %d found. "
+                    "Cannot attach to cloud. Skipping.",
                     name,
                     iface.name,
                     ro.name,
                     len(uplinks),
                 )
-                return
+                continue
             cloud_ifaces += [uplinks[0]]
         # Refresh cloud
-        self.confirm_cloud(iface, cloud_ifaces)
+        if cloud_ifaces:
+            self.confirm_cloud(iface, cloud_ifaces)
+        else:
+            self.logger.info("[%s][%s] Empty cloud. Skipping.", name, iface.name)
 
     @staticmethod
     def find_direct_uplinks(mo):
