@@ -1376,7 +1376,9 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         root_link = links.get(root_interface)
         if root_link:
             if root_link.discovery_method != self.name:
-                if not root_link.is_preferable_method(self.name):
+                if not self.object.segment.profile.is_preferable_method(
+                    self.name, root_link.discovery_method
+                ):
                     self.logger.info(
                         "Cannot create cloud on %s:%s. Existing method '%s' is preferable over '%s'",
                         root_interface.managed_object.name,
@@ -1413,7 +1415,9 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "%s:%s is already linked", iface.managed_object.name, iface.name
                     )
                     continue
-                elif not if_link.is_preferable_method(self.name):
+                elif not self.object.segment.profile.is_preferable_method(
+                    self.name, if_link.discovery_method
+                ):
                     self.logger.info(
                         "Cannot unlink %s:%s. Method %s is preferable over %s",
                         iface.managed_object.name,

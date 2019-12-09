@@ -244,12 +244,3 @@ class Link(Document):
             else:
                 return "M"
         return "u"
-
-    def is_preferable_method(self, method):
-        # type: (str) -> bool
-        """
-        Check if discovery method is preferable over existing one
-        """
-        return self.managed_object.segment.profile.is_preferable_method(
-            method, self.discovery_method
-        )
