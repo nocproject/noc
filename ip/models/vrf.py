@@ -18,6 +18,7 @@ from django.db import models
 import cachetools
 
 # NOC modules
+from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.core.validators import check_rd
@@ -30,6 +31,7 @@ from noc.wf.models.state import State
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
+from noc.core.datastream.decorator import datastream
 
 
 id_lock = Lock()
@@ -38,6 +40,7 @@ id_lock = Lock()
 @full_text_search
 @on_init
 @workflow
+@datastream
 @on_delete_check(
     check=[
         ("ip.Address", "vrf"),
@@ -145,6 +148,10 @@ class VRF(NOCModel):
     def get_absolute_url(self):
         return site.reverse("ip:vrf:change", self.id)
 
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_vrf:
+            yield "vrf", self.id
+
     @classmethod
     def get_global(cls):
         """
@@ -240,3 +247,7 @@ class VRF(NOCModel):
         self.save()
         # Delete
         super(VRF, self).delete(*args, **kwargs)
+
+    @property
+    def is_global(self):
+        return self.vpn_id == self.GLOBAL_RD
