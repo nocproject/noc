@@ -133,7 +133,7 @@ class XMACCheck(TopologyDiscoveryCheck):
         # Arrange objects
         chain = list(sorted(chain, key=lambda x: x.object_profile.level, reverse=True))
         # Check uplinks/downlinks
-        ports = self.find_direct_uplinks_downlins(chain)
+        ports = self.find_direct_uplinks_downlinks(chain)
         ports[self.object] = ([], [iface])
         links = []  # type: List[Tuple[Interface, Interface]]
         for p, n in zip([self.object] + chain, chain):
@@ -207,7 +207,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                 return
             cloud += [ro]
         # Get all cloud uplinks
-        ports = self.find_direct_uplinks_downlins(cloud)
+        ports = self.find_direct_uplinks_downlinks(cloud)
         # Connect all interfaces to cloud link
         cloud_ifaces = []  # type: List[Interface]
         for ro in cloud:
@@ -248,7 +248,7 @@ class XMACCheck(TopologyDiscoveryCheck):
         ]
 
     @staticmethod
-    def find_direct_uplinks_downlins(objects):
+    def find_direct_uplinks_downlinks(objects):
         # type: (List[ManagedObject]) -> Dict[ManagedObject, Tuple[List[Interface], List[Interface]]]
         """
         For all given objects return all direct uplink/direct downlink ports
