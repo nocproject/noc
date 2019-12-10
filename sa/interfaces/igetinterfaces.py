@@ -368,6 +368,7 @@ class IGetInterfaces(BaseInterface):
                     "description": StringParameter(required=False),
                     "mac": MACAddressParameter(required=False),
                     "snmp_ifindex": IntParameter(required=False),
+                    "hints": StringListParameter(choices=["uplink", "uni", "nni"], required=False),
                     "subinterfaces": ListOfParameter(
                         element=DictParameter(
                             attrs={

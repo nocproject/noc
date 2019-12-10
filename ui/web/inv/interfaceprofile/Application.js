@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interfaceprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interfaceprofile.Application");
@@ -79,9 +79,13 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         text: __("MAC"),
                         dataIndex: "mac_discovery_policy",
                         renderer: NOC.render.Choices({
-                            e: __("Enable"),
+                            e: __("Transit"),
                             d: __("Disable"),
-                            m: __("Management VLAN")
+                            m: __("Management VLAN"),
+                            i: __("Direct Downlink"),
+                            c: __("Chained Downlink"),
+                            u: __("Direct Uplink"),
+                            C: __("Cloud Downlink")
                         }),
                         width: 50
                     },
@@ -163,9 +167,13 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         fieldLabel: __("MAC Discovery Policy"),
                         allowBlank: false,
                         store: [
-                            ["e", __("Enable")],
+                            ["e", __("Transit")],
                             ["d", __("Disable")],
-                            ["m", __("Management VLAN")]
+                            ["m", __("Management VLAN")],
+                            ["i", __("Direct Downlink")],
+                            ["c", __("Chained Downlink")],
+                            ["u", __("Direct Uplink")],
+                            ["C", __("Cloud Downlink")]
                         ],
                         uiStyle: "medium"
                     },

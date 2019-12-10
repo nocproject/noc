@@ -104,6 +104,8 @@ class Interface(Document):
     in_speed = IntField(required=False)  # Input speed, kbit/s
     out_speed = IntField(required=False)  # Output speed, kbit/s
     bandwidth = IntField(required=False)  # Configured bandwidth, kbit/s
+    # Interface hints: uplink, uni, nni
+    hints = ListField(StringField(required=False))
     # Coverage
     coverage = PlainReferenceField(Coverage)
     technologies = ListField(StringField())
@@ -184,8 +186,12 @@ class Interface(Document):
             raise ValueError("Interface is not linked")
         if link.is_ptp or link.is_lag:
             link.delete()
+        elif len(link.interfaces) == 2:
+            # Depleted cloud
+            link.delete()
         else:
-            raise ValueError("Cannot unlink non p-t-p link")
+            link.interfaces = [i for i in link.interfaces if i.id != self.id]
+            link.save()
 
     def link_ptp(self, other, method=""):
         """

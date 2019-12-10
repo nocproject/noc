@@ -88,7 +88,16 @@ class InterfaceProfile(Document):
     )
     # Collect mac addresses on interface
     mac_discovery_policy = StringField(
-        choices=[("d", "Disabled"), ("m", "Management VLAN"), ("e", "Enabled")], default="d"
+        choices=[
+            ("d", "Disabled"),
+            ("m", "Management VLAN"),
+            ("e", "Transit"),
+            ("i", "Direct Downlink"),
+            ("c", "Chained Downlink"),
+            ("u", "Direct Uplink"),
+            ("C", "Cloud Downlink"),
+        ],
+        default="d",
     )
     # Collect and keep interface status
     status_discovery = BooleanField(default=False)

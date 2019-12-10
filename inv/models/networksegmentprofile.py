@@ -54,6 +54,7 @@ class SegmentTopologySettings(EmbeddedDocument):
             ("fdp", "FDP"),
             ("bfd", "BFD"),
             ("mac", "MAC"),
+            ("xmac", "xMAC"),
             ("nri", "NRI"),
         ]
     )
@@ -163,6 +164,9 @@ class NetworkSegmentProfile(Document):
         Returns True if m1 topology discovery method is
         preferable over m2
         """
+        if not m2:
+            # Always override unknown method
+            return True
         if m1 == m2:
             # Method can refine itself
             return True
