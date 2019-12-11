@@ -22,6 +22,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["object_platform", __("Object Platform"), true],
         ["object_adm_domain", __("Object Administrative domain"), true],
         ["object_segment", __("Object Segemnt"), false],
+        ["object_container", __("Object Geo Address"), false],
         ["iface_name", __("Interface Name"), true],
         ["iface_description", __("Interface Description"), true],
         ["iface_speed", __("Interface Speed"), false],
@@ -41,6 +42,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["object_platform", __("Object Platform"), true],
         ["object_adm_domain", __("Object Administrative domain"), true],
         ["object_segment", __("Object Segemnt"), false],
+        ["object_container", __("Object Geo Address"), false],
         ["slot", __("Slot"), false],
         ["cpu_usage", __("CPU Usage"), true],
         ["memory_usage", __("Memory Usage"), true]
@@ -52,6 +54,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["object_platform", __("Object Platform"), true],
         ["object_adm_domain", __("Object Administrative domain"), true],
         ["object_segment", __("Object Segemnt"), false],
+        ["object_container", __("Object Geo Address"), false],
         ["ping_rtt", __("Ping RTT"), true],
         ["ping_attempts", __("Ping Attempts"), true]
     ],
