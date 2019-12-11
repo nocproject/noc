@@ -14,7 +14,7 @@ COPY requirements/test.txt /opt/noc/requirements/test.txt
 
 RUN apk add --update --no-cache \
     ca-certificates \
-    libpq libssh2 \
+    libpq \
     py-cffi \
     py-numpy \
     py-pip \
@@ -22,6 +22,8 @@ RUN apk add --update --no-cache \
     tzdata \
     curl \
    && apk add --no-cache --virtual .build-deps \
+        git \
+        build-base \
         cyrus-sasl-dev \
         cython \
         cython-dev \
@@ -29,13 +31,13 @@ RUN apk add --update --no-cache \
         libffi-dev \
         libmemcached-dev \
         libressl-dev \
-        libssh2-dev \
         musl-dev \
         postgresql-dev \
         python-dev \
-        zlib-dev
-RUN pip install --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/docker.txt \
-    && pip install --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/test.txt
+        zlib-dev \
+        cmake
+RUN pip install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/docker.txt \
+    && pip install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/test.txt
 
 COPY . /opt/noc
 RUN find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python -m py_compile \

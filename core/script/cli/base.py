@@ -35,6 +35,7 @@ from .error import (
 )
 from noc.config import config
 from noc.core.span import Span
+from noc.core.perf import metrics
 
 
 class CLI(object):
@@ -257,14 +258,18 @@ class CLI(object):
             )
             self.logger.debug("Connecting %s", address)
             try:
+                metrics["cli_connection", ("proto", self.name)] += 1
                 yield self.iostream.connect(address)
+                metrics["cli_connection_success", ("proto", self.name)] += 1
             except tornado.iostream.StreamClosedError:
                 self.logger.debug("Connection refused")
+                metrics["cli_connection_refused", ("proto", self.name)] += 1
                 self.error = CLIConnectionRefused("Connection refused")
                 raise tornado.gen.Return(None)
             self.logger.debug("Connected")
             yield self.iostream.startup()
         # Perform all necessary login procedures
+        metrics["cli_commands", ("proto", self.name)] += 1
         if not self.is_started:
             yield self.on_start()
             self.motd = yield self.read_until_prompt()
@@ -329,13 +334,16 @@ class CLI(object):
         connect_retries = self.CONNECT_RETRIES
         while True:
             try:
+                metrics["cli_reads", ("proto", self.name)] += 1
                 f = self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
                 if self.current_timeout:
                     r = yield tornado.gen.with_timeout(self.current_timeout, f)
                 else:
                     r = yield f
                 if r == self.SYNTAX_ERROR_CODE:
+                    metrics["cli_syntax_errors", ("proto", self.name)] += 1
                     raise tornado.gen.Return(self.SYNTAX_ERROR_CODE)
+                metrics["cli_read_bytes", ("proto", self.name)] += len(r)
                 if self.script.to_track:
                     self.script.push_cli_tracking(r, self.state)
             except tornado.iostream.StreamClosedError:
@@ -368,6 +376,7 @@ class CLI(object):
                     raise tornado.iostream.StreamClosedError()
             except tornado.gen.TimeoutError:
                 self.logger.info("Timeout error")
+                metrics["cli_timeouts", ("proto", self.name)] += 1
                 # IOStream must be closed to prevent hanging read callbacks
                 self.close_iostream()
                 raise tornado.gen.TimeoutError("Timeout")
@@ -386,8 +395,10 @@ class CLI(object):
                     matched = self.buffer[: match.start()]
                     self.buffer = self.buffer[match.end() :]
                     if isinstance(handler, tuple):
+                        metrics["cli_state", ("state", handler[0].__name__)] += 1
                         r = yield handler[0](matched, match, *handler[1:])
                     else:
+                        metrics["cli_state", ("state", handler.__name__)] += 1
                         r = yield handler(matched, match)
                     if r is not None:
                         raise tornado.gen.Return(r)
