@@ -18,6 +18,7 @@ import tornado.gen
 import six
 
 # NOC modules
+from noc.core.perf import metrics
 from .base import CLI
 
 _logger = logging.getLogger(__name__)
@@ -233,11 +234,18 @@ class TelnetIOStream(IOStream):
             yield self.write(self.cli.profile.telnet_send_on_connect)
 
     def read_from_fd(self):
+        metrics["telnet_reads"] += 1
         chunk = super(TelnetIOStream, self).read_from_fd()
+        if chunk:
+            metrics["telnet_read_bytes"] += len(chunk)
+        elif chunk is None:
+            metrics["telnet_reads_blocked"] += 1
         return self.parser.feed(chunk)
 
     def write(self, data, callback=None):
         data = self.parser.escape(data)
+        metrics["telnet_writes"] += 1
+        metrics["telnet_write_bytes"] += len(data)
         return super(TelnetIOStream, self).write(data, callback=callback)
 
 
