@@ -29,6 +29,7 @@ from noc.lib.app.reportdatasources.report_metrics import (
     ReportMemoryMetrics,
     ReportPingMetrics,
 )
+from noc.lib.app.reportdatasources.report_container import ReportContainerData
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
@@ -122,6 +123,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             "object_platform",
             "object_adm_domain",
             "object_segment",
+            "object_container",
             # "object_hostname",
             # "object_status",
             # "profile_name",
@@ -152,6 +154,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             "OBJECT_PLATFORM",
             "OBJECT_ADM_DOMAIN",
             "OBJECT_SEGMENT",
+            "OBJECT_CONTAINER",
             "IFACE_NAME",
             "IFACE_DESCRIPTION",
             "IFACE_SPEED",
@@ -300,9 +303,13 @@ class ReportMetricsDetailApplication(ExtApplication):
         metrics_attrs = namedtuple("METRICSATTRs", query_fields)
 
         mo_attrs = namedtuple("MOATTRs", [c for c in cols if c.startswith("object")])
+        containers_address = {}
+        if "object_container" in columns_filter:
+            containers_address = ReportContainerData(set(mos.values_list("id", flat=True)))
+            containers_address = dict(list(containers_address.extract()))
         moss = {}
         for row in mos.values_list(
-            "bi_id", "name", "address", "platform", "administrative_domain__name", "segment"
+            "bi_id", "name", "address", "platform", "administrative_domain__name", "segment", "id"
         ):
             moss[row[0]] = mo_attrs(
                 *[
@@ -311,6 +318,7 @@ class ReportMetricsDetailApplication(ExtApplication):
                     str(Platform.get_by_id(row[3]) if row[3] else ""),
                     row[4],
                     str(NetworkSegment.get_by_id(row[5])) if row[5] else "",
+                    containers_address.get(row[6], "") if containers_address and row[6] else "",
                 ]
             )
         url = report_map[reporttype].get("url", "")
