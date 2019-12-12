@@ -103,7 +103,7 @@ class Command(BaseCommand):
             [
                 "10BASET",
                 "100BASETX",
-                "1000BASETX",
+                "1000BASET",
                 "2.5GBASET",
                 "5GBASET",
                 "10GBASET",
