@@ -18,9 +18,9 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: noc_node_freebsd11
-    template: packer-freebsd11
-    memory: 3072
+  - name: noc_node_freebsd12
+    template: packer-freebsd12
+    memory: 4096
     cpu: 2
 provisioner:
   name: ansible
