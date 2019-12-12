@@ -23,9 +23,9 @@ def setup_proxies():
             aa = a.split("://", 1)[1]
             if aa.endswith("/"):
                 aa = aa[:-1]
-            host, port = aa.split(":")
+            host, port = aa.rsplit(":", 1)
         else:
-            host, port = a.split(":")
+            host, port = a.rsplit(":", 1)
         return host, int(port)
 
     if config.proxy.http_proxy:
