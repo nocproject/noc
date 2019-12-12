@@ -427,6 +427,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 ]
         # Active Alarms
         if source in ["active", "both"]:
+            datenow = datetime.datetime.now()
             for a in (
                 ActiveAlarm._get_collection()
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -443,7 +444,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     ]
                 )
             ):
-                dt = fd - a["timestamp"]
+                dt = datenow - a["timestamp"]
                 duration = int(dt.total_seconds())
                 total_objects = sum(ss["summary"] for ss in a["total_objects"])
                 if min_objects and total_objects < min_objects:
