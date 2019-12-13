@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CloudEngine | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "785f4000-db8b-4883-9316-8b6df44de85a",
+    "description": "Huawei CloudEngine PSU slot (Power module)",
+    "c_group": [],
+    "genders": "mf"
+}
