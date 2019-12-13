@@ -15,7 +15,7 @@ import time
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.text import parse_table
+from noc.lib.text import parse_table
 from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.ip import IPv4
@@ -66,7 +66,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
     rx_sh_int_des = rx_in = re.compile(
-        r"^(?P<ifname>\S+)\s+(?:(?:General|Trunk|Access \(\d+\))\s+)?(?P<oper_status>Up|Down)\s+"
+        r"^(?P<ifname>\S+)\s+(?:(?:General|Trunk|Access|Customer)(?: \(\d+\))?\s+)?(?P<oper_status>Up|Down)\s+"
         r"(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
         re.MULTILINE,
     )
