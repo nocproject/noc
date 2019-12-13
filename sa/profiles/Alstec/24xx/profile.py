@@ -16,7 +16,8 @@ class Profile(BaseProfile):
     name = "Alstec.24xx"
     pattern_username = r"^User:"
     pattern_unprivileged_prompt = r"^(?P<hostname>[ \S]+) >"
-    pattern_prompt = r"^(?P<hostname>[ \S]+?)(\s\([\S ]+?\)){0,3} #"
+    pattern_prompt = r"^(?=[^#])(?P<hostname>\S+?)(\s\([\S ]+?\)){0,3} #"
+    # (?=[^#]) fix if use banner '# Banner message #' format
     pattern_more = [
         (r"^--More-- or \(q\)uit$", " "),
         (
