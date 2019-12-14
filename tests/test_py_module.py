@@ -15,6 +15,9 @@ import ast
 import pytest
 import cachetools
 
+# NOC modules
+from noc.core.comp import smart_text
+
 ALLOW_XFAIL = {
     "noc.services.login.backends.pam",
     "noc.services.web.apps.kb.parsers.mediawiki",
@@ -36,11 +39,13 @@ ALLOW_XFAIL = {
 def get_files():
     def _get_files():
         try:
-            data = subprocess.check_output(["git", "ls-tree", "HEAD", "-r", "--name-only"])
+            data = smart_text(
+                subprocess.check_output(["git", "ls-tree", "HEAD", "-r", "--name-only"])
+            )
             return data.splitlines()
         except (OSError, subprocess.CalledProcessError):
             # No git, emulate
-            data = subprocess.check_output(["find", ".", "-type", "f", "-print"])
+            data = smart_text(subprocess.check_output(["find", ".", "-type", "f", "-print"]))
             return [p[2:] for p in data.splitlines()]
 
     return [x for x in _get_files() if not x.startswith("docs")]

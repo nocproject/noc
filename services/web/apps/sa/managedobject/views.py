@@ -45,7 +45,6 @@ from noc.sa.interfaces.base import (
     BooleanParameter,
 )
 from noc.cm.models.objectfact import ObjectFact
-from noc.cm.engine import Engine
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
@@ -791,6 +790,8 @@ class ManagedObjectApplication(ExtModelApplication):
 
     @view(url=r"(?P<id>\d+)/revalidate/$", method=["POST"], access="read", api=True)
     def api_revalidate(self, request, id):
+        from noc.cm.engine import Engine
+
         def revalidate(o):
             engine = Engine(o)
             engine.check()

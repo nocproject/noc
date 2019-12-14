@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.utils.translation import ugettext_lazy as _
+from noc.core.translation import ugettext as _
 
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport

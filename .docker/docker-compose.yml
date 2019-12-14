@@ -52,7 +52,7 @@ services:
       timeout: 3s
       retries: 100
 
-  migrate:
+  py2migrate:
     build:
       context: ../
       dockerfile: .docker/Dockerfile.build
@@ -66,9 +66,9 @@ services:
         condition: service_started
     command: >
       sh -c "set -xe
-      && /usr/bin/python ./commands/migrate.py
+      && ./noc migrate
       && ./noc ensure-indexes
-      && /usr/bin/python ./commands/migrate-ch.py
+      && ./noc migrate-ch
       && /usr/bin/python ./scripts/deploy/install-packages requirements/collections.json
       && ./noc collection sync
       && ./noc sync-perm
@@ -77,7 +77,7 @@ services:
     env_file:
       - noc.conf
 
-  tests:
+  py2tests:
     build:
       context: ../
       dockerfile: .docker/Dockerfile.build
@@ -110,7 +110,7 @@ services:
     env_file:
       - noc.conf
 
-  python3:
+  py3migrate:
     build:
       context: ../
       dockerfile: .docker/Dockerfile.build3
@@ -133,21 +133,48 @@ services:
       snmpd:
         condition: service_started
     command: >
-      sh -c "
-      for i in services/*; do
-        echo $$i;
-        timeout -t 10 -s 9 /usr/bin/python3 $$i/service.py;
-      done;
-      echo 'Trying to compile' &&
-      find /opt/noc/ -type f -name '*.py' -print0 | xargs -0 python3 -m py_compile
-      && /usr/bin/python3 ./commands/migrate.py
+      sh -c "set -xe
+      && ./noc migrate
       && ./noc ensure-indexes
-      && /usr/bin/python3 ./commands/migrate-ch.py
+      && ./noc migrate-ch
       && /usr/bin/python3 ./scripts/deploy/install-packages requirements/collections.json
       && ./noc collection sync
       && ./noc sync-perm
       && ./noc sync-mibs
       "
+    env_file:
+      - noc.conf
+
+  py3tests:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build3
+    restart: "no"
+    working_dir: /opt/noc
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb-repl-set-init:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+      nsqd:
+        condition: service_started
+      telnetd:
+        condition: service_started
+      sshd:
+        condition: service_started
+      dropbear:
+        condition: service_started
+      snmpd:
+        condition: service_started
+    command: >
+      sh -c "set -xe
+      && /usr/bin/python3 ./scripts/deploy/install-packages requirements/collections.json
+      && ./noc test run --coverage-report=/opt/noc/var/coverage --statistics
+      "
+    environment:
+      NOC_TEST_DB: noc_tests
     env_file:
       - noc.conf
 

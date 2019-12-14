@@ -33,7 +33,11 @@ flake8:
         true;
       fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
 
@@ -52,7 +56,11 @@ black:
         true;
       fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
   allow_failure: false
@@ -72,7 +80,11 @@ mypy:
         true;
       fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
   allow_failure: true
@@ -92,7 +104,17 @@ prettier:
         true;
       fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.js"
+      - "*.json"
+      - "*.css"
+      - "*.yml"
+      - "**/*.js"
+      - "**/*.json"
+      - "**/*.css"
+      - "**/*.yml"
   tags:
     - docker
   allow_failure: true
@@ -115,7 +137,11 @@ xenon:
       fi
     - if [ "$x" -gt 0 ] ; then exit 1; fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
   allow_failure: true
@@ -135,7 +161,11 @@ pylint:
         true;
       fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
 
@@ -154,7 +184,11 @@ pylint3k:
         true;
       fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
 
@@ -173,7 +207,11 @@ bandit:
         true;
       fi
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
   allow_failure: true
@@ -197,7 +235,11 @@ futurize:
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - /bin/future.sh "$FLIST"
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
 
@@ -208,35 +250,39 @@ futurize stage2:
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
     - /bin/future2.sh "$FLIST"
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
   tags:
     - docker
   allow_failure: true
 
-Test migrate:
+py2:migrate:
   stage: test
   before_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2migrate
   script:
     # see docker/docker-compose.yml for complete list of migrations
     - >
      docker-compose
      -f .docker/docker-compose.yml
-     -p "${DOCKER_COMPOSE_PROJECT}-migrate"
-     build migrate
+     -p "${DOCKER_COMPOSE_PROJECT}"
+     build py2migrate
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-migrate"
+      -p "${DOCKER_COMPOSE_PROJECT}"
       up
-      --exit-code-from migrate
-      migrate
+      --exit-code-from py2migrate
+      py2migrate
   after_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2migrate
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-migrate"
+      -p "${DOCKER_COMPOSE_PROJECT}"
       down -v
   only:
     refs:
@@ -247,10 +293,44 @@ Test migrate:
     - shell
   allow_failure: false
 
-Test code:
+py3:migrate:
   stage: test
   before_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3migrate
+  script:
+    # see docker/docker-compose.yml for complete list of migrations
+    - >
+     docker-compose
+     -f .docker/docker-compose.yml
+     -p "${DOCKER_COMPOSE_PROJECT}"
+     build py3migrate
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}"
+      up
+      --exit-code-from py3migrate
+      py3migrate
+  after_script:
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3migrate
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}"
+      down -v
+  only:
+    refs:
+      - merge_requests
+      - master
+      - /^release-\d+\.\d+/
+  tags:
+    - shell
+  allow_failure: false
+
+py2:test:
+  stage: test
+  before_script:
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2tests
     - mv .dockerignore .dockerignore.prod
     - cp .dockerignore.tests .dockerignore
   script:
@@ -263,22 +343,22 @@ Test code:
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-tests"
-      build tests
+      -p "${DOCKER_COMPOSE_PROJECT}"
+      build py2tests
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-tests"
+      -p "${DOCKER_COMPOSE_PROJECT}"
       up
-      --exit-code-from tests
-      tests
+      --exit-code-from py2tests
+      py2tests
   after_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2tests
     - mv .dockerignore.prod .dockerignore
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-tests"
+      -p "${DOCKER_COMPOSE_PROJECT}"
       down -v
   only:
     refs:
@@ -293,10 +373,10 @@ Test code:
       - collections/
     expire_in: 1 day
 
-Test python 3:
+py3:test:
   stage: test
   before_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3tests
     - mv .dockerignore .dockerignore.prod
     - cp .dockerignore.tests .dockerignore
   script:
@@ -305,22 +385,22 @@ Test python 3:
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-py3"
-      build python3
+      -p "${DOCKER_COMPOSE_PROJECT}"
+      build py3tests
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-py3"
+      -p "${DOCKER_COMPOSE_PROJECT}"
       up
-      --exit-code-from python3
-      python3
+      --exit-code-from py3tests
+      py3tests
   after_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3tests
     - mv .dockerignore.prod .dockerignore
     - >
       docker-compose
       -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}-py3"
+      -p "${DOCKER_COMPOSE_PROJECT}"
       down -v
   only:
     refs:
@@ -331,7 +411,7 @@ Test python 3:
     - shell
   allow_failure: true
 
-Build docs:
+build:Docs:
   stage: Build docs
   environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
@@ -359,7 +439,7 @@ Build docs:
   only:
     - merge_requests
 
-Build Master Docs:
+build:Master Docs:
   stage: Build docs
   environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
@@ -381,7 +461,7 @@ Build Master Docs:
       - master
       - /^release-\d+\.\d+/
 
-Build release image:
+build:Release Image:
   stage: Build release container
   before_script:
   script:

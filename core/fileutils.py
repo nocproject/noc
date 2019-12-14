@@ -17,14 +17,14 @@ import six
 
 # NOC modules
 from noc.core.version import version
+from noc.core.comp import smart_text
 
 
 def safe_rewrite(path, text, mode=None):
     """
     Create new file filled with "text" safely
     """
-    if isinstance(text, unicode):
-        text = text.encode("utf-8")
+    text = smart_text(text)
     d = os.path.dirname(path)
     if d and not os.path.exists(d):
         os.makedirs(d)
@@ -46,8 +46,7 @@ def safe_append(path, text):
     """
     Append the text to the end of the file
     """
-    if isinstance(text, unicode):
-        text = text.encode("utf-8")
+    text = smart_text(text)
     d = os.path.dirname(path)
     if d and not os.path.exists(d):
         os.makedirs(d)
@@ -64,8 +63,7 @@ def is_differ(path, content):
             cs1 = hashlib.sha1(f.read()).digest()
         cs2 = hashlib.sha1(content).digest()
         return cs1 != cs2
-    else:
-        return True
+    return True
 
 
 def rewrite_when_differ(path, content):
@@ -87,8 +85,7 @@ def read_file(path):
     if os.path.isfile(path) and os.access(path, os.R_OK):
         with open(path, "r") as f:
             return f.read()
-    else:
-        return None
+    return None
 
 
 def copy_file(f, t, mode=None):
@@ -144,7 +141,7 @@ def urlopen(url, auto_deflate=False):
     """
     urlopen wrapper
     """
-    from future.moves.urllib.request import urlopen, Request
+    from six.moves.urllib.request import urlopen, Request
     from noc.core.http.proxy import setup_urllib_proxies
 
     setup_urllib_proxies()

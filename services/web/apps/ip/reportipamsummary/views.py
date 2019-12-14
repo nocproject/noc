@@ -6,7 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from django.utils.translation import ugettext_lazy as _
+from noc.core.translation import ugettext as _
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn

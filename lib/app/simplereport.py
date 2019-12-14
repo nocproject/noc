@@ -21,6 +21,7 @@ from django.utils.dateformat import DateFormat
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.lib.widgets import tags_list
+from noc.core.comp import smart_text
 from .reportapplication import ReportApplication
 
 
@@ -42,7 +43,7 @@ class ReportNode(object):
         Return XML-quoted value
         """
         return (
-            unicode(s)
+            smart_text(s)
             .replace("&", "&amp;")
             .replace("<", "&lt;")
             .replace(">", "&gt;")
@@ -199,7 +200,7 @@ for suffix in ["KB", "MB", "GB", "TB", "PB"]:
     dec *= 1024
 
 
-class SafeString(unicode):
+class SafeString(six.text_type):
     """
     Do not perform HTML quoting
     """
@@ -499,7 +500,7 @@ class TableSection(ReportSection):
         self.columns = []
         for c in columns:
             if isinstance(c, six.string_types) or hasattr(c, "__unicode__"):
-                self.columns += [TableColumn(unicode(c))]
+                self.columns += [TableColumn(smart_text(c))]
             else:
                 self.columns += [c]
         self.data = data

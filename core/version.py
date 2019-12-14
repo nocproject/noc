@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NOC components versions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import platform
 
 # NOC modules
 from noc.config import config
+from noc.core.comp import smart_text
 
 CHANGESET_LEN = 8
 BRAND_PATH = config.get_customized_paths("BRAND", prefer_custom=True)
@@ -54,7 +55,9 @@ class Version(object):
         :return:
         """
         if self.has_git:
-            return subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
+            return smart_text(
+                subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
+            )
         else:
             return ""
 
@@ -65,15 +68,17 @@ class Version(object):
         :return:
         """
         if self.has_git:
-            return subprocess.check_output(["git", "rev-parse", "HEAD"])[:CHANGESET_LEN]
+            return smart_text(subprocess.check_output(["git", "rev-parse", "HEAD"]))[:CHANGESET_LEN]
         else:
             return ""
 
     @cachedproperty
     def version(self):
         if self.has_git:
-            v = subprocess.check_output(
-                ["git", "describe", "--tags", "--abbrev=%d" % CHANGESET_LEN]
+            v = smart_text(
+                subprocess.check_output(
+                    ["git", "describe", "--tags", "--abbrev=%d" % CHANGESET_LEN]
+                )
             )
             if "-" not in v:
                 return v.strip()

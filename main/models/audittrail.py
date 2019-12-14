@@ -13,7 +13,6 @@ import datetime
 # Third-party modules
 import six
 from django.db.models import signals as django_signals
-from django.utils.encoding import smart_unicode
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, DateTimeField, ListField, EmbeddedDocumentField
 
@@ -21,6 +20,7 @@ from mongoengine.fields import StringField, DateTimeField, ListField, EmbeddedDo
 from noc.config import config
 from noc.core.middleware.tls import get_user
 from noc.lib.utils import get_model_id
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -122,7 +122,7 @@ class AuditTrail(Document):
             for f in sender._meta.fields:
                 od = instance._old_values.get(f.attname)
                 if od is not None:
-                    od = smart_unicode(od)
+                    od = smart_text(od)
                 nd = cls.get_field(instance, f)
                 if nd != od:
                     changes += [{"field": f.name, "old": od, "new": nd}]

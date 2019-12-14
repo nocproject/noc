@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+import codecs
 
 # NOC modules
 from .base import BaseMiddleware
+from noc.core.comp import smart_text
 
 
 class BasicAuthMiddeware(BaseMiddleware):
@@ -29,7 +31,8 @@ class BasicAuthMiddeware(BaseMiddleware):
         user = self.user or self.http.script.credentials.get("user")
         password = self.password or self.http.script.credentials.get("password")
         if user and password:
+            uh = smart_text("%s:%s" % (user, password))
             headers["Authorization"] = (
-                "Basic %s" % ("%s:%s" % (user, password)).encode("base64").strip()
+                b"Basic %s" % codecs.encode(uh.encode("utf-8"), "base64").strip()
             )
         return url, body, headers

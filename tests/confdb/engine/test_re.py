@@ -17,16 +17,16 @@ from noc.core.confdb.engine.base import Engine
     "input,query,output",
     [
         # Empty context, unknown variable
-        ({}, "Re('\d+', x)", []),
+        ({}, r"Re('\d+', x)", []),
         # Empty context, constant string
-        ({}, "Re('\d+', 'x')", []),
+        ({}, r"Re('\d+', 'x')", []),
         # Match context
-        ({"x": "12"}, "Re('\d+', x)", [{"x": "12"}]),
+        ({"x": "12"}, r"Re('\d+', x)", [{"x": "12"}]),
         # Match context, pass groups
-        ({"x": "12"}, "Re('-?(?P<abs>\d+)', x)", [{"x": "12", "abs": "12"}]),
+        ({"x": "12"}, r"Re('-?(?P<abs>\d+)', x)", [{"x": "12", "abs": "12"}]),
         (
             {"x": ["12", "-12"]},
-            "Re('-?(?P<abs>\d+)', x)",
+            r"Re('-?(?P<abs>\d+)', x)",
             [{"x": "12", "abs": "12"}, {"x": "-12", "abs": "12"}],
         ),
         # Ignore case

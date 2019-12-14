@@ -11,7 +11,7 @@ import six
 
 
 class BasePattern(object):
-    __slots__ = ["match_rest"]
+    # __slots__ = ["match_rest"] conflicts with py3
     match_rest = False
 
     def match(self, token):

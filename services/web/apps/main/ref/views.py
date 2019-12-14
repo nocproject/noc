@@ -82,9 +82,11 @@ class RefAppplication(ExtApplication):
         Stencils
         :return:
         """
-        return sorted(
-            ({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
-            key=lambda x: x["label"],
+        return list(
+            sorted(
+                ({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
+                key=lambda x: x["label"],
+            )
         )
 
     def build_model(self):
@@ -92,9 +94,11 @@ class RefAppplication(ExtApplication):
         Model Names
         :return:
         """
-        return sorted(
-            ({"id": m._meta.db_table, "label": m._meta.db_table} for m in apps.get_models()),
-            key=lambda x: x["label"],
+        return list(
+            sorted(
+                ({"id": m._meta.db_table, "label": m._meta.db_table} for m in apps.get_models()),
+                key=lambda x: x["label"],
+            )
         )
 
     def build_modcol(self):
@@ -121,14 +125,17 @@ class RefAppplication(ExtApplication):
             for n, c in six.iteritems(_document_registry)
             if c._get_collection_name()
         ]
-        return sorted(r, key=lambda x: x["label"])
+        return list(sorted(r, key=lambda x: x["label"]))
 
     def build_ulanguage(self):
         """
         User languages
         :return:
         """
-        return sorted({"id": l[0], "label": l[1]} for l in settings.LANGUAGES)
+        return [
+            {"id": lang[0], "label": lang[1]}
+            for lang in sorted(settings.LANGUAGES, key=operator.itemgetter(1))
+        ]
 
     rx_fa_glyph = re.compile(r"\.fa-([^:]+):before\{content:", re.MULTILINE | re.DOTALL)
 
@@ -150,9 +157,11 @@ class RefAppplication(ExtApplication):
         return r
 
     def build_unotificationmethod(self):
-        return sorted(
-            ({"id": s[0], "label": s[1]} for s in USER_NOTIFICATION_METHOD_CHOICES),
-            key=lambda x: x["label"],
+        return list(
+            sorted(
+                ({"id": s[0], "label": s[1]} for s in USER_NOTIFICATION_METHOD_CHOICES),
+                key=lambda x: x["label"],
+            )
         )
 
     def build_validator(self):
@@ -176,25 +185,29 @@ class RefAppplication(ExtApplication):
             }
             return r
 
-        return sorted(
-            (f(k, v) for k, v in six.iteritems(validator_registry.validators) if v.TITLE),
-            key=lambda x: x["label"],
+        return list(
+            sorted(
+                (f(k, v) for k, v in six.iteritems(validator_registry.validators) if v.TITLE),
+                key=lambda x: x["label"],
+            )
         )
 
     def build_windowfunction(self):
-        return sorted(({"id": x[0], "label": x[1]} for x in wf_choices))
+        return [{"id": x[0], "label": x[1]} for x in sorted(wf_choices, key=operator.itemgetter(1))]
 
     def _build_report(self):
-        return sorted(
-            ({"id": r_id, "label": r.title} for r_id, r in site.iter_predefined_reports()),
-            key=operator.itemgetter("label"),
+        return list(
+            sorted(
+                ({"id": r_id, "label": r.title} for r_id, r in site.iter_predefined_reports()),
+                key=operator.itemgetter("label"),
+            )
         )
 
     def build_modelid(self):
         return [{"id": x, "label": x} for x in sorted(iter_model_id())]
 
     def build_kbparser(self):
-        return sorted([{"id": x, "label": x} for x in sorted(kbparser_loader)])
+        return [{"id": x, "label": x} for x in sorted(kbparser_loader)]
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
@@ -222,5 +235,4 @@ class RefAppplication(ExtApplication):
             data = data[int(start) : int(start) + int(limit)]
         if format == "ext":
             return {"total": total, "success": True, "data": data}
-        else:
-            return data
+        return data

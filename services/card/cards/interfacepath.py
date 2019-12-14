@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+import codecs
 
 #  Third-party modules
 from typing import Dict, Any, List, Tuple, Set, Optional
@@ -108,12 +109,12 @@ class InterfacePathCard(BaseCard):
         :param data: Input data
         :return: Tamper-protection signature
         """
-        return hash_str(config.secret_key + data).encode("base64")[: cls.SIG_LEN]
+        return codecs.encode(hash_str(config.secret_key + data), "base64")[: cls.SIG_LEN]
 
     @classmethod
     def encode_query(cls, to_collect):
         # type: (Set[Tuple[int, int, str]]) -> str
-        data = ujson.dumps(to_collect).encode("base64").replace("\n", "")
+        data = codecs.encode(ujson.dumps(to_collect), "base64").replace("\n", "")
         return cls.get_signature(data) + data
 
     @classmethod
@@ -122,7 +123,7 @@ class InterfacePathCard(BaseCard):
         sig, data = query[: cls.SIG_LEN], query[cls.SIG_LEN :]
         if sig != cls.get_signature(data):
             raise ValueError
-        return ujson.loads(data.decode("base64"))
+        return ujson.loads(codecs.decode(data, "base64"))
 
     @staticmethod
     def split_interfaces(obj, interfaces):

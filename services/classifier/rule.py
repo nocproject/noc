@@ -9,7 +9,7 @@
 # Python modules
 import re
 import logging
-import new
+import types
 
 # Third-party modules
 import six
@@ -260,10 +260,12 @@ class Rule(object):
         cc = ["# %s" % self.name]
         cc += ["def match(self, event, vars):"]
         cc += c
-        cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
+        cc += ["rule.match = types.MethodType(match, rule)"]
         self.code = "\n".join(cc)
         code = compile(self.code, "<string>", "exec")
-        six.exec_(code, {"rule": self, "new": new, "logging": logging, "fm_unescape": fm_unescape})
+        six.exec_(
+            code, {"rule": self, "types": types, "logging": logging, "fm_unescape": fm_unescape}
+        )
 
     def clone(self, rules):
         """

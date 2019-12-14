@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BI decorators
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,9 +12,11 @@ import struct
 # Third-party modules
 from csiphash import siphash24
 import bson
+import six
 
 # NOC modules
 from noc.models import is_document
+from noc.core.comp import smart_bytes
 
 SIPHASH_SEED = b"\x00" * 16
 BI_ID_FIELD = "bi_id"
@@ -26,7 +28,9 @@ def bi_hash(v):
     :param v:
     :return:
     """
-    bh = siphash24(SIPHASH_SEED, str(v))
+    if not isinstance(v, six.string_types):
+        v = str(v)
+    bh = siphash24(SIPHASH_SEED, smart_bytes(v))
     return int(struct.unpack("!Q", bh)[0] & 0x7FFFFFFFFFFFFFFF)
 
 
