@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party Modules
-from django.utils.translation import ugettext_lazy as _
+from noc.core.translation import ugettext as _
 from django import forms
 
 # NOC Modules

@@ -9,8 +9,10 @@
 # Third-party modules
 import six
 from django import forms
-from django.utils.encoding import force_unicode
 from django.utils.html import escape
+
+# NOC modules
+from noc.core.comp import smart_text
 
 
 class NOCBoundField(forms.forms.BoundField):
@@ -24,9 +26,9 @@ class NOCBoundField(forms.forms.BoundField):
 
     def label_tag(self, contents=None, attrs=None):
         if not contents:
-            contents = force_unicode(
-                escape(self.field.label if self.field.label else self.name)
-            ) + (":" if not self.is_checkbox else "")
+            contents = smart_text(escape(self.field.label if self.field.label else self.name)) + (
+                ":" if not self.is_checkbox else ""
+            )
         classes = []
         if self.is_checkbox:
             classes += ["vCheckboxLabel"]

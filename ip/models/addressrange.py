@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 # Third-party modules
 import six
-from django.utils.translation import ugettext_lazy as _
+from noc.core.translation import ugettext as _
 from django.db import models
 from django.template import Template, Context
 

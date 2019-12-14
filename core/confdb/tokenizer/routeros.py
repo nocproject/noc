@@ -17,7 +17,7 @@ from .line import LineTokenizer
 
 class RouterOSTokenizer(LineTokenizer):
     name = "routeros"
-    rx_param = re.compile('([^= ]+="[^"]+"|[^= ]+=\S+|\S+)')
+    rx_param = re.compile(r'([^= ]+="[^"]+"|[^= ]+=\S+|\S+)')
 
     def iter_context(self, context, tokens):
         for token in tokens:

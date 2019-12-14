@@ -14,7 +14,7 @@ import six
 import ujson
 from django import forms
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from noc.core.translation import ugettext as _
 from noc.core.ip import IP
 
 # NOC modules

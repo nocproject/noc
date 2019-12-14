@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Clickhouse connection
+# ClickHouse connection
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -16,6 +16,7 @@ from six.moves.urllib.parse import quote as urllib_quote
 
 # NOC modules
 from noc.core.http.client import fetch_sync
+from noc.core.comp import smart_text
 from noc.config import config
 from .error import ClickhouseError
 
@@ -68,7 +69,7 @@ class ClickhouseClient(object):
         )
         if code != 200:
             raise ClickhouseError("%s: %s" % (code, body))
-        return [row.split("\t") for row in body.splitlines()]
+        return [smart_text(row).split("\t") for row in body.splitlines()]
 
     def ensure_db(self):
         self.execute(post="CREATE DATABASE IF NOT EXISTS %s;" % config.clickhouse.db, nodb=True)

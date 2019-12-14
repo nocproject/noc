@@ -30,6 +30,7 @@ import cachetools
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.mongo.connection import get_db
+from noc.core.comp import smart_bytes
 
 state_lock = threading.Lock()
 
@@ -111,7 +112,7 @@ class Collection(object):
         # Get state from database
         cs = coll.find_one({"_id": self.name})
         if cs:
-            return ujson.loads(zlib.decompress(str(cs["state"])))
+            return ujson.loads(zlib.decompress(smart_bytes(cs["state"])))
         # Fallback to legacy local
         lpath = self.get_legacy_state_path()
         state = {}
@@ -132,7 +133,7 @@ class Collection(object):
         coll = self.get_state_collection()
         coll.update_one(
             {"_id": self.name},
-            {"$set": {"state": bson.Binary(zlib.compress(ujson.dumps(state)))}},
+            {"$set": {"state": bson.Binary(zlib.compress(smart_bytes(ujson.dumps(state))))}},
             upsert=True,
         )
         # Remove legacy state
@@ -173,7 +174,7 @@ class Collection(object):
         """
 
         def item_hash_default(x):
-            return hashlib.sha256(x).hexdigest()
+            return hashlib.sha256(smart_bytes(x)).hexdigest()
 
         def item_hash_tagged(x):
             return "%s:%s" % (api_version, item_hash_default(x))

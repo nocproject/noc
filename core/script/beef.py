@@ -11,6 +11,7 @@ import os
 from collections import namedtuple
 import bisect
 import itertools
+import codecs
 
 # Third-party modules
 import ujson
@@ -257,7 +258,7 @@ class Beef(object):
         :param value:
         :return:
         """
-        return value.decode("base64")
+        return codecs.decode(value, "base64")
 
     @staticmethod
     def mib_decode_hex(value):

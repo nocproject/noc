@@ -292,7 +292,7 @@ class Command(BaseCommand):
     def has_unquoted(item, v):
         return not item.startswith('"') and v in item
 
-    rx_mq = re.compile('"\s+"')
+    rx_mq = re.compile(r'"\s+"')
 
     @classmethod
     def merge_mq(cls, value):

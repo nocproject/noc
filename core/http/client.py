@@ -15,6 +15,7 @@ import logging
 import zlib
 import time
 import struct
+import codecs
 
 # Third-party modules
 import six
@@ -30,6 +31,7 @@ from noc.core.perf import metrics
 from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 from noc.config import config
+from noc.core.comp import smart_bytes, smart_text
 
 if config.features.pypy:
     from http_parser.pyparser import HttpParser
@@ -272,11 +274,10 @@ def fetch(
         # Process request
         body = body or ""
         content_type = "application/binary"
-        if isinstance(body, unicode):
-            body = body.encode("utf-8")
-        elif not isinstance(body, six.string_types):
+        if not isinstance(body, (six.string_types, six.binary_type)):
             body = ujson.dumps(body)
             content_type = "text/json"
+        body = smart_bytes(body)
         h = {"Host": str(u.netloc), "Connection": "close", "User-Agent": DEFAULT_USER_AGENT}
         if body and content_encoding:
             if content_encoding == CE_DEFLATE:
@@ -309,16 +310,17 @@ def fetch(
             h["Content-Type"] = content_type
         if user and password:
             # Include basic auth header
-            h["Authorization"] = "Basic %s" % ("%s:%s" % (user, password)).encode("base64").strip()
+            uh = smart_text("%s:%s" % (user, password))
+            h["Authorization"] = b"Basic %s" % codecs.encode(uh.encode("utf-8"), "base64").strip()
         if headers:
             h.update(headers)
         path = u.path
         if u.query:
             path += "?%s" % u.query
         req = b"%s %s HTTP/1.1\r\n%s\r\n\r\n%s" % (
-            method,
-            path,
-            "\r\n".join(b"%s: %s" % (k, h[k]) for k in h),
+            smart_bytes(method),
+            smart_bytes(path),
+            b"\r\n".join(b"%s: %s" % (smart_bytes(k), smart_bytes(h[k])) for k in h),
             body,
         )
         try:
@@ -400,7 +402,7 @@ def fetch(
             else:
                 raise tornado.gen.Return((404, {}, "Redirect limit exceeded"))
         # @todo: Process gzip and deflate Content-Encoding
-        raise tornado.gen.Return((code, parsed_headers, "".join(response_body)))
+        raise tornado.gen.Return((code, parsed_headers, b"".join(response_body)))
     finally:
         if stream:
             stream.close()

@@ -12,7 +12,7 @@ import re
 
 # Third-party modules
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from noc.core.translation import ugettext as _
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, SafeString

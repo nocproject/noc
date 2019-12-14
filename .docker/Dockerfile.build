@@ -35,7 +35,9 @@ RUN apk add --update --no-cache \
         postgresql-dev \
         python-dev \
         zlib-dev \
-        cmake
+        cmake \
+   && echo -e "import sys\nsys.setdefaultencoding('utf-8')\n" > /usr/lib/python2.7/site-packages/sitecustomize.py
+
 RUN pip install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/docker.txt \
     && pip install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/test.txt
 

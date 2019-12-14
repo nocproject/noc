@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Various debugging and error logging utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ from noc.config import config
 from noc.core.version import version
 from noc.core.fileutils import safe_rewrite
 from noc.core.perf import metrics
+from noc.core.comp import smart_bytes, smart_text
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -74,15 +75,7 @@ def get_lines_from_file(filename, lineno, context_lines, loader=None, module_nam
             pass
     if source is None:
         return None, [], None, []
-    encoding = "ascii"
-    for line in source[:2]:
-        # File coding may be specified. Match pattern from PEP-263
-        # (http://www.python.org/dev/peps/pep-0263/)
-        match = rx_coding.search(line)
-        if match:
-            encoding = match.group(1)
-            break
-    source = [unicode(sline, encoding, "replace") for sline in source]
+    source = [smart_text(sline) for sline in source]
     lower_bound = max(0, lineno - context_lines)
     upper_bound = lineno + context_lines
     pre_context = [line.strip("\n") for line in source[lower_bound:lineno]]
@@ -189,7 +182,7 @@ def format_frames(frames, reverse=config.traceback.reverse):
             r += ["Variables:"]
             for n, v in f["vars"]:
                 try:
-                    pv = unicode(repr(v), "utf-8")
+                    pv = smart_text(repr(v))
                     if len(pv) > 72:
                         pv = "\n" + pprint.pformat(v)
                 except:  # noqa
@@ -249,7 +242,7 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
     ]
     if not reverse:
         r += ["UNHANDLED EXCEPTION (%s)" % str(now), str(t), str(v)]
-    return "\n".join(r)
+    return "\n".join(smart_text(x, "ignore") for x in r)
 
 
 def excepthook(t, v, tb):
@@ -355,8 +348,8 @@ def error_fingerprint():
         tb_function,
         str(tb_lineno),  # Absolute code point
     ]
-    hash = hashlib.sha1("|".join(p if p else "" for p in parts)).digest()
-    return str(uuid.UUID(bytes=hash[:16], version=5))
+    eh = hashlib.sha1(smart_bytes(b"|".join(smart_bytes(p if p else "") for p in parts))).digest()
+    return str(uuid.UUID(bytes=eh[:16], version=5))
 
 
 def dump_stacks(thread_id=None):
@@ -371,23 +364,6 @@ def dump_stacks(thread_id=None):
             print("File: '%s', line %d, in %s" % (filename, lineno, name))
             if line:
                 print("    %s" % line.strip())
-
-
-def BQ(s):
-    """
-    Pretty-format binary string
-    :param s: String to format
-    :return: Formatted string
-
-    >>> BQ("test")
-    u'test'
-    >>> BQ("\\xa8\\xf9\\x80")
-    '(A8 F9 80)'
-    """
-    try:
-        return unicode(s)
-    except UnicodeDecodeError:
-        return "(%s)" % " ".join(["%02X" % ord(c) for c in s])
 
 
 class ErrorReport(object):

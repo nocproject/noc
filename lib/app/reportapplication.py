@@ -11,6 +11,7 @@ from __future__ import absolute_import
 
 # NOC modules
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 from .application import Application, view
 
 
@@ -61,7 +62,7 @@ class ReportApplication(Application):
         pass
 
     def get_menu(self):
-        return [_("Reports"), unicode(self.title)]
+        return [_("Reports"), smart_text(self.title)]
 
     @view(url=r"^$", url_name="view", access="view", menu=get_menu)
     def view_report(self, request, format="html"):

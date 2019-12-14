@@ -13,7 +13,7 @@ from collections import defaultdict
 
 # Third-party modules
 import six
-from django.utils.translation import ugettext_lazy as _
+from noc.core.translation import ugettext as _
 from django.db import models
 from django.db.models import Q
 

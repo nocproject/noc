@@ -35,7 +35,10 @@ class NPkg(object):
     def get_latest_version(self, r):
         url = self.url + r["name"] + ".latest"
         f = urlopen(url)
-        version = f.read().splitlines()[0]
+        data = f.read()
+        if hasattr(data, "decode"):
+            data = data.decode("utf-8")
+        version = data.splitlines()[0]
         return version
 
     def read_config(self):

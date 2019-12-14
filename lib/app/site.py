@@ -29,6 +29,7 @@ import ujson
 # NOC modules
 from noc.config import config
 from noc.core.debug import error_report
+from noc.core.comp import smart_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -477,7 +478,7 @@ class Site(object):
             m["children"] = sorted_menu(m["children"])
 
     def get_menu_id(self, path):
-        return hashlib.sha1(" | ".join(smart_str(p) for p in path)).hexdigest()
+        return hashlib.sha1(smart_bytes(" | ".join(smart_str(p) for p in path))).hexdigest()
 
     def add_contributor(self, cls, contributor):
         self.app_contributors[cls].add(contributor)
