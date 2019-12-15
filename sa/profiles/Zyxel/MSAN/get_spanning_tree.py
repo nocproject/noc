@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Zyxel.MSAN.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_status = re.compile("^status\s+: (?P<status>enable|disable)d?\s*\n", re.MULTILINE)
+    rx_status = re.compile(r"^status\s+: (?P<status>enable|disable)d?\s*\n", re.MULTILINE)
     rx_config = re.compile(
         r"^config name\s+: (?P<region>\S+)\s*\n"
         r"^revision level\s+: (?P<revision>\S+)\s*\n"

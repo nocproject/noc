@@ -17,8 +17,8 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_capabilities"
 
-    rx_lldp_active = re.compile("Active\s*:\s*Yes", re.MULTILINE | re.IGNORECASE)
-    rx_stp_active = re.compile("Uptime\s*:\s*\d+", re.MULTILINE | re.IGNORECASE)
+    rx_lldp_active = re.compile(r"Active\s*:\s*Yes", re.MULTILINE | re.IGNORECASE)
+    rx_stp_active = re.compile(r"Uptime\s*:\s*\d+", re.MULTILINE | re.IGNORECASE)
 
     @false_on_cli_error
     def has_lldp_cli(self):

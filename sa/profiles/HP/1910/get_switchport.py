@@ -193,7 +193,7 @@ class Script(BaseScript):
                             rx_po = re.compile(
                                 r"^\s*Bridge-Aggregation"
                                 + name.split(" ")[1]
-                                + " current state:\s+(?P<status>(UP|DOWN|Administratively DOWN))$",
+                                + r" current state:\s+(?P<status>(UP|DOWN|Administratively DOWN))$",
                                 re.IGNORECASE,
                             )
                             j = 0

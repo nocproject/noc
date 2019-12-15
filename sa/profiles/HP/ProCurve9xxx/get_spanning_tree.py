@@ -23,11 +23,11 @@ class Script(BaseScript):
         dsep = "======================================================================"
         port_rx = re.compile("\d+\/\d+")
         glob_stp_rx = re.compile(
-            "(?P<vlan_id>\d+)\s+(?P<root_id>[0-9a-f]+)\s+(?P<root_cost>\d+)\s+(?P<root_port>[0-9a-z/]+)\s+"
+            r"(?P<vlan_id>\d+)\s+(?P<root_id>[0-9a-f]+)\s+(?P<root_cost>\d+)\s+(?P<root_port>[0-9a-z/]+)\s+"
             r"(?P<priority>[0-9a-f]+)\s+(\d+\s+){6}\s+(?P<bridge_address>[0-9a-f]+)",
             re.DOTALL | re.IGNORECASE | re.MULTILINE,
         )
-        dpi_rx = re.compile("Interface:\s(?P<dpi>[0-9/]+)")
+        dpi_rx = re.compile(r"Interface:\s(?P<dpi>[0-9/]+)")
         r = {"mode": proto, "instances": []}
 
         detail = self.cli("show span detail")

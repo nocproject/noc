@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = (
         r"^(Command not found. Use '?' to view available commands|"
-        + "Incomplete command\s+|Invalid argument\s+)"
+        + r"Incomplete command\s+|Invalid argument\s+)"
     )
     #    command_disable_pager = "terminal datadump"
     #    command_super = "enable"

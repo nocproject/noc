@@ -26,7 +26,7 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal length 0"
     command_exit = "exit"
 
-    rx_interface_name = re.compile("^\d+\.\d+\.\d+$")
+    rx_interface_name = re.compile(r"^\d+\.\d+\.\d+$")
 
     def convert_interface_name(self, s):
         match = self.rx_interface_name.match(s)

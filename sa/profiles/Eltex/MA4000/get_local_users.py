@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        t = parse_table(self.cli("show users"), footer="system users\.")
+        t = parse_table(self.cli("show users"), footer=r"system users\.")
         for i in t:
             if i[1] == "15":
                 user_class = "superuser"

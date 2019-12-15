@@ -22,7 +22,7 @@ class Script(BaseScript):
                 v = self.snmp.get("1.3.6.1.4.1.35265.1.29.3.0", cached=True)
                 # v = None
                 if v:
-                    match = self.re_search("^V\.(?P<version>\S+)\s(?P<platform>\d+)", v)
+                    match = self.re_search(r"^V\.(?P<version>\S+)\s(?P<platform>\d+)", v)
                     version = match.group("version")
                     platform = "SMG-" + match.group("platform")
                     return {"vendor": "Eltex", "platform": platform, "version": version}

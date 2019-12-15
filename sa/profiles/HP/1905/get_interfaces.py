@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_admin_status = re.compile(
-        r"Port No\s+:(?P<interface>\d+).\s*" "Active\s+:(?P<admin>(Yes|No)).*$",
+        r"Port No\s+:(?P<interface>\d+).\s*Active\s+:(?P<admin>(Yes|No)).*$",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ipif = re.compile(
