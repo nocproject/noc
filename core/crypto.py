@@ -10,6 +10,9 @@
 import random
 import hashlib
 
+# NOC modules
+from noc.core.comp import smart_bytes
+
 # Symbols used in salt
 ITOA64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 SALT_DICT = list(ITOA64)
@@ -37,9 +40,9 @@ def md5crypt(password, salt=None, magic="$1$"):
     """
     salt = salt if salt else gen_salt(8)
     # /* The password first, since that is what is most unknown */ /* Then our magic string */ /* Then the raw salt */
-    m = hashlib.md5(password + magic + salt)
+    m = hashlib.md5(smart_bytes(password + magic + salt))
     # /* Then just as many characters of the MD5(pw,salt,pw) */
-    mixin = hashlib.md5(password + salt + password).digest()
+    mixin = hashlib.md5(smart_bytes(password + salt + password)).digest()
     for i in range(len(password)):
         m.update(mixin[i % 16])
     # /* Then something really weird... */
@@ -56,17 +59,17 @@ def md5crypt(password, salt=None, magic="$1$"):
     for i in range(1000):
         m2 = hashlib.md5()
         if i & 1:
-            m2.update(password)
+            m2.update(smart_bytes(password))
         else:
-            m2.update(final)
+            m2.update(smart_bytes(final))
         if i % 3:
-            m2.update(salt)
+            m2.update(smart_bytes(salt))
         if i % 7:
-            m2.update(password)
+            m2.update(smart_bytes(password))
         if i & 1:
-            m2.update(final)
+            m2.update(smart_bytes(final))
         else:
-            m2.update(password)
+            m2.update(smart_bytes(password))
         final = m2.digest()
     # This is the bit that uses to64() in the original code.
     rearranged = ""

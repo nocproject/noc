@@ -36,6 +36,7 @@ from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
+from noc.core.comp import smart_bytes
 from .alarmseverity import AlarmSeverity
 from .alarmclassvar import AlarmClassVar
 from .datasource import DataSource
@@ -198,9 +199,8 @@ class AlarmClass(Document):
         """
         if vars:
             ds = sorted(str(vars[n]) for n in self.discriminator)
-            return hashlib.sha1("\x00".join(ds)).hexdigest()
-        else:
-            return hashlib.sha1("").hexdigest()
+            return hashlib.sha1(smart_bytes("\x00".join(ds))).hexdigest()
+        return hashlib.sha1(b"").hexdigest()
 
     def to_json(self):
         c = self

@@ -22,6 +22,7 @@ import re
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.mongo.connection import get_db
+from noc.core.comp import smart_bytes
 
 
 class DataStream(object):
@@ -106,7 +107,7 @@ class DataStream(object):
 
     @staticmethod
     def get_hash(data):
-        return hashlib.sha256(ujson.dumps(data)).hexdigest()[: DataStream.HASH_LEN]
+        return hashlib.sha256(smart_bytes(ujson.dumps(data))).hexdigest()[: DataStream.HASH_LEN]
 
     @classmethod
     def update_object(cls, id, delete=False):

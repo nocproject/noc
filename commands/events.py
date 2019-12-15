@@ -32,6 +32,7 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.core.validators import is_oid
 from noc.core.escape import json_escape
+from noc.core.comp import smart_bytes
 
 
 DEFAULT_CLEAN = datetime.timedelta(weeks=4)
@@ -182,7 +183,7 @@ class Command(BaseCommand):
                 s = self.rx_ip.sub("$IP", s)
                 s = self.rx_float.sub("$FLOAT", s)
                 s = self.rx_int.sub("$INT", s)
-                sh = hashlib.sha1(s).hexdigest()
+                sh = hashlib.sha1(smart_bytes(s)).hexdigest()
                 # Check subject is already seen
                 if sh in seen:
                     # Suppress seen
