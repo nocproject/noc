@@ -71,7 +71,7 @@ class Script(BaseScript):
             }
         return ports
 
-    rx_stp_disabled = re.compile("Protocol Status\s+:\s*Disabled", re.MULTILINE)
+    rx_stp_disabled = re.compile(r"Protocol Status\s+:\s*Disabled", re.MULTILINE)
 
     rx_mstp_region = re.compile(
         r"Region name\s+:(?P<region>\S+).+Revision level\s+:(?P<revision>\d+)",
@@ -116,7 +116,7 @@ class Script(BaseScript):
     )
 
     def process_mstp(self, ports=None):
-        check_d = re.compile("\s*\d+\s*")
+        check_d = re.compile(r"\s*\d+\s*")
         #
         v = self.cli("display stp region-configuration")
         match = self.rx_mstp_region.search(v)
@@ -141,17 +141,18 @@ class Script(BaseScript):
                 iv[int(instance)] += row[14:]
         for x in iv:
             iv[x] = iv[x].replace(" to ", "-")
-
         #
         interfaces = {}
         for instance_id in iv:
             if instance_id not in ports:
                 continue
             try:
-                instance_list = self.cli("display stp instance %s" % instance_id).split("-------\[")
+                instance_list = self.cli("display stp instance %s" % instance_id).split(
+                    r"-------\["
+                )
             except self.CLISyntaxError:
                 # Not support command "display stp instance NUM"
-                instance_list = self.cli("display stp").split("-------\[")
+                instance_list = self.cli("display stp").split(r"-------\[")
             for I in instance_list[0:]:
                 # instance_id = int(instance_id)
                 if instance_id == 0:

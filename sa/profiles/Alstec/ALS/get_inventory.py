@@ -23,8 +23,8 @@ class Script(BaseScript):
         r"^(?P<port>(?:Fa|Gi|Te|e|g)\S+)\s+(?P<type>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+(?:Up|Down|Not Present)",
         re.MULTILINE | re.IGNORECASE,
     )
-    rx_sfp_vendor = re.compile("SFP vendor name:(?P<vendor>\S+)")
-    rx_sfp_serial = re.compile("SFP serial number:(?P<serial>\S+)")
+    rx_sfp_vendor = re.compile(r"SFP vendor name:(?P<vendor>\S+)")
+    rx_sfp_serial = re.compile(r"SFP serial number:(?P<serial>\S+)")
 
     def execute_cli(self):
         v = self.scripts.get_version()

@@ -22,7 +22,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     oid_cdp = "1.3.6.1.4.1.9.9.23.1.2.1.1"
-    rx_serial_check = re.compile("(\S+)\(\S+\)$")
+    rx_serial_check = re.compile(r"(\S+)\(\S+\)$")
 
     def execute(self):
         device_id = self.scripts.get_fqdn()

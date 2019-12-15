@@ -30,8 +30,8 @@ class FIASParser(AddressParser):
     name = "FIAS"
     TOP_NAME = "Российская Федерация"
 
-    rx_letter = re.compile("^(\d*)([^\d]*\S*)$")
-    rx_letter2 = re.compile("^(\d*)([^/]*)(/\d+)?(\S*)$")
+    rx_letter = re.compile(r"^(\d*)([^\d]*\S*)$")
+    rx_letter2 = re.compile(r"^(\d*)([^/]*)(/\d+)?(\S*)$")
 
     def __init__(self, config, opts):
         super(FIASParser, self).__init__(config, opts)
@@ -69,7 +69,7 @@ class FIASParser(AddressParser):
         self.info("Load OKTMO structure")
         # Inject top level
         for t in self.addrobj.find(
-            {"code": {"$regex": "^\d+\d+ 0 000 000 000 000 0000 0000 000$"}}
+            {"code": {"$regex": r"^\d+\d+ 0 000 000 000 000 0000 0000 000$"}}
         ):
             oktmo = t["okato"][:2] + "000000"
             o = OKTMO(okato=t["okato"], oktmo=oktmo, name=t["offname"], parent=None)

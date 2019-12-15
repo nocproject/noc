@@ -27,7 +27,7 @@ from noc.core.error import ERR_MIB_MISSED
 class Command(BaseCommand):
     help = "MIB manipulation tool"
 
-    rx_oid = re.compile("^\d+(\.\d+)+")
+    rx_oid = re.compile(r"^\d+(\.\d+)+")
 
     svc = open_sync_rpc("mib")
 

@@ -17,7 +17,7 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "EdgeCore.ES.get_capabilities"
 
-    rx_stp = re.compile("enabled/disabled\s*:\s*enabled")
+    rx_stp = re.compile(r"enabled/disabled\s*:\s*enabled")
 
     @false_on_cli_error
     def has_stp_cli(self):

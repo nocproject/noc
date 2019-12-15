@@ -25,9 +25,9 @@ class Script(BaseScript):
 
     rx_iface = re.compile(
         r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
-        "\s+link\/(?P<type>\S+)\s(?P<mac>\S+) brd.+\n"
-        "(\s+inet\s+(?P<inet_ip>\S+)/(?P<inet_prefix>\d+)\s+brd\s+"
-        "(?P<inet_broadcast>\S+)\s+scope\s+(?P<scope>\S+)\s+|)",
+        r"\s+link\/(?P<type>\S+)\s(?P<mac>\S+) brd.+\n"
+        r"(\s+inet\s+(?P<inet_ip>\S+)/(?P<inet_prefix>\d+)\s+brd\s+"
+        r"(?P<inet_broadcast>\S+)\s+scope\s+(?P<scope>\S+)\s+|)",
         re.MULTILINE,
     )
 

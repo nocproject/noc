@@ -23,24 +23,24 @@ class Script(BaseScript):
         r"^(?P<ifname>\S+)\s+(?P<bridge_port>\d+)\s+(?P<pvid>\d+)\s+\d+\s*\n", re.MULTILINE
     )
     rx_vlan_map = re.compile(r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
-    rx_ifname = re.compile("port : (?P<ifname>\S+)")
-    rx_ifindex = re.compile("if-index : (?P<ifindex>\d+)")
-    rx_ififo = re.compile('info : "(?P<info>.+?)"')
-    rx_type = re.compile("type : (?P<type>\S+)")
-    rx_mac = re.compile("phy-addr : (?P<mac>\S+)")
+    rx_ifname = re.compile(r"port : (?P<ifname>\S+)")
+    rx_ifindex = re.compile(r"if-index : (?P<ifindex>\d+)")
+    rx_ififo = re.compile(r'info : "(?P<info>.+?)"')
+    rx_type = re.compile(r"type : (?P<type>\S+)")
+    rx_mac = re.compile(r"phy-addr : (?P<mac>\S+)")
     rx_admin_status = re.compile(
         r"admin-status : (?P<admin_status>up|admin-up|down|admin-down|not-appl)"
     )
-    rx_oper_status = re.compile("opr-status : (?P<oper_status>up|down|no-value)")
-    rx_mtu = re.compile("largest-pkt-size : (?P<mtu>\d+)")
+    rx_oper_status = re.compile(r"opr-status : (?P<oper_status>up|down|no-value)")
+    rx_mtu = re.compile(r"largest-pkt-size : (?P<mtu>\d+)")
     rx_vpi_vci = re.compile("(?P<ifname>\S+\d+):(?P<vpi>\d+):(?P<vci>\d+)")
     rx_ip = re.compile(
-        "^(?P<iface>\d+)\s+(?P<vlan_id>\d+)\s+(?P<admin_status>up|down)\s+"
-        "(?P<oper_status>up|down)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)",
+        r"^(?P<iface>\d+)\s+(?P<vlan_id>\d+)\s+(?P<admin_status>up|down)\s+"
+        r"(?P<oper_status>up|down)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)",
         re.MULTILINE,
     )
-    rx_mgmt_ip = re.compile("host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)")
-    rx_mgmt_vlan = re.compile("mgnt-vlan-id (?P<vlan_id>\d+)")
+    rx_mgmt_ip = re.compile(r"host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)")
+    rx_mgmt_vlan = re.compile(r"mgnt-vlan-id (?P<vlan_id>\d+)")
 
     types = {
         "ethernet": "physical",

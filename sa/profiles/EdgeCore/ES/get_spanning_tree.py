@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "EdgeCore.ES.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_section = re.compile("^(?:-----*|\s*)\n", re.MULTILINE | re.DOTALL)
+    rx_section = re.compile(r"^(?:-----*|\s*)\n", re.MULTILINE | re.DOTALL)
 
     TOKENS = {
         "spanning tree mode": "STP_MODE",

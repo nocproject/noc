@@ -31,7 +31,7 @@ class MIBAPI(API):
 
     name = "mib"
     rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
-    rx_oid = re.compile("^\d+(\.\d+)+")
+    rx_oid = re.compile(r"^\d+(\.\d+)+")
 
     SMI_ENV = {"SMIPATH": config.path.mib_path}
 

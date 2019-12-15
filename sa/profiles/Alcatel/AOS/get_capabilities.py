@@ -20,7 +20,7 @@ class Script(BaseScript):
     cache = True
 
     rx_lldp = re.compile(r"^\s*\d+/\d+\s+Rx \+ Tx\s+", re.MULTILINE)
-    rx_udld = re.compile("Global UDLD Status\s*:\s*(?P<status>\S+)")
+    rx_udld = re.compile(r"Global UDLD Status\s*:\s*(?P<status>\S+)")
 
     @false_on_cli_error
     def has_lldp_cli(self):

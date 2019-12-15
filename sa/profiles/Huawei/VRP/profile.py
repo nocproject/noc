@@ -48,7 +48,7 @@ class Profile(BaseProfile):
     )
 
     command_more = " "
-    config_volatile = ["^%.*?$"]
+    config_volatile = [r"^%.*?$"]
     command_disable_pager = "screen-length 0 temporary"
     command_enter_config = "system-view"
     command_leave_config = "return"

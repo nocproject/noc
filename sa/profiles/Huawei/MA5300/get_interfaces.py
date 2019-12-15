@@ -21,11 +21,7 @@ class Script(BaseScript):
 
     rx_iface_sep = re.compile(r"^ Vlan ID", re.MULTILINE | re.IGNORECASE)
     rx_vlan_id = re.compile(r"^: (?P<vlanid>\d+)$", re.MULTILINE | re.IGNORECASE)
-    """
-    rx_iface = re.compile(
-        r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
-        r"(?P<descr>.*)", re.MULTILINE)
-    """
+
     rx_iface = re.compile(r"^(?P<port>\S+\d+) is (?P<admin_state>up|down)", re.MULTILINE)
     rx_adsl_state = re.compile(r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)
     rx_vdsl_state = re.compile(r"^\s*(?P<port>Vdsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)

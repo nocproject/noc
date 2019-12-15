@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetMPLSVPN
 
     rx_line = re.compile(r"^\s+(?P<vrf>\S+)\s+(?P<rd>\S+:\S+|<not set>)\s+", re.MULTILINE)
-    rx_if = re.compile("^\s+Interfaces : (?P<ifaces>.+)", re.MULTILINE | re.DOTALL)
+    rx_if = re.compile(r"^\s+Interfaces : (?P<ifaces>.+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         vpns = []

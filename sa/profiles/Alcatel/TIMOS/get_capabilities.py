@@ -26,7 +26,7 @@ class Script(BaseScript):
         r"(?:xgige|xcme)",
         re.MULTILINE,
     )
-    rx_oam = re.compile("Admin State\s+: up", re.MULTILINE)
+    rx_oam = re.compile(r"Admin State\s+: up", re.MULTILINE)
 
     @false_on_cli_error
     def has_lldp_cli(self):

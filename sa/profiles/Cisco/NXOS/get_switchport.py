@@ -23,12 +23,12 @@ class Script(BaseScript):
     rx_line = re.compile(r"\n+Name:\s+", re.MULTILINE)
     rx_body = re.compile(
         r"^(?P<interface>\S+).+"
-        "^  Switchport: .+"
-        "^  Switchport Monitor: .+"
-        "^  Operational Mode: (?P<omode>\S+).+"
-        "^  Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
-        "^  Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
-        "^  Trunking VLANs Allowed: (?P<vlans>.+?)$",
+        r"^  Switchport: .+"
+        r"^  Switchport Monitor: .+"
+        r"^  Operational Mode: (?P<omode>\S+).+"
+        r"^  Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
+        r"^  Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
+        r"^  Trunking VLANs Allowed: (?P<vlans>.+?)$",
         # "Pruning VLANs Enabled:",
         re.MULTILINE | re.DOTALL,
     )

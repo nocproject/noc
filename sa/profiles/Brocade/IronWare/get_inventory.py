@@ -39,7 +39,7 @@ class Script(BaseScript):
     )
     rx_chserial = re.compile(r"\s*Chassis\s*Serial\s*\S+\s*(?P<serial>\S+)", re.DOTALL)
     rx_hw = re.compile(r"HW:\s*(?P<platform>[ A-Za-z0-9]*)", re.DOTALL)
-    rx_trans = re.compile("(1000Base\S+)")
+    rx_trans = re.compile(r"(1000Base\S+)")
     sx_power = re.compile(
         r"Power\s*supply\s*(\d)\s*\(([ A-Za-z\-]*)\)\s* present,"
         r"\s*status\s*ok\s*Model\s*Number:\s*(\S+)"

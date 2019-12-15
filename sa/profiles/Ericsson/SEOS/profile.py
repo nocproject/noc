@@ -30,7 +30,7 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     rogue_chars = [re.compile(r"\x08{4,}\S+"), "\r"]
 
-    rx_ifname = re.compile("\S+\s+\d+\/\d+\/\d+")
+    rx_ifname = re.compile(r"\S+\s+\d+\/\d+\/\d+")
 
     def convert_interface_name(self, s):
         """

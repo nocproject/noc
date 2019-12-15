@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"PID:\s*(?P<pid>\S+)?\s*,\s*VID:\s*(?P<vid>\S+)?\s*,\s*SN:\s*(?P<serial>\S+)",
         re.MULTILINE | re.DOTALL,
     )
-    rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
+    rx_trans = re.compile(r"((?:100|1000|10G)BASE\S+)")
 
     def execute(self):
         objects = []

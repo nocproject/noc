@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Cisco.IOS.get_portchannel"
     interface = IGetPortchannel
 
-    rx_iface = re.compile("^(\S+)\(", re.MULTILINE)
+    rx_iface = re.compile(r"^(\S+)\(", re.MULTILINE)
 
     def extract_iface(self, i):
         match = self.rx_iface.search(i)

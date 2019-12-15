@@ -50,7 +50,7 @@ class IcqSenderService(Service):
     @staticmethod
     def escape_markdown(text):
         """Helper function to escape markup symbols"""
-        escape_chars = "\*_`"
+        escape_chars = r"\*_`"
         return re.sub(r"([%s])" % escape_chars, r"\\\1", text)
 
     def send_tb(self, messages, address, subject, body):

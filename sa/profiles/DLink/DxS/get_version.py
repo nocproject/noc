@@ -41,8 +41,8 @@ class Script(BaseScript):
     rx_ser = re.compile(
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL
     )
-    rx_platform = re.compile("^(?:D-Link )?(?P<platform>\S+)(\s+(?P<version>\d+\.\d+.B\d+))?")
-    rx_motd = re.compile("(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
+    rx_platform = re.compile(r"^(?:D-Link )?(?P<platform>\S+)(\s+(?P<version>\d+\.\d+.B\d+))?")
+    rx_motd = re.compile(r"(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
 
     def execute_snmp(self):
         """

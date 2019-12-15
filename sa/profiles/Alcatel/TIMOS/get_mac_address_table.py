@@ -21,10 +21,10 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_line1 = re.compile(
-        "^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
-        "\S+\s+\S+\s+(?P<port>lag-\d+|\d+/\d+/\d+):(?P<vlans>\S+)$"
+        r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
+        r"\S+\s+\S+\s+(?P<port>lag-\d+|\d+/\d+/\d+):(?P<vlans>\S+)$"
     )
-    rx_ies = re.compile("^(\d+)\s+IES\s+Up\s+Up", re.MULTILINE)
+    rx_ies = re.compile(r"^(\d+)\s+IES\s+Up\s+Up", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show service fdb-mac"

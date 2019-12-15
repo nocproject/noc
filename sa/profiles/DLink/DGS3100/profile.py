@@ -23,7 +23,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+):(3|6|user|operator)#"
     pattern_syntax_error = r"(Command: .+|Invalid input detected at)"
     pattern_prompt = r"^(?P<hostname>\S+)#"
-    rogue_chars = [re.compile("^\s{45,}"), "\r"]
+    rogue_chars = [re.compile(r"^\s{45,}"), "\r"]
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
@@ -41,8 +41,8 @@ class Profile(BaseProfile):
             [int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)]
         )
 
-    rx_interface_name = re.compile("^.+ Port\s+(?P<port>\d+)\s+on Unit (?P<unit>\d+)")
-    rx2_interface_name = re.compile("^.+ Port\s+(?P<port>\d+)\s*")
+    rx_interface_name = re.compile(r"^.+ Port\s+(?P<port>\d+)\s+on Unit (?P<unit>\d+)")
+    rx2_interface_name = re.compile(r"^.+ Port\s+(?P<port>\d+)\s*")
 
     def convert_interface_name(self, s):
         match = self.rx_interface_name.match(s)

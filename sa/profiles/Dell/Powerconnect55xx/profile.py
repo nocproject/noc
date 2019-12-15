@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Dell.Powerconnect55xx"
     pattern_username = "[Uu]ser( [Nn]ame)?:"
-    pattern_more = "^More: \<space\>"
+    pattern_more = r"^More: \<space\>"
     pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = r"% (?:Unrecognized|Incomplete) command"
     pattern_prompt = r"^(?P<hostname>\S+(:\S+)*)#"

@@ -25,7 +25,7 @@ class Script(BaseScript):
     )
     rx_line1 = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<vlan_name>\S+)?\s+(?P<mac>\S+)\s+"
-        "(?P<interface>\d+)\s+(?P<type>Dynamic|Static)",
+        r"(?P<interface>\d+)\s+(?P<type>Dynamic|Static)",
         re.MULTILINE,
     )
 

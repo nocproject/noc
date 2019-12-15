@@ -22,7 +22,7 @@ class Profile(BaseProfile):
     )
     rogue_chars = [re.compile(r"\x1b\[16D\s+\x1b\[16D"), re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
 
-    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+    spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)

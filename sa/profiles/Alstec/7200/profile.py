@@ -39,7 +39,7 @@ class Profile(BaseProfile):
         if self.terminal_length_changed:
             script.cli("terminal length %s" % self.terminal_length)
 
-    rx_cards = re.compile("^0/(?P<slot>\d+)\s*(?P<state>Working)?", re.MULTILINE)
+    rx_cards = re.compile(r"^0/(?P<slot>\d+)\s*(?P<state>Working)?", re.MULTILINE)
 
     def fill_cards(self, script):
         r = []

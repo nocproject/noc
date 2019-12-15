@@ -209,7 +209,7 @@ class WorkflowApplication(ExtDocApplication):
         # Get all clone names
         m = 0
         for d in Workflow._get_collection().find(
-            {"name": {"$regex": re.compile("^%s\(Copy #\d+\)$" % re.escape(wf.name))}},
+            {"name": {"$regex": re.compile(r"^%s\(Copy #\d+\)$" % re.escape(wf.name))}},
             {"_id": 0, "name": 1},
         ):
             match = self.rx_clone_name.search(d["name"])

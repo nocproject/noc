@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_version = re.compile("^\S+\.v(?P<version>[^@]+)$")
+    rx_version = re.compile(r"^\S+\.v(?P<version>[^@]+)$")
 
     def execute_cli(self):
         # Replace # with @ to prevent prompt matching

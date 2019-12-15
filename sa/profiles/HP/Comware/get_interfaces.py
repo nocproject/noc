@@ -86,7 +86,7 @@ class Script(BaseScript):
             else:
                 iftype = "physical"
             o_stat = match.group("oper_status").lower() == "up"
-            if match.group("oper_status") == "DOWN ( Administratively\)":
+            if match.group("oper_status") == r"DOWN ( Administratively\)":
                 a_stat = False
             else:
                 a_stat = True
@@ -147,7 +147,7 @@ class Script(BaseScript):
                 continue
             ifname = match.group("interface")
             o_stat = match.group("oper_status").lower() == "up"
-            if match.group("oper_status") == "DOWN ( Administratively\)":
+            if match.group("oper_status") == r"DOWN ( Administratively\)":
                 a_stat = False
             else:
                 a_stat = True
@@ -187,7 +187,7 @@ class Script(BaseScript):
                 continue
             ifname = match.group("interface")
             o_stat = match.group("oper_status").lower() == "up (spoofing)"
-            if match.group("oper_status") == "DOWN ( Administratively\)":
+            if match.group("oper_status") == r"DOWN ( Administratively\)":
                 a_stat = False
             else:
                 a_stat = True

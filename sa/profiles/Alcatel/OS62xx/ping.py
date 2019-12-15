@@ -23,7 +23,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_result1 = re.compile(
-        "^round-trip \(ms\) min/avg/max = " r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE
+        r"^round-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE
     )
 
     def execute(self, address, size=None, count=None, timeout=None):
