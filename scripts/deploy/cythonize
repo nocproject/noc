@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # Compile pyx files
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 import subprocess
 import stat
@@ -18,7 +19,7 @@ CYTHONIZE = config.path.cythonize
 def main():
     # Check cythonize is exists and executable
     if not os.path.isfile(CYTHONIZE) or not os.access(CYTHONIZE, os.X_OK):
-        print "ERROR"
+        print("ERROR")
         return
     #
     changed = False
@@ -41,12 +42,12 @@ def main():
                     )
                     changed = True
                 except OSError as e:
-                    print "ERROR"
+                    print("ERROR")
                     return
     if changed:
-        print "CHANGED"
+        print("CHANGED")
     else:
-        print "OK"
+        print("OK")
 
 
 if __name__ == "__main__":
