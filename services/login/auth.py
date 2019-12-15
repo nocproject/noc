@@ -7,11 +7,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import base64
+import codecs
 
 # Third-party modules
 import tornado.web
 from noc.config import config
+from noc.core.comp import smart_bytes
 
 
 class AuthRequestHandler(tornado.web.RequestHandler):
@@ -61,7 +62,7 @@ class AuthRequestHandler(tornado.web.RequestHandler):
             # Fallback to the basic auth
             ah = self.request.headers.get("Authorization")
             if ah.startswith("Basic "):
-                c = base64.decodestring(ah[6:])
+                c = codecs.decode(smart_bytes(ah[6:]), "base64")
                 if ":":
                     user, password = c.split(":", 1)
                     credentials = {"user": user, "password": password, "ip": self.request.remote_ip}

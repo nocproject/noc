@@ -10,11 +10,12 @@
 from __future__ import absolute_import
 import ujson
 import hashlib
-import base64
+import codecs
 
 # NOC modules
 from noc.core.script.http.middleware.base import BaseMiddleware
 from noc.core.http.client import fetch_sync
+from noc.core.comp import smart_bytes
 
 
 class DahuaAuthMiddeware(BaseMiddleware):
@@ -47,16 +48,19 @@ class DahuaAuthMiddeware(BaseMiddleware):
         :rtype: str
         """
         if params["encryption"] == "Basic":
-            return base64.b64encode("%s:%s" % (self.user, self.password))
+            return codecs.encode("%s:%s" % (self.user, self.password), "base64")
         elif params["encryption"] == "Default":
             A1 = (
-                hashlib.md5("%s:%s:%s" % (self.user, params["realm"], self.password))
+                hashlib.md5(smart_bytes("%s:%s:%s" % (self.user, params["realm"], self.password)))
                 .hexdigest()
                 .upper()
             )
-            return hashlib.md5("%s:%s:%s" % (self.user, params["random"], A1)).hexdigest().upper()
-        else:
-            return self.password
+            return (
+                hashlib.md5(smart_bytes("%s:%s:%s" % (self.user, params["random"], A1)))
+                .hexdigest()
+                .upper()
+            )
+        return self.password
 
     def process_post(self, url, body, headers):
         """

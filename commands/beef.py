@@ -13,6 +13,7 @@ import datetime
 import os
 import re
 from collections import defaultdict
+import codecs
 
 # Third-party modules
 import six
@@ -26,11 +27,11 @@ from noc.core.script.beef import Beef
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.dev.models.spec import Spec
 from noc.main.models.extstorage import ExtStorage
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
     CLI_ENCODING = "quopri"
-    MIB_ENCODING = "base64"
     DEFAULT_BEEF_PATH_TEMPLATE = "ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json"
     DEFAULT_TEST_CASE_TEMPLATE = "ad-hoc/{0.profile.name}/{0.uuid}/"
 
@@ -55,24 +56,24 @@ class Command(BaseCommand):
         # edit command
         export_parser = subparsers.add_parser("export")
         export_parser.add_argument("--storage", help="External storage name")
-        export_parser.add_argument("--path", type=unicode, help="Path name")
+        export_parser.add_argument("--path", type=smart_text, help="Path name")
         export_parser.add_argument("--export-path", help="Path file for export")
         # edit command
         import_parser = subparsers.add_parser("import")
         import_parser.add_argument("--storage", help="External storage name")
-        import_parser.add_argument("--path", type=unicode, help="Path name")
+        import_parser.add_argument("--path", type=smart_text, help="Path name")
         import_parser.add_argument("paths", nargs=argparse.REMAINDER, help="Path to imported beef")
         # list command
         list_parser = subparsers.add_parser("list")  # noqa
         list_parser.add_argument("--storage", help="External storage name")
-        list_parser.add_argument("--path", type=unicode, help="Path name")
+        list_parser.add_argument("--path", type=smart_text, help="Path name")
         # test command
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
             "--script", action="append", help="Script name for runs. Default (get_version)"
         )
         run_parser.add_argument("--storage", help="External storage name")
-        run_parser.add_argument("--path", type=unicode, help="Path name")
+        run_parser.add_argument("--path", type=smart_text, help="Path name")
         run_parser.add_argument("--access-preference", default="SC", help="Access preference")
         out_group = run_parser.add_mutually_exclusive_group()
         out_group.add_argument(
@@ -89,9 +90,9 @@ class Command(BaseCommand):
         # create-test-case
         create_test_case_parser = subparsers.add_parser("create-test-case")
         create_test_case_parser.add_argument("--storage", help="External storage name")
-        create_test_case_parser.add_argument("--path", type=unicode, help="Path name")
+        create_test_case_parser.add_argument("--path", type=smart_text, help="Path name")
         create_test_case_parser.add_argument("--test-storage", help="External storage name")
-        create_test_case_parser.add_argument("--test-path", type=unicode, help="Path name")
+        create_test_case_parser.add_argument("--test-path", type=smart_text, help="Path name")
         create_test_case_parser.add_argument("--config-storage", help="External storage name")
         create_test_case_parser.add_argument("--config-path", default="/", help="Path name")
         create_test_case_parser.add_argument(
@@ -100,7 +101,7 @@ class Command(BaseCommand):
         # build-test-case
         build_test_case_parser = subparsers.add_parser("build-test-case")
         build_test_case_parser.add_argument("--test-storage", help="External storage name")
-        build_test_case_parser.add_argument("--test-path", type=unicode, help="Path name")
+        build_test_case_parser.add_argument("--test-path", type=smart_text, help="Path name")
 
     def handle(self, cmd, *args, **options):
         connect()
@@ -221,14 +222,14 @@ class Command(BaseCommand):
             with open(import_path, "r") as f:
                 data = yaml.safe_load(f)
             for c in data["cli_fsm"]:
-                c["reply"] = [reply.encode(self.CLI_ENCODING) for reply in c["reply"]]
+                c["reply"] = [codecs.encode(reply, self.CLI_ENCODING) for reply in c["reply"]]
             for c in data["cli"]:
-                c["reply"] = [reply.encode(self.CLI_ENCODING) for reply in c["reply"]]
+                c["reply"] = [codecs.encode(reply, self.CLI_ENCODING) for reply in c["reply"]]
             for m in data["mib"]:
-                m["value"] = m["value"].encode(self.CLI_ENCODING)
+                m["value"] = codecs.encode(m["value"], self.CLI_ENCODING)
             beef = Beef.from_json(data)
             st = self.get_storage(storage, beef=True)
-            beef.save(st, unicode(path))
+            beef.save(st, smart_text(path))
 
     def handle_list(self, storage=None, *args, **options):
         r = ["GUID,Profile,Vendor,Platform,Version,SpecUUID,Changed,Path"]
@@ -348,18 +349,18 @@ class Command(BaseCommand):
                     self.print("Path %s already exists. Skipping..." % save_path)
                     continue
                 self.print("Creating %s:%s" % (test_storage, save_path))
-                fs.makedirs(unicode(save_path))
+                fs.makedirs(smart_text(save_path))
                 # Write config
                 config = cfg[beef.uuid][0] if beef.uuid in cfg else cfg[""][0]
                 config["beef"] = str(beef.uuid)
                 self.print("Writing %s:%s/test-config.yml" % (test_storage, save_path))
                 fs.writebytes(
-                    unicode(os.path.join(save_path, "test-config.yml")),
+                    smart_text(os.path.join(save_path, "test-config.yml")),
                     yaml.dump(config, default_flow_style=False),
                 )
                 # Write beef
                 self.print("Writing %s:%s/beef.json.bz2" % (test_storage, save_path))
-                beef.save(test_storage, unicode(os.path.join(save_path, "beef.json.bz2")))
+                beef.save(test_storage, smart_text(os.path.join(save_path, "beef.json.bz2")))
                 if build:
                     self.handle_build_test_case(test_storage, save_path)
 
@@ -374,7 +375,7 @@ class Command(BaseCommand):
         if not cfg:
             # Get config
             with test_st.open_fs() as fs:
-                data = fs.readbytes(unicode(os.path.join(test_path, "test-config.yml")))
+                data = fs.readbytes(smart_text(os.path.join(test_path, "test-config.yml")))
                 cfg = yaml.safe_load(data)
         # Get beef
         beef_path = os.path.join(test_path, "beef.json.bz2")
@@ -428,7 +429,7 @@ class Command(BaseCommand):
             rn = os.path.join(test_path, "%04d.%s.json.bz2" % (n, test["script"]))
             self.print("[%04d] Writing %s" % (n, rn))
             with test_st.open_fs() as fs:
-                fs.writebytes(unicode(rn), data)
+                fs.writebytes(smart_text(rn), data)
 
     def get_storage(self, name, beef=False, beef_test=False, beef_test_config=False):
         """
@@ -469,7 +470,7 @@ class Command(BaseCommand):
         for config_st in self.iter_storage(name=storage, beef_test_config=True):
             with config_st.open_fs() as fs:
                 for config_path in fs.walk.files(path=path):
-                    cfg = fs.readbytes(unicode(config_path))
+                    cfg = fs.readbytes(smart_text(config_path))
                     data = yaml.safe_load(cfg)
                     r[data.get("beef", "")] += [data]
         return r

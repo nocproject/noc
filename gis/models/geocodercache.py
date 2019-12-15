@@ -11,8 +11,8 @@
 import re
 import logging
 import hashlib
-import base64
 import datetime
+import codecs
 
 # Third-party modules
 from mongoengine.document import Document
@@ -23,6 +23,7 @@ from noc.core.geocoder.base import GeoCoderResult
 from noc.core.geocoder.errors import GeoCoderError
 from noc.config import config
 from noc.core.geocoder.loader import loader
+from noc.core.comp import smart_bytes, smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -72,8 +73,7 @@ class GeocoderCache(Document):
 
     @classmethod
     def clean_query(cls, query):
-        if isinstance(query, str):
-            query = unicode(query, "utf-8")
+        query = smart_text(query)
         query = query.upper().encode("utf-8")
         query = cls.rx_slash.sub("/", query)
         query = cls.rx_dots.sub(" ", query)
@@ -84,7 +84,7 @@ class GeocoderCache(Document):
 
     @classmethod
     def get_hash(cls, query):
-        return base64.b64encode(hashlib.sha256(query).digest())[:12]
+        return codecs.encode(hashlib.sha256(smart_bytes(query)).digest(), "base64")[:12]
 
     @classmethod
     def forward(cls, query, bounds=None):
