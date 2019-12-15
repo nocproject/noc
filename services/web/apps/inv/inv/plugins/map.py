@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.inv map plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ class MapPlugin(InvPlugin):
         self.add_view(
             "api_plugin_%s_get_layer" % self.name,
             self.api_get_layer,
-            url="^plugin/%s/layers/(?P<layer>\S+)/$" % self.name,
+            url=r"^plugin/%s/layers/(?P<layer>\S+)/$" % self.name,
             method=["GET"],
         )
         self.add_view(
@@ -150,7 +150,7 @@ class MapPlugin(InvPlugin):
         o = self.app.get_object_or_404(Object, id=id)
         for mo in ManagedObject.objects.filter(container=id)[:10]:
             mos[mo.id] = {"moname": mo.name}
-        return {"id": str(o.id), "name": o.name, "model": o.model.name, "moname": mos}
+        return {"id": str(o.id), "name": o.get_address_text(), "model": o.model.name, "moname": mos}
 
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
         line = Layer.get_by_code("conduits")

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MonMap
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -142,7 +142,7 @@ class MonMapCard(BaseCard):
                 id__in=con,
                 read_preference=ReadPreference.SECONDARY_PREFERRED,
             )
-            .fields(id=1, name=1, data__geopoint__x=1, data__geopoint__y=1)
+            .fields(id=1, name=1, data__geopoint__x=1, data__geopoint__y=1, data__address__text=1)
             .as_pymongo()
         }
         # Main Loop. Get ManagedObject group by container
@@ -152,6 +152,9 @@ class MonMapCard(BaseCard):
             name, data = containers.get(container, ("", {"geopoint": {}}))
             x = data["geopoint"].get("x")
             y = data["geopoint"].get("y")
+            address = ""
+            if "address" in data:
+                address = data["address"].get("text", "")
             ss = {"objects": [], "total": 0, "error": 0, "warning": 0, "good": 0, "maintenance": 0}
             for mo_id, mo_name, container in mol:
                 # Status by alarm severity
@@ -177,7 +180,7 @@ class MonMapCard(BaseCard):
                 continue
             objects += [
                 {
-                    "name": name,
+                    "name": address or name,
                     "id": str(container),
                     "x": x if x > -168 else x + 360,  # For Chukotskiy AO
                     "y": y,
