@@ -35,7 +35,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
             del q["id__referred"]
         return super(ManagedObjectSelectorApplication, self).cleaned_query(q)
 
-    @view(url="(?P<id>\d+)/objects/", method=["GET"], access="read", api=True)
+    @view(url=r"(?P<id>\d+)/objects/", method=["GET"], access="read", api=True)
     def api_test(self, request, id):
         o = self.get_object_or_404(ManagedObjectSelector, id=int(id))
         return [

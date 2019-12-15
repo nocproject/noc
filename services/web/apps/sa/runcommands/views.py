@@ -22,7 +22,7 @@ class RunCommandsApplication(ExtApplication):
 
     implied_permissions = {"launch": ["sa:objectlist:read"]}
 
-    @view(url="^form/snippet/(?P<snippet_id>\d+)/$", method=["GET"], access="launch", api=True)
+    @view(url=r"^form/snippet/(?P<snippet_id>\d+)/$", method=["GET"], access="launch", api=True)
     def api_form_snippet(self, request, snippet_id):
         snippet = self.get_object_or_404(CommandSnippet, id=int(snippet_id))
         r = []
@@ -38,7 +38,7 @@ class RunCommandsApplication(ExtApplication):
         return r
 
     @view(
-        url="^form/action/(?P<action_id>[0-9a-f]{24})/$", method=["GET"], access="launch", api=True
+        url=r"^form/action/(?P<action_id>[0-9a-f]{24})/$", method=["GET"], access="launch", api=True
     )
     def api_form_action(self, request, action_id):
         action = self.get_object_or_404(Action, id=action_id)
@@ -57,7 +57,7 @@ class RunCommandsApplication(ExtApplication):
         return r
 
     @view(
-        url="^render/snippet/(?P<snippet_id>\d+)/$",
+        url=r"^render/snippet/(?P<snippet_id>\d+)/$",
         method=["POST"],
         validate={
             "objects": ListOfParameter(element=ModelParameter(ManagedObject)),
@@ -75,7 +75,7 @@ class RunCommandsApplication(ExtApplication):
         return r
 
     @view(
-        url="^render/action/(?P<action_id>[0-9a-f]{24})/$",
+        url=r"^render/action/(?P<action_id>[0-9a-f]{24})/$",
         method=["POST"],
         validate={
             "objects": ListOfParameter(element=ModelParameter(ManagedObject)),

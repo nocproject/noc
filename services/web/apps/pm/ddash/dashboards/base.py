@@ -13,7 +13,7 @@ import os
 
 import ujson
 
-BAD_CHARS = "!\"%'()+,:;<>?@\^`{|}~\\\n\r"
+BAD_CHARS = r"!\"%'()+,:;<>?@\^`{|}~\\\n\r"
 
 
 class BaseDashboard(object):

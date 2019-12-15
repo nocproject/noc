@@ -19,7 +19,7 @@ import ujson
 from noc.config import config
 from noc.core.script.loader import loader
 
-rx_tc = re.compile("^.+/\d\d\d\d\.\S+\.json\.bz2")
+rx_tc = re.compile(r"^.+/\d\d\d\d\.\S+\.json\.bz2")
 
 
 class ServiceStub(object):

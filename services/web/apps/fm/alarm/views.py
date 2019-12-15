@@ -96,7 +96,7 @@ class AlarmApplication(ExtApplication):
 
     DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
 
-    rx_oper_splitter = re.compile("^(?P<field>\S+)(?P<f_num>\d+)__in")
+    rx_oper_splitter = re.compile(r"^(?P<field>\S+)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -590,7 +590,7 @@ class AlarmApplication(ExtApplication):
         alarm.set_root(r)
         return True
 
-    @view(url="notification/$", method=["GET"], api=True, access="launch")
+    @view(url=r"notification/$", method=["GET"], api=True, access="launch")
     def api_notification(self, request):
         delta = request.GET.get("delta")
         n = 0

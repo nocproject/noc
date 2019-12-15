@@ -34,7 +34,7 @@ class DynamicDashboardApplication(ExtApplication):
         "container": ContainerDashboard,
     }
 
-    @view(url="^$", method="GET", access="launch", api=True)
+    @view(url=r"^$", method="GET", access="launch", api=True)
     def api_dashboard(self, request):
         dt = self.dashboards.get(request.GET.get("dashboard"))
         if not dt:

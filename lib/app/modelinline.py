@@ -101,7 +101,7 @@ class ModelInline(object):
             "api_%s_list" % name,
             self.api_list,
             method=["GET"],
-            url="^(?P<parent>[^/]+)/%s/$" % name,
+            url=r"^(?P<parent>[^/]+)/%s/$" % name,
             access="read",
             api=True,
         )
@@ -110,7 +110,7 @@ class ModelInline(object):
             "api_%s_create" % name,
             self.api_create,
             method=["POST"],
-            url="^(?P<parent>[^/]+)/%s/$" % name,
+            url=r"^(?P<parent>[^/]+)/%s/$" % name,
             access="create",
             api=True,
         )
@@ -119,7 +119,7 @@ class ModelInline(object):
             "api_%s_read" % name,
             self.api_read,
             method=["GET"],
-            url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
+            url=r"^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
             access="read",
             api=True,
         )
@@ -128,7 +128,7 @@ class ModelInline(object):
             "api_%s_update" % name,
             self.api_update,
             method=["PUT"],
-            url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
+            url=r"^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
             access="update",
             api=True,
         )
@@ -137,7 +137,7 @@ class ModelInline(object):
             "api_%s_delete" % name,
             self.api_delete,
             method=["DELETE"],
-            url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
+            url=r"^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
             access="delete",
             api=True,
         )

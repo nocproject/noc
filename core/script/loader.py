@@ -24,7 +24,7 @@ from .base import BaseScript
 class ScriptLoader(BaseLoader):
     name = "script"
 
-    rx_requires = re.compile("^\s+requires\s*=\s*\[([^\]]*)\]", re.DOTALL | re.MULTILINE)
+    rx_requires = re.compile(r"^\s+requires\s*=\s*\[([^\]]*)\]", re.DOTALL | re.MULTILINE)
 
     protected_names = {"profile", "__init__"}
 
