@@ -48,6 +48,7 @@ from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
 from noc.core.collection.base import Collection
+from noc.core.comp import smart_bytes
 from .extapplication import ExtApplication, view
 
 
@@ -61,8 +62,8 @@ class ExtDocApplication(ExtApplication):
     parent_field = None  # Tree lookup
     parent_model = None
     secret_fields = (
-        None
-    )  # Set of sensitive fields. "secret" permission is required to show of modify
+        None  # Set of sensitive fields. "secret" permission is required to show of modify
+    )
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
@@ -495,7 +496,7 @@ class ExtDocApplication(ExtApplication):
         """
         o = self.get_object_or_404(self.model, id=id)
         content = o.to_json()
-        hash = hashlib.sha256(content).hexdigest()[:8]
+        hash = hashlib.sha256(smart_bytes(content)).hexdigest()[:8]
         return {
             "file_path": os.path.join(
                 "src", self.model._meta["json_collection"], o.get_json_path()

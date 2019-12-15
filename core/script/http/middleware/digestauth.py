@@ -18,6 +18,7 @@ from six.moves.urllib.request import parse_http_list, parse_keqv_list
 # NOC modules
 from .base import BaseMiddleware
 from noc.core.http.client import fetch_sync
+from noc.core.comp import smart_bytes
 
 
 class DigestAuthMiddeware(BaseMiddleware):
@@ -48,8 +49,8 @@ class DigestAuthMiddeware(BaseMiddleware):
         A1 = "%s:%s:%s" % (self.user, realm, self.password)
         A2 = "%s:%s" % (self.method, uri)
 
-        HA1 = hashlib.md5(A1).hexdigest()
-        HA2 = hashlib.md5(A2).hexdigest()
+        HA1 = hashlib.md5(smart_bytes(A1)).hexdigest()
+        HA2 = hashlib.md5(smart_bytes(A2)).hexdigest()
 
         return HA1, HA2
 
@@ -81,13 +82,13 @@ class DigestAuthMiddeware(BaseMiddleware):
         s = nonce.encode("utf-8")
         # s += time.ctime().encode('utf-8')
         s += os.urandom(8)
-        cnonce = hashlib.sha1(s).hexdigest()[:16]
+        cnonce = hashlib.sha1(smart_bytes(s)).hexdigest()[:16]
 
         if not qop:
-            respdig = hashlib.md5("%s:%s:%s" % (HA1, nonce, HA2)).hexdigest()
+            respdig = hashlib.md5(smart_bytes("%s:%s:%s" % (HA1, nonce, HA2))).hexdigest()
         elif qop == "auth" or "auth" in qop.split(","):
             noncebit = "%s:%s:%s:%s:%s" % (nonce, ncvalue, cnonce, "auth", HA2)
-            respdig = hashlib.md5("%s:%s" % (HA1, noncebit)).hexdigest()
+            respdig = hashlib.md5(smart_bytes("%s:%s" % (HA1, noncebit))).hexdigest()
         else:
             respdig = None
 

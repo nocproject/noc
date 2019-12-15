@@ -17,7 +17,7 @@ import six
 
 # NOC modules
 from noc.core.version import version
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
 
 
 def safe_rewrite(path, text, mode=None):
@@ -60,8 +60,8 @@ def is_differ(path, content):
     """
     if os.path.isfile(path):
         with open(path) as f:
-            cs1 = hashlib.sha1(f.read()).digest()
-        cs2 = hashlib.sha1(content).digest()
+            cs1 = hashlib.sha1(smart_bytes(f.read())).digest()
+        cs2 = hashlib.sha1(smart_bytes(content)).digest()
         return cs1 != cs2
     return True
 

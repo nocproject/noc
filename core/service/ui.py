@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # UI backend service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-1017 The NOC Project
+# Copyright (C) 2007-1019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ import logging
 import tornado.web
 
 # NOC modules
+from noc.core.comp import smart_bytes
 from .base import Service
 from noc.config import config
 
@@ -60,7 +61,7 @@ class UIHandler(tornado.web.RequestHandler):
         if not os.path.exists(path):
             return "%s?%s" % (url, "00000000")
         with open(path) as f:
-            hash = hashlib.sha256(f.read()).hexdigest()[:8]
+            hash = hashlib.sha256(smart_bytes(f.read())).hexdigest()[:8]
         return "%s?%s" % (url, hash)
 
 
