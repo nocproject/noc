@@ -31,6 +31,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.sa.interfaces.base import DictListParameter, DictParameter, IntParameter, StringParameter
 from noc.core.perf import metrics
+from noc.core.comp import smart_bytes
 from noc.core.translation import ugettext as _
 
 # Access items validations
@@ -300,7 +301,7 @@ class BIAPI(API):
         """
         d = self._get_dashboard(id)
         if d:
-            return ujson.loads(zlib.decompress(d.config))
+            return ujson.loads(zlib.decompress(smart_bytes(d.config)))
         else:
             metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
@@ -326,7 +327,7 @@ class BIAPI(API):
             d = Dashboard(id=str(bson.ObjectId()), owner=self.handler.current_user)
         d.format = config.get("format", 1)
         config["id"] = str(d.id)
-        d.config = zlib.compress(ujson.dumps(config))
+        d.config = zlib.compress(smart_bytes(ujson.dumps(config)))
         d.changed = datetime.datetime.now()
         d.title = config.get("title")  # @todo: Generate title
         d.description = config.get("description")

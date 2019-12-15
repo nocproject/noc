@@ -277,7 +277,7 @@ def fetch(
         if not isinstance(body, (six.string_types, six.binary_type)):
             body = ujson.dumps(body)
             content_type = "text/json"
-        body = smart_bytes(body)
+        body = smart_bytes(body)  # Here and below body is binary
         h = {"Host": str(u.netloc), "Connection": "close", "User-Agent": DEFAULT_USER_AGENT}
         if body and content_encoding:
             if content_encoding == CE_DEFLATE:

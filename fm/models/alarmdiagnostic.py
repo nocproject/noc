@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmDiagnostic model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from mongoengine.fields import StringField, ObjectIdField, DateTimeField, Binary
 import bson
 
 # NOC modules
+from noc.core.comp import smart_bytes
 
 
 class AlarmDiagnostic(Document):
@@ -36,7 +37,7 @@ class AlarmDiagnostic(Document):
 
     @classmethod
     def save_diagnostics(cls, alarm, diag, state):
-        data = zlib.compress("\n\n".join(str(d) for d in diag), 9)
+        data = zlib.compress(b"\n\n".join(smart_bytes(d) for d in diag), 9)
         if state == "C":
             expires = datetime.datetime.now() + cls.TTL
         else:
@@ -49,7 +50,13 @@ class AlarmDiagnostic(Document):
             alarm = alarm.id
         r = []
         for d in AlarmDiagnostic.objects.filter(alarm=alarm).order_by("timestamp"):
-            r += [{"timestamp": d.timestamp, "state": d.state, "data": zlib.decompress(d.data)}]
+            r += [
+                {
+                    "timestamp": d.timestamp,
+                    "state": d.state,
+                    "data": zlib.decompress(smart_bytes(d.data)),
+                }
+            ]
         return r
 
     @classmethod
