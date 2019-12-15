@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Base dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ class BaseDashboard(object):
             )
         t = {}
         if not os.path.exists(t_path):
-            self.logger.warn("Templates path %s is not exist" % t_path)
+            self.logger.warning("Templates path %s is not exist" % t_path)
             return {}
         for f in os.listdir(t_path):
             path = os.path.join(t_path, f)

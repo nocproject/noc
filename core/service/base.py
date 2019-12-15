@@ -264,16 +264,16 @@ class Service(object):
         if new_value not in self.LOG_LEVELS:
             self.logger.error("Invalid loglevel '%s'. Ignoring", new_value)
             return
-        self.logger.warn("Changing loglevel to %s", new_value)
+        self.logger.warning("Changing loglevel to %s", new_value)
         logging.getLogger().setLevel(self.LOG_LEVELS[new_value])
 
     def log_separator(self, symbol="*", length=72):
         """
         Log a separator string to visually split log
         """
-        self.logger.warn(symbol * length)
+        self.logger.warning(symbol * length)
         if config.features.forensic:
-            self.logger.warn("[noc.core.forensic] [=Process restarted]")
+            self.logger.warning("[noc.core.forensic] [=Process restarted]")
 
     def setup_signal_handlers(self):
         """
@@ -318,24 +318,24 @@ class Service(object):
         # Starting IOLoop
         self.is_active = True
         if self.pooled:
-            self.logger.warn("Running service %s (pool: %s)", self.name, config.pool)
+            self.logger.warning("Running service %s (pool: %s)", self.name, config.pool)
         else:
-            self.logger.warn("Running service %s", self.name)
+            self.logger.warning("Running service %s", self.name)
         try:
             if config.features.use_uvlib:
                 from tornaduv import UVLoop
 
-                self.logger.warn("Using libuv")
+                self.logger.warning("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
             # Initialize DCS
             self.dcs = get_dcs(cmd_options["dcs"], self.ioloop)
             # Activate service
             self.ioloop.add_callback(self.activate)
-            self.logger.warn("Starting IOLoop")
+            self.logger.warning("Starting IOLoop")
             self.ioloop.start()
         except KeyboardInterrupt:
-            self.logger.warn("Interrupted by Ctrl+C")
+            self.logger.warning("Interrupted by Ctrl+C")
         except self.RegistrationError:
             self.logger.info("Registration failed")
         except Exception:
@@ -345,7 +345,7 @@ class Service(object):
                 self.ioloop.add_callback(self.deactivate())
         for cb, args, kwargs in self.close_callbacks:
             cb(*args, **kwargs)
-        self.logger.warn("Service %s has been terminated", self.name)
+        self.logger.warning("Service %s has been terminated", self.name)
 
     def on_start(self):
         """
@@ -355,16 +355,16 @@ class Service(object):
             self.setup_translation()
 
     def stop(self):
-        self.logger.warn("Stopping")
+        self.logger.warning("Stopping")
         self.ioloop.add_callback(self.deactivate)
 
     def on_SIGHUP(self, signo, frame):
-        # self.logger.warn("SIGHUP caught, rereading config")
+        # self.logger.warning("SIGHUP caught, rereading config")
         # self.ioloop.add_callback(self.load_config)
         pass
 
     def on_SIGTERM(self, signo, frame):
-        self.logger.warn("SIGTERM caught, Stopping")
+        self.logger.warning("SIGTERM caught, Stopping")
         self.stop()
 
     def get_service_address(self):
@@ -417,7 +417,7 @@ class Service(object):
         """
         Initialize services before run
         """
-        self.logger.warn("Activating service")
+        self.logger.warning("Activating service")
         if self.use_mongo:
             from noc.core.mongo.connection import connect
 
