@@ -1,0 +1,13 @@
+{
+    "name": "TPLink | EAP | EAP sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ee48aa20-5979-4837-a81e-332ac1d30c82",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.11863.3.2.10",
+    "action": "match",
+    "profile__name": "TPLink.EAP"
+}
