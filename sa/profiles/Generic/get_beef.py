@@ -10,10 +10,12 @@
 import uuid
 import datetime
 from collections import OrderedDict
+import codecs
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbeef import IGetBeef
+from noc.core.comp import smart_bytes
 
 
 class Script(BaseScript):
@@ -85,7 +87,7 @@ class Script(BaseScript):
                     {
                         "names": cmd_answers.get(rcmd, ["setup.cli"]),
                         "request": rcmd,
-                        "reply": [v.encode(self.CLI_ENCODING) for v in packets],
+                        "reply": [self.encode_cli(v) for v in packets],
                     }
                 ]
         self.stop_tracking()
@@ -94,7 +96,7 @@ class Script(BaseScript):
     def get_cli_fsm_results(self):
         r = []
         for state, reply in self.iter_cli_fsm_tracking():
-            r += [{"state": state, "reply": [v.encode(self.CLI_ENCODING) for v in reply]}]
+            r += [{"state": state, "reply": [self.encode_cli(v) for v in reply]}]
         return r
 
     def collect_snmp(self, spec):
@@ -102,10 +104,10 @@ class Script(BaseScript):
         for ans in spec["answers"]:
             if ans["type"] == "snmp-get":
                 value = self.snmp.get(ans["value"], raw_varbinds=True)
-                yield {"oid": str(ans["value"]), "value": value.encode(self.MIB_ENCODING).strip()}
+                yield {"oid": str(ans["value"]), "value": self.encode_mib(value).strip()}
             elif ans["type"] == "snmp-getnext":
                 for oid, value in self.snmp.getnext(ans["value"], raw_varbinds=True):
-                    yield {"oid": str(oid), "value": value.encode(self.MIB_ENCODING).strip()}
+                    yield {"oid": str(oid), "value": self.encode_mib(value).strip()}
 
     def get_snmp_results(self, spec):
         r = []
@@ -118,3 +120,17 @@ class Script(BaseScript):
             r += [v]
         # Sort
         return sorted(r, key=lambda x: oids[x["oid"]])
+
+    @classmethod
+    def encode_cli(cls, s):
+        """
+        Apply CLI encoding
+        """
+        return codecs.encode(smart_bytes(s), cls.CLI_ENCODING)
+
+    @classmethod
+    def encode_mib(cls, s):
+        """
+        Apply MIB encoding
+        """
+        return codecs.encode(smart_bytes(s), cls.MIB_ENCODING)
