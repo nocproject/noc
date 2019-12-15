@@ -21,7 +21,7 @@ class AccountApplication(ExtApplication):
     title = _("Account")
     menu = [_("Setup"), _("Account")]
 
-    @view(url="^$", method=["GET"], access="launch", api=True)
+    @view(url=r"^$", method=["GET"], access="launch", api=True)
     def api_get(self, request):
         c = CPClient()
         data = {}

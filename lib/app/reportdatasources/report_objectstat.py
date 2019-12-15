@@ -317,7 +317,7 @@ class StatusIsolator(IsolatorClass):
             match = {
                 "problems": {"$exists": True},
                 "problems.suggest_snmp.": {
-                    "$regex": "Failed to guess SNMP community",
+                    "$regex": r"Failed to guess SNMP community",
                     "$options": "i",
                 },
             }
@@ -331,7 +331,7 @@ class StatusIsolator(IsolatorClass):
                         }
                     },
                     {"problems.profile.": {"$ne": "Cannot detect profile"}},
-                    {"problems.version.": {"$regex": "/Remote error code \d+/"}},
+                    {"problems.version.": {"$regex": r"/Remote error code \d+/"}},
                 ]
             }
 
@@ -371,7 +371,7 @@ class ProblemIsolator(IsolatorClass):
             "$or": [
                 {
                     "problems.suggest_snmp.": {
-                        "$regex": "Failed to guess SNMP community",
+                        "$regex": r"Failed to guess SNMP community",
                         "$options": "i",
                     }
                 },
@@ -401,10 +401,10 @@ class ProblemIsolator(IsolatorClass):
                 {"problems.profile.": {"$ne": "Cannot detect profile"}},
                 {
                     "$or": [
-                        {"problems.version.": {"$regex": "Remote error code \d+"}},
+                        {"problems.version.": {"$regex": r"Remote error code \d+"}},
                         {
                             "problems.suggest_cli.": {
-                                "$regex": "Failed to guess CLI credentials",
+                                "$regex": r"Failed to guess CLI credentials",
                                 "$options": "i",
                             }
                         },
@@ -428,7 +428,7 @@ class ProblemIsolator(IsolatorClass):
             "$or": [
                 {
                     "problems.suggest_snmp.": {
-                        "$regex": "Failed to guess SNMP community",
+                        "$regex": r"Failed to guess SNMP community",
                         "$options": "i",
                     }
                 },
@@ -448,7 +448,7 @@ class ProblemIsolator(IsolatorClass):
 
     def _4_isp(self, index):
         # Undefined profiles
-        match = {"problems.profile.": {"$regex": "Not find profile for OID"}}
+        match = {"problems.profile.": {"$regex": r"Not find profile for OID"}}
         c = set(
             int(r["_id"].rsplit("-")[-1])
             for r in get_db()["noc.joblog"]

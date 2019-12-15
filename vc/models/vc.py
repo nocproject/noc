@@ -32,7 +32,7 @@ from .error import InvalidLabelException, MissedLabelException
 from .vcdomain import VCDomain
 
 # Regular expressions
-rx_vc_underline = re.compile("\s+")
+rx_vc_underline = re.compile(r"\s+")
 rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
 
 id_lock = Lock()

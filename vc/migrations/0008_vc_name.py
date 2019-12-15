@@ -15,7 +15,7 @@ from django.db import models
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
-rx_underline = re.compile("\s+")
+rx_underline = re.compile(r"\s+")
 rx_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
 
 

@@ -537,7 +537,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 result[int(x)] = None
         return sorted(result.keys())
 
-    rx_detect_sep = re.compile("^(.*?)\d+$")
+    rx_detect_sep = re.compile(r"^(.*?)\d+$")
 
     def expand_interface_range(self, s):
         """

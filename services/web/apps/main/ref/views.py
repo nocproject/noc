@@ -209,7 +209,7 @@ class RefAppplication(ExtApplication):
     def build_kbparser(self):
         return [{"id": x, "label": x} for x in sorted(kbparser_loader)]
 
-    @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
+    @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
         if ref not in self.refs:
             if ref == "report":
