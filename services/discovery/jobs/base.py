@@ -48,6 +48,7 @@ from noc.core.error import ERR_UNKNOWN
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.core.backport.time import perf_counter
+from noc.core.comp import smart_bytes
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -96,7 +97,7 @@ class MODiscoveryJob(PeriodicJob):
             {"_id": key},
             {
                 "$set": {
-                    "log": bson.Binary(zlib.compress(self.out_buffer.getvalue())),
+                    "log": bson.Binary(zlib.compress(smart_bytes(self.out_buffer.getvalue()))),
                     "problems": problems,
                 }
             },
