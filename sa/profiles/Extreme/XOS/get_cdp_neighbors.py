@@ -18,13 +18,13 @@ class Script(BaseScript):
     name = "Extreme.XOS.get_cdp_neighbors"
     interface = IGetCDPNeighbors
 
-    rx_dev_id = re.compile("CDP Device ID\s+:\s+(?P<device_id>\S+)")
+    rx_dev_id = re.compile(r"CDP Device ID\s+:\s+(?P<device_id>\S+)")
     rx_entry = re.compile(
         r"^\s*(?P<local_interface>\d+(\:\d+)?)\s+(?P<device_id>\S+)\s+\d+\s+"
         r"Ver\S+\s+(?P<remote_interface>.+)",
         re.MULTILINE,
     )
-    rx_ex_stack_port1 = re.compile("^Slot:\s*(\d+),\s*Port:\s*(\d+)\s*")
+    rx_ex_stack_port1 = re.compile(r"^Slot:\s*(\d+),\s*Port:\s*(\d+)\s*")
     rx_mac = re.compile(r"^System MAC:\s+(?P<mac>\S+)$", re.MULTILINE)
 
     def normalize_port(self, port):

@@ -20,9 +20,9 @@ class Script(BaseScript):
 
     rx_link = re.compile(
         r"pairA:?\s+(?P<status_p1>\w+)(\s+(?P<len_p1>\d+\.\d+|N\/A)\s+(?P<len_fault_p1>\d+\.\d+|N\/A))?"
-        ".*pairB:?\s+(?P<status_p2>\w+)(\s+(?P<len_p2>\d+\.\d+|N\/A)\s+(?P<len_fault_p2>\d+\.\d+|N\/A))?"
-        ".*pairC:?\s+(?P<status_p3>\w+)(\s+(?P<len_p3>\d+\.\d+|N\/A)\s+(?P<len_fault_p3>\d+\.\d+|N\/A))?"
-        ".*pairD:?\s+(?P<status_p4>\w+)(\s+(?P<len_p4>\d+\.\d+|N\/A)\s+(?P<len_fault_p4>\d+\.\d+|N\/A))?",
+        r".*pairB:?\s+(?P<status_p2>\w+)(\s+(?P<len_p2>\d+\.\d+|N\/A)\s+(?P<len_fault_p2>\d+\.\d+|N\/A))?"
+        r".*pairC:?\s+(?P<status_p3>\w+)(\s+(?P<len_p3>\d+\.\d+|N\/A)\s+(?P<len_fault_p3>\d+\.\d+|N\/A))?"
+        r".*pairD:?\s+(?P<status_p4>\w+)(\s+(?P<len_p4>\d+\.\d+|N\/A)\s+(?P<len_fault_p4>\d+\.\d+|N\/A))?",
         re.MULTILINE | re.DOTALL,
     )
 

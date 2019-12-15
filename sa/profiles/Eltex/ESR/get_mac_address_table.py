@@ -19,7 +19,7 @@ class Script(BaseScript):
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         c = self.cli("show mac address-table")
-        for vlan_id, mac, port, mtype in parse_table(c, footer="\d+ valid mac entries"):
+        for vlan_id, mac, port, mtype in parse_table(c, footer=r"\d+ valid mac entries"):
             r += [
                 {
                     "vlan_id": vlan_id,

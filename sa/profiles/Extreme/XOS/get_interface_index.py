@@ -22,8 +22,8 @@ class Script(BaseScript):
     name = "Extreme.XOS.get_interface_index"
     interface = IGetIfIndex
 
-    rx_ifidx_phys = re.compile("^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE)
-    rx_ifidx_vlan = re.compile("^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.IGNORECASE)
+    rx_ifidx_phys = re.compile(r"^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE)
+    rx_ifidx_vlan = re.compile(r"^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.IGNORECASE)
 
     requires = []
 

@@ -24,7 +24,7 @@ class Script(BaseScript):
     )
     rx_port_name = re.compile(r"^\s+ifName\s+(?P<ifname>\S+)\s*\n", re.MULTILINE)
     rx_line = re.compile(
-        "^(?P<interfaces>\d+/\d+(?:/\d+)?)\s+(?P<vlan_id>\d+)\s+"
+        r"^(?P<interfaces>\d+/\d+(?:/\d+)?)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<mac>\S+)\s+(\S+)\s+(?P<type>\S+)\s+",
         re.MULTILINE,
     )

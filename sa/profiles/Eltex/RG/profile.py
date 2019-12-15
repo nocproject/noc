@@ -13,8 +13,8 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.RG"
-    pattern_username = "^\S+ [Ll]ogin:"
-    pattern_password = "^[Pp]assword:"
+    pattern_username = r"^\S+ [Ll]ogin:"
+    pattern_password = r"^[Pp]assword:"
     pattern_syntax_error = r"Permission denied"
     pattern_unprivileged_prompt = r"^\S+@(?P<hostname>\S+):~\$"
     pattern_prompt = r"^\S+@(?P<hostname>\S+):~#"

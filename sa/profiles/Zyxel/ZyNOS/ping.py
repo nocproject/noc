@@ -20,8 +20,8 @@ class Script(BaseScript):
     interface = IPing
     rx_result = re.compile(
         r"^\s+(?P<count>\d+)\s+(?P<success>\d+)\s+\d+\s+"
-        "\d+\s+(?P<avg>\d+)\s+\d+\s+(?P<max>\d+)\s+"
-        "(?P<min>\d+)",
+        r"\d+\s+(?P<avg>\d+)\s+\d+\s+(?P<max>\d+)\s+"
+        r"(?P<min>\d+)",
         re.MULTILINE,
     )
 

@@ -21,16 +21,16 @@ class Script(BaseScript):
 
     rx_summary_split = re.compile(r"^LocalPort.+?\n", re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(r"(?P<local_if>\d+)\s+[0-9a-f:]+\s+.+?$")
-    rx_remote_port = re.compile("^\s*Port id:(?P<remote_if>.*)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port = re.compile(r"^\s*Port id:(?P<remote_if>.*)", re.MULTILINE | re.IGNORECASE)
     rx_remote_port_desc = re.compile(
-        "^\s*Port Description:(?P<remote_if_desc>.*)", re.MULTILINE | re.IGNORECASE
+        r"^\s*Port Description:(?P<remote_if_desc>.*)", re.MULTILINE | re.IGNORECASE
     )
     rx_remote_port_subtype = re.compile(
-        "^\s*Port id subtype:(?P<remote_if_subtype>.*)", re.MULTILINE | re.IGNORECASE
+        r"^\s*Port id subtype:(?P<remote_if_subtype>.*)", re.MULTILINE | re.IGNORECASE
     )
     rx_chassis_id = re.compile(r"^\s*Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_enabled_caps = re.compile(
-        "^\s*System Capabilities Enabled:\s*"
+        r"^\s*System Capabilities Enabled:\s*"
         r"(?P<caps>((other|repeater|bridge|router|wlan-access-point"
         r"|telephone|docsis-cable-device|station-only)\s+)+)\s*$",
         re.MULTILINE | re.IGNORECASE,

@@ -22,8 +22,8 @@ class Script(BaseScript):
     name = "Extreme.XOS.get_interfaces"
     interface = IGetInterfaces
 
-    rx_ifidx_phys = re.compile("^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.MULTILINE)
-    rx_ifidx_vlan = re.compile("^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.MULTILINE)
+    rx_ifidx_phys = re.compile(r"^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.MULTILINE)
+    rx_ifidx_vlan = re.compile(r"^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.MULTILINE)
     rx_status = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)\s+(\S+)?(\s+\S+)?(\s+)?"
         r"(?P<admin_status>\S)\s+(?P<oper_status>\S)(\s+\S+)?(\s+\S+)?$",

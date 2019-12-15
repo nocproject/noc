@@ -25,8 +25,8 @@ class Script(BaseScript):
         r"^\s*Description\s*:(?P<descr>[^\n]*)\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
-    rx_mtu = re.compile("The Maximum Frame Length is (?P<mtu>\d+)")
-    rx_port_type = re.compile("Port link-type: (?P<port_type>hybrid|access|trunk)")
+    rx_mtu = re.compile(r"The Maximum Frame Length is (?P<mtu>\d+)")
+    rx_port_type = re.compile(r"Port link-type: (?P<port_type>hybrid|access|trunk)")
     rx_port_other = re.compile(
         r"^\s*Tagged   VLAN ID : (?P<tagged>[^\n]+)\n"
         r"^\s*Untagged VLAN ID : (?P<untagged>[^\n]+)\n",

@@ -13,8 +13,8 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.TAU"
-    pattern_username = "^\S+ [Ll]ogin:"
-    pattern_password = "^[Pp]assword:"
+    pattern_username = r"^\S+ [Ll]ogin:"
+    pattern_password = r"^[Pp]assword:"
     pattern_prompt = r"^(> |config> |\S+])"
     command_exit = "exit"
     command_more = "\n"

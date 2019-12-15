@@ -47,7 +47,7 @@ class Script(BaseScript):
         r"^\s*(?:Port\=)?(?P<sub>\d+)\s.+(?P<admin_status>Enabled|Disabled)\s*/(?P<oper_status>Up|Down)\s*\n",
         re.MULTILINE,
     )
-    rx_descr = re.compile("^\s*(?P<sub>\d+)\s+(?P<descr>\S+)\s+", re.MULTILINE)
+    rx_descr = re.compile(r"^\s*(?P<sub>\d+)\s+(?P<descr>\S+)\s+", re.MULTILINE)
     rx_ipif = re.compile(
         r"^\s*(?P<ifname>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s*(?P<vid>\d+|\-)?\s*$",
