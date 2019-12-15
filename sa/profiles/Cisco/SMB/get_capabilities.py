@@ -17,7 +17,7 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "Cisco.SMB.get_capabilities"
 
-    rx_stp = re.compile("Spanning tree enabled mode \S+STP")
+    rx_stp = re.compile(r"Spanning tree enabled mode \S+STP")
 
     def has_cdp_snmp(self):
         """

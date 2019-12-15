@@ -30,13 +30,13 @@ class Script(BaseScript):
         r"Type of operation to perform:\s+(?P<type>\S+)", re.MULTILINE | re.IGNORECASE
     )
 
-    rx_target = re.compile("Target address/Source \S+: (?P<target>[^/]+)/", re.MULTILINE)
+    rx_target = re.compile(r"Target address/Source \S+: (?P<target>[^/]+)/", re.MULTILINE)
 
-    rx_target1 = re.compile("Target address: (?P<target>\S+)", re.MULTILINE)
+    rx_target1 = re.compile(r"Target address: (?P<target>\S+)", re.MULTILINE)
 
-    rx_tag = re.compile("Tag: *(?P<tag>[^\n]+)\n", re.MULTILINE)
+    rx_tag = re.compile(r"Tag: *(?P<tag>[^\n]+)\n", re.MULTILINE)
 
-    rx_owner = re.compile("Owner: *(?P<owner>[^\n]+)\n", re.MULTILINE)
+    rx_owner = re.compile(r"Owner: *(?P<owner>[^\n]+)\n", re.MULTILINE)
 
     # IOS to interface type conversion
     # @todo: Add other types

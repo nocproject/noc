@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Cisco.1900"
 
-    pattern_more = [("\[K\] Command Line", "K"), ("--More--$", " ")]
+    pattern_more = [(r"\[K\] Command Line", "K"), ("--More--$", " ")]
 
     pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"

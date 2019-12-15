@@ -38,7 +38,7 @@ class Script(BaseScript):
     def execute_config_current12(self, **kwargs):
         config = self.cli("show config current_config")
         config = self.strip_first_lines(config, 4)
-        config = re.sub("config time \d+[^\n]*\n", "", config)
+        config = re.sub(r"config time \d+[^\n]*\n", "", config)
         while config.endswith("\n\n"):
             config = config[:-1]
         return self.cleaned_config(config)
@@ -63,7 +63,7 @@ class Script(BaseScript):
     def execute_config_current11(self, **kwargs):
         config = self.cli("show config current_config")
         config = self.strip_first_lines(config, 4)
-        config = re.sub("config time \d+[^\n]*\n", "", config)
+        config = re.sub(r"config time \d+[^\n]*\n", "", config)
         while config.endswith("\n\n"):
             config = config[:-1]
         return self.cleaned_config(config)

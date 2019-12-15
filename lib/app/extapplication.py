@@ -260,7 +260,7 @@ class ExtApplication(Application):
         return self.apply_bulk_fields(data)
 
     @view(
-        url="^favorites/app/(?P<action>set|reset)/$",
+        url=r"^favorites/app/(?P<action>set|reset)/$",
         method=["POST"],
         access=PermitLogged(),
         api=True,
@@ -280,7 +280,7 @@ class ExtApplication(Application):
         return True
 
     @view(
-        url="^favorites/item/(?P<item>[0-9a-f]+)/(?P<action>set|reset)/$",
+        url=r"^favorites/item/(?P<item>[0-9a-f]+)/(?P<action>set|reset)/$",
         method=["POST"],
         access=PermitLogged(),
         api=True,
@@ -296,7 +296,7 @@ class ExtApplication(Application):
             Favorites.remove_item(request.user, self.app_id, item)
         return True
 
-    @view(url="^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"], access="launch", api=True)
+    @view(url=r"^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"], access="launch", api=True)
     def api_future_status(self, request, f_id):
         op = self.get_object_or_404(
             SlowOp, id=f_id, app_id=self.get_app_id(), user=request.user.username

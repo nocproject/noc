@@ -19,7 +19,7 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_dom_status"
     interface = IGetDOMStatus
 
-    rx_port = re.compile("Port (?P<port>\S+\d+) transceiver diagnostic information:")
+    rx_port = re.compile(r"Port (?P<port>\S+\d+) transceiver diagnostic information:")
 
     ne_map = {"tx power": "tx_power", "rx power": "rx_power"}
     ar_map = {

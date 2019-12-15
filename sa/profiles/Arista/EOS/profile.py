@@ -26,7 +26,7 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal length 0"
     convert_mac = BaseProfile.convert_mac_to_cisco
 
-    rx_interface_name = re.compile("^(?P<type>\S+?)(?P<number>\d+)$")
+    rx_interface_name = re.compile(r"^(?P<type>\S+?)(?P<number>\d+)$")
 
     def convert_interface_name(self, s):
         match = self.rx_interface_name.match(s)

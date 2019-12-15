@@ -34,9 +34,9 @@ class Script(BaseScript):
             if match:
                 vlan_id = "1"
                 rx_cfg = re.compile(
-                    "interface "
+                    r"interface "
                     + match.group("interface").replace("/", ".")
-                    + ".+vlan-membership static (?P<static_vlan_id>\d+)",
+                    + r".+vlan-membership static (?P<static_vlan_id>\d+)",
                     re.DOTALL | re.MULTILINE,
                 )
                 cfg_match = rx_cfg.search(running_config)

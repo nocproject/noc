@@ -19,7 +19,7 @@ class Script(BaseScript):
     name = "Cisco.IOS.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_prio = re.compile("^\d+\.\d+$")
+    rx_prio = re.compile(r"^\d+\.\d+$")
 
     def get_ports_attrs(self, cli_stp, instance_sep):
         """

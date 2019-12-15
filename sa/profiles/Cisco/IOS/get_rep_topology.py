@@ -18,12 +18,12 @@ class Script(BaseScript):
     name = "Cisco.IOS.get_rep_topology"
     interface = IGetREPTopology
     rx_port = re.compile(
-        "^(?P<host>\S+), (?P<port>\S+)\s+\((?P<role>[^)]+)\)\n"
-        "\s+(?P<state>Open|Alternate|Failed) Port,.+?\n"
-        "\s+Bridge MAC: (?P<mac>\S+)\n"
-        "\s+.+?\n"
-        "\s+.+?\n"
-        "\s+Neighbor Number:\s+(?P<fwd>\d+)\s*/\s*\[-(?P<rev>\d+)\]",
+        r"^(?P<host>\S+), (?P<port>\S+)\s+\((?P<role>[^)]+)\)\n"
+        r"\s+(?P<state>Open|Alternate|Failed) Port,.+?\n"
+        r"\s+Bridge MAC: (?P<mac>\S+)\n"
+        r"\s+.+?\n"
+        r"\s+.+?\n"
+        r"\s+Neighbor Number:\s+(?P<fwd>\d+)\s*/\s*\[-(?P<rev>\d+)\]",
         re.MULTILINE,
     )
 

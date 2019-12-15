@@ -26,8 +26,8 @@ class Script(BaseScript):
         r"SN:\s(?P<serial>\S+)?",
         re.MULTILINE | re.DOTALL,
     )
-    rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
-    rx_cvend = re.compile("(CISCO.(?P<ven>\S{3,15}))")
+    rx_trans = re.compile(r"((?:100|1000|10G)BASE\S+)")
+    rx_cvend = re.compile(r"(CISCO.(?P<ven>\S{3,15}))")
     rx_idprom = re.compile(
         r"\s*Vendor Name\s+(:|=)(\s+)?(?P<t_vendor>\S+[\S ]*)\n"
         r"(\s*Vendor OUI\s+(:|=)(\s+)?[\S+ ]*(\s+)?\n)?"
@@ -47,17 +47,17 @@ class Script(BaseScript):
         re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
     rx_ver1 = re.compile(
-        r"^cisco (?P<part_no>\S+) \(\S+\) processor( " r"\(revision(?P<revision>.+?)\))? with",
+        r"^cisco (?P<part_no>\S+) \(\S+\) processor( \(revision(?P<revision>.+?)\))? with",
         re.IGNORECASE | re.MULTILINE,
     )
     rx_7100 = re.compile(
-        r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? " r"(?:Universal Broadband Router|chassis)"
+        r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? (?:Universal Broadband Router|chassis)"
     )
     rx_slot_id = re.compile(
-        r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)" r"(?P<slot_id>[\d|\w]+).*", re.IGNORECASE
+        r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)(?P<slot_id>[\d|\w]+).*", re.IGNORECASE
     )
-    rx_psu1 = re.compile("(?:PS|Power Supply) (?P<number>\d+) ")
-    rx_psu2 = re.compile("Power Supply (?P<number>\d+)$")
+    rx_psu1 = re.compile(r"(?:PS|Power Supply) (?P<number>\d+) ")
+    rx_psu2 = re.compile(r"Power Supply (?P<number>\d+)$")
 
     slot_id = 0
 

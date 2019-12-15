@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.mib import mib
 
 rx_ver = re.compile(r"^Product Version\.+\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
-rx_inv = re.compile("^PID:\s+(?P<platform>\S+)\,", re.MULTILINE | re.DOTALL)
+rx_inv = re.compile(r"^PID:\s+(?P<platform>\S+)\,", re.MULTILINE | re.DOTALL)
 
 
 class Script(BaseScript):

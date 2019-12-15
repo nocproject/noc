@@ -25,7 +25,7 @@ class Script(BaseScript):
         r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\s*\n",
         re.MULTILINE,
     )
-    rx_instance = re.compile("^\s*(?P<key>STP Instance Settings)\n", re.MULTILINE)
+    rx_instance = re.compile(r"^\s*(?P<key>STP Instance Settings)\n", re.MULTILINE)
     rx_ins = re.compile(
         r"^\s*STP Instance Settings\n"
         r"^\s*\-+\n"
@@ -83,24 +83,6 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    """
-    rx_mst = re.compile(
-        r" Current MST Configuration Identification\n"
-        r" ----------------------------------------\n"
-        r"\n"
-        r" Configuration Name : (?P<name>\S+)\s+Revision Level :0\n"
-        r" MSTI ID           VID List\n"
-        r" -------           -------------------------------------------------------------\n"
-        r"    CIST           (?P<vlans>\S+)\n", re.MULTILINE)
-    rx_mst1 = re.compile(
-        r"Name            \[(?P<name>\S+)\]\s*\n"
-        r"Revision        0\n"
-        r"Instance        Vlans mapped\n"
-        r" --------      ------------------------------------------\n"
-        r"  0              (?P<vlans>\S+)\n"
-        r" -------------------------------------------------------\n",
-        re.MULTILINE)
-    """
     PORT_STATE = {
         "Broken": "broken",
         "Disabled": "disabled",

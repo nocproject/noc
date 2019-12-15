@@ -24,8 +24,8 @@ class Script(BaseScript):
 
     rx_entry = re.compile(
         r"Device ID: (?P<device_id>\S+).+?"
-        "Interface:\s(?P<local_interface>\S+)\s+"
-        "Port ID \(outgoing port\): (?P<remote_interface>\S+)",
+        r"Interface:\s(?P<local_interface>\S+)\s+"
+        r"Port ID \(outgoing port\): (?P<remote_interface>\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 

@@ -23,7 +23,7 @@ class Script(BaseScript):
     rx_trans_pid = re.compile(r"\s+Vendor PN\s+:\s+(?P<pid>\S+)\n")
     rx_trans_rev = re.compile(r"\s+Vendor Rev\s+:\s+(?P<rev>\S+)\n")
     rx_trans_sn = re.compile(r"\s+Vendor SN\s+:\s+(?P<sn>\S+)\n")
-    rx_trans = re.compile("((?:100|1000)BASE\s+SFP)")
+    rx_trans = re.compile(r"((?:100|1000)BASE\s+SFP)")
 
     rx_int_type = re.compile(
         r"(?P<int>Eth\s+\d/\d+)\n\s+Basic Information:\s+\n"

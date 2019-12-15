@@ -27,12 +27,12 @@ class Script(BaseScript):
     rx_line = re.compile(r"\n+\s*Name:\s+", re.MULTILINE)
     rx_body = re.compile(
         r"^(?P<interface>\S+).+"
-        "^\s*Administrative Mode: (?P<amode>.+).+"
-        "^\s*Operational Mode: (?P<omode>.+).+"
-        "^\s*Administrative Trunking Encapsulation:.+"
-        "^\s*Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
-        "^\s*Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
-        "^\s*Trunking VLANs Enabled: (?P<vlans>.+?)$",
+        r"^\s*Administrative Mode: (?P<amode>.+).+"
+        r"^\s*Operational Mode: (?P<omode>.+).+"
+        r"^\s*Administrative Trunking Encapsulation:.+"
+        r"^\s*Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
+        r"^\s*Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
+        r"^\s*Trunking VLANs Enabled: (?P<vlans>.+?)$",
         # "Pruning VLANs Enabled:",
         re.MULTILINE | re.DOTALL,
     )
@@ -42,7 +42,7 @@ class Script(BaseScript):
         r"(?:up|down)\s+(?P<description>.+)"
     )
     rx_tagged = re.compile(
-        r"^Port\s+Vlans allowed on trunk\s*\n" r"^\S+\s+([0-9\-\,]+)\s*\n", re.MULTILINE
+        r"^Port\s+Vlans allowed on trunk\s*\n^\S+\s+([0-9\-\,]+)\s*\n", re.MULTILINE
     )
 
     rx_conf_iface = re.compile(

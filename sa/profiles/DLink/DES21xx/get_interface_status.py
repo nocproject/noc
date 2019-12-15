@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
     rx_link = re.compile(
         r"^(?P<interface>\d+)\s+([01M HFaulf]+|Auto)\s+"
-        "\S+\s+\S+\s+(?P<status>([01M HFaulf]+|Down))$",
+        r"\S+\s+\S+\s+(?P<status>([01M HFaulf]+|Down))$",
         re.MULTILINE | re.IGNORECASE,
     )
 

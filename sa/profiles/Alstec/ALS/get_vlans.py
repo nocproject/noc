@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Alstec.ALS.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile("^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
 
     def execute_cli(self):
         r = []

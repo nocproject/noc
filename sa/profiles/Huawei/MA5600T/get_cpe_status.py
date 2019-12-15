@@ -23,7 +23,7 @@ class Script(BaseScript):
 
     cache = True
 
-    splitter = re.compile("\s*-+\n")
+    splitter = re.compile(r"\s*-+\n")
 
     status_map = {"online": "active", "offline": "inactive"}  # associated  # disassociating
 

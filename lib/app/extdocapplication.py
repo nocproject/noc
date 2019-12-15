@@ -68,7 +68,7 @@ class ExtDocApplication(ExtApplication):
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
 
-    rx_oper_splitter = re.compile("^(?P<field>\S+)(?P<f_num>\d+)__in")
+    rx_oper_splitter = re.compile(r"^(?P<field>\S+)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -116,7 +116,7 @@ class ExtDocApplication(ExtApplication):
             self.add_view(
                 "api_json",
                 self._api_to_json,
-                url="^(?P<id>[0-9a-f]{24})/json/$",
+                url=r"^(?P<id>[0-9a-f]{24})/json/$",
                 method=["GET"],
                 access="read",
                 api=True,
@@ -124,7 +124,7 @@ class ExtDocApplication(ExtApplication):
             self.add_view(
                 "api_share_info",
                 self._api_share_info,
-                url="^(?P<id>[0-9a-f]{24})/share_info/$",
+                url=r"^(?P<id>[0-9a-f]{24})/share_info/$",
                 method=["GET"],
                 access="read",
                 api=True,
@@ -330,7 +330,7 @@ class ExtDocApplication(ExtApplication):
     def instance_to_lookup(self, o, fields=None):
         return {"id": str(o.id), "label": unicode(o)}
 
-    @view(method=["GET"], url="^$", access="read", api=True)
+    @view(method=["GET"], url=r"^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 
@@ -401,7 +401,7 @@ class ExtDocApplication(ExtApplication):
 
     @view(
         method=["GET"],
-        url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+        url=r"^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
         access="read",
         api=True,
     )
@@ -420,7 +420,7 @@ class ExtDocApplication(ExtApplication):
 
     @view(
         method=["PUT"],
-        url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+        url=r"^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
         access="update",
         api=True,
     )
@@ -463,7 +463,7 @@ class ExtDocApplication(ExtApplication):
 
     @view(
         method=["DELETE"],
-        url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+        url=r"^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
         access="delete",
         api=True,
     )
@@ -517,7 +517,7 @@ class ExtDocApplication(ExtApplication):
             x["is_builtin"] = u and u in builtins
         return data
 
-    @view(url="^actions/group_edit/$", method=["POST"], access="update", api=True)
+    @view(url=r"^actions/group_edit/$", method=["POST"], access="update", api=True)
     def api_action_group_edit(self, request):
         validator = DictParameter(
             attrs={"ids": ListOfParameter(element=DocumentParameter(self.model), convert=True)}

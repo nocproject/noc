@@ -158,16 +158,16 @@ class Script(BaseScript):
 
                 if m.group("port_description").strip():
                     p = m.group("port_description").strip()
-                    n["remote_port_description"] = re.sub("\n\s{49}", "", p)
+                    n["remote_port_description"] = re.sub(r"\n\s{49}", "", p)
                 if m.group("system_name").strip():
                     p = m.group("system_name").strip()
-                    n["remote_system_name"] = re.sub("\n\s{49}", "", p)
+                    n["remote_system_name"] = re.sub(r"\n\s{49}", "", p)
                 if m.group("system_description").strip():
                     p = m.group("system_description").strip()
-                    n["remote_system_description"] = re.sub("\n\s{49}", "", p)
+                    n["remote_system_description"] = re.sub(r"\n\s{49}", "", p)
                 caps = 0
                 for c in m.group("system_capabilities").split(","):
-                    c = re.sub("\s{49,50}", "", c)
+                    c = re.sub(r"\s{49,50}", "", c)
                     c = c.strip()
                     if not c:
                         break
