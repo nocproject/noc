@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Service stub for scripts and commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -41,8 +41,8 @@ class ServiceStub(object):
         # Initialize DCS
         self.dcs = get_dcs(DEFAULT_DCS)
         # Activate service
-        self.logger.warn("Activating stub service")
-        self.logger.warn("Starting IOLoop")
+        self.logger.warning("Activating stub service")
+        self.logger.warning("Starting IOLoop")
         self.ioloop.add_callback(self.is_ready.set)
         self.ioloop.start()
 
