@@ -11,7 +11,7 @@ import six
 import pytest
 
 # NOC modules
-from noc.core.comp import smart_bytes, smart_text
+from noc.core.comp import smart_bytes, smart_text, bord
 
 if six.PY3:
 
@@ -59,3 +59,8 @@ def test_smart_bytes(input, expected):
     v = smart_bytes(input)
     assert isinstance(v, six.binary_type)
     assert v == expected
+
+
+@pytest.mark.parametrize("input,expected", [(b"\x00", 0), (b"\x01", 1), (b"\x10", 16)])
+def test_bord(input, expected):
+    assert bord(input[0]) == expected

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# ASN.1 BER utitities
+# ASN.1 BER utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,11 +10,17 @@
 import math
 import struct
 
+# Third-party modules
+from typing import Tuple, Any, List
+import six
+
 # NOC modules
+from noc.core.comp import bord, smart_bytes, smart_text
 from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int, encode_oid
 
 
 def did(tag_class, is_constructed, tag_id):
+    # type: (int, int, int) -> int
     """
     Calculate decoder_id as <tag id > | tag_class | constructed
     :param tag_class:
@@ -31,12 +37,14 @@ def did(tag_class, is_constructed, tag_id):
 class BERDecoder(object):
     @staticmethod
     def split_tlv(msg):
+        # type: (bytes) -> Tuple[bytes, bytes]
         decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(
             msg
         )
         return msg[offset : offset + length], msg[offset + length :]
 
     def parse_tlv(self, msg):
+        # type: (bytes) -> Tuple[Any, bytes]
         decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(
             msg
         )
@@ -44,8 +52,8 @@ class BERDecoder(object):
         if is_implicit:
             return self.parse_implicit(value, tag), rest
         try:
-            decoder = self.DECODERS[decoder_id]
-            return decoder(self, value), rest
+            type_dec = self.DECODERS[decoder_id]
+            return type_dec(self, value), rest
         except KeyError:
             pt = "constructed" if is_constructed else "primitive"
             if is_implicit:
@@ -61,9 +69,10 @@ class BERDecoder(object):
         return None
 
     def parse_boolean(self, msg):
+        # type: (bytes) -> bool
         if not msg:
             return False
-        return bool(ord(msg[0]))
+        return bool(bord(msg[0]))
 
     INT_MASK = {
         1: struct.Struct("!b"),
@@ -73,6 +82,7 @@ class BERDecoder(object):
     }
 
     def parse_int(self, msg):
+        # type: (bytes) -> int
         """
         >>> BERDecoder().parse_int('')
         0
@@ -103,19 +113,20 @@ class BERDecoder(object):
         # Decode as is
         v = 0
         for c in msg:
-            v = (v << 8) + ord(c)
-        if ord(msg[0]) & 0x80:
+            v = (v << 8) + bord(c)
+        if bord(msg[0]) & 0x80:
             # Negative number
             m = 1 << (8 * len(msg))
             v -= m
         return v
 
     def parse_real(self, msg):
+        # type: (bytes) -> float
         """
         """
         if not msg:
             return 0.0
-        f = ord(msg[0])
+        f = bord(msg[0])
         if f & 0x80:  # Binary encoding, 8.5.6
             # @todo: Снести в конец
             base = {0x00: 2, 0x10: 4, 0x20: 16}[f & 0x30]  # 8.5.6.2
@@ -141,19 +152,23 @@ class BERDecoder(object):
             raise ValueError("Unknown REAL encoding: %s" % f)
 
     def parse_p_bitstring(self, msg):
-        unused = ord(msg[0])
-        r = "".join(BITSTING[ord(c)] for c in msg)
+        # type: (six.binary_type) -> six.binary_type
+        unused = bord(msg[0])
+        r = b"".join(BITSTING[bord(c)] for c in msg)
         if unused:
             r = r[:-unused]
         return r
 
     def parse_p_octetstring(self, msg):
+        # type: (bytes) -> six.text_type
         return msg
 
     def parse_p_t61_string(self, msg):
+        # type: (bytes) -> six.text_type
         return msg
 
     def parse_c_octetstring(self, msg):
+        # type: (bytes) -> List[six.text_type]
         r = []
         while msg:
             v, msg = self.parse_tlv(msg)
@@ -168,30 +183,34 @@ class BERDecoder(object):
         return r
 
     def parse_null(self, msg):
+        # type: (bytes) -> None
         return None
 
     def parse_a_ipaddress(self, msg):
+        # type: (bytes) -> six.text_type
         if not msg:
             raise ValueError("Invalid IP Address: '%s'" % msg.encode("hex"))
-        return "%d.%d.%d.%d" % (ord(msg[0]), ord(msg[1]), ord(msg[2]), ord(msg[3]))
+        return "%d.%d.%d.%d" % (bord(msg[0]), bord(msg[1]), bord(msg[2]), bord(msg[3]))
 
     def parse_p_oid(self, msg):
+        # type: (bytes) -> six.text_type
         """
         >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
         "1.3.6.1.2.1.1.5.0"
         """
         self.last_oid = parse_p_oid(msg)
-        return self.last_oid
+        return smart_text(self.last_oid)
 
     def parse_compressed_oid(self, msg):
+        # type: (bytes) -> six.text_type
         """
         :param msg:
         :return:
         """
-        pos = ord(msg[0]) - 1
-        parts = self.last_oid.split(".")[:pos] + [str(ord(d)) for d in msg[1:]]
+        pos = bord(msg[0]) - 1
+        parts = self.last_oid.split(".")[:pos] + [str(bord(d)) for d in msg[1:]]
         self.last_oid = ".".join(parts)
-        return self.last_oid
+        return smart_text(self.last_oid)
 
     def parse_sequence(self, msg):
         r = []
@@ -320,20 +339,24 @@ class BEREncoder(object):
     MZERO = float("-0")
 
     struct_Q = struct.Struct("!Q")
+    struct_B = struct.Struct("B")
+    struct_BB = struct.Struct("BB")
 
     def encode_tlv(self, tag, primitive, data):
+        # type: (int, bool, six.binary_type) -> six.binary_type
+        data = smart_bytes(data)
         # Encode tag
         t = tag
-        t |= 0 if primitive else 0x20
+        if not primitive:
+            t |= 0x20
         # Encode length
         ln = len(data)
         if ln < 0x80:
             # Short form
-            return "%s%s%s" % (chr(t), chr(ln), data)
-        else:
-            # Prepare length's representation
-            ll = self.struct_Q.pack(ln).lstrip("\x00")
-            return "%s%s%s%s" % (chr(t), chr(0x80 | len(ll)), ll, data)
+            return self.struct_BB.pack(t, ln) + data
+        # Prepare length's representation
+        ll = self.struct_Q.pack(ln).lstrip("\x00")
+        return self.struct_BB.pack(t, 0x80 | len(ll)) + ll + data
 
     def encode_octet_string(self, data):
         """
@@ -377,20 +400,20 @@ class BEREncoder(object):
         '\\x02\\x02\\xff\\x7f'
         """
         if data == 0:
-            return "\x02\x01\x00"
+            return b"\x02\x01\x00"
         if data > 0:
             return encode_int(data)
         data = -data
-        r = self.struct_Q.pack(data).lstrip("\x00")
+        r = self.struct_Q.pack(data).lstrip(b"\x00")
         ln = len(r)
         comp = 1 << (ln * 8 - 1)
         if comp < data:
             comp <<= 8
-        r = self.struct_Q.pack(comp - data).lstrip("\x00")
+        r = self.struct_Q.pack(comp - data).lstrip(b"\x00")
         if r:
-            r = chr(ord(r[0]) | 0x80) + r[1:]
+            r = self.struct_B.pack(bord(r[0]) | 0x80) + r[1:]
         else:
-            r = "\x80" + "\x00" * (ln - 1)
+            r = b"\x80" + b"\x00" * (ln - 1)
         return self.encode_tlv(2, True, r)
 
     def encode_real(self, data):
@@ -432,13 +455,15 @@ class BEREncoder(object):
         return self.encode_tlv(9, True, "0x03%dE%s%d" % (m, "" if e else "+", e))
 
     def encode_null(self):
+        # type: () -> six.binary_type
         """
         05 00
         :return:
         """
-        return "\x05\x00"
+        return b"\x05\x00"
 
     def encode_oid(self, data):
+        # type: (six.text_type) -> six.binary_type
         """
         >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
         '\\x06\\x08+\\x06\\x01\\x02\\x01\\x01\\x05\\x00'
@@ -446,7 +471,7 @@ class BEREncoder(object):
         :param data:
         :return:
         """
-        return encode_oid(data)
+        return encode_oid(smart_bytes(data))
 
 
 decoder = BERDecoder()
@@ -462,4 +487,4 @@ def decode(msg):
 # value -> string of bits
 BITSTING = {}
 for i in range(256):
-    BITSTING[i] = "".join("%d" % ((i >> j) & 1) for j in range(7, -1, -1))
+    BITSTING[i] = b"".join(b"%d" % ((i >> j) & 1) for j in range(7, -1, -1))

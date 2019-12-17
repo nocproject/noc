@@ -32,3 +32,17 @@ def smart_text(s, errors="strict"):
     if isinstance(s, six.binary_type):
         return s.decode(DEFAULT_ENCODING, errors=errors)
     return six.text_type(s)
+
+
+if six.PY3:
+
+    def bord(x):
+        # type: (int) -> int
+        return x
+
+
+else:
+
+    def bord(x):
+        # type: (bytes) -> int
+        return ord(x)
