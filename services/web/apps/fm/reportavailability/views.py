@@ -21,6 +21,7 @@ from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.connection import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from pymongo import ReadPreference
@@ -170,17 +171,19 @@ class ReportAvailabilityApplication(SimpleReport):
 
         mo_hostname = ReportObjectsHostname1(sync_ids=mos_id)
         mo_hostname = mo_hostname.get_dictionary()
-        for o in mos:
+        for mo_id, mo_name, address, profile, ad_name in mos.values_list(
+            "id", "name", "address", "profile", "administrative_domain__name"
+        ):
             s = [
-                o.administrative_domain.name,
-                o.name,
-                mo_hostname.get(o.id, ""),
-                o.address,
-                o.profile.name,
-                round(a.get(o.id, (100.0, 0, 0))[0], 2),
+                ad_name,
+                mo_name,
+                mo_hostname.get(mo_id, ""),
+                address,
+                Profile.get_by_id(profile).name,
+                round(a.get(mo_id, (100.0, 0, 0))[0], 2),
             ]
-            s.extend(a.get(o.id, (100.0, 0, 0))[1:])
-            s.append(rb[o.id] if o.id in rb else 0)
+            s.extend(a.get(mo_id, (100.0, 0, 0))[1:])
+            s.append(rb[mo_id] if mo_id in rb else 0)
             r += [s]
             """
             a1.get(o.id, 100),
