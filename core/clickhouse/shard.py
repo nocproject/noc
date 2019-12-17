@@ -111,8 +111,9 @@ class ShardingFunction(object):
         if "else" not in f:
             f = "%s else []" % f  # testing stub
         fn = "def _ch_sharding_function(k):\n    return %s" % f
-        exec(compile(fn, "<string>", "exec"))
-        return _ch_sharding_function  # noqa
+        scope = {}
+        exec(compile(fn, "<string>", "exec"), scope)
+        return scope["_ch_sharding_function"]
 
 
 class ShardingSharder(BaseSharder):
