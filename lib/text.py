@@ -32,11 +32,11 @@ from noc.core.text import (
     tsv_escape,
     parse_table_header,
 )
-from noc.core.deprecations import RemovedInNOC1905Warning
+from noc.core.deprecations import RemovedInNOC2001Warning
 
 warnings.warn(
-    "noc.lib.text is deprecated and will be removed in NOC 19.5. "
+    "noc.lib.text is deprecated and will be removed in NOC 20.1. "
     "Please replace imports to noc.core.text",
-    RemovedInNOC1905Warning,
+    RemovedInNOC2001Warning,
     stacklevel=2,
 )

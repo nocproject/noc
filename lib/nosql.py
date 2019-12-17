@@ -6,7 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
-Deprecated module. Will be removed in NOC 19.5.
+Deprecated module. Will be removed in NOC 20.1.
 Use noc.core.mongo.* modules instead.
 """
 
@@ -29,12 +29,12 @@ from noc.core.mongo.fields import (  # noqa
     RawDictField,
 )
 
-from noc.core.deprecations import RemovedInNOC1905Warning
+from noc.core.deprecations import RemovedInNOC2001Warning
 
 
 warnings.warn(
-    "noc.lib.nosql is deprecated and will be removed in NOC 19.5. Watch for pending instructions",
-    RemovedInNOC1905Warning,
+    "noc.lib.nosql is deprecated and will be removed in NOC 20.1. Watch for pending instructions",
+    RemovedInNOC2001Warning,
     stacklevel=2,
 )
 
@@ -51,9 +51,9 @@ def auto_connect():
 
     warnings.warn(
         "Implicit auto-connecting to MongoDB via importing noc.lib.nosql is deprecated "
-        "and to be removed in NOC 19.5. "
+        "and to be removed in NOC 20.1. "
         "Use noc.core.mongo.connection to explicit connect.",
-        RemovedInNOC1905Warning,
+        RemovedInNOC2001Warning,
         stacklevel=2,
     )
     connect()

@@ -12,12 +12,10 @@ import sys
 import glob
 import os
 import threading
-import warnings
 
 # NOC modules
 from noc.core.loader.base import BaseLoader
 from noc.config import config
-from noc.core.deprecations import RemovedInNOC1904Warning
 from .base import BaseProfile
 
 GENERIC_PROFILE = "Generic.Host"
@@ -48,29 +46,19 @@ class ProfileLoader(BaseLoader):
                     return None
                 for p in config.get_customized_paths("", prefer_custom=True):
                     path = os.path.join(p, "sa", "profiles", *name.split("."))
-                    if os.path.exists(os.path.join(path, "__init__.py")) or os.path.exists(
-                        os.path.join(path, "profile.py")
-                    ):
-                        if p:
-                            # Custom script
-                            base_name = os.path.basename(os.path.dirname(p))
-                            module_name = "%s.sa.profiles.%s" % (base_name, name)
-                        else:
-                            # Common script
-                            module_name = "noc.sa.profiles.%s" % name
-                        for mn in ("%s.profile" % module_name, module_name):
-                            profile = self.find_class(mn, BaseProfile, name)
-                            if profile:
-                                if not profile.__module__.endswith(".profile"):
-                                    warnings.warn(
-                                        "%s profile: __init__.py should be moved to profile.py"
-                                        % name,
-                                        RemovedInNOC1904Warning,
-                                    )
-                                profile.initialize()
-                                break
-                        if profile:
-                            break
+                    if not os.path.exists(os.path.join(path, "profile.py")):
+                        continue
+                    if p:
+                        # Custom script
+                        base_name = os.path.basename(os.path.dirname(p))
+                        module_name = "%s.sa.profiles.%s" % (base_name, name)
+                    else:
+                        # Common script
+                        module_name = "noc.sa.profiles.%s" % name
+                    profile = self.find_class("%s.profile" % module_name, BaseProfile, name)
+                    if profile:
+                        profile.initialize()
+                        break
                 self.profiles[name] = profile
             return profile
 
