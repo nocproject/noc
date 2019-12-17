@@ -49,5 +49,5 @@ class Script(BaseScript):
             "vendor": "Allied Telesis",
             "platform": platform,
             "version": version,
-            "attributes": {"Boot PROM": bootprom, "serial": serial},
+            "attributes": {"Boot PROM": bootprom, "Serial Number": serial},
         }
