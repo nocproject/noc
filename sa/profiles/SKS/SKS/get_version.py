@@ -21,13 +21,13 @@ class Script(BaseScript):
     cache = True
 
     rx_ver = re.compile(
-        r"^\s*SW version\s+(?P<version>\S+).*\n"
-        r"^\s*Boot version\s+(?P<bootprom>\S+).*\n"
-        r"^\s*HW version\s+(?P<hardware>\S+).*\n",
+        r"^\s*S(?:W|oftware) [Vv]ersion\s+(?P<version>\S+).*\n"
+        r"^\s*Boot(?:Rom)? [Vv]ersion\s+(?P<bootprom>\S+).*\n"
+        r"^\s*H(?:W|ardware) [Vv]ersion\s+(?P<hardware>\S+).*\n",
         re.MULTILINE,
     )
-    rx_platform = re.compile(r"^\s*System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
-    rx_serial = re.compile(r"^\s*Serial number : (?P<serial>\S+)")
+    rx_platform = re.compile(r"^\s*[Ss]ystem [Dd]escription\s*:\s+(?P<platform>.+)\n", re.MULTILINE)
+    rx_serial = re.compile(r"^\s*Serial (?:No\.|number)\s*: (?P<serial>\S+)", re.MULTILINE)
 
     rx_ver2 = re.compile(
         r"^(?P<platform>S(?:KS|WA)\-\S+) Series Software, Version (?P<version>\S+)", re.MULTILINE
@@ -38,6 +38,7 @@ class Script(BaseScript):
         r"^Serial num:\s*(?P<serial>\w+),?",
         re.MULTILINE,
     )
+    VALID_PLATFORMS = {"SKS-16E1-IP-I-16PG"}
 
     def execute_cli(self):
         v = self.cli("show version", cached=True)
@@ -51,18 +52,26 @@ class Script(BaseScript):
                     "HW version": match.group("hardware"),
                 },
             }
+            match = self.rx_serial.search(v)
+            if match:
+                r["attributes"]["Serial Number"] = match.group("serial")
             v = self.cli("show system", cached=True)
             match = self.rx_platform.search(v)
             platform = match.group("platform")
             if platform == "SKS 10G":
                 platform = "SKS-16E1-IP-1U"
+            elif platform in self.VALID_PLATFORMS:
+                pass
             elif platform.startswith("SKS"):
                 platform = "SKS-16E1-IP"
             r["platform"] = platform
-            v = self.cli("show system id", cached=True)
-            match = self.rx_serial.search(v)
-            if match:
-                r["attributes"]["Serial Number"] = match.group("serial")
+            try:
+                v = self.cli("show system id", cached=True)
+                match = self.rx_serial.search(v)
+                if match:
+                    r["attributes"]["Serial Number"] = match.group("serial")
+            except self.CLISyntaxError:
+                pass
         else:
             match = self.rx_ver2.search(v)
             if match:

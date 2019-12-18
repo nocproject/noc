@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>[^#\n]\S+)(?:\(e1\))?\s*#"
     pattern_syntax_error = (
         r"% Unrecognized command|% Wrong number of parameters|"
-        r"% Unrecognized host or address|"
+        r"% Unrecognized host or address|% Invalid parameter|"
         r"Unknown command|Incomplete command|Too many parameters"
     )
     command_super = "enable"
@@ -29,6 +29,7 @@ class Profile(BaseProfile):
     pattern_more = [
         ("More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
         ("^ --More-- ", " "),
+        ("^....press ENTER to next line, Q to quit, other key to next page....", "\x0a"),
     ]
     config_volatile = [
         r"enable password 7 \S+( level \d+)?\n",
@@ -78,6 +79,7 @@ class Profile(BaseProfile):
     INTERFACE_TYPES = {
         "fa": "physical",  # FastEthernet
         "gi": "physical",  # GigabitEthernet
+        "ge": "physical",  # gigabitethernet
         "te": "physical",  # TenGigabitEthernet
         "tg": "physical",  # TenGigabitEthernet
         "po": "aggregated",  # Port-Channel

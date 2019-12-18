@@ -18,13 +18,15 @@ from noc.core.text import parse_table
 class Script(BaseScript):
     name = "SKS.SKS.get_vlans"
     interface = IGetVlans
+    cache = True
 
     rx_vlan = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
+    rx_vlan2 = re.compile(r"^VLAN ID\s+: (?P<vlan_id>\d+)", re.MULTILINE)
     rx_status = re.compile(r"VLAN\s+Status\s+Name\s+Ports", re.MULTILINE)
 
     def execute_cli(self):
         r = []
-        c = self.cli("show vlan")
+        c = self.cli("show vlan", cached=True)
         if bool(self.rx_status.search(c)):
             t = parse_table(c, allow_wrap=True)
             for i in t:
@@ -32,4 +34,7 @@ class Script(BaseScript):
         else:
             for match in self.rx_vlan.finditer(c):
                 r += [match.groupdict()]
+            if not r:
+                for match in self.rx_vlan2.finditer(c):
+                    r += [match.groupdict()]
         return r

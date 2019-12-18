@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import parse_table
+from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -58,6 +59,32 @@ class Script(BaseScript):
         r"^\s+MTU (?P<mtu>\d+) bytes.+\n"
         r"(^\s+Encapsulation .+\n)?"
         r"(^\s+Members in this Aggregator: (?P<agg_list>.+)\n)?",
+        re.MULTILINE,
+    )
+    rx_iface2 = re.compile(
+        r"^\S+ (?P<ifname>\S+\d) current state: (?P<oper_status>up|down)\s*\n"
+        r"^\s+shutdown: (?P<admin_status>\S+)\s*\n"
+        r"^\s+Hardware address is (?P<mac>\S+)\s*\n"
+        r"^\s+ConfigSpeed.+\n"
+        r"^\s+Current port type:.+\n"
+        r"^\s+Priority is .+\n"
+        r"^\s+Flow control is .+\n"
+        r"^\s+PVID is (?P<pvid>\d+)\s*\n"
+        r"^\s+Port mode: (?P<mode>trunk|access|hybrid)\s*\n"
+        r"^\s*\n"
+        r"(^\s+Untagged\s+VLAN : (?P<untagged>\d+)\s*\n)?"
+        r"(^\s+Tagged pvid: .+\n)?"
+        r"(^\s+Vlan\s+allowed : (?P<vlans>\S+)\s*\n)?",
+        re.MULTILINE,
+    )
+    rx_ip_iface = re.compile(
+        r"^The mac-address of interface is (?P<mac>\S+)\s*\n"
+        r"^Interface name\s+: (?P<ifname>\S+)\s*\n"
+        r"^Primary ipaddress\s+: (?P<ip>\S+)/(?P<mask>\S+)\s*\n"
+        r"^Secondary ipaddress\s+: (?P<ip2>\S+)(?:/(?P<mask2>\S+))?\s*\n"
+        r"^VLAN\s+: (?P<vlan_id>\d+)\s*\n"
+        r"^Address-range\s+: \S+\s*\n"
+        r"^Interface status\s+: (?P<oper_status>\S+)\s*\n",
         re.MULTILINE,
     )
 
@@ -199,7 +226,8 @@ class Script(BaseScript):
 
     def get_new_sks(self):
         interfaces = []
-        for match in self.rx_iface.finditer(self.cli("show interface")):
+        v = self.cli("show interface")
+        for match in self.rx_iface.finditer(v):
             ifname = match.group("ifname")
             iface = {
                 "name": ifname,
@@ -247,6 +275,65 @@ class Script(BaseScript):
                 sub["enabled_afi"] = ["IPv4"]
             iface["subinterfaces"] = [sub]
             interfaces += [iface]
+        if not interfaces:
+            for match in self.rx_iface2.finditer(v):
+                iface = {
+                    "name": match.group("ifname"),
+                    "type": "physical",
+                    "admin_status": match.group("admin_status") == "false",
+                    "oper_status": match.group("oper_status") == "up",
+                    "mac": match.group("mac"),
+                }
+                sub = {
+                    "name": match.group("ifname"),
+                    "admin_status": match.group("admin_status") == "false",
+                    "oper_status": match.group("oper_status") == "up",
+                    "mac": match.group("mac"),
+                    "enabled_afi": ["BRIDGE"],
+                }
+                pvid = match.group("pvid")
+                sub["untagged_vlan"] = pvid
+                if match.group("mode") == "trunk":
+                    tagged = match.group("vlans")
+                    if tagged == "all":
+                        vlans = []
+                        for item in self.scripts.get_vlans():
+                            vlans += [item["vlan_id"]]
+                    else:
+                        vlans = self.expand_rangelist(match.group("vlans"))
+                    if pvid in vlans:
+                        vlans.remove(pvid)
+                    sub["tagged_vlans"] = vlans
+                iface["subinterfaces"] = [sub]
+                interfaces += [iface]
+                v = self.cli("show ip interface")
+                for match in self.rx_ip_iface.finditer(v):
+                    ifname = match.group("ifname")
+                iface = {
+                    "name": match.group("ifname"),
+                    "type": "SVI",
+                    "admin_status": match.group("oper_status") == "Up",
+                    "oper_status": match.group("oper_status") == "Up",
+                    "mac": match.group("mac"),
+                }
+                sub = {
+                    "name": match.group("ifname"),
+                    "admin_status": match.group("oper_status") == "Up",
+                    "oper_status": match.group("oper_status") == "Up",
+                    "mac": match.group("mac"),
+                    "enabled_afi": ["IPv4"],
+                    "vlan_ids": match.group("vlan_id"),
+                }
+                ip_address = "%s/%s" % (match.group("ip"), IPv4.netmask_to_len(match.group("mask")))
+                sub["ipv4_addresses"] = [ip_address]
+                if match.group("ip2") != "None":
+                    ip_address = "%s/%s" % (
+                        match.group("ip2"),
+                        IPv4.netmask_to_len(match.group("mask2")),
+                    )
+                    sub["ipv4_addresses"] = [ip_address]
+                iface["subinterfaces"] = [sub]
+                interfaces += [iface]
         return interfaces
 
     def execute_cli(self):

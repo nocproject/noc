@@ -20,14 +20,14 @@ class Script(BaseScript):
     interface = IPing
     rx_result1 = re.compile(
         r"(?P<count>\d+) packets transmitted, "
-        r"(?P<success>\d+) packets received, \d+% packet loss\n"
-        r"round-trip( \(ms\))? min/avg/max = "
+        r"(?P<success>\d+)(?: packets)? received, \d+% packet loss(?:, time \d+ ms)?\n"
+        r"(?:round-trip|rtt)( \(ms\))? min/avg/max = "
         r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
         re.MULTILINE,
     )
     rx_result2 = re.compile(
         r"(?P<count>\d+) packets transmitted, "
-        r"(?P<success>\d+) packets received, \d+% packet loss"
+        r"(?P<success>\d+)(?: packets)? received, \d+% packet loss"
     )
 
     def execute_cli(self, address, count=None, source_address=None, size=None):
@@ -62,5 +62,7 @@ class Script(BaseScript):
                 "max": match.group("max"),
             }
         else:
+            if "failed to send echo ping req" in s:
+                return {"success": 0, "count": 0}
             match = self.rx_result2.search(s)
             return {"success": match.group("success"), "count": match.group("count")}

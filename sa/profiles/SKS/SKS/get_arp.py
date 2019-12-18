@@ -28,16 +28,27 @@ class Script(BaseScript):
         r"(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+?)(\(\S+\))?\s*\n",
         re.MULTILINE,
     )
+    rx_line3 = re.compile(
+        r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)",
+        re.MULTILINE,
+    )
 
     def execute_cli(self, interface=None):
         r = []
-        c = self.cli("show arp")
-        for match in self.rx_line1.finditer(c):
-            if interface is not None and interface != match.group("interface"):
-                continue
-            r += [match.groupdict()]
-        if not r:
-            for match in self.rx_line2.finditer(c):
+        try:
+            c = self.cli("show arp")
+            for match in self.rx_line1.finditer(c):
+                if interface is not None and interface != match.group("interface"):
+                    continue
+                r += [match.groupdict()]
+            if not r:
+                for match in self.rx_line2.finditer(c):
+                    if interface is not None and interface != match.group("interface"):
+                        continue
+                    r += [match.groupdict()]
+        except self.CLISyntaxError:
+            c = self.cli("show arp all")
+            for match in self.rx_line3.finditer(c):
                 if interface is not None and interface != match.group("interface"):
                     continue
                 r += [match.groupdict()]

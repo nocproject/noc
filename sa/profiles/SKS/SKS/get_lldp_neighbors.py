@@ -48,13 +48,63 @@ class Script(BaseScript):
         r"^enabled capabilities:(?P<caps>.*?)\n",
         re.MULTILINE,
     )
+    rx_port = re.compile(
+        r"^(?P<iface>\S+)\s*\n"
+        r"^Port LLDP:.+\n"
+        r"^Total neighbor count: 1\s*\n"
+        r"^Local Management Address:.+\n"
+        r"^\s*\n"
+        r"^Neighbor \(1\):\s*\n"
+        r"^TTL:.+\n"
+        r"^Chassis ID: (?P<chassis_id>\S+)\s*\n"
+        r"^Port ID: (?P<port_id>\S+)\s*\n"
+        r"^System Name: (?P<system_name>.+)\s*\n"
+        r"^System Description: (?P<system_descr>(.+\n)*?)"
+        r"^Port Description: (?P<port_descr>.+)\s*\n",
+        re.MULTILINE,
+    )
 
     def execute_cli(self):
         r = []
         try:
             v = self.cli("show lldp neighbors")
         except self.CLISyntaxError:
-            raise self.NotSupportedError()
+            try:
+                v = self.cli("show lldp")
+                for match in self.rx_port.finditer(v):
+                    chassis_id = match.group("chassis_id")
+                    if is_ipv4(chassis_id) or is_ipv6(chassis_id):
+                        chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
+                    elif is_mac(chassis_id):
+                        chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
+                    else:
+                        chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
+                    port_id = match.group("port_id")
+                    if is_ipv4(port_id) or is_ipv6(port_id):
+                        port_id_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
+                    elif is_mac(port_id):
+                        port_id_subtype = LLDP_PORT_SUBTYPE_MAC
+                    else:
+                        port_id_subtype = LLDP_PORT_SUBTYPE_LOCAL
+                    neighbor = {
+                        "remote_chassis_id": chassis_id,
+                        "remote_chassis_id_subtype": chassis_id_subtype,
+                        "remote_port": port_id,
+                        "remote_port_subtype": port_id_subtype,
+                    }
+                    port_descr = match.group("port_descr").strip()
+                    system_name = match.group("system_name").strip()
+                    system_descr = match.group("system_descr").strip()
+                    if port_descr != "NONE":
+                        neighbor["remote_port_description"] = port_descr
+                    if system_name != "NONE":
+                        neighbor["remote_system_name"] = system_name
+                    if system_descr != "NONE":
+                        neighbor["remote_system_description"] = system_descr
+                    r += [{"local_interface": match.group("iface"), "neighbors": [neighbor]}]
+                return r
+            except self.CLISyntaxError:
+                raise self.NotSupportedError()
         t = parse_table(v, allow_wrap=True)
         for i in t:
             chassis_id = i[1]
