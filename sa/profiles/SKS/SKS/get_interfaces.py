@@ -72,6 +72,7 @@ class Script(BaseScript):
         r"^\s+PVID is (?P<pvid>\d+)\s*\n"
         r"^\s+Port mode: (?P<mode>trunk|access|hybrid)\s*\n"
         r"^\s*\n"
+        r"(^\s+Tagged\s+VLAN : (?P<tagged>.*)\s*\n)?"
         r"(^\s+Untagged\s+VLAN : (?P<untagged>\d+)\s*\n)?"
         r"(^\s+Tagged pvid: .+\n)?"
         r"(^\s+Vlan\s+allowed : (?P<vlans>\S+)\s*\n)?",
@@ -291,24 +292,40 @@ class Script(BaseScript):
                     "mac": match.group("mac"),
                     "enabled_afi": ["BRIDGE"],
                 }
-                pvid = match.group("pvid")
-                sub["untagged_vlan"] = pvid
-                if match.group("mode") == "trunk":
+                if match.group("mode") == "access":
+                    pvid = match.group("untagged")
+                if match.group("mode") == "hybrid":
+                    # TODO: Proccess more, then one untagged VLAN
+                    pvid = match.group("pvid")
+                    tagged = match.group("tagged")
+                    if tagged:
+                        if tagged == "all":
+                            vlans = []
+                            for item in self.scripts.get_vlans():
+                                vlans += [item["vlan_id"]]
+                        else:
+                            vlans = self.expand_rangelist(match.group("vlans"))
+                        if pvid in vlans:
+                            vlans.remove(pvid)
+                        sub["tagged_vlans"] = vlans
+                elif match.group("mode") == "trunk":
+                    pvid = match.group("pvid")
                     tagged = match.group("vlans")
-                    if tagged == "all":
-                        vlans = []
-                        for item in self.scripts.get_vlans():
-                            vlans += [item["vlan_id"]]
-                    else:
-                        vlans = self.expand_rangelist(match.group("vlans"))
-                    if pvid in vlans:
-                        vlans.remove(pvid)
+                    if tagged:
+                        if tagged == "all":
+                            vlans = []
+                            for item in self.scripts.get_vlans():
+                                vlans += [item["vlan_id"]]
+                        else:
+                            vlans = self.expand_rangelist(match.group("vlans"))
+                        if pvid in vlans:
+                            vlans.remove(pvid)
                     sub["tagged_vlans"] = vlans
+                sub["untagged_vlan"] = pvid
                 iface["subinterfaces"] = [sub]
                 interfaces += [iface]
                 v = self.cli("show ip interface")
-                for match in self.rx_ip_iface.finditer(v):
-                    ifname = match.group("ifname")
+            for match in self.rx_ip_iface.finditer(v):
                 iface = {
                     "name": match.group("ifname"),
                     "type": "SVI",
