@@ -47,6 +47,7 @@ class Script(BaseScript):
     rx_7100 = re.compile(
         r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? " r"(?:Universal Broadband Router|chassis)"
     )
+    rx_c4900m = re.compile(r"^Cisco Systems, Inc. (?P<part_no>\S+) \d+ slot switch")
     rx_ver = re.compile(
         r"Model revision number\s+:\s+(?P<revision>\S+)\s*\n"
         r"Motherboard revision number\s+:\s+\S+\s*\n"
@@ -159,6 +160,10 @@ class Script(BaseScript):
                     if pid in ("", "N/A"):
                         if self.rx_7100.search(descr):
                             pid = "CISCO7100"
+                    if pid == "MIDPLANE" and name == "Switch System":
+                        match1 = self.rx_c4900m.search(descr)
+                        if match1:
+                            pid = match1.group("part_no")
                     platform = pid
                     serial = match.group("serial")
                     break
