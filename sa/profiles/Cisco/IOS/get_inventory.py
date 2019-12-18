@@ -39,6 +39,14 @@ class Script(BaseScript):
         r"(\s+)?\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
+    rx_idprom1 = re.compile(
+        r"^\s*Transceiver vendor name\s+:\s*(?P<t_vendor>\S+[\S ]*)\s*\n"
+        r"^\s*Part number provided by transceiver vendor\s+:\s*(?P<t_part_no>\S+[\S ]*)\s*\n"
+        r"^\s*Revision level of part number provided by vendor\s+:\s*(?P<t_rev>\S+[\S ]*)\s*\n"
+        r"^\s*Vendor serial number\s+:\s*(?P<t_sn>\S+)\s*\n"
+        r"^\s*Vendor manufacturing date code\s+:\s*(?P<t_date>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_ver = re.compile(
         r"Model revision number\s+:\s+(?P<revision>\S+)\s*\n"
         r"Motherboard revision number\s+:\s+\S+\s*\n"
@@ -53,6 +61,7 @@ class Script(BaseScript):
     rx_7100 = re.compile(
         r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? (?:Universal Broadband Router|chassis)"
     )
+    rx_c4900m = re.compile(r"^Cisco Systems, Inc. (?P<part_no>\S+) \d+ slot switch")
     rx_slot_id = re.compile(
         r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)(?P<slot_id>[\d|\w]+).*", re.IGNORECASE
     )
@@ -72,7 +81,7 @@ class Script(BaseScript):
     def get_inv(self):
         objects = []
         try:
-            v = self.cli("show inventory raw")
+            v = self.cli("show inventory raw", cached=True)
             self.slot_id = 0
             for match in self.rx_item.finditer(v):
                 vendor, serial = "", ""
@@ -97,7 +106,7 @@ class Script(BaseScript):
                     self.logger.debug("PID, VID, Serial is not match. Continue...")
                     continue
                 serial = match.group("serial")
-                if not part_no:
+                if not part_no or (self.is_cat4000 and match.group("descr") == "10Gbase-LR"):
                     if type and "XCVR" in type:
                         # Last chance to get idprom
                         if match.group("name").startswith("Transceiver"):
@@ -132,7 +141,7 @@ class Script(BaseScript):
                         "number": number,
                         "vendor": vendor,
                         "serial": serial,
-                        "description": match.group("descr"),
+                        "description": match.group("descr").strip(),
                         "part_no": [part_no],
                         "revision": match.group("vid"),
                         "builtin": False,
@@ -209,6 +218,9 @@ class Script(BaseScript):
         try:
             t = self.cli("show idprom int %s | i Vendor" % int)
             match = self.rx_idprom.search(t)
+            if not match and self.is_cat4000 and descr == "10GBASE-LR":
+                t = self.cli("show idprom int %s | i endor" % int)
+                match = self.rx_idprom1.search(t)
             if match:
                 v = self.rx_cvend.search(match.group("t_vendor").upper())
                 if v and "SYSTEMS" not in v.group("ven"):
@@ -327,6 +339,8 @@ class Script(BaseScript):
                 return "MOTHERBOARD", None, "CISCO1921-MB"
             return "MOTHERBOARD", None, pid
         elif pid.startswith("WS-X4920") or (pid.startswith("WS-C4900M") and "Linecard" in name):
+            if pid == "WS-C4900M":
+                pid = "WS-C4900M-LC"  # First builtin linecard
             return "LINECARD", self.slot_id, pid
         elif (
             (lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
@@ -344,6 +358,10 @@ class Script(BaseScript):
                 pid = descr
             if is_int(name):  # Stacking
                 return "CHASSIS", int(name), pid
+            if pid == "MIDPLANE" and name == "Switch System":
+                match = self.rx_c4900m.search(descr)
+                if match:
+                    pid = match.group("part_no")
             return "CHASSIS", self.slot_id, pid
         elif ("SUP" in pid or "S2U" in pid) and "supervisor" in descr:
             # Sup2
@@ -367,6 +385,7 @@ class Script(BaseScript):
             or pid.startswith("WS-X67")
             or pid.startswith("WS-X65")
             or pid.startswith("WS-X68")
+            or pid.startswith("WS-X49")
         ) and "port" in descr:
             return "LINECARD", self.slot_id, pid
         elif (
