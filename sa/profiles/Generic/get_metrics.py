@@ -228,7 +228,11 @@ class MetricScriptBase(BaseScriptMetaclass):
         f.mt_volatile = False
         setattr(script, fn, six.create_unbound_method(f, script))
         ff = getattr(script, fn)
-        ff.__func__.__name__ = fn
+        if six.PY3:
+            ff.__name__ = fn
+            ff.__qualname__ = "%s.%s" % (script.__name__, fn)
+        else:
+            ff.__func__.__name__ = fn
         return ff
 
     rx_mt_name = re.compile("[^a-z0-9]+")
