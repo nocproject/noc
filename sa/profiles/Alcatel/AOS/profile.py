@@ -3,7 +3,7 @@
 # Vendor: Alcatel
 # OS:     AOS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,10 +25,11 @@ class Profile(BaseProfile):
 
     rx_ver = re.compile(r"\d+")
 
-    def cmp_version(self, x, y):
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)]
-        )
+    @classmethod
+    def cmp_version(cls, x, y):
+        a = [int(z) for z in cls.rx_ver.findall(x)]
+        b = [int(z) for z in cls.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     def convert_interface_name(self, s):
         if s.startswith("Alcatel ") or s.startswith("Alcatel-Lucent "):
@@ -38,5 +39,4 @@ class Profile(BaseProfile):
         elif s.startswith("Dynamic Aggregate Number "):
             # Dynamic Aggregate Number 1 ref 40000001 size 4
             return "Agg %s" % s.split()[3]
-        else:
-            return s
+        return s

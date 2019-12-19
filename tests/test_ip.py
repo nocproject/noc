@@ -11,6 +11,7 @@ import pytest
 
 # NOC modules
 from noc.core.ip import IP, IPv4, IPv6, PrefixDB
+from noc.core.comp import smart_text
 
 
 @pytest.mark.parametrize(
@@ -66,7 +67,7 @@ def test_ipv4_str(p1, p2):
     ],
 )
 def test_ipv4_unicode(p1, p2):
-    assert unicode(p1) == p2
+    assert smart_text(p1) == p2
 
 
 @pytest.mark.parametrize("p1,p2", [(IPv4("192.168.0.0/24"), "<IPv4 192.168.0.0/24>")])
@@ -81,8 +82,9 @@ def test_ipv4_len(p1, p2):
     assert len(p1) == p2
 
 
-@pytest.fixture(
-    params=[
+@pytest.mark.parametrize(
+    "p1, p2, c, eq, ne, lt, le, gt, ge",
+    [
         #    Prefix1          Prefix2      cmp    =     !=      <     <=     >     >=
         ("192.168.0.0/24", "192.168.0.0/24", 0, True, False, False, True, False, True),
         ("192.168.0.0/24", "192.168.1.0/24", -1, False, True, True, True, False, False),
@@ -90,17 +92,12 @@ def test_ipv4_len(p1, p2):
         ("192.168.0.0/24", "192.168.0.0/25", -1, False, True, True, True, False, False),
         ("0.0.0.0/0", "192.168.0.0/24", -1, False, True, True, True, False, False),
         ("0.0.0.0/0", "0.0.0.0/1", -1, False, True, True, True, False, False),
-    ]
+    ],
 )
-def ipv4_comparison(request):
-    return request.param
-
-
-def test_ipv4_comparison(ipv4_comparison):
-    p1, p2, c, eq, ne, lt, le, gt, ge = ipv4_comparison
+def test_ipv4_comparison(p1, p2, c, eq, ne, lt, le, gt, ge):
     p1 = IPv4(p1)
     p2 = IPv4(p2)
-    assert cmp(p1, p2) is c
+    assert ((p1 > p2) - (p1 < p2)) == c
     assert (p1 == p2) is eq
     assert (p1 != p2) is ne
     assert (p1 < p2) is lt
@@ -171,13 +168,11 @@ def test_ipv4_from_bits(p1, p2):
     assert repr(p1) == p2
 
 
-@pytest.fixture(params=["192.168.0.1", "224.0.0.0/4", "192.168.0.0/16", "255.255.255.255"])
-def ipv4_bits(request):
-    return request.param
-
-
-def test_ipv4_from_to_bits(ipv4_bits):
-    p = IPv4(ipv4_bits)
+@pytest.mark.parametrize(
+    "prefix", ["192.168.0.1", "224.0.0.0/4", "192.168.0.0/16", "255.255.255.255"]
+)
+def test_ipv4_from_to_bits(prefix):
+    p = IPv4(prefix)
     assert IPv4.from_bits(p.iter_bits()) == p
 
 
@@ -612,7 +607,7 @@ def test_ipv4_special_addresses(prefix, special):
     ],
 )
 def test_ipv6_unicode(p1, p2):
-    assert unicode(IPv6(p1)) == p2
+    assert smart_text(IPv6(p1)) == p2
 
 
 @pytest.mark.parametrize("p1,p2", [("::", "<IPv6 ::/128>")])
@@ -627,8 +622,9 @@ def test_ipv6_len(p1, p2):
     assert len(IPv6(p1)) == p2
 
 
-@pytest.fixture(
-    params=[
+@pytest.mark.parametrize(
+    "p1, p2, c, eq, ne, lt, le, gt, ge",
+    [
         #    Prefix1     Prefix2 cmp    =     !=      <     <=     >     >=
         ("100::/16", "100::/16", 0, True, False, False, True, False, True),
         ("100::/16", "200::/16", -1, False, True, True, True, False, False),
@@ -642,17 +638,12 @@ def test_ipv6_len(p1, p2):
         ("::100:200:300:200/64", "::100:200:300:400/64", -1, False, True, True, True, False, False),
         ("::100:200:300:400/64", "::100:100:300:400/64", 1, False, True, False, False, True, True),
         ("::100:100:300:400/64", "::100:200:300:400/64", -1, False, True, True, True, False, False),
-    ]
+    ],
 )
-def ipv6_comparison(request):
-    return request.param
-
-
-def test_ipv6_comparison(ipv6_comparison):
-    p1, p2, c, eq, ne, lt, le, gt, ge = ipv6_comparison
+def test_ipv6_comparison(p1, p2, c, eq, ne, lt, le, gt, ge):
     p1 = IPv6(p1)
     p2 = IPv6(p2)
-    assert cmp(p1, p2) is c
+    assert ((p1 > p2) - (p1 < p2)) == c
     assert (p1 == p2) is eq
     assert (p1 != p2) is ne
     assert (p1 < p2) is lt

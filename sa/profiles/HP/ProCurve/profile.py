@@ -3,11 +3,11 @@
 # Vendor: HP
 # OS:     ProCurve
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-10 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -39,7 +39,9 @@ class Profile(BaseProfile):
         if l1 != l2:
             # Different letters
             return None
-        r = cmp(int(mj1), int(mj2))
+        a, b = int(mj1), int(mj2)
+        r = (a > b) - (a < b)
         if r != 0:
             return r
-        return cmp(int(mn1), int(mn2))
+        a, b = int(mn1), int(mn2)
+        return (a > b) - (a < b)
