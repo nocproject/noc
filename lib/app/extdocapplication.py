@@ -48,7 +48,7 @@ from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
 from noc.core.collection.base import Collection
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 from .extapplication import ExtApplication, view
 
 
@@ -287,16 +287,16 @@ class ExtDocApplication(ExtApplication):
                 elif isinstance(f, GeoPointField):
                     pass
                 elif isinstance(f, ForeignKeyField):
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                     v = v.id
                 elif isinstance(f, PlainReferenceField):
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                     if hasattr(v, "id"):
                         v = str(v.id)
                     else:
                         v = str(v)
                 elif isinstance(f, ReferenceField):
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                     if hasattr(v, "id"):
                         v = str(v.id)
                     else:
@@ -319,7 +319,7 @@ class ExtDocApplication(ExtApplication):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
-                        v = unicode(v)
+                        v = smart_text(v)
             r[n] = v
         # Add custom fields
         if not nocustom:
@@ -328,7 +328,7 @@ class ExtDocApplication(ExtApplication):
         return r
 
     def instance_to_lookup(self, o, fields=None):
-        return {"id": str(o.id), "label": unicode(o)}
+        return {"id": str(o.id), "label": smart_text(o)}
 
     @view(method=["GET"], url=r"^$", access="read", api=True)
     def api_list(self, request):
@@ -344,7 +344,7 @@ class ExtDocApplication(ExtApplication):
     @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
     def api_lookup_tree(self, request):
         def trim(s):
-            return unicode(o).rsplit(" | ")[-1]
+            return smart_text(o).rsplit(" | ")[-1]
 
         if not self.parent_field:
             return None

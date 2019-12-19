@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # ip.reportfilter
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django import forms
 
 # NOC modules
@@ -16,6 +15,8 @@ from noc.main.models.customfield import CustomField
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
 from noc.peer.models.asn import AS
+from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 class ReportFilterApplication(SimpleReport):
@@ -41,7 +42,13 @@ class ReportFilterApplication(SimpleReport):
 
     def get_data(self, request, **kwargs):
         def get_row(p):
-            r = [p.vrf.name, p.prefix, p.state.name, unicode(p.asn), unicode(p.vc) if p.vc else ""]
+            r = [
+                p.vrf.name,
+                p.prefix,
+                p.state.name,
+                smart_text(p.asn),
+                smart_text(p.vc) if p.vc else "",
+            ]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]

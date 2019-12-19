@@ -24,6 +24,7 @@ import mongoengine.signals
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.validators import is_int
+from noc.core.comp import smart_text
 from .customfieldenumgroup import CustomFieldEnumGroup
 
 logger = logging.getLogger(__name__)
@@ -315,7 +316,7 @@ class CustomField(NOCModel):
         """
         Install custom field to model
         """
-        un = unicode(self)
+        un = smart_text(self)
         if un in self._installed:
             return
         self._installed.add(un)

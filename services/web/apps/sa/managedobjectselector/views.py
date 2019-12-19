@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobjectselector application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from noc.sa.models.managedobjectselector import (
     ManagedObjectSelector,
     ManagedObjectSelectorByAttribute,
 )
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -45,7 +46,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
                 "is_managed": mo.is_managed,
                 "profile": mo.profile.name,
                 "platform": mo.platform.name if mo.platform else "",
-                "administrative_domain": unicode(mo.administrative_domain),
+                "administrative_domain": smart_text(mo.administrative_domain),
                 "address": mo.address,
                 "description": mo.description,
                 "tags": mo.tags,

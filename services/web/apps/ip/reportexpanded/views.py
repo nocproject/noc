@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party Modules
-from noc.core.translation import ugettext as _
 from django import forms
 
 # NOC Modules
@@ -16,6 +15,8 @@ from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
 from noc.main.models.customfield import CustomField
 from noc.core.validators import check_ipv6_prefix, check_ipv4_prefix, ValidationError
+from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
@@ -48,7 +49,7 @@ class ExpandedReport(SimpleReport):
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_row(p, level=0):
             s = "--" * level
-            r = [s + p.prefix, p.state.name, unicode(p.vc) if p.vc else ""]
+            r = [s + p.prefix, p.state.name, smart_text(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]

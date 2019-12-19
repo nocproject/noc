@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # phone.phonerange application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from mongoengine.queryset import Q
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.phone.models.phonerange import PhoneRange
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -38,12 +39,12 @@ class PhoneRangeApplication(ExtDocApplication):
         return o.total_numbers
 
     def instance_to_lookup(self, o, fields=None):
-        return {"id": str(o.id), "label": unicode(o), "has_children": o.has_children}
+        return {"id": str(o.id), "label": smart_text(o), "has_children": o.has_children}
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         def sg_to_list(items):
             return [
-                {"group": str(x), "group__label": unicode(ResourceGroup.get_by_id(x))}
+                {"group": str(x), "group__label": smart_text(ResourceGroup.get_by_id(x))}
                 for x in items
             ]
 
@@ -72,7 +73,7 @@ class PhoneRangeApplication(ExtDocApplication):
         path = [PhoneRange.get_by_id(r) for r in o.get_path()]
         return {
             "data": [
-                {"id": str(p.id), "level": path.index(p) + 1, "label": unicode(p.name)}
+                {"id": str(p.id), "level": path.index(p) + 1, "label": smart_text(p.name)}
                 for p in path
             ]
         }

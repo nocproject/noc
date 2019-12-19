@@ -22,6 +22,7 @@ from noc.core.service.api import API, api
 from noc.core.fileutils import temporary_file, safe_rewrite
 from noc.fm.models.mib import MIB
 from noc.core.error import ERR_MIB_NOT_FOUND, ERR_MIB_MISSED, ERR_MIB_TOOL_MISSED
+from noc.core.comp import smart_text, smart_bytes
 
 
 class MIBAPI(API):
@@ -90,7 +91,7 @@ class MIBAPI(API):
                     env=self.SMI_ENV,
                 )
                 with open(py_path) as f:
-                    p_data = unicode(f.read(), "ascii", "ignore").encode("ascii")
+                    p_data = smart_bytes(smart_text(f.read(), encoding="ascii", errors="ignore"))
                 with open(py_path, "w") as f:
                     f.write(p_data)
                 m = imp.load_source("mib", py_path)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.audittrail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.main.models.audittrail import AuditTrail
 from noc.core.translation import ugettext as _
 from noc.models import get_object, get_model
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,6 @@ class AuditTrailApplication(ExtDocApplication):
 
     def field_object_name(self, o):
         try:
-            return unicode(get_object(o.model_id, o.object))
+            return smart_text(get_object(o.model_id, o.object))
         except AssertionError:
-            return unicode(o.object)
+            return smart_text(o.object)

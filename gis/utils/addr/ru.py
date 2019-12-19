@@ -9,6 +9,9 @@
 # Python modules
 import re
 
+# NOC modules
+from noc.core.comp import smart_text
+
 
 div_norm = {"село": "с", "поселок": "п", "город": "г", "поселок городского типа": "пгт"}
 
@@ -25,7 +28,7 @@ def normalize_division(s):
     :returns: (short name, name)
     """
     if isinstance(s, str):
-        s = unicode(s)
+        s = smart_text(s)
     match = rx_div_start.match(s)
     if match:
         sn, n = match.groups()

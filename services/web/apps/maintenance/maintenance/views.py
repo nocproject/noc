@@ -71,7 +71,6 @@ class MaintenanceApplication(ExtDocApplication):
             "subject": o.subject,
             "time_pattern": o.time_pattern.id if o.time_pattern else None,
             "time_pattern__label": o.time_pattern.name if o.time_pattern else "",
-            # "row_class": ""
         }
 
     @view(url="(?P<id>[0-9a-f]{24})/objects/", method=["GET"], access="read", api=True)
@@ -86,8 +85,6 @@ class MaintenanceApplication(ExtDocApplication):
                     "name": mo.name,
                     "is_managed": mo.is_managed,
                     "profile": mo.profile.name,
-                    # "platform": mo.platform,
-                    # "administrative_domain": unicode(mo.administrative_domain),
                     "address": mo.address,
                     "description": mo.description,
                     "tags": mo.tags,

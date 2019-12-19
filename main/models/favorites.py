@@ -12,6 +12,7 @@ import logging
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, BooleanField
+import six
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
@@ -20,6 +21,7 @@ from noc.aaa.models.user import User
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class Favorites(Document):
     meta = {
         "collection": "noc.favorites",
@@ -33,7 +35,7 @@ class Favorites(Document):
     favorite_app = BooleanField(default=False)
     favorites = ListField()
 
-    def unicode(self):
+    def __str__(self):
         return "%s:%s" % (self.user.username, self.app)
 
     @classmethod

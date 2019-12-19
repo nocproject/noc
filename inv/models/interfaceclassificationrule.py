@@ -21,6 +21,7 @@ from noc.core.ip import IP
 from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.vc.models.vcfilter import VCFilter
+from noc.core.comp import smart_text
 from .interfaceprofile import InterfaceProfile
 
 
@@ -216,9 +217,9 @@ class InterfaceClassificationRule(Document):
         if not len(self.match):
             return "any"
         elif len(self.match) == 1:
-            return unicode(self.match[0])
+            return smart_text(self.match[0])
         else:
-            return " AND ".join("(%s)" % unicode(m) for m in self.match)
+            return " AND ".join("(%s)" % smart_text(m) for m in self.match)
 
     @classmethod
     def get_classificator_code(cls):

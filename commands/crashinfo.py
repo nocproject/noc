@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ./noc crashinfo
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.config import config
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
@@ -70,7 +71,7 @@ class Command(BaseCommand):
                         x = sl[11:]
                         break
                 x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
-                x = unicode(x)[:100].encode("utf-8")
+                x = smart_text(x)[:100].encode("utf-8")
                 fl += [
                     {
                         "uuid": fn[:-5],

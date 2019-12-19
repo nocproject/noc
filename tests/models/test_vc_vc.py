@@ -14,6 +14,7 @@ from noc.vc.models.vctype import VCType
 from noc.vc.models.vcdomain import VCDomain
 from noc.vc.models.vc import VC
 from noc.vc.models.error import InvalidLabelException
+from noc.core.comp import smart_text
 
 
 @pytest.mark.parametrize(
@@ -38,7 +39,7 @@ def test_vc_labels(data):
             vc.save()
     else:
         vc.save()
-        assert unicode(vc)
+        assert smart_text(vc)
         vc.delete()
     # Cleanup
     vc_domain.delete()

@@ -17,6 +17,7 @@ from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.ip import IPv4
 from noc.core.validators import is_mac
+from noc.core.comp import smart_text, smart_bytes
 
 
 class Script(BaseScript):
@@ -59,9 +60,8 @@ class Script(BaseScript):
     # if ascii or rus text in description
     def convert_description(self, desc):
         if desc:
-            return unicode(desc, "utf8", "replace").encode("utf8")
-        else:
-            return desc
+            return smart_bytes(smart_text(desc, errors="replace"))
+        return desc
 
     def get_bulk(self):
         return self.BULK

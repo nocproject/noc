@@ -39,6 +39,7 @@ from noc.core.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
 from noc.core.cache.base import cache
+from noc.core.comp import smart_text
 from .access import HasPerm, Permit, Deny
 from .site import site
 
@@ -219,7 +220,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         app_perms = [p[lps:] for p in user_perms & self.get_permissions()]
         return {
             "class": self.js_app_class,
-            "title": unicode(self.title),
+            "title": smart_text(self.title),
             "params": {
                 "url": self.menu_url,
                 "permissions": app_perms,

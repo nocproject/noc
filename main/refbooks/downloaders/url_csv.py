@@ -3,7 +3,7 @@
 # CSV-file downloader
 # First line is a field names
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ import six
 # NOC modules
 from noc.main.refbooks.downloaders import Downloader as DownloaderBase
 from noc.core.http.client import fetch_sync
+from noc.core.comp import smart_text
 
 
 class Downloader(DownloaderBase):
@@ -50,10 +51,10 @@ class Downloader(DownloaderBase):
             if not header:
                 # Read field names from first line
                 for i, h in enumerate(row):
-                    header[i] = unicode(h, "utf8", "ignore")
+                    header[i] = smart_text(h, "ignore")
                 continue
             r = {}
             for i, v in enumerate(row):
-                r[header[i]] = unicode(v, "utf8", "ignore")
+                r[header[i]] = smart_text(v, "ignore")
             out.append(r)
         return out

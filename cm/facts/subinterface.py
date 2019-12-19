@@ -15,8 +15,9 @@ import logging
 import six
 
 # NOC modules
-from .base import BaseFact
 from noc.inv.models.subinterface import SubInterface as DBSubInterface
+from noc.core.comp import smart_text
+from .base import BaseFact
 
 logger = logging.getLogger(__name__)
 
@@ -357,5 +358,5 @@ class SubInterface(BaseFact):
                 managed_object=self.managed_object.id, name=self.name
             ).first()
             if si:
-                logger.debug("bind %s to database", unicode(self))
+                logger.debug("bind %s to database", smart_text(self))
                 si.profile = si.get_profile()

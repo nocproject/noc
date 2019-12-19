@@ -11,6 +11,7 @@ from noc.core.script.base import BaseScript
 
 # NOC modules
 from noc.sa.interfaces.igetconfig import IGetConfig
+from noc.core.comp import smart_text, smart_bytes
 
 
 class Script(BaseScript):
@@ -37,5 +38,5 @@ class Script(BaseScript):
             raise Exception("Not implemented")
         config = self.cleaned_config(config)
         if self.encoding:
-            config = unicode(config, self.encoding).encode("utf8", "ignore")
+            config = smart_bytes(smart_text(config, encoding=self.encoding, errors="ignore"))
         return config

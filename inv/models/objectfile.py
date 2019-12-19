@@ -16,6 +16,7 @@ from mongoengine.fields import StringField, ObjectIdField, FileField, DateTimeFi
 from mongoengine import signals
 
 # NOC modules
+from noc.core.comp import smart_text
 from .object import Object
 
 
@@ -41,7 +42,7 @@ class ObjectFile(Document):
     mime_type = StringField()
 
     def __str__(self):
-        return unicode(self.name or self.id)
+        return smart_text(self.name or self.id)
 
     def delete_file(self):
         if self.file:

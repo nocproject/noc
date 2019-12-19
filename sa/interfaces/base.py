@@ -21,6 +21,7 @@ from noc.core.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 from noc.core.interface.parameter import ORParameter  # noqa
+from noc.core.comp import smart_text
 
 
 class NoneParameter(Parameter):
@@ -71,7 +72,7 @@ class UnicodeParameter(StringParameter):
         if value is None and self.default is not None:
             return self.default
         try:
-            value = unicode(value)
+            value = smart_text(value)
         except Exception:
             self.raise_error(value)
         if self.choices and value not in self.choices:

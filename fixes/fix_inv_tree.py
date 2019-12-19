@@ -6,10 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import logging
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
-import logging
+from noc.core.comp import smart_text
 
 
 def fix():
@@ -38,7 +41,7 @@ def fix():
         l0 = lfs[0]
         for l in lfs[1:]:
             for ls in Object.objects.filter(container=l.id):
-                logging.info("    ... moving %s to primary Lost&Found", unicode(ls))
+                logging.info("    ... moving %s to primary Lost&Found", smart_text(ls))
                 ls.container = l0
                 ls.save()
             logging.info("   ... removing duplicated Lost&Found %s", l)

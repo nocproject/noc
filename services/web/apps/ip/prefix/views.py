@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ip.prefix application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import ModelParameter, PrefixParameter
 from noc.core.ip import IP
 from noc.lib.app.decorators.state import state_handler
+from noc.core.comp import smart_text
 
 
 @state_handler
@@ -120,7 +121,7 @@ class PrefixApplication(ExtModelApplication):
         try:
             path = [Prefix.objects.get(id=ns) for ns in o.get_path()]
             return {
-                "data": [{"id": str(p.id), "name": unicode(p.name), "afi": p.afi} for p in path]
+                "data": [{"id": str(p.id), "name": smart_text(p.name), "afi": p.afi} for p in path]
             }
         except ValueError as e:
             return self.response_bad_request(str(e))

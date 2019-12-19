@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # phone.phonenumber application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.phone.models.phonenumber import PhoneNumber
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -30,12 +31,12 @@ class PhoneNumberApplication(ExtDocApplication):
     ]
 
     def instance_to_lookup(self, o, fields=None):
-        return {"id": str(o.id), "label": unicode(o), "dialplan": o.dialplan.name}
+        return {"id": str(o.id), "label": smart_text(o), "dialplan": o.dialplan.name}
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         def sg_to_list(items):
             return [
-                {"group": str(x), "group__label": unicode(ResourceGroup.get_by_id(x))}
+                {"group": str(x), "group__label": smart_text(ResourceGroup.get_by_id(x))}
                 for x in items
             ]
 

@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # ip.reportfilter
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django import forms
 
 # NOC modules
@@ -17,6 +16,8 @@ from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
 
 
 class ReportFilterApplication(SimpleReport):
@@ -48,7 +49,7 @@ class ReportFilterApplication(SimpleReport):
                 a.prefix.prefix,
                 a.address,
                 a.state.name,
-                unicode(a.fqdn) if a.fqdn else "",
+                smart_text(a.fqdn) if a.fqdn else "",
             ]
             for f in cf:
                 v = getattr(a, f.name)

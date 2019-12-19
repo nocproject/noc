@@ -47,6 +47,7 @@ from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
 from noc.aaa.models.permission import Permission
 from noc.core.middleware.tls import get_user
+from noc.core.comp import smart_text
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter
 
@@ -343,13 +344,13 @@ class ExtModelApplication(ExtApplication):
                 if o.shape:
                     v = stencil_registry.get(o.shape)
                     r[f.name] = v.id
-                    r["%s__label" % f.name] = unicode(v.title)
+                    r["%s__label" % f.name] = smart_text(v.title)
             elif hasattr(f, "document"):
                 # DocumentReferenceField
                 v = getattr(o, f.name)
                 if v:
                     r[f.name] = str(v.pk)
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                 else:
                     r[f.name] = None
                     r["%s__label" % f.name] = ""
@@ -364,19 +365,19 @@ class ExtModelApplication(ExtApplication):
                     if isinstance(v, datetime.datetime):
                         v = v.isoformat()
                     else:
-                        v = unicode(v)
+                        v = smart_text(v)
                 r[f.name] = v
             else:
                 v = getattr(o, f.name)
                 if v:
                     r[f.name] = v._get_pk_val()
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                 else:
                     r[f.name] = None
                     r["%s__label" % f.name] = ""
         # Add m2m fields
         for n in self.m2m_fields:
-            r[n] = [{"id": str(mmo.pk), "label": unicode(mmo)} for mmo in getattr(o, n).all()]
+            r[n] = [{"id": str(mmo.pk), "label": smart_text(mmo)} for mmo in getattr(o, n).all()]
             # r[n] = list(getattr(o, n).values_list("id", flat=True))
         # Add custom fields
         for f in self.custom_fields:
@@ -386,7 +387,7 @@ class ExtModelApplication(ExtApplication):
         return r
 
     def instance_to_lookup(self, o, fields=None):
-        return {"id": o.id, "label": unicode(o)}
+        return {"id": o.id, "label": smart_text(o)}
 
     def lookup_tags(self, q, name, value):
         if not value:

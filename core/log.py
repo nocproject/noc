@@ -10,8 +10,12 @@
 import logging
 import datetime
 
+# Third-party modules
+import six
+
 # NOC modules
 from noc.core.debug import get_traceback, error_fingerprint
+from noc.core.comp import smart_text
 
 
 class PrefixLoggerAdapter(object):
@@ -105,16 +109,16 @@ class ColorFormatter(logging.Formatter):
         logging.Formatter.__init__(self, *args, **kwargs)
 
     def format(self, record):
-        def safe_unicode(s):
+        def safe_text(s):
             try:
-                return unicode(s)
+                return smart_text(s)
             except UnicodeDecodeError:
                 return repr(s)
 
         try:
             message = record.getMessage()
-            assert isinstance(message, (str, unicode))
-            record.message = safe_unicode(message)
+            assert isinstance(message, six.string_types)
+            record.message = safe_text(message)
         except Exception as e:
             record.message = "Bad message (%r): %r" % (e, record.__dict__)
         record.asctime = self.formatTime(record, self.datefmt)
@@ -134,10 +138,10 @@ class ColorFormatter(logging.Formatter):
         self._colors = {}
         fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or ""
         for level in self.DEFAULT_LOG_COLORS:
-            self._colors[level] = unicode(
+            self._colors[level] = smart_text(
                 curses.tparm(fg_color, self.DEFAULT_LOG_COLORS[level]), "ascii"
             )
-        self._end_color = unicode(curses.tigetstr("sgr0"), "ascii")
+        self._end_color = smart_text(curses.tigetstr("sgr0"), encoding="ascii")
 
 
 class ErrorFormatter(logging.Formatter):

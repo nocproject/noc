@@ -35,6 +35,7 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
 from .dnszoneprofile import DNSZoneProfile
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -351,7 +352,7 @@ class DNSZone(NOCModel):
         if isinstance(n, unicode):
             return n.lower().encode("idna")
         elif isinstance(n, six.string_types):
-            return unicode(n, "utf-8").lower().encode("idna")
+            return smart_text(n, "utf-8").lower().encode("idna")
         else:
             return n
 

@@ -25,6 +25,7 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.validators import is_int
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.comp import smart_text
 
 
 class DocInline(object):
@@ -269,10 +270,10 @@ class DocInline(object):
                 if isinstance(f, GeoPointField):
                     pass
                 elif isinstance(f, ForeignKeyField):
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                     v = v.id
                 elif isinstance(f, PlainReferenceField):
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                     if hasattr(v, "id"):
                         v = str(v.id)
                     else:
@@ -285,7 +286,7 @@ class DocInline(object):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
-                        v = unicode(v)
+                        v = smart_text(v)
             r[n] = v
         # Add custom fields
         for f in self.custom_fields:

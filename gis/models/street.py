@@ -17,6 +17,7 @@ from mongoengine.fields import StringField, DictField, BooleanField, DateTimeFie
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
+from noc.core.comp import smart_text
 from .division import Division
 
 
@@ -54,5 +55,5 @@ class Street(Document):
     def full_path(self):
         if not self.parent:
             return ""
-        r = [self.parent.full_path, unicode(self)]
+        r = [self.parent.full_path, smart_text(self)]
         return " | ".join(r)

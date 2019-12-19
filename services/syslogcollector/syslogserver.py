@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Syslog server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import time
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.ioloop.udpserver import UDPServer
+from noc.core.comp import smart_bytes, smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +36,11 @@ class SyslogServer(UDPServer):
         if not cfg:
             return  # Invalid event source
         # Convert data to valid UTF8
-        data = unicode(data, "utf8", "ignore").encode("utf8")
+        data = smart_bytes(smart_text(data, errors="ignore"))
         # Parse priority
         priority = 0
-        if data.startswith("<"):
-            idx = data.find(">")
+        if data.startswith(b"<"):
+            idx = data.find(b">")
             if idx == -1:
                 return
             try:
