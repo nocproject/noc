@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+import operator
 
 # NOC Modules
 from noc.core.script.base import BaseScript
@@ -38,7 +39,7 @@ class Script(BaseScript):
         ):  # dot1qVlanStaticName
             o = oid.split(".")[-1]
             result += [{"vlan_id": int(o), "name": v.strip().rstrip("\x00")}]
-        return sorted(result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"]))
+        return list(sorted(result, key=operator.itemgetter("vlan_id")))
 
     def execute_cli(self):
         r = []

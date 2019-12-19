@@ -71,7 +71,7 @@ class Profile(BaseProfile):
         elif l1 < l2:
             n1 += [None] * (l2 - l1)
         for c1, c2 in zip(n1, n2):
-            r = cmp(c1, c2)
+            r = (c1 > c2) - (c1 < c2)
             if r != 0:
                 return r
         return 0

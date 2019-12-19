@@ -10,6 +10,7 @@
 import os
 import datetime
 import stat
+import operator
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
@@ -32,5 +33,5 @@ class ReportBackups(SimpleReport):
             ]:
                 s = os.stat(os.path.join(bd, f))
                 r.append([f, datetime.datetime.fromtimestamp(s[stat.ST_MTIME]), s[stat.ST_SIZE]])
-            data = sorted(r, lambda x, y: cmp(x[1], y[1]))
+            data = list(sorted(r, key=operator.itemgetter(1)))
         return self.from_dataset(title=self.title, columns=["File", "Size"], data=data)

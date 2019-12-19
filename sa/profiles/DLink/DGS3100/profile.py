@@ -4,12 +4,14 @@
 # OS:     DGS3100
 # Compatible:
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
 import re
+
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -36,10 +38,11 @@ class Profile(BaseProfile):
     #
     rx_ver = re.compile(r"\d+")
 
-    def cmp_version(self, x, y):
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)]
-        )
+    @classmethod
+    def cmp_version(cls, x, y):
+        a = [int(z) for z in cls.rx_ver.findall(x)]
+        b = [int(z) for z in cls.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     rx_interface_name = re.compile(r"^.+ Port\s+(?P<port>\d+)\s+on Unit (?P<unit>\d+)")
     rx2_interface_name = re.compile(r"^.+ Port\s+(?P<port>\d+)\s*")
