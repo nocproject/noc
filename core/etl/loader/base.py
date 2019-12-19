@@ -25,6 +25,7 @@ from six.moves import zip_longest
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -486,7 +487,7 @@ class BaseLoader(object):
     def clean_str(self, value):
         if value:
             if isinstance(value, str):
-                return unicode(value, "utf-8")
+                return smart_text(value, "utf-8")
             elif not isinstance(value, six.string_types):
                 return str(value)
             else:

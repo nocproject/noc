@@ -2,9 +2,12 @@
 # ----------------------------------------------------------------------
 # RR helper class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# NOC modules
+from noc.core.comp import smart_text
 
 TYPE_PREF = {"NS": 0, "MX": 10}
 DEFAULT_PREF = 100
@@ -94,9 +97,8 @@ class RR(object):
         if isinstance(n, unicode):
             return n.lower().encode("idna")
         elif isinstance(n, str):
-            return unicode(n, "utf-8").lower().encode("idna")
-        else:
-            return n
+            return smart_text(n, "utf-8").lower().encode("idna")
+        return n
 
     @staticmethod
     def maybe_int(v):

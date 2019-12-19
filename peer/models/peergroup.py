@@ -33,4 +33,4 @@ class PeerGroup(NOCModel):
     export_med = models.IntegerField("Export MED", blank=True, null=True)
 
     def __str__(self):
-        return unicode(self.name)
+        return self.name

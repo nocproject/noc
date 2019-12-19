@@ -25,6 +25,7 @@ from noc.main.models.language import Language
 from noc.main.models.databasestorage import database_storage
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbentryattachment import KBEntryAttachment
+from noc.core.comp import smart_text
 
 #
 rx_hexseq = re.compile(r"\(((?:[0-9a-f][0-9a-f])+)\)")
@@ -81,7 +82,7 @@ class Command(BaseCommand):
                 seq = seq[2:]
                 r += chr(int(c, 16))
             r = "".join(r)
-            return unicode(r, self.encoding)
+            return smart_text(r, self.encoding)
 
         root = os.path.join(self.pages, page)
         name = rx_hexseq.sub(convert_hexseq, page)

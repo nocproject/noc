@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.networksegment application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -37,7 +38,7 @@ class NetworkSegmentApplication(ExtDocApplication):
         return qs
 
     def instance_to_lookup(self, o, fields=None):
-        return {"id": str(o.id), "label": unicode(o), "has_children": o.has_children}
+        return {"id": str(o.id), "label": smart_text(o), "has_children": o.has_children}
 
     def bulk_field_count(self, data):
         segments = [d["id"] for d in data]
@@ -57,7 +58,7 @@ class NetworkSegmentApplication(ExtDocApplication):
         path = [NetworkSegment.get_by_id(ns) for ns in o.get_path()]
         return {
             "data": [
-                {"level": level + 1, "id": str(p.id), "label": unicode(p.name)}
+                {"level": level + 1, "id": str(p.id), "label": smart_text(p.name)}
                 for level, p in enumerate(path)
             ]
         }

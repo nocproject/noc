@@ -14,6 +14,7 @@ import pytest
 import six
 
 # NOC modules
+from noc.core.comp import smart_text
 from .util import get_models, get_documents
 
 
@@ -32,7 +33,7 @@ def test_document_str(model):
 @pytest.mark.parametrize("model", get_models())
 def test_model_unicode(model):
     for o in model.objects.all():
-        assert unicode(o)
+        assert smart_text(o)
 
 
 @pytest.mark.parametrize("model", get_documents())
@@ -44,10 +45,10 @@ def test_document_unicode(model):
 @pytest.mark.parametrize("model", get_models())
 def test_model_str_unicode(model):
     for o in model.objects.all():
-        assert str(o) == unicode(o).encode("utf-8")
+        assert str(o) == smart_text(o).encode("utf-8")
 
 
 @pytest.mark.parametrize("model", get_documents())
 def test_document_str_unicode(model):
     for o in model.objects.all():
-        assert str(o) == unicode(o).encode("utf-8")
+        assert str(o) == smart_text(o).encode("utf-8")

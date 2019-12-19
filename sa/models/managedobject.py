@@ -82,6 +82,7 @@ from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
+from noc.core.comp import smart_text
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -877,7 +878,7 @@ class ManagedObject(NOCModel):
         :param value:
         :return:
         """
-        value = unicode(value)
+        value = smart_text(value)
         try:
             v = self.managedobjectattribute_set.get(key=name)
             v.value = value

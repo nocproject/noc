@@ -17,6 +17,7 @@ from django.db import models
 from noc.core.model.base import NOCModel
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.core.comp import smart_text
 from .vcdomain import VCDomain
 from .vcfilter import VCFilter
 
@@ -52,7 +53,7 @@ class VCDomainProvisioningConfig(NOCModel):
     )
 
     def __str__(self):
-        return "%s: %s" % (unicode(self.vc_domain), unicode(self.selector))
+        return "%s: %s" % (unicode(self.vc_domain), smart_text(self.selector))
 
     @property
     def tagged_ports_list(self):

@@ -21,6 +21,7 @@ from noc.core.debug import error_report
 from .error import RetryAfter
 from noc.core.span import Span
 from noc.core.backport.time import perf_counter
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -251,9 +252,8 @@ class Job(object):
         Return dereferenced key name
         """
         if self.object:
-            return unicode(self.object)
-        else:
-            return self.attrs[self.ATTR_KEY]
+            return smart_text(self.object)
+        return self.attrs[self.ATTR_KEY]
 
     def can_run(self):
         """

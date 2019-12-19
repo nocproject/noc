@@ -30,6 +30,7 @@ from noc.core.debug import error_report
 from noc.core.handler import get_handler
 from noc.cm.models.objectfact import ObjectFact
 from noc.lib.clipsenv import CLIPSEnv
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -338,7 +339,7 @@ class Engine(object):
                     bulk += [
                         UpdateOne(
                             {"_id": f["_id"]},
-                            {"$set": {"attrs": f_attrs, "changed": now, "label": unicode(fact)}},
+                            {"$set": {"attrs": f_attrs, "changed": now, "label": smart_text(fact)}},
                         )
                     ]
                 new_facts.remove(f["_id"])
@@ -357,7 +358,7 @@ class Engine(object):
                         "_id": f,
                         "object": self.object.id,
                         "cls": fact.cls,
-                        "label": unicode(fact),
+                        "label": smart_text(fact),
                         "attrs": f_attrs,
                         "introduced": now,
                         "changed": now,

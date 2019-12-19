@@ -13,6 +13,7 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.kb.models.kbentry import KBEntry
+from noc.core.comp import smart_text
 
 
 @six.python_2_unicode_compatible
@@ -33,4 +34,4 @@ class KBGlobalBookmark(NOCModel):
     )
 
     def __str__(self):
-        return unicode(self.kb_entry)
+        return smart_text(self.kb_entry)

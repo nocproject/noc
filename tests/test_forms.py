@@ -17,7 +17,7 @@ from noc.core.forms import NOCForm
 app = get_wsgi_application()
 
 
-class TestF(NOCForm):
+class Form(NOCForm):
     charf = forms.CharField(required=True)
     intf = forms.IntegerField(min_value=18)
 
@@ -33,5 +33,5 @@ class TestF(NOCForm):
     ],
 )
 def test_f(charf, intf, expected):
-    f = TestF(data={"charf": charf, "intf": intf})
+    f = Form(data={"charf": charf, "intf": intf})
     assert f.is_valid() is expected

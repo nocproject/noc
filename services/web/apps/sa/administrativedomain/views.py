@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # sa.administrativedomain application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -27,7 +28,7 @@ class AdministrativeDomainApplication(ExtModelApplication):
         return o.managedobject_set.count()
 
     def instance_to_lookup(self, o, fields=None):
-        return {"id": o.id, "label": unicode(o), "has_children": o.has_children}
+        return {"id": o.id, "label": smart_text(o), "has_children": o.has_children}
 
     @view(r"^(?P<id>\d+)/get_path/$", access="read", api=True)
     def api_get_path(self, request, id):
@@ -35,7 +36,7 @@ class AdministrativeDomainApplication(ExtModelApplication):
         path = [AdministrativeDomain.objects.get(id=ns) for ns in o.get_path()]
         return {
             "data": [
-                {"level": path.index(p) + 1, "id": str(p.id), "label": unicode(p.name)}
+                {"level": path.index(p) + 1, "id": str(p.id), "label": smart_text(p.name)}
                 for p in path
             ]
         }

@@ -11,6 +11,7 @@ from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.ip.models.addressrange import AddressRange
 from noc.core.ip import IP
 from noc.core.validators import is_ipv4, is_ipv6, is_fqdn
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -65,6 +66,6 @@ class AddressRangeApplication(ExtModelApplication):
             ]
             if r:
                 raise ValueError(
-                    "Locked range overlaps with ahother locked range: %s" % unicode(r[0])
+                    "Locked range overlaps with ahother locked range: %s" % smart_text(r[0])
                 )
         return data

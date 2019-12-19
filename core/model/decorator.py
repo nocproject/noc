@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.models import get_model
+from noc.core.comp import smart_text
 
 
 def is_document(klass):
@@ -166,7 +167,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
         for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
                 raise ValueError(
-                    "Referred from model %s: %s (id=%s)" % (model_id, unicode(ro), ro.id)
+                    "Referred from model %s: %s (id=%s)" % (model_id, smart_text(ro), ro.id)
                 )
         # Clean related
         for model, model_id, field in iter_models("clean"):

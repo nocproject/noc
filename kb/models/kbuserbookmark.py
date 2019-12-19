@@ -14,6 +14,7 @@ from django.db import models
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.kb.models.kbentry import KBEntry
+from noc.core.comp import smart_text
 
 
 @six.python_2_unicode_compatible
@@ -33,4 +34,4 @@ class KBUserBookmark(NOCModel):
     kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s: %s" % (unicode(self.user), unicode(self.kb_entry))
+        return "%s: %s" % (unicode(self.user), smart_text(self.kb_entry))

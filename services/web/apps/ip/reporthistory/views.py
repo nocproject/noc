@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ip.reporthistory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,13 +12,14 @@ import re
 
 # Third-party modules
 from django import forms
-from noc.core.translation import ugettext as _
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, SafeString
 from noc.main.models.audittrail import AuditTrail
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
+from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 class ReportHistoryApplication(SimpleReport):
@@ -114,7 +115,7 @@ class ReportHistoryApplication(SimpleReport):
             model = self.MODELS[l.model_id]
             if l.object:
                 try:
-                    obj = unicode(model.objects.get(id=int(l.object)))
+                    obj = smart_text(model.objects.get(id=int(l.object)))
                 except model.DoesNotExist:
                     obj = "UNKNOWN?"
             else:

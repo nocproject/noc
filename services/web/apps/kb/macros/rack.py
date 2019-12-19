@@ -16,6 +16,7 @@ import operator
 from django.utils.html import escape
 
 # NOC modules
+from noc.core.comp import smart_text
 from .base import BaseMacro
 
 rx_link = re.compile(r"^(.*)\|(https?://.+)$")
@@ -356,4 +357,4 @@ class RackMacro(BaseMacro):
     @classmethod
     def handle(cls, args, text):
         parser = XMLParser(text)
-        return unicode(parser.rackset.render_html())
+        return smart_text(parser.rackset.render_html())

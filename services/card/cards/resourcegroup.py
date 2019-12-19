@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ResourceGroup card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from __future__ import absolute_import
 # NOC modules
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.models import get_model
+from noc.core.comp import smart_text
 from .base import BaseCard
 
 
@@ -33,7 +34,7 @@ class ResourceGroupCard(BaseCard):
             s_model = get_model(self.object.technology.service_model)
             card = self.get_card_name(self.object.technology.service_model)
             for i in s_model.objects.filter(effective_service_groups=str(self.object.id)):
-                services += [{"id": i.id, "card": card, "label": unicode(i)}]
+                services += [{"id": i.id, "card": card, "label": smart_text(i)}]
         else:
             services = []
         # Clients
@@ -42,7 +43,7 @@ class ResourceGroupCard(BaseCard):
             c_model = get_model(self.object.technology.client_model)
             card = self.get_card_name(self.object.technology.client_model)
             for i in c_model.objects.filter(effective_client_groups=str(self.object.id)):
-                clients += [{"id": i.id, "card": card, "label": unicode(i)}]
+                clients += [{"id": i.id, "card": card, "label": smart_text(i)}]
         else:
             clients = []
         # Data

@@ -27,6 +27,7 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.validators import is_int
 from noc.core.model.fields import TextArrayField
+from noc.core.comp import smart_text
 
 
 class ModelInline(object):
@@ -321,13 +322,13 @@ class ModelInline(object):
                     and not isinstance(v, six.integer_types)
                     and not isinstance(v, (bool, list))
                 ):
-                    v = unicode(v)
+                    v = smart_text(v)
                 r[f.name] = v
             else:
                 v = getattr(o, f.name)
                 if v:
                     r[f.name] = v._get_pk_val()
-                    r["%s__label" % f.name] = unicode(v)
+                    r["%s__label" % f.name] = smart_text(v)
                 else:
                     r[f.name] = None
                     r["%s__label" % f.name] = ""

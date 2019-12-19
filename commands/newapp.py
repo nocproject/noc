@@ -22,6 +22,7 @@ from jinja2 import Template
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.settings import INSTALLED_APPS
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
@@ -218,7 +219,7 @@ class Command(BaseCommand):
                             fd = {
                                 "type": "int",
                                 "name": f.name,
-                                "label": unicode(f.verbose_name),
+                                "label": smart_text(f.verbose_name),
                                 "blank": f.null,
                                 "widget": "%s.LookupField" % rc,
                             }
@@ -230,7 +231,7 @@ class Command(BaseCommand):
                             fd = {
                                 "type": self.model_map[fc][0],
                                 "name": f.name,
-                                "label": unicode(f.verbose_name),
+                                "label": smart_text(f.verbose_name),
                                 "blank": f.null,
                                 "widget": self.model_map[fc][1],
                             }
@@ -249,7 +250,12 @@ class Command(BaseCommand):
                             ft = "int"
                         else:
                             ft = self.document_ext_type[fc]
-                        fd = {"type": ft, "name": n, "label": unicode(n), "blank": not f.required}
+                        fd = {
+                            "type": ft,
+                            "name": n,
+                            "label": smart_text(n),
+                            "blank": not f.required,
+                        }
                         if f.default:
                             fd["default"] = f.default
                         fields += [fd]

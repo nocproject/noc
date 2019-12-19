@@ -23,6 +23,7 @@ from noc.core.validators import is_oid
 from noc.core.escape import fm_unescape, fm_escape
 from noc.core.snmp.util import render_tc
 from noc.core.model.decorator import on_delete_check
+from noc.core.comp import smart_text
 from .error import MIBNotFoundException, OIDCollision
 from .mibpreference import MIBPreference
 from .mibalias import MIBAlias
@@ -333,13 +334,13 @@ class MIB(Document):
                     # Render according to TC
                     rv = render_tc(v, syntax["base_type"], syntax.get("display_hint", None))
                     try:
-                        unicode(rv, "utf8")
+                        smart_text(rv, "utf8")
                     except ValueError:
                         # Escape invalid UTF8
                         rv = fm_escape(rv)
             else:
                 try:
-                    unicode(rv, "utf8")
+                    smart_text(rv, "utf8")
                 except ValueError:
                     # escape invalid UTF8
                     rv = fm_escape(rv)

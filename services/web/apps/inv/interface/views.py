@@ -27,6 +27,7 @@ from noc.vc.models.vcdomain import VCDomain
 from noc.core.text import split_alnum
 from noc.core.translation import ugettext as _
 from noc.config import config
+from noc.core.comp import smart_text
 
 
 class InterfaceAppplication(ExtApplication):
@@ -109,14 +110,14 @@ class InterfaceAppplication(ExtApplication):
                 "lag": (i.aggregated_interface.name if i.aggregated_interface else ""),
                 "link": get_link(i),
                 "profile": str(i.profile.id) if i.profile else None,
-                "profile__label": unicode(i.profile) if i.profile else None,
+                "profile__label": smart_text(i.profile) if i.profile else None,
                 "enabled_protocols": i.enabled_protocols,
                 "project": i.project.id if i.project else None,
-                "project__label": unicode(i.project) if i.project else None,
+                "project__label": smart_text(i.project) if i.project else None,
                 "state": i.state.id if i.state else default_state.id,
-                "state__label": unicode(i.state if i.state else default_state),
+                "state__label": smart_text(i.state if i.state else default_state),
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
-                "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
+                "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i),
             }
             for i in Interface.objects.filter(managed_object=o.id, type="physical")
@@ -134,14 +135,14 @@ class InterfaceAppplication(ExtApplication):
                     )
                 ],
                 "profile": str(i.profile.id) if i.profile else None,
-                "profile__label": unicode(i.profile) if i.profile else None,
+                "profile__label": smart_text(i.profile) if i.profile else None,
                 "enabled_protocols": i.enabled_protocols,
                 "project": i.project.id if i.project else None,
-                "project__label": unicode(i.project) if i.project else None,
+                "project__label": smart_text(i.project) if i.project else None,
                 "state": i.state.id if i.state else default_state.id,
-                "state__label": unicode(i.state if i.state else default_state),
+                "state__label": smart_text(i.state if i.state else default_state),
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
-                "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
+                "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i),
             }
             for i in Interface.objects.filter(managed_object=o.id, type="aggregated")

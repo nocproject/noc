@@ -11,6 +11,7 @@ import pytest
 
 # NOC modules
 from noc.vc.models.vctype import VCType
+from noc.core.comp import smart_text
 
 
 @pytest.mark.parametrize(
@@ -35,7 +36,7 @@ def test_insert(data):
     # Fetch record
     vc_type = VCType.objects.get(name=data["name"])
     assert vc_type.pk
-    assert unicode(vc_type)
+    assert smart_text(vc_type)
     for k in data:
         assert getattr(vc_type, k) == data[k]
     # Delete record

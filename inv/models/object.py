@@ -28,6 +28,7 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.comp import smart_text
 from .connectiontype import ConnectionType
 from .objectmodel import ObjectModel
 from .modelinterface import ModelInterface
@@ -85,7 +86,7 @@ class Object(Document):
     REBUILD_CONNECTIONS = ["links", "conduits"]
 
     def __str__(self):
-        return unicode(self.name or self.id)
+        return smart_text(self.name or self.id)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -392,7 +393,7 @@ class Object(Document):
             return [unicode(self)]
         np = [unicode(self)]
         while current:
-            np.insert(0, unicode(current))
+            np.insert(0, smart_text(current))
             current = current.container
         return np
 
@@ -404,7 +405,7 @@ class Object(Document):
         if not user:
             user = "NOC"
         if not isinstance(managed_object, six.string_types):
-            managed_object = unicode(managed_object)
+            managed_object = smart_text(managed_object)
         ObjectLog(
             object=self.id,
             user=user,

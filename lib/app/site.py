@@ -30,6 +30,7 @@ import ujson
 from noc.config import config
 from noc.core.debug import error_report
 from noc.core.comp import smart_bytes
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,7 @@ class URL(object):
             self.method = set(method)
 
     def __repr__(self):
-        return "<URL %s>" % unicode(self)
+        return "<URL %s>" % smart_text(self)
 
     def __str__(self):
         s = self.url
