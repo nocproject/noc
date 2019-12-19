@@ -70,13 +70,13 @@ class Script(BaseScript):
                 neighbor["remote_chassis_id"] = chassis[match.group("interface")]
             if match.group("port_descr").strip():
                 p = match.group("port_descr").strip()
-                neighbor["remote_port_description"] = re.sub("\n\s{30}", "", p)
+                neighbor["remote_port_description"] = re.sub(r"\n\s{30}", "", p)
             if match.group("sys_name").strip():
                 p = match.group("sys_name").strip()
-                neighbor["remote_system_name"] = re.sub("\n\s{30}", "", p)
+                neighbor["remote_system_name"] = re.sub(r"\n\s{30}", "", p)
             if match.group("sys_descr").strip():
                 p = match.group("sys_descr").strip()
-                neighbor["remote_system_description"] = re.sub("\n\s{30}", "", p)
+                neighbor["remote_system_description"] = re.sub(r"\n\s{30}", "", p)
             caps = 0
             for c in match.group("caps").split(","):
                 c = c.strip()

@@ -132,7 +132,7 @@ class Script(BaseScript):
         re.VERBOSE | re.MULTILINE | re.DOTALL,
     )
     re_port_info = re.compile(
-        """
+        r"""
         ^(?P<name>\d+/\d+/\d+)\s+
         (?P<admin_status>\S*)\s+
         (?P<bad_stat>\S*)\s+
@@ -144,7 +144,7 @@ class Script(BaseScript):
         re.VERBOSE | re.MULTILINE | re.DOTALL,
     )
     re_port_detail_info = re.compile(
-        """
+        r"""
         Description\s*?:\s(?P<description>.*?)\n
         Interface\s*?:\s(?P<name>\d*/\d*/\S*)\s*
         .*?
@@ -161,7 +161,7 @@ class Script(BaseScript):
         re.VERBOSE | re.MULTILINE | re.DOTALL,
     )
     re_lag_detail = re.compile(
-        """
+        r"""
         Description\s*?:\s(?P<description>.+?)\n-{79}
         .*?
         Detail

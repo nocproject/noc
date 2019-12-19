@@ -36,7 +36,7 @@ class Script(BaseScript):
     )
     rx_alias = re.compile(r"\s+alias name is (?P<alias>\S+)\s", re.MULTILINE)
     rx_index = re.compile(r", index is (?P<ifindex>\d+)")
-    rx_alias_and_index = re.compile(" alias name is (?P<alias>.+), index is (?P<ifindex>\d+)")
+    rx_alias_and_index = re.compile(r" alias name is (?P<alias>.+), index is (?P<ifindex>\d+)")
     rx_mtu = re.compile(r"MTU (?P<mtu>\d+) bytes")
     rx_pvid = re.compile(r"PVID is (?P<pvid>\d+)")
     rx_ip = re.compile(

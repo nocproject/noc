@@ -20,7 +20,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetInventory
 
-    rx_section = re.compile("System has (\d+) (.+?)$", re.MULTILINE)
+    rx_section = re.compile(r"System has (\d+) (.+?)$", re.MULTILINE)
 
     def execute(self):
         objects = []

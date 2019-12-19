@@ -70,7 +70,7 @@ class BaseLoader(object):
     tags = []
 
     PREFIX = config.path.etl_import
-    rx_archive = re.compile("^import-\d{4}(?:-\d{2}){5}.csv.gz$")
+    rx_archive = re.compile(r"^import-\d{4}(?:-\d{2}){5}.csv.gz$")
 
     # Discard records which cannot be dereferenced
     discard_deferred = False

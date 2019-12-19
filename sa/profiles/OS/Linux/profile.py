@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "OS.Linux"
-    pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
+    pattern_username = r"^((?!Last)\S+ login|[Ll]ogin):"
     pattern_unprivileged_prompt = r"^\[?\s*\w+@(?P<hostname>\S+)\]?(\s+|:)\S+\s*\]?\$\s*"
     pattern_prompt = (
         r"^(\[?\s*root@(?P<hostname>\S+)\]?(\s+|:)\S+\s*(#|\$)\s*"

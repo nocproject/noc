@@ -40,7 +40,7 @@ class Script(BaseScript):
     )
     rx_ipif = re.compile(
         r"^(?:TUNNEL )?(?P<interface>\S+) line protocol( (?P<l_proto>\S+))? is (?P<oper_status>up|down), "
-        "ip is (?P<admin_status>up|down)\s*\n"
+        r"ip is (?P<admin_status>up|down)\s*\n"
         r"^\s+Description:(?P<descr>.*)\s*\n"
         r"^\s+Network Protocols: (?P<n_proto>.+)\s*\n"
         r"(^\s+Unnumbered Interface on (?P<unnumbered>\S+)\s*\n)?"
@@ -52,7 +52,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_secondary = re.compile(r"^\s+(?P<ip>\S+)/(?P<mask>\S+) \(secondary\)\s*\n", re.MULTILINE)
-    rx_vrfs = re.compile("^(?P<vrf>\S+)\s+(?P<rd>\d+:\d+)\s+\S+\s*\n", re.MULTILINE)
+    rx_vrfs = re.compile(r"^(?P<vrf>\S+)\s+(?P<rd>\d+:\d+)\s+\S+\s*\n", re.MULTILINE)
     phys_interfaces = []
     logical_interfaces = []
 

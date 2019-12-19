@@ -17,7 +17,7 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_lldp_cli(self):
         """
-        Check box has lldp\ladvd daemon enabled
+        Check box has lldp/ladvd daemon enabled
         """
         r1 = self.cli("/bin/ps aux | grep [l]advd")
         r2 = self.cli("/bin/ps aux | grep [l]ldpd")

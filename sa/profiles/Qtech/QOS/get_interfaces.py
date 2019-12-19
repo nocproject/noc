@@ -21,7 +21,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
-    rx_port = re.compile("^P(?P<port>\d+)\s+", re.MULTILINE)
+    rx_port = re.compile(r"^P(?P<port>\d+)\s+", re.MULTILINE)
     rx_vlan = re.compile(
         r"^Operational Mode: (?P<op_mode>\S+)\s*\n"
         r"^Access Mode VLAN:\s*(?P<access_vlan>\d+)\s*\n"

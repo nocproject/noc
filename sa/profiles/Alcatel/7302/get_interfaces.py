@@ -33,7 +33,7 @@ class Script(BaseScript):
     )
     rx_oper_status = re.compile(r"opr-status : (?P<oper_status>up|down|no-value)")
     rx_mtu = re.compile(r"largest-pkt-size : (?P<mtu>\d+)")
-    rx_vpi_vci = re.compile("(?P<ifname>\S+\d+):(?P<vpi>\d+):(?P<vci>\d+)")
+    rx_vpi_vci = re.compile(r"(?P<ifname>\S+\d+):(?P<vpi>\d+):(?P<vci>\d+)")
     rx_ip = re.compile(
         r"^(?P<iface>\d+)\s+(?P<vlan_id>\d+)\s+(?P<admin_status>up|down)\s+"
         r"(?P<oper_status>up|down)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)",

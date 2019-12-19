@@ -28,14 +28,14 @@ class OverlayApplication(ExtDocApplication):
     def extra_permissions(self):
         return list({s.permission_name for s in Overlay.objects.all()})
 
-    @view(url="^gate/(?P<gate_id>[a-zA-Z0-9_\-]+)/$", method=["GET"], access="launch", api=True)
+    @view(url=r"^gate/(?P<gate_id>[a-zA-Z0-9_\-]+)/$", method=["GET"], access="launch", api=True)
     def api_gate(self, request, gate_id):
         # Find overlay
         overlay = Overlay.objects.filter(gate_id=gate_id).first()
         if overlay is None:
             return self.response_not_found("Gate not found")
         if not overlay.is_active:
-            return self.rensponse_not_found("Overlay is disabled")
+            return self.response_not_found("Overlay is disabled")
         # Parse bbox
         kwargs = dict(six.iteritems(request.GET))
         if "bbox" in kwargs:

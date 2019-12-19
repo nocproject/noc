@@ -21,7 +21,7 @@ class Script(BaseScript):
     TIMEOUT = 240
 
     rx_sh_ip_int = re.compile(
-        r"^(?P<ip>\S+)/(?P<mask>\d+)\s+(?P<interface>(\S+ \d+|\S+))\s+" r"(Static|DHCP)\s*$",
+        r"^(?P<ip>\S+)/(?P<mask>\d+)\s+(?P<interface>(\S+ \d+|\S+))\s+(Static|DHCP)\s*$",
         re.MULTILINE,
     )
 
@@ -149,20 +149,20 @@ class Script(BaseScript):
             if ifname[:1] == "g":
                 ifindex = ifname[1:]
                 rx_config = re.compile(
-                    r"^" + ifname + "\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
+                    r"^" + ifname + r"\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
                     r"(?P<admin_status>(Up|Down))\s+\S+\s+\S+$",
                     re.MULTILINE,
                 )
             else:
                 ifindex = str(999 + int(ifname[2:]))
                 rx_config = re.compile(
-                    r"^" + ifname + "\s+\S+\s+\S+\s+\S+\s+\S+\s+"
+                    r"^" + ifname + r"\s+\S+\s+\S+\s+\S+\s+\S+\s+"
                     r"(?P<admin_status>(Up|Down))\s*$",
                     re.MULTILINE,
                 )
             match = rx_config.search(config)
             a_stat = match.group("admin_status").lower() == "up"
-            rx_descr = re.compile(r"^" + ifname + "\s+(?P<desc>\S+)$", re.MULTILINE)
+            rx_descr = re.compile(r"^" + ifname + r"\s+(?P<desc>\S+)$", re.MULTILINE)
             match = rx_descr.search(descr)
             if match:
                 description = match.group("desc")
@@ -222,21 +222,21 @@ class Script(BaseScript):
 
             # GVRP
             rx_gvrp = re.compile(
-                r"^" + ifname + "\s+Enabled\s+Normal\s+" r"Enabled\s+\d+\s+\d+\s+\d+", re.MULTILINE
+                r"^" + ifname + r"\s+Enabled\s+Normal\s+Enabled\s+\d+\s+\d+\s+\d+", re.MULTILINE
             )
             match = rx_gvrp.search(gvrp)
             if match:
                 iface["enabled_protocols"] += ["GVRP"]
 
             # LLDP
-            rx_lldp = re.compile(r"^" + ifname + "\s+(Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
+            rx_lldp = re.compile(r"^" + ifname + r"\s+(Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
             match = rx_lldp.search(lldp)
             if match:
                 iface["enabled_protocols"] += ["LLDP"]
 
             # STP
             rx_stp = re.compile(
-                r"^\s*" + ifname + "\s+enabled\s+\S+\s+\d+\s+" r"\S+\s+\S+\s+(Yes|No)\s+",
+                r"^\s*" + ifname + r"\s+enabled\s+\S+\s+\d+\s+\S+\s+\S+\s+(Yes|No)\s+",
                 re.MULTILINE,
             )
             match = rx_stp.search(stp)

@@ -19,13 +19,6 @@ class Script(BaseScript):
     name = "Brocade.ADX.get_interfaces"
     interface = IGetInterfaces
 
-    """
-    rx_sh_int = re.compile(
-        r"^(?P<interface>\d+?)\s+(?P<admin_status>Up|Down)\s+"
-        r"(?P<oper_status>Forward|None)?.+"
-        r"(?P<mac>\S{4}\.\S{4}\.\S{4})(?:\s(?P<descr>\S+))?$",
-        re.MULTILINE | re.IGNORECASE)
-    """
     rx_sh_int = re.compile(
         r"^(?P<interface>\S+?)\s+(?P<admin_status>Up|Down)\s+"
         r"(?P<oper_status>Forward|None)?.+"

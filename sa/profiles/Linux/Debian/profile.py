@@ -15,8 +15,8 @@ class Profile(BaseProfile):
     name = "Linux.Debian"
 
     # supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
-    pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
-    pattern_password = "^[Pp]assword:"
+    pattern_username = r"^((?!Last)\S+ login|[Ll]ogin):"
+    pattern_password = r"^[Pp]assword:"
 
     """
     "user@debian-test-virtual:~$ "

@@ -87,7 +87,7 @@ def clips_match_re(rx, s):
     """
     Check string matches regular expression
     Usage:
-        (match-re "^\s+test" ?f)
+        (match-re r"^\s+test" ?f)
     """
     logger.error("@@@@ MATCH RE: <%s> <%s> -> %s", rx, s, bool(re.search(rx, s)))
     return _clips_bool(re.search(rx, s))

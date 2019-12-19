@@ -21,10 +21,10 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_slot = re.compile(
-        "^(?P<slot>\d+/\d+).+\d{10}\s+\d{10}\s+\S{3}\s+(?P<count>\d+)\s*\n", re.MULTILINE
+        r"^(?P<slot>\d+/\d+).+\d{10}\s+\d{10}\s+\S{3}\s+(?P<count>\d+)\s*\n", re.MULTILINE
     )
     rx_mac = re.compile(
-        r"^(?P<slot>\d+/\d+)\s+" r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+" r"\S+\s*\n",
+        r"^(?P<slot>\d+/\d+)\s+" r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+\S+\s*\n",
         re.MULTILINE,
     )
 

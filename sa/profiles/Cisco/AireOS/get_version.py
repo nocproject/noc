@@ -5,14 +5,16 @@
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
+
+# Python modules
 import re
 
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
+
 rx_ver = re.compile(r"^Product Version\.+\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
-rx_inv = re.compile("^PID:\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
+rx_inv = re.compile(r"^PID:\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
 
 
 class Script(BaseScript):

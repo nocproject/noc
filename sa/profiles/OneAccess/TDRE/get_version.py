@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        'sysDescr = "(?P<platform>\S+).+?(?P<version>\S+)\s\S+\s\S+"$', re.MULTILINE
+        r'sysDescr = "(?P<platform>\S+).+?(?P<version>\S+)\s\S+\s\S+"$', re.MULTILINE
     )
 
     def execute(self):
