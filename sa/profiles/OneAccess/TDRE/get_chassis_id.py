@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_mac = re.compile("macAddress = (?P<mac>\S+)")
+    rx_mac = re.compile(r"macAddress = (?P<mac>\S+)")
 
     def execute(self):
         self.cli("SELGRP Status")

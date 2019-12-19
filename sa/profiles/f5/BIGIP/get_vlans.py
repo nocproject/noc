@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -20,7 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVlans
 
-    rx_tag = re.compile("Tag\s+(?P<tag>\d+)", re.MULTILINE)
+    rx_tag = re.compile(r"Tag\s+(?P<tag>\d+)", re.MULTILINE)
 
     def execute(self):
         r = []

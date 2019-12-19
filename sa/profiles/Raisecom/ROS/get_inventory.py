@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -19,9 +18,9 @@ class Script(BaseScript):
     name = "Raisecom.ROS.get_inventory"
     interface = IGetInventory
 
-    rx_iface = re.compile("^(?P<ifname>\S+)\s+(?:UP|DOWN)\s+(?:UP|DOWN)", re.MULTILINE)
-    rx_ifunit = re.compile("(?P<iftype>\D+)(?P<ifunit>\d+\S*)")
-    rx_portnum = re.compile("^\S*?(?P<portnum>\d+)$")
+    rx_iface = re.compile(r"^(?P<ifname>\S+)\s+(?:UP|DOWN)\s+(?:UP|DOWN)", re.MULTILINE)
+    rx_ifunit = re.compile(r"(?P<iftype>\D+)(?P<ifunit>\d+\S*)")
+    rx_portnum = re.compile(r"^\S*?(?P<portnum>\d+)$")
 
     def execute_iscom2624g(self):
         v = self.profile.get_version(self)

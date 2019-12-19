@@ -130,10 +130,10 @@ class Script(BaseScript):
                 sd = match.group("sys_descr").strip()
                 if "SysDesc:" in sd:
                     sd = sd.split()[-1]
-                n["remote_system_description"] = re.sub("\n\s{29,30}", "", sd)
+                n["remote_system_description"] = re.sub(r"\n\s{29,30}", "", sd)
             if match.group("port_descr").strip() != "N/A":
                 n["remote_port_description"] = re.sub(
-                    "\n\s{29,30}", "", match.group("port_descr").strip()
+                    r"\n\s{29,30}", "", match.group("port_descr").strip()
                 )
                 match.group("port_descr")
             if n["remote_chassis_id"] is None:

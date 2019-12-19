@@ -13,9 +13,9 @@ class Script(BaseScript):
     name = "Alcatel.TIMOS.get_arp"
     interface = IGetARP
     rx_line = re.compile(
-        "^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)" "\s+\d+\S+\s+\S+\s+(?P<iface>.+)$"
+        r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+\d+\S+\s+\S+\s+(?P<iface>.+)$"
     )
-    rx_vrfs = re.compile("^(\d+)\s+VPRN\s+Up\s+Up", re.MULTILINE)
+    rx_vrfs = re.compile(r"^(\d+)\s+VPRN\s+Up\s+Up", re.MULTILINE)
 
     def execute(self, vrf=None):
         if vrf:

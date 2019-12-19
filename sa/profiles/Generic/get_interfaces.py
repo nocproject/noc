@@ -150,7 +150,8 @@ class Script(BaseScript):
                               "Gi 1/0/8", "Gi 1/0/9", "Gi 1/0/10", "Gi 1/0/11", "Gi 1/0/12", "Po 1", "Po 2", "Po 3",
                               "Po 4", "Po 5", "Po 6","Po 7", "Po 8", "Po 9", "Po 10", "Po 11", "Po 12", "Po 13",
                               "Po 14", "Po 15", "Po 16"])
-                if self.match_version(version__regex="4\.0\.8\.1$") and self.match_version(platform__regex="MES-2308P"):
+                if self.match_version(version__regex=r"4\.0\.8\.1$")
+                    and self.match_version(platform__regex=r"MES-2308P"):
                     return super(Script, self).execute_snmp(last_ifname=IFNAME)
             """
             if last_ifname and iface["interface"] not in last_ifname:

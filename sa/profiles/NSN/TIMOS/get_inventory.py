@@ -55,7 +55,7 @@ class Script(BaseScript):
         r"^\s+Model number\s+:\s+(?P<part_no>.+)\s*\n",
         re.MULTILINE,
     )
-    rx_date = re.compile("(?P<m>\d{2})(?P<d>\d{2})(?P<y>\d{4})")
+    rx_date = re.compile(r"(?P<m>\d{2})(?P<d>\d{2})(?P<y>\d{4})")
 
     def get_date(self, d):
         match = self.rx_date.search(d)

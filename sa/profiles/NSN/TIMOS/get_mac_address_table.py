@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
         r"\S+\s+\S+\s+(?P<port>lag-\d+|\d+/\d+/\d+):(?P<vlans>\S+)$"
     )
-    rx_ies = re.compile("^(\d+)\s+IES\s+Up\s+Up", re.MULTILINE)
+    rx_ies = re.compile(r"^(\d+)\s+IES\s+Up\s+Up", re.MULTILINE)
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show service fdb-mac"

@@ -25,4 +25,4 @@ class Profile(BaseProfile):
     command_save_config = "copy running-config startup-config\n"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
-    config_volatile = ["^ntp message\-digest\-key .*?^", "^access user .*?^"]
+    config_volatile = [r"^ntp message\-digest\-key .*?^", r"^access user .*?^"]

@@ -157,7 +157,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         def sort_path_key(s):
             """
             M - Main, C - Custom, G - Generic, P - profile
-            \|G|P
+            \\|G|P
             -+-+-
             M|3|1
             C|2|0

@@ -50,7 +50,7 @@ class Script(BaseScript):
         r"^\s*This switch is the root\s*\n",
         re.MULTILINE,
     )
-    rx_vlans = re.compile("^(?P<id>\d+)\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
+    rx_vlans = re.compile(r"^(?P<id>\d+)\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port = re.compile(
         r"^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
         r"^\s*State: (?P<state>\S+)\s+Role: (?P<role>\S+)\s*\n"

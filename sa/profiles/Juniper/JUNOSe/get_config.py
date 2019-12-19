@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     name = "Juniper.JUNOSe.get_config"
     interface = IGetConfig
-    rx_service = re.compile("^(?P<service>\w+\.mac)", re.MULTILINE)
+    rx_service = re.compile(r"^(?P<service>\w+\.mac)", re.MULTILINE)
 
     def execute_cli(self, **kwargs):
         # Get configuration

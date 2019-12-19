@@ -35,8 +35,8 @@ class Script(BaseScript):
         r"^\s+vid = (?P<vlan_id>\d+)\s*\n" r"(?P<ports>.+?)\n" r"^\s+localPort",
         re.MULTILINE | re.DOTALL,
     )
-    rx_vlan_port = re.compile("hwPort(?P<port>\d) = (?P<type>\S+)")
-    rx_mac = re.compile("macAddress = (?P<mac>\S+)")
+    rx_vlan_port = re.compile(r"hwPort(?P<port>\d) = (?P<type>\S+)")
+    rx_mac = re.compile(r"macAddress = (?P<mac>\S+)")
     rx_ip_iface = re.compile(
         r"^\s+ifDescr = (?P<descr>.+)\n"
         r"^\s+ifType = (?P<iftype>\S+)\s*\n"

@@ -56,11 +56,11 @@ class AccountApplication(ExtApplication):
         access="launch",
         api=True,
         validate={
-            "name": REStringParameter("^[a-zA-Z0-9\.\-_]+$"),
+            "name": REStringParameter(r"^[a-zA-Z0-9\.\-_]+$"),
             "email": StringParameter(),
             "org": StringParameter(),
-            "country": REStringParameter("^[A-Z]{2}$"),
-            "language": REStringParameter("^[A-Z]{2}$"),
+            "country": REStringParameter(r"^[A-Z]{2}$"),
+            "language": REStringParameter(r"^[A-Z]{2}$"),
             "password": StringParameter(required=False),
         },
     )
@@ -102,7 +102,7 @@ class AccountApplication(ExtApplication):
         return {"status": True, "message": "Account saved"}
 
     @view(
-        url="^account/change_password/$",
+        url=r"^account/change_password/$",
         method=["POST"],
         access="launch",
         api=True,
@@ -118,12 +118,12 @@ class AccountApplication(ExtApplication):
         return {"status": True, "message": "Password has been changed"}
 
     @view(
-        url="^system/$",
+        url=r"^system/$",
         method=["POST"],
         access="launch",
         api=True,
         validate={
-            "name": REStringParameter("^[a-zA-Z0-9\.\-_]+$"),
+            "name": REStringParameter(r"^[a-zA-Z0-9\.\-_]+$"),
             "type": StringParameter(required=False),
             "description": StringParameter(required=False),
         },
