@@ -70,6 +70,6 @@ class Script(BaseScript):
             "attributes": {
                 "HW version": match.group("hwversion"),
                 "Serial Number": match.group("sn"),
-                "Bios": match.group("biosversion"),
+                "Boot PROM": match.group("biosversion"),
             },
         }

@@ -32,5 +32,5 @@ class Script(BaseScript):
             "vendor": "Ruckus",
             "platform": pmatch.group("platform"),
             "version": match.group("version"),
-            "attributes": {"SN": smatch.group("serial")},
+            "attributes": {"Serial Number": smatch.group("serial")},
         }
