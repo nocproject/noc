@@ -276,9 +276,14 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                 logger.debug("Stopping processing")
                 break
         nalarm = get_alarm(alarm_id)
-        if nalarm and nalarm.status == "C" and nalarm.escalation_tt:
-            log("Alarm has been closed during escalation. Try to deescalate")
+        if nalarm and nalarm.status == "C":
+            nalarm.log_message("Alarm has been closed during escalation. Try to deescalate")
+            logger.info("[%s] Alarm has been closed during escalation. Try to deescalate", alarm.id)
             metrics["escalation_closed_while_escalated"] += 1
+            if tt_id and not nalarm.escalation_tt:
+                nalarm.escalation_ts = datetime.datetime.now()
+                nalarm.escalation_tt = "%s:%s" % (mo.tt_system.name, tt_id)
+                nalarm.save()
             if not nalarm.escalation_close_ts and not nalarm.escalation_close_error:
                 notify_close(
                     alarm_id=alarm_id,
@@ -290,6 +295,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                     else None,
                     close_tt=alarm.close_tt,
                 )
+        elif nalarm == "A" and not nalarm.escalation_tt and tt_id:
+            logger.error("[%s] Alarm without escalation TT: %s", alarm.id, tt_id)
         logger.info("[%s] Escalations loop end", alarm_id)
 
 
