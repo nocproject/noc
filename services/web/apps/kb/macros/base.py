@@ -25,7 +25,7 @@ class BaseMacro(object):
         """
         if isinstance(args, dict):
             return args
-        return dict([(m[0], m[2]) for m in rx_args.findall(args)])
+        return dict((m[0], m[2]) for m in rx_args.findall(args))
 
     @classmethod
     def expand(cls, args, text):
