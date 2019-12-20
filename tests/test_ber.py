@@ -13,7 +13,7 @@ import pytest
 from noc.core.snmp.ber import BEREncoder, BERDecoder
 
 
-@pytest.mark.parametrize("raw,value", [(b"\x00", False), (b"\x01", True)])
+@pytest.mark.parametrize("raw,value", [(b"\x00", False), (b"\x01", True), (b"", False)])
 def test_decode_bool(raw, value):
     decoder = BERDecoder()
     assert decoder.parse_boolean(raw) is value
@@ -30,6 +30,7 @@ def test_decode_bool(raw, value):
         (b"\x01\x00", 256),
         (b"\x80", -128),
         (b"\xff\x7f", -129),
+        (b"\xff\x00\x01", -65535),
         (b"\x20\x85", 0x2085),
         (b"\x20\x85\x11", 0x208511),
     ],
@@ -46,6 +47,7 @@ def test_decode_int(raw, value):
         (b"A", float("-inf")),
         (b"\x031E+0", float("1")),
         (b"\x0315E-1", float("1.5")),
+        (b"", 0.0),
     ],
 )
 def test_decode_real(raw, value):
@@ -176,16 +178,6 @@ def test_encode_octet_string(raw, value):
     assert encoder.encode_octet_string(raw) == value
 
 
-@pytest.mark.xfail()
-def test_encode_sequence():
-    raise NotImplementedError()
-
-
-@pytest.mark.xfail()
-def test_encode_choice():
-    raise NotImplementedError()
-
-
 @pytest.mark.parametrize(
     "value,raw",
     [
@@ -252,3 +244,48 @@ def test_encode_null(value):
 def test_encode_oid(oid, raw):
     encoder = BEREncoder()
     assert encoder.encode_oid(oid) == raw
+
+
+@pytest.mark.parametrize(
+    "data,result",
+    [
+        (b"\x02\x04w\x05\xd3\xc9", b"0\x06\x02\x04w\x05\xd3\xc9"),
+        (
+            [
+                b"\x02\x04w\x05\xd3\xc9",
+                b"\x02\x01\x00",
+                b"\x02\x01\x00",
+                b"0\x0e0\x0c\x06\x08+\x06\x01\x02\x01\x01\x06\x00\x05\x00",
+            ],
+            b"0\x1c\x02\x04w\x05\xd3\xc9\x02\x01\x00\x02\x01\x000\x0e0\x0c\x06\x08"
+            b"+\x06\x01\x02\x01\x01\x06\x00\x05\x00",
+        ),
+    ],
+)
+def test_encode_sequence(data, result):
+    encoder = BEREncoder()
+    assert encoder.encode_sequence(data) == result
+
+
+@pytest.mark.parametrize(
+    "tag,data,result",
+    [
+        (0, b"\x02\x04w\x05\xd3\xc9", b"\xa0\x06\x02\x04w\x05\xd3\xc9"),
+        (
+            0,
+            [
+                b"\x02\x04w\x05\xd3\xc9",
+                b"\x02\x01\x00",
+                b"\x02\x01\x00",
+                b"0\x0e0\x0c\x06\x08+\x06\x01\x02\x01\x01\x06\x00\x05\x00",
+            ],
+            (
+                b"\xa0\x1c\x02\x04w\x05\xd3\xc9\x02\x01\x00\x02\x01\x000\x0e0\x0c\x06\x08"
+                b"+\x06\x01\x02\x01\x01\x06\x00\x05\x00"
+            ),
+        ),
+    ],
+)
+def test_encode_choice(tag, data, result):
+    encoder = BEREncoder()
+    assert encoder.encode_choice(tag, data) == result
