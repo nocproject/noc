@@ -374,12 +374,12 @@ class BEREncoder(object):
 
     def encode_sequence(self, data):
         if isinstance(data, (list, tuple)):
-            data = "".join(data)
+            data = b"".join(data)
         return self.encode_tlv(16, False, data)
 
     def encode_choice(self, tag, data):
         if isinstance(data, (list, tuple)):
-            data = "".join(data)
+            data = b"".join(data)
         return self.encode_tlv(0x80 + tag, False, data)
 
     def encode_int(self, data):
