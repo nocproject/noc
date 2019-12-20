@@ -28,8 +28,10 @@ class DigestAuthMiddeware(BaseMiddleware):
 
     name = "digestauth"
 
-    def __init__(self, http):
+    def __init__(self, http, eof_mark=None):
         super(DigestAuthMiddeware, self).__init__(http)
+        self.logger = http.logger
+        self.eof_mark = eof_mark
         self.user = self.http.script.credentials.get("user")
         self.password = self.http.script.credentials.get("password")
         self.method = "GET"
@@ -63,6 +65,9 @@ class DigestAuthMiddeware(BaseMiddleware):
         :type digest_response: dict
         :return:
         """
+        self.logger.debug(
+            "[%s] Build digest for %s, on response %s", self.name, url, digest_response
+        )
         p_parsed = urlparse(url)
         uri = p_parsed.path or "/"
         qop = digest_response["qop"]
@@ -111,12 +116,12 @@ class DigestAuthMiddeware(BaseMiddleware):
         self.last_nonce = nonce
         self.last_realm = realm
         self.last_opaque = opaque
-
         return "Digest %s" % (str(base))
 
     def process_request(self, url, body, headers):
         if not headers:
             headers = {}
+        self.logger.debug("[%s] Process middleware on: %s", self.name, url)
         # First query - 401
         code, resp_headers, result = fetch_sync(
             url,
@@ -125,6 +130,15 @@ class DigestAuthMiddeware(BaseMiddleware):
             follow_redirects=True,
             allow_proxy=False,
             validate_cert=False,
+            eof_mark=self.eof_mark,
+        )
+        self.logger.debug(
+            "[%s] Response code %s, headers %s on: %s, body: %s",
+            self.name,
+            code,
+            resp_headers,
+            url,
+            body,
         )
         if "WWW-Authenticate" in resp_headers and resp_headers["WWW-Authenticate"].startswith(
             "Digest"
@@ -132,4 +146,5 @@ class DigestAuthMiddeware(BaseMiddleware):
             items = parse_http_list(resp_headers["WWW-Authenticate"][7:])
             digest_response = parse_keqv_list(items)
             headers["Authorization"] = self.build_digest_header(url, self.method, digest_response)
+        self.logger.debug("[%s] Set headers, %s", self.name, headers)
         return url, body, headers

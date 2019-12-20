@@ -94,7 +94,7 @@ class HTTP(object):
             try:
                 result = ujson.loads(result)
             except ValueError as e:
-                raise HTTPError("Failed to decode JSON: %s", e)
+                raise HTTPError("Failed to decode JSON: %s" % e)
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
