@@ -240,7 +240,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Find by composite unique keys
             for fs in ut_fields:
                 try:
-                    o = model.objects.get(**dict([(f, variables[f]) for f in fs if f in variables]))
+                    o = model.objects.get(**dict((f, variables[f]) for f in fs if f in variables))
                     break
                 except model.DoesNotExist:
                     pass

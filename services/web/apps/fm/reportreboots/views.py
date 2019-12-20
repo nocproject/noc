@@ -83,7 +83,7 @@ class ReportRebootsApplication(SimpleReport):
                 WHERE id IN (%s)"""
                 % ", ".join(chunk)
             )
-            mo_names.update(dict([(c[0], c[1:3]) for c in cursor]))
+            mo_names.update(dict((c[0], c[1:3]) for c in cursor))
         #
         if not request.user.is_superuser:
             data = [
