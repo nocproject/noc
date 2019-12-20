@@ -96,7 +96,7 @@ class TextArrayField(models.Field):
             if isinstance(s, unicode):
                 return s
             else:
-                return smart_text(s, "utf-8")
+                return smart_text(s)
 
         if value is None:
             return None
@@ -171,7 +171,7 @@ class TagsField(models.Field):
         def to_unicode(s):
             if isinstance(s, unicode):
                 return s
-            return smart_text(s, "utf-8")
+            return smart_text(s)
 
         if value is None:
             return None

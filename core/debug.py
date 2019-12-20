@@ -242,7 +242,7 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
     ]
     if not reverse:
         r += ["UNHANDLED EXCEPTION (%s)" % str(now), str(t), str(v)]
-    return "\n".join(smart_text(x, "ignore") for x in r)
+    return "\n".join(smart_text(x, errors="ignore") for x in r)
 
 
 def excepthook(t, v, tb):
