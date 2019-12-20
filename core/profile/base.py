@@ -441,7 +441,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
                 rx = re.compile(r, re.DOTALL | re.MULTILINE)
                 cfg = rx.sub("", cfg)
         # Prevent serialization errors
-        return smart_text(cfg, "utf8", "ignore").encode("utf8")
+        return smart_text(cfg, errors="ignore").encode("utf8")
 
     def clean_lldp_neighbor(self, obj, neighbor):
         """

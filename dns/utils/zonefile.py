@@ -43,7 +43,7 @@ class ZoneFile(object):
         if isinstance(n, unicode):
             return n.lower().encode("idna")
         elif isinstance(n, six.string_types):
-            return smart_text(n, "utf-8").lower().encode("idna")
+            return smart_text(n).lower().encode("idna")
         else:
             return n
 
@@ -53,7 +53,7 @@ class ZoneFile(object):
         if isinstance(s, unicode):
             return s.encode("utf-8").decode("idna")
         else:
-            return smart_text(s, "idna").encode("utf-8")
+            return smart_text(s, encoding="idna").encode("utf-8")
 
     def is_idna(self, s):
         return "xn--" in s

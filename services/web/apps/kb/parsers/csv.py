@@ -22,10 +22,10 @@ class CSVParser(BaseParser):
     def to_html(cls, kb_entry):
         reader = csv.reader([l.encode("utf-8") for l in kb_entry.body.splitlines()])
         r = ["<TABLE BORDER='1' ID='csvtable' class='tablesorter'>", "<thead>"]
-        r += ["<TR>"] + ["<TH>%s</TH>" % smart_text(c, "utf-8") for c in next(reader)] + ["</TR>"]
+        r += ["<TR>"] + ["<TH>%s</TH>" % smart_text(c) for c in next(reader)] + ["</TR>"]
         r += ["</thead>", "<tbody>"]
         for row in reader:
-            r += ["<TR>"] + ["<TD>%s</TD>" % smart_text(c, "utf-8") for c in row] + ["</TR>"]
+            r += ["<TR>"] + ["<TD>%s</TD>" % smart_text(c) for c in row] + ["</TR>"]
         r += ["</tbody></TABLE>"]
         r += [
             "<script type='text/javascript'>",

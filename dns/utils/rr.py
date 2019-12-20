@@ -97,7 +97,7 @@ class RR(object):
         if isinstance(n, unicode):
             return n.lower().encode("idna")
         elif isinstance(n, str):
-            return smart_text(n, "utf-8").lower().encode("idna")
+            return smart_text(n).lower().encode("idna")
         return n
 
     @staticmethod

@@ -487,7 +487,7 @@ class BaseLoader(object):
     def clean_str(self, value):
         if value:
             if isinstance(value, str):
-                return smart_text(value, "utf-8")
+                return smart_text(value)
             elif not isinstance(value, six.string_types):
                 return str(value)
             else:

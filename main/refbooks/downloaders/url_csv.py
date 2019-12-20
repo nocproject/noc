@@ -51,10 +51,10 @@ class Downloader(DownloaderBase):
             if not header:
                 # Read field names from first line
                 for i, h in enumerate(row):
-                    header[i] = smart_text(h, "ignore")
+                    header[i] = smart_text(h, errors="ignore")
                 continue
             r = {}
             for i, v in enumerate(row):
-                r[header[i]] = smart_text(v, "ignore")
+                r[header[i]] = smart_text(v, errors="ignore")
             out.append(r)
         return out
