@@ -149,6 +149,30 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     labelWidth: 170
                 },
                 {
+                    name: "filter_vendor",
+                    xtype: "inv.vendor.LookupField",
+                    fieldLabel: __("Filter by Vendor"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
+                },
+                {
+                    name: "filter_platform",
+                    xtype: "inv.platform.LookupField",
+                    fieldLabel: __("Filter by Platform"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
+                },
+                {
+                    name: "filter_version",
+                    xtype: "inv.firmware.LookupField",
+                    fieldLabel: __("Filter by Version"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
+                },
+                {
                     name: "filter_object_profile",
                     xtype: "sa.managedobjectprofile.LookupField",
                     fieldLabel: __("Filter by Object Profile"),
