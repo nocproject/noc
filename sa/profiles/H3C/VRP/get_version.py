@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^.*?Switch\s(?P<platform>.+?)\sSoftware\s\Version" r"\s3Com\sOS\sV(?P<version>.+?)$",
+        r"^.*?Switch\s(?P<platform>.+?)\sSoftware\s\Version\s3Com\sOS\sV(?P<version>.+?)$",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver1 = re.compile(
