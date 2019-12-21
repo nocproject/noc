@@ -1,5 +1,6 @@
 # CentOS settings
 ---
+activator_command: "/bin/sh -c 'exec taskset -c $((%(process_num)d %% $(nproc))) ./services/activator/service.py'"
 mongo_fork: "True"
 mongo_user: mongod
 pgbouncer_path_pid: /var/run/pgbouncer

@@ -46,7 +46,7 @@ services:
       - discovery
     level: pool
     supervisord:
-      command: "/bin/sh -c 'exec taskset -c $((%(process_num)d %% $(nproc))) ./services/activator/service.py'"
+      command: "{{ activator_command }}"
       oom_score_adj: 300
       process_name: "%(program_name)s-%(process_num)02d"
       startretries: 999
