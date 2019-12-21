@@ -12,6 +12,7 @@ from __future__ import absolute_import
 # Third-party modules
 from six.moves.configparser import RawConfigParser
 from six import StringIO
+import six
 
 # NOC modules
 from .base import BaseTokenizer
@@ -27,8 +28,11 @@ class INITokenizer(BaseTokenizer):
     def __init__(self, data):
         super(INITokenizer, self).__init__(data)
         self.config = RawConfigParser()
-        f = StringIO(data)
-        self.config.readfp(f)
+        if six.PY3:
+            self.config.read_string(data)
+        else:
+            f = StringIO(data)
+            self.config.readfp(f)
 
     def __iter__(self):
         for section in sorted(self.config.sections()):

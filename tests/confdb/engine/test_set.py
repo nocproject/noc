@@ -6,11 +6,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
+
 # Third-party modules
 import pytest
 
 # NOC modules
-from noc.core.confdb.engine.base import Engine
+from .utils import check_query
 
 
 @pytest.mark.parametrize(
@@ -103,5 +106,4 @@ from noc.core.confdb.engine.base import Engine
     ],
 )
 def test_set(input, query, output):
-    e = Engine()
-    assert list(e.query(query, **input)) == output
+    assert check_query(query, input, output)

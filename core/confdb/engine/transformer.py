@@ -11,6 +11,7 @@ import ast
 import itertools
 
 # Third-party modules
+import six
 from six.moves import zip_longest
 
 CVAR_NAME = "_ctx"
@@ -22,13 +23,63 @@ class PredicateTransformer(ast.NodeTransformer):
         self.input_counter = itertools.count()
         super(PredicateTransformer, self).__init__()
 
-    def wrap_callable(self, node):
-        return ast.Lambda(
-            args=ast.arguments(
-                args=[ast.Name(id=CVAR_NAME, ctx=ast.Param())], vararg=None, kwarg=None, defaults=[]
-            ),
-            body=node,
-        )
+    if six.PY3:
+
+        def wrap_callable(self, node):
+            return ast.Lambda(
+                args=ast.arguments(
+                    args=[ast.arg(arg=CVAR_NAME, annotation=None)],
+                    vararg=None,
+                    kwonlyargs=[],
+                    kw_defaults=[],
+                    kwarg=None,
+                    defaults=[],
+                ),
+                body=node,
+            )
+
+        def make_or_call(self, cn):
+            l_name = "_input_%d" % next(self.input_counter)
+            return ast.Lambda(
+                args=ast.arguments(
+                    args=[
+                        ast.arg(arg="self", annotation=None),
+                        ast.arg(arg=l_name, annotation=None),
+                    ],
+                    vararg=None,
+                    kwonlyargs=[],
+                    kw_defaults=[],
+                    kwarg=None,
+                    defaults=[],
+                ),
+                body=self.visit_Call(cn, _input=ast.Name(id=l_name, ctx=ast.Load())),
+            )
+
+    else:
+
+        def wrap_callable(self, node):
+            return ast.Lambda(
+                args=ast.arguments(
+                    args=[ast.Name(id=CVAR_NAME, ctx=ast.Param())],
+                    vararg=None,
+                    kwarg=None,
+                    defaults=[],
+                ),
+                body=node,
+            )
+
+        def make_or_call(self, cn):
+            l_input = ast.Name(id="_input_%d" % next(self.input_counter), ctx=ast.Load())
+
+            return ast.Lambda(
+                args=ast.arguments(
+                    args=[ast.Name(id="self", ctx=ast.Param()), l_input],
+                    vararg=None,
+                    kwarg=None,
+                    defaults=[],
+                ),
+                body=self.visit_Call(cn, _input=l_input),
+            )
 
     def wrap_visitor(self, node):
         return self.visit(node)
@@ -45,22 +96,25 @@ class PredicateTransformer(ast.NodeTransformer):
         wrap = {"x": self.wrap_expr, "v": self.wrap_visitor}
         return [wrap[v](a) for v, a in zip_longest(vx, args, fillvalue=vx[-1])]
 
+    def _get_node_id(self, node):
+        if isinstance(node, ast.Name):
+            return node.id
+        # NameConstant py<3.8, Constant py>=3.8
+        return node.value
+
     def visit_Call(self, node, _input=None):
         if isinstance(node, ast.BoolOp):
             return self.visit_BoolOp(node, _input=_input)
         if not _input:
             _input = ast.Name(id="_input", ctx=ast.Load())
-        fn = getattr(self.engine, "fn_%s" % node.func.id)
+        attr_name = "fn_%s" % self._get_node_id(node.func)
+        fn = getattr(self.engine, attr_name)
         return ast.Call(
             func=ast.Attribute(
-                value=ast.Name(id="self", ctx=ast.Load()),
-                attr="fn_%s" % node.func.id,
-                ctx=ast.Load(),
+                value=ast.Name(id="self", ctx=ast.Load()), attr=attr_name, ctx=ast.Load(),
             ),
             args=[_input] + self.visit_args(fn, node.args),
             keywords=[ast.keyword(arg=k.arg, value=self.wrap_expr(k.value)) for k in node.keywords],
-            starargs=node.starargs,
-            kwargs=node.kwargs,
         )
 
     def visit_BoolOp(self, node, _input=None):
@@ -70,27 +124,12 @@ class PredicateTransformer(ast.NodeTransformer):
             return self.visit_Call(chain[0], get_and_call_chain(chain[1:]))
 
         def get_or_call_chain(chain):
-            def make_or_call(cn):
-                l_input = ast.Name(id="_input_%d" % next(self.input_counter), ctx=ast.Load())
-
-                return ast.Lambda(
-                    args=ast.arguments(
-                        args=[ast.Name(id="self", ctx=ast.Param()), l_input],
-                        vararg=None,
-                        kwarg=None,
-                        defaults=[],
-                    ),
-                    body=self.visit_Call(cn, _input=l_input),
-                )
-
             return ast.Call(
                 func=ast.Attribute(
                     value=ast.Name(id="self", ctx=ast.Load()), attr="op_Or", ctx=ast.Load()
                 ),
-                args=[_input] + [make_or_call(n) for n in chain],
+                args=[_input] + [self.make_or_call(n) for n in chain],
                 keywords=[],
-                starargs=None,
-                kwargs=None,
             )
 
         if not _input:
@@ -113,8 +152,6 @@ class PredicateTransformer(ast.NodeTransformer):
             ),
             args=[ast.Str(s=node.id)],
             keywords=[],
-            starargs=None,
-            kwargs=None,
         )
 
     def visit_UnaryOp(self, node):
@@ -125,8 +162,6 @@ class PredicateTransformer(ast.NodeTransformer):
                 ),
                 args=[self.visit(node.operand)],
                 keywords=[],
-                starargs=None,
-                kwargs=None,
             )
 
         return node
