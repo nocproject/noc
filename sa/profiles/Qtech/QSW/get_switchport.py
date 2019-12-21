@@ -28,11 +28,6 @@ class Script(BaseScript):
     rx_vlan_au = re.compile(r"^\s*Untagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
     rx_description = re.compile(r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
 
-    """
-    rx_channel_description = re.compile(r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-    rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
-    """
-
     def execute(self):
         # TODO
         # Get portchannels
