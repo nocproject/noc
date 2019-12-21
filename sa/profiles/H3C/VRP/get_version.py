@@ -21,11 +21,11 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^.*?Switch\s(?P<platform>.+?)\sSoftware\s\Version\s3Com\sOS\sV(?P<version>.+?)$",
+        r"^.*?Switch\s(?P<platform>.+?)\sSoftware\s\\Version\s3Com\sOS\sV(?P<version>.+?)$",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver1 = re.compile(
-        r"^\s*Comware\sSoftware,\s\Version\s(?P<version>.+?),\s"
+        r"^\s*Comware\sSoftware,\s\\Version\s(?P<version>.+?),\s"
         r"(Release)?(?P<release>\w+(\s)?\w+).*(H3C )(?P<platform>[a-zA-Z0-9\-]+) uptime is",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )

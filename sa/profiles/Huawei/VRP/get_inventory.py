@@ -12,8 +12,6 @@ import re
 # Third-party modules
 from six.moves import zip
 from collections import namedtuple
-
-from typing import List, TypedDict, Tuple
 from dateutil.parser import parse as parse_date
 
 # NOC modules
@@ -300,7 +298,6 @@ class Script(BaseScript):
     rx_slot_num = re.compile(r"^(?P<type>\w+)(?P<num>\d+)")
 
     def get_device_inventory(self):
-        # type: () -> Tuple[int, List[TypedDict[{"part_no":str, "slot": int, "sub": int, "unit": bool}]]]
         """
         Get inventory table from "display device" command.
          Detect Slot and Subcard number and inventory type
