@@ -9,6 +9,13 @@
 # Python modules
 import re
 
+# Third-party modules
+import six
+from typing import Any, Optional
+
+# NOC modules
+from noc.core.comp import smart_text
+
 
 rx_os_format = re.compile(
     r"(?P<repeat>[*]?)"
@@ -20,6 +27,7 @@ rx_os_format = re.compile(
 
 
 def render_tc(value, base_type, format=None):
+    # type: (Any, six.text_type, Optional[six.text_type]) -> six.text_type
     """
     Render SNMP TC using DISPLAY-HINT according to RFC 2579
 
@@ -78,7 +86,7 @@ def render_tc(value, base_type, format=None):
                     elif fmt == "t":
                         s = "".join([chr(v) for v in value[:size]])
                         value = value[size:]
-                        rr += [unicode(s, "utf8", "ignore").encode("utf8")]
+                        rr += [smart_text(s, errors="ignore")]
                     else:
                         v = 0
                         for j in range(size):
@@ -97,4 +105,4 @@ def render_tc(value, base_type, format=None):
                 if value and dsep:
                     r += dsep
         return r
-    return str(value)
+    return smart_text(value, errors="ignore")
