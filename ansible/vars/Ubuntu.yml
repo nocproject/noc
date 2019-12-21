@@ -1,5 +1,6 @@
 # Ubuntu settings
 ---
+activator_command: "/bin/sh -c 'exec taskset -c $((%(process_num)d %% $(nproc))) ./services/activator/service.py'"
 apt_cache_valid_time: 86400
 
 mongo_arbiter_pid: /var/run/mongodb-arbiter.pid
