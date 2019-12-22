@@ -206,7 +206,7 @@ class InterfaceClassificationRule(Document):
     profile = PlainReferenceField(InterfaceProfile, default=InterfaceProfile.get_default_profile)
 
     def __str__(self):
-        r = [unicode(x) for x in self.match]
+        r = [smart_text(x) for x in self.match]
         return "%s -> %s" % (", ".join(r), self.profile.name)
 
     @property

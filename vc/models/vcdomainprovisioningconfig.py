@@ -53,7 +53,7 @@ class VCDomainProvisioningConfig(NOCModel):
     )
 
     def __str__(self):
-        return "%s: %s" % (unicode(self.vc_domain), smart_text(self.selector))
+        return "%s: %s" % (smart_text(self.vc_domain), smart_text(self.selector))
 
     @property
     def tagged_ports_list(self):

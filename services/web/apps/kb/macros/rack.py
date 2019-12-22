@@ -297,7 +297,7 @@ class XMLParser(object):
         self.last_allocation = None
         if not text.startswith("<?"):
             text = "<?xml version='1.0' encoding='utf-8' ?>\n" + text  # Add missed XML prolog
-        self.parser.Parse(unicode(text).encode("utf-8"))
+        self.parser.Parse(smart_text(text).encode("utf-8"))
 
     #
     # Called on tag opening

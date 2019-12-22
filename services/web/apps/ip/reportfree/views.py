@@ -16,6 +16,7 @@ from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP
+from noc.core.comp import smart_text
 
 
 class ReportForm(forms.Form):
@@ -52,7 +53,7 @@ class FreeBlocksReport(SimpleReport):
             ),
             columns=["Free Blocks"],
             data=[
-                [unicode(f)]
+                [smart_text(f)]
                 for f in p.iter_free([IP.prefix(c.prefix) for c in prefix.children_set.all()])
             ],
         )

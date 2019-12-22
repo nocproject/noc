@@ -914,10 +914,10 @@ class TagsParameter(Parameter):
 
     def clean(self, value):
         if type(value) in (list, tuple):
-            v = [unicode(v).strip() for v in value]
+            v = [smart_text(v).strip() for v in value]
             return [x for x in v if x]
         elif isinstance(value, six.string_types):
-            v = [unicode(x.strip()) for x in value.split(",")]
+            v = [smart_text(x.strip()) for x in value.split(",")]
             return [x for x in v if x]
         else:
             self.raise_error("Invalid tags: %s" % value)

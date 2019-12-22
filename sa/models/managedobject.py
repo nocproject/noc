@@ -799,7 +799,7 @@ class ManagedObject(NOCModel):
             content += [self.trap_source_ip]
         platform = self.platform
         if platform:
-            content += [unicode(platform.name)]
+            content += [smart_text(platform.name)]
             card += " [%s]" % platform.name
         version = self.get_attr("version")
         if version:

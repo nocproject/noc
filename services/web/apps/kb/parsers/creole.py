@@ -16,6 +16,7 @@ import creole
 # NOC modules
 from ..macros.loader import loader as macro_loader
 from .base import BaseParser
+from noc.core.comp import smart_text
 
 mw_lock = Lock()
 
@@ -45,7 +46,7 @@ class CreoleParser(BaseParser):
                 html_emitter.attr_escape(text),
             )
 
-        parser = creole.Parser(unicode(kb_entry.body))
+        parser = creole.Parser(smart_text(kb_entry.body))
         html_emitter = creole.HtmlEmitter(parser.parse(), macros=cls.get_macro_wrapper())
         html_emitter.link_emit = custom_link_emit
         html_emitter.image_emit = custom_image_emit

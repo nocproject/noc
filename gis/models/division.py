@@ -23,6 +23,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.comp import smart_text
 from noc.core.model.decorator import on_delete_check
 
 
@@ -94,9 +95,9 @@ class Division(Document):
 
     @property
     def full_path(self):
-        r = [unicode(self)]
+        r = [smart_text(self)]
         p = self.parent
         while p:
-            r = [unicode(p)] + r
+            r = [smart_text(p)] + r
             p = p.parent
         return " | ".join(r)
