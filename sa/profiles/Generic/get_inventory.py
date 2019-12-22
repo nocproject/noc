@@ -20,6 +20,9 @@ class Script(BaseScript):
         serial = None
         if "attributes" in v and v["attributes"]["Serial Number"]:
             serial = v["attributes"]["Serial Number"]
+        revision = None
+        if "attributes" in v and v["attributes"]["HW version"]:
+            revision = v["attributes"]["HW version"]
 
         return [
             {
@@ -27,6 +30,7 @@ class Script(BaseScript):
                 "vendor": v["vendor"],
                 "part_no": [v["platform"]],
                 "serial": serial,
+                "revision": revision,
             }
         ]
 
