@@ -23,6 +23,7 @@ import geojson
 from noc.inv.models.object import Object
 from noc.core.mongo.fields import PlainReferenceField
 from noc.gis.models.layer import Layer
+from noc.core.comp import smart_text
 
 
 @six.python_2_unicode_compatible
@@ -34,7 +35,7 @@ class ObjectConnectionItem(EmbeddedDocument):
     name = StringField()
 
     def __str__(self):
-        return "%s: %s" % (unicode(self.object), self.name)
+        return "%s: %s" % (smart_text(self.object), self.name)
 
 
 @six.python_2_unicode_compatible
@@ -59,7 +60,7 @@ class ObjectConnection(Document):
     line = LineStringField(auto_index=True)
 
     def __str__(self):
-        return "<%s>" % ", ".join(unicode(c) for c in self.connection)
+        return "<%s>" % ", ".join(smart_text(c) for c in self.connection)
 
     def clean(self):
         self.set_line()

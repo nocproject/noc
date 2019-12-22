@@ -16,6 +16,7 @@ from mongoengine.fields import StringField, DateTimeField, ListField, IntField
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceListField
+from noc.core.comp import smart_text
 from noc.core.model.decorator import on_delete, on_save
 
 
@@ -48,7 +49,7 @@ class L3Link(Document):
     l3_cost = IntField(default=1)
 
     def __str__(self):
-        return "(%s)" % ", ".join([unicode(i) for i in self.subinterfaces])
+        return "(%s)" % ", ".join([smart_text(i) for i in self.subinterfaces])
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.subinterfaces))

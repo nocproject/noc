@@ -26,6 +26,7 @@ from noc.ip.models.address import Address
 from noc.core.validators import is_int
 from noc.dns.utils.rr import RR
 from noc.core.text import split_alnum
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
@@ -425,7 +426,7 @@ class Command(BaseCommand):
         """
         if not s:
             return
-        return ".".join(unicode(x, "idna") for x in s.split("."))
+        return ".".join(smart_text(x, encoding="idna") for x in s.split("."))
 
     @classmethod
     def parse_ttl(cls, line):

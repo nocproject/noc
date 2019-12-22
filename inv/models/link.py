@@ -20,6 +20,7 @@ from noc.config import config
 from noc.core.mongo.fields import PlainReferenceListField
 from noc.core.model.decorator import on_delete, on_save
 from noc.core.datastream.decorator import datastream
+from noc.core.comp import smart_text
 
 
 @on_delete
@@ -83,7 +84,7 @@ class Link(Document):
 
     def __str__(self):
         if self.interfaces:
-            return "(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+            return "(%s)" % ", ".join(smart_text(i) for i in self.interfaces)
         else:
             return "Stale link (%s)" % self.id
 

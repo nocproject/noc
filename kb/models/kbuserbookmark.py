@@ -34,4 +34,4 @@ class KBUserBookmark(NOCModel):
     kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s: %s" % (unicode(self.user), smart_text(self.kb_entry))
+        return "%s: %s" % (smart_text(self.user), smart_text(self.kb_entry))

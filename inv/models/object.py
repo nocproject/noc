@@ -390,8 +390,8 @@ class Object(Document):
         if current is None:
             for _, ro, rn in self.get_outer_connections():
                 return ro.get_name_path() + [rn]
-            return [unicode(self)]
-        np = [unicode(self)]
+            return [smart_text(self)]
+        np = [smart_text(self)]
         while current:
             np.insert(0, smart_text(current))
             current = current.container

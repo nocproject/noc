@@ -13,6 +13,7 @@ from __future__ import print_function
 from noc.main.models.refbook import RefBook as RB
 from noc.main.models.refbookfield import RefBookField
 from noc.main.models.language import Language
+from noc.core.comp import smart_text
 
 lang_cache = {}
 
@@ -71,7 +72,7 @@ class RefBook(object):
             es.add(f.name)
         ns = set()
         for f in cls.fields:
-            ns.add(unicode(f.name, "utf-8"))
+            ns.add(smart_text(f.name))
         if es != ns:
             print("Recreating fields")
             rb.flush_refbook()
