@@ -349,7 +349,7 @@ class DNSZone(NOCModel):
 
     @staticmethod
     def to_idna(n):
-        if isinstance(n, unicode):
+        if isinstance(n, six.text_type):
             return n.lower().encode("idna")
         elif isinstance(n, six.string_types):
             return smart_text(n).lower().encode("idna")

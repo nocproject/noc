@@ -11,6 +11,9 @@ import sys
 import os
 import imp
 
+# Third-party modules
+import six
+
 # NOC modules
 from noc.config import config
 from noc.core.mongo.connection import get_db
@@ -92,7 +95,7 @@ class NOCLoader(object):
             # so we can find the sub-modules.
             mod.__path__ = [self.path_entry]
 
-        if isinstance(source, unicode):
+        if isinstance(source, six.text_type):
             # Convert to UTF-8 to prevent
             # SyntaxError: encoding declaration in Unicode string
             source = source.encode("utf-8")

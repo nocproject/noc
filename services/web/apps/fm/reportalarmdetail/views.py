@@ -13,7 +13,7 @@ import xlsxwriter
 import bson
 
 # Third-party modules
-from six import StringIO
+from six import StringIO, text_type
 from django.http import HttpResponse
 from django.db import connection
 from pymongo import ReadPreference
@@ -164,7 +164,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             def qe(v):
                 if v is None:
                     return ""
-                if isinstance(v, unicode):
+                if isinstance(v, text_type):
                     return v.encode("utf-8")
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")

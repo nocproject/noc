@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+import six
+
 # NOC modules
 from noc.core.comp import smart_text
 
@@ -94,7 +97,7 @@ class RR(object):
 
     @staticmethod
     def to_idna(n):
-        if isinstance(n, unicode):
+        if isinstance(n, six.text_type):
             return n.lower().encode("idna")
         elif isinstance(n, str):
             return smart_text(n).lower().encode("idna")

@@ -18,6 +18,9 @@ import datetime
 import sys
 import gc
 
+# Third-party modules
+import six
+
 # NOC modules
 from noc.aaa.models.user import User
 from noc.core.management.base import BaseCommand
@@ -62,7 +65,7 @@ class Command(BaseCommand):
     #
 
     def out(self, s):
-        if isinstance(s, unicode):
+        if isinstance(s, six.text_type):
             sys.stdout.write(s.encode("utf-8"))
         else:
             sys.stdout.write(smart_bytes(smart_text(s, encoding=self.encoding)))

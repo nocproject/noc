@@ -40,7 +40,7 @@ class ZoneFile(object):
         self.records = [RR(zone=self.zone, **r) for r in records]
 
     def to_idna(self, n):
-        if isinstance(n, unicode):
+        if isinstance(n, six.text_type):
             return n.lower().encode("idna")
         elif isinstance(n, six.string_types):
             return smart_text(n).lower().encode("idna")
@@ -50,7 +50,7 @@ class ZoneFile(object):
     def from_idna(self, s):
         if not s or not self.is_idna(s):
             return s
-        if isinstance(s, unicode):
+        if isinstance(s, six.text_type):
             return s.encode("utf-8").decode("idna")
         else:
             return smart_text(s, encoding="idna").encode("utf-8")

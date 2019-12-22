@@ -93,7 +93,7 @@ class TextArrayField(models.Field):
 
     def from_db_value(self, value, expression, connection, context):
         def to_unicode(s):
-            if isinstance(s, unicode):
+            if isinstance(s, six.text_type):
                 return s
             else:
                 return smart_text(s)
@@ -169,7 +169,7 @@ class TagsField(models.Field):
 
     def from_db_value(self, value, expression, connection, context):
         def to_unicode(s):
-            if isinstance(s, unicode):
+            if isinstance(s, six.text_type):
                 return s
             return smart_text(s)
 
