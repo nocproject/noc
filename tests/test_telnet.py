@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+
 # Third-party modules
 import pytest
-from six import StringIO
+from six import BytesIO
 
 # NOC modules
 from noc.core.script.cli.telnet import TelnetParser
@@ -22,79 +23,85 @@ from noc.core.script.cli.telnet import TelnetParser
         # Expected - expected parser output
         # Sent Expected - expected control sequence output
         # Empty feed
-        [("", "", "")],
+        [(b"", b"", b"")],
         # Plain text
-        [("Lorem ipsum", "Lorem ipsum", ""), ("dolor sit amet", "dolor sit amet", "")],
+        [(b"Lorem ipsum", b"Lorem ipsum", b""), (b"dolor sit amet", b"dolor sit amet", b"")],
         # Escaped IAC
-        [("Lorem\xff\xff ipsum", "Lorem\xff ipsum", ""), ("dolor sit amet", "dolor sit amet", "")],
+        [
+            (b"Lorem\xff\xff ipsum", b"Lorem\xff ipsum", b""),
+            (b"dolor sit amet", b"dolor sit amet", b""),
+        ],
         # Incomplete IAC
-        [("Lorem ipsum\xff", "Lorem ipsum", ""), ("\xffdolor sit amet", "\xffdolor sit amet", "")],
+        [
+            (b"Lorem ipsum\xff", b"Lorem ipsum", b""),
+            (b"\xffdolor sit amet", b"\xffdolor sit amet", b""),
+        ],
         # Ignored commands
         [
-            ("Lorem\xff\xf5 ipsum", "Lorem ipsum", ""),
-            ("Lorem\xff\xf6 ipsum", "Lorem ipsum", ""),
-            ("Lorem\xff", "Lorem", ""),
-            ("\xf5ipsum", "ipsum", ""),
+            (b"Lorem\xff\xf5 ipsum", b"Lorem ipsum", b""),
+            (b"Lorem\xff\xf6 ipsum", b"Lorem ipsum", b""),
+            (b"Lorem\xff", b"Lorem", b""),
+            (b"\xf5ipsum", b"ipsum", b""),
         ],
         # Accepted commands
         [
             # IAC DO ECHO -> IAC WILL ECHO
-            ("\xff\xfd\x01Lorem ipsum", "Lorem ipsum", "\xff\xfb\x01"),
+            (b"\xff\xfd\x01Lorem ipsum", b"Lorem ipsum", b"\xff\xfb\x01"),
             # IAC DO SGA -> IAC WILL SGA
-            ("\xff\xfd\x03Lorem ipsum", "Lorem ipsum", "\xff\xfb\x03"),
+            (b"\xff\xfd\x03Lorem ipsum", b"Lorem ipsum", b"\xff\xfb\x03"),
         ],
         # IAC DO
         [
-            ("\xff\xfd\x01", "", "\xff\xfb\x01"),
-            ("\xff\xfd\x02", "", "\xff\xfc\x02"),
-            ("\xff\xfd\x03", "", "\xff\xfb\x03"),
-            ("\xff\xfd\x04", "", "\xff\xfc\x04"),
-            ("\xff\xfd\x18", "", "\xff\xfb\x18"),
+            (b"\xff\xfd\x01", b"", b"\xff\xfb\x01"),
+            (b"\xff\xfd\x02", b"", b"\xff\xfc\x02"),
+            (b"\xff\xfd\x03", b"", b"\xff\xfb\x03"),
+            (b"\xff\xfd\x04", b"", b"\xff\xfc\x04"),
+            (b"\xff\xfd\x18", b"", b"\xff\xfb\x18"),
             # NAWS
-            ("\xff\xfd\x1f", "", "\xff\xfb\x1f\xff\xfa\x1f\x00\x80\x00\x80\xff\xf0"),
+            (b"\xff\xfd\x1f", b"", b"\xff\xfb\x1f\xff\xfa\x1f\x00\x80\x00\x80\xff\xf0"),
         ],
         # IAC DONT
-        [("\xff\xfe\x01Lorem", "Lorem", "\xff\xfc\x01")],
+        [(b"\xff\xfe\x01Lorem", b"Lorem", b"\xff\xfc\x01")],
         # IAC WONT
-        [("\xff\xfc\x01Lorem", "Lorem", "\xff\xfe\x01")],
+        [(b"\xff\xfc\x01Lorem", b"Lorem", b"\xff\xfe\x01")],
         # IAC WILL
         [
-            ("\xff\xfb\x01", "", "\xff\xfd\x01"),
-            ("\xff\xfb\x02", "", "\xff\xfe\x02"),
-            ("\xff\xfb\x03", "", "\xff\xfd\x03"),
-            ("\xff\xfb\x04", "", "\xff\xfe\x04"),
-            ("\xff\xfb\x18", "", "\xff\xfd\x18"),
+            (b"\xff\xfb\x01", b"", b"\xff\xfd\x01"),
+            (b"\xff\xfb\x02", b"", b"\xff\xfe\x02"),
+            (b"\xff\xfb\x03", b"", b"\xff\xfd\x03"),
+            (b"\xff\xfb\x04", b"", b"\xff\xfe\x04"),
+            (b"\xff\xfb\x18", b"", b"\xff\xfd\x18"),
         ],
         # Invalid IAC
-        [("\xff\x00Lorem ipsum", "orem ipsum", "")],
+        [(b"\xff\x00Lorem ipsum", b"orem ipsum", b"")],
         # TTYPE
         [
-            ("\xff\xfa\x18\x01\xff\xf0Lorem", "Lorem", "\xff\xfa\x18\x00XTERM\xff\xf0"),
-            ("\xff\xfa\x18", "", ""),
-            ("\x01\xff\xf0Lorem", "Lorem", "\xff\xfa\x18\x00XTERM\xff\xf0"),
+            (b"\xff\xfa\x18\x01\xff\xf0Lorem", b"Lorem", b"\xff\xfa\x18\x00XTERM\xff\xf0"),
+            (b"\xff\xfa\x18", b"", b""),
+            (b"\x01\xff\xf0Lorem", b"Lorem", b"\xff\xfa\x18\x00XTERM\xff\xf0"),
         ],
     ],
 )
 def test_telnet_scenario(scenario):
-    writer = StringIO()
-    parser = TelnetParser(writer=writer.write)
+    parser = TelnetParser()
     for feed, expected, sent_expected in scenario:
+        writer = BytesIO()
+        parser.set_writer(writer.write)
         data = parser.feed(feed)
         assert data == expected
         ctl = writer.getvalue()
         assert ctl == sent_expected
-        writer.truncate(0)
 
 
 @pytest.mark.parametrize(
     "data,expected",
     [
-        ("", ""),
-        ("12345", "12345"),
-        ("\xfe12345", "\xfe12345"),
-        ("\xff12345", "\xff\xff12345"),
-        ("123\xff45", "123\xff\xff45"),
-        ("12345\xff", "12345\xff\xff"),
+        (b"", b""),
+        (b"12345", b"12345"),
+        (b"\xfe12345", b"\xfe12345"),
+        (b"\xff12345", b"\xff\xff12345"),
+        (b"123\xff45", b"123\xff\xff45"),
+        (b"12345\xff", b"12345\xff\xff"),
     ],
 )
 def test_telnet_escape(data, expected):

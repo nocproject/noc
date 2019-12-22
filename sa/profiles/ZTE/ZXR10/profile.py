@@ -26,4 +26,4 @@ class Profile(BaseProfile):
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = [r"^ntp clock-period .*?^"]
-    telnet_naws = "\x7f\x7f\x7f\x7f"
+    telnet_naws = b"\x7f\x7f\x7f\x7f"

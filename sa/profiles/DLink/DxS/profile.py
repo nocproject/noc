@@ -30,7 +30,7 @@ class Profile(BaseProfile):
     command_save_config = "save"
     rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
     config_volatile = [r"^%.*?$", r"^config time \d\d.*?\n"]
-    telnet_naws = "\x00\x7f\x00\x7f"
+    telnet_naws = b"\x00\x7f\x00\x7f"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 30
     snmp_metrics_get_timeout = 3

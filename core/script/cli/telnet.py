@@ -13,27 +13,42 @@ import logging
 # Third-party modules
 from tornado.iostream import IOStream
 import tornado.gen
+from typing import List, Optional
 
 # Third-party modules
 import six
 
 # NOC modules
 from noc.core.perf import metrics
+from noc.core.comp import bord
 from .base import CLI
 
 _logger = logging.getLogger(__name__)
 
 
-IAC = "\xFF"  # Interpret As Command
-DONT = "\xFE"
-DO = "\xFD"
-WONT = "\xFC"
-WILL = "\xFB"
-SB = "\xFA"
-SE = "\xF0"
-NAWS = "\x1F"
-AO = "\xF5"
-AYT = "\xF6"
+IAC = 0xFF  # Interpret As Command
+DONT = 0xFE
+DO = 0xFD
+WONT = 0xFC
+WILL = 0xFB
+SB = 0xFA
+SE = 0xF0
+NAWS = 0x1F
+AO = 0xF5
+AYT = 0xF6
+
+B_IAC = b"\xFF"
+B_SB = b"\xFA"
+B_SE = b"\xF0"
+B_IAC2 = B_IAC + B_IAC
+B_IAC_SB = B_IAC + B_SB
+B_IAC_SE = B_IAC + B_SE
+B_NAWS = b"\x1F"
+
+B_OPT_TTYPE_IS = b"\x18\x00"
+B_OPT_WS = b"\x1f"
+
+B_TERMINAL_TYPE = b"XTERM"
 
 IAC_CMD = {DO: "DO", DONT: "DONT", WILL: "WILL", WONT: "WONT"}
 
@@ -88,7 +103,22 @@ TELNET_OPTIONS = {
 }
 
 # ECHO+SGA+TTYPE+NAWS
-ACCEPTED_TELNET_OPTIONS = "\x01\x03\x18\x1f"
+ACCEPTED_TELNET_OPTIONS = {0x01, 0x03, 0x18, 0x1F}
+
+OPTS = {B_OPT_TTYPE_IS: "TTYPE IS", B_OPT_WS: "WS"}
+
+if six.PY3:
+
+    def bytes_seq(*args):
+        # type: (*int) -> six.binary_type
+        return bytes(args)
+
+
+else:
+
+    def bytes_seq(*args):
+        # type: (*int) -> six.binary_type
+        return b"".join(chr(x) for x in args)
 
 
 class TelnetParser(object):
@@ -96,14 +126,15 @@ class TelnetParser(object):
     Telnet protocol state and commands processing
     """
 
-    def __init__(self, logger=None, writer=None, naws="\x00\x80\x00\x80"):
+    def __init__(self, logger=None, writer=None, naws=b"\x00\x80\x00\x80"):
         self.logger = logger or _logger
         self.writer = writer
-        self.iac_seq = ""
-        self.out_iac_seq = []
+        self.iac_seq = b""  # type: six.binary_type
+        self.out_iac_seq = []  # type: List[six.binary_type]
         self.naws = naws
 
     def feed(self, chunk):
+        # type: (six.binary_type) -> six.binary_type
         """
         Feed chunk of data to parser
 
@@ -113,68 +144,72 @@ class TelnetParser(object):
         if self.iac_seq and chunk:
             # Restore incomplete IAC context
             chunk = self.iac_seq + chunk
-            self.iac_seq = ""
-        r = []
+            self.iac_seq = b""
+        r = []  # type: List[six.binary_type]
         while chunk:
-            left, seq, right = chunk.partition(IAC)
+            left, seq, right = chunk.partition(B_IAC)
+            # Pass clear part
             r += [left]
+            # Process control sequences
             if seq:
                 # Process IAC sequence
                 if not right or len(right) == 1:
                     # Incomplete sequence
                     # Collect for next round
-                    self.iac_seq = IAC + right
+                    self.iac_seq = B_IAC + right
                     break
-                elif right[0] == IAC:
+                ctl = bord(right[0])
+                if ctl == IAC:
                     # <IAC> <IAC> leads to single <IAC>
-                    r += [IAC]
+                    r += [B_IAC]
                     chunk = right[1:]
-                elif right[0] in IGNORED_CMD:
+                elif ctl in IGNORED_CMD:
                     # Ignore command
                     chunk = right[1:]
-                elif right[0] != SB:
+                elif ctl != SB:
                     # Process IAC <cmd> <opt>
-                    self.process_iac(right[0], right[1])
+                    self.process_iac(ctl, bord(right[1]))
                     chunk = right[2:]
                 else:
                     # Process IAC SB ... SE sequence
-                    if SE not in right:
-                        self.iac_seq = IAC + right
+                    # @todo: Use .partition()
+                    if B_SE not in right:
+                        self.iac_seq = B_IAC + right
                         break
-                    else:
-                        i = right.index(SE)
-                        self.process_iac_sb(right[1 : i - 1])
-                        chunk = right[i + 1 :]
+                    i = right.index(B_SE)
+                    self.process_iac_sb(right[1 : i - 1])
+                    chunk = right[i + 1 :]
             else:
                 # Return leftovers
                 break
         if self.out_iac_seq:
-            self.writer("".join(self.out_iac_seq))
+            out_seq = b"".join(self.out_iac_seq)
+            self.writer(out_seq)
             self.out_iac_seq = []
-        return "".join(r)
+        return b"".join(r)
 
     def send_iac(self, cmd, opt):
+        # type: (int, int) -> None
         """
         Send IAC response
         """
         self.logger.debug("Send %s", self.iac_repr(cmd, opt))
-        self.out_iac_seq += [IAC + cmd + opt]
+        self.out_iac_seq += [bytes_seq(IAC, cmd, opt)]
 
     def send_iac_sb(self, opt, data=None):
-        sb = IAC + SB + opt
+        # type: (six.binary_type, Optional[six.binary_type]) -> None
+        sb = [B_IAC_SB, opt]  # type: List[six.binary_type]
         if data:
-            sb += data
-        sb += IAC + SE
-        if opt == "\x18\x00":
-            opt = "TTYPE IS"
-        elif opt == "\x1f":
-            opt = "WS"
-        else:
-            opt = "%r" % opt
-        self.logger.debug("Send IAC SB %s %r IAC SE", opt, data)
-        self.out_iac_seq += [sb]
+            sb += [data]
+        sb += [B_IAC_SE]
+        s_opt = OPTS.get(opt)
+        if not s_opt:
+            s_opt = "%r" % opt
+        self.logger.debug("Send IAC SB %s %r IAC SE", s_opt, data)
+        self.out_iac_seq += sb
 
     def process_iac(self, cmd, opt):
+        # type: (int, int) -> None
         """
         Process IAC command.
         """
@@ -192,30 +227,40 @@ class TelnetParser(object):
         self.send_iac(r, opt)
         # Send NAWS response
         if cmd == DO and opt == NAWS:
-            self.send_iac_sb(opt, self.naws)
+            self.send_iac_sb(B_NAWS, self.naws)
 
     def process_iac_sb(self, sb):
-        if sb == "\x18\x01":
+        # type: (six.binary_type) -> None
+        if sb == b"\x18\x01":
             self.logger.debug("Received IAC SB TTYPE SEND IAC SE")
-            self.send_iac_sb("\x18\x00", "XTERM")
+            self.send_iac_sb(b"\x18\x00", B_TERMINAL_TYPE)
         else:
             self.logger.debug("Received IAC SB %s IAC SE", sb.encode("hex"))
 
     @staticmethod
     def iac_repr(cmd, opt):
+        # type: (int, int) -> six.text_type
         """
         Human-readable IAC sequence
         :param cmd:
         :param opt:
         :return:
         """
-        if isinstance(opt, six.string_types):
-            opt = ord(opt)
         return "%s %s" % (IAC_CMD.get(cmd, cmd), TELNET_OPTIONS.get(opt, opt))
 
     @staticmethod
     def escape(data):
-        return data.replace(IAC, IAC + IAC)
+        # type: (six.binary_type) -> six.binary_type
+        return data.replace(B_IAC, B_IAC2)
+
+    def set_writer(self, writer):
+        """
+        Replace current writer.
+
+        :param writer: Callable accepting bytes
+        :return:
+        """
+        self.writer = writer
 
 
 class TelnetIOStream(IOStream):

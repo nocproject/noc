@@ -26,7 +26,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"^Unknown command"
     pattern_prompt = r"^(?P<hostname>\S+)# "
     command_exit = "exit"
-    telnet_naws = "\x00\x7f\x00\x7f"
+    telnet_naws = b"\x00\x7f\x00\x7f"
 
     def convert_interface_name(self, interface):
         return " ".join(interface.split())
