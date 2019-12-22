@@ -11,12 +11,15 @@ from __future__ import print_function
 import os
 import argparse
 import pprint
+import datetime
 import re
 
 # Third-party modules
 from fs import open_fs
 import ujson
 import yaml
+import codecs
+import uuid
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -35,6 +38,11 @@ from noc.core.script.scheme import (
     HTTPS,
 )
 from noc.core.mongo.connection import connect
+from noc.core.comp import smart_text, smart_bytes
+
+BEEF_FORMAT = "1"
+CLI_ENCODING = "quopri"
+MIB_ENCODING = "base64"
 
 
 class Command(BaseCommand):
@@ -59,7 +67,7 @@ class Command(BaseCommand):
         )
         parser.add_argument("--update-spec", help="Append all issued commands to spec")
         parser.add_argument(
-            "-o", dest="beef_output", type=unicode, help="Save script output to beef"
+            "-o", dest="beef_output", type=smart_text, help="Save script output to beef"
         )
         parser.add_argument("script", nargs=1, help="Script name")
         parser.add_argument("object_name", nargs=1, help="Object name")
@@ -126,7 +134,10 @@ class Command(BaseCommand):
             name=script,
         )
         span_sample = 1 if update_spec or beef_output else 0
-        with Span(sample=span_sample):
+        result = ""
+        if beef_output:
+            scr.start_tracking()
+        with Span(sample=span_sample, suppress_trace=span_sample):
             result = scr.run()
         if pretty:
             pprint.pprint(result)
@@ -139,23 +150,12 @@ class Command(BaseCommand):
         if update_spec:
             self.update_spec(update_spec, scr)
         if beef_output:
-            spec = self.update_spec(update_spec, scr, save=False)
-            bef_script_class = loader.get_script("%s.%s" % (obj.profile.name, "get_beef"))
-            beef_scr = bef_script_class(
-                service=service,
-                credentials=credentials,
-                capabilities=caps,
-                args={"spec": spec.get_spec_request()},
-                version=version,
-                timeout=3600,
-                name="%s.%s" % (obj.profile.name, "get_beef"),
-            )
-            bdata = beef_scr.run()
+            bdata = self.get_beef(scr, obj)
             beef = Beef.from_json(bdata)
             storage = StorageStub("osfs:///")
             sdata = beef.get_data(decode=True)
             with storage.open_fs() as fs:
-                fs.writebytes(beef_output, bytes(yaml.dump(sdata)))
+                fs.writebytes(beef_output, bytes(yaml.safe_dump(sdata)))
 
     def get_object(self, object_name):
         """
@@ -293,7 +293,7 @@ class Command(BaseCommand):
             if span.service not in cli_svc:
                 continue
             # Delete last \\n symbol and add command
-            commands.add(span.in_label[:-3].decode("string_escape").strip())
+            commands.add(span.in_label[:-1].decode("string_escape").strip())
         # Update specs
         s_name = "cli_%s" % script.name.rsplit(".", 1)[-1]
         names = set()
@@ -320,6 +320,65 @@ class Command(BaseCommand):
             return spec
         if changed:
             spec.save()
+
+    def get_beef(self, script, obj):
+        result = {
+            "version": BEEF_FORMAT,
+            "uuid": str(uuid.uuid4()),
+            "spec": None,
+            "changed": datetime.datetime.now().isoformat(),
+            "cli": [],
+            "cli_fsm": [],
+            "mib": [],
+            "mib_encoding": MIB_ENCODING,
+            "cli_encoding": CLI_ENCODING,
+        }
+        # Process CLI answers
+        result["cli"] = self.get_cli_results(script)
+        # Apply CLI fsm states
+        result["cli_fsm"] = self.get_cli_fsm_results(script)
+        # Apply MIB snapshot
+        # self.logger.debug("Collecting MIB snapshot")
+        # result["mib"] = self.get_snmp_results(spec)
+        # Process version reply
+        if script.version:
+            result["box"] = script.version
+        else:
+            result["box"] = {
+                "vendor": smart_text(obj.vendor.name) if obj.vendor else "Unknown",
+                "platform": obj.platform.name if obj.platform else "Unknown",
+                "version": obj.version.version if obj.version else "Unknown",
+            }
+        result["box"]["profile"] = obj.profile.name
+        return result
+
+    def get_cli_results(self, script):
+        r = []
+        cmd_num = 1
+        for rcmd, packets in script.iter_cli_tracking():
+            r += [
+                {
+                    "names": ["cli_%d" % cmd_num],
+                    "request": rcmd,
+                    "reply": [self.encode_cli(v) for v in packets],
+                }
+            ]
+            cmd_num += 1
+        script.stop_tracking()
+        return r
+
+    def get_cli_fsm_results(self, script):
+        r = []
+        for state, reply in script.iter_cli_fsm_tracking():
+            r += [{"state": state, "reply": [self.encode_cli(v) for v in reply]}]
+        return r
+
+    @classmethod
+    def encode_cli(cls, s):
+        """
+        Apply CLI encoding
+        """
+        return codecs.encode(smart_bytes(s), CLI_ENCODING)
 
 
 class ServiceStub(object):
