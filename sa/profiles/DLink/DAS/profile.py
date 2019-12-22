@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"(?P<hostname>\S*)[#$]"
     command_exit = "logout"
     config_volatile = ["^%.*?$"]
-    telnet_naws = "\x00\x7f\x00\x7f"
+    telnet_naws = b"\x00\x7f\x00\x7f"
     snmp_metrics_get_chunk = 10
 
     matchers = {"is_vendor_conexant": {"version": {"$regex": r"^D.+"}}}

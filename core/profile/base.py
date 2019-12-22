@@ -169,7 +169,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # True - send password by characters
     telnet_slow_send_password = False
     # Telnet NAWS negotiation
-    telnet_naws = "\x00\x80\x00\x80"
+    telnet_naws = b"\x00\x80\x00\x80"
     # List of strings containing setup sequence
     # Setup sequence is initialized on pattern_start_setup during
     # startup phase
@@ -518,6 +518,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
 
     @classmethod
     def get_telnet_naws(cls):
+        # type: () -> six.binary_type
         return cls.telnet_naws
 
     @classmethod
