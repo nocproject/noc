@@ -44,7 +44,8 @@ RUN apk add --update --no-cache \
     && /usr/bin/cythonize -i speedup/*.pyx \
     && apk del -r .build-deps \
     && adduser -h /opt/noc -s /bin/sh -S -D -H -u 1200 noc \
-    && chown noc /opt/noc
+    && chown noc /opt/noc \
+    && sed -i 's/g = \"ascii"/g = \"utf-8\"/g' /usr/lib/python2.7/site.py
 
 EXPOSE 1200
 
