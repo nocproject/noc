@@ -7,22 +7,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
     name = "BDCOM.IOS.get_inventory"
     interface = IGetInventory
-
-    def execute_cli(self):
-        v = self.scripts.get_version()
-        return [
-            {
-                "type": "CHASSIS",
-                "vendor": "BDCOM",
-                "part_no": [v["platform"]],
-                "revision": v["attributes"]["HW version"],
-                "serial": v["attributes"]["Serial Number"],
-            }
-        ]

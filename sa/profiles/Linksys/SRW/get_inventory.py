@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# H3C.VRP.get_inventory
+# Linksys.SRW.get_inventory
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -12,5 +12,5 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
-    name = "H3C.VRP.get_inventory"
+    name = "Linksys.SRW.get_inventory"
     interface = IGetInventory

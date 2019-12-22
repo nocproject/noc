@@ -7,14 +7,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
     name = "Eltex.DSLAM.get_inventory"
     interface = IGetInventory
-
-    def execute_cli(self, **kwargs):
-        v = self.scripts.get_version()
-        return [{"type": "CHASSIS", "vendor": "ELTEX", "part_no": v["platform"]}]

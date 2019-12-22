@@ -7,21 +7,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
     name = "Rubytech.l2ms.get_inventory"
     interface = IGetInventory
-
-    def execute(self):
-        v = self.scripts.get_version()
-        return [
-            {
-                "type": "CHASSIS",
-                "vendor": "Rubytech",
-                "part_no": [v["platform"]],
-                "serial": v["attributes"]["Serial Number"],
-            }
-        ]
