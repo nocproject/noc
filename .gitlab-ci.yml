@@ -263,6 +263,7 @@ py2:migrate:
   stage: test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2migrate
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
     # see docker/docker-compose.yml for complete list of migrations
     - >
@@ -297,6 +298,7 @@ py3:migrate:
   stage: test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3migrate
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
     # see docker/docker-compose.yml for complete list of migrations
     - >
@@ -333,6 +335,7 @@ py2:test:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2tests
     - mv .dockerignore .dockerignore.prod
     - cp .dockerignore.tests .dockerignore
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
     - >
      docker
@@ -379,8 +382,8 @@ py3:test:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3tests
     - mv .dockerignore .dockerignore.prod
     - cp .dockerignore.tests .dockerignore
-  script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
     # see docker/docker-compose.yml for complete list of migrations
     - >
       docker-compose
