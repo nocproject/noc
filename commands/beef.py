@@ -30,6 +30,7 @@ from noc.core.comp import smart_text
 class Command(BaseCommand):
     CLI_ENCODING = "quopri"
     DEFAULT_BEEF_PATH_TEMPLATE = "ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json"
+    DEFAULT_BEEF_IMPORT_PATH_TEMPLATE = "imports/{0.box.profile}/{0.uuid}.beef.json"
     DEFAULT_TEST_CASE_TEMPLATE = "ad-hoc/{0.profile.name}/{0.uuid}/"
 
     def add_arguments(self, parser):
@@ -45,6 +46,7 @@ class Command(BaseCommand):
         )
         collect_parser.add_argument("--storage", help="External storage name or url")
         collect_parser.add_argument("--path", type=smart_text, help="Path name")
+        collect_parser.add_argument("--description", type=smart_text, help="Set beef description")
         collect_parser.add_argument("objects", nargs=argparse.REMAINDER, help="Object names or ids")
         # view command
         view_parser = subparsers.add_parser("view")
@@ -103,7 +105,9 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
-    def handle_collect(self, storage, path, spec, force, objects, *args, **options):
+    def handle_collect(
+        self, storage, path, spec, force, objects, description=None, *args, **options
+    ):
         connect()
         from noc.sa.models.managedobjectselector import ManagedObjectSelector
         from noc.dev.models.spec import Spec
@@ -153,6 +157,8 @@ class Command(BaseCommand):
                 self.print("Failed collect beef on %s: %s" % (mo.name, e))
                 continue
             beef = Beef.from_json(bdata)
+            if description:
+                beef.description = description
             self.print("  Saving to %s:%s" % (storage.name, path))
             try:
                 cdata, udata = beef.save(storage, path)
@@ -220,7 +226,7 @@ class Command(BaseCommand):
             with open(export_path, "w") as f:
                 f.write(yaml.dump(data))
 
-    def handle_import(self, storage, path, paths=None, *args, **options):
+    def handle_import(self, storage, path=None, paths=None, *args, **options):
         """
         Importing yaml file to beef
         :param storage:
@@ -244,10 +250,11 @@ class Command(BaseCommand):
                 self.print("Error when importing beef file %s" % import_path)
                 continue
             st = self.get_storage(storage, beef=True)
+            if not path:
+                path = smart_text(self.DEFAULT_BEEF_IMPORT_PATH_TEMPLATE.format(beef))
             beef.save(st, smart_text(path))
 
     def handle_list(self, storage=None, *args, **options):
-        r = ["GUID,Profile,Vendor,Platform,Version,SpecUUID,Changed,Path"]
         if storage:
             storages = [self.get_storage(name=storage)]
         else:
@@ -255,6 +262,7 @@ class Command(BaseCommand):
             storages = ExtStorage.objects.filter(type="beef")
         for storage in storages:
             self.print("\n%sStorage: %s%s\n" % ("=" * 20, storage.name, "=" * 20))
+            r = ["GUID,Profile,Vendor,Platform,Version,Description,SpecUUID,Changed,Path"]
             st_fs = storage.open_fs()
             for step in st_fs.walk("", exclude=["*.yml"]):
                 if not step.files:
@@ -273,6 +281,7 @@ class Command(BaseCommand):
                                 beef.box.vendor,
                                 beef.box.platform,
                                 beef.box.version,
+                                beef.description,
                                 beef.spec,
                                 beef.changed,
                                 file.make_path(step.path),
@@ -297,13 +306,15 @@ class Command(BaseCommand):
     ):
         from noc.core.script.loader import loader
 
+        if not path:
+            self.die("Set Path or UUID")
         st = self.get_storage(storage, beef=True)
         # beef = self.get_beef(st, path)
         beef = self.beef_filter(st, path)
         if beef:
             beef, _ = beef[0]
         else:
-            self.die("Beef not found" % path)
+            self.die("Beef path %s not found" % path)
         # Build credentials
         credentials = {
             "address": beef.uuid,
@@ -484,6 +495,8 @@ class Command(BaseCommand):
             beef_type = "beef_test"
         elif beef_test_config:
             beef_type = "beef_test_config"
+        if not name:
+            self.die("Unknown storage: %s" % name)
         if ":" in name:
             # URL
             st = ExtStorage.from_json(
@@ -539,7 +552,13 @@ class Command(BaseCommand):
             self.print("Configs for tests %s", test_config)
         r = []
         st_fs = storage.open_fs()
-        for beef_path in st_fs.walk.files(path=smart_text(path), exclude=["*.yml"]):
+        file_filter = []
+        if st_fs.isfile(path):
+            file_filter = [os.path.basename(path)]
+            path = os.path.dirname(path)
+        for beef_path in st_fs.walk.files(
+            path=smart_text(path), exclude=["*.yml"], filter=file_filter
+        ):
             try:
                 beef = self.get_beef(storage, beef_path)
             except ValueError:
