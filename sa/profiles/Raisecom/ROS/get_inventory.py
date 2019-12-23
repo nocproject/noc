@@ -23,14 +23,14 @@ class Script(BaseScript):
     rx_portnum = re.compile(r"^\S*?(?P<portnum>\d+)$")
 
     def execute_iscom2624g(self):
-        v = self.profile.get_version(self)
+        v = self.scripts.get_version()
         r = [
             {
                 "type": "CHASSIS",
                 "vendor": "RAISECOM",
                 "part_no": v["platform"],
-                "revision": v["hw_rev"],
-                "serial": v["serial"],
+                "revision": v["attributes"]["HW version"],
+                "serial": v["attributes"]["Serial Number"],
             }
         ]
         v = self.cli("show interface brief")
@@ -69,16 +69,18 @@ class Script(BaseScript):
     def execute_cli(self):
         if self.is_iscom2624g:
             return self.execute_iscom2624g()
-        v = self.profile.get_version(self)
+        v = self.scripts.get_version()
         r = [
             {
                 "type": "CHASSIS",
                 "vendor": "RAISECOM",
                 "part_no": v["platform"],
-                "revision": v["hw_rev"],
-                "serial": v["serial"],
+                "revision": v["attributes"]["HW version"],
+                "serial": v["attributes"]["Serial Number"],
             }
         ]
+        if self.is_rotek:
+            return r
         v = self.cli("show interface port transceiver information")
         for port in v.split("Port "):
             if not port or "Wait" in port or "Error" in port:
