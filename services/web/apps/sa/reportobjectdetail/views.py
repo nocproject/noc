@@ -162,7 +162,7 @@ class ReportObjectDetailApplication(ExtApplication):
             def qe(v):
                 if v is None:
                     return ""
-                if isinstance(v, unicode):
+                if isinstance(v, six.text_type):
                     return v.encode("utf-8")
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")

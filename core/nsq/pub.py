@@ -61,7 +61,7 @@ def mpub_encode(messages):
         for msg in messages:
             if not isinstance(msg, six.string_types):
                 msg = ujson.dumps(msg)
-            if isinstance(msg, unicode):
+            if isinstance(msg, six.text_type):
                 msg = msg.encode("utf-8")
             yield struct.pack("!i", len(msg))
             yield msg

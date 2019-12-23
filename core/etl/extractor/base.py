@@ -13,6 +13,7 @@ import os
 import csv
 import itertools
 from collections import namedtuple
+import six
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -85,7 +86,7 @@ class BaseExtractor(object):
         def q(s):
             if s == "" or s is None:
                 return ""
-            elif isinstance(s, unicode):
+            elif isinstance(s, six.text_type):
                 return s.encode("utf-8")
             else:
                 return str(s)

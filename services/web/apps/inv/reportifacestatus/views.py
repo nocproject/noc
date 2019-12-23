@@ -12,7 +12,7 @@ import datetime
 import csv
 
 # Third-party modules
-from six import StringIO
+from six import StringIO, text_type
 from django.http import HttpResponse
 from pymongo import ReadPreference
 from bson import ObjectId
@@ -140,7 +140,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
             def qe(v):
                 if v is None:
                     return ""
-                if isinstance(v, unicode):
+                if isinstance(v, text_type):
                     return v.encode("utf-8")
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")
