@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-import six
+# Python modules
+from __future__ import absolute_import
 
 # NOC modules
-from noc.dns.utils.rr import RR
-from noc.core.comp import smart_text
+from .encoding import from_idna, to_idna, is_idna
+from .rr import RR
 
 HEADER = """;;
 ;; %s
@@ -39,25 +39,6 @@ class ZoneFile(object):
             raise ValueError("First record must be SOA")
         self.records = [RR(zone=self.zone, **r) for r in records]
 
-    def to_idna(self, n):
-        if isinstance(n, six.text_type):
-            return n.lower().encode("idna")
-        elif isinstance(n, six.string_types):
-            return smart_text(n).lower().encode("idna")
-        else:
-            return n
-
-    def from_idna(self, s):
-        if not s or not self.is_idna(s):
-            return s
-        if isinstance(s, six.text_type):
-            return s.encode("utf-8").decode("idna")
-        else:
-            return smart_text(s, encoding="idna").encode("utf-8")
-
-    def is_idna(self, s):
-        return "xn--" in s
-
     def get_text(self):
         primary, contact, serial, refresh, retry, expire, ttl = self.records[0].rdata.split()
         serial = int(serial)
@@ -70,13 +51,13 @@ class ZoneFile(object):
         if not contact.endswith("."):
             contact += "."
 
-        suffix = self.to_idna(self.zone + ".")
+        suffix = to_idna(self.zone + ".")
         nsuffix = "." + suffix
         lnsuffix = len(nsuffix)
 
         # SOA
         z = [
-            HEADER % self.from_idna(self.zone),
+            HEADER % from_idna(self.zone),
             """$ORIGIN %(domain)s.
 $TTL %(ttl)d
 @ IN SOA %(primary)s %(contact)s (
@@ -126,8 +107,8 @@ $TTL %(ttl)d
         txt_cmask = "%s%%s" % (" " * l1)
         # Add RRs
         for r in rr:
-            if self.is_idna(r[0]):
-                z += ["; %s" % self.from_idna(r[0])]
+            if is_idna(r[0]):
+                z += ["; %s" % from_idna(r[0])]
             if r[1] == "TXT":
                 content = self.split_txt(r[2])
                 z += [mask % (r[0], r[1], content.pop(0))]

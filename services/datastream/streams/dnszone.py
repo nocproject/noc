@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # dnszone DataStream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,8 +21,9 @@ from noc.dns.models.dnszone import DNSZone, ZONE_FORWARD, ZONE_REVERSE_IPV4, ZON
 from noc.dns.models.dnszonerecord import DNSZoneRecord
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
-from noc.dns.utils.rr import RR
-from noc.dns.utils.zonefile import ZoneFile
+from noc.core.dns.rr import RR
+from noc.core.dns.zonefile import ZoneFile
+from noc.core.dns.encoding import to_idna
 
 
 class DNSZoneDataStream(DataStream):
@@ -51,14 +52,14 @@ class DNSZoneDataStream(DataStream):
         :param zone:
         :return:
         """
-        r = list(cls.iter_soa(zone))
+        zone_iters = [cls.iter_soa(zone)]
         if zone.type == ZONE_FORWARD:
-            r += sorted(cls.iter_forward(zone))
+            zone_iters += [sorted(cls.iter_forward(zone))]
         elif zone.type == ZONE_REVERSE_IPV4:
-            r += sorted(cls.iter_reverse_ipv4(zone))
+            zone_iters += [sorted(cls.iter_reverse_ipv4(zone))]
         elif zone.type == ZONE_REVERSE_IPV6:
-            r += sorted(cls.iter_reverse_ipv6(zone))
-        return [x.to_json() for x in r]
+            zone_iters += [sorted(cls.iter_reverse_ipv6(zone))]
+        return [x.to_json() for x in chain(*tuple(zone_iters))]
 
     @classmethod
     def iter_soa(cls, zone):
@@ -74,7 +75,7 @@ class DNSZoneDataStream(DataStream):
 
         yield RR(
             zone=zone.name,
-            name=dotted(zone.to_idna(zone.name)),
+            name=dotted(to_idna(zone.name)),
             ttl=zone.profile.zone_ttl,
             type="SOA",
             rdata="%s %s %d %d %d %d %d"
