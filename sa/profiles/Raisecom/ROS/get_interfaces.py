@@ -8,7 +8,6 @@
 
 # Python modules
 import re
-from collections import defaultdict
 
 # Third-party modules
 import six
@@ -22,7 +21,6 @@ from noc.core.ip import IPv4
 
 class Script(BaseScript):
     name = "Raisecom.ROS.get_interfaces"
-    cache = True
     interface = IGetInterfaces
 
     rx_vlans = re.compile(
@@ -101,6 +99,56 @@ class Script(BaseScript):
             r = match.groupdict()
         return r
 
+    def get_lldp_config(self):
+        r = {}
+        try:
+            v = self.cli("show lldp local config")
+        except self.CLISyntaxError:
+            return r
+        match = self.rx_lldp.search(v)
+        if match:
+            r = {el for el in self.expand_rangelist(match.group("ports"))}
+        return r
+
+    def get_switchport(self):
+        r = {}
+        if self.is_rotek:
+            return r
+        v = self.cli("show interface port switchport")
+        for section in v.split("Port"):
+            if not section:
+                continue
+            port = self.parse_vlans(section)
+            r[port["name"]] = port
+        return r
+
+    def get_iface_statuses(self):
+        r = []
+        try:
+            v = self.cli("show interface port")
+        except self.CLISyntaxError:
+            return r
+        for line in v.splitlines()[5:]:
+            # r[int(line[:6])] = {
+            r += [
+                {
+                    "name": int(line[:6]),
+                    "admin_status": "enable" in line[7:14],
+                    "oper_status": "up" in line[14:29],
+                }
+            ]
+        return r
+
+    def get_iface_ip_description(self):
+        r = {}
+        try:
+            v = self.cli("show interface ip description")
+        except self.CLISyntaxError:
+            return r
+        for line in v.splitlines()[2:-1]:
+            r[str(int(line[:9]))] = {"name": int(line[:9]), "description": str(line[9:])}
+        return r
+
     def execute_iscom2624g(self):
         lldp_ifaces = []
         v = self.cli("show lldp local config")
@@ -174,72 +222,49 @@ class Script(BaseScript):
     def execute_cli(self):
         if self.is_iscom2624g:
             return self.execute_iscom2624g()
-        lldp_ifaces = []
-        v = self.cli("show lldp local config")
-        match = self.rx_lldp.search(v)
-        if match:
-            lldp_ifaces = self.expand_rangelist(match.group("ports"))
-        ifaces = []
-        v = self.cli("show interface port description")
-        for line in v.splitlines()[2:-1]:
-            i = {
-                "name": int(line[:8]),
-                "type": "physical",
-                "snmp_ifindex": int(line[:8]),
-                "subinterfaces": [],
-            }
-            if str(line[8:]) != "-":
-                i["description"] = str(line[8:])
-            if i["name"] in lldp_ifaces:
-                i["enabled_protocols"] = ["LLDP"]
-            ifaces.append(i)
-        statuses = []
-        v = self.cli("show interface port")
-        for line in v.splitlines()[5:]:
-            i = {
-                "name": int(line[:6]),
-                "admin_status": "enable" in line[7:14],
-                "oper_status": "up" in line[14:29],
-            }
-            statuses.append(i)
-        vlans = []
-        v = self.cli("show interface port switchport")
-        for section in v.split("Port"):
-            if not section:
-                continue
-            vlans.append(self.parse_vlans(section))
-        d = defaultdict(dict)
-
-        for l in (statuses, ifaces):
-            for elem in l:
-                d[elem["name"]].update(elem)
-        l3 = list(six.itervalues(d))
-
-        for port in l3:
-            name = port["name"]
+        lldp_ifaces = self.get_lldp_config()
+        interfaces = {}
+        if not self.is_rotek:
+            v = self.cli("show interface port description")
+            for line in v.splitlines()[2:-1]:
+                ifname = int(line[:8])
+                interfaces[ifname] = {
+                    "name": ifname,
+                    "type": "physical",
+                    "snmp_ifindex": int(line[:8]),
+                    "subinterfaces": [],
+                }
+                if str(line[8:]) != "-":
+                    interfaces[ifname]["description"] = str(line[8:])
+                if ifname in lldp_ifaces:
+                    interfaces[ifname]["enabled_protocols"] = ["LLDP"]
+            for port in self.get_iface_statuses():
+                if port["name"] in interfaces:
+                    interfaces[port["name"]].update(port)
+                else:
+                    interfaces[port["name"]] = port
+        vlans = self.get_switchport()
+        for ifname in interfaces:
+            port = interfaces[ifname]
+            name = str(port["name"])
             port["subinterfaces"] = [
                 {
-                    "name": str(name),
+                    "name": name,
                     "enabled_afi": ["BRIDGE"],
                     "admin_status": port["admin_status"],
                     "oper_status": port["oper_status"],
                     "tagged_vlans": [],
-                    "untagged_vlan": [
-                        int(vlan["untagged_vlan"]) for vlan in vlans if int(vlan["name"]) == name
-                    ][0],
                 }
             ]
+            if name in vlans:
+                port["subinterfaces"][0]["untagged_vlan"] = int(vlans[name]["untagged_vlan"])
+                if "n/a" not in vlans[name]["op_trunk_allowed_vlan"]:
+                    port["subinterfaces"][0]["tagged_vlans"] = ranges_to_list(
+                        vlans[name]["op_trunk_allowed_vlan"]
+                    )
             if "description" in port:
                 port["subinterfaces"][0]["description"] = port["description"]
-            tvl = [vlan["op_trunk_allowed_vlan"] for vlan in vlans if int(vlan["name"]) == name][0]
-            if "n/a" not in tvl:
-                port["subinterfaces"][0]["tagged_vlans"] = ranges_to_list(tvl)
-        if_descr = []
-        v = self.cli("show interface ip description")
-        for line in v.splitlines()[2:-1]:
-            i = {"name": int(line[:9]), "description": str(line[9:])}
-            if_descr.append(i)
-        if not l3:
+        if not interfaces:
             v = self.cli("show interface description")
             for match in self.rx_descr.finditer(v):
                 i = {
@@ -251,7 +276,7 @@ class Script(BaseScript):
                         {"name": match.group("port"), "description": match.group("descr").strip()}
                     ],
                 }
-                l3 += [i]
+                interfaces[i["name"]] = i
             v = self.cli("show vlan detail")
             for match in self.rx_vlan2.finditer(v):
                 vlan_id = int(match.group("vlan_id"))
@@ -260,18 +285,19 @@ class Script(BaseScript):
                     untagged = ranges_to_list(match.group("untagged"))
                 else:
                     untagged = []
-                for i in l3:
-                    for p in ports:
-                        if i["name"] == "port%s" % p:
-                            if p not in untagged:
-                                if "tagged_vlans" in i["subinterfaces"][0]:
-                                    i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
-                                else:
-                                    i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
+                for p in ports:
+                    p_name = "port%s" % p
+                    if p_name in interfaces:
+                        if p not in untagged:
+                            if "tagged_vlans" in interfaces[p_name]["subinterfaces"][0]:
+                                interfaces[p_name]["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
                             else:
-                                i["subinterfaces"][0]["untagged_vlan"] = vlan_id
-        v = self.profile.get_version(self)
-        mac = v["mac"]
+                                interfaces[p_name]["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
+                        else:
+                            interfaces[p_name]["subinterfaces"][0]["untagged_vlan"] = vlan_id
+        ifdescr = self.get_iface_ip_description()
+        v = self.scripts.get_chassis_id()
+        mac = v[0]["first_chassis_mac"]
         # XXX: This is a dirty hack !!!
         # I do not know, how get ip interface MAC address
         try:
@@ -302,15 +328,14 @@ class Script(BaseScript):
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
             i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
-            for q in if_descr:
-                if str(q["name"]).strip() == ifname:
-                    i["description"] = q["description"]
-                    i["subinterfaces"][0]["description"] = q["description"]
-            l3 += [i]
+            if ifname in ifdescr:
+                i["description"] = ifdescr[ifname]["description"]
+                i["subinterfaces"][0]["description"] = ifdescr[ifname]["description"]
+            interfaces[i["name"]] = i
         try:
             v = self.cli("show ip interface brief")
         except self.CLISyntaxError:
-            return [{"interfaces": l3}]
+            return [{"interfaces": list(six.itervalues(interfaces))}]
         for match in self.rx_iface2.finditer(v):
             ifname = match.group("iface")
             i = {
@@ -324,15 +349,15 @@ class Script(BaseScript):
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
             i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
-            l3 += [i]
+            interfaces[i["name"]] = i
         v = self.cli("show interface ip vlan")
         for match in self.rx_vlans_ip.finditer(v):
             vlan_id = match.group("vlan_id")
             if vlan_id == "none":
                 continue
             ifname = "ip%s" % match.group("iface")
-            for i in l3:
-                if i["name"] == ifname:
-                    i["subinterfaces"][0]["vlan_ids"] = vlan_id
+            for iname in interfaces:
+                if iname == ifname:
+                    interfaces[ifname]["subinterfaces"][0]["vlan_ids"] = vlan_id
                     break
-        return [{"interfaces": l3}]
+        return [{"interfaces": list(six.itervalues(interfaces))}]
