@@ -7,7 +7,7 @@ Several notes that it will not do:
 * backup your data, please do it by yourself
 * move data from one host to another.
 
-Thar repo should not inteded to be used by itself. 
+Thar repo should not intended to be used by itself. 
 Use https://code.getnoc.com/noc/tower/blob/master/Readme.md instaed. 
 
 # Additional roles
@@ -16,8 +16,8 @@ Want to use noc tower tu rule them all? you can check this group: https://code.g
 
 # Supported platforms are:
 
-* Debian 8
 * Debian 9
+* Debian 10
 * CentOS 7
 * RHEL 7
 * Ubuntu 16.04
