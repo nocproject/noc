@@ -24,7 +24,7 @@ from noc.ip.models.vrf import VRF
 from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
 from noc.core.validators import is_int
-from noc.dns.utils.rr import RR
+from noc.core.dns.rr import RR
 from noc.core.text import split_alnum
 from noc.core.comp import smart_text
 

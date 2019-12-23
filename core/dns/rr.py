@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import six
+# Python modules
+from __future__ import absolute_import
 
 # NOC modules
-from noc.core.comp import smart_text
+from .encoding import to_idna
 
 TYPE_PREF = {"NS": 0, "MX": 10}
 DEFAULT_PREF = 100
@@ -38,18 +38,18 @@ class RR(object):
         self.rdata = rdata
         self.priority = priority
         if name.endswith("."):
-            self._idna = self.to_idna(name)
+            self._idna = to_idna(name)
         elif name:
-            self._idna = self.to_idna("%s.%s." % (name, zone))
+            self._idna = to_idna("%s.%s." % (name, zone))
         else:
-            self._idna = self.to_idna("%s." % zone)
+            self._idna = to_idna("%s." % zone)
         if type in ("NS", "MX", "CNAME"):
-            self._content = self.to_idna(rdata)
+            self._content = to_idna(rdata)
         else:
             self._content = rdata
         if type == "PTR":
             self._order = tuple(self.maybe_int(x) for x in name.split("."))
-        l_suffix = len(self.to_idna(zone)) + 1
+        l_suffix = len(to_idna(zone)) + 1
         self._sorder = self._idna[:-l_suffix]
 
     def __repr__(self):
@@ -94,14 +94,6 @@ class RR(object):
         if self.priority:
             r["priority"] = self.priority
         return r
-
-    @staticmethod
-    def to_idna(n):
-        if isinstance(n, six.text_type):
-            return n.lower().encode("idna")
-        elif isinstance(n, str):
-            return smart_text(n).lower().encode("idna")
-        return n
 
     @staticmethod
     def maybe_int(v):
