@@ -48,7 +48,9 @@ class Script(BaseScript):
             return wrap
 
         objects = []
-        if self.match_version(version__startswith="3.90"):
+        if self.match_version(version__startswith="3.90") or self.match_version(
+            version__startswith="4."
+        ):
             xcvr_n = get_offset(0)
             inv = self.cli("show interface transceiver *")
             rx_trans = re.compile(
