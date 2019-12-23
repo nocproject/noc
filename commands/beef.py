@@ -282,7 +282,7 @@ class Command(BaseCommand):
                                 beef.box.platform,
                                 beef.box.version,
                                 beef.description,
-                                beef.spec,
+                                beef.spec or "",  # For ad-hoc specs
                                 beef.changed,
                                 file.make_path(step.path),
                             ]

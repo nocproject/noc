@@ -72,6 +72,7 @@ class Span(object):
         context=DEFAULT_ID,
         hist=None,
         quantile=None,
+        suppress_trace=False,
     ):
         self.client = client
         self.server = server
@@ -100,6 +101,7 @@ class Span(object):
             self.forensic_id = str(uuid.uuid4())
         self.hist = hist
         self.quantile = quantile
+        self.suppress_trace = suppress_trace
 
     def __enter__(self):
         if config.features.forensic:
@@ -171,6 +173,8 @@ class Span(object):
         else:
             tls.span_parent = self.span_parent
         metrics["spans"] += 1
+        if self.suppress_trace:
+            return True
 
     @staticmethod
     def is_ignorable_error(exc_type):
