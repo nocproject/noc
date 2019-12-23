@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # InfiNet.WANFlexX.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,12 +17,13 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "InfiNet.WANFlexX.get_capabilities"
 
-    rx_lacp_id = re.compile(r"^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
+    rx_lldp = re.compile(r"LLDP Mode: (?P<mode>(?:TxRx|Tx only|Rx only|disabled))")
 
     @false_on_cli_error
     def has_lldp_cli(self):
         """
         Check box has LLDP enabled
         """
-        cmd = self.cli("conf show\r\n")
-        return "lldp" in cmd
+        cmd = self.cli("lldp report")
+        match = self.rx_lldp.search(cmd)
+        return match.group("mode") != "disabled"
