@@ -7,7 +7,7 @@
             <max>604800</max>
         </lifetime>
         <layout>
-            <hashed />
+            <flat />
         </layout>
         <source>
             <http>
