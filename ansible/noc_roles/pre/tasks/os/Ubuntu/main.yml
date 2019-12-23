@@ -13,6 +13,7 @@
       - curl
       - apt-transport-https
       - dbus  # to setup hostname
+      - build-essential  # ub18 hasn't it usually
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
