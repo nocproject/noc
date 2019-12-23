@@ -43,7 +43,7 @@ XlsxWriter==0.9.3
 pylibmc==1.5.1
 demjson==2.2.4
 crontab==0.22.0
-fs==2.4.10
+fs==2.4.11
 tornadis==0.8.1
 hiredis==0.2.0
 redis==2.10.6
