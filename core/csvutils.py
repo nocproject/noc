@@ -15,6 +15,7 @@ from six.moves import zip
 
 # Third-party modules
 from django.db import models
+from noc.core.comp import smart_text
 
 
 # CSV import conflict resolution constants
@@ -114,7 +115,7 @@ def csv_export(model, queryset=None, first_row_only=False):
                 row += [v]
             else:
                 row += [getattr(v, rf)]
-        row = [unicode(f).encode("utf-8") for f in row]
+        row = [smart_text(f).encode("utf-8") for f in row]
         writer.writerow(row)
         # Return result
     return io.getvalue()
