@@ -37,6 +37,7 @@
     packages:
       - unzip
       - ca-certificates
+      - "@Development tools"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
