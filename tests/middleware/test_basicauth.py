@@ -18,5 +18,5 @@ def test_basicauth():
     url = "http://127.0.0.1"
     r_url, r_body, r_headers = middleware.process_post(url, {}, {})
     assert not r_body  # Should not be set
-    assert r_headers == {"Authorization": "Basic dXNlcjpwYXNzd29yZA=="}
+    assert r_headers == {"Authorization": b"Basic dXNlcjpwYXNzd29yZA=="}
     assert r_url == url  # Should not be changed
