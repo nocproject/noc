@@ -37,6 +37,9 @@ class WhoisCacheLoader(object):
     JCLS_WHOIS_PREFIX = "noc.services.discovery.jobs.as.job.ASDiscoveryJob"
     PER_AS_DELAY = 10
 
+    class DownloadError(IOError):
+        pass
+
     def __init__(
         self,
         use_ripe=config.peer.enable_ripe,
@@ -44,7 +47,6 @@ class WhoisCacheLoader(object):
         use_radb=config.peer.enable_radb,
     ):
         self._url_cache = {}  # URL -> data
-        self.status = True
         self.use_ripe = use_ripe
         self.use_arin = use_arin
         self.use_radb = use_radb
@@ -141,12 +143,10 @@ class WhoisCacheLoader(object):
             f = self.urlopen(url)
         except URLError as e:
             logger.error("Failed to download %s: %s" % (url, e))
-            self.status = False
-            return 0
+            raise self.DownloadError("Failed to download %s: %s" % (url, e))
         except socket.error as e:
             logger.error("Failed to download %s: %s" % (url, e))
-            self.status = False
-            return 0
+            raise self.DownloadError("Failed to download %s: %s" % (url, e))
         logger.info("Parsing")
         for o in parser(f, [key_field, values_field]):
             if key_field in o and values_field in o:
@@ -255,7 +255,6 @@ class WhoisCacheLoader(object):
     def update(self):
         self.process_as_set_members()
         self.process_origin_route()
-        return self.status
 
 
 def update_whois_cache():
