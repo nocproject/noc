@@ -16,12 +16,14 @@ import random
 import ujson
 import six
 import tornado.gen
+from typing import List, Any
 
 # NOC modules
 from noc.core.http.client import fetch_sync, fetch
 from noc.core.dcs.loader import get_dcs
 from noc.config import config
 from noc.core.perf import metrics
+from noc.core.comp import smart_bytes
 from .error import NSQPubError
 
 nsqd_http_service_param = config.nsqd.__dict__["http_addresses"]
@@ -49,6 +51,7 @@ def nsq_pub(topic, message):
 
 
 def mpub_encode(messages):
+    # type: (List[Any]) -> six.binary_type
     """
     Build mpub binary message
     :param messages: List of messages
@@ -62,13 +65,13 @@ def mpub_encode(messages):
             if not isinstance(msg, six.string_types):
                 msg = ujson.dumps(msg)
             if isinstance(msg, six.text_type):
-                msg = msg.encode("utf-8")
+                msg = smart_bytes(msg)
             yield struct.pack("!i", len(msg))
             yield msg
 
     if not messages:
-        return ""
-    return "".join(iter_msg())
+        return b""
+    return b"".join(iter_msg())
 
 
 @tornado.gen.coroutine

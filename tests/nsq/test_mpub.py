@@ -17,18 +17,18 @@ from noc.core.nsq.pub import mpub_encode
     "messages,expected",
     [
         # Empty messages
-        ([], ""),
+        ([], b""),
         # Single
-        (["lorem"], "\x00\x00\x00\x01\x00\x00\x00\x05lorem"),
+        (["lorem"], b"\x00\x00\x00\x01\x00\x00\x00\x05lorem"),
         # Multiple
         (
             ["lorem ipsum", "dolor", "sit amet"],
-            "\x00\x00\x00\x03\x00\x00\x00\x0blorem ipsum\x00\x00\x00\x05dolor\x00\x00\x00\x08sit amet",
+            b"\x00\x00\x00\x03\x00\x00\x00\x0blorem ipsum\x00\x00\x00\x05dolor\x00\x00\x00\x08sit amet",
         ),
         # Mixed
         (
             ["lorem ipsum", 12, {"x": "sit amet"}],
-            '\x00\x00\x00\x03\x00\x00\x00\x0blorem ipsum\x00\x00\x00\x0212\x00\x00\x00\x10{"x":"sit amet"}',
+            b'\x00\x00\x00\x03\x00\x00\x00\x0blorem ipsum\x00\x00\x00\x0212\x00\x00\x00\x10{"x":"sit amet"}',
         ),
     ],
 )
