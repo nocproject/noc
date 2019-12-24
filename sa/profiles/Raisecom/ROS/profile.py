@@ -23,9 +23,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_exit = "exit"
-    pattern_syntax_error = (
-        r"(% \".+\"  (?:Unknown command.)|Error input in the position marke[dt] by)"
-    )
+    pattern_syntax_error = r"(% \".+\"  (?:Unknown command.)|Error input in the position marke[dt] by|%\s+Incomplete command\.)"
     pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
     config_volatile = [
@@ -41,7 +39,7 @@ class Profile(BaseProfile):
 
     matchers = {
         "is_iscom2624g": {"platform": {"$regex": "ISCOM26(?:24|08)G"}},
-        "is_rotek": {"vendor": "Rotek"},
+        "is_rotek": {"vendor": {"$in": ["Rotek", "ROTEK"]}},
     }
 
     rx_port = re.compile(r"^port(|\s+)(?P<port>\d+)")

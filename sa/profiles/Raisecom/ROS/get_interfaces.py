@@ -300,38 +300,39 @@ class Script(BaseScript):
         mac = v[0]["first_chassis_mac"]
         # XXX: This is a dirty hack !!!
         # I do not know, how get ip interface MAC address
-        try:
-            v = self.cli("show interface ip")
-        except self.CLISyntaxError:
-            v = self.cli("show interface ip 0")
-        for match in self.rx_iface.finditer(v):
-            ifname = match.group("iface")
-            i = {
-                "name": "ip%s" % ifname,
-                "type": "SVI",
-                "oper_status": match.group("oper_status") == "active",
-                "admin_status": match.group("oper_status") == "active",
-                "mac": mac,
-                "enabled_protocols": [],
-                "subinterfaces": [
-                    {
-                        "name": "ip%s" % ifname,
-                        "oper_status": match.group("oper_status") == "active",
-                        "admin_status": match.group("oper_status") == "active",
-                        "mac": mac,
-                        "vlan_ids": [int(match.group("vid"))],
-                        "enabled_afi": ["IPv4"],
-                    }
-                ],
-            }
-            addr = match.group("ip")
-            mask = match.group("mask")
-            ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
-            i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
-            if ifname in ifdescr:
-                i["description"] = ifdescr[ifname]["description"]
-                i["subinterfaces"][0]["description"] = ifdescr[ifname]["description"]
-            interfaces[i["name"]] = i
+        if not self.is_rotek:
+            try:
+                v = self.cli("show interface ip")
+            except self.CLISyntaxError:
+                v = self.cli("show interface ip 0")
+            for match in self.rx_iface.finditer(v):
+                ifname = match.group("iface")
+                i = {
+                    "name": "ip%s" % ifname,
+                    "type": "SVI",
+                    "oper_status": match.group("oper_status") == "active",
+                    "admin_status": match.group("oper_status") == "active",
+                    "mac": mac,
+                    "enabled_protocols": [],
+                    "subinterfaces": [
+                        {
+                            "name": "ip%s" % ifname,
+                            "oper_status": match.group("oper_status") == "active",
+                            "admin_status": match.group("oper_status") == "active",
+                            "mac": mac,
+                            "vlan_ids": [int(match.group("vid"))],
+                            "enabled_afi": ["IPv4"],
+                        }
+                    ],
+                }
+                addr = match.group("ip")
+                mask = match.group("mask")
+                ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
+                i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
+                if ifname in ifdescr:
+                    i["description"] = ifdescr[ifname]["description"]
+                    i["subinterfaces"][0]["description"] = ifdescr[ifname]["description"]
+                interfaces[i["name"]] = i
         try:
             v = self.cli("show ip interface brief")
         except self.CLISyntaxError:
@@ -350,14 +351,15 @@ class Script(BaseScript):
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
             i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
             interfaces[i["name"]] = i
-        v = self.cli("show interface ip vlan")
-        for match in self.rx_vlans_ip.finditer(v):
-            vlan_id = match.group("vlan_id")
-            if vlan_id == "none":
-                continue
-            ifname = "ip%s" % match.group("iface")
-            for iname in interfaces:
-                if iname == ifname:
-                    interfaces[ifname]["subinterfaces"][0]["vlan_ids"] = vlan_id
-                    break
+        if not self.is_rotek:
+            v = self.cli("show interface ip vlan")
+            for match in self.rx_vlans_ip.finditer(v):
+                vlan_id = match.group("vlan_id")
+                if vlan_id == "none":
+                    continue
+                ifname = "ip%s" % match.group("iface")
+                for iname in interfaces:
+                    if iname == ifname:
+                        interfaces[ifname]["subinterfaces"][0]["vlan_ids"] = vlan_id
+                        break
         return [{"interfaces": list(six.itervalues(interfaces))}]
