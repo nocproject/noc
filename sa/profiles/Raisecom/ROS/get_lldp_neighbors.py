@@ -36,7 +36,7 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_lldp = re.compile(
-        r"^\s*(?:Port\s+)?(port)?(?P<port>gigaethernet1/1/\d+|\d+)\s*has\s+1\s*remotes:\s*\n(?:\n)?"
+        r"^\s*\w*?(?:Port\s+)?(port)?(?P<port>gigaethernet1/1/\d+|\d+)\s*has\s+1\s*remotes:\s*\n(?:\n)?"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
         r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
@@ -51,7 +51,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_lldp_womac = re.compile(
-        r"^\s*(?:Port\s+)?(port)?(?P<port>gigaethernet1/1/\d+|\d+)\s*has\s+1\s*remotes:\s*\n(?:\n)?"
+        r"^\s*\w*?(?:Port\s+)?(port)?(?P<port>gigaethernet1/1/\d+|\d+)\s*has\s+1\s*remotes:\s*\n(?:\n)?"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
         r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
