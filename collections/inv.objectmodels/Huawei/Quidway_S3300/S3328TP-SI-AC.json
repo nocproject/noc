@@ -276,7 +276,8 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["CX5Z228AM"]
+            "order_part_no": ["02351381"],
+            "part_no": ["CX22EOFEA", "CX5Z228AM"]
         },
         "dimensions": {
             "depth": 220,
