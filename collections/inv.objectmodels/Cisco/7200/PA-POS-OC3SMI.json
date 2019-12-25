@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | 7200 | PA-POS-OC3SMI",
+    "$collection": "inv.objectmodels",
+    "uuid": "a6966297-b035-4dca-a7c3-d0c87a4d32d0",
+    "vendor__code": "CISCO",
+    "description": "Packet over SONET 1-port OC3 Single-Mode Intermediate Reach port adapter",
+    "connection_rule__name": "Cisco | 7200",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Port1",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx_port",
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "Port2",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx_port",
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PA-POS-OC3SMI", "PA-POS-OC3SMI="]
+        }
+    }
+}
