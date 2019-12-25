@@ -1,0 +1,247 @@
+{
+    "name": "MikroTik | RouterBoard | CRS125-24G-1S",
+    "$collection": "inv.objectmodels",
+    "uuid": "7d831788-9305-4ffd-9ead-e6db16baff2d",
+    "vendor__code": "MIKROTIK",
+    "description": null,
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether1",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether2",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether3",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether4",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether5",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether6",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether7",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether8",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether9",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether10",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether11",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether12",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether13",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether14",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether15",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether16",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether17",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether18",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether19",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether20",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether21",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether22",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether23",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether24",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">+24VDC"],
+            "type__name": "Power | IEC 60130-10"
+        },
+        {
+            "description": "sfp1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpsfp1",
+            "name": "sfp1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Micro USB",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CRS125-24G-1S"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

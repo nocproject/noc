@@ -1,19 +1,18 @@
 {
-    "name": "MikroTik | RouterBoard | RB2011UiAS",
+    "name": "MikroTik | RouterBoard | CCR1036-8G-2S+",
     "$collection": "inv.objectmodels",
-    "uuid": "b60ac83c-204f-4b3a-958e-d3367d0a7ded",
+    "uuid": "9a361eea-37a1-452b-8c63-52f1b8ad24a8",
     "vendor__code": "MIKROTIK",
-    "description": "SOHO router with 5-port 10/100/1000BASE-T switch and 5-port 10/100BASE-T switch",
+    "description": null,
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port"],
     "connections": [
         {
             "description": "ether1",
             "direction": "s",
             "gender": "f",
             "name": "ether1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -53,7 +52,7 @@
             "direction": "s",
             "gender": "f",
             "name": "ether6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -61,7 +60,7 @@
             "direction": "s",
             "gender": "f",
             "name": "ether7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -69,33 +68,26 @@
             "direction": "s",
             "gender": "f",
             "name": "ether8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ether9",
-            "direction": "s",
-            "gender": "f",
-            "name": "ether9",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ether10",
-            "direction": "s",
-            "gender": "f",
-            "name": "ether10",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "sfp1",
+            "description": "sfp-sfpplus1",
             "direction": "i",
             "gender": "f",
-            "internal_name": "sfpsfp1",
-            "name": "sfp1",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "internal_name": "sfpsfp-sfpplus1",
+            "name": "sfp-sfpplus1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "sfp-sfpplus2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpsfp-sfpplus2",
+            "name": "sfp-sfpplus2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Console port",
@@ -106,7 +98,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Micro USB",
+            "description": "USB type A",
             "direction": "s",
             "gender": "f",
             "name": "usb0",
@@ -117,25 +109,25 @@
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
-            "protocols": [">+24VDC"],
+            "name": "power1",
+            "protocols": [">220VAC"],
+            "type__name": "Power | IEC 60130-10"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power2",
+            "protocols": [">220VAC"],
             "type__name": "Power | IEC 60130-10"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["RB2011UiAS"]
+            "part_no": ["CCR1036-8G-2S+"]
         },
         "management": {
             "managed": true
-        },
-        "dimensions": {
-            "depth": 86,
-            "height": 44,
-            "width": 214
-        },
-        "power": {
-            "power": 30.0
         },
         "rackmount": {
             "units": 1.0
