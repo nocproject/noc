@@ -546,3 +546,13 @@ class IPAMApplication(ExtApplication):
 
     def user_access_change_url(self, user):
         return self.site.reverse("ip:prefixaccess:changelist", QUERY={"user__id__exact": user.id})
+
+    @view(url=r"^(?P<prefix_id>\d+)/toggle_bookmark/$", method=["GET"], api=True, access="launch")
+    def view_toggle_bookmark(self, request, prefix_id):
+        """
+        Toggle block bookmark status
+        """
+        prefix = self.get_object_or_404(Prefix, id=int(prefix_id))
+        prefix.toggle_bookmark(request.user)
+        return {"has_bookmark": prefix.has_bookmark(request.user)}
+    

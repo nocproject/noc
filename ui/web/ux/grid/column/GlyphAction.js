@@ -10,7 +10,7 @@ Ext.define("Ext.ux.grid.column.GlyphAction", {
     extend: "Ext.grid.column.Action",
     alias: "widget.glyphactioncolumn",
 
-    defaultRenderer: function(v, meta, record, rowIdx, colIdx, store, view){
+    defaultRenderer: function(v, meta, record, rowIdx, colIdx, store, view) {
         var me = this,
             prefix = Ext.baseCSSPrefix,
             scope = me.origScope || me,
@@ -26,14 +26,14 @@ Ext.define("Ext.ux.grid.column.GlyphAction", {
         ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
 
         meta.tdCls += ' ' + Ext.baseCSSPrefix + 'action-col-cell';
-        for (; i < len; i++) {
+        for(; i < len; i++) {
             item = items[i];
 
             disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
             tooltip = disabled ? null : (item.tooltip || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
 
             // Only process the item action setup once.
-            if (!item.hasActionConfiguration) {
+            if(!item.hasActionConfiguration) {
 
                 // Apply our documented default to all items
                 item.stopSelection = me.stopSelection;
@@ -43,6 +43,10 @@ Ext.define("Ext.ux.grid.column.GlyphAction", {
             }
 
             if(item.glyph) {
+                var glyph = item.glyph;
+                if(Ext.isFunction(item.glyph)) {
+                    glyph = item.glyph.apply(item.scope || scope, arguments);
+                }
                 // Use glyph
                 ret += '<span role="button" unselectable="on" class="' +
                     prefix + 'action-col-icon ' +
@@ -52,7 +56,7 @@ Ext.define("Ext.ux.grid.column.GlyphAction", {
                     'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
                     (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
                     (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
-                    '>&#' + item.glyph + ';</span>';
+                    '>' + (glyph ? '&#' + glyph + ';' : '') + '</span>';
             } else {
                 // Use icon
                 ret += '<img role="button" alt="' + (item.altText || me.altText) + '" src="' + (item.icon || Ext.BLANK_IMAGE_URL) +

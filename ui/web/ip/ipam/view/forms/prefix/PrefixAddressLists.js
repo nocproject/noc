@@ -12,6 +12,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
     controller: "ip.ipam.list.prefixAddress",
     layout: "vbox",
     requires: [
+        "Ext.ux.grid.column.GlyphAction",
         "NOC.ip.ipam.view.forms.prefix.PrefixAddressListsController"
     ],
     scrollable: true,
@@ -127,76 +128,136 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
             ]
         },
         {
-            xtype: "dataview",
+            // xtype: "dataview",
+            xtype: "grid",
             itemId: "ipam-prefix-grid",
             width: "100%",
-            itemSelector: "tr.prefix-row",
-            tpl: [
-                "<table class='ipam'>",
-                "  <thead style='text-align: left;'>",
-                "    <tr>",
-                "      <th></th>",
-                "      <th></th>",
-                "      <th></th>",
-                "      <th>" + __("Prefix") + "</th>",
-                "      <th></th>",
-                "      <th>" + __("State") + "</th>",
-                "      <th>" + __("Project") + "</th>",
-                "      <th>" + __("AS") + "</th>",
-                "      <th>" + __("VC") + "</th>",
-                "      <th>" + __("Description") + "</th>",
-                "      <th>" + __("Usage") + "</th>",
-                "      <th>" + __("Address Usage") + "</th>",
-                "      <th>" + __("TT") + "</th>",
-                "      <th>" + __("Tags") + "</th>",
-                "    </tr>",
-                "  </thead>",
-                "  <tbody>",
-                "    <tpl for='.'>",
-                "    <tr class='prefix-row'>",
-                "      <td class='prefix-bookmark' style='cursor: pointer;'>",
-                "         <tpl if='!isFree'>",
-                "         <tpl if='has_bookmark'><i class='fa fa-star'></i>",
-                "         <tpl else><i class='fa fa-star-o'></i></tpl>",
-                "         </tpl>",
-                "      </td>",
-                "      <td class='prefix-edit' style='cursor: pointer;'>",
-                "        <tpl if='!isFree && permissions.change'><i title='" + __("Edit Prefix") + "' class='fa fa-edit'></i></tpl>",
-                "      </td>",
-                "      <td class='prefix-card' style='cursor: pointer;'>",
-                "        <tpl if='!isFree && permissions.view'><a href='/api/card/view/prefix/{id}/'",
-                "          style='color: black;' target='_blank' title='" + __("Open Prefix Card") + "'>",
-                "          <i class='fa fa-id-card-o'></i></a></tpl>",
-                "      </td>",
-                "      <td>{name}</td>",
-                "      <td class='prefix-view' style='cursor: pointer;'>",
-                "         <tpl if='isFree && permissions.add_prefix'><i title='" + __("Add Prefix") + "' class='fa fa-plus'></i>",
-                "         <tpl elseif='!isFree && permissions.view'><i title='" + __("Show Prefix") + "' class='fa fa-eye'></i></tpl>",
-                "      </td>",
-                "      <td>{state}</td>",
-                "      <td>{project}</td>",
-                "      <td>{as}</td>",
-                "      <td>{vc}</td>",
-                "      <td>{description}</td>",
-                "      <td>{usage}</td>",
-                "      <td>{address_usage}</td>",
-                "      <td>{tt}</td>",
-                "      <td>{tags}</td>",
-                "    </tr>",
-                "    </tpl>",
-                "  </tbody>",
-                "</table>"
+            // itemSelector: "tr.prefix-row",
+            columns: [
+                {
+                    xtype: "glyphactioncolumn",
+                    width: 60,
+                    sortable: false,
+                    items: [
+                        {
+                            tooltip: __("Mark/Unmark Bookmark"),
+                            handler: "onBookmarkToggle",
+                            glyph: function(cls, meta, r) {
+                                if(r.get("isFree")) {
+                                    return false;
+                                }
+                                return NOC.glyph.star;
+                            },
+                            getColor: function(cls, meta, r) {
+                                return r.get("has_bookmark") ? NOC.colors.starred : NOC.colors.unstarred;
+                            // },
+                            // isDisabled: function(view, rowIndex, colIndex, item, record) {
+                            //     return record.get("isFree");
+                            }
+                        },
+                        {
+                            glyph: function(cls, meta, r) {
+                                if(r.get("isFree")) {
+                                    return NOC.glyph.plus;
+                                }
+                                return NOC.glyph.edit;
+                            },
+                            color: NOC.colors.edit,
+                            tooltip: __("Edit/New"),
+                            handler: "onEditPrefix"
+                        // },
+                        // {
+                        //     glyph: function(cls, meta, r) {
+                        //         if(r.get("isFree")) {
+                        //             return false;
+                        //         }
+                        //         return NOC.glyph.id_card;
+                        //     },
+                        //     color: NOC.colors.edit,
+                        //     tooltip: __("Open Prefix Card"),
+                        //     handler: "onEditPrefix"
+                        }
+                    ]
+                },
+                {text: __("Prefix"), dataIndex: "name"},
+                {text: __("State"), dataIndex: "state"},
+                {text: __("Project"), dataIndex: "project"},
+                {text: __("AS"), dataIndex: "as"},
+                {text: __("VC"), dataIndex: "vc"},
+                {text: __("Description"), dataIndex: "description"},
+                {text: __("Usage"), dataIndex: "usage"},
+                {text: __("Address Usage"), dataIndex: "address_usage"},
+                {text: __("TT"), dataIndex: "tt"},
+                {text: __("Tags"), dataIndex: "tags"}
             ],
+
+            // tpl: [
+            //     "<table class='ipam'>",
+            //     "  <thead style='text-align: left;'>",
+            //     "    <tr>",
+            //     "      <th></th>",
+            //     "      <th></th>",
+            //     "      <th></th>",
+            //     "      <th>" + __("Prefix") + "</th>",
+            //     "      <th></th>",
+            //     "      <th>" + __("State") + "</th>",
+            //     "      <th>" + __("Project") + "</th>",
+            //     "      <th>" + __("AS") + "</th>",
+            //     "      <th>" + __("VC") + "</th>",
+            //     "      <th>" + __("Description") + "</th>",
+            //     "      <th>" + __("Usage") + "</th>",
+            //     "      <th>" + __("Address Usage") + "</th>",
+            //     "      <th>" + __("TT") + "</th>",
+            //     "      <th>" + __("Tags") + "</th>",
+            //     "    </tr>",
+            //     "  </thead>",
+            //     "  <tbody>",
+            //     "    <tpl for='.'>",
+            //     "    <tr class='prefix-row'>",
+            //     "      <td class='prefix-bookmark' style='cursor: pointer;'>",
+            //     "         <tpl if='!isFree'>",
+            //     "         <tpl if='has_bookmark'><i class='fa fa-star'></i>",
+            //     "         <tpl else><i class='fa fa-star-o'></i></tpl>",
+            //     "         </tpl>",
+            //     "      </td>",
+            //     "      <td class='prefix-edit' style='cursor: pointer;'>",
+            //     "        <tpl if='!isFree && permissions.change'><i title='" + __("Edit Prefix") + "' class='fa fa-edit'></i></tpl>",
+            //     "      </td>",
+            //     "      <td class='prefix-card' style='cursor: pointer;'>",
+            //     "        <tpl if='!isFree && permissions.view'><a href='/api/card/view/prefix/{id}/'",
+            //     "          style='color: black;' target='_blank' title='" + __("Open Prefix Card") + "'>",
+            //     "          <i class='fa fa-id-card-o'></i></a></tpl>",
+            //     "      </td>",
+            //     "      <td>{name}</td>",
+            //     "      <td class='prefix-view' style='cursor: pointer;'>",
+            //     "         <tpl if='isFree && permissions.add_prefix'><i title='" + __("Add Prefix") + "' class='fa fa-plus'></i>",
+            //     "         <tpl elseif='!isFree && permissions.view'><i title='" + __("Show Prefix") + "' class='fa fa-eye'></i></tpl>",
+            //     "      </td>",
+            //     "      <td>{state}</td>",
+            //     "      <td>{project}</td>",
+            //     "      <td>{as}</td>",
+            //     "      <td>{vc}</td>",
+            //     "      <td>{description}</td>",
+            //     "      <td>{usage}</td>",
+            //     "      <td>{address_usage}</td>",
+            //     "      <td>{tt}</td>",
+            //     "      <td>{tags}</td>",
+            //     "    </tr>",
+            //     "    </tpl>",
+            //     "  </tbody>",
+            //     "</table>"
+            // ],
             bind: {
                 store: "{prefixStore}",
                 hidden: "{noPrefixes}"
             },
             prepareData: function(data) {
                 var permissions = this.up("[itemId=ip-ipam]").getViewModel().get("prefix.permissions");
+                console.log(data);
                 return Ext.apply({permissions: permissions}, data);
             },
             listeners: {
-                itemclick: "onViewPrefixContents"
+                itemdblclick: "onViewPrefixContents"
             },
             emptyText: __("WARNING!!!&nbsp;This prefix is empty! Please add nested prefixes."),
         },

@@ -15,25 +15,35 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressListsController", {
     onShowFreeAddresses: function(button) {
         this.showFree(button, "address", this.filterByFree);
     },
-    onViewPrefixContents: function(view, record, item, idx, evt) {
-        if(evt.getTarget(".prefix-bookmark")) {
-            Ext.Ajax.request({
-                url: "/ip/ipam/" + record.id + "/toggle_bookmark/",
-                method: "GET",
-                success: function(response) {
-                    var result = Ext.decode(response.responseText);
-                    record.set("has_bookmark", result.has_bookmark);
-                }
-            });
-        } else if(evt.getTarget(".prefix-view")) {
-            if(record.get("isFree")) {
-                this.fireViewEvent("ipIPAMPrefixFormNew", {prefix: record.get("name")});
-            } else {
-                this.fireViewEvent("ipIPAMViewPrefixContents", {id: record.id});
+    onBookmarkToggle: function(view, rowIndex, colIndex, item, e, record) {
+        Ext.Ajax.request({
+            url: "/ip/ipam/" + record.id + "/toggle_bookmark/",
+            method: "GET",
+            success: function(response) {
+                var result = Ext.decode(response.responseText);
+                record.set("has_bookmark", result.has_bookmark);
             }
-        } else if(evt.getTarget(".prefix-edit")) {
+        });
+    },
+    onEditPrefix: function(view, rowIndex, colIndex, item, e, record) {
+        if(record.get("isFree")){
+            this.fireViewEvent("ipIPAMPrefixFormNew", {prefix: record.get("name")});
+        } else {
             this.fireViewEvent("ipIPAMPrefixFormEdit", {id: record.id});
         }
+    },
+    onViewPrefixContents: function(view, record, item, idx, evt) {
+        this.fireViewEvent("ipIPAMViewPrefixContents", {id: record.id});
+        // console.log("onViewPrefixContents");
+        // if(evt.getTarget(".prefix-bookmark")) {
+        // } else if(evt.getTarget(".prefix-view")) {
+        //     if(record.get("isFree")) {
+        //         this.fireViewEvent("ipIPAMPrefixFormNew", {prefix: record.get("name")});
+        //     } else {
+        //         this.fireViewEvent("ipIPAMViewPrefixContents", {id: record.id});
+        //     }
+        // } else if(evt.getTarget(".prefix-edit")) {
+        // }
     },
     onViewAddresses: function(view, record, item, idx, evt) {
         if(evt.getTarget(".address-view")) {
