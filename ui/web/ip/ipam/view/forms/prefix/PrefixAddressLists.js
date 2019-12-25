@@ -150,9 +150,9 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
                             },
                             getColor: function(cls, meta, r) {
                                 return r.get("has_bookmark") ? NOC.colors.starred : NOC.colors.unstarred;
-                            // },
-                            // isDisabled: function(view, rowIndex, colIndex, item, record) {
-                            //     return record.get("isFree");
+                                // },
+                                // isDisabled: function(view, rowIndex, colIndex, item, record) {
+                                //     return record.get("isFree");
                             }
                         },
                         {
@@ -165,17 +165,17 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
                             color: NOC.colors.edit,
                             tooltip: __("Edit/New"),
                             handler: "onEditPrefix"
-                        // },
-                        // {
-                        //     glyph: function(cls, meta, r) {
-                        //         if(r.get("isFree")) {
-                        //             return false;
-                        //         }
-                        //         return NOC.glyph.id_card;
-                        //     },
-                        //     color: NOC.colors.edit,
-                        //     tooltip: __("Open Prefix Card"),
-                        //     handler: "onEditPrefix"
+                        },
+                        {
+                            glyph: function(cls, meta, r) {
+                                if(r.get("isFree")) {
+                                    return false;
+                                }
+                                return NOC.glyph.id_card_o;
+                            },
+                            color: NOC.colors.edit,
+                            tooltip: __("Open Prefix Card"),
+                            handler: "onOpenCard"
                         }
                     ]
                 },
@@ -190,7 +190,6 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
                 {text: __("TT"), dataIndex: "tt"},
                 {text: __("Tags"), dataIndex: "tags"}
             ],
-
             // tpl: [
             //     "<table class='ipam'>",
             //     "  <thead style='text-align: left;'>",

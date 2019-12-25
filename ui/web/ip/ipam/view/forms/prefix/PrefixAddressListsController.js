@@ -26,7 +26,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressListsController", {
         });
     },
     onEditPrefix: function(view, rowIndex, colIndex, item, e, record) {
-        if(record.get("isFree")){
+        if(record.get("isFree")) {
             this.fireViewEvent("ipIPAMPrefixFormNew", {prefix: record.get("name")});
         } else {
             this.fireViewEvent("ipIPAMPrefixFormEdit", {id: record.id});
@@ -34,16 +34,9 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressListsController", {
     },
     onViewPrefixContents: function(view, record, item, idx, evt) {
         this.fireViewEvent("ipIPAMViewPrefixContents", {id: record.id});
-        // console.log("onViewPrefixContents");
-        // if(evt.getTarget(".prefix-bookmark")) {
-        // } else if(evt.getTarget(".prefix-view")) {
-        //     if(record.get("isFree")) {
-        //         this.fireViewEvent("ipIPAMPrefixFormNew", {prefix: record.get("name")});
-        //     } else {
-        //         this.fireViewEvent("ipIPAMViewPrefixContents", {id: record.id});
-        //     }
-        // } else if(evt.getTarget(".prefix-edit")) {
-        // }
+    },
+    onOpenCard: function(view, rowIndex, colIndex, item, e, record) {
+        window.open("/api/card/view/prefix/" + record.id + "/");
     },
     onViewAddresses: function(view, record, item, idx, evt) {
         if(evt.getTarget(".address-view")) {
