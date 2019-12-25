@@ -1,0 +1,90 @@
+{
+    "name": "Cisco | ISR | Module | NM-8AM-V2",
+    "$collection": "inv.objectmodels",
+    "uuid": "70c37a88-575a-41b1-9837-86b4a2e8d8a2",
+    "vendor__code": "CISCO",
+    "description": "8 internal V.34/V.42bis/V.44/V.90/V.92 analog modems",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "description": "voice-port 0",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port0",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port1",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },{
+            "description": "voice-port 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port2",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port 3",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port3",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },{
+            "description": "voice-port 4",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port4",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port 5",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port5",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },{
+            "description": "voice-port 6",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port6",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port 7",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port7",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },{
+            "description": "voice-port 8",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port8",
+            "protocols": ["V34", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NM-8AM-V2", "NM-8AM-V2="]
+        }
+    }
+}
