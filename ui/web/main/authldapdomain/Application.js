@@ -160,6 +160,16 @@ Ext.define("NOC.main.authldapdomain.Application", {
                             dataIndex: "use_tls",
                             width: 50,
                             editor: "checkbox"
+                        },
+                        {
+                            text: __("Connect timeout"),
+                            dataIndex: "connect_timeout",
+                            width: 50,
+                            editor: "numberfield",
+                            uiStyle: "small",
+                            defaultValue: 10,
+                            minValue: 1,
+                            maxValue: 120
                         }
                     ]
                 },
