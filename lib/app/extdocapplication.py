@@ -64,9 +64,7 @@ class ExtDocApplication(ExtApplication):
     secret_fields = (
         None  # Set of sensitive fields. "secret" permission is required to show of modify
     )
-    protected_fields = (
-        None  # Set of protected fields. Individually permission to modify
-    )
+    protected_fields = None  # Set of protected fields. Individually permission to modify
     PROTECTED_MESSAGE = "Field is blocked for changing. Contact to Administrator"
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
