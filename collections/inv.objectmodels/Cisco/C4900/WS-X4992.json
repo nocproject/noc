@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | C4900 | WS-X4992",
+    "$collection": "inv.objectmodels",
+    "uuid": "7b0f6497-8c82-4699-b41e-b39831f3d788",
+    "vendor__code": "CISCO",
+    "description": "WS-C4900M FAN tray",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "Cisco WS-C4900M FAN tray",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | C4900 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-X4992"]
+        }
+    }
+}

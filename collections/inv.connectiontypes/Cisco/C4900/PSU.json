@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | C4900 | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "0c3aa220-b73a-4a01-a61b-0330346ae891",
+    "description": "Cisco C4900M PSU slot",
+    "c_group": [],
+    "genders": "mf"
+}
