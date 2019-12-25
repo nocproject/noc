@@ -64,6 +64,10 @@ class ExtDocApplication(ExtApplication):
     secret_fields = (
         None  # Set of sensitive fields. "secret" permission is required to show of modify
     )
+    protected_fields = (
+        None  # Set of protected fields. Individually permission to modify
+    )
+    PROTECTED_MESSAGE = "Field is blocked for changing. Contact to Administrator"
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
@@ -142,6 +146,9 @@ class ExtDocApplication(ExtApplication):
         p = super(ExtDocApplication, self).get_permissions()
         if self.secret_fields:
             p.add("%s:secret" % self.get_app_id().replace(".", ":"))
+        if self.protected_fields:
+            for f in self.protected_fields:
+                p.add("%s:protect#%s" % (self.get_app_id().replace(".", ":"), f))
         return p
 
     def get_custom_fields(self):
@@ -217,6 +224,11 @@ class ExtDocApplication(ExtApplication):
             for f in self.secret_fields:
                 if f in data:
                     del data[f]
+        # Protect individually fields
+        if self.protected_fields:
+            for f in self.protected_fields:
+                if f in data and self.has_protected(f):
+                    del data[f]
         # Clean up fields
         for f in self.clean_fields:
             if f in data:
@@ -267,6 +279,10 @@ class ExtDocApplication(ExtApplication):
         :return:
         """
         perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
+        return perm_name in Permission.get_effective_permissions(get_user())
+
+    def has_protected(self, field):
+        perm_name = "%s:protect#%s" % (self.get_app_id().replace(".", ":"), field)
         return perm_name in Permission.get_effective_permissions(get_user())
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
@@ -447,6 +463,8 @@ class ExtDocApplication(ExtApplication):
                 Tag.register_tag(t, repr(self.model))
         # @todo: Check for duplicates
         for k in attrs:
+            if self.protected_fields and k in self.protected_fields and self.has_protected(k):
+                continue
             if k != self.pk and "__" not in k:
                 setattr(o, k, attrs[k])
         try:

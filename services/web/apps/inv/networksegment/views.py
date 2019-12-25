@@ -26,6 +26,7 @@ class NetworkSegmentApplication(ExtDocApplication):
     title = _("Network Segment")
     menu = [_("Setup"), _("Network Segments")]
     model = NetworkSegment
+    protected_fields = {"remote_system", "remote_id"}
     query_fields = ["name__icontains", "description__icontains"]
 
     def field_row_class(self, o):

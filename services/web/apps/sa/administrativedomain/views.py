@@ -21,6 +21,7 @@ class AdministrativeDomainApplication(ExtModelApplication):
     title = _("Administrative Domains")
     menu = [_("Setup"), _("Administrative Domains")]
     model = AdministrativeDomain
+    protected_fields = {"remote_system", "remote_id"}
     query_fields = ["name__icontains", "description__icontains"]
     lookup_default = [{"has_children": False, "id": "Leave unchanged", "label": "Leave unchanged"}]
 

@@ -66,6 +66,10 @@ class ExtModelApplication(ExtApplication):
     secret_fields = (
         None  # Set of sensitive fields. "secret" permission is required to show of modify
     )
+    protected_fields = (
+        None  # Set of protected fields. Individually permission to modify
+    )
+    PROTECTED_MESSAGE = "Field is blocked for changing. Contact to Administrator"
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
@@ -122,6 +126,9 @@ class ExtModelApplication(ExtApplication):
         p = super(ExtModelApplication, self).get_permissions()
         if self.secret_fields:
             p.add("%s:secret" % self.get_app_id().replace(".", ":"))
+        if self.protected_fields:
+            for f in self.protected_field:
+                p.add("%s:protect#%s" % (self.get_app_id().replace(".", ":"), f))
         return p
 
     def get_validator(self, field):
@@ -227,6 +234,11 @@ class ExtModelApplication(ExtApplication):
             for f in self.secret_fields:
                 if f in data:
                     del data[f]
+        # Protect individually fields
+        if self.protected_fields:
+            for f in self.protected_fields:
+                if f in data and self.has_protected(f):
+                    del data[f]
         # Set defaults
         for f in data:
             if data[f] is None and f in self.field_defaults:
@@ -319,6 +331,10 @@ class ExtModelApplication(ExtApplication):
         :return:
         """
         perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
+        return perm_name in Permission.get_effective_permissions(get_user())
+
+    def has_protected(self, field):
+        perm_name = "%s:protect#%s" % (self.get_app_id().replace(".", ":"), field)
         return perm_name in Permission.get_effective_permissions(get_user())
 
     def instance_to_dict(self, o, fields=None):
@@ -645,6 +661,8 @@ class ExtModelApplication(ExtApplication):
         # Update attributes
         for k, v in six.iteritems(attrs):
             if self.secret_fields and k in self.secret_fields and not self.has_secret():
+                continue
+            if self.protected_fields and k in self.protected_fields and self.has_protected(k):
                 continue
             setattr(o, k, v)
         # Run models validators

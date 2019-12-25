@@ -22,6 +22,7 @@ class ManagedObjectProfileApplication(ExtModelApplication):
     title = _("Managed Object Profile")
     menu = [_("Setup"), _("Managed Object Profiles")]
     model = ManagedObjectProfile
+    protected_fields = {"remote_system", "remote_id"}
     query_condition = "icontains"
     query_fields = ["name", "description"]
 
