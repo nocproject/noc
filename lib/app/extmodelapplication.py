@@ -125,7 +125,7 @@ class ExtModelApplication(ExtApplication):
         if self.secret_fields:
             p.add("%s:secret" % self.get_app_id().replace(".", ":"))
         if self.protected_fields:
-            for f in self.protected_field:
+            for f in self.protected_fields:
                 p.add("%s:protect#%s" % (self.get_app_id().replace(".", ":"), f))
         return p
 
