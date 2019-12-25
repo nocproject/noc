@@ -22,10 +22,15 @@ import tornado.ioloop
 import tornado.iostream
 import tornado.concurrent
 import six
+from typing import Optional, Callable
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.text import replace_re_group
+from noc.config import config
+from noc.core.span import Span
+from noc.core.perf import metrics
+from noc.core.comp import smart_bytes, smart_text
 from .error import (
     CLIError,
     CLIAuthFailed,
@@ -33,9 +38,6 @@ from .error import (
     CLILowPrivileges,
     CLIConnectionRefused,
 )
-from noc.config import config
-from noc.core.span import Span
-from noc.core.perf import metrics
 
 
 class CLI(object):
@@ -77,7 +79,7 @@ class CLI(object):
         self.command = None
         self.prompt_stack = []
         self.patterns = self.profile.patterns.copy()
-        self.buffer = ""
+        self.buffer = b""  # type: six.binary_type
         self.is_started = False
         self.result = None
         self.error = None
@@ -91,6 +93,9 @@ class CLI(object):
         self.setup_complete = False
         self.to_raise_privileges = script.credentials.get("raise_privileges", True)
         self.state = "start"
+        self.ignore_errors = None
+        self.allow_empty_response = None
+        self.native_encoding = self.script.native_encoding
         # State retries
         self.super_password_retries = self.profile.cli_retries_super_password
 
@@ -172,6 +177,7 @@ class CLI(object):
         return self.iostream_class(s, self)
 
     def set_timeout(self, timeout):
+        # type: (int) -> None
         if timeout:
             self.logger.debug("Setting timeout: %ss", timeout)
             self.current_timeout = datetime.timedelta(seconds=timeout)
@@ -223,8 +229,9 @@ class CLI(object):
         ignore_errors=False,
         allow_empty_response=True,
     ):
+        # type: (six.text_type, Optional[Callable], Optional[six.binary_type], Optional[six.binary_type], bool, bool) -> six.text_type
         self.reset_close_timeout()
-        self.buffer = ""
+        self.buffer = b""
         self.command = cmd
         self.error = None
         self.ignore_errors = ignore_errors
@@ -244,8 +251,7 @@ class CLI(object):
                 if s:
                     s.error_text = str(self.error)
                 raise self.error
-            else:
-                return self.result
+            return self.result
 
     @tornado.gen.coroutine
     def submit(self, parser=None):
@@ -272,7 +278,8 @@ class CLI(object):
         metrics["cli_commands", ("proto", self.name)] += 1
         if not self.is_started:
             yield self.on_start()
-            self.motd = yield self.read_until_prompt()
+            motd = yield self.read_until_prompt()
+            self.motd = smart_text(motd, errors="ignore", encoding=self.native_encoding)
             self.script.set_motd(self.motd)
             self.is_started = True
         # Send command
@@ -308,24 +315,21 @@ class CLI(object):
         raise tornado.gen.Return(self.result)
 
     def cleaned_input(self, s):
+        # type: (six.binary_type) -> six.binary_type
         """
         Clean up received input and wipe out control sequences
         and rogue chars
         """
         # Wipe out rogue chars
         if self.profile.rogue_chars:
-            for rc in self.profile.rogue_chars:
-                try:
-                    s = rc.sub("", s)  # rc is compiled regular expression
-                except AttributeError:
-                    s = s.replace(rc, "")  # rc is a string
+            s = self.profile.clean_rogue_chars(s)
         # Clean control sequences
         return self.profile.cleaned_input(s)
 
     @tornado.gen.coroutine
     def send(self, cmd):
-        # @todo: Apply encoding
-        cmd = str(cmd)
+        # type: (six.binary_type) -> None
+        # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
         yield self.iostream.write(cmd)
 
@@ -382,7 +386,7 @@ class CLI(object):
                 raise tornado.gen.TimeoutError("Timeout")
             self.logger.debug("Received: %r", r)
             # Clean input
-            if self.buffer.find("\x1b", -self.MATCH_MISSED_CONTROL_TAIL) != -1:
+            if self.buffer.find(b"\x1b", -self.MATCH_MISSED_CONTROL_TAIL) != -1:
                 self.buffer = self.cleaned_input(self.buffer + r)
             else:
                 self.buffer += self.cleaned_input(r)
@@ -402,8 +406,7 @@ class CLI(object):
                         r = yield handler(matched, match)
                     if r is not None:
                         raise tornado.gen.Return(r)
-                    else:
-                        break  # This state is processed
+                    break  # This state is processed
 
     @tornado.gen.coroutine
     def parse_object_stream(self, parser=None, cmd_next=None, cmd_stop=None):
@@ -538,7 +541,10 @@ class CLI(object):
     def on_username(self, data, match):
         self.set_state("username")
         self.send(
-            (self.script.credentials.get("user", "") or "") + (self.profile.username_submit or "\n")
+            smart_bytes(
+                self.script.credentials.get("user", "") or "", encoding=self.native_encoding
+            )
+            + (self.profile.username_submit or b"\n")
         )
         self.expect(
             {
@@ -554,8 +560,10 @@ class CLI(object):
     def on_password(self, data, match):
         self.set_state("password")
         self.send(
-            (self.script.credentials.get("password", "") or "")
-            + (self.profile.password_submit or "\n")
+            smart_bytes(
+                self.script.credentials.get("password", "") or "", encoding=self.native_encoding
+            )
+            + (self.profile.password_submit or b"\n")
         )
         self.expect(
             {
@@ -576,7 +584,10 @@ class CLI(object):
             # Start privilege raising sequence
             if not self.profile.command_super:
                 self.on_failure(data, match, CLINoSuperCommand)
-            self.send(self.profile.command_super + (self.profile.command_submit or "\n"))
+            self.send(
+                smart_bytes(self.profile.command_super, encoding=self.native_encoding)
+                + (self.profile.command_submit or b"\n")
+            )
             # Do not remove `pager` section
             # It fixes this situation on Huawei MA5300:
             # xxx>enable
@@ -612,7 +623,7 @@ class CLI(object):
                 return None
         if not self.is_started:
             self.resolve_pattern_prompt(match)
-        d = "".join(self.collected_data + [data])
+        d = b"".join(self.collected_data + [data])
         self.collected_data = []
         self.expect({"prompt": self.on_prompt, "pager": self.send_pager_reply})
         return d
@@ -621,7 +632,10 @@ class CLI(object):
     def on_super_username(self, data, match):
         self.set_state("super_username")
         self.send(
-            (self.script.credentials.get("user", "") or "") + (self.profile.username_submit or "\n")
+            smart_bytes(
+                self.script.credentials.get("user", "") or "", encoding=self.native_encoding
+            )
+            + (self.profile.username_submit or "\n")
         )
         self.expect(
             {
@@ -638,7 +652,10 @@ class CLI(object):
     def on_super_password(self, data, match):
         self.set_state("super_password")
         self.send(
-            (self.script.credentials.get("super_password", "") or "")
+            smart_bytes(
+                self.script.credentials.get("super_password", "") or "",
+                encoding=self.native_encoding,
+            )
             + (self.profile.username_submit or "\n")
         )
         if self.super_password_retries > 1:
@@ -700,8 +717,8 @@ class CLI(object):
                     )
                 else:
                     v = re.escape(v)
-                pattern_prompt = replace_re_group(pattern_prompt, "(?P<%s>" % k, v)
-                pattern_prompt = replace_re_group(pattern_prompt, "(?P=%s" % k, v)
+                pattern_prompt = replace_re_group(pattern_prompt, r"(?P<%s>" % k, v)
+                pattern_prompt = replace_re_group(pattern_prompt, r"(?P=%s" % k, v)
             else:
                 self.logger.error("Invalid prompt pattern")
         if old_pattern_prompt != pattern_prompt:

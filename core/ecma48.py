@@ -9,6 +9,14 @@
 # Python modules
 import re
 
+# Third-party modules
+import six
+
+# NOC modules
+from noc.core.comp import smart_bytes
+
+# @todo: Python 2.7 doesn't support rb"...". So we use smart_bytes(r"...")
+
 
 def c(x, y):
     """
@@ -79,20 +87,20 @@ def get_ecma_re():
     # .replace("\\x09","") # \n,\r, ESC, \t, BS
     re_vt100 = "\\x1b[c()78]"  # VT100
     re_other = "\\x1b[^[]"  # Last resort. Skip all ESC+char
-    return "|".join(["(?:%s)" % r for r in (re_csi, re_c1, re_c0, re_vt100, re_other)])
+    return smart_bytes("|".join(["(?:%s)" % r for r in (re_csi, re_c1, re_c0, re_vt100, re_other)]))
 
 
 #
 # Backspace pattern
 #
-BS = "\x08"
-rx_bs_sol = re.compile(r"^\x08+", re.MULTILINE)
-rx_bs = re.compile(r"[^\x08]\x08 ?")
+BS = b"\x08"
+rx_bs_sol = re.compile(smart_bytes(r"^\x08+"), re.MULTILINE)
+rx_bs = re.compile(smart_bytes(r"[^\x08]\x08 ?"))
 
 #
 # \r<spaces>\r should be cut
 #
-rx_lf_spaces = re.compile(r"\r\s+\r")
+rx_lf_spaces = re.compile(smart_bytes(r"\r\s+\r"))
 #
 # Remove ECMA-48 Control Sequences from a string
 #
@@ -100,6 +108,7 @@ rx_ecma = re.compile(get_ecma_re())
 
 
 def strip_control_sequences(s):
+    # type: (six.binary_type) -> six.binary_type
     """
     Normal text leaved untouched
     >>> strip_control_sequences("Lorem Ipsum")
@@ -154,15 +163,15 @@ def strip_control_sequences(s):
     'switch# '
     """
     # Process LFs
-    s = rx_lf_spaces.sub("", s)
+    s = rx_lf_spaces.sub(b"", s)
     # Remove escape sequences
-    s = rx_ecma.sub("", s)
+    s = rx_ecma.sub(b"", s)
     # Process backspaces
     while BS in s:
-        ss = rx_bs.sub("", s)
+        ss = rx_bs.sub(b"", s)
         if ss == s:
             if BS in ss:
-                s = ss.replace(BS, "")
+                s = ss.replace(BS, b"")
             break
         s = ss
     return s

@@ -12,6 +12,7 @@ import os
 import threading
 import operator
 import logging
+import codecs
 
 # Third-party modules modules
 import cachetools
@@ -24,6 +25,7 @@ from ssh2.error_codes import LIBSSH2_ERROR_EAGAIN
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
+from noc.core.comp import smart_bytes, smart_text
 from .base import CLI
 from .error import CLIAuthFailed, CLISSHProtocolError
 
@@ -79,9 +81,13 @@ class SSHIOStream(IOStream):
         self.session = Session()
         try:
             self.session.handshake(self.socket)
-            host_hash = self.session.hostkey_hash(LIBSSH2_HOSTKEY_HASH_SHA1)
-            self.logger.debug("Connected. Host fingerprint is %s", host_hash.encode("hex"))
+            host_hash = smart_bytes(self.session.hostkey_hash(LIBSSH2_HOSTKEY_HASH_SHA1))
+            hex_hash = smart_text(codecs.encode(host_hash, "hex"))
+            self.logger.debug("Connected. Host fingerprint is %s", hex_hash)
             auth_methods = self.session.userauth_list(user)
+            if not auth_methods:
+                self.logger.info("No supported authentication methods. Failed to log in")
+                raise CLIAuthFailed("Failed to log in")
             self.logger.debug("Supported authentication methods: %s", ", ".join(auth_methods))
             # Try to authenticate
             authenticated = False

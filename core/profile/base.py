@@ -9,6 +9,7 @@
 # Python modules
 import re
 import functools
+import warnings
 
 # Third-party modules
 import tornado.gen
@@ -19,12 +20,69 @@ from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
+from noc.core.deprecations import RemovedInNOC2002Warning
 
 
 class BaseProfileMetaclass(type):
+    BINARY_ATTRS = (
+        "command_submit",
+        "pattern_username",
+        "pattern_password",
+        "pattern_super_password",
+        "pattern_prompt",
+        "pattern_unprivileged_prompt",
+        "pattern_syntax_error",
+        "username_submit",
+        "password_submit",
+        "command_super",
+    )
+
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
+        n.rogue_char_cleaners = n._get_rogue_chars_cleaners()
+        #
+        if n.command_more:
+            warnings.warn(
+                "%s: 'command_more' is deprecated and will be removed in NOC 20.2" % n.name,
+                RemovedInNOC2002Warning,
+            )
+        if isinstance(n.pattern_more, six.string_types):
+            warnings.warn(
+                "%s: 'command_more' must be a list of (pattern, command). "
+                "Support for textual 'command_more' will be removed in NOC 20.2" % n.name,
+                RemovedInNOC2002Warning,
+            )
+            n.pattern_more = [(n.pattern_more, n.command_more)]
+            n.command_more = None
+        # Fix binary attributes
+        for attr in mcs.BINARY_ATTRS:
+            v = getattr(n, attr, None)
+            if v is not None and isinstance(v, six.text_type):
+                warnings.warn(
+                    "%s: '%s' must be of binary type. Support for text values will be removed in NOC 20.2"
+                    % (n.name, attr),
+                    RemovedInNOC2002Warning,
+                )
+                setattr(n, attr, smart_bytes(v))
+        # Fix command_more
+        pattern_more = []
+        for pattern, cmd in n.pattern_more:
+            if not isinstance(pattern, six.binary_type):
+                warnings.warn(
+                    "%s: 'pattern_more' %r pattern must be of binary type. "
+                    "Support for text values will be removed in NOC 20.2" % (n.name, pattern)
+                )
+                pattern = smart_bytes(pattern)
+            if not isinstance(cmd, six.binary_type):
+                warnings.warn(
+                    "%s: 'pattern_more' %r command must be of binary type. "
+                    "Support for text values will be removed in NOC 20.2" % (n.name, cmd)
+                )
+                cmd = smart_bytes(cmd)
+            pattern_more += [(pattern, cmd)]
+        n.pattern_more = pattern_more
+        # Build patterns
         n.patterns = n._get_patterns()
         return n
 
@@ -101,9 +159,9 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     can_strip_hostname_to = None
     # Sequence to be send to list forward pager
     # If pattern_more is string and is matched
-    command_more = "\n"
+    command_more = b"\n"
     # Sequence to be send at the end of all CLI commands
-    command_submit = "\n"
+    command_submit = b"\n"
     # Sequence to submit username. Use "\n" if None
     username_submit = None
     # Sequence to submit password. Use "\n" if None
@@ -161,7 +219,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
     # (when Action.CLEAN_INPUT==True)
-    rogue_chars = ["\r"]
+    rogue_chars = [b"\r"]
     # String to send just after telnet connect is established
     telnet_send_on_connect = None
     # Password sending mode for telnet
@@ -424,12 +482,20 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     config_volatile = None
 
     def cleaned_input(self, input):
+        # type: (six.binary_type) -> six.binary_type
         """
         Preprocessor to clean up and normalize input from device.
         Delete ASCII sequences by default.
         Can be overriden to achieve desired behavior
         """
         return strip_control_sequences(input)
+
+    def clean_rogue_chars(self, s):
+        # type: (six.binary_type) -> six.binary_type
+        if self.rogue_chars:
+            for cleaner in self.rogue_char_cleaners:
+                s = cleaner(s)
+        return s
 
     def cleaned_config(self, cfg):
         """
@@ -503,18 +569,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         """
 
         def compile(pattern):
+            if not pattern:
+                return None
             if isinstance(pattern, six.string_types):
+                return re.compile(pattern)
+            if isinstance(pattern, six.binary_type):
                 return re.compile(pattern)
             return pattern
 
-        if cls.pattern_syntax_error:
-            cls.rx_pattern_syntax_error = compile(cls.pattern_syntax_error)
-        else:
-            cls.rx_pattern_syntax_error = None
-        if cls.pattern_operation_error:
-            cls.rx_pattern_operation_error = compile(cls.pattern_operation_error)
-        else:
-            cls.rx_pattern_operation_error = None
+        cls.rx_pattern_syntax_error = compile(cls.pattern_syntax_error)
+        cls.rx_pattern_operation_error = compile(cls.pattern_operation_error)
 
     @classmethod
     def get_telnet_naws(cls):
@@ -683,21 +747,44 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
             patterns["super_password"] = re.compile(
                 cls.pattern_super_password, re.DOTALL | re.MULTILINE
             )
-        if isinstance(cls.pattern_more, six.string_types):
-            more_patterns = [cls.pattern_more]
-            patterns["more_commands"] = [cls.command_more]
-        else:
-            # .more_patterns is a list of (pattern, command)
-            more_patterns = [x[0] for x in cls.pattern_more]
-            patterns["more_commands"] = [x[1] for x in cls.pattern_more]
         if cls.pattern_start_setup:
             patterns["setup"] = re.compile(cls.pattern_start_setup, re.DOTALL | re.MULTILINE)
+        # .more_patterns is a list of (pattern, command)
+        more_patterns = [x[0] for x in cls.pattern_more]
+        patterns["more_commands"] = [x[1] for x in cls.pattern_more]
         # Merge pager patterns
         patterns["pager"] = re.compile(
-            "|".join([r"(%s)" % p for p in more_patterns]), re.DOTALL | re.MULTILINE
+            b"|".join(b"(%s)" % p for p in more_patterns), re.DOTALL | re.MULTILINE
         )
         patterns["more_patterns"] = [re.compile(p, re.MULTILINE | re.DOTALL) for p in more_patterns]
         patterns["more_patterns_commands"] = list(
             zip(patterns["more_patterns"], patterns["more_commands"])
         )
         return patterns
+
+    @classmethod
+    def _get_rogue_chars_cleaners(cls):
+        def get_bytes_cleaner(s):
+            def _inner(x):
+                return x.replace(s, b"")
+
+            return _inner
+
+        def get_re_cleaner(s):
+            def _inner(x):
+                return s.sub(b"", x)
+
+            return _inner
+
+        chain = []
+        if cls.rogue_chars:
+            for rc in cls.rogue_chars:
+                if isinstance(rc, six.text_type):
+                    chain += [get_bytes_cleaner(smart_bytes(rc))]
+                elif isinstance(rc, six.binary_type):
+                    chain += [get_bytes_cleaner(rc)]
+                elif hasattr(rc, "sub"):
+                    chain += [get_re_cleaner(rc)]
+                else:
+                    raise ValueError("Invalid rogue char expression: %r" % rc)
+        return chain
