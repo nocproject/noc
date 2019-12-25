@@ -18,6 +18,7 @@ from functools import reduce
 # Third-party modules
 import six
 from six.moves import zip
+from typing import Any, Optional
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -29,6 +30,7 @@ from noc.config import config
 from noc.core.span import Span
 from noc.core.matcher import match
 from noc.core.backport.time import perf_counter
+from noc.core.comp import smart_bytes, smart_text
 from .context import (
     ConfigurationContextManager,
     CacheContextManager,
@@ -208,6 +210,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         #
         self.http_cache = {}
         self.partial_result = None
+        # @todo: Get native encoding from ManagedObject
+        self.native_encoding = "utf8"
         # Tracking
         self.to_track = False
         self.cli_tracked_data = {}  # command -> [packets]
@@ -673,8 +677,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         """
         if self._motd:
             return self._motd
-        else:
-            return self.get_cli_stream().get_motd()
+        return self.get_cli_stream().get_motd()
 
     def re_search(self, rx, s, flags=0):
         """
@@ -781,24 +784,24 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         cmd_next=None,
         cmd_stop=None,
     ):
+        # type: (six.text_type, Optional[six.binary_type], Any, Any, bool, Optional[six.text_type], Any, Any, Any, Any, Any, Any) -> six.text_type
         """
         Execute CLI command and return result. Initiate cli session
-        when necessary
-        :param cmd: CLI command to execute
-        :param command_submit:
-        :param bulk_lines:
-        :param list_re:
-        :param cached:
-        :param file:
-        :param ignore_errors:
-        :param allow_empty_response: Allow empty output. If False - ignore prompt and wait output
-        :type allow_empty_response: bool
-        :param nowait:
+        when necessary.
 
-        Execute CLI command and return a result.
         if list_re is None, return a string
         if list_re is regular expression object, return a list of dicts (group name -> value),
             one dict per matched line
+
+        :param cmd: CLI command to execute
+        :param command_submit: Optional suffix to submit command. Profile's one used by default
+        :param bulk_lines:
+        :param list_re:
+        :param cached: True if result of execution may be cached
+        :param file: Path to the file containing debugging result
+        :param ignore_errors:
+        :param allow_empty_response: Allow empty output. If False - ignore prompt and wait output
+        :param nowait:
         """
 
         def format_result(result):
@@ -813,26 +816,35 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 return result
 
         if file:
+            # Read from file
             with open(file) as f:
                 return format_result(f.read())
         if cached:
+            # Cached result
             r = self.root.cli_cache.get(cmd)
             if r is not None:
                 self.logger.debug("Use cached result")
                 return format_result(r)
-        command_submit = command_submit or self.profile.command_submit
+        # Effective command submit suffix
+        if command_submit is None:
+            command_submit = self.profile.command_submit
+        # Encode submitted command
+        submitted_cmd = smart_bytes(cmd, encoding=self.native_encoding) + command_submit
+        # Run command
         stream = self.get_cli_stream()
         if self.to_track:
             self.cli_tracked_command = cmd
         r = stream.execute(
-            cmd + command_submit,
+            submitted_cmd,
             obj_parser=obj_parser,
             cmd_next=cmd_next,
             cmd_stop=cmd_stop,
             ignore_errors=ignore_errors,
             allow_empty_response=allow_empty_response,
         )
-        if isinstance(r, six.string_types):
+        if isinstance(r, six.binary_type):
+            r = smart_text(r, errors="ignore", encoding=self.native_encoding)
+        if isinstance(r, six.text_type):
             # Check for syntax errors
             if not ignore_errors:
                 # Then check for operation error
@@ -842,18 +854,30 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 ):
                     raise self.CLIOperationError(r)
             # Echo cancelation
-            if r[:4096].lstrip().startswith(cmd):
-                r = r.lstrip()
-                if r.startswith(cmd + "\n"):
-                    # Remove first line
-                    r = self.strip_first_lines(r.lstrip())
-                else:
-                    # Some switches, like ProCurve do not send \n after the echo
-                    r = r[len(cmd) :]
+            r = self.echo_cancelation(r, cmd)
             # Store cli cache when necessary
             if cached:
                 self.root.cli_cache[cmd] = r
         return format_result(r)
+
+    def echo_cancelation(self, r, cmd):
+        # type: (six.text_type, six.text_type) -> six.text_type
+        """
+        Adaptive echo cancelation
+
+        :param r:
+        :param cmd:
+        :return:
+        """
+        if r[:4096].lstrip().startswith(cmd):
+            r = r.lstrip()
+            if r.startswith(cmd + "\n"):
+                # Remove first line
+                r = self.strip_first_lines(r.lstrip())
+            else:
+                # Some switches, like ProCurve do not send \n after the echo
+                r = r[len(cmd) :]
+        return r
 
     def get_cli_stream(self):
         if self.parent:
