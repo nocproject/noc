@@ -27,7 +27,7 @@
     packages:
       - unzip
       - ca-certificates
-      - "@Development tools"
+      - gcc-c++
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
