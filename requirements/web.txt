@@ -1,1 +1,1 @@
-noc-pkg-pyclips==1.0.7
+noc-pkg-pyclips==1.0.14

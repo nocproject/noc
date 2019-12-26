@@ -30,7 +30,7 @@ supervisor==3.3.1
 supervisor-serialrestart==0.1.1
 cachetools==3.1.1
 Pygments==1.2.2
-noc-pkg-pyclips==1.0.7
+noc-pkg-pyclips==1.0.14
 markerlib>=0.6.0
 distribute>=0.7.3
 PyYAML>=3.11

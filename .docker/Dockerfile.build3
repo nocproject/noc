@@ -34,8 +34,8 @@ RUN apk add --no-cache --virtual .build-deps \
     python3-dev \
     zlib-dev \
     cmake
-RUN pip3 install --src=/tmp/src --no-cache --upgrade -r /opt/noc/requirements/docker3.txt \
-    && pip3 install --src=/tmp/src --no-cache --upgrade -r /opt/noc/requirements/test.txt
+RUN pip3 install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/docker3.txt \
+    && pip3 install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/test.txt
 
 RUN pip3 install cython
 
