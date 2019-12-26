@@ -30,7 +30,7 @@ networkx==2.2
 requests==2.20.0
 cachetools==3.1.1
 Pygments==2.2.0
-noc-pkg-pyclips==1.0.7
+noc-pkg-pyclips==1.0.14
 markerlib>=0.6.0
 distribute>=0.7.3
 PyYAML>=3.11
@@ -41,7 +41,7 @@ XlsxWriter==0.9.3
 sleekxmpp==1.1.11
 raven==6.0.0
 argparse>=1.4.0
-noc-pkg-pyclips==1.0.7
+noc-pkg-pyclips==1.0.14
 demjson==2.2.4
 crontab==0.22.0
 fs==2.4.11
