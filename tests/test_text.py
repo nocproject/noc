@@ -336,8 +336,20 @@ def test_ranges_to_list(config, expected):
         ("the (?P<groupname> nested (test)>)", "the groupvalue"),
     ],
 )
-def test_replace_re_group(config, expected):
+def test_replace_re_group_text(config, expected):
     assert replace_re_group(config, "(?P<groupname>", "groupvalue") == expected
+
+
+@pytest.mark.parametrize(
+    "config, expected",
+    [
+        (b"nothing", b"nothing"),
+        (b"the (?P<groupname>simple) test", b"the groupvalue test"),
+        (b"the (?P<groupname> nested (test)>)", b"the groupvalue"),
+    ],
+)
+def test_replace_re_group_bytes(config, expected):
+    assert replace_re_group(config, b"(?P<groupname>", b"groupvalue") == expected
 
 
 @pytest.mark.parametrize(

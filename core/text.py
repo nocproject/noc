@@ -14,6 +14,9 @@ import six
 from six.moves import zip_longest
 from numpy import array
 
+# NOC modules
+from noc.core.comp import bord
+
 rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
@@ -243,11 +246,17 @@ def ranges_to_list(s, splitter=","):
     return sorted(r)
 
 
-#
-# Replace regular expression group with pattern
-#
 def replace_re_group(expr, group, pattern):
+    if isinstance(expr, six.binary_type):
+        return _replace_re_group_binary(expr, group, pattern)
+    return _replace_re_group_text(expr, group, pattern)
+
+
+def _replace_re_group_text(expr, group, pattern):
+    # type: (six.text_type, six.text_type, six.text_type) -> six.text_type
     """
+    Replace regular expression group with pattern
+
     >>> replace_re_group("nothing","(?P<groupname>","groupvalue")
     'nothing'
     >>> replace_re_group("the (?P<groupname>simple) test","(?P<groupname>","groupvalue")
@@ -255,13 +264,13 @@ def replace_re_group(expr, group, pattern):
     >>> replace_re_group("the (?P<groupname> nested (test)>)","(?P<groupname>","groupvalue")
     'the groupvalue'
     """
-    r = ""
+    r = []
     lg = len(group)
     while expr:
         idx = expr.find(group)
         if idx == -1:
-            return r + expr  # No more groups found
-        r += expr[:idx]
+            break
+        r += [expr[:idx]]
         expr = expr[idx + lg :]
         level = 1  # Level of parenthesis nesting
         while expr:
@@ -280,9 +289,53 @@ def replace_re_group(expr, group, pattern):
                 level -= 1
                 if level == 0:
                     # Replace with pattern and search for next
-                    r += pattern
+                    r += [pattern]
                     break
-    return r + expr
+    r += [expr]
+    return "".join(r)
+
+
+def _replace_re_group_binary(expr, group, pattern):
+    # type: (six.binary_type, six.binary_type, six.binary_type) -> six.binary_type
+    """
+    Replace regular expression group with pattern
+
+    >>> replace_re_group("nothing","(?P<groupname>","groupvalue")
+    'nothing'
+    >>> replace_re_group("the (?P<groupname>simple) test","(?P<groupname>","groupvalue")
+    'the groupvalue test'
+    >>> replace_re_group("the (?P<groupname> nested (test)>)","(?P<groupname>","groupvalue")
+    'the groupvalue'
+    """
+    r = []
+    lg = len(group)
+    while expr:
+        idx = expr.find(group)
+        if idx == -1:
+            break
+        r += [expr[:idx]]
+        expr = expr[idx + lg :]
+        level = 1  # Level of parenthesis nesting
+        while expr:
+            c = bord(expr[0])
+            expr = expr[1:]
+            if c == 0x5C:  # "\\"
+                # Skip quoted character
+                expr = expr[1:]
+                continue
+            elif c == 0x28:  # "("
+                # Increase nesting level
+                level += 1
+                continue
+            elif c == 0x29:  # ")"
+                # Decrease nesting level
+                level -= 1
+                if level == 0:
+                    # Replace with pattern and search for next
+                    r += [pattern]
+                    break
+    r += [expr]
+    return b"".join(r)
 
 
 def indent(text, n=4):
