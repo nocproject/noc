@@ -192,42 +192,6 @@ pylint3k:
   tags:
     - docker
 
-bandit:
-  stage: lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
-  script:
-    - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        bandit "$FLIST";
-      else
-        echo "No files to lint"
-        true;
-      fi
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
-  allow_failure: true
-
-caniusepython3:
-  stage: lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
-  script:
-    - caniusepython3 -r requirements/*.txt
-  only:
-    - merge_requests
-  tags:
-    - docker
-  allow_failure: true
-  when: manual
-
 futurize:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
@@ -242,22 +206,6 @@ futurize:
       - "**/*.py"
   tags:
     - docker
-
-futurize stage2:
-  stage: lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
-  script:
-    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
-    - /bin/future2.sh "$FLIST"
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
-  allow_failure: true
 
 py2:migrate:
   stage: test
@@ -412,7 +360,7 @@ py3:test:
       - /^release-\d+\.\d+/
   tags:
     - shell
-  allow_failure: true
+  allow_failure: false
 
 build:Docs:
   stage: Build docs
