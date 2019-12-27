@@ -708,17 +708,18 @@ class CLI(object):
         sl = self.profile.can_strip_hostname_to
         for k, v in six.iteritems(match.groupdict()):
             if v:
-                if k == "hostname" and sl and len(v) > sl:
+                k = smart_bytes(k)
+                if k == b"hostname" and sl and len(v) > sl:
                     ss = list(reversed(v[sl:]))
                     v = re.escape(v[:sl]) + reduce(
-                        lambda x, y: "(?:%s%s)?" % (re.escape(y), x),
+                        lambda x, y: b"(?:%s%s)?" % (re.escape(y), x),
                         ss[1:],
-                        "(?:%s)?" % re.escape(ss[0]),
+                        b"(?:%s)?" % re.escape(ss[0]),
                     )
                 else:
                     v = re.escape(v)
-                pattern_prompt = replace_re_group(pattern_prompt, r"(?P<%s>" % k, v)
-                pattern_prompt = replace_re_group(pattern_prompt, r"(?P=%s" % k, v)
+                pattern_prompt = replace_re_group(pattern_prompt, b"(?P<%s>" % k, v)
+                pattern_prompt = replace_re_group(pattern_prompt, b"(?P=%s" % k, v)
             else:
                 self.logger.error("Invalid prompt pattern")
         if old_pattern_prompt != pattern_prompt:
