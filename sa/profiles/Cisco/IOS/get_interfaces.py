@@ -383,7 +383,7 @@ class Script(BaseScript):
         for match in self.rx_sh_int.finditer(v):
             full_ifname = match.group("interface").strip()
             ifname = self.profile.convert_interface_name(full_ifname)
-            if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co"]:
+            if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co", "Em"]:
                 continue
             # NOC-378 - Dirty hack for interface like ATM0/IMA0
             if "/ima" in full_ifname.lower():

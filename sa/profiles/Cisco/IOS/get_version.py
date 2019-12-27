@@ -164,6 +164,8 @@ class Script(BaseScript):
                         match1 = self.rx_c4900m.search(descr)
                         if match1:
                             pid = match1.group("part_no")
+                    if pid.startswith("CISCO"):
+                        pid = pid[5:]
                     platform = pid
                     serial = match.group("serial")
                     break
