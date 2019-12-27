@@ -60,13 +60,20 @@ class NRIServiceCheck(DiscoveryCheck):
                 continue
             if i["nri_name"] in smap:
                 svc = smap[i["nri_name"]]
+                p = prof_map.get(svc)
                 if svc != i.get("service"):
                     self.logger.info("Binding service %s to interface %s", svc, i["name"])
                     op = {"service": svc}
-                    p = prof_map.get(svc)
                     if p and p.interface_profile:
                         op["profile"] = p.interface_profile.id
                     bulk += [UpdateOne({"_id": i["_id"]}, {"$set": op})]
+                elif p and p.interface_profile and p.interface_profile.id != i["profile"]:
+                    self.logger.info(
+                        "Replace profile to %s on intertace %s", p.interface_profile, i["name"]
+                    )
+                    bulk += [
+                        UpdateOne({"_id": i["_id"]}, {"$set": {"profile": p.interface_profile.id}})
+                    ]
                 del smap[i["nri_name"]]
             elif i.get("service"):
                 self.logger.info("Removing service %s from interface %s", i["service"], i["name"])
@@ -79,7 +86,7 @@ class NRIServiceCheck(DiscoveryCheck):
         for n in smap:
             svc = smap[n]
             if n not in nmap:
-                self.logger.info("Cannot bind service %s. " "Cannot find NRI interface %s", svc, n)
+                self.logger.info("Cannot bind service %s. Cannot find NRI interface %s", svc, n)
                 continue
             i = nmap[n]
             self.logger.info("Binding service %s to interface %s", svc, i["name"])
