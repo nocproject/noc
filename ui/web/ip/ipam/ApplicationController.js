@@ -111,18 +111,17 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
         form.preview(prefixId);
     },
     openVRFForm: function(id, mode) {
-        this.getViewModel().set("activeItem", "ipam-vrf-form");
         if(mode === "edit") {
-            this.loadDetail("/ip/vrf/" + id, "", "vrf");
+            this.initForm("ipam-vrf-form", "/ip/vrf/" + id, "", "vrf");
         }
     },
     openVRFList: function() {
+        this.getView().down("[itemId=ipam-vrf-list]").getStore().reload();
         this.getViewModel().set("activeItem", "ipam-vrf-list");
         this.updateHash(true);
     },
     openPrefixContents: function(hash) {
-        this.getViewModel().set("activeItem", "ipam-prefix-contents");
-        this.loadDetail("/ip/ipam/", hash, "prefix");
+        this.initForm("ipam-prefix-contents", "/ip/ipam/", hash, "prefix");
     },
     openParentPrefix: function() {
         var parentId, path = this.getViewModel().get("prefix.path");
@@ -133,16 +132,34 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
             this.openVRFList();
         }
     },
-    loadDetail: function(prefix, hash, variable) {
+    initForm: function(formName, prefix, hash, variable) {
+        var formView = this.getView().down("[itemId=" + formName + "]");
+        formView.mask(__("Loading..."));
+        this.getViewModel().set("activeItem", formName);
         Ext.Ajax.request({
             url: prefix + hash,
             method: "GET",
             scope: this,
             success: function(response) {
-                var value = Ext.decode(response.responseText);
-                this.getViewModel().set(variable, value);
+                var me = this, data = Ext.decode(response.responseText),
+                    setCombos = function(model, variable, values) {
+                        var items = formView.query("[xtype=fm.alarm.lookup]");
+                        items.forEach(function(item) {
+                            if(values.hasOwnProperty(item.name) && values.hasOwnProperty(item.name + "__label")) {
+                                var variableName = variable + "." + item.name,
+                                    record = Ext.create("Ext.data.Model", {
+                                        id: values[item.name],
+                                        label: values[item.name + "__label"]
+                                    });
+                                model.set(variableName, record);
+                            }
+                        });
+                        formView.unmask();
+                    };
+                me.getViewModel().set(variable, data);
+                setCombos(me.getViewModel(), variable, data);
                 if(Ext.String.endsWith(hash, "//")) { // change vrf_id on prefix_id
-                    hash = "contents/" + value.id;
+                    hash = "contents/" + data.id;
                 }
                 this.setUrl(hash);
             },
