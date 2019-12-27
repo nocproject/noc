@@ -1,0 +1,31 @@
+{
+    "name": "Cisco | C3750E | C3K-PWR-265WAC",
+    "$collection": "inv.objectmodels",
+    "uuid": "00da3cff-0573-48ec-8196-b2ca35771261",
+    "vendor__code": "CISCO",
+    "description": "Cisco Catalyst 3650E/3750E Metro AC Power supply",
+    "cr_context": "PSU",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | C3560E-C3750E | PSU"
+        },
+        {
+            "description": "AC power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["C3K-PWR-265WAC", "C3K-PWR-265WAC="]
+        }
+    }
+}
