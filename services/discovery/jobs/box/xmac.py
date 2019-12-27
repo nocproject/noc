@@ -76,6 +76,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                 iface.name,
                 len(ris),
             )
+            return
         ri = ris[0]
         self.confirm_interface_link(iface, ri)
 
