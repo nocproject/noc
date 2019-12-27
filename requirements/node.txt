@@ -37,7 +37,7 @@ markerlib>=0.6.0
 distribute>=0.7.3
 PyYAML>=3.11
 setproctitle>=1.1.9
-ujson>=1.35
+ujson-x==1.37
 yappi==0.94
 XlsxWriter==0.9.3
 pylibmc==1.5.1
