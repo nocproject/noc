@@ -90,7 +90,10 @@ class CiscoIOSNormalizer(BaseNormalizer):
 
     @match("interface", ANY, "speed", ANY)
     def normalize_interface_speed(self, tokens):
-        yield self.make_interface_speed(interface=self.interface_name(tokens[1]), speed=tokens[3])
+        if tokens[3] not in ["auto", "nonegotiate"]:
+            yield self.make_interface_speed(
+                interface=self.interface_name(tokens[1]), speed=tokens[3]
+            )
 
     @match("interface", ANY, "duplex", ANY)
     def normalize_interface_duplex(self, tokens):
