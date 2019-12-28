@@ -45,14 +45,15 @@ class Script(BaseScript):
             }
         ]
         match = self.rx_mng.search(v)
-        r += [
-            {
-                "type": "MODULE",
-                "vendor": "HP",
-                "part_no": match.group("part_no"),
-                "serial": match.group("serial"),
-            }
-        ]
+        if match:
+            r += [
+                {
+                    "type": "MODULE",
+                    "vendor": "HP",
+                    "part_no": match.group("part_no"),
+                    "serial": match.group("serial"),
+                }
+            ]
         t = parse_table(v, allow_wrap=True)
         for i in t:
             match = self.rx_linecard.search(i[1])
