@@ -381,7 +381,7 @@ class ManagedObjectCard(BaseCard):
         }
         try:
             r["confdb"] = self.object.get_confdb()
-        except SyntaxError:
+        except (SyntaxError, ValueError):
             pass
         return r
 
