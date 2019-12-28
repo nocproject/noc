@@ -1,9 +1,9 @@
 {
-    "name": "Ubiquiti | AP | PowerBeam",
+    "name": "Ubiquiti | AP | PowerBeam M5",
     "$collection": "inv.objectmodels",
     "uuid": "b7edc9e6-3d25-43a0-9a03-9c41e8ec1adf",
     "vendor__code": "UBIQUITI",
-    "description": "Радиоустройство 2.4 ГГц, PtP/CPE, airMAX ac, MIMO 2х2, 18 дБи, 27 дБм",
+    "description": "High-Performance airMAX Bridge, PtP/PtMP, 5 GHz, 22-29 dBi,",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -11,13 +11,13 @@
             "direction": "s",
             "gender": "f",
             "name": "eth",
-            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
             "type__name": "Electrical | RJ45"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["Ubiquiti PowerBeam M2", "Ubiquiti PowerBeam M5"]
+            "part_no": ["PowerBeam M5"]
         }
     }
 }

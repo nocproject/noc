@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "bd0708f2-ab7c-4833-b3ea-4159cc5058c3",
     "vendor__code": "UBIQUITI",
-    "description": "Радиоустройство 2.4 ГГц, PtP/PtMP, airMAX, 2x RP-SMA, MIMO 2x2, 28 дБм",
+    "description": "Powerful 2x2 MIMO airMAX BaseStation, 2402-2462 MHz, 28dBm, 24V-1A",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -33,18 +33,18 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["Ubiquiti Rocket M2"]
+            "part_no": ["Rocket M2"]
         },
         "dimensions": {
             "depth": 80,
-            "height": 44,
+            "height": 30,
             "width": 160
         },
         "power": {
             "power": 6.5
         },
         "weight": {
-            "weight": 0.35
+            "weight": 0.5
         }
     }
 }
