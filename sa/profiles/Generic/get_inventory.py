@@ -18,10 +18,10 @@ class Script(BaseScript):
     def get_inv_from_version(self):
         v = self.scripts.get_version()
         serial = None
-        if "attributes" in v and v["attributes"]["Serial Number"]:
+        if "attributes" in v and "Serial Number" in v["attributes"]:
             serial = v["attributes"]["Serial Number"]
         revision = None
-        if "attributes" in v and v["attributes"]["HW version"]:
+        if "attributes" in v and "HW version" in v["attributes"]:
             revision = v["attributes"]["HW version"]
 
         return [
