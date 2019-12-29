@@ -1,9 +1,9 @@
 {
-    "name": "Ubiquiti | AP | Rocket M2 Titanium",
+    "name": "Ubiquiti | AP | Rocket M5 Titanium",
     "$collection": "inv.objectmodels",
-    "uuid": "001c9632-8f94-4f10-a56e-4e37aee88fdf",
+    "uuid": "ef581515-162f-4f1b-adcb-25fe1b8bf9b4",
     "vendor__code": "UBIQUITI",
-    "description": "Powerful 2x2 MIMO airMAX BaseStation, 2402-2462 MHz, 28dBm, 48V-0.5A",
+    "description": "Powerful 2x2 MIMO airMAX BaseStation, 5170-5875 MHz, 27dBm, 48V-0.5A, GPS",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -23,7 +23,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "MIMO 2x2 2.4GHz",
+            "description": "MIMO 2x2 5GHz",
             "direction": "s",
             "gender": "f",
             "name": "rf1",
@@ -31,17 +31,25 @@
             "type__name": "Radio | RF | RP SMA"
         },
         {
-            "description": "MIMO 2x2 2.4GHz",
+            "description": "MIMO 2x2 5GHz",
             "direction": "s",
             "gender": "f",
             "name": "rf2",
             "protocols": ["802.11abgn"],
             "type__name": "Radio | RF | RP SMA"
+        },
+        {
+            "description": "GPS",
+            "direction": "s",
+            "gender": "f",
+            "name": "gps",
+            "protocols": ["GPS"],
+            "type__name": "Radio | RF | SMA"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["Rocket M2 Titanium"]
+            "part_no": ["Rocket M5 Titanium"]
         },
         "dimensions": {
             "depth": 80,

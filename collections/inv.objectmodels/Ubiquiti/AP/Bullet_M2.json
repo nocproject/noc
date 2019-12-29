@@ -10,7 +10,7 @@
             "description": "Uplink port",
             "direction": "s",
             "gender": "f",
-            "name": "eth",
+            "name": "eth1",
             "protocols": ["10BASET", "100BASETX", ">POE"],
             "type__name": "Electrical | RJ45"
         },
@@ -18,14 +18,14 @@
             "description": "2.4G antenna interface 1",
             "direction": "s",
             "gender": "f",
-            "name": "2.4G",
+            "name": "ath0",
             "protocols": ["802.11abgn"],
             "type__name": "Radio | RF | N"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["Ubiquiti Bullet M2"]
+            "part_no": ["Bullet M2"]
         },
         "dimensions": {
             "depth": 31,

@@ -1,9 +1,9 @@
 {
-    "name": "Ubiquiti | AP | Rocket M2 Titanium",
+    "name": "Ubiquiti | AP | Rocket M5",
     "$collection": "inv.objectmodels",
-    "uuid": "001c9632-8f94-4f10-a56e-4e37aee88fdf",
+    "uuid": "d7fa2259-356d-4de8-9794-510c0fc31997",
     "vendor__code": "UBIQUITI",
-    "description": "Powerful 2x2 MIMO airMAX BaseStation, 2402-2462 MHz, 28dBm, 48V-0.5A",
+    "description": "Powerful 2x2 MIMO airMAX BaseStation, 5170-5875 MHz, 27dBm, 24V-1A",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -11,19 +11,11 @@
             "direction": "s",
             "gender": "f",
             "name": "eth1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "protocols": ["10BASET", "100BASETX", ">POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Secondary port",
-            "direction": "s",
-            "gender": "f",
-            "name": "eth2",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "MIMO 2x2 2.4GHz",
+            "description": "MIMO 2x2 5GHz",
             "direction": "s",
             "gender": "f",
             "name": "rf1",
@@ -31,7 +23,7 @@
             "type__name": "Radio | RF | RP SMA"
         },
         {
-            "description": "MIMO 2x2 2.4GHz",
+            "description": "MIMO 2x2 5GHz",
             "direction": "s",
             "gender": "f",
             "name": "rf2",
@@ -41,18 +33,18 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["Rocket M2 Titanium"]
+            "part_no": ["Rocket M5"]
         },
         "dimensions": {
             "depth": 80,
-            "height": 44,
+            "height": 30,
             "width": 160
         },
         "power": {
-            "power": 6.5
+            "power": 8.0
         },
         "weight": {
-            "weight": 0.35
+            "weight": 0.5
         }
     }
 }
