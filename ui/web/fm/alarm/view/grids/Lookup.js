@@ -76,5 +76,13 @@ Ext.define("NOC.fm.alarm.view.grids.Lookup", {
         // Fix combobox with remote paging
         this.pickerId = this.getId() + '-picker';
         this.callParent();
+    },
+    setValue: function(value) {
+        if(value && !this.getStore().isLoaded()) { // restore from url
+            this.getStore().load({
+                params: {id: value}
+            });
+        }
+        this.callParent([value]);
     }
 });

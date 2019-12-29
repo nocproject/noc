@@ -20,8 +20,13 @@ Ext.define("NOC.core.StateField", {
     shownTransitionCls: "fa fa-arrow-circle-down",
     currentRecord: undefined,
     inEditor: true,  // Do not inject result into .getFormData()
+    twoWayBindable: [
+        "value",
+        "label",
+        "id"
+    ],
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
         me.store = Ext.create("Ext.data.Store", {
             model: "NOC.core.StateModel",
@@ -35,7 +40,7 @@ Ext.define("NOC.core.StateField", {
         me.stateField = Ext.create("Ext.form.field.Text", {
             cls: "noc-wc-state",
             baseBodyCls: "noc-wc-state-base-body",
-            uiStyle: "medium",
+            width: "100%",
             editable: false,
             inEditor: true,  // Do not inject result into .getFormData()
             triggers: {
@@ -53,7 +58,7 @@ Ext.define("NOC.core.StateField", {
                 }
             },
             listeners: {
-                afterrender: function (field) {
+                afterrender: function(field) {
                     Ext.tip.QuickTipManager.register({
                         target: field.getId(),
                         text: __("Transition")
@@ -85,7 +90,7 @@ Ext.define("NOC.core.StateField", {
                                 width: 25,
                                 xtype: "button",
                                 glyph: NOC.glyph.arrow_circle_right,
-                                handler: function (btn) {
+                                handler: function(btn) {
                                     me.step(btn.getWidgetRecord())
                                 }
                             }
@@ -102,7 +107,7 @@ Ext.define("NOC.core.StateField", {
                         }
                     ],
                     listeners: {
-                        rowdblclick: function (grid, rec) {
+                        rowdblclick: function(grid, rec) {
                             me.step(rec);
                         }
                     }
@@ -118,7 +123,7 @@ Ext.define("NOC.core.StateField", {
         me.callParent();
     },
 
-    cleanValue: function (record, url) {
+    cleanValue: function(record, url) {
         var me = this;
         me.currentRecord = record;
         return {
@@ -129,16 +134,26 @@ Ext.define("NOC.core.StateField", {
         }
     },
 
-    setValue: function (v) {
+    setLabel: function(v) {
+        this.stateField.setValue(v);
+    },
+
+    setId: function(v) {
+        this.itemId = v;
+    },
+
+    setValue: function(v) {
         var me = this;
         v = v || {};
-        me.stateField.setValue(v.label || "");
-        me.itemId = v.itemId || null;
-        me.restUrl = v.restUrl || null;
+        if(!Ext.Object.isEmpty(v) && v.hasOwnProperty("label")) {
+            me.stateField.setValue(v.label || "");
+            me.itemId = v.itemId || null;
+            me.restUrl = v.restUrl || null;
+        }
         me.hideTransitions();
     },
 
-    step: function (rec) {
+    step: function(rec) {
         var me = this;
         Ext.Msg.show({
             title: __("Transition"),
@@ -146,21 +161,21 @@ Ext.define("NOC.core.StateField", {
             buttons: Ext.Msg.YESNO,
             icon: Ext.window.MessageBox.QUESTION,
             modal: true,
-            fn: function (button) {
-                if (button === "yes") {
+            fn: function(button) {
+                if(button === "yes") {
                     me.doTransition(rec);
                 }
             }
         });
     },
 
-    doTransition: function (record) {
+    doTransition: function(record) {
         var me = this,
             url = Ext.String.format("{0}{1}/transitions/{2}/", me.restUrl, me.itemId, record.get("id"));
         Ext.Ajax.request({
             url: url,
             method: "POST",
-            success: function (response) {
+            success: function(response) {
                 var data = Ext.decode(response.responseText);
                 me.setValue({
                     value: data.state,
@@ -176,13 +191,13 @@ Ext.define("NOC.core.StateField", {
                 NOC.msg.complete(__("Transition started"))
             },
 
-            failure: function (response) {
+            failure: function(response) {
                 NOC.msg.failed(__("server-side failure with status code ") + response.status);
             }
         });
     },
 
-    showTransitions: function () {
+    showTransitions: function() {
         var me = this;
         me.gridContainer.show();
         me.stateField.getTriggers().right.hide();
@@ -192,7 +207,7 @@ Ext.define("NOC.core.StateField", {
         })
     },
 
-    hideTransitions: function () {
+    hideTransitions: function() {
         var me = this;
         me.stateField.getTriggers().right.show();
         me.stateField.getTriggers().down.hide();

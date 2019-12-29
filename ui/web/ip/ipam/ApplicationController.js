@@ -141,30 +141,17 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
             method: "GET",
             scope: this,
             success: function(response) {
-                var me = this, data = Ext.decode(response.responseText),
-                    setCombos = function(model, variable, values) {
-                        var items = formView.query("[xtype=fm.alarm.lookup]");
-                        items.forEach(function(item) {
-                            if(values.hasOwnProperty(item.name) && values.hasOwnProperty(item.name + "__label")) {
-                                var variableName = variable + "." + item.name,
-                                    record = Ext.create("Ext.data.Model", {
-                                        id: values[item.name],
-                                        label: values[item.name + "__label"]
-                                    });
-                                model.set(variableName, record);
-                            }
-                        });
-                        formView.unmask();
-                    };
+                var me = this, data = Ext.decode(response.responseText);
                 me.getViewModel().set(variable, data);
-                setCombos(me.getViewModel(), variable, data);
                 if(Ext.String.endsWith(hash, "//")) { // change vrf_id on prefix_id
                     hash = "contents/" + data.id;
                 }
                 this.setUrl(hash);
+                formView.unmask();
             },
             failure: function() {
                 NOC.error(__("Failed to get data"));
+                formView.unmask();
             }
         });
     },

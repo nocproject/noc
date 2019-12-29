@@ -24,8 +24,7 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
     defaults: {
         labelAlign: "left",
         columnWidth: 0.5,
-        xtype: "fm.alarm.lookup",
-        // autoLoadOnValue: true
+        xtype: "fm.alarm.lookup"
     },
     items: [
         {
@@ -46,7 +45,7 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
             margin: "5 0 0 0",
             allowBlank: true,
             bind: {
-                selection: "{vrf.vrf_group}"
+                value: "{vrf.vrf_group}"
             }
         },
         {
@@ -65,7 +64,7 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
             allowBlank: false,
             margin: "5 0 0 0",
             bind: {
-                selection: "{vrf.profile}"
+                value: "{vrf.profile}"
             }
         },
         {
@@ -85,8 +84,8 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
             restUrl: "/ip/vrf/",
             bind: {
                 value: "{vrf.state}",
-                // label: "{vrf.state__label}",
-                // id: "{vrf.id}"
+                label: "{vrf.state__label}",
+                id: "{vrf.id}"
             }
         },
         {
@@ -128,7 +127,7 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
             allowBlank: true,
             margin: "5 0 0 0",
             bind: {
-                selection: "{vrf.project}"
+                value: "{vrf.project}"
             }
         },
         {
