@@ -18,6 +18,7 @@ import codecs
 import uuid
 import yaml
 import ujson
+from fs import open_fs
 
 # NOC modules
 from noc.core.mongo.connection import connect
@@ -29,8 +30,8 @@ from noc.core.comp import smart_text
 
 class Command(BaseCommand):
     CLI_ENCODING = "quopri"
-    DEFAULT_BEEF_PATH_TEMPLATE = "ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json"
-    DEFAULT_BEEF_IMPORT_PATH_TEMPLATE = "imports/{0.box.profile}/{0.uuid}.beef.json"
+    DEFAULT_BEEF_PATH_TEMPLATE = "ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json.bz2"
+    DEFAULT_BEEF_IMPORT_PATH_TEMPLATE = "imports/{0.box.profile}/{0.uuid}.beef.json.bz2"
     DEFAULT_TEST_CASE_TEMPLATE = "ad-hoc/{0.profile.name}/{0.uuid}/"
 
     def add_arguments(self, parser):
@@ -112,8 +113,20 @@ class Command(BaseCommand):
         from noc.sa.models.managedobjectselector import ManagedObjectSelector
         from noc.dev.models.spec import Spec
 
+        class FakeSpec(object):
+            def __init__(self, name):
+                self.name = name
+                self.uuid = "4ec10fd8-3a33-4f23-b96e-91e3967c3b1b"
+
         # Get spec data
-        sp = Spec.get_by_name(spec)
+        if ":" in spec:
+            path, file = smart_text(os.path.dirname(spec)), smart_text(os.path.basename(spec))
+            spec_data = open_fs(path).open(file)
+            sp = Spec.from_json(spec_data.read())
+            sp.quiz = FakeSpec("Ad-Hoc")
+            sp.profile = FakeSpec("Generic.Host")
+        else:
+            sp = Spec.get_by_name(spec)
         if not sp:
             self.die("Invalid spec: '%s'" % spec)
         # Spec data
@@ -126,6 +139,8 @@ class Command(BaseCommand):
         # Collect beefs
         for mo in mos:
             self.print("Collecting beef from %s" % mo.name)
+            if ":" in spec:
+                sp.profile = mo.profile
             if mo.profile.name != sp.profile.name:
                 self.print("  Profile mismatch. Skipping")
                 continue
@@ -389,7 +404,7 @@ class Command(BaseCommand):
                 # beef, t_config = beefs[(storage, path)]
                 config = cfg or t_config
                 # Create test directory
-                save_path = test_path or path
+                save_path = test_path or beef._path
                 if fs.exists(save_path):
                     self.print("Path %s already exists. Skipping..." % save_path)
                     continue
