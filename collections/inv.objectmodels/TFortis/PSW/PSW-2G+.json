@@ -1,0 +1,93 @@
+{
+    "name": "TFortis | PSW | PSW-2G+",
+    "$collection": "inv.objectmodels",
+    "uuid": "f6a1b964-ac97-42b3-9bb9-72072fd76a04",
+    "vendor__code": "TFORTIS",
+    "description": "Multifunction Gigabit Managed Switch for IP-video surveillance systems, PoE+ 802.3at, IP66",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "3",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "4",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "5",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+
+        {
+            "description": "6",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Power AC",
+            "direction": "s",
+            "gender": "f",
+            "name": "power1",
+            "protocols": [">220VAC"],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": "Power DC",
+            "direction": "s",
+            "gender": "f",
+            "name": "power2",
+            "protocols": [">-54VDC"],
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PSW-2G+"]
+        },
+        "dimensions": {
+            "depth": 120,
+            "height": 360,
+            "width": 240
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 200.0
+        }
+    }
+}
