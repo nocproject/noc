@@ -1,0 +1,6 @@
+/* ConfDB Syntax helper */
+#confdb-syntax #syntax li {
+    list-style-type: none;
+    border-left: 4px solid #d0d0d0;
+    padding-left: 4px;
+}
