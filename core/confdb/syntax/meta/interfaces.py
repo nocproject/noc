@@ -16,6 +16,11 @@ from ..patterns import ANY, INTEGER
 INTERFACES_META_SYNTAX = DEF(
     "meta",
     [
+        DEF("mac", [DEF(INTEGER, name="mac", required=True, gen="make_interfaces_meta_mac")]),
+        DEF(
+            "ifindex",
+            [DEF(INTEGER, name="ifindex", required=True, gen="make_interfaces_meta_ifindex")],
+        ),
         DEF(
             "profile",
             [
