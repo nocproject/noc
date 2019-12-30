@@ -69,6 +69,8 @@ NBI API
 +-----------------------+----------------------------------------------------------------+
 | `nbi:objectmetrics`   | ref:`NBI objectmetrics API <api-nbi-objectmetrics>` access     |
 +-----------------------+----------------------------------------------------------------+
+| `nbi:objectstatus`    | ref:`NBI objectstatus API <api-nbi-objectstatus>` access       |
++-----------------------+----------------------------------------------------------------+
 | `nbi:path`            | ref:`NBI path API <api-nbi-path>` access                       |
 +-----------------------+----------------------------------------------------------------+
 | `nbi:telemetry`       | ref:`NBI telemetry API <api-nbi-telemetry>` access             |
