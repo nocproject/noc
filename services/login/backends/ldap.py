@@ -11,6 +11,7 @@ from __future__ import absolute_import
 
 # Third-party modules
 import ldap3
+from ldap3.core.exceptions import LDAPCommunicationError, LDAPServerPoolExhaustedError
 import six
 
 # NOC modules
@@ -51,8 +52,13 @@ class LdapBackend(BaseAuthBackend):
             dkw["password"] = "******"
         self.logger.debug("Connect to ldap: %s", ", ".join("%s='%s'" % (kk, dkw[kk]) for kk in dkw))
         connect = ldap3.Connection(server_pool, **connect_kwargs)
-        if not connect.bind():
-            raise self.LoginError("Failed to bind to LDAP: %s" % connect.result)
+        try:
+            self.logger.debug("Bind to ldap")
+            if not connect.bind():
+                raise self.LoginError("Failed to bind to LDAP: %s" % connect.result)
+        except (LDAPCommunicationError, LDAPServerPoolExhaustedError) as e:
+            self.logger.error("Failed to bind to LDAP: connect failed by %s" % e.message)
+            raise self.LoginError("Failed to bind to LDAP: connect failed by %s" % e.message)
         # Rebind as privileged user
         if ldap_domain.bind_user:
             # Rebind as privileged user
@@ -136,7 +142,7 @@ class LdapBackend(BaseAuthBackend):
         for s in ldap_domain.servers:
             if not s.is_active:
                 continue
-            kwargs = {"host": s.address}
+            kwargs = {"host": s.address, "connect_timeout": s.connect_timeout}
             if s.port:
                 kwargs["port"] = s.port
             if s.use_tls:
@@ -145,7 +151,7 @@ class LdapBackend(BaseAuthBackend):
         if not servers:
             self.logger.error("No active servers configured for domain '%s'", ldap_domain.name)
             return None
-        pool = ldap3.ServerPool(servers, ldap3.POOLING_STRATEGY_ROUND_ROBIN)
+        pool = ldap3.ServerPool(servers, ldap3.POOLING_STRATEGY_ROUND_ROBIN, active=2)
         return pool
 
     def get_connection_kwargs(self, ldap_domain, user, password):

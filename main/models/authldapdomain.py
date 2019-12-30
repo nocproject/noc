@@ -31,6 +31,7 @@ class AuthLDAPServer(EmbeddedDocument):
     address = StringField()
     port = IntField()
     use_tls = BooleanField()
+    connect_timeout = IntField(default=10, min_value=0)
 
     def __str__(self):
         return self.name or self.address
