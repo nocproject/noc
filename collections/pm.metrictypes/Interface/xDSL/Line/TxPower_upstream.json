@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | TxPower | Upstream",
+    "$collection": "pm.metrictypes",
+    "uuid": "1cc4ced8-c7f6-4457-83cb-f65a8322ea30",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_txpower_up",
+    "field_type": "UInt16",
+    "description": "(≈ voltage) with which device sends its signal to the cable.",
+    "measure": "dB"
+}
