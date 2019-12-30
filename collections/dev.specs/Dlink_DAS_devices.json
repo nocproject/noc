@@ -1,17 +1,17 @@
 {
-    "name": "Generic SNMP devices example",
+    "name": "Dlink DAS devices",
     "$collection": "dev.specs",
-    "uuid": "dfe646e6-f600-4e6d-96c8-f89f28c45ad4",
-    "description": "Specs for SNMP access switches",
+    "uuid": "f8d66ac4-e6e3-4337-9a94-82b4358d02a9",
+    "description": "Specs for DLink DAS DSLAM",
     "revision": 1,
-    "quiz__name": "General Switches",
+    "quiz__name": "General DSLAM",
     "author": "avs",
-    "profile__name": "Cisco.IOS",
+    "profile__name": "DLink.DAS",
     "answers": [
         {
             "name": "vendor",
             "type": "str",
-            "value": "Cisco"
+            "value": "Huawei"
         },
         {
             "name": "has.l3",
@@ -21,10 +21,20 @@
         {
             "name": "has.cli",
             "type": "bool",
-            "value": "false"
+            "value": "true"
         },
         {
             "name": "has.snmp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "has.slots",
+            "type": "bool",
+            "value": "false"
+        },
+        {
+            "name": "support.adsl_mib",
             "type": "bool",
             "value": "true"
         },
@@ -34,19 +44,29 @@
             "value": "1.3.6.1.2.1.1"
         },
         {
+            "name": "get.version.cli.1",
+            "type": "cli",
+            "value": "get system info"
+        },
+        {
             "name": "get.version.snmp.1",
             "type": "snmp-get",
             "value": "1.3.6.1.2.1.1.1.0"
         },
         {
             "name": "get.version.snmp.2",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.47.1.1.1"
+            "type": "snmp-get",
+            "value": "1.3.6.1.4.1.171.10.65.1.6.1.3.0"
         },
         {
             "name": "has.stp",
             "type": "bool",
             "value": "true"
+        },
+        {
+            "name": "get.caps.stp.cli",
+            "type": "cli",
+            "value": "get stp info"
         },
         {
             "name": "get.caps.stp.snmp",
@@ -59,16 +79,6 @@
             "value": "1.3.6.1.2.1.17.2.15"
         },
         {
-            "name": "get.neighbors.lldp.snmp.1",
-            "type": "snmp-getnext",
-            "value": "1.0.8802.1.1.2.1.4.1"
-        },
-        {
-            "name": "get.neighbors.lldp.snmp.2",
-            "type": "snmp-getnext",
-            "value": "1.0.8802.1.1.2.1.3.7"
-        },
-        {
             "name": "has.lacp",
             "type": "bool",
             "value": "true"
@@ -77,6 +87,11 @@
             "name": "get.caps.lacp.snmp",
             "type": "snmp-getnext",
             "value": "1.2.840.10006.300.43.1.1.1"
+        },
+        {
+            "name": "get.caps.lacp.cli",
+            "type": "cli",
+            "value": "get lacp aggrport info"
         },
         {
             "name": "get.neighbors.lacp.snmp",
@@ -89,9 +104,29 @@
             "value": "1.3.6.1.2.1.1.5.0"
         },
         {
+            "name": "get.interface_name.cli",
+            "type": "cli",
+            "value": "show interface"
+        },
+        {
             "name": "get.interface_name.snmp",
             "type": "snmp-getnext",
             "value": "1.3.6.1.2.1.2.2"
+        },
+        {
+            "name": "get.interface.dsl.1",
+            "type": "cli",
+            "value": "get interface stats"
+        },
+        {
+            "name": "get.interface.dsl.2",
+            "type": "cli",
+            "value": "get vlan curr info"
+        },
+        {
+            "name": "get.interface_ip.cli",
+            "type": "cli",
+            "value": "get ethernet intf"
         },
         {
             "name": "get.interface_ip.snmp",
@@ -114,49 +149,14 @@
             "value": "1.3.6.1.2.1.31.1.1"
         },
         {
-            "name": "get.interface_status.ospf.snmp",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.14.7"
+            "name": "get.inventory.cli.1",
+            "type": "cli",
+            "value": "get system manuf info"
         },
         {
-            "name": "get.caps.ospf.snmp",
+            "name": "get.xdsl.line.metrics.snmp.1",
             "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.14.1"
-        },
-        {
-            "name": "get.neighbors.ospf.snmp",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.14.10"
-        },
-        {
-            "name": "get.caps.bgp.snmp",
-            "type": "snmp-get",
-            "value": "1.3.6.1.2.1.15.2.0"
-        },
-        {
-            "name": "get.neighbors.bgp.snmp",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.15.3"
-        },
-        {
-            "name": "get.interface.vlan.snmp.1",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.17.1.4"
-        },
-        {
-            "name": "get.interface.vlan.snmp.2",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.17.7.1.4.5"
-        },
-        {
-            "name": "get.vlans.snmp.1",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.17.7.1.4.2"
-        },
-        {
-            "name": "get.vlans.snmp.2",
-            "type": "snmp-getnext",
-            "value": "1.3.6.1.2.1.17.7.1.4.3"
+            "value": "1.3.6.1.2.1.10.94.1.1.1"
         }
     ],
     "changes": []
