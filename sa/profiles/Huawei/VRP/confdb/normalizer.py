@@ -60,6 +60,17 @@ class VRPNormalizer(BaseNormalizer):
     def normalize_username_password(self, tokens):
         yield self.make_user_encrypted_password(username=tokens[2], password=" ".join(tokens[4:]))
 
+    @match("ntp-service", "unicast-server", REST)
+    def normalize_ntp_server(self, tokens):
+        yield self.make_ntp_server_address(name=tokens[2], address=tokens[2])
+        yield self.make_ntp_server_mode(name=tokens[2], mode="client")
+
+    @match("#", "ntp-service", "unicast-server", REST)
+    @match("aaa", "ntp-service", "unicast-server", REST)
+    def normalize_ntp_server_aaa(self, tokens):
+        yield self.make_ntp_server_address(name=tokens[3], address=tokens[3])
+        yield self.make_ntp_server_mode(name=tokens[3], mode="client")
+
     @match("vlan", "batch", REST)
     def normalize_vlan_id_batch(self, tokens):
         """
