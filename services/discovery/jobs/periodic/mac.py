@@ -30,6 +30,7 @@ class MACCheck(DiscoveryCheck):
     name = "mac"
     required_script = "get_mac_address_table"
     XMAC_POLICIES = ("i", "c", "C")
+    XMAC_FILTER_TYPE = {"D", "S"}  # Only Dynamic and Static MAC collected
 
     def handler(self):
         # Build filter policy
@@ -80,8 +81,8 @@ class MACCheck(DiscoveryCheck):
         result = self.object.scripts.get_mac_address_table()
         for v in result:
             total_macs += 1
-            if v["type"] != "D" or not v["interfaces"]:
-                self.logger.debug("Ignored not dynamic MAC: %s" % v["mac"])
+            if v["type"] not in self.XMAC_FILTER_TYPE or not v["interfaces"]:
+                self.logger.debug("Ignored not dynamic or static MAC: %s" % v["mac"])
                 continue
             ifname = str(v["interfaces"][0])
             iface = self.get_interface_by_name(ifname)
