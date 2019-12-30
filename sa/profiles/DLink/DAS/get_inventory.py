@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "DLink.DAS.get_inventory"
     interface = IGetInventory
 
-    rx_serial = re.compile(r"Serial\s+Number\s*:\s*\<(?P<serial>\S+)\>")
+    rx_serial = re.compile(r"Serial\s+Number\s*:\s*(?P<serial>\<\S+\>|\S+)")
 
     def execute_cli(self, **kwargs):
         v = self.cli("get system manuf info", cached=True)
@@ -30,7 +30,7 @@ class Script(BaseScript):
                 "number": 0,
                 "vendor": "DLink",
                 "part_no": v["platform"],
-                "serial": serial.group("serial"),
+                "serial": serial.group("serial").strip("<> "),
                 "description": "",
             }
         ]
