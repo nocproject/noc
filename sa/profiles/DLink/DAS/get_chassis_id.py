@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(
-        r"^\d+\s+\| ([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:" r"[0-9A-F]{2}:[0-9A-F]{2})",
+        r"^\d+\s+\| ([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2})",
         re.MULTILINE,
     )
 
