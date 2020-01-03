@@ -39,6 +39,7 @@ from noc.core.lldp import (
     LLDP_CAP_STATION_ONLY,
     lldp_caps_to_bits,
 )
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -237,7 +238,7 @@ class Script(BaseScript):
                     if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
                         neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
                     neigh["remote_port"] = neigh["remote_port"].strip(
-                        " \x00"
+                        smart_text(" \x00")
                     )  # \x00 Found on some devices
                     if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
                         neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])

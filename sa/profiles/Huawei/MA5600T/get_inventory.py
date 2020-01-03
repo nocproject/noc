@@ -23,6 +23,7 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Huawei.MA5600T.get_inventory"
     interface = IGetInventory
+    always_prefer = "C"
 
     rx_slot = re.compile(
         r"^\s*Pcb\s+Version\s*:\s+(?P<part_no>\S+)\s+" r"VER (?P<revision>\S+)\s*\n",

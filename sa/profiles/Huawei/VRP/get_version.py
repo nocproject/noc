@@ -11,6 +11,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.core.mib import mib
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -121,7 +122,7 @@ class Script(BaseScript):
                 for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
                     if not x:
                         continue
-                    r += [x.strip(" \x00")]
+                    r += [x.strip(smart_text(" \x00"))]
                 if r:
                     return r
             except (self.snmp.TimeOutError, self.snmp.SNMPError):
@@ -147,7 +148,7 @@ class Script(BaseScript):
                 for oid, x in self.snmp.getnext(mib["HUAWEI-SYS-MAN-MIB::hwPatchVersion", 0]):
                     if not x:
                         continue
-                    r += [x.strip(" \x00")]
+                    r += [x.strip(smart_text(" \x00"))]
                 if r:
                     return r
             except (self.snmp.TimeOutError, self.snmp.SNMPError):
@@ -225,7 +226,7 @@ class Script(BaseScript):
         for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
             if not x:
                 continue
-            serial += [x.strip(" \x00")]
+            serial += [x.strip(smart_text(" \x00"))]
         if platform in self.hw_series:
             # series name, fix
             platform = self.fix_platform_name(platform)
