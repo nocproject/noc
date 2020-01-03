@@ -25,8 +25,14 @@ class Script(BaseScript):
             cmd += " interface %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
-        for i in parse_table(self.cli(cmd), expand_columns=True, max_width=80):
+        v = self.cli(cmd)
+        for i in parse_table(v, expand_columns=True, max_width=80):
             r += [
-                {"vlan_id": i[0], "mac": i[1], "interfaces": [i[4]], "type": {"Learnt": "D"}[i[2]]}
+                {
+                    "vlan_id": i[0],
+                    "mac": i[1],
+                    "interfaces": [i[4]],
+                    "type": {"Learnt": "D", "Static": "C"}[i[2]],
+                }
             ]
         return r

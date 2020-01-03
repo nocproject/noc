@@ -19,6 +19,7 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.base import IPv4Parameter
 from noc.core.mac import MAC
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -89,7 +90,7 @@ class Script(BaseScript):
                 neigh["remote_port"] = MAC(neigh["remote_port"])
             for i in neigh:
                 if isinstance(neigh[i], six.string_types):
-                    neigh[i] = neigh[i].rstrip("\x00")
+                    neigh[i] = neigh[i].rstrip(smart_text("\x00"))
             if neigh["remote_capabilities"]:
                 neigh["remote_capabilities"] = int(
                     "".join(

@@ -12,6 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.core.text import parse_kv
+from noc.core.comp import smart_text, smart_bytes
 
 
 class Script(BaseScript):
@@ -53,7 +54,7 @@ class Script(BaseScript):
                 "1.3.6.1.4.1.1286.1.3.3.1.1.30",
             ]
         ):
-            if not serial or not serial.strip("\x00"):
+            if not serial or not serial.strip(smart_text("\x00")):
                 continue
             r += [
                 {
@@ -61,7 +62,7 @@ class Script(BaseScript):
                     "number": "0",
                     "vendor": "ECI",
                     "part_no": [hw_descr, catalog_num],
-                    "serial": serial.split("\x00")[0],
+                    "serial": serial.split(smart_text("\x00"))[0],
                     "revision": rev,
                     "description": "",
                 }
@@ -97,7 +98,7 @@ class Script(BaseScript):
                     if x["order_num"]
                     else [x["hw_descr"]],
                     "serial": serial,
-                    "revision": x["rev"].strip("\xe0"),
+                    "revision": smart_text(smart_bytes(x["rev"]), errors="ignore"),
                     "description": "",
                 }
             ]

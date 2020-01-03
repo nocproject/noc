@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -41,10 +42,10 @@ class Script(BaseScript):
             return {
                 "vendor": "Planar",
                 "platform": platform.upper(),
-                "version": version.strip("\x00"),
+                "version": version.strip(smart_text("\x00")),
                 "attributes": {
-                    "Serial Number": serial.strip("\x00"),
-                    "HW version": hw_ver.strip("\x00"),
+                    "Serial Number": serial.strip(smart_text("\x00")),
+                    "HW version": hw_ver.strip(smart_text("\x00")),
                 },
             }
         except self.snmp.TimeOutError:
