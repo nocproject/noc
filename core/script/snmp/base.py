@@ -20,7 +20,12 @@ from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ioloop.udp import UDPSocket
-from noc.core.error import NOCError, ERR_SNMP_TIMEOUT, ERR_SNMP_FATAL_TIMEOUT
+from noc.core.error import (
+    NOCError,
+    ERR_SNMP_TIMEOUT,
+    ERR_SNMP_FATAL_TIMEOUT,
+    ERR_SNMP_BAD_COMMUNITY,
+)
 
 
 class SNMP(object):
@@ -124,6 +129,8 @@ class SNMP(object):
                 else:
                     raise
 
+        if "snmp_ro" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         r, self.result = self.result, None
@@ -159,6 +166,8 @@ class SNMP(object):
             varbinds = [(args[0], args[1])]
         else:
             raise ValueError("Invalid varbinds")
+        if "snmp_ro" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         self.get_ioloop().run_sync(run)
         r, self.result = self.result, None
         return r
@@ -190,6 +199,8 @@ class SNMP(object):
                 else:
                     raise
 
+        if "snmp_ro" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         r, self.result = self.result, None
@@ -234,6 +245,8 @@ class SNMP(object):
                 else:
                     raise
 
+        if "snmp_ro" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         r, self.result = self.result, None
