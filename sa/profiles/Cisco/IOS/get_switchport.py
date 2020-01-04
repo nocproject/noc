@@ -85,7 +85,7 @@ class Script(BaseScript):
                 "status": port_status == 2,
                 # "ifindex": ifindex,
                 # "port_type": port_type,
-                "untagged": pvid,
+                "untagged": int(pvid) or 1,
                 "tagged": [],
                 "members": [],
             }
@@ -128,7 +128,7 @@ class Script(BaseScript):
                     "status": True,
                     # "ifindex": ifindex,
                     # "port_type": port_type,
-                    "untagged": native_vlan,
+                    "untagged": int(native_vlan) or 1,
                     "tagged": list(compress(range(start, 4096), self.convert_vlan(vlans_bank))),
                     "members": [],
                 }
