@@ -15,7 +15,8 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.mac import MAC
 from noc.core.mib import mib
-from noc.core.comp import smart_text
+from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_MAC
+from noc.core.comp import smart_bytes
 
 
 class Script(BaseScript):
@@ -92,12 +93,10 @@ class Script(BaseScript):
                 if v:
                     neigh = dict(zip(neighb, v[2:]))
                     # cleaning
-                    neigh["remote_port"] = neigh["remote_port"].strip(
-                        smart_text(" \x00")
-                    )  # \x00 Found on some devices
-                    if neigh["remote_chassis_id_subtype"] == 4:
+                    neigh["remote_port"] = smart_bytes(neigh["remote_port"]).strip(b" \x00")
+                    if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
                         neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
-                    if neigh["remote_port_subtype"] == 3:
+                    if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                         try:
                             neigh["remote_port"] = MAC(neigh["remote_port"])
                         except ValueError:
