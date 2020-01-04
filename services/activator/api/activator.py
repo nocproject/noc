@@ -18,6 +18,7 @@ from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
+from noc.core.comp import smart_text
 
 
 class ActivatorAPI(API):
@@ -117,7 +118,7 @@ class ActivatorAPI(API):
             metrics["error", ("type", "snmp_v1_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
-        raise tornado.gen.Return(result)
+        raise tornado.gen.Return(smart_text(result, errors="replace"))
 
     @staticmethod
     def snmp_v1_get_get_label(address, community, oid):
@@ -148,7 +149,7 @@ class ActivatorAPI(API):
             metrics["error", ("type", "snmp_v2_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
-        raise tornado.gen.Return(result)
+        raise tornado.gen.Return(smart_text(result, errors="replace"))
 
     @staticmethod
     def snmp_v2_get_get_label(address, community, oid):
@@ -176,7 +177,9 @@ class ActivatorAPI(API):
         elif ignore_errors:
             metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
-            raise tornado.gen.Return(str(header) + str(body))
+            raise tornado.gen.Return(
+                smart_text(header, errors="replace") + smart_text(body, errors="replace")
+            )
         else:
             metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
