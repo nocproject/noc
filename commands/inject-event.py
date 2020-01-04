@@ -61,7 +61,7 @@ class Command(BaseCommand):
         # Decode JSON
         with open(path) as f:
             try:
-                data = json.load(f.read())
+                data = json.load(f)
             except ValueError as e:
                 self.die('Failed to decode JSON file "%s": %s' % (path, str(e)))
         # Load events
