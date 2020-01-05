@@ -54,16 +54,20 @@ class Script(BaseScript):
         ]
         return len(cmd) == 2
 
+    @false_on_cli_error
+    def has_stack(self):
+        s = []
+        cmd = self.cli("show stacking")
+        if "stacking-support:          Disabled" in cmd:
+            return s
+        for i in parse_table(cmd, footer="(Indicates this node|stacking-support:)"):
+            if i[1] == "-":
+                continue
+            s += [i[1]]
+        return s
+
     def execute_platform_cli(self, caps):
-        try:
-            s = []
-            cmd = self.cli("show stacking")
-            for i in parse_table(cmd, footer="Indicates this node"):
-                if i[1] == "-":
-                    continue
-                s += [i[1]]
-            if s:
-                caps["Stack | Members"] = len(s) if len(s) != 1 else 0
-                caps["Stack | Member Ids"] = " | ".join(s)
-        except Exception:
-            pass
+        s = self.has_stack()
+        if s:
+            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(s)
