@@ -10,7 +10,8 @@ import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -27,38 +28,32 @@ class Script(BaseScript):
         cmd = self.cli("show lldp", cached=True)
         return "LLDP has been enabled globally" in cmd
 
+    @false_on_snmp_error
     def has_lldp_snmp(self):
         """
         Check box has lldp enabled on Qtech
         """
-        try:
-            r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
-            if r > 0:
-                return True
-        except self.snmp.TimeOutError:
-            return False
+        r = self.snmp.get(mib["LLDP-MIB::lldpStatsRemTablesInserts", 0])
+        if r > 0:
+            return True
 
+    @false_on_snmp_error
     def has_snmp_enterprises(self):
         """
         Check box oid 1.3.6.1.4.1.27514 or 1.3.6.1.4.1.6339
         """
-        try:
-            x = self.snmp.get("1.3.6.1.2.1.1.2.0")
-            if x:
-                return int(x.split(".")[6])
-        except self.snmp.TimeOutError:
-            return False
+        x = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
+        if x:
+            return int(x.split(".")[6])
 
+    @false_on_snmp_error
     def has_snmp_memory_oids(self, oid):
         """
         Check box has memory usage 1.3.6.1.4.1.27514.100.1.11.11.0 enabled on Qtech
         """
-        try:
-            x = self.snmp.get("1.3.6.1.4.1." + str(oid) + ".100.1.11.11.0")
-            if x > 0:
-                return True
-        except self.snmp.TimeOutError:
-            return False
+        x = self.snmp.get("1.3.6.1.4.1." + str(oid) + ".100.1.11.11.0")
+        if x > 0:
+            return True
 
     @false_on_cli_error
     def has_stp_cli(self):
@@ -68,6 +63,16 @@ class Script(BaseScript):
         # Spanning Tree Enabled/Disabled : Enabled
         cmd = self.cli("show spanning-tree")
         return "STP is disabled" not in cmd
+
+    @false_on_snmp_error
+    def has_stp_snmp(self):
+        """
+        Check box has STP enabled
+        """
+        # Spanning Tree Enabled/Disabled : Enabled
+        r = self.snmp.getnext(mib["BRIDGE-MIB::dot1dStpPortEnable"], bulk=False)
+        # if value == 1:
+        return any([x[1] for x in r])
 
     @false_on_cli_error
     def has_oam_cli(self):
