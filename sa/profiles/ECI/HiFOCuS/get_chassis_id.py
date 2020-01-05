@@ -20,6 +20,7 @@ class Script(BaseScript):
     reuse_cli_session = False
     keep_cli_session = False
     cache = True
+    always_prefer = "S"
 
     rx_mac1 = re.compile(
         r"^\s*OUTBAND\s+\|\s(?P<mac1>\S+)\n\s*INBAND\s+\|\s(?P<mac2>\S+)$", re.MULTILINE

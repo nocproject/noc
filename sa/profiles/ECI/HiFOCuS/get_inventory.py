@@ -18,6 +18,7 @@ from noc.core.comp import smart_text, smart_bytes
 class Script(BaseScript):
     name = "ECI.HiFOCuS.get_inventory"
     interface = IGetInventory
+    always_prefer = "S"  # Stuck CLI periodically
 
     rx_table_spliter = re.compile(r"(?:\+-*)+\n")
 
@@ -52,7 +53,8 @@ class Script(BaseScript):
                 "1.3.6.1.4.1.1286.1.3.3.1.1.17",
                 "1.3.6.1.4.1.1286.1.3.3.1.1.29",
                 "1.3.6.1.4.1.1286.1.3.3.1.1.30",
-            ]
+            ],
+            max_retries=2,
         ):
             if not serial or not serial.strip(smart_text("\x00")):
                 continue
@@ -88,6 +90,8 @@ class Script(BaseScript):
             if int(port):
                 continue
             detail = self.cli("ginv %s %s %s %s" % (shelf, slot, port, mani))
+            if not detail:
+                continue
             x = parse_kv(self.slot_detail_map, detail)
             r += [
                 {
@@ -95,7 +99,7 @@ class Script(BaseScript):
                     "number": slot,
                     "vendor": "ECI",
                     "part_no": [x["hw_descr"], x["order_num"]]
-                    if x["order_num"]
+                    if x.get("order_num")
                     else [x["hw_descr"]],
                     "serial": serial,
                     "revision": smart_text(smart_bytes(x["rev"]), errors="ignore"),
