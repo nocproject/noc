@@ -18,6 +18,7 @@ from noc.sa.interfaces.igetcapabilities import IGetCapabilities
 from noc.core.mib import mib
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.snmp.error import SNMPError
+from noc.core.script.snmp.base import SNMP
 
 
 class Script(BaseScript):
@@ -280,6 +281,19 @@ class Script(BaseScript):
             fallback_handler=self.return_false,
         )
 
+    def get_enterprise_id(self, version=None):
+        """
+        Returns EnterpriseID number from sysObjectID
+        :param version:
+        :return:
+        """
+        if self.credentials.get("snmp_ro"):
+            try:
+                r = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0], version=version)
+                return r
+            except (self.snmp.TimeOutError, SNMPError):
+                pass
+
     def execute_platform_cli(self, caps):
         """
         Method to be overriden in subclasses. Execute if C preffered
@@ -352,6 +366,9 @@ class Script(BaseScript):
                 for cap, oid in six.iteritems(self.CHECK_SNMP_GETNEXT):
                     if self.check_snmp_getnext(oid, version=snmp_version):
                         caps[cap] = True
+                x = self.get_enterprise_id(version=snmp_version)
+                if x:
+                    caps["SNMP | OID | EnterpriseID"] = int(x.split(".")[6])
             else:
                 caps["SNMP"] = False
         else:
@@ -442,7 +459,7 @@ def false_on_snmp_error(f):
     def wrapper_snmp(*args, **kwargs):
         try:
             return f(*args, **kwargs)
-        except SNMPError:
+        except (SNMPError, SNMP.TimeOutError):
             return False
 
     return wrapper_snmp
