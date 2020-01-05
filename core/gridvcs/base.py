@@ -191,10 +191,10 @@ class GridVCS(object):
         if not revision:
             try:
                 with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
-                    return self.decompress(f.read(), f._file.get("c"))
+                    return smart_text(self.decompress(f.read(), f._file.get("c")))
             except gridfs.errors.NoFile:
                 return None
-        data = six.text_type("")
+        data = six.text_type()
         for r in self.iter_revisions(object, reverse=True):
             with self.fs.get(r.id) as f:
                 delta = self.decompress(f.read(), f._file.get("c"))
