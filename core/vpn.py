@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # VPN utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,9 @@ import struct
 
 # Third-party modules
 from csiphash import siphash24
+
+# NOC modules
+from noc.core.comp import smart_bytes
 
 SIPHASH_SEED = b"\x00" * 16
 
@@ -47,5 +50,5 @@ def get_vpn_id(vpn):
     # Use reserved OUI range 00 00 00 - 00 00 FF to generate
     # So we have 5 octets to fill vpn id
     # Use last 5 octets of siphash 2-4
-    i_hash = siphash24(SIPHASH_SEED, str(identity))
+    i_hash = siphash24(SIPHASH_SEED, smart_bytes(identity))
     return "%x:%x" % struct.unpack("!BI", i_hash[3:])

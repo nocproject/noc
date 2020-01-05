@@ -82,7 +82,7 @@ from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -1049,8 +1049,8 @@ class ManagedObject(NOCModel):
                     difflib.unified_diff(
                         old_data.splitlines(True),
                         new_data.splitlines(True),
-                        fromfile=os.path.join("a", self.name.encode("utf8")),
-                        tofile=os.path.join("b", self.name.encode("utf8")),
+                        fromfile=os.path.join(b"a", smart_bytes(self.name)),
+                        tofile=os.path.join(b"b", smart_bytes(self.name)),
                     )
                 )
         if changed:
@@ -1140,7 +1140,7 @@ class ManagedObject(NOCModel):
                     logger.debug("[%s] Ensuring directory: %s", self.name, dir_path)
                     fs.makedirs(dir_path, recreate=True)
                 logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
-                fs.writebytes(path, bytes(data))
+                fs.writebytes(path, smart_bytes(data))
         except storage.Error as e:
             logger.error("[%s] Failed to mirror config: %s", self.name, e)
 
