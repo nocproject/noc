@@ -21,6 +21,10 @@ rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
+def default_line_wrapper(p_line):
+    return p_line.expandtabs()
+
+
 def parse_table(
     s,
     allow_wrap=False,
@@ -29,7 +33,8 @@ def parse_table(
     max_width=0,
     footer=None,
     n_row_delim="",
-    expand_tabs=True,
+    line_wrapper=default_line_wrapper,
+    row_wrapper=None,
 ):
     """
     Parse string containing table an return a list of table rows.
@@ -57,17 +62,23 @@ def parse_table(
     :type footer: string
     :param n_row_delim: Append delimiter to next cell line
     :type n_row_delim: string
-    :param expand_tabs: Apply expandtabs() to each line
-    :type expand_tabs: bool
+    :param line_wrapper: Call line_wrapper with line argument
+    :type line_wrapper: callable
+    :param row_wrapper: Call row_wrapper with row argument
+    :type row_wrapper: callable
     """
     r = []
     columns = []
     if footer is not None:
         rx_footer = re.compile(footer)
+    if line_wrapper and not callable(line_wrapper):
+        line_wrapper = None
+    if row_wrapper and not callable(line_wrapper):
+        row_wrapper = None
     for line in s.splitlines():
-        if expand_tabs:
+        if line_wrapper:
             # Replace tabs with spaces with step 8
-            line = line.expandtabs()
+            line = line_wrapper(line)
         if not line.strip() and footer is None:
             columns = []
             continue
@@ -115,13 +126,18 @@ def parse_table(
                             and not r[-1][i].endswith(n_row_delim)
                             and not x.startswith(n_row_delim)
                         ):
-                            r[-1][i] += "%s%s" % (n_row_delim, x)
+                            r[-1][i] += "%s%s" % (n_row_delim, row_wrapper(x) if row_wrapper else x)
                         else:
-                            r[-1][i] += x
+                            r[-1][i] += row_wrapper(x) if row_wrapper else x
                 else:
                     r += [row]
             else:
-                r += [[line[f:t].strip() for f, t in columns]]
+                r += [
+                    [
+                        row_wrapper(line[f:t]).strip() if row_wrapper else line[f:t].strip()
+                        for f, t in columns
+                    ]
+                ]
     if allow_wrap:
         return [[x.strip() for x in rr] for rr in r]
     else:
