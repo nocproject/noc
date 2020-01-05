@@ -705,6 +705,7 @@ class ManagedObject(NOCModel):
             or "address" in self.changed_fields
             or "port" in self.changed_fields
             or "auth_profile" in self.changed_fields
+            or "object_profile" in self.changed_fields
             or "user" in self.changed_fields
             or "password" in self.changed_fields
             or "super_password" in self.changed_fields
