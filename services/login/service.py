@@ -23,6 +23,7 @@ from noc.aaa.models.user import User
 from noc.aaa.models.apikey import APIKey
 from noc.core.perf import metrics
 from noc.config import config
+from noc.core.comp import smart_text
 
 
 class LoginService(UIService):
@@ -70,9 +71,9 @@ class LoginService(UIService):
                 user = backend.authenticate(**credentials)
                 metrics["auth_try", ("method", method)] += 1
             except backend.LoginError as e:
-                self.logger.info("[%s] Login Error: %s", method, e)
+                self.logger.info("[%s] Login Error: %s", method, smart_text(e))
                 metrics["auth_fail", ("method", method)] += 1
-                le = str(e)
+                le = smart_text(e)
                 continue
             self.logger.info("Authorized credentials %s as user %s", c, user)
             metrics["auth_success", ("method", method)] += 1
