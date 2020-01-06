@@ -11,6 +11,12 @@ import os
 import logging
 import gettext
 
+# Third-party modules
+import six
+
+# NOC modules
+from noc.core.comp import smart_text
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,8 +31,11 @@ def set_translation(service, lang):
         mo_path = "services/%s/translations/%s/LC_MESSAGES/messages.mo" % (service, lang)
         if os.path.exists(mo_path):
             logger.info("Setting '%s' translation", mo_path)
-            with open(mo_path) as f:
-                _ugettext = gettext.GNUTranslations(f).ugettext
+            with open(mo_path, mode="rb") as f:
+                if six.PY3:
+                    _ugettext = gettext.GNUTranslations(f).lgettext
+                else:
+                    _ugettext = gettext.GNUTranslations(f).ugettext
         else:
             logger.info("No translation for language '%s'. Using 'en' instead", lang)
 
@@ -36,4 +45,4 @@ def _ugettext(x):
 
 
 def ugettext(x):
-    return _ugettext(x)
+    return smart_text(_ugettext(x))
