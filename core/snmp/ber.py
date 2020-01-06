@@ -355,7 +355,7 @@ class BEREncoder(object):
             # Short form
             return self.struct_BB.pack(t, ln) + data
         # Prepare length's representation
-        ll = self.struct_Q.pack(ln).lstrip("\x00")
+        ll = self.struct_Q.pack(ln).lstrip(b"\x00")
         return self.struct_BB.pack(t, 0x80 | len(ll)) + ll + data
 
     def encode_octet_string(self, data):

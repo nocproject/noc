@@ -64,7 +64,7 @@ class CLI(object):
     KEEP_INTVL = 10
     # Terminate connection after N keepalive failures
     KEEP_CNT = 3
-    SYNTAX_ERROR_CODE = "+@@@NOC:SYNTAXERROR@@@+"
+    SYNTAX_ERROR_CODE = b"+@@@NOC:SYNTAXERROR@@@+"
 
     class InvalidPagerPattern(Exception):
         pass
