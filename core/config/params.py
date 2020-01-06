@@ -15,6 +15,7 @@ import six
 
 # NOC modules
 from noc.core.validators import is_int, is_ipv4
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class StringParameter(BaseParameter):
         super(StringParameter, self).__init__(default=default, help=help)
 
     def clean(self, v):
-        v = str(v)
+        v = smart_text(v)
         if self.choices:
             if v not in self.choices:
                 raise ValueError("Invalid value: %s" % v)
@@ -69,8 +70,7 @@ class SecretParameter(BaseParameter):
         super(SecretParameter, self).__init__(default=default, help=help)
 
     def clean(self, v):
-        v = str(v)
-        return v
+        return smart_text(v)
 
     def __repr__(self):
         return "****hidden****"
@@ -112,7 +112,7 @@ class MapParameter(BaseParameter):
 
     def clean(self, v):
         try:
-            return self.mappings[v]
+            return self.mappings[smart_text(v)]
         except KeyError:
             raise ValueError("Invalid value %s" % v)
 
@@ -237,6 +237,7 @@ class ServiceParameter(BaseParameter):
 
     def set_value(self, value):
         self.value = None
+        value = smart_text(value)
         if isinstance(value, six.string_types):
             self.services = [value]
         else:
