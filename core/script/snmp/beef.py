@@ -186,7 +186,7 @@ class BeefServerIOStream(tornado.iostream.IOStream):
         self._add_io_state(self.io_loop.WRITE)
         return future
 
-    def close(self):
+    def close(self, exc_info=False):
         self.socket.close()
         self.socket = None
 

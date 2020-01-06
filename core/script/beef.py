@@ -18,7 +18,7 @@ import ujson
 import six
 
 # NOC modules
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
 
 Box = namedtuple("Box", ["profile", "vendor", "platform", "version"])
 CLIFSM = namedtuple("CLIFSM", ["state", "reply"])
@@ -75,15 +75,15 @@ class Beef(object):
         self.cli_fsm = [
             CLIFSM(
                 state=self.get_or_die(d, "state"),
-                reply=[str(n) for n in self.get_or_die(d, "reply")],
+                reply=[smart_bytes(n) for n in self.get_or_die(d, "reply")],
             )
             for d in self.get_or_die(data, "cli_fsm")
         ]
         self.cli = [
             CLI(
                 names=[n for n in self.get_or_die(d, "names")],
-                request=str(self.get_or_die(d, "request")),
-                reply=[str(n) for n in self.get_or_die(d, "reply")],
+                request=smart_bytes(self.get_or_die(d, "request")),
+                reply=[n for n in self.get_or_die(d, "reply")],
             )
             for d in self.get_or_die(data, "cli")
         ]
@@ -226,6 +226,7 @@ class Beef(object):
         return Beef.from_json(smart_text(data))
 
     def iter_fsm_state_reply(self, state):
+        # type: (six.text_type) -> six.binary_type
         """
         Iterate fsm states
         :param state:
@@ -238,12 +239,15 @@ class Beef(object):
                 break
 
     def iter_cli_reply(self, command):
+        # type: (six.binary_type) -> six.binary_type
         """
         Iterate fsm states
-        :param state:
+        :param command:
         :return:
         """
-        cmd = str(command)
+        # typo
+        # cmd = smart_bytes(command)
+        cmd = command
         found = False
         for c in self.cli:
             if c.request == cmd:
@@ -252,16 +256,17 @@ class Beef(object):
                 found = True
                 break
         if not found:
-            raise KeyError("Command not found")
+            raise KeyError(b"Command not found")
 
     @staticmethod
     def mib_decode_base64(value):
+        # type: (six.binary_type) -> six.binary_type
         """
         Decode base64
         :param value:
         :return:
         """
-        return codecs.decode(value, "base64")
+        return codecs.decode(smart_bytes(value), "base64")
 
     @staticmethod
     def mib_decode_hex(value):
@@ -274,12 +279,13 @@ class Beef(object):
 
     @staticmethod
     def cli_decode_quopri(value):
+        # type: (six.binary_type) -> six.binary_type
         """
         Decode quoted-printable
         :param value:
         :return:
         """
-        return value.decode("quopri")
+        return codecs.decode(smart_bytes(value), "quopri")
 
     def get_mib_oid_values(self):
         if self.mib_oid_values is None:
@@ -287,6 +293,7 @@ class Beef(object):
         return self.mib_oid_values
 
     def get_mib_value(self, oid):
+        # type: (six.text_type) -> None | six.binary_type
         """
         Lookup mib and return oid value
         :param oid:

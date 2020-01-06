@@ -14,6 +14,7 @@ import socket
 import tornado.gen
 import tornado.iostream
 from tornado.concurrent import TracebackFuture
+import six
 
 # NOC modules
 from .base import CLI
@@ -32,8 +33,9 @@ class BeefCLI(CLI):
 
     @tornado.gen.coroutine
     def send(self, cmd):
+        # type: (six.binary_type) -> None
         # @todo: Apply encoding
-        cmd = str(cmd)
+        # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
         if self.state != "prompt":
             raise tornado.gen.Return()  # Will be replied via reply_state
@@ -110,6 +112,6 @@ class BeefIOStream(TelnetIOStream):
         self._add_io_state(self.io_loop.WRITE)
         return future
 
-    def close(self):
+    def close(self, exc_info=False):
         self.socket.close()
         self.socket = None
