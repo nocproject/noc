@@ -15,7 +15,13 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.mac import MAC
 from noc.core.mib import mib
-from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_MAC
+from noc.core.lldp import (
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+)
 from noc.core.comp import smart_bytes
 
 
@@ -44,15 +50,16 @@ class Script(BaseScript):
                 mib["LLDP-MIB::lldpLocPortIdSubtype"],
                 mib["LLDP-MIB::lldpLocPortId"],
                 mib["LLDP-MIB::lldpLocPortDesc"],
-            ]
+            ],
+            max_retries=1,
         ):
-            if port_subtype == 1:
+            if port_subtype == LLDP_PORT_SUBTYPE_ALIAS:
                 # Iface alias
                 iface_name = self.get_interface_alias(port_id, port_descr)
-            elif port_subtype == 3:
+            elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
                 # Iface MAC address
                 raise NotImplementedError()
-            elif port_subtype == 7 and port_id.isdigit():
+            elif port_subtype == LLDP_PORT_SUBTYPE_LOCAL and port_id.isdigit():
                 # Iface local (ifindex)
                 iface_name = names[int(port_id)]
             else:
@@ -89,11 +96,14 @@ class Script(BaseScript):
                     mib["LLDP-MIB::lldpRemSysName"],
                 ],
                 bulk=True,
+                max_retries=1,
             ):
                 if v:
                     neigh = dict(zip(neighb, v[2:]))
                     # cleaning
-                    neigh["remote_port"] = smart_bytes(neigh["remote_port"]).strip(b" \x00")
+                    if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
+                        neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
+                    neigh["remote_port"] = smart_bytes(neigh["remote_port"]).replace(b" \x00", b"")
                     if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
                         neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
                     if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
