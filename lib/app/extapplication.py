@@ -150,18 +150,18 @@ class ExtApplication(Application):
         else:
             q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
-        if limit and limit > 0:
+        if limit:
             try:
-                limit = int(limit)
+                limit = max(int(limit), 0)
             except ValueError:
                 return HttpResponse(400, "Invalid %s param" % self.limit_param)
         if limit and limit < 0:
             return HttpResponse(400, "Invalid %s param" % self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param) or 0
-        if start and start > 0:
+        if start:
             try:
-                start = int(start)
+                start = max(int(start), 0)
             except ValueError:
                 return HttpResponse(400, "Invalid %s param" % self.start_param)
         elif start and start < 0:
