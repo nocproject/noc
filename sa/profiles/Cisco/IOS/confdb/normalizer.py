@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
+from noc.core.text import ranges_to_list
 
 
 class CiscoIOSNormalizer(BaseNormalizer):
@@ -35,7 +36,8 @@ class CiscoIOSNormalizer(BaseNormalizer):
 
     @match("vlan", ANY)
     def normalize_vlan(self, tokens):
-        yield self.make_vlan_id(vlan_id=tokens[1])
+        for vid in ranges_to_list(tokens[1]):
+            yield self.make_vlan_id(vlan_id=vid)
 
     @match("vlan", ANY, "name", REST)
     def normalize_vlan_name(self, tokens):
