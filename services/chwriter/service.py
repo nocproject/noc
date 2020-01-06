@@ -18,6 +18,7 @@ from noc.config import config
 from noc.core.perf import metrics
 from noc.services.chwriter.channel import Channel
 from noc.core.backport.time import perf_counter
+from noc.core.comp import smart_text
 
 
 class CHWriterService(Service):
@@ -89,7 +90,7 @@ class CHWriterService(Service):
             )
             metrics["deferred_messages"] += 1
             return False
-        table, data = records.split("\n", 1)
+        table, data = smart_text(records).split("\n", 1)
         self.logger.debug("Receiving %s", table)
         if "." in table or "|" in table:
             self.logger.error("Message in legacy format dropped: %s" % table)
