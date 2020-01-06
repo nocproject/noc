@@ -30,6 +30,9 @@ Ext.define("NOC.ip.ipam.view.GridController", {
             record = store.getAt(rowIndex);
         this.fireViewEvent("ipIPAMVRFFormEdit", record);
     },
+    onDblClickItem: function(grid, record) {
+        this.fireViewEvent("ipIPAMVRFFormEdit", record);
+    },
     onOpenCard: function(grid, rowIndex, colIndex, item, e, record) {
         window.open(
             "/api/card/view/prefix/" + record.get("id") + "/"

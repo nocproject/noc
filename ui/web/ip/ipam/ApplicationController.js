@@ -112,7 +112,7 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
     },
     openVRFForm: function(id, mode) {
         if(mode === "edit") {
-            this.initForm("ipam-vrf-form", "/ip/vrf/" + id, "", "vrf");
+            this.initForm("ipam-vrf-form", "/ip/vrf/", id, "vrf");
         }
     },
     openVRFList: function() {
@@ -133,9 +133,10 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
         }
     },
     initForm: function(formName, prefix, hash, variable) {
-        var formView = this.getView().down("[itemId=" + formName + "]");
-        formView.mask(__("Loading..."));
+        var view = this.getView().down("[itemId=" + formName + "]"),
+            isFormReady = !!view.getMaskTarget();
         this.getViewModel().set("activeItem", formName);
+        if(isFormReady) view.mask(__("Loading..."));
         Ext.Ajax.request({
             url: prefix + hash,
             method: "GET",
@@ -146,12 +147,15 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
                 if(Ext.String.endsWith(hash, "//")) { // change vrf_id on prefix_id
                     hash = "contents/" + data.id;
                 }
+                if(Ext.String.startsWith(prefix, "/ip/vrf/")) {
+                    hash = "vrf/" + hash;
+                }
                 this.setUrl(hash);
-                formView.unmask();
+                if(isFormReady) view.unmask();
             },
             failure: function() {
                 NOC.error(__("Failed to get data"));
-                formView.unmask();
+                if(isFormReady) view.unmask();
             }
         });
     },

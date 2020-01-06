@@ -81,13 +81,30 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressListsController", {
     },
     showFree: function(button, name, filter) {
         var store = this.getView().down("[itemId=ipam-" + name + "-grid]").getStore();
-        if(store.isFiltered()) {
-            store.clearFilter();
-            button.setText(__("Hide Free") + " " + __(Ext.String.capitalize(name)));
-        } else {
-            store.addFilter(filter);
-            button.setText(__("Show Free") + " " + __(Ext.String.capitalize(name)));
-        }
+        var me = this;
+        button.setDisabled(true);
+        console.log(true);
+        var task = new Ext.util.DelayedTask(function() {
+            button.setDisabled(false)
+        }, me);
+        task.delay(2000);
+        // var task = Ext.TaskManager.start({
+        //     run: function(){
+        //         // button.setDisabled(false);
+        //         console.log(false);
+        //     },
+        //     interval: 2000,
+        //     repeat: 1
+        // });
+        // if(store.isFiltered()) {
+        //     button.setText(__("Hide Free") + " " + __(Ext.String.capitalize(name)));
+        //     store.clearFilter();
+        // } else {
+        //     button.setText(__("Show Free") + " " + __(Ext.String.capitalize(name)));
+        //     store.addFilter(filter);
+        // }
+        // button.setDisabled(false);
+        // console.log(false);
     },
     filterByFree: function(record) {
         return !record.data.isFree;

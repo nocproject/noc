@@ -78,9 +78,19 @@ Ext.define("NOC.fm.alarm.view.grids.Lookup", {
         this.callParent();
     },
     setValue: function(value) {
-        if(value && !this.getStore().isLoaded()) { // restore from url
+        if(Ext.isEmpty(value)) {
+            this.getStore().load();
+        } else if(value && !this.getStore().isLoaded()) { // restore from url
             this.getStore().load({
-                params: {id: value}
+                params: {id: value},
+                callback: function(records) {
+                    var result = Ext.Array.findBy(records, function(item) {
+                        return item.id === value
+                    });
+                    if(Ext.isEmpty(result)) {
+                        NOC.msg.failed(__("Failed to get data for fill combobox id = " + value));
+                    }
+                }
             });
         }
         this.callParent([value]);

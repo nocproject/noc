@@ -123,5 +123,8 @@ Ext.define("NOC.ip.ipam.view.Grid", {
             dataIndex: "tags",
             renderer: NOC.render.Tags
         }
-    ]
+    ],
+    listeners: {
+        itemdblclick: "onDblClickItem"
+    }
 });

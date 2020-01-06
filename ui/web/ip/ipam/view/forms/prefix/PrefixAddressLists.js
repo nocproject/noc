@@ -128,11 +128,13 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
             ]
         },
         {
-            // xtype: "dataview",
             xtype: "grid",
             itemId: "ipam-prefix-grid",
             width: "100%",
-            // itemSelector: "tr.prefix-row",
+            bind: {
+                store: "{prefixStore}",
+                hidden: "{noPrefixes}"
+            },
             columns: [
                 {
                     xtype: "glyphactioncolumn",
@@ -190,6 +192,8 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
                 {text: __("TT"), dataIndex: "tt"},
                 {text: __("Tags"), dataIndex: "tags"}
             ],
+            // xtype: "dataview",
+            // itemSelector: "tr.prefix-row",
             // tpl: [
             //     "<table class='ipam'>",
             //     "  <thead style='text-align: left;'>",
@@ -246,15 +250,11 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressLists", {
             //     "  </tbody>",
             //     "</table>"
             // ],
-            bind: {
-                store: "{prefixStore}",
-                hidden: "{noPrefixes}"
-            },
-            prepareData: function(data) {
-                var permissions = this.up("[itemId=ip-ipam]").getViewModel().get("prefix.permissions");
-                console.log(data);
-                return Ext.apply({permissions: permissions}, data);
-            },
+            // prepareData: function(data) {
+            //     var permissions = this.up("[itemId=ip-ipam]").getViewModel().get("prefix.permissions");
+            //     console.log(data);
+            //     return Ext.apply({permissions: permissions}, data);
+            // },
             listeners: {
                 itemdblclick: "onViewPrefixContents"
             },

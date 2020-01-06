@@ -163,7 +163,6 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
             }
         }
     ],
-
     tbar: [
         {
             text: __("Close"),
@@ -182,5 +181,10 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
                 disabled: "{!isSaveDisabled}"
             }
         }
-    ]
+    ],
+    listeners: {
+        actioncomplete: function() {
+            console.log("actioncomplete");
+        }
+    }
 });
