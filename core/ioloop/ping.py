@@ -143,6 +143,7 @@ class PingSocket(object):
                 metrics["ping_time_stepbacks"] += 1
                 logger.info(
                     "[%s] Negative RTT detected (%s). Possible timer stepback. Check system time synchronization",
+                    address,
                     rtt,
                 )
                 rtt = None
@@ -183,7 +184,7 @@ class PingSocket(object):
     def build_echo_request(self, size, request_id, seq):
         # Pad to size
         ts = perf_counter()
-        payload = (TS_STRUCT.pack(ts) + "A" * (size - self.HEADER_SIZE - 8))[
+        payload = (TS_STRUCT.pack(ts) + b"A" * (size - self.HEADER_SIZE - 8))[
             : size - self.HEADER_SIZE
         ]
         return build_icmp_echo_request(request_id, seq, payload)
