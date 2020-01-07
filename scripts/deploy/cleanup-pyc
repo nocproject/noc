@@ -42,8 +42,8 @@ class Cleanup(object):
                 self.changed += [pyc]
                 try:
                     os.unlink(pyc)
-                except OSError, why:
-                    self.error(why)
+                except OSError as e:
+                    self.error(e)
 
     def run(self):
         self.cleanup()
