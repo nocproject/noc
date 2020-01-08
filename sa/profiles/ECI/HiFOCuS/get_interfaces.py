@@ -24,6 +24,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
     reuse_cli_session = False
     keep_cli_session = False
+    always_prefer = "S"
 
     rx_table_spliter = re.compile(r"(?:\+-*)+\n")
 
