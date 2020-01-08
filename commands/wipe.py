@@ -144,7 +144,7 @@ class Command(BaseCommand):
         """
         from noc.main.models.notificationgroup import NotificationGroupUser
         from noc.main.models.audittrail import AuditTrail
-        from noc.main.models.userprofile import UserProfile
+        from noc.aaa.models.usercontact import UserContact
         from noc.main.models.userstate import UserState
         from noc.sa.models.useraccess import UserAccess
         from noc.fm.models.activealarm import ActiveAlarm
@@ -162,9 +162,9 @@ class Command(BaseCommand):
         # Clean NotificationGroupUser
         with self.log("Cleaning notification groups"):
             NotificationGroupUser.objects.filter(user=o).delete()
-        # Clean User profile
-        with self.log("Cleaning user profile"):
-            UserProfile.objects.filter(user=o).delete()
+        # Clean User contact
+        with self.log("Cleaning user contact"):
+            UserContact.objects.filter(user=o).delete()
         # Clean user access
         with self.log("Cleaning management object access"):
             UserAccess.objects.filter(user=o).delete()
