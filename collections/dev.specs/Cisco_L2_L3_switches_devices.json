@@ -281,7 +281,7 @@
         {
             "name": "get.config.cli",
             "type": "cli",
-            "value": "show running-config"
+            "value": "show startup-config"
         },
         {
             "name": "get.mac_address_table.cli.1",
@@ -319,9 +319,19 @@
             "value": "show vlan-switch"
         },
         {
-            "name": "get.vlan_table.snmp",
+            "name": "get.vlan_table.snmp.1",
             "type": "snmp-getnext",
             "value": "1.3.6.1.4.1.9.9.46.1.3.1"
+        },
+        {
+            "name": "get.vlan_table.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.7.1.4.2"
+        },
+        {
+            "name": "get.vlan_table.snmp.3",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.7.1.4.3"
         },
         {
             "name": "get.interface_name.cli.1",
@@ -382,6 +392,16 @@
             "name": "get.interface_vlans.snmp.2",
             "type": "snmp-getnext",
             "value": "1.3.6.1.4.1.9.9.46.1.6.1"
+        },
+        {
+            "name": "get.interface_vlans.snmp.3",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.7.1.4.5"
+        },
+        {
+            "name": "get.interface_vlans.snmp.4",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.7.1.4.2"
         },
         {
             "name": "get.interface_proto_snmp.cli",
@@ -452,6 +472,16 @@
             "name": "get.mpls_vrf.cli.2",
             "type": "cli",
             "value": "show ip vrf"
+        },
+        {
+            "name": "get.mpls_vrf.cli.3",
+            "type": "cli",
+            "value": "show xconnect all"
+        },
+        {
+            "name": "get.mpls_vrf.cli.4",
+            "type": "cli",
+            "value": "show vfi"
         },
         {
             "name": "get.mpls_vrf.snmp.1",
