@@ -11,14 +11,16 @@ from __future__ import absolute_import
 import ctypes
 import errno
 from ctypes.util import find_library
-import os
+import sys
 import time
 
-_platform = os.uname()[0].lower()
+_platform = sys.platform
 
-if _platform == "linux":
+if _platform.startswith("linux"):
+    # Possible linux or linux2
     CLOCK_MONOTONIC_RAW = 4
-elif _platform == "freebsd":
+elif _platform.startswith("freebsd"):
+    # Possible freebsd7, freebsd8, etc.
     CLOCK_MONOTONIC_RAW = 4
 else:
     CLOCK_MONOTONIC_RAW = None
