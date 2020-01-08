@@ -18,6 +18,7 @@ class Profile(BaseProfile):
     pattern_more = [(r"\[Yes/press any key for no\]", "Y")]
     # pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = r"^(Command not found|Incomplete command|Invalid argument)"
+    pattern_operation_error = r"Data verify failed, bad MAC!"
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
