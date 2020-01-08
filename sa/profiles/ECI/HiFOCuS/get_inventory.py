@@ -56,7 +56,8 @@ class Script(BaseScript):
             ],
             max_retries=2,
         ):
-            if not serial or not serial.strip(smart_text("\x00")):
+            serial = smart_text(serial, errors="ignore").strip("\x00")
+            if not serial:
                 continue
             r += [
                 {
