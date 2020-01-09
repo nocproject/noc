@@ -24,6 +24,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% Invalid command at"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
+    config_volatile = ["^!Time:.*?^"]
 
     def convert_interface_name(self, interface):
         return self.convert_interface_name_cisco(interface)
