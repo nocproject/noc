@@ -17,7 +17,6 @@ if config.features.pypy:
     from psycopg2cffi import compat
 
     compat.register()
-
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 ADMINS = []
@@ -61,7 +60,6 @@ if config.date_time_formats.date_format != DATE_INPUT_FORMATS[0]:
             "[^./: ]", lambda match: "%%%s" % match.group(0), config.date_time_formats.date_format
         ),
     )
-
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -114,6 +112,7 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "APP_DIRS": False,
         "DIRS": [".", "templates"],
+        "OPTIONS": {"libraries": {"template_exists": "noc.templatetags.template_exists"}},
     }
 ]
 

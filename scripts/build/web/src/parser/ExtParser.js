@@ -24,7 +24,6 @@ class ExtParser {
     }
 
     getClassMap() {
-        console.log(this.options);
         let parseDir = new DirParser(this.options);
         const version = parseDir.readVersion();
         const cacheFile = cacheDir + '/' + version;

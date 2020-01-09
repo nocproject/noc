@@ -1,15 +1,11 @@
 <html lang="{{ language }}">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta charset="utf-8">
         <meta name="robots" content="NONE,NOARCHIVE" />
-        <meta name="Copyright" content="2007-2016, nocproject.org" />
-        <meta http-equiv="Pragma" content="no-cache" />
-        <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="Copyright" content="2007-2019, nocproject.org" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <title id="title">{{ setup.brand }}|{{ setup.installation_name }}</title>
-        <!-- favicon -->
-        {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
+        <!-- l10n -->
+        <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}">
         <!-- CSS -->
         <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-{{ setup.theme }}/resources/theme-{{ setup.theme }}-all.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
@@ -22,8 +18,6 @@
         <link rel="stylesheet" type="text/css" href="/ui/pkg/codemirror/addon/dialog/dialog.css" />
         <link rel="stylesheet" type="text/css" href="/ui/web/css/codemirror.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/joint/joint.min.css" />
-        <!-- l10n -->
-        <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}">
         <!-- JS -->
         <script type="text/javascript" src="/ui/web/js/jsloader.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/ext-all.js"></script>
@@ -46,89 +40,15 @@
         <script type="text/javascript" src="/ui/pkg/moment/moment.min.js"></script>
         <script type="text/javascript" src="/ui/pkg/moment-timezone/moment-timezone-with-data-1970-2030.min.js"></script>
         <!-- NOC modules -->
+        <script type="text/javascript" src="/ui/web/js/boot.js"></script>
         <script type="text/javascript" src="/ui/common/gettext.js"></script>
         <script type="text/javascript" src="/ui/web/js/colors.js"></script>
         <script type="text/javascript" src="/ui/web/js/glyph.js"></script>
         <script type="text/javascript" src="/ui/web/js/util.js"></script>
-        <!-- page specific -->
-        <script type="text/javascript">
-            //
-            console.log("!!!");
-            console.log("!!! Running NOC desktop");
-            console.log("!!!");
-            // Initialize loader
-            Ext.BLANK_IMAGE_URL = "/ui/web/img/s.gif";
-            Ext.namespace("NOC");
-            NOC.settings = {
-                systemId: {% if setup.system_uuid %}"{{ setup.system_uuid }}"{% else %}null{% endif %},
-                brand: "{{ setup.brand }}",
-                installation_name: "{{setup.installation_name}}",
-                preview_theme: "{{ setup.preview_theme }}",
-                language: "{{ language }}",
-                logo_url: "{{setup.logo_url}}",
-                logo_width: {{setup.logo_width}},
-                logo_height: {{setup.logo_height}},
-                branding_color: "{{ setup.branding_color }}",
-                branding_background_color: "{{ setup.branding_background_color }}",
-                enable_search: {% if setup.enable_search %}true{% else %}false{% endif %},
-                gitlab_url: "{{ setup.gitlab_url }}",
-                collections: {
-                    allow_sharing: {% if setup.collections_allow_sharing %}true{% else %}false{% endif %},
-                    project_id: {{ setup.collections_project_id }}
-                },
-                gis: {
-                    base: {
-                        "enable_osm": {% if setup.enable_gis_base_osm %}true{% else %}false{% endif %},
-                        "enable_google_sat": {% if setup.enable_gis_base_google_sat %}true{% else %}false{% endif %},
-                        "enable_google_roadmap": {% if setup.enable_gis_base_google_roadmap %}true{% else %}false{% endif %}
-                    }
-                },
-                traceExtJSEvents: {% if setup.trace_extjs_events %}true{% else %}false{% endif %},
-                helpUrl: "{{ setup.help_base_url }}",
-                helpBranch: "{{ setup.help_branch }}",
-                helpLanguage: "{{ setup.help_language }}",
-                timezone: "{{ setup.timezone }}",
-                enable_remote_system_last_extract_info: {% if setup.enable_remote_system_last_extract_info %}true{% else %}false{% endif %}
-            };
-            NOC.settings.enableHelp = NOC.settings.helpUrl && NOC.settings.helpUrl !== "";
-            NOC.templates = {};
-            Ext.setGlyphFontFamily("FontAwesome");
-        </script>
         <script type="text/javascript" src="/ui/web/js/override.js"></script>
-<!--        <script type="text/javascript" src="/ui/web/js/bundle.min.js"></script>-->
         <script type="text/javascript" src="/ui/web/main/desktop/app.js"></script>
     </head>
     <body>
-    <!-- "Loading" Splash Screen -->
-    <style>
-        /*
-         * Splash screen
-         */
-        #noc-loading-mask {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 20000;
-            background-color: #c0c0c0;
-        }
-
-        #noc-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -10px;
-            margin-left: -150px;
-            width: 300px;
-            height: 100px;
-            color: #ffffff;
-            z-index: 20001;
-            font-size: 20px;
-            font-family: sans-serif !important;
-            text-align: center;
-        }
-    </style>
     <div id="noc-loading-mask"></div>
     <div id="noc-loading">Loading {{ setup.brand }}. Please wait ...</div>
     <form id="history-form" class="x-hide-display">

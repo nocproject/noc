@@ -2,7 +2,6 @@
 /**
  * Parse Ext source directory.
  */
-// import { FileParser } from './FileParser';
 let FileParser = require('./FileParser');
 let Path = require('path');
 let Glob = require('glob');
@@ -26,7 +25,7 @@ class DirParser {
             let packageJson = require(this.getPath() + '/package.json');
             packageJson = packageJson.sencha || packageJson;
             this.type = packageJson.type;
-            this.packageJson = packageJson;
+            // this.packageJson = packageJson;
             if (packageJson.classpath && packageJson.type !== 'framework') {
                 if (typeof packageJson.classpath == 'string') {
                     this.classPath = Path.normalize(packageJson.classpath.replace('${package.dir}', this.getPath()));
@@ -43,7 +42,7 @@ class DirParser {
             this.packages = [...options.packages ? options.packages : []];
             this.toolkit = options.toolkit;
         } catch (e) {
-            console.log('error', e);
+            console.error('error', e);
             throw new Error(e);
         }
         this.toolkit = options.toolkit;
@@ -65,7 +64,6 @@ class DirParser {
     }
 
     createNS(className) {
-        let arr = className.split('.');
         let obj = this.classMap;
         className.split('.').forEach(key => {
             if (key !=='*') {
@@ -92,7 +90,7 @@ class DirParser {
     }
 
     saveOverride(override, file) {
-        if (override.length == 0) {
+        if (override.length === 0) {
             return;
         }
         let obj = this.createNS(override);
@@ -100,7 +98,6 @@ class DirParser {
             obj.classProp.overrides.push(file);
         }
     }
-
 
     parse() {
         return this.processPackages(this.packages)
@@ -162,20 +159,17 @@ class DirParser {
              break;*/
             case 'toolkit' :
                 return this.processPackage();
-                break;
             case 'code' :
                 return this.processPackage();
-                break;
         }
 
     }
 
     processPackage() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             return this.processSrc()
             .then(this.processOverride.bind(this))
             .then(resolve);
-
         });
     }
 
@@ -183,7 +177,6 @@ class DirParser {
         return new Promise((resolve, reject) => {
             (Array.isArray(this.classPath) ? this.classPath : [this.classPath])
             .forEach((path) => {
-                console.log('Processing src', path);
                 Glob(path + '/**/*.js', {}, (err, files) => {
                     if (err) {
                         return reject(err);
@@ -229,4 +222,3 @@ class DirParser {
 }
 
 module.exports = DirParser;
-// export { DirParser };

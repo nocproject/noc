@@ -6,14 +6,18 @@ const fs = require('fs');
 
 const cacheDir = './.cache';
 
+const sha1 = function(data) {
+    return crypto.createHash("sha1").update(data).digest("hex");
+};
+
 const parse = function(entry) {
     const query = {
         sourceMap: false,
         debug: false,
         nameSpace: 'NOC',
         paths: {
-            'Ext.ux': '../ux',
-            NOC: '..',
+            'Ext.ux': '../../../ui/web/ux',
+            NOC: '../../../ui/web',
         }
     };
     const configMap = {
@@ -94,10 +98,6 @@ const parse = function(entry) {
             }
         }
         return r;
-    }
-
-    function sha1(data) {
-        return crypto.createHash("sha1").update(data, "binary").digest("hex");
     }
 
     /**
@@ -381,4 +381,4 @@ function topologySort(vertexes, edges) {
     return sorted;
 }
 
-module.exports = parse;
+module.exports = {parse, sha1};

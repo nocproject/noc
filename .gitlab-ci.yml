@@ -1,14 +1,12 @@
 ---
 stages:
-  - lint
-  - test
-  - Build docs
-  - Build release container
-  - Build additional release containers
-  - Upload docs
+  - Lint
+  - Test
+  - Build
+  - Upload
 
 check labels:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA)
@@ -19,7 +17,7 @@ check labels:
     - docker
 
 flake8:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
@@ -42,7 +40,7 @@ flake8:
     - docker
 
 black:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/black:master
   script:
     - set -x
@@ -66,7 +64,7 @@ black:
   allow_failure: false
 
 mypy:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/mypy:master
   script:
     - set -x
@@ -90,7 +88,7 @@ mypy:
   allow_failure: true
 
 prettier:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/prettier:master
   script:
     - set -x
@@ -121,7 +119,7 @@ prettier:
 
 # waiting for https://github.com/rubik/xenon/issues/21
 xenon:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
@@ -147,7 +145,7 @@ xenon:
   allow_failure: true
 
 pylint:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
@@ -170,7 +168,7 @@ pylint:
     - docker
 
 pylint3k:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
@@ -193,7 +191,7 @@ pylint3k:
     - docker
 
 futurize:
-  stage: lint
+  stage: Lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
@@ -208,7 +206,7 @@ futurize:
     - docker
 
 py2:migrate:
-  stage: test
+  stage: Test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2migrate
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
@@ -243,7 +241,7 @@ py2:migrate:
   allow_failure: false
 
 py3:migrate:
-  stage: test
+  stage: Test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3migrate
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
@@ -278,7 +276,7 @@ py3:migrate:
   allow_failure: false
 
 py2:test:
-  stage: test
+  stage: Test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2tests
     - mv .dockerignore .dockerignore.prod
@@ -325,7 +323,7 @@ py2:test:
     expire_in: 1 day
 
 py3:test:
-  stage: test
+  stage: Test
   before_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3tests
     - mv .dockerignore .dockerignore.prod
@@ -363,7 +361,7 @@ py3:test:
   allow_failure: false
 
 build:Docs:
-  stage: Build docs
+  stage: Build
   environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
   script:
@@ -391,7 +389,7 @@ build:Docs:
     - merge_requests
 
 build:Master Docs:
-  stage: Build docs
+  stage: Build
   environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
   script:
@@ -413,8 +411,7 @@ build:Master Docs:
       - /^release-\d+\.\d+/
 
 build:Release Image:
-  stage: Build release container
-  before_script:
+  stage: Build
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     # registry.getnoc.com/noc/noc/code:stable
@@ -432,8 +429,29 @@ build:Release Image:
   only:
     - tags
 
+build:web:
+  stage: Build
+  image: node:12
+  script:
+    - cd scripts/build/web
+    - npm install
+    - node src/index.js
+  tags:
+    - docker
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - "ui/web/**.js"
+      - "ui/web/**.css"
+      - "scripts/build/web/**"
+  artifacts:
+    paths:
+      - dist/ui/pkg/web
+      - dist/ui/pkg/web.debug
+
 upload docs:
-  stage: Upload docs
+  stage: Upload
   environment: docs
   image: registry.getnoc.com/infrastructure/s3helper:master
   script:
