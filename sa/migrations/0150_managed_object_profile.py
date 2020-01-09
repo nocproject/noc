@@ -47,6 +47,14 @@ class Migration(BaseMigration):
             """,
                 [pmap[p], p],
             )
+            self.db.execute(
+                """
+                UPDATE sa_managedobjectselector
+                SET filter_profile = %s
+                WHERE filter_profile = %s
+            """,
+                [pmap[p], p],
+            )
         # Set profile as not null
         self.db.execute("ALTER TABLE sa_managedobject ALTER profile SET NOT NULL")
         # Drop legacy profile_name
