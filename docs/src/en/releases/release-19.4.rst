@@ -14,7 +14,7 @@ In accordance to our :ref:`Release Policy <releases-policy>`
 `we're <https://getnoc.com/devteam/>`_ proudly present release `19.4 <https://code.getnoc.com/noc/noc/tags/19.4>`_.
 
 19.4 release contains
-`387 <https://code.getnoc.com/noc/noc/merge_requests?scope=all&state=merged&milestone_title=19.4>`_
+`386 <https://code.getnoc.com/noc/noc/merge_requests?scope=all&state=merged&milestone_title=19.4>`_
 bugfixes, optimisations and improvements.
 
 .. _release-19.4-highlights:
@@ -30,6 +30,7 @@ most of functions work on py3, though `some glitches still remain <https://code.
 So we continue routine work on reaching full py3 compatibility.
 
 We expect that:
+
 * NOC 20.1 will have full py3 compatibility and will allow to choose between py2 and py3 during deploy.
 * NOC 20.2 will by py3-only release with all py2-compatibility stuff removed.
 * NOC 20.3 will use py3 features like async/await
@@ -59,6 +60,7 @@ exposes comprehensive VPN information.
 nbi improvements
 ^^^^^^^^^^^^^^^^
 NBI got 3 additional groups of API:
+
 * :ref:`objectstatus<api-nbi-objectstatus>` for online Managed Object status requesting
 * :ref:`config<api-nbi-config>` and :ref:`configrevisions<api-nbi-configrevisions>`
   for accessing Managed Object's config
@@ -164,8 +166,6 @@ Improvements
 | :mr:`1787` | Add full address on map                                                                               |
 +------------+-------------------------------------------------------------------------------------------------------+
 | :mr:`1990` | Replace pylibssh2 with ssh2-python                                                                    |
-+------------+-------------------------------------------------------------------------------------------------------+
-| :mr:`2328` | 19.1.2 and 19.2.1 release notes                                                                       |
 +------------+-------------------------------------------------------------------------------------------------------+
 | :mr:`2408` | docs: Fix profile anchors                                                                             |
 +------------+-------------------------------------------------------------------------------------------------------+
