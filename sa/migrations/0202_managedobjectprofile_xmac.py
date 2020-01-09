@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# ManagedObjectProfile.object_validation_policy
+# ManagedObjectProfile.enable_box_discovery_xmac
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
