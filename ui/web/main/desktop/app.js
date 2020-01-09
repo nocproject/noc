@@ -16,8 +16,10 @@ Ext.application({
     requires: [
         "NOC.main.desktop.Application"
     ],
-    launch: function() {
+
+    launch: function () {
         var me = this;
+        Ext.setGlyphFontFamily("FontAwesome");
         console.log("Initializing history API");
         Ext.History.init();
         console.log("NOC application starting");

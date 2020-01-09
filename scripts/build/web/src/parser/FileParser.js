@@ -48,7 +48,7 @@ class FileParser {
     }
 
     generateAST(content) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             return resolve(Esprima.parse(content.toString(), {
                 tolerant: true,
                 comment: true,
@@ -160,7 +160,7 @@ class FileParser {
     parseTag(tag) {
 
         if (tag.tag === "class" && (tag.name === "Ext" || tag.name === "Ext.Widget")) {
-            if (this.src.indexOf('Ext.js') == -1) {
+            if (this.src.indexOf('Ext.js') === -1) {
                 return Promise.resolve();
             }
         }
@@ -184,7 +184,7 @@ class FileParser {
     }
 
     addName(name) {
-        if (name && name != "" && !this.names.includes(name)) {
+        if (name && name !== "" && !this.names.includes(name)) {
             this.names.push(name);
         }
     }

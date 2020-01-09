@@ -112,9 +112,57 @@ class DesktopApplication(ExtApplication):
             request, "desktop.html", language=self.get_language(request), apps=apps, setup=setup
         )
 
-    #
-    # Exposed Public API
-    #
+    @view(method=["GET"], url="^settings/$", access=True, api=True)
+    def api_settings(self, request):
+        cp = CPClient()
+        # Prepare settings
+        favicon_url = config.customization.favicon_url
+        if favicon_url.endswith(".png"):
+            favicon_mime = "image/png"
+        elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
+            favicon_mime = "image/jpeg"
+        else:
+            favicon_mime = None
+        if request.user.is_authenticated():
+            enable_search = Permission.has_perm(request.user, "main:search:launch")
+        else:
+            enable_search = False
+        language = self.get_language(request)
+        return {
+            "system_uuid": cp.system_uuid or None,
+            "brand": version.brand,
+            "installation_name": config.installation_name,
+            "preview_theme": config.customization.preview_theme,
+            "language": language,
+            "logo_url": config.customization.logo_url,
+            "logo_width": config.customization.logo_width,
+            "logo_height": config.customization.logo_height,
+            "branding_color": config.customization.branding_color,
+            "branding_background_color": config.customization.branding_background_color,
+            "favicon_mime": favicon_mime,
+            "favicon_url": favicon_url,
+            "enable_search": enable_search,
+            "gitlab_url": config.gitlab_url,
+            "collections": {
+                "allow_sharing": config.collections.allow_sharing,
+                "project_id": config.collections.project_id,
+            },
+            "gis": {
+                "base": {
+                    "enable_osm": config.gis.enable_osm,
+                    "enable_google_sat": config.gis.enable_google_sat,
+                    "enable_google_roadmap": config.gis.enable_google_roadmap,
+                }
+            },
+            "traceExtJSEvents": False,
+            "helpUrl": config.help.base_url,
+            "helpBranch": config.help.branch,
+            "helpLanguage": config.help.language,
+            "timezone": config.timezone,
+            "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
+            "theme": config.web.theme,
+        }
+
     @view(method=["GET"], url="^version/$", access=True, api=True)
     def api_version(self, request):
         """
