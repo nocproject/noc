@@ -6,3 +6,5 @@
 
 .. toctree::
     :titlesonly:
+
+    /releases/release-19.4
