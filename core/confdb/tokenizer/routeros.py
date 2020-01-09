@@ -20,13 +20,18 @@ class RouterOSTokenizer(LineTokenizer):
     rx_param = re.compile(r'([^= ]+="[^"]+"|[^= ]+=\S+|\S+)')
 
     def iter_context(self, context, tokens):
-        for token in tokens:
-            if "=" not in token:
-                continue
-            k, v = token.split("=", 1)
-            if v.startswith('"') and v.endswith('"'):
-                v = v[1:-1]
-            yield context + (k, v)
+        if tokens:
+            if "=" not in tokens[0]:
+                for ct in self.iter_context(context + (tokens[0],), tokens[1:]):
+                    yield ct
+            else:
+                for token in tokens:
+                    if "=" not in token:
+                        continue
+                    k, v = token.split("=", 1)
+                    if v.startswith('"') and v.endswith('"'):
+                        v = v[1:-1]
+                    yield context + (k, v)
 
     def iter_line_tokens(self, line):
         """

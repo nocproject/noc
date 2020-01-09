@@ -55,9 +55,28 @@ TOKENS1 = [
     ("/system", "logging", "action", "0", "memory-lines", "100"),
     ("/system", "logging", "action", "1", "disk-lines-per-file", "100"),
 ]
+CFG2 = """/ip service
+set telnet disabled=yes
+set ftp disabled=yes
+set www disabled=yes
+set ssh port=22000
+set api disabled=yes
+set winbox address=192.168.16.0/24,192.168.61.0/24
+set api-ssl disabled=yes
+"""
+
+TOKENS2 = [
+    ("/ip", "service", "telnet", "disabled", "yes"),
+    ("/ip", "service", "ftp", "disabled", "yes"),
+    ("/ip", "service", "www", "disabled", "yes"),
+    ("/ip", "service", "ssh", "port", "22000"),
+    ("/ip", "service", "api", "disabled", "yes"),
+    ("/ip", "service", "winbox", "address", "192.168.16.0/24,192.168.61.0/24"),
+    ("/ip", "service", "api-ssl", "disabled", "yes"),
+]
 
 
-@pytest.mark.parametrize("input,config,expected", [(CFG1, {}, TOKENS1)])
+@pytest.mark.parametrize("input,config,expected", [(CFG1, {}, TOKENS1), (CFG2, {}, TOKENS2)])
 def test_tokenizer(input, config, expected):
     tokenizer = RouterOSTokenizer(input, **config)
     assert list(tokenizer) == expected
