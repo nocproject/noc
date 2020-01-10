@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,8 +30,15 @@ class Script(BaseScript):
     )
 
     rx_iface_split = re.compile(r"Interface brief:\n", re.IGNORECASE)
+    rx_eth_member = re.compile(r"Ethernet(?P<member>\d+)/0/\d+")
+    rx_member = re.compile(
+        r"^Hardware version\s+: (?P<revision>\S+)\s*\n"
+        r"^Serial number\s+: (?P<serial>\S+)\s*\n"
+        r"^Manufacture date\s+: (?P<mfg_date>\S+)\s*\n",
+        re.MULTILINE,
+    )
 
-    def execute(self):
+    def execute_cli(self):
         r = {"type": "CHASSIS", "number": "1", "vendor": "QTECH"}
         v = self.scripts.get_version()
         if "platform" not in v:
@@ -41,12 +48,45 @@ class Script(BaseScript):
             r["serial"] = v["attributes"]["Serial Number"]
             if "HW version" in v["attributes"]:
                 r["revision"] = v["attributes"]["HW version"]
+        if self.is_stackable:
+            try:
+                c = self.cli("show member 1 slot 1")
+                match = self.rx_member.search(c)
+                if match:
+                    r["serial"] = match.group("serial")
+                    r["revision"] = match.group("revision")
+                    r["mfg_date"] = match.group("mfg_date").replace("/", "-")
+            except self.CLISyntaxError:
+                pass
         r = [r]
+        old_member = 1
         v = self.cli("show interface")
         for iface in self.rx_iface_split.split(v):
             if not iface:
                 continue
             num = iface.split()[0].split("/")[-1]
+            if self.is_stackable:
+                match = self.rx_eth_member.search(iface)
+                if match:
+                    member = int(match.group("member"))
+                    if member > old_member:
+                        ch = {
+                            "type": "CHASSIS",
+                            "number": member,
+                            "vendor": "QTECH",
+                            "part_no": r[0]["part_no"],
+                        }
+                        try:
+                            c = self.cli("show member %d slot 1" % member)
+                            match = self.rx_member.search(c)
+                            if match:
+                                ch["serial"] = match.group("serial")
+                                ch["revision"] = match.group("revision")
+                                ch["mfg_date"] = match.group("mfg_date").replace("/", "-")
+                        except self.CLISyntaxError:
+                            pass
+                        r += [ch]
+                        old_member = member
             for t in self.rx_trans.finditer(iface):
                 part_no = self.profile.convert_sfp(
                     t.group("sfp_type"),

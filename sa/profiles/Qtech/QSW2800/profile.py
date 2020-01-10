@@ -59,6 +59,7 @@ class Profile(BaseProfile):
         "is_support_mac_version": {
             "$or": [{"version": {"$gte": "6.3.100.12"}}, {"version": {"$lte": "6.0"}}]
         },
+        "is_stackable": {"platform": {"$regex": r"QSW-8200-28F-AC-DC"}},
     }
 
     @classmethod
