@@ -25,6 +25,7 @@ from noc.aaa.models.permission import Permission
 from noc.support.cp import CPClient
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -323,11 +324,8 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        value = request.body
-        if not value:
-            # Delete state
-            UserState.objects.filter(user_id=uid, key=name).delete()
-        else:
+        value = smart_text(request.body)
+        if value:
             # Save
             s = UserState.objects.filter(user_id=uid, key=name).first()
             if s:
@@ -335,6 +333,9 @@ class DesktopApplication(ExtApplication):
             else:
                 s = UserState(user_id=uid, key=name, value=value)
             s.save()
+        else:
+            # Delete state
+            UserState.objects.filter(user_id=uid, key=name).delete()
         return True
 
     @view(url="^favapps/$", method=["GET"], access=PermitLogged(), api=True)
