@@ -63,7 +63,7 @@ class Migration(BaseMigration):
                 tp["window_config"] = metric.get("window_config")
                 # Build thresholds
                 tp["thresholds"] = []
-                if metric.get("high_error", False) or metric.get("high_error", False) == 0:
+                if metric.get("high_error", False) or metric.get("high_error", None) == 0:
                     tp["thresholds"] += [
                         {
                             "op": ">=",
@@ -73,7 +73,7 @@ class Migration(BaseMigration):
                             "alarm_class": self.get_alarm_class_id("NOC | PM | High Error"),
                         }
                     ]
-                if metric.get("low_error", False) or metric.get("low_error", False) == 0:
+                if metric.get("low_error", False) or metric.get("low_error", None) == 0:
                     tp["thresholds"] += [
                         {
                             "op": "<=",
@@ -83,7 +83,7 @@ class Migration(BaseMigration):
                             "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error"),
                         }
                     ]
-                if metric.get("low_warn", False) or metric.get("low_warn", False) == 0:
+                if metric.get("low_warn", False) or metric.get("low_warn", None) == 0:
                     tp["thresholds"] += [
                         {
                             "op": "<=",
@@ -93,7 +93,7 @@ class Migration(BaseMigration):
                             "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning"),
                         }
                     ]
-                if metric.get("high_warn", False) or metric.get("high_warn", False) == 0:
+                if metric.get("high_warn", False) or metric.get("high_warn", None) == 0:
                     tp["thresholds"] += [
                         {
                             "op": ">=",
@@ -120,10 +120,10 @@ class Migration(BaseMigration):
             or metric.get("low_warn", False)
             or metric.get("high_warn", False)
             or metric.get("high_error", False)
-            or metric.get("low_error", False) == 0
-            or metric.get("low_warn", False) == 0
-            or metric.get("high_warn", False) == 0
-            or metric.get("high_error", False) == 0
+            or metric.get("low_error", None) == 0
+            or metric.get("low_warn", None) == 0
+            or metric.get("high_warn", None) == 0
+            or metric.get("high_error", None) == 0
             or metric.get("threshold_profile")
         )
 
