@@ -25,6 +25,9 @@ class Migration(BaseMigration):
         for (p,) in s_profiles:
             if not p:
                 continue
+            elif p not in pmap:
+                # If migrations on 0150_managed_object_profile
+                continue
             self.db.execute(
                 """
             UPDATE sa_managedobjectselector
