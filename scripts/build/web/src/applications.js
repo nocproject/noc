@@ -163,6 +163,7 @@ const apps = [
     '../../../ui/web/sa/getnow/Application.js',
     '../../../ui/web/sa/groupaccess/Application.js',
     '../../../ui/web/sa/managedobject/Application.js',
+    '../../../ui/web/sa/monitor/Application.js',
     '../../../ui/web/sa/managedobjectprofile/Application.js',
     '../../../ui/web/sa/managedobjectselector/Application.js',
     // '../../../ui/web/sa/mrt/Application.js', // not found in menu
