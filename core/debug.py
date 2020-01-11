@@ -61,7 +61,14 @@ def get_lines_from_file(filename, lineno, context_lines, loader=None, module_nam
     """
     source = None
     if loader is not None and hasattr(loader, "get_source"):
-        source = loader.get_source(module_name)
+        try:
+            source = loader.get_source(module_name)
+        except ImportError:
+            # See #1185.
+            # py3 raises ImportError: 'importlib._bootstrap' is not a frozen module
+            # on invalid custom modules.
+            # Safer to ignore
+            return None, [], None, []
         if source is not None:
             source = source.splitlines()
     if source is None:
