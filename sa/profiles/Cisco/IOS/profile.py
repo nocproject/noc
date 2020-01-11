@@ -3,7 +3,7 @@
 # Vendor: Cisco
 # OS:     IOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ class Profile(BaseProfile):
     rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
 
     matchers = {
-        "is_platform_7200": {"platform": {"$regex": r"7200|7301"}},
+        "is_platform_7200": {"platform": {"$regex": r"720[0146]|730[14]"}},
         "is_platform_7600": {"platform": {"$regex": r"76(0[3459](\-S)?|13)"}},
         "is_platform_me3x00x": {"platform": {"$regex": r"^ME\-3[68]00X"}},
         "is_isr_router": {"platform": {"$regex": r"^(19\d\d|29\d\d|39\d\d)$"}},

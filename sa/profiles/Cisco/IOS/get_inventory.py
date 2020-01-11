@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -373,6 +373,15 @@ class Script(BaseScript):
                 and "Supervisor Engine" in descr
             ):
                 return "SUP", self.slot_id, pid
+            if pid.startswith("PA-"):
+                # Port Adapter
+                return "PA", self.slot_id, pid
+            if "I/O Controller" in descr:
+                # I/O controller directly attached to chassis, without container
+                match = self.rx_slot_id.search(name)
+                if match:
+                    return "IO", match.group("slot_id"), pid
+                return "IO", self.slot_id, pid
             else:
                 if pid == "N/A" and "Gibraltar,G-20" in descr:
                     # 2-port 100BASE-TX Fast Ethernet port adapter
@@ -483,6 +492,9 @@ class Script(BaseScript):
         elif "Compact Flash Disk" in descr:
             # Compact Flash
             return "Flash | CF", name, pid
+        elif "PCMCIA Flash Disk" in descr:
+            # PCMCIA Flash
+            return "Flash | PCMCIA", name, pid
         # Unknown
         return None, None, None
 

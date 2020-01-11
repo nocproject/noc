@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -121,7 +121,7 @@ class Script(BaseScript):
         7200, 7301
         :return:
         """
-        v = self.cli("show c%s | i MAC" % self.version["platform"])
+        v = self.cli("show c%s00 | i MAC" % self.version["platform"][:2])
         macs = []
         for f, t in [
             (mac, MAC(mac).shift(int(count) - 1)) for count, mac in self.rx_7200.findall(v)
