@@ -144,7 +144,7 @@ class ExtApplication(Application):
         # Todo: Fix
         if request.method == "POST":
             if request.META.get("CONTENT_TYPE") == "application/json":
-                q = ujson.decode(request.body)
+                q = ujson.loads(request.body)
             else:
                 q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.POST.lists())
         else:

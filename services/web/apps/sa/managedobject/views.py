@@ -813,9 +813,8 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         a = self.get_object_or_404(Action, name=action)
         # @todo: Check access
-        body = request.body
-        if body:
-            args = ujson.loads(body)
+        if request.body:
+            args = ujson.loads(request.body)
         else:
             args = {}
         return self.submit_slow_op(request, execute, o, a, args)
