@@ -43,13 +43,14 @@ class Script(BaseScript):
             "mib_encoding": self.MIB_ENCODING,
             "cli_encoding": self.CLI_ENCODING,
         }
-        # Process version reply
-        result["box"] = self.scripts.get_version()
-        result["box"]["profile"] = self.profile.name
         # Process CLI answers
         result["cli"] = self.get_cli_results(spec)
         # Apply CLI fsm states
         result["cli_fsm"] = self.get_cli_fsm_results()
+        # Process version reply
+        result["box"] = self.scripts.get_version()
+        result["box"]["profile"] = self.profile.name
+        self.close_cli_stream()
         # Apply MIB snapshot
         self.logger.debug("Collecting MIB snapshot")
         result["mib"] = self.get_snmp_results(spec)
@@ -91,7 +92,6 @@ class Script(BaseScript):
                     }
                 ]
         self.stop_tracking()
-        self.close_cli_stream()
         return r
 
     def get_cli_fsm_results(self):
