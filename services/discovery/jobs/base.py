@@ -552,7 +552,11 @@ class DiscoveryCheck(object):
         Returns Interface instance
         """
         mo = mo or self.object
-        name = mo.get_profile().convert_interface_name(name)
+        try:
+            name = mo.get_profile().convert_interface_name(name)
+        except ValueError as e:
+            self.logger.debug("Cannot convert remote port %s:%r, %r", mo.name, name, e)
+            return
         self.logger.debug("Searching port by name: %s:%s", mo.name, name)
         key = (mo, name)
         if key not in self.if_name_cache:
