@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  BaseTopology class
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2019 The NOC Project
+#  Copyright (C) 2007-2020 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ import cachetools
 
 # NOC modules
 from noc.core.stencil import stencil_registry
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 from .layout.ring import RingLayout
 from .layout.spring import SpringLayout
 from .layout.tree import TreeLayout
@@ -173,13 +173,13 @@ class BaseTopology(object):
         id_to_name = {}
         dl_map = {}  # downlink -> uplink port
         for p in self.G.node[uplink]["ports"]:
-            id_to_name[p["id"]] = sorted(p["ports"], key=split_alnum)[0]
+            id_to_name[p["id"]] = sorted(p["ports"], key=alnum_key)[0]
         for dl in downlinks:
             for p in self.G.edges[uplink, dl]["ports"]:
                 if p in id_to_name:
                     dl_map[dl] = id_to_name[p]
                     break
-        return sorted(dl_map, key=lambda x: split_alnum(dl_map[x]))
+        return sorted(dl_map, key=lambda x: alnum_key(dl_map[x]))
 
     @cachetools.cachedmethod(operator.attrgetter("_rings_cache"))
     def get_rings(self):

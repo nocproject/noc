@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ./noc nri
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.etl.portmapper.loader import loader
-from noc.core.text import split_alnum, format_table
+from noc.core.text import alnum_key, format_table
 
 
 class Command(BaseCommand):
@@ -63,8 +63,8 @@ class Command(BaseCommand):
                         self.print(ln, rn, i.get("nri_name"))
                         status = "Failed to convert to local name"
                     r += [(i["name"], rn, i.get("nri_name", "--"), status)]
-                r = [("Local", "Remote", "Interface NRI", "Status")] + sorted(
-                    r, key=lambda x: split_alnum(x[0])
+                r = [("Local", "Remote", "Interface NRI", "Status")] + list(
+                    sorted(r, key=lambda x: alnum_key(x[0]))
                 )
                 self.stdout.write("%s\n" % format_table([0, 0, 0, 0], r, sep=" | ", hsep="-+-"))
 

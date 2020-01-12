@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Firmware Policy
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from .firmware import Firmware
 from .platform import Platform
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 
 
 FS_RECOMMENDED = "r"
@@ -85,5 +85,5 @@ class FirmwarePolicy(Document):
             versions += [fp.firmware.version]
         if versions:
             # Get latest acceptable version
-            return sorted(versions, key=lambda x: split_alnum(x))[-1]
+            return list(sorted(versions, key=lambda x: alnum_key(x)))[-1]
         return None

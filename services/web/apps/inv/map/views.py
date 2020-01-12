@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.maintenance.models.maintenance import Maintenance
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 from noc.core.pm.utils import get_interface_metrics
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -215,7 +215,7 @@ class MapApplication(ExtApplication):
                     "name": mo.name,
                     "interfaces": [
                         {"name": i.name, "description": i.description or None, "status": i.status}
-                        for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
+                        for i in sorted(o[mo], key=lambda x: alnum_key(x.name))
                     ],
                 }
             ]
@@ -277,7 +277,7 @@ class MapApplication(ExtApplication):
                     "name": mo.name,
                     "interfaces": [
                         {"name": i.name, "description": i.description or None, "status": i.status}
-                        for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
+                        for i in sorted(o[mo], key=lambda x: alnum_key(x.name))
                     ],
                 }
             ]

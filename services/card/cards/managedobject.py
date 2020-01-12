@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObject card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ from noc.inv.models.link import Link
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
-from noc.core.text import split_alnum, list_to_ranges
+from noc.core.text import alnum_key, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
@@ -161,18 +161,18 @@ class ManagedObjectCard(BaseCard):
                         "id": l.id,
                         "role": role,
                         "local_interface": sorted(
-                            local_interfaces, key=lambda x: split_alnum(x.name)
+                            local_interfaces, key=lambda x: alnum_key(x.name)
                         ),
                         "remote_object": ro,
                         "remote_interface": sorted(
-                            remote_interfaces, key=lambda x: split_alnum(x.name)
+                            remote_interfaces, key=lambda x: alnum_key(x.name)
                         ),
                         "remote_status": "up" if ro.get_status() else "down",
                     }
                 ]
             links = sorted(
                 links,
-                key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0].name)),
+                key=lambda x: (x["role"] != "uplink", alnum_key(x["local_interface"][0].name)),
             )
         # Build global services summary
         service_summary = ServiceSummary.get_object_summary(self.object)
@@ -257,7 +257,7 @@ class ManagedObjectCard(BaseCard):
                 si = si[0]
                 interfaces[-1]["untagged_vlan"] = si.untagged_vlan
                 interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
-        interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
+        interfaces = sorted(interfaces, key=lambda x: alnum_key(x["name"]))
         # Resource groups
         # Service groups (i.e. server)
         static_services = set(self.object.static_service_groups)

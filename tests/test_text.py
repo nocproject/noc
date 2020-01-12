@@ -19,6 +19,7 @@ from noc.core.text import (
     replace_re_group,
     indent,
     split_alnum,
+    alnum_key,
     find_indented,
     to_seconds,
     format_table,
@@ -396,6 +397,20 @@ def test_indent(config, expected):
 )
 def test_split_alnum(config, expected):
     assert split_alnum(config) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("auto", "auto"),
+        ("0", "000000000000"),
+        ("1", "000000000001"),
+        ("Fa 0/1", "Fa 000000000000/000000000001"),
+        ("ge-1/0/1.15", "ge-000000000001/000000000000/000000000001.000000000015"),
+    ],
+)
+def test_alnum_key(input, expected):
+    assert alnum_key(input) == expected
 
 
 @pytest.mark.parametrize(

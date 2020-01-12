@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObject's dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ from .base import BaseDashboard
 from noc.config import config
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobject import ManagedObject
 
@@ -83,7 +83,7 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             radio = []
-            for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
+            for iface in sorted(ifaces, key=lambda el: alnum_key(el.name)):
                 if iface.type == "SVI" and not iface.profile.allow_subinterface_metrics:
                     continue
                 if iface.type == "aggregated" and iface.lag_members:

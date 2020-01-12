@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # path API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ from noc.core.topology.constraint.any import AnyConstraint
 from noc.core.topology.goal.base import BaseGoal
 from noc.core.topology.goal.managedobject import ManagedObjectGoal
 from noc.core.topology.goal.level import ManagedObjectLevelGoal
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 from ..base import NBIAPI
 
 # Constants
@@ -285,7 +285,7 @@ class PathAPI(NBIAPI):
                             "address": obj.address,
                             "bi_id": obj.bi_id,
                         },
-                        "interfaces": list(sorted(objects[obj], key=split_alnum)),
+                        "interfaces": list(sorted(objects[obj], key=alnum_key)),
                     }
                     for obj in order
                 ]

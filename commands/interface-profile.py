@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface profile management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 
 
 class Command(BaseCommand):
@@ -60,7 +60,7 @@ class Command(BaseCommand):
     @staticmethod
     def get_interfaces(mo):
         return sorted(
-            Interface.objects.filter(managed_object=mo.id, type="physical"), key=split_alnum
+            Interface.objects.filter(managed_object=mo.id, type="physical"), key=alnum_key
         )
 
     @staticmethod
