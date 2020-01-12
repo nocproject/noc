@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.interface application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ from noc.sa.interfaces.base import (
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.core.comp import smart_text
@@ -55,7 +55,7 @@ class InterfaceAppplication(ExtApplication):
         """
 
         def sorted_iname(s):
-            return sorted(s, key=lambda x: split_alnum(x["name"]))
+            return list(sorted(s, key=lambda x: alnum_key(x["name"])))
 
         def get_style(i):
             profile = i.profile
@@ -222,7 +222,7 @@ class InterfaceAppplication(ExtApplication):
             for i in Interface.objects.filter(managed_object=o.id, type="physical").order_by("name")
             if not i.link
         ]
-        return sorted(r, key=lambda x: split_alnum(x["label"]))
+        return list(sorted(r, key=lambda x: alnum_key(x["label"])))
 
     @view(
         url=r"^l1/(?P<iface_id>[0-9a-f]{24})/change_profile/$",

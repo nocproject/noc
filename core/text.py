@@ -13,6 +13,7 @@ import re
 import six
 from six.moves import zip_longest
 from numpy import array
+from typing import List, Union, Iterable
 
 # NOC modules
 from noc.core.comp import bord
@@ -372,7 +373,23 @@ def indent(text, n=4):
     return i + text.replace("\n", "\n" + i)
 
 
+rx_split_alnum = re.compile(r"(\d+|[^0-9]+)")
+
+
+def _iter_split_alnum(s):
+    # type: (six.string_types) -> Iterable[six.string_types]
+    """
+    Iterator yielding alphabetic and numeric sections if string
+
+    :param s:
+    :return:
+    """
+    for match in rx_split_alnum.finditer(s):
+        yield match.group(0)
+
+
 def split_alnum(s):
+    # type: (six.string_types) -> List[Union[six.string_types, int]]
     """
     Split line to a sequence of iterating alpha and digit strings
 
@@ -391,22 +408,32 @@ def split_alnum(s):
     ['ge-', 1, '/', 0, '/', 1, '.', 15]
     """
 
-    def convert(x):
+    def maybe_int(v):
+        # type: (six.string_types) -> Union[six.string_types, int]
         try:
-            return int(x)
+            return int(v)
         except ValueError:
-            return x
+            return v
 
-    r = []
-    digit = None
-    for c in s:
-        d = c.isdigit()
-        if d != digit:
-            digit = d
-            r += [c]
-        else:
-            r[-1] += c
-    return [convert(x) for x in r]
+    return [maybe_int(x) for x in _iter_split_alnum(s)]
+
+
+def alnum_key(s):
+    # type: (six.string_types) -> six.string_types
+    """
+    Comparable alpha-numeric key
+    :param s:
+    :return:
+    """
+
+    def maybe_formatted_int(v):
+        #  type: (six.string_types) -> six.string_types
+        try:
+            return "%012d" % int(v)
+        except ValueError:
+            return v
+
+    return "".join(maybe_formatted_int(x) for x in _iter_split_alnum(s))
 
 
 rx_notspace = re.compile(r"^\S+")

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 from noc.sa.interfaces.base import (
     ListOfParameter,
     ModelParameter,
@@ -386,7 +386,7 @@ class ManagedObjectApplication(ExtModelApplication):
         """
 
         def sorted_iname(s):
-            return sorted(s, key=lambda x: split_alnum(x["name"]))
+            return list(sorted(s, key=lambda x: alnum_key(x["name"])))
 
         def get_style(i):
             profile = i.profile
@@ -911,7 +911,7 @@ class ManagedObjectApplication(ExtModelApplication):
         """
 
         def sorted_iname(s):
-            return sorted(s, key=lambda x: split_alnum(x["name"]))
+            return list(sorted(s, key=lambda x: alnum_key(x["name"])))
 
         # Get object
         o = self.get_object_or_404(ManagedObject, id=int(id))

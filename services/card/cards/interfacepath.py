@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # interfacepath card
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ from noc.core.topology.constraint.upwards import UpwardsConstraint
 from noc.core.topology.constraint.vlan import VLANConstraint
 from noc.core.topology.goal.level import ManagedObjectLevelGoal
 from noc.inv.models.subinterface import SubInterface
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 from noc.core.bi.decorator import bi_hash
 from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
@@ -137,7 +137,7 @@ class InterfacePathCard(BaseCard):
         """
         ingress = []  # type: List[Interface]
         egress = []  # type: List[Interface]
-        for iface in sorted(interfaces, key=lambda x: split_alnum(x.name)):
+        for iface in sorted(interfaces, key=lambda x: alnum_key(x.name)):
             if iface.managed_object == obj:
                 egress += [iface]
             else:

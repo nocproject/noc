@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # managedobject datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 
 
 def qs(s):
@@ -184,7 +184,7 @@ class ManagedObjectDataStream(DataStream):
         # Get interfaces
         interfaces = sorted(
             Interface._get_collection().find({"managed_object": mo.id}),
-            key=lambda x: split_alnum(x["name"]),
+            key=lambda x: alnum_key(x["name"]),
         )
         # Populate cache
         for i in interfaces:
@@ -231,7 +231,7 @@ class ManagedObjectDataStream(DataStream):
         # Apply subinterfaces
         r["subinterfaces"] = [
             ManagedObjectDataStream._get_subinterface(s)
-            for s in sorted(subs, key=lambda x: split_alnum(x["name"]))
+            for s in sorted(subs, key=lambda x: alnum_key(x["name"]))
         ]
         # Apply links
         if links:
