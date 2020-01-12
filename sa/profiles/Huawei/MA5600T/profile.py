@@ -177,7 +177,7 @@ class Profile(BaseProfile):
         for line in table.splitlines():
             # parse table row
             if len(line) - len(line.lstrip()) - 2:
-                line = line[len(line) - len(str.lstrip(line)) - 2 :]
+                line = line[len(line) - len(line.lstrip()) - 2 :]
             i = 0
             field = {}
             for num in sorted(header):
