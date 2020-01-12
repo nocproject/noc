@@ -113,6 +113,14 @@ class Script(BaseScript):
                             self.logger.warning(
                                 "Bad MAC address on Remote Neighbor: %s", neigh["remote_port"]
                             )
+                    else:
+                        neigh["remote_port"] = neigh["remote_port"].replace(b"\x00", b"")
+                    if "remote_system_name" in neigh:
+                        neigh["remote_system_name"] = neigh["remote_system_name"].rstrip(b"\x00")
+                    if "remote_port_description" in neigh:
+                        neigh["remote_port_description"] = neigh["remote_port_description"].rstrip(
+                            b"\x00"
+                        )
                     r += [
                         {
                             "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
