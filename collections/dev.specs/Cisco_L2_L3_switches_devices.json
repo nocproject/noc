@@ -319,7 +319,17 @@
             "value": "show vlan-switch"
         },
         {
-            "name": "get.vlan_table.snmp.1",
+            "name": "get.vlan_table.cli.4",
+            "type": "cli",
+            "value": "show vlans dot1q"
+        },
+        {
+            "name": "get.vlan_table_cli.5",
+            "type": "cli",
+            "value": "show vlans"
+        },
+        {
+            "name": "get.vlan_table.snmp",
             "type": "snmp-getnext",
             "value": "1.3.6.1.4.1.9.9.46.1.3.1"
         },
