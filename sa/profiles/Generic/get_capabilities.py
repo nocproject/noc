@@ -44,6 +44,9 @@ class Script(BaseScript):
         if self.credentials.get("snmp_ro"):
             try:
                 r = self.snmp.get(oid, version=version)
+                if r is not None and oid == mib["SNMPv2-MIB::sysObjectID", 0]:
+                    # For EnterpriseID Caps
+                    self._ent_id = r
                 return r is not None
             except (self.snmp.TimeOutError, SNMPError):
                 pass
@@ -289,7 +292,16 @@ class Script(BaseScript):
         """
         if self.credentials.get("snmp_ro"):
             try:
-                r = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0], version=version)
+                r = getattr(self, "_ent_id", None)
+                if r is None:
+                    r = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0], version=version)
+                elif r == "0.0":
+                    # Bad values
+                    r = self.snmp.getnext(
+                        "1.3.6.1.4.1", bulk=False, version=version, only_first=True
+                    )
+                    if r:
+                        r = r[0][0]
                 return r
             except (self.snmp.TimeOutError, SNMPError):
                 pass
