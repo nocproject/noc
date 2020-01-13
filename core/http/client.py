@@ -205,7 +205,7 @@ def fetch(
             try:
                 yield tornado.gen.with_timeout(
                     deadline,
-                    future=stream.write(req),
+                    future=stream.write(smart_bytes(req)),
                     io_loop=io_loop,
                     quiet_exceptions=(tornado.iostream.StreamClosedError,),
                 )
