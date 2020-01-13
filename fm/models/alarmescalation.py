@@ -117,7 +117,7 @@ class AlarmEscalation(Document):
         return list(AlarmEscalation.objects.filter(alarm_classes__alarm_class=alarm_class))
 
     @classmethod
-    def watch_escalations(cls, alarm):
+    def watch_escalations(cls, alarm, delay=None):
         now = datetime.datetime.now()
         for esc in cls.get_class_escalations(alarm.alarm_class):
             for e_item in esc.escalations:
@@ -137,10 +137,10 @@ class AlarmEscalation(Document):
                     continue
                 logger.debug("[%s] Watch for %s after %s seconds", alarm.id, esc.name, e_item.delay)
                 et = alarm.timestamp + datetime.timedelta(seconds=e_item.delay)
-                if et > now:
+                if et > now and delay is None:
                     delay = (et - now).total_seconds()
                 else:
-                    delay = None
+                    delay = delay
                 call_later(
                     "noc.services.escalator.escalation.escalate",
                     scheduler="escalator",

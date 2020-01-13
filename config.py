@@ -185,6 +185,7 @@ class Config(BaseConfig):
         max_threads = IntParameter(default=20)
         topology_rca_window = IntParameter(default=0)
         oo_close_delay = SecondsParameter(default="20s")
+        cons_escalation_delay = SecondsParameter(default="30s")
         discovery_delay = SecondsParameter(default="10M")
         auto_escalation = BooleanParameter(default=True)
 

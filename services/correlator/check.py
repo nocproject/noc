@@ -13,6 +13,9 @@ import logging
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.perf import metrics
+from noc.config import config
+# Delay to escalation consequence alarm
+CONS_ESCALATION_DELAY = config.correlator.cons_escalation_delay
 
 logger = logging.getLogger(__name__)
 
@@ -32,4 +35,4 @@ def check_close_consequence(alarm_id):
     alarm.log_message("Detached from root for not recovered", to_save=True)
     metrics["detached_root"] += 1
     # Trigger escalations
-    AlarmEscalation.watch_escalations(alarm)
+    AlarmEscalation.watch_escalations(alarm, delay=CONS_ESCALATION_DELAY)
