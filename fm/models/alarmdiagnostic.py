@@ -16,7 +16,7 @@ from mongoengine.fields import StringField, ObjectIdField, DateTimeField, Binary
 import bson
 
 # NOC modules
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 
 
 class AlarmDiagnostic(Document):
@@ -54,7 +54,7 @@ class AlarmDiagnostic(Document):
                 {
                     "timestamp": d.timestamp,
                     "state": d.state,
-                    "data": zlib.decompress(smart_bytes(d.data)),
+                    "data": smart_text(zlib.decompress(smart_bytes(d.data))),
                 }
             ]
         return r
