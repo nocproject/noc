@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.alarm application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -52,6 +52,7 @@ from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
 from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.core.comp import smart_text
 
 
 def get_advanced_field(id):
@@ -688,7 +689,7 @@ class AlarmApplication(ExtApplication):
         address = Object.get_by_id(id).get_address_text()
         if address:
             for res in address.split(","):
-                adr = normalize_division(res.strip().decode("utf-8").lower())
+                adr = normalize_division(smart_text(res).strip().lower())
                 if None in adr and "" in adr:
                     continue
                 if None in adr:
@@ -699,8 +700,7 @@ class AlarmApplication(ExtApplication):
             location_1 = ", ".join(res[0])
             location_2 = ", ".join(res[1])
             return [location_1, location_2]
-        else:
-            return ["", ""]
+        return ["", ""]
 
     @classmethod
     def f_summary(cls, s):
