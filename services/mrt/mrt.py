@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # MRTHandler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,8 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 class MRTRequestHandler(AuthRequestHandler):
-    CONCURRENCY = config.mrt.max_concurrency
-
     @tornado.gen.coroutine
     def write_chunk(self, obj):
         data = ujson.dumps(obj)
@@ -98,7 +96,7 @@ class MRTRequestHandler(AuthRequestHandler):
         logger.info(
             "Run task on parralels: %d (Max concurrent %d), for User: %s",
             len(req),
-            self.CONCURRENCY,
+            config.mrt.max_concurrency,
             self.current_user,
         )
         # Check access
@@ -128,7 +126,8 @@ class MRTRequestHandler(AuthRequestHandler):
                     metrics["mrt_access_denied"] += 1
                 if len(futures) >= config.mrt.max_concurrency:
                     wi = tornado.gen.WaitIterator(*futures)
-                    r = yield next(wi)
+                    wi_next = getattr(wi, "next")
+                    r = yield wi_next()
                     del futures[wi.current_index]
                     yield self.write_chunk(r)
                 futures += [
@@ -138,7 +137,8 @@ class MRTRequestHandler(AuthRequestHandler):
                 ]
             # Wait for rest
             wi = tornado.gen.WaitIterator(*futures)
+            wi_next = getattr(wi, "next")
             while not wi.done():
-                r = yield next(wi)
+                r = yield wi_next()
                 yield self.write_chunk(r)
         logger.info("Done")
