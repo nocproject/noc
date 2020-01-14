@@ -23,6 +23,9 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
   with_items: "{{ required_assets }}"
+  retries: 5
+  delay: 2
+  until: s is succeeded
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
