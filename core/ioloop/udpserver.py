@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  Tornado IOLoop UDP server
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2018 The NOC Project
+#  Copyright (C) 2007-2020 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ from tornado.util import errno_from_exception
 from tornado.ioloop import IOLoop
 from tornado.platform.auto import set_close_exec
 from tornado import process
+from typing import Iterable, Tuple
 
 
 class UDPServer(object):
@@ -28,7 +29,27 @@ class UDPServer(object):
         self._pending_sockets = []
         self._started = False
 
+    def iter_listen(self, cfg):
+        # type: (six.text_type) -> Iterable[Tuple[six.text_type, int]]
+        """
+        Parses listen configuration and yield (address, port) tuples.
+        Listen configuration is comma-separated string with items:
+        * address:port
+        * port
+
+        :param cfg:
+        :return:
+        """
+        for listen in cfg.split(","):
+            listen = listen.strip()
+            if ":" in listen:
+                addr, port = listen.split(":")
+            else:
+                addr, port = "", listen
+            yield addr, int(port)
+
     def listen(self, port, address=""):
+        # type: (int, six.text_type) -> None
         """Starts accepting connections on the given port.
 
         This method may be called more than once to listen on multiple ports.

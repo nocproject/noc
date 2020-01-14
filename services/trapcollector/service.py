@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,11 +44,7 @@ class TrapCollectorService(Service):
     def on_activate(self):
         # Listen sockets
         server = TrapServer(service=self)
-        for l in config.trapcollector.listen.split(","):
-            if ":" in l:
-                addr, port = l.split(":")
-            else:
-                addr, port = "", l
+        for addr, port in server.iter_listen(config.trapcollector.listen):
             self.logger.info("Starting SNMP Trap server at %s:%s", addr, port)
             try:
                 server.listen(port, addr)
