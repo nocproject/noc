@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # HTTP Client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -138,6 +138,9 @@ def fetch(
 
     logger.debug("HTTP %s %s", method, url)
     metrics["httpclient_requests", ("method", method.lower())] += 1
+    #
+    if eof_mark:
+        eof_mark = smart_bytes(eof_mark)
     # Detect proxy when necessary
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
     u = urlparse(str(url))
@@ -351,7 +354,7 @@ def fetch(
                     break
                 if eof_mark and response_body:
                     # Check if EOF mark is in received data
-                    response_body = ["".join(response_body)]
+                    response_body = [b"".join(response_body)]
                     if isinstance(eof_mark, six.string_types):
                         if eof_mark in response_body[0]:
                             break
