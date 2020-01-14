@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,11 +47,7 @@ class SyslogCollectorService(Service):
     def on_activate(self):
         # Listen sockets
         server = SyslogServer(service=self)
-        for l in config.syslogcollector.listen.split(","):
-            if ":" in l:
-                addr, port = l.split(":")
-            else:
-                addr, port = "", l
+        for addr, port in server.iter_listen(config.syslogcollector.listen):
             self.logger.info("Starting syslog server at %s:%s", addr, port)
             try:
                 server.listen(port, addr)
