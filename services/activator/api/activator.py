@@ -113,12 +113,13 @@ class ActivatorAPI(API):
                 tos=config.activator.tos,
                 ioloop=self.service.ioloop,
             )
+            result = smart_text(result, errors="replace") if result else result
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
         except SNMPError as e:
             metrics["error", ("type", "snmp_v1_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
-        raise tornado.gen.Return(smart_text(result, errors="replace"))
+        raise tornado.gen.Return(result)
 
     @staticmethod
     def snmp_v1_get_get_label(address, community, oid):
@@ -145,11 +146,12 @@ class ActivatorAPI(API):
                 ioloop=self.service.ioloop,
             )
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
+            result = smart_text(result, errors="replace") if result else result
         except SNMPError as e:
             metrics["error", ("type", "snmp_v2_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
-        raise tornado.gen.Return(smart_text(result, errors="replace"))
+        raise tornado.gen.Return(result)
 
     @staticmethod
     def snmp_v2_get_get_label(address, community, oid):
