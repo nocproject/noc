@@ -217,6 +217,7 @@ class ManagedObjectDataStream(DataStream):
             "type": iface["type"],
             "description": qs(iface.get("description")),
             "enabled_protocols": iface.get("enabled_protocols") or [],
+            "admin_status": iface.get("admin_status", False),
         }
         if iface.get("ifindex"):
             r["snmp_ifindex"] = iface["ifindex"]
