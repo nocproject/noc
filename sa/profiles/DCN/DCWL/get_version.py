@@ -16,7 +16,27 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        oids = {
+            "serial": "1.3.6.1.4.1.6339.100.1.1.1.0",
+            "platform": "1.3.6.1.4.1.6339.100.1.1.2.0",
+            "version": "1.3.6.1.4.1.6339.100.1.1.4.0",
+        }
+        try:
+            r = self.snmp.get(oids)
+        except Exception:
+            raise NotImplementedError
+        return {
+            "vendor": "DCN",
+            "platform": r["platform"],
+            "version": r["version"],
+            "attributes": {"HW version": "hwversion", "Serial Number": r["serial"]},
+        }
+
+    def execute_cli(self, **kwargs):
+        if self.is_wl8200:
+            # SNMP only support
+            return self.execute_snmp()
         r = []
         c = self.cli("get device-info", cached=True)
         for line in c.splitlines():

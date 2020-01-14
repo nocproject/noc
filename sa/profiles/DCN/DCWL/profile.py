@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     command_exit = "exit"
     pattern_syntax_error = r"Invalid command\."
 
-    matchers = {"is_wl8200": {"platform": {"$regex": "WL8200.+"}}}
+    matchers = {"is_wl8200": {"platform": {"$regex": "WL8200-TL3.+"}}}
 
     class shell(object):
         """Switch context manager to use with "with" statement"""
