@@ -34,9 +34,6 @@ class Script(BaseScript):
         }
 
     def execute_cli(self, **kwargs):
-        if self.is_wl8200:
-            # SNMP only support
-            return self.execute_snmp()
         r = []
         c = self.cli("get device-info", cached=True)
         for line in c.splitlines():
