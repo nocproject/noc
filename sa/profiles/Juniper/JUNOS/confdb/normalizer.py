@@ -114,12 +114,24 @@ class JunOSNormalizer(BaseNormalizer):
 
     @match("routing-instances", ANY, "instance-type", ANY)
     def make_routing_instances_type(self, tokens):
-        yield self.make_forwarding_instance_type(instance=tokens[1], type=tokens[3])
+        vrf_type = tokens[3]
+        if tokens[3] == "virtual-router":
+            vrf_type = "vrf"
+        elif tokens[3] == "virtual-switch":
+            vrf_type = "bridge"
+        yield self.make_forwarding_instance_type(instance=tokens[1], type=vrf_type)
 
     @match("routing-instances", ANY, "vrf-target", ANY)
     def normalize_routing_instances_rt(self, tokens):
-        yield self.make_forwarding_instance_export_target(instance=tokens[1], target=tokens[3][7:])
-        yield self.make_forwarding_instance_import_target(instance=tokens[1], target=tokens[3][7:])
+        vrf_taget = tokens[3]
+        if vrf_taget.startswith("target"):
+            # vrf-target target:10.10.10.10:1010;
+            vrf_taget = tokens[3][7:]
+        elif vrf_taget.startswith("t:"):
+            # vrf-target t:10.10.10.10:1010;
+            vrf_taget = tokens[3][2:]
+        yield self.make_forwarding_instance_export_target(instance=tokens[1], target=vrf_taget)
+        yield self.make_forwarding_instance_import_target(instance=tokens[1], target=vrf_taget)
 
     @match("routing-instances", ANY, "vrf-target", "export", ANY)
     def normalize_routing_instances_rt_export(self, tokens):
