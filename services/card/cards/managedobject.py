@@ -59,11 +59,9 @@ class ManagedObjectCard(BaseCard):
     # get data function
     def get_data(self):
         def sortdict(dct):
-            kys = dct.keys()
-            kys.sort()
             res = OrderedDict()
-            for x in kys:
-                for k, v in dct.iteritems():
+            for x in sorted(list(dct)):
+                for k, v in six.iteritems(dct):
                     if k == x:
                         res[k] = v
             return res
