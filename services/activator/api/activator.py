@@ -175,7 +175,7 @@ class ActivatorAPI(API):
             eof_mark="</html>",
         )
         if 200 <= code <= 299:
-            raise tornado.gen.Return(body)
+            raise tornado.gen.Return(smart_text(body, errors="replace"))
         elif ignore_errors:
             metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
