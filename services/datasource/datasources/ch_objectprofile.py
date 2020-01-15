@@ -25,7 +25,7 @@ class CHManagedObjectProfileDataSource(BaseDataSource):
                 mop.id,
                 mop.name,
                 mop.level,
-                mop.enable_ping,
-                mop.enable_box_discovery,
-                mop.enable_periodic_discovery,
+                int(mop.enable_ping),
+                int(mop.enable_box_discovery),
+                int(mop.enable_periodic_discovery),
             )
