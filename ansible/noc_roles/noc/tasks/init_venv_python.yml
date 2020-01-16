@@ -36,7 +36,8 @@
     name: setuptools
     chdir: "{{ noc_root }}"
     virtualenv: "{{ noc_root }}"
-    state: latest
+    state: forcereinstall
+    version: '44.0.0'
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
