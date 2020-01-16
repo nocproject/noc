@@ -76,7 +76,7 @@ class MIBAPI(API):
                 [config.path.smilint, "-m", tmp_path], stderr=subprocess.PIPE, env=self.SMI_ENV
             ).stderr
             for l in f:
-                match = self.rx_module_not_found.search(l.strip())
+                match = self.rx_module_not_found.search(smart_text(l).strip())
                 if match:
                     return {
                         "status": False,
@@ -92,7 +92,7 @@ class MIBAPI(API):
                 )
                 with open(py_path) as f:
                     p_data = smart_bytes(smart_text(f.read(), encoding="ascii", errors="ignore"))
-                with open(py_path, "w") as f:
+                with open(py_path, "wb") as f:
                     f.write(p_data)
                 m = imp.load_source("mib", py_path)
             # NOW we can deduce module name
