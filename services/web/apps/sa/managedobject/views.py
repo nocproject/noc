@@ -51,7 +51,7 @@ from noc.core.script.loader import loader as script_loader
 from noc.core.mongo.connection import get_db
 from noc.core.defer import call_later
 from noc.core.translation import ugettext as _
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -685,7 +685,7 @@ class ManagedObjectApplication(ExtModelApplication):
         key = "discovery-%s-%s" % (job, o.id)
         d = get_db()["noc.joblog"].find_one({"_id": key})
         if d and d["log"]:
-            return self.render_plain_text(zlib.decompress(str(d["log"])))
+            return self.render_plain_text(zlib.decompress(smart_bytes((d["log"]))))
         else:
             return self.render_plain_text("No data")
 
