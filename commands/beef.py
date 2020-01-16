@@ -25,7 +25,7 @@ from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
 from noc.main.models.extstorage import ExtStorage
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
 
 
 class Command(BaseCommand):
@@ -52,7 +52,7 @@ class Command(BaseCommand):
         # view command
         view_parser = subparsers.add_parser("view")
         view_parser.add_argument("--storage", help="External storage name or url")
-        view_parser.add_argument("--path", help="Beef UUID or path name")
+        view_parser.add_argument("--path", type=smart_text, help="Beef UUID or path name")
         # edit command
         export_parser = subparsers.add_parser("export")
         export_parser.add_argument("--storage", help="External storage name or url")
@@ -74,7 +74,7 @@ class Command(BaseCommand):
         )
         run_parser.add_argument("--storage", help="External storage name")
         run_parser.add_argument("--path", type=smart_text, help="Beef UUID or path name")
-        run_parser.add_argument("--access-preference", default="SC", help="Access preference")
+        run_parser.add_argument("--access-preference", default="CS", help="Access preference")
         out_group = run_parser.add_mutually_exclusive_group()
         out_group.add_argument(
             "--pretty",
@@ -254,11 +254,15 @@ class Command(BaseCommand):
             with open(import_path, "r") as f:
                 data = yaml.safe_load(f)
             for c in data["cli_fsm"]:
-                c["reply"] = [codecs.encode(reply, self.CLI_ENCODING) for reply in c["reply"]]
+                c["reply"] = [
+                    codecs.encode(smart_bytes(reply), self.CLI_ENCODING) for reply in c["reply"]
+                ]
             for c in data["cli"]:
-                c["reply"] = [codecs.encode(reply, self.CLI_ENCODING) for reply in c["reply"]]
+                c["reply"] = [
+                    codecs.encode(smart_bytes(reply), self.CLI_ENCODING) for reply in c["reply"]
+                ]
             for m in data["mib"]:
-                m["value"] = codecs.encode(m["value"], self.CLI_ENCODING)
+                m["value"] = codecs.encode(smart_bytes(m["value"]), self.CLI_ENCODING)
             try:
                 beef = Beef.from_json(data)
             except ValueError:
