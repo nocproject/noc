@@ -53,3 +53,26 @@ class ServiceLoader(BaseLoader):
     }
 
     discard_deferred = True
+
+    def find_object(self, v):
+        """
+        Find object by remote system/remote id
+        :param v:
+        :return:
+        """
+        if not v.get("remote_system") or not v.get("remote_id"):
+            self.logger.warning("RS or RID not found")
+            return None
+        if not hasattr(self, "_service_remote_ids"):
+            self.logger.info("Filling service collection")
+            coll = Service._get_collection()
+            self._service_remote_ids = {
+                c["remote_id"]: c["_id"]
+                for c in coll.find(
+                    {"remote_system": v["remote_system"].id, "remote_id": {"$exists": True}},
+                    {"remote_id": 1, "_id": 1},
+                )
+            }
+        if v["remote_id"] in self._service_remote_ids:
+            return Service.objects.get(id=self._service_remote_ids[v["remote_id"]])
+        return None
