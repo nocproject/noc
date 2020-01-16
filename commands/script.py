@@ -155,7 +155,7 @@ class Command(BaseCommand):
             storage = StorageStub("osfs:///")
             sdata = beef.get_data(decode=True)
             with storage.open_fs() as fs:
-                fs.writebytes(beef_output, bytes(yaml.safe_dump(sdata)))
+                fs.writebytes(beef_output, smart_bytes(yaml.safe_dump(sdata)))
 
     def get_object(self, object_name):
         """

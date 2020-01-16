@@ -181,9 +181,9 @@ class Beef(object):
         usize = len(data)
         dir_path = os.path.dirname(path)
         if path.endswith(".gz"):
-            data = self.compress_gzip(data)
+            data = self.compress_gzip(smart_bytes(data))
         elif path.endswith(".bz2"):
-            data = self.compress_bz2(data)
+            data = self.compress_bz2(smart_bytes(data))
         csize = len(data)
         try:
             with storage.open_fs() as fs:
