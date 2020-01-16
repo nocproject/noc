@@ -9,16 +9,21 @@
 # Python module
 import re
 
-# NOC modules
-from noc.services.web.apps.sa.objectlist.views import ObjectListApplication
+# Third-party modules
+import zlib
 
-# from noc.core.dateutils import humanize_distance
+# NOC modules
+from noc.services.web.apps.sa.objectlist.views import ObjectListApplication, view
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
+from noc.core.mongo.connection import get_db
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.main.models.pool import Pool
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_bytes
+
+# from noc.core.dateutils import humanize_distance
 
 
 class MonitorApplication(ObjectListApplication):
@@ -84,12 +89,29 @@ class MonitorApplication(ObjectListApplication):
                     "%s_time_start" % prefix: self.to_json(job[Job.ATTR_TS]),
                     "%s_last_success" % prefix: self.to_json(job.get(Job.ATTR_LAST)),
                     "%s_status" % prefix: job[Job.ATTR_STATUS] if Job.ATTR_STATUS in job else "--",
-                    "%s_time" % prefix: job[Job.ATTR_LAST_DURATION],
-                    "%s_duration" % prefix: job[Job.ATTR_LAST_DURATION],
+                    "%s_time" % prefix: job.get(Job.ATTR_LAST_DURATION, 0),
+                    "%s_duration" % prefix: job.get(Job.ATTR_LAST_DURATION, 0),
                     "%s_last_status" % prefix: job.get(Job.ATTR_LAST_STATUS),
                 }
             )
         return result
+
+    @view(url=r"^(?P<id>\d+)/discovery_job_log/$", method=["GET"], access="read", api=True)
+    def api_job_log(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = []
+        for job in self.job_map:
+            key = "discovery-%s-%s" % (job, o.id)
+            d = get_db()["noc.joblog"].find_one({"_id": key})
+            if d and d["log"]:
+                r += [b"\n", smart_bytes(job), b"\n"]
+                r += [zlib.decompress(smart_bytes((d["log"])))]
+        if r:
+            return self.render_plain_text(b"".join(r))
+        else:
+            return self.render_plain_text("No data")
 
 
 class JobF(object):
@@ -115,6 +137,13 @@ class JobF(object):
             }
         ]
         pass
+
+    def count(self):
+        scheduler = Scheduler(self.scheduler, pool=self.pool).get_collection()
+        find = {Job.ATTR_KEY: {"$in": list(self.mos_filter.values_list("id", flat=True))}}
+        if self.pipeline and "$match" in self.pipeline[0]:
+            find.update(self.pipeline[0]["$match"])
+        return scheduler.count(find)
 
     def filter(self, *args, **kwargs):
         self.mos_filter = self.mos_filter.filter(**kwargs)
