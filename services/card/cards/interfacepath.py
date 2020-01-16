@@ -32,6 +32,7 @@ from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
 from noc.core.hash import hash_str
 from .base import BaseCard
+from noc.core.comp import smart_bytes, smart_text
 
 
 class InterfacePathCard(BaseCard):
@@ -109,12 +110,16 @@ class InterfacePathCard(BaseCard):
         :param data: Input data
         :return: Tamper-protection signature
         """
-        return codecs.encode(hash_str(config.secret_key + data), "base64")[: cls.SIG_LEN]
+        return smart_text(
+            codecs.encode(hash_str(config.secret_key + data), "base64")[: cls.SIG_LEN]
+        )
 
     @classmethod
     def encode_query(cls, to_collect):
         # type: (Set[Tuple[int, int, str]]) -> str
-        data = codecs.encode(ujson.dumps(to_collect), "base64").replace("\n", "")
+        data = smart_text(
+            codecs.encode(smart_bytes(ujson.dumps(to_collect)), "base64").replace(b"\n", b"")
+        )
         return cls.get_signature(data) + data
 
     @classmethod
