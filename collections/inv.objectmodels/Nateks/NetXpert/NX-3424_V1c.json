@@ -1,0 +1,276 @@
+{
+    "name": "Nateks | NetXpert | NX-3424 V1c",
+    "$collection": "inv.objectmodels",
+    "uuid": "8400beea-bed3-47df-9776-44c8aced5511",
+    "vendor__code": "NATEKS",
+    "description": "24x10/100BT+ 2 Gigabit SFP Combo",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric"],
+    "connections": [
+        {
+            "description": "FastEthernet0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/13",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/14",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/15",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/16",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/17",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/18",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/19",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/20",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/21",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/22",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/23",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet0/24",
+            "direction": "s",
+            "gender": "f",
+            "name": "FastEthernet0/24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigaEthernet0/1",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigaEthernet0/1 Fiber",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigaEthernet0/2",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "Gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigaEthernet0/2 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NX-3424 V1c"]
+        },
+        "dimensions": {
+            "depth": 316,
+            "height": 44,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 20.0
+        },
+
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
