@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # mib API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -158,7 +158,9 @@ class MIBAPI(API):
                             "name": "%s::%s" % (mib_name, node),
                             "oid": v["oid"],
                             "description": v.get("description"),
-                            "syntax": v["syntax"]["type"] if "syntax" in v else None,
+                            "syntax": MIB.parse_syntax(v["syntax"]["type"]) or None
+                            if "syntax" in v
+                            else None,
                         }
                         for node, v in six.iteritems(m.MIB[i])
                     ]
