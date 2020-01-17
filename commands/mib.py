@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # MIB command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,11 @@ import argparse
 import re
 import os
 import datetime
+import contextlib
+import gzip
+
+# Third-party modules
+import ujson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -22,6 +27,7 @@ from noc.core.service.error import RPCError
 from noc.fm.models.mib import MIB, MIBData
 from noc.services.mib.api.mib import MIBAPI
 from noc.core.error import ERR_MIB_MISSED
+from noc.core.comp import smart_bytes
 
 
 class Command(BaseCommand):
@@ -40,10 +46,17 @@ class Command(BaseCommand):
         # lookup
         lookup_parser = subparsers.add_parser("lookup")
         lookup_parser.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP OIDs")
+        # Make collection-ready MIB
+        make_collection_parser = subparsers.add_parser("make-collection")
+        make_collection_parser.add_argument("-o", "--output", dest="output", default="")
+        make_collection_parser.add_argument(
+            "-b", "--bump", dest="bump", action="store_true", default=False
+        )
+        make_collection_parser.add_argument(dest="mib_name", nargs=1, help="MIB Name")
         # Make cmib "Make compiled MIB for SA and PM scripts"
-        make_cmib_parser = subparsers.add_parser("make_cmib")
+        make_cmib_parser = subparsers.add_parser("make-cmib")
         make_cmib_parser.add_argument("-o", "--output", dest="output", default="")
-        make_cmib_parser.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP OIDs")
+        make_cmib_parser.add_argument(dest="mib_name", nargs=1, help="MIB Name")
         # import
         import_parser = subparsers.add_parser("import")
         import_parser.add_argument("paths", nargs=argparse.REMAINDER, help="Path to MIB files")
@@ -52,7 +65,7 @@ class Command(BaseCommand):
         if options.get("local"):
             self.svc = MIBAPI(ServiceStub(), None, None)
         connect()
-        return getattr(self, "handle_%s" % cmd)(*args, **options)
+        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_lookup(self, oids, *args, **kwargs):
         for oid in oids:
@@ -82,24 +95,90 @@ class Command(BaseCommand):
         except RPCError as e:
             self.die("RPC Error: %s" % e)
 
-    def handle_make_cmib(self, oids, *args, **kwargs):
-        if len(oids) != 1:
-            self.stdout.write("Specify one MIB\n")
-            self.die("")
-        if kwargs["output"]:
-            self.prepare_dirs(kwargs["output"])
-            self.print("Opening file %s" % kwargs["output"])
-            f = open(kwargs["output"], "w")
-            f = f.write
+    @contextlib.contextmanager
+    def open_output(self, path=None):
+        """
+        Context manager for output writer
+        :param path:
+        :return:
+        """
+        if path:
+            self.prepare_dirs(path)
+            self.print("Writing to file %s" % path)
+            if os.path.splitext(path)[-1] == ".gz":
+                with gzip.GzipFile(path, "w") as f:
+                    yield lambda x: f.write(smart_bytes(x))
+            else:
+                with open(path, "w") as f:
+                    yield lambda x: f.write(x)
         else:
             self.print("Dumping to stdout")
-            f = self.print
-        mib = oids[0]
-        try:
-            m = MIB.objects.get(name=mib)
-        except MIB.DoesNotExist:
-            self.stdout.write("MIB not found: %s\n" % mib)
+            yield self.print
+
+    def handle_make_collection(self, mib_name, bump=False, *args, **kwargs):
+        if len(mib_name) != 1:
+            self.print("Specify one MIB")
             self.die("")
+        # Get MIB
+        mib = MIB.get_by_name(mib_name[0])
+        if not mib:
+            self.print("MIB not found: %s" % mib_name[0])
+            self.die("")
+        # Prepare MIB data
+        mib_data = list(
+            sorted(
+                [
+                    {
+                        "oid": dd.oid,
+                        "name": dd.name,
+                        "description": dd.description,
+                        "syntax": dd.syntax,
+                    }
+                    for dd in MIBData.objects.filter(mib=mib.id)
+                ]
+                + [
+                    {
+                        "oid": dd.oid,
+                        "name": next((a for a in dd.aliases if a.startswith(mib.name + "::"))),
+                        "description": dd.description,
+                        "syntax": dd.syntax,
+                    }
+                    for dd in MIBData.objects.filter(aliases__startswith="%s::" % mib.name)
+                ],
+                key=lambda x: x["oid"],
+            )
+        )
+        # Prepare MIB
+        if mib.last_updated:
+            last_updated = mib.last_updated.strftime("%Y-%m-%d")
+        else:
+            last_updated = "1970-01-01"
+        version = mib.version
+        if bump:  # Bump to next version
+            version += 1
+        data = {
+            "name": mib.name,
+            "description": mib.description,
+            "last_updated": last_updated,
+            "version": version,
+            "depends_on": mib.depends_on,
+            "typedefs": mib.typedefs,
+            "data": mib_data,
+        }
+        # Serialize and write
+        with self.open_output(kwargs.get("output")) as f:
+            f(ujson.dumps(data))
+
+    def handle_make_cmib(self, mib_name, *args, **kwargs):
+        if len(mib_name) != 1:
+            self.print("Specify one MIB")
+            self.die("")
+        # Get MIB
+        mib = MIB.get_by_name(mib_name[0])
+        if not mib:
+            self.print("MIB not found: %s" % mib_name[0])
+            self.die("")
+        # Build cmib
         year = datetime.date.today().year
         r = [
             "# -*- coding: utf-8 -*-",
@@ -117,21 +196,26 @@ class Command(BaseCommand):
             'NAME = "%s"' % mib,
             "",
             "# Metadata",
-            'LAST_UPDATED = "%s"' % m.last_updated.isoformat().split("T")[0],
+            'LAST_UPDATED = "%s"' % mib.last_updated.isoformat().split("T")[0],
             'COMPILED = "%s"' % datetime.date.today().isoformat(),
             "",
             "# MIB Data: name -> oid",
             "MIB = {",
         ]
-        rr = []
-        for md in sorted(
-            MIBData.objects.filter(mib=m.id), key=lambda x: [int(y) for y in x.oid.split(".")]
-        ):
-            rr += ['    "%s": "%s"' % (md.name, md.oid)]
-        r += [",\n".join(rr) + ","]
+        r += [
+            ",\n".join(
+                '    "%s": "%s"' % (md.name, md.oid)
+                for md in sorted(
+                    MIBData.objects.filter(mib=mib.id),
+                    key=lambda x: [int(y) for y in x.oid.split(".")],
+                )
+            )
+        ]
+        r[-1] += ","
         r += ["}", ""]
-        data = "\n".join(r)
-        f(data)
+        data = "\n".join(r) + "\n"
+        with self.open_output(kwargs.get("output")) as f:
+            f(data)
 
     def prepare_dirs(self, path):
         d = os.path.dirname(path)
