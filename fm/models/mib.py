@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MIB model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ class MIB(Document):
                 s["base_type"] = syntax["name"]
             else:
                 # Resolve references
-                mib = MIB.objects.filter(name=syntax["module"]).first()
+                mib = MIB.get_by_name(syntax["module"])
                 if mib is None:
                     raise MIBNotFoundException(syntax["module"])
                 if not mib.typedefs or syntax["name"] not in mib.typedefs:
@@ -116,12 +116,15 @@ class MIB(Document):
         mp = MIBPreference.objects.filter(mib=self.name).first()
         mib_preference = mp.preference if mp else None
         prefs = {}  # MIB Preferences cache
+        # Prefetch existing MIB data
+        oids = [v["oid"] for v in data]
+        md_cache = {md["oid"]: md for md in MIBData.objects.filter(oid__in=oids)}
         # Load data
         for v in data:
             oid = v["oid"]
             oid_name = v["name"]
             description = v.get("description", None)
-            o = MIBData.objects.filter(oid=oid).first()
+            o = md_cache.get(oid)
             if o is not None:
                 if o.name == oid_name:
                     # Same oid, same name: duplicated declaration.
@@ -147,7 +150,7 @@ class MIB(Document):
                     raise OIDCollision(oid, oid_name, o.name, "Equal preferences")
                 if mib_preference < o_preference:
                     # Replace existing
-                    o.aliases = sorted(o.aliases + [o.name])
+                    o.aliases = list(sorted(o.aliases + [o.name]))
                     o.name = oid_name
                     o.mib = self.id
                     if description:
