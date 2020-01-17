@@ -13,6 +13,7 @@ from __future__ import absolute_import
 import demjson
 from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
+from collections import defaultdict
 
 # NOC modules
 from .base import BaseDashboard
@@ -72,7 +73,8 @@ class MODashboard(BaseDashboard):
         lags = []
         subif = []
         radio_types = []
-
+        selected_types = defaultdict(list)
+        selected_ifaces = set(self.extra_vars.get("var_ifaces", "").split(","))
         # Get all interface profiles with configurable metrics
         all_ifaces = list(Interface.objects.filter(managed_object=self.object.id))
         iprof = set(i.profile for i in all_ifaces)
@@ -132,6 +134,8 @@ class MODashboard(BaseDashboard):
                         }
                         for si in SubInterface.objects.filter(interface=iface)
                     ]
+                if iface.name in selected_ifaces:
+                    selected_types[profile.id] += [iface.name]
             if ports:
                 port_types += [{"type": profile.id, "name": profile.name, "ports": ports}]
             if radio:
@@ -155,6 +159,7 @@ class MODashboard(BaseDashboard):
 
         return {
             "port_types": port_types,
+            "selected_types": selected_types,
             "object_metrics": object_metrics,
             "object_check_metrics": object_check_metrics,
             "lags": lags,
@@ -181,6 +186,8 @@ class MODashboard(BaseDashboard):
             "bi_id": self.object.bi_id,
             "pool": self.object.pool.name,
             "extra_template": self.extra_template,
+            "extra_vars": self.extra_vars,
+            "selected_types": self.object_data["selected_types"],
             "ping_interval": self.object.object_profile.ping_interval,
             "discovery_interval": self.object.object_profile.periodic_discovery_interval,
         }
