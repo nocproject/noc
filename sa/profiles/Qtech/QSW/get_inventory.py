@@ -7,23 +7,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
     name = "Qtech.QSW.get_inventory"
     interface = IGetInventory
-
-    def execute(self):
-        v = self.scripts.get_version()
-        return [
-            {
-                "type": "CHASSIS",
-                "number": "1",
-                "vendor": "QTECH",
-                "part_no": [v["platform"]],
-                "revision": v["attributes"]["HW version"],
-                "serial": v["attributes"]["Serial Number"],
-            }
-        ]

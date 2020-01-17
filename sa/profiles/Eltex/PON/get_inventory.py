@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Eltex.RG.get_inventory
+# Eltex.PON.get_inventory
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -12,5 +12,5 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
-    name = "Eltex.RG.get_inventory"
+    name = "Eltex.PON.get_inventory"
     interface = IGetInventory
