@@ -1,4 +1,4 @@
-{% macro ports(port_type) -%}
+{% macro ports(port_type,selected_types) -%}
 {% if port_type["ports"][0] and port_type["ports"][0]["descr"] %}
     {% set port_name = port_type["ports"][0]["descr"] %}
 {% elif port_type["ports"][0] and port_type["ports"][0]["name"] %}
@@ -10,11 +10,10 @@
 {% set comma = joiner(",") -%}
 {
   "current": {
-    "selected": true,
     "tags": [],
-    "text": "All",
+    "text": "{% if port_type.type in selected_types %}Selected{% else %}All{% endif %}",
     "value": [
-      "$__all"
+        "{%- for port in selected_types[port_type.type] %}{{port.name}},{% else %}$__all{% endfor %}"
      ]
   },
   "datasource": null,
@@ -31,7 +30,7 @@
     },
     {%for port in port_type.ports -%}
     {{ comma() }}{
-      "selected": false,
+      "selected": {%- if port.name in selected_types[port_type.type] -%}true{% else %}false{%- endif -%},
       "text": "{%- if port.descr -%}{{port.name}} status : {{ port.status }} ({{port.descr}}){%else%}{{port.name}} status : {{ port.status }}{%- endif -%}",
       "value": "{{port.name}}"
     }

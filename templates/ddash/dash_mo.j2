@@ -22,7 +22,7 @@
         {% set comma = joiner(",") -%}
         {% for port_type in port_types -%}
           {% from 'template_port.j2' import ports -%}
-          {{ comma() }}{{ ports(port_type) }}
+          {{ comma() }}{{ ports(port_type, selected_types) }}
         {% endfor -%},
       {% endif %}
 
@@ -132,7 +132,7 @@
         {% for port in port_types -%}
             {{ comma() }}
             {
-              "collapse": true,
+              "collapse": {% if port.type in selected_types and selected_types[port.type] %}false{% else %}true{% endif %},
               "editable": false,
               "height": "250px",
               "showTitle": true,
