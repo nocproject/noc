@@ -40,9 +40,13 @@ class DynamicDashboardApplication(ExtApplication):
         if not dt:
             return self.response_not_found("Dashboard not found")
         oid = request.GET.get("id")
+        extra_vars = {}
+        for v in request.GET:
+            if v.startswith("var_"):
+                extra_vars[v] = request.GET[v]
         extra_template = request.GET.get("extra_template")
         try:
-            dashboard = dt(oid, extra_template)
+            dashboard = dt(oid, extra_template, extra_vars)
         except BaseDashboard.NotFound:
             return self.response_not_found("Object not found")
         return dashboard.render()
