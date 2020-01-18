@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES24xx.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -48,8 +48,8 @@ class Script(BaseScript):
         r"^System Desc\s+: (?P<system_description>.*?)\n"
         r"^Local Intf\s+: (?P<local_port>.*?)\n"
         r"^Time Remaining.*?\n"
-        r"^System Capabilities Supported\s+:.*?\n"
-        r"^System Capabilities Enabled\s+:(?P<caps>.*?)\n",
+        r"(^System Capabilities Supported\s+:.*?\n)?"
+        r"^System Capabilities (?:Enabled|Tlv)\s+:(?P<caps>.*?)\n",
         re.MULTILINE | re.DOTALL,
     )
 
@@ -118,12 +118,15 @@ class Script(BaseScript):
                 "remote_port_subtype": self.PORT_SUBTYPE[match.group("port_id_subtype").strip()],
                 "remote_capabilities": cap,
             }
-            if match.group("system_name").strip():
-                n["remote_system_name"] = match.group("system_name").strip()
-            if match.group("system_description").strip():
-                n["remote_system_description"] = match.group("system_description").strip()
-            if match.group("port_description").strip():
-                n["remote_port_description"] = match.group("port_description").strip()
+            system_name = match.group("system_name").strip()
+            if system_name and system_name != "Not Advertised":
+                n["remote_system_name"] = system_name
+            system_description = match.group("system_description").strip()
+            if system_description and system_description != "Not Advertised":
+                n["remote_system_description"] = system_description
+            port_description = match.group("port_description").strip()
+            if port_description and port_description != "Not Advertised":
+                n["remote_port_description"] = port_description
             iface["neighbors"] += [n]
             r += [iface]
         return r
