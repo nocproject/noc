@@ -1,0 +1,6 @@
+{
+    "mib": "DLINK-3100-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "22177f65-0201-4b66-8133-9540dbc327a6",
+    "preference": 2000
+}
