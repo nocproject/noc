@@ -242,7 +242,7 @@ class Command(BaseCommand):
         :param local:
         :return:
         """
-        with open(path) as f:
+        with open(path, "rb") as f:
             data = f.read()
         try:
             r = self.svc.compile(data)

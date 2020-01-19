@@ -33,6 +33,7 @@ class MIBAPI(API):
     name = "mib"
     rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
     rx_oid = re.compile(r"^\d+(\.\d+)+")
+    TRY_ENCODINGS = ["utf-8", "big5"]
 
     SMI_ENV = {"SMIPATH": config.path.mib_path}
 
@@ -57,6 +58,23 @@ class MIBAPI(API):
                 return {"status": True, "data": f.read()}
         return {"status": False, "msg": "Not found", "code": ERR_MIB_NOT_FOUND}
 
+    def guess_encoding(self, s, encodings=None):
+        # type: (six.binary_type) -> six.text_type
+        """
+        Try to guess encoding
+        :param s:
+        :param encodings:
+        :return:
+        """
+        encodings = encodings or self.TRY_ENCODINGS
+        exc = None
+        for enc in encodings:
+            try:
+                return s.decode(enc)
+            except UnicodeDecodeError as e:
+                exc = e
+        raise exc
+
     @api
     def compile(self, data):
         """
@@ -68,6 +86,9 @@ class MIBAPI(API):
             return {"status": False, "msg": "smilint is missed", "error": ERR_MIB_TOOL_MISSED}
         if not config.path.smilint or not os.path.exists(config.path.smidump):
             return {"status": False, "msg": "smidump is missed", "error": ERR_MIB_TOOL_MISSED}
+        # Normalize input
+        if isinstance(data, six.binary_type):
+            data = self.guess_encoding(data)
         # Put data to temporary file
         with temporary_file(data) as tmp_path:
             # Pass MIB through smilint to detect missed modules
