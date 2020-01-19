@@ -15,7 +15,7 @@ class Profile(BaseProfile):
     name = "Carelink.SWG"
     pattern_username = r"(?<!Login in progress\.\.\.)Username: "
     pattern_prompt = r"^(\S+)# "
-    pattern_more = r"^---More---\n"
+    pattern_more = [(r"^---More---\n", "\r")]
     pattern_syntax_error = r"^(Invalid command|\*Incomplete command)"
     username_submit = "\r"
     password_submit = "\r"
