@@ -295,7 +295,7 @@ class Script(BaseScript):
                 r = getattr(self, "_ent_id", None)
                 if r is None:
                     r = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0], version=version)
-                elif r == "0.0":
+                elif len(r.split(".")) < 6:
                     # Bad values
                     r = self.snmp.getnext(
                         "1.3.6.1.4.1", bulk=False, version=version, only_first=True
