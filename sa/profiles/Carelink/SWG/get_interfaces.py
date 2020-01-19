@@ -37,7 +37,6 @@ class Script(BaseScript):
             return self.rx_lldp.findall(self.cli("show lldp"))
         except self.CLISyntaxError:
             return []
-        return []
 
     def get_ctp(self):
         try:
@@ -51,7 +50,6 @@ class Script(BaseScript):
             return self.rx_ctp.findall(v)
         except self.CLISyntaxError:
             return []
-        return []
 
     def execute(self):
         interfaces = []
