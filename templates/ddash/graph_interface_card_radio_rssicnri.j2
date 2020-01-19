@@ -1,7 +1,10 @@
+{% macro interface(interface) -%}
+
 {
-  "title": "CPU | Usage",
+  "title": "Power Tx/Rx - {{interface.port.name}} Status: {{interface.port.status}}{% if interface.port.descr %} Descr: {{interface.port.descr}}{% endif %}",
   "aliasColors": {},
   "bars": false,
+  "internal_comment":"graph_interface_card_radio_rssicnri.j2",
   "datasource": null,
   "fill": 1,
   "grid": {
@@ -10,7 +13,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": 1151904820716512,
+  "id": 1716215125057151,
   "legend": {
     "alignAsTable": true,
     "avg": true,
@@ -25,28 +28,36 @@
   "lines": true,
   "linewidth": 2,
   "links": [],
+  "minSpan": 6,
   "nullPointMode": "connected",
   "percentage": false,
   "pointradius": 5,
   "points": false,
   "renderer": "flot",
-  "seriesOverrides": [],
+  "repeat": "{{interface.port.name}}",
+  "scopedVars": {
+    "{{interface.type}}": {
+      "selected": true,
+      "text": "{{interface.port.name}}({{interface.port.descr}})",
+      "value": "{{interface.port.name}}"
+    }
+  },
   "span": 6,
   "stack": false,
   "steppedLine": false,
   "targets": [
     {
-      "dateTimeColDataType": "ts",
-      "datetimeLoading": false,
-      "database": "noc",
-      "dateLoading": false,
-      "tableLoading": false,
-      "dateColDataType": "date",
-      "table": "cpu",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((slot, CPUUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'/') as slot, \n        avg(usage) as `CPUUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY arrayStringConcat(path,'/'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT $timeSeries as t, avg(rssi) as `RSSI`, avg(cnri) as `CNRI` FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{interface.port.name}}') and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
-      "resultFormat": "time_series"
+      "resultFormat": "time_series",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "interface",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
     }
   ],
   "timeFrom": null,
@@ -58,27 +69,27 @@
     "value_type": "cumulative"
   },
   "type": "graph",
-  "x-axis": true,
   "xaxis": {
     "show": true
   },
   "y-axis": true,
   "yaxes": [
     {
-      "format": "percent",
-      "label": null,
-      "logBase": 1,
-      "max": 100,
-      "min": 0,
-      "show": true
-    },
-    {
-      "format": "short",
-      "label": null,
+      "format": "bps",
+      "label": "bit/s",
       "logBase": 1,
       "max": null,
       "min": null,
       "show": true
+    },
+    {
+      "logBase": 1,
+      "show": true,
+      "max": null,
+      "format": "short",
+      "min": null,
+      "label": null
     }
   ]
 }
+{%- endmacro %}

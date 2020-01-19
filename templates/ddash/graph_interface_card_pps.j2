@@ -1,9 +1,10 @@
-{% macro interface(interface, lindex) -%}
+{% macro interface(interface) -%}
+
 {
-  "title": "{{interface.name}} : Members {{ interface.status | join(", ") }}",
+  "title": "Packets In/Out - {{interface.port.name}} Status: {{interface.port.status}}{% if interface.port.descr %} Descr: {{interface.port.descr}}{% endif %}",
   "aliasColors": {},
   "bars": false,
-  "internal_comment":"graph_interface_load_lag.j2",
+  "internal_comment":"graph_interface_load_pps.j2",
   "datasource": null,
   "fill": 1,
   "grid": {
@@ -12,7 +13,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": {{lindex + 100}},
+  "id": 6389162852101061,
   "legend": {
     "alignAsTable": true,
     "avg": true,
@@ -33,23 +34,21 @@
   "pointradius": 5,
   "points": false,
   "renderer": "flot",
-  "repeat": "",
-  "seriesOverrides": [
-    {
-      "alias": "/Input.+/",
-      "transform": "negative-Y"
+  "repeat": "{{interface.port.name}}",
+  "scopedVars": {
+    "{{interface.type}}": {
+      "selected": true,
+      "text": "{{interface.port.name}}({{interface.port.descr}})",
+      "value": "{{interface.port.name}}"
     }
-  ],
-  "span": 12,
+  },
+  "span": 6,
   "stack": false,
   "steppedLine": false,
   "targets": [
-  {% set comma = joiner(",") -%}
-  {%for port in interface.ports %}
-  {{ comma() }}
-      {
+    {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(load_in) as `Input {{ port }}`,  avg(load_out) as `Output {{ port }}`, avg(status_oper) as `Oper status`, avg(status_admin) as `Admin status` FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{port}}') and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t,  avg(packets_in) as `Input PPS`,  avg(packets_out) as `Output PPS` FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{interface.port.name}}') and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
       "database": "noc",
@@ -60,7 +59,6 @@
       "dateColDataType": "date",
       "dateTimeColDataType": "ts"
     }
-  {%endfor%}
   ],
   "timeFrom": null,
   "timeShift": null,
@@ -74,22 +72,35 @@
   "xaxis": {
     "show": true
   },
-  "y-axis": true,
-  "yaxes": [
+ "seriesOverrides": [
     {
-      "format": "bps",
-      "label": "bit/s",
-      "logBase": 1,
-      "max": null,
-      "min": null,
-      "show": true
+      "alias": "/Input/i",
+      "transform": "negative-Y"
     },
     {
-      "format": "short",
-      "label": null,
+      "alias": "/Input/i",
+      "color": "#64b0c8"
+    },
+    {
+      "alias": "/Output/i",
+      "color": "#0a50a1"
+    }
+  ],
+  "yaxes": [
+    {
       "logBase": 1,
+      "show": true,
+      "max": null,
+      "format": "pps",
+      "min": null,
+      "label": "packets/s"
+    },
+    {
+      "logBase": 1,
+      "format": "short",
       "max": null,
       "min": null,
+      "label": null,
       "show": true
     }
   ]
