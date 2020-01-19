@@ -22,6 +22,7 @@ class Script(BaseScript):
     rx_mac = re.compile(r"MAC Address\s+: (?P<mac>\S+)")
 
     def execute(self):
-        match = self.rx_mac.search(self.cli("show system", cached=True))
+        v = self.cli("show system", cached=True)
+        match = self.rx_mac.search(v)
         mac = match.group("mac")
         return {"first_chassis_mac": mac, "last_chassis_mac": mac}
