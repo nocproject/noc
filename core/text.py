@@ -73,7 +73,7 @@ def parse_table(
         rx_footer = re.compile(footer)
     if line_wrapper and not callable(line_wrapper):
         line_wrapper = None
-    if row_wrapper and not callable(line_wrapper):
+    if row_wrapper and not callable(row_wrapper):
         row_wrapper = None
     for line in s.splitlines():
         if line_wrapper:
