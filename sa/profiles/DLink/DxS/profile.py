@@ -18,7 +18,10 @@ from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_P
 
 class Profile(BaseProfile):
     name = "DLink.DxS"
-    pattern_more = r"CTRL\+C.+?a A[Ll][Ll]\s*"
+    pattern_more = [
+        (r"CTRL\+C.+?a A[Ll][Ll]\s*", "a"),
+        (r"System will reboot immediately after upgrade firmware complete\, continue\? \(y\/n\)\s*", "y"),
+    ]
     pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = r"(Available commands|Next possible completions|Ambiguous token):"
     pattern_operation_error = r"This command can\'t be used when authentication policy is disabled."
