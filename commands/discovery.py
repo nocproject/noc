@@ -22,6 +22,7 @@ from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
 from noc.core.cache.base import cache
 from noc.core.span import Span, get_spans
+from noc.core.service.pub import pub
 
 
 class Command(BaseCommand):
@@ -154,6 +155,7 @@ class ServiceStub(object):
         self.service_id = "stub"
         self.address = "127.0.0.1"
         self.port = 0
+        self.pub = pub
 
     def register_metrics(self, table, data):
         self.metrics[table] += data
