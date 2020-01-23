@@ -196,7 +196,7 @@
             "description": "24",
             "direction": "i",
             "gender": "f",
-            "name": "24",
+            "name": "sfp24",
             "protocols": ["TransEth100M"],
             "type__name": "Transceiver | SFP"
         },
