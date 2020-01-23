@@ -155,7 +155,8 @@ class SSHIOStream(IOStream):
                     self.channel.close()
                 except SSH2Error as e:
                     self.logger.debug("Cannot close channel clearly: %s", e)
-                self.channel = None
+                # The causes of memory leak
+                # self.channel = None
             if self.session:
                 self.logger.debug("Closing ssh session")
                 self.session = None
