@@ -14,7 +14,12 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 class Script(BaseScript):
     name = "Alcatel.7302.get_inventory"
     interface = IGetInventory
-    port_map = {14: "7330", 21: "7302"}  # 16, 2  # 8, 2  # 24, 2
+    port_map = {
+        14: "7330",
+        18: "7302",
+        19: "7302",
+        21: "7302",
+    }  # show equipment slot for devices with one control plate return 19 slots
 
     def execute_snmp(self, **kwargs):
         r = []

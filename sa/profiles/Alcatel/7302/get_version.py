@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_version
-# Author: scanbox@gmail.com
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -21,7 +23,12 @@ class Script(BaseScript):
     rx_slots = re.compile(r"slot count\s*:\s*(?P<slot_count>\d+)")
     rx_ver = re.compile(r".+?\/*(?P<version>[A-Za-z0-9.]+?)\s+\S+\s+active.*$", re.MULTILINE)
 
-    port_map = {7: "7330 iSAM", 19: "7302 iSAM"}  # 16, 2  # 8, 2  # 24, 2
+    port_map = {
+        7: "7330",
+        18: "7302",
+        19: "7302",
+        21: "7302",
+    }  # show equipment slot for devices with one control plate return 19 slots
 
     def execute_cli(self, **kwargs):
         self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
