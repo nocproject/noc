@@ -1,10 +1,10 @@
 {
-    "name": "Eltex | xPON | PP4X",
+    "name": "Eltex | MA4000 | PP4X",
     "$collection": "inv.objectmodels",
     "uuid": "01d15312-41fb-416b-a454-a5ccff7a2e67",
     "vendor__code": "ELTEX",
     "description": "Eltex MA4000 плата управления и коммутации PP4X 4x10GBase-X(SFP+), 2x (10/100/1000Base-T/1000Base-X (SFP))",
-    "connection_rule__name": "Generic | Switch SFP",
+    "connection_rule__name": "Eltex | MA4000",
     "cr_context": "LINECARD",
     "tags": ["lc", "sup", "fabric", "port"],
     "connections": [

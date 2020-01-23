@@ -1,9 +1,9 @@
 {
-    "name": "Eltex | LTP | LTP-4X-rev.C",
+    "name": "Eltex | LTP | LTP-8X-rev.C",
     "$collection": "inv.objectmodels",
-    "uuid": "a909582c-a1fb-45cc-9351-00a10ed23f94",
+    "uuid": "83a5bf7a-69b0-403e-9a75-a1e6d025ce2b",
     "vendor__code": "ELTEX",
-    "description": "Оптический станционный терминал LTP-4X/8X",
+    "description": "Оптический станционный терминал LTP-8X",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "tags": ["chassis", "sup", "psu", "port", "fan"],
@@ -12,7 +12,6 @@
             "description": "0",
             "direction": "s",
             "gender": "f",
-            "group": "0",
             "name": "0",
             "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -21,7 +20,6 @@
             "description": "1",
             "direction": "s",
             "gender": "f",
-            "group": "1",
             "name": "1",
             "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -30,7 +28,6 @@
             "description": "2",
             "direction": "s",
             "gender": "f",
-            "group": "2",
             "name": "2",
             "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -39,44 +36,79 @@
             "description": "3",
             "direction": "s",
             "gender": "f",
-            "group": "3",
             "name": "3",
             "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fiber port 0",
+            "description": "4",
+            "direction": "s",
+            "gender": "f",
+            "group": "4",
+            "name": "4",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "5",
+            "direction": "s",
+            "gender": "f",
+            "group": "5",
+            "name": "5",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "6",
+            "direction": "s",
+            "gender": "f",
+            "group": "6",
+            "name": "6",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "7",
+            "direction": "s",
+            "gender": "f",
+            "group": "7",
+            "name": "7",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 4",
             "direction": "i",
             "gender": "f",
-            "group": "0",
-            "name": "sfp0",
+            "group": "4",
+            "name": "sfp4",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Fiber port 1",
+            "description": "Fiber port 5",
             "direction": "i",
             "gender": "f",
-            "group": "1",
-            "name": "sfp1",
+            "group": "5",
+            "name": "sfp5",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Fiber port 2",
+            "description": "Fiber port 6",
             "direction": "i",
             "gender": "f",
-            "group": "2",
-            "name": "sfp2",
+            "group": "6",
+            "name": "sfp6",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Fiber port 3",
+            "description": "Fiber port 7",
             "direction": "i",
             "gender": "f",
-            "group": "3",
-            "name": "sfp3",
+            "group": "7",
+            "name": "sfp7",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -129,6 +161,38 @@
             "type__name": "Transceiver | SFP"
         },
         {
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon4",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon5",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon6",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon7",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
@@ -153,7 +217,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["LTP-4X-rev.C"]
+            "part_no": ["LTP-8X-rev.C"]
         },
         "dimensions": {
             "depth": 317,
@@ -164,14 +228,14 @@
             "managed": true
         },
         "power": {
-            "power": 40.0
+            "power": 55.0
         },
         "rackmount": {
             "units": 1.0
         },
         "weight": {
             "is_recursive": true,
-            "weight": 3.5
+            "weight": 5.0
         }
     }
 }

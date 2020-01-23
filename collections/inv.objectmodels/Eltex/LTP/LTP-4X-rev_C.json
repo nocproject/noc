@@ -1,9 +1,9 @@
 {
-    "name": "Eltex | LTP | LTP-4X-rev.B",
+    "name": "Eltex | LTP | LTP-4X-rev.C",
     "$collection": "inv.objectmodels",
-    "uuid": "01e0279a-2c74-4922-a030-4bc49cdaac02",
+    "uuid": "a909582c-a1fb-45cc-9351-00a10ed23f94",
     "vendor__code": "ELTEX",
-    "description": "Оптический станционный терминал LTP-4X/8X",
+    "description": "Оптический станционный терминал LTP-4X",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "tags": ["chassis", "sup", "psu", "port", "fan"],
@@ -134,7 +134,7 @@
             "gender": "f",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "Power slot 1",
@@ -153,10 +153,10 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["LTP-4X-rev.B", "LTP-4X:rev.B"]
+            "part_no": ["LTP-4X-rev.C"]
         },
         "dimensions": {
-            "depth": 259,
+            "depth": 317,
             "height": 44,
             "width": 420
         },
