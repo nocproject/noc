@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import os
 from threading import Lock
 import operator
+import re
 
 # Third-party modules
 import six
@@ -23,6 +24,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     ObjectIdField,
 )
+from mongoengine.errors import ValidationError
 import cachetools
 from pymongo import InsertOne, DeleteOne
 
@@ -39,6 +41,8 @@ from noc.core.model.decorator import on_delete_check, on_save
 
 id_lock = Lock()
 
+rx_composite_pins_validate = re.compile(r"\d+\-\d+")
+
 
 @six.python_2_unicode_compatible
 class ObjectModelConnection(EmbeddedDocument):
@@ -52,6 +56,8 @@ class ObjectModelConnection(EmbeddedDocument):
     cross = StringField(required=False)
     protocols = ListField(StringField(), required=False)
     internal_name = StringField(required=False)
+    composite = StringField(required=False)
+    composite_pins = StringField(required=False)
 
     def __str__(self):
         return self.name
@@ -67,6 +73,8 @@ class ObjectModelConnection(EmbeddedDocument):
             and self.cross == other.cross
             and self.protocols == other.protocols
             and self.internal_name == other.internal_name
+            and self.composite == other.composite
+            and self.composite_pins == other.composite_pins
         )
 
     @property
@@ -86,7 +94,18 @@ class ObjectModelConnection(EmbeddedDocument):
             r["protocols"] = self.protocols
         if self.internal_name:
             r["internal_name"] = self.internal_name
+        if self.composite:
+            r["composite"] = self.composite
+        if self.composite_pins:
+            r["composite_pins"] = self.composite_pins
         return r
+
+    def clean(self):
+        if self.type.name == "Composed" and (self.direction != "s" or self.gender != "s"):
+            raise ValidationError('Direction and gender fields on Composed type must be "s"')
+        if self.composite_pins and not rx_composite_pins_validate.match(self.composite_pins):
+            raise ValidationError("Composite pins not match format: N-N")
+        super(ObjectModelConnection, self).clean()
 
 
 @category
