@@ -14,9 +14,10 @@ import os
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.config import config
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.connection import connect
 from noc.core.profile.loader import loader
+from noc.core.text import format_table
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
@@ -26,22 +27,29 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # syntax command
         syntax_parser = subparsers.add_parser("syntax")
+        syntax_parser.add_argument("--profile", help="Profile Name")
         syntax_parser.add_argument("path", nargs=argparse.REMAINDER)
         # tokenizer command
         tokenizer_parser = subparsers.add_parser("tokenizer")
-        tokenizer_parser.add_argument("--object", type=int, help="Managed Object ID")
+        tokenizer_parser.add_argument("--object", type=smart_text, help="Managed Object ID")
         tokenizer_parser.add_argument("--profile", help="Profile Name")
         tokenizer_parser.add_argument("--config", help="Config Path")
         # config command
         normalizer_parser = subparsers.add_parser("normalizer")
-        normalizer_parser.add_argument("--object", type=int, help="Managed Object ID")
+        normalizer_parser.add_argument("--object", type=smart_text, help="Managed Object ID")
         normalizer_parser.add_argument("--profile", help="Profile Name")
         normalizer_parser.add_argument("--config", help="Config Path")
+        # query command
+        query_parser = subparsers.add_parser("query")
+        query_parser.add_argument("--object", type=smart_text, help="Managed Object ID")
+        query_parser.add_argument("--profile", help="Profile Name")
+        query_parser.add_argument("--config", help="Config Path")
+        query_parser.add_argument("query", help="Query request")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_syntax(self, path=None, *args, **kwargs):
+    def handle_syntax(self, path=None, profile=None, *args, **kwargs):
         def dump_node(node, level=0, recursive=True):
             indent = "  " * level
             if node.name:
@@ -70,8 +78,17 @@ class Command(BaseCommand):
                     return find_root(cc.children, rest_path[1:], level=level + 1)
 
         from noc.core.confdb.syntax.base import SYNTAX
+        from noc.core.handler import get_handler
 
-        root = find_root(SYNTAX, path)
+        s = SYNTAX
+        if profile:
+            p = loader.get_profile(profile)
+            if not p:
+                self.die("Invalid profile: %s" % profile)
+            n_handler, n_config = p.get_config_normalizer(self)
+            n_cls = get_handler("noc.sa.profiles.%s.confdb.normalizer.%s" % (p.name, n_handler))
+            s = n_cls.SYNTAX
+        root = find_root(s, path)
         if not root:
             return
         for c in root:
@@ -86,7 +103,9 @@ class Command(BaseCommand):
                 cfg = f.read()
         if object:
             connect()
-            mo = ManagedObject.get_by_id(object)
+            from noc.sa.models.managedobject import ManagedObject
+
+            mo = ManagedObject.objects.get(name=object)
             if not mo:
                 self.die("Managed Object not found")
         elif profile:
@@ -97,6 +116,8 @@ class Command(BaseCommand):
                 self.die("Specify config file with --config option")
             # Mock up tokenizer
             connect()
+            from noc.sa.models.managedobject import ManagedObject
+
             mo = ManagedObject.mock_object(profile=profile)
         else:
             self.die("Eigther object or profile must be set")
@@ -112,8 +133,10 @@ class Command(BaseCommand):
             with open(config) as f:
                 cfg = f.read()
         if object:
+            from noc.sa.models.managedobject import ManagedObject
+
             connect()
-            mo = ManagedObject.get_by_id(object)
+            mo = ManagedObject.objects.get(name=object)
             if not mo:
                 self.die("Managed Object not found")
         elif profile:
@@ -124,12 +147,58 @@ class Command(BaseCommand):
                 self.die("Specify config file with --config option")
             # Mock up tokenizer
             connect()
+            from noc.sa.models.managedobject import ManagedObject
+
             mo = ManagedObject.mock_object(profile=profile)
         else:
             self.die("Eigther object or profile must be set")
         normalizer = mo.iter_normalized_tokens(config=cfg)
         for token in normalizer:
             self.print(token)
+
+    def handle_query(self, object=None, profile=None, config=None, query=None, *args, **kwargs):
+        cfg = None
+        if config:
+            if not os.path.exists(config):
+                self.die("File not found: %s" % config)
+            with open(config) as f:
+                cfg = f.read()
+        if object:
+            connect()
+            from noc.sa.models.managedobject import ManagedObject
+
+            mo = ManagedObject.objects.get(name=object)
+            if not mo:
+                self.die("Managed Object not found")
+        elif profile:
+            p = loader.get_profile(profile)
+            if not p:
+                self.die("Invalid profile: %s" % profile)
+            if not cfg:
+                self.die("Specify config file with --config option")
+            # Mock up tokenizer
+            connect()
+            from noc.sa.models.managedobject import ManagedObject
+
+            mo = ManagedObject.mock_object(profile=profile)
+        else:
+            self.die("Eigther object or profile must be set")
+        confdb = mo.get_confdb()
+        headers = []
+        table = []
+        width = []
+        for r in confdb.query(query):
+            row = []
+            for key in r:
+                if key not in headers:
+                    headers += [key]
+                    width += [40]
+                row.insert(headers.count(key), r[key])
+            table += [row]
+        if table:
+            self.print("Result:\n", format_table(width, [headers] + table))
+        else:
+            self.print("Result:")
 
 
 if __name__ == "__main__":
