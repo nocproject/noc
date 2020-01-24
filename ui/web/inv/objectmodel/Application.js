@@ -228,6 +228,22 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             width: 50
                         },
                         {
+                            text: __("Composite"),
+                            dataIndex: "composite",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Composite pins"),
+                            dataIndex: "composite_pins",
+                            width: 50,
+                            editor: {
+                                xtype: "textfield",
+                                regex: /^\d+-\d+$/,
+                                regexText: __("Regex error!")
+                            }
+                        },
+                        {
                             text: __("Cross"),
                             dataIndex: "cross",
                             width: 100,
@@ -308,13 +324,15 @@ Ext.define("NOC.inv.objectmodel.Application", {
         for(i in v.connections) {
             c = v.connections[i];
             if(!Ext.isArray(c.protocols)) {
-                x = c.protocols.trim();
-                if(x === "" || x === undefined || x === null) {
-                    c.protocols = [];
-                } else {
-                    c.protocols = c.protocols.split(",").map(function(v) {
-                        return v.trim();
-                    });
+                if(!Ext.isEmpty(c.protocols)) {
+                    x = c.protocols.trim();
+                    if(x === "" || x === undefined || x === null) {
+                        c.protocols = [];
+                    } else {
+                        c.protocols = c.protocols.split(",").map(function(v) {
+                            return v.trim();
+                        });
+                    }
                 }
             }
         }
