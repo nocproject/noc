@@ -10,6 +10,8 @@
 import re
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class Trigger(object):
     def __init__(self, t):
@@ -21,7 +23,7 @@ class Trigger(object):
         # Action
         self.notification_group = t.notification_group
         self.template = t.template
-        self.pyrule = t.pyrule
+        self.handler = t.handler
 
     def match(self, alarm):
         """
@@ -36,13 +38,16 @@ class Trigger(object):
     def call(self, alarm):
         if not self.match(alarm):
             return
-        logging.debug("Calling trigger '%s'" % self.name)
+        logger.debug("Calling trigger '%s'" % self.name)
         # Notify if necessary
         if self.notification_group and self.template:
             self.notification_group.notify(
                 subject=self.template.render_subject(alarm=alarm),
                 body=self.template.render_body(alarm=alarm),
             )
-        # Call pyRule
-        if self.pyrule:
-            self.pyrule(alarm=alarm)
+        # Call handler
+        if self.handler:
+            try:
+                self.handler(alarm=alarm)
+            except Exception as e:
+                logger.error("Exception when calling AlarmTrigger handler: %s", e)
