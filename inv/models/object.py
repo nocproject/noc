@@ -28,7 +28,9 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.datastream.decorator import datastream
 from noc.core.comp import smart_text
+from noc.config import config
 from .connectiontype import ConnectionType
 from .objectmodel import ObjectModel
 from .modelinterface import ModelInterface
@@ -41,6 +43,7 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 @bi_sync
 @on_save
+@datastream
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "container"),
@@ -97,6 +100,15 @@ class Object(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return Object.objects.filter(bi_id=id).first()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_managedobject:
+            if self.data and "management" in self.data:
+                yield "managedobject", self.data["management"]["managed_object"]
+            else:
+                for _, o, _ in self.iter_outer_connections():
+                    if o.data and "management" in o.data:
+                        yield "managedobject", o.data["management"]["managed_object"]
 
     def clean(self):
         self.set_point()
