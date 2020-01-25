@@ -24,6 +24,8 @@ from noc.inv.models.object import Object
 from noc.core.mongo.fields import PlainReferenceField
 from noc.gis.models.layer import Layer
 from noc.core.comp import smart_text
+from noc.core.datastream.decorator import datastream
+from noc.config import config
 
 
 @six.python_2_unicode_compatible
@@ -38,6 +40,7 @@ class ObjectConnectionItem(EmbeddedDocument):
         return "%s: %s" % (smart_text(self.object), self.name)
 
 
+@datastream
 @six.python_2_unicode_compatible
 class ObjectConnection(Document):
     """
@@ -61,6 +64,12 @@ class ObjectConnection(Document):
 
     def __str__(self):
         return "<%s>" % ", ".join(smart_text(c) for c in self.connection)
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_managedobject:
+            for c in self.connection:
+                for _, mo_id in c.object.iter_changed_datastream():
+                    yield _, mo_id
 
     def clean(self):
         self.set_line()
