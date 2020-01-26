@@ -145,6 +145,13 @@ def test_invalid_name(clean_mib, name):
             {"1.3.6.1.2.1.2.2.1.6": render_mac},
             "01:02:03:04:0A:0B",
         ),
+        (
+            "LLDP-MIB",
+            "1.0.8802.1.1.2.1.4.1.1.5.0.59.3",
+            b"\x01\x02\x03\x04\x05\x06",
+            {"1.0.8802.1.1.2.1.4.1.1.5": render_mac},
+            "01:02:03:04:05:06",
+        ),
     ],
 )
 def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected):
