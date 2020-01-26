@@ -49,6 +49,8 @@ class SNMP(object):
         self.timeouts_limit = 0
         self.timeouts = 0
         self.socket = None
+        self.display_hints = None
+        self.snmp_version = None
 
     @property
     def script(self):
@@ -88,20 +90,29 @@ class SNMP(object):
     def _get_snmp_version(self, version=None):
         if version is not None:
             return version
-        if self.script.has_snmp_v2c():
-            return SNMP_v2c
-        elif self.script.has_snmp_v3():
-            return SNMP_v3
-        elif self.script.has_snmp_v1():
-            return SNMP_v1
-        return SNMP_v2c
+        if self.snmp_version is None:
+            if self.script.has_snmp_v2c():
+                self.snmp_version = SNMP_v2c
+            elif self.script.has_snmp_v3():
+                self.snmp_version = SNMP_v3
+            elif self.script.has_snmp_v1():
+                self.snmp_version = SNMP_v1
+            else:
+                self.snmp_version = SNMP_v2c
+        return self.snmp_version
 
-    def get(self, oids, cached=False, version=None, raw_varbinds=False):
+    def _get_display_hints(self):
+        if self.display_hints is None:
+            self.display_hints = self.script.profile.get_snmp_display_hints(self.script)
+        return self.display_hints
+
+    def get(self, oids, cached=False, version=None, raw_varbinds=False, display_hints=None):
         """
         Perform SNMP GET request
         :param oid: string or list of oids
         :param cached: True if get results can be cached during session
         :param raw_varbinds: Return value in BER encoding
+        :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
         :returns: eigther result scalar or dict of name -> value
         """
 
@@ -117,6 +128,7 @@ class SNMP(object):
                     udp_socket=self.get_socket(),
                     version=version,
                     raw_varbinds=raw_varbinds,
+                    display_hints=display_hints,
                 )
                 self.timeouts = self.timeouts_limit
             except SNMPError as e:
@@ -131,6 +143,8 @@ class SNMP(object):
 
         if "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        if display_hints is None:
+            display_hints = self._get_display_hints()
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         r, self.result = self.result, None
@@ -219,6 +233,7 @@ class SNMP(object):
         max_retries=0,
         timeout=10,
         raw_varbinds=False,
+        display_hints=None,
     ):
         @tornado.gen.coroutine
         def run():
@@ -238,6 +253,7 @@ class SNMP(object):
                     max_retries=max_retries,
                     timeout=timeout,
                     raw_varbinds=raw_varbinds,
+                    display_hints=display_hints,
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -247,6 +263,8 @@ class SNMP(object):
 
         if "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        if display_hints is None:
+            display_hints = self._get_display_hints()
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         r, self.result = self.result, None
@@ -282,6 +300,7 @@ class SNMP(object):
         max_index=None,
         cached=False,
         max_retries=0,
+        display_hints=None,
     ):
         """
         Query list of SNMP tables referenced by oids and yields
@@ -294,6 +313,7 @@ class SNMP(object):
         :param max_index:
         :param cached:
         :param max_retries:
+        :param display_hints:
         :return:
         """
 
@@ -305,6 +325,7 @@ class SNMP(object):
                 cached=cached,
                 bulk=bulk,
                 max_retries=max_retries,
+                display_hints=display_hints,
             ):
                 yield tuple([int(x) for x in o[line:].split(".")]), v
 

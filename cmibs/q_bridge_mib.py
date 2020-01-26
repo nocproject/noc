@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Q-BRIDGE-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc make-cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "Q-BRIDGE-MIB"
+
 # Metadata
-LAST_UPDATED = "1999-08-25"
-COMPILED = "2018-11-01"
+LAST_UPDATED = "2006-01-09"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "Q-BRIDGE-MIB::qBridgeMIB": "1.3.6.1.2.1.17.7",
@@ -90,6 +92,7 @@ MIB = {
     "Q-BRIDGE-MIB::dot1qPortGvrpStatus": "1.3.6.1.2.1.17.7.1.4.5.1.4",
     "Q-BRIDGE-MIB::dot1qPortGvrpFailedRegistrations": "1.3.6.1.2.1.17.7.1.4.5.1.5",
     "Q-BRIDGE-MIB::dot1qPortGvrpLastPduOrigin": "1.3.6.1.2.1.17.7.1.4.5.1.6",
+    "Q-BRIDGE-MIB::dot1qPortRestrictedVlanRegistration": "1.3.6.1.2.1.17.7.1.4.5.1.7",
     "Q-BRIDGE-MIB::dot1qPortVlanStatisticsTable": "1.3.6.1.2.1.17.7.1.4.6",
     "Q-BRIDGE-MIB::dot1qPortVlanStatisticsEntry": "1.3.6.1.2.1.17.7.1.4.6.1",
     "Q-BRIDGE-MIB::dot1qTpVlanPortInFrames": "1.3.6.1.2.1.17.7.1.4.6.1.1",
@@ -111,7 +114,36 @@ MIB = {
     "Q-BRIDGE-MIB::dot1qConstraintStatus": "1.3.6.1.2.1.17.7.1.4.8.1.4",
     "Q-BRIDGE-MIB::dot1qConstraintSetDefault": "1.3.6.1.2.1.17.7.1.4.9",
     "Q-BRIDGE-MIB::dot1qConstraintTypeDefault": "1.3.6.1.2.1.17.7.1.4.10",
+    "Q-BRIDGE-MIB::dot1vProtocol": "1.3.6.1.2.1.17.7.1.5",
+    "Q-BRIDGE-MIB::dot1vProtocolGroupTable": "1.3.6.1.2.1.17.7.1.5.1",
+    "Q-BRIDGE-MIB::dot1vProtocolGroupEntry": "1.3.6.1.2.1.17.7.1.5.1.1",
+    "Q-BRIDGE-MIB::dot1vProtocolTemplateFrameType": "1.3.6.1.2.1.17.7.1.5.1.1.1",
+    "Q-BRIDGE-MIB::dot1vProtocolTemplateProtocolValue": "1.3.6.1.2.1.17.7.1.5.1.1.2",
+    "Q-BRIDGE-MIB::dot1vProtocolGroupId": "1.3.6.1.2.1.17.7.1.5.1.1.3",
+    "Q-BRIDGE-MIB::dot1vProtocolGroupRowStatus": "1.3.6.1.2.1.17.7.1.5.1.1.4",
+    "Q-BRIDGE-MIB::dot1vProtocolPortTable": "1.3.6.1.2.1.17.7.1.5.2",
+    "Q-BRIDGE-MIB::dot1vProtocolPortEntry": "1.3.6.1.2.1.17.7.1.5.2.1",
+    "Q-BRIDGE-MIB::dot1vProtocolPortGroupId": "1.3.6.1.2.1.17.7.1.5.2.1.1",
+    "Q-BRIDGE-MIB::dot1vProtocolPortGroupVid": "1.3.6.1.2.1.17.7.1.5.2.1.2",
+    "Q-BRIDGE-MIB::dot1vProtocolPortRowStatus": "1.3.6.1.2.1.17.7.1.5.2.1.3",
     "Q-BRIDGE-MIB::qBridgeConformance": "1.3.6.1.2.1.17.7.2",
     "Q-BRIDGE-MIB::qBridgeGroups": "1.3.6.1.2.1.17.7.2.1",
     "Q-BRIDGE-MIB::qBridgeCompliances": "1.3.6.1.2.1.17.7.2.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.2.1.17.7.1.2.2.1.1": ("OctetString", "1x:"),  # Q-BRIDGE-MIB::dot1qTpFdbAddress
+    "1.3.6.1.2.1.17.7.1.2.3.1.1": ("OctetString", "1x:"),  # Q-BRIDGE-MIB::dot1qTpGroupAddress
+    "1.3.6.1.2.1.17.7.1.3.1.1.1": ("OctetString", "1x:"),  # Q-BRIDGE-MIB::dot1qStaticUnicastAddress
+    "1.3.6.1.2.1.17.7.1.3.2.1.1": (
+        "OctetString",
+        "1x:",
+    ),  # Q-BRIDGE-MIB::dot1qStaticMulticastAddress
+    "1.3.6.1.2.1.17.7.1.4.2.1.2": ("Unsigned32", "d"),  # Q-BRIDGE-MIB::dot1qVlanIndex
+    "1.3.6.1.2.1.17.7.1.4.5.1.1": ("Unsigned32", "d"),  # Q-BRIDGE-MIB::dot1qPvid
+    "1.3.6.1.2.1.17.7.1.4.5.1.6": (
+        "OctetString",
+        "1x:",
+    ),  # Q-BRIDGE-MIB::dot1qPortGvrpLastPduOrigin
+    "1.3.6.1.2.1.17.7.1.4.8.1.1": ("Unsigned32", "d"),  # Q-BRIDGE-MIB::dot1qConstraintVlan
 }

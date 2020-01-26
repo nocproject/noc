@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # CISCO-VRF-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "CISCO-VRF-MIB"
+
 # Metadata
 LAST_UPDATED = "2009-12-10"
-COMPILED = "2018-06-09"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "CISCO-VRF-MIB::ciscoVrfMIB": "1.3.6.1.4.1.9.9.711",
@@ -59,3 +61,5 @@ MIB = {
     "CISCO-VRF-MIB::cvMIBGroups": "1.3.6.1.4.1.9.9.711.2.1",
     "CISCO-VRF-MIB::cvMIBCompliances": "1.3.6.1.4.1.9.9.711.2.2",
 }
+
+DISPLAY_HINTS = {}

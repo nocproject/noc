@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # EtherLike-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "EtherLike-MIB"
+
 # Metadata
 LAST_UPDATED = "2003-09-19"
-COMPILED = "2018-02-11"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "EtherLike-MIB::dot3": "1.3.6.1.2.1.10.7",
@@ -74,3 +76,5 @@ MIB = {
     "EtherLike-MIB::etherGroups": "1.3.6.1.2.1.35.2.1",
     "EtherLike-MIB::etherCompliances": "1.3.6.1.2.1.35.2.2",
 }
+
+DISPLAY_HINTS = {}

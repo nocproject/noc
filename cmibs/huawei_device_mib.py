@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # HUAWEI-DEVICE-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make-cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ NAME = "HUAWEI-DEVICE-MIB"
 
 # Metadata
 LAST_UPDATED = "2004-06-28"
-COMPILED = "2019-10-05"
+COMPILED = "2020-01-19"
 
 # MIB Data: name -> oid
 MIB = {
@@ -170,4 +170,19 @@ MIB = {
     "HUAWEI-DEVICE-MIB::hwCompatibleVersion": "1.3.6.1.4.1.2011.6.3.11.2",
     "HUAWEI-DEVICE-MIB::hwCompatibleVRCB": "1.3.6.1.4.1.2011.6.3.11.3",
     "HUAWEI-DEVICE-MIB::hwCompatibleProductName": "1.3.6.1.4.1.2011.6.3.11.4",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.4.1.2011.6.3.1.4": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-DEVICE-MIB::hwSysTime
+    "1.3.6.1.4.1.2011.6.3.7.1.1.3": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-DEVICE-MIB::hwAlarmOcurTime
+    "1.3.6.1.4.1.2011.6.3.10.2.1.5": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-DEVICE-MIB::hwCliClientLoginTime
 }

@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # CISCO-VPDN-MGMT-MIB
-#    Compiled MIB
-#    Do not modify this file directly
-#    Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "CISCO-VPDN-MGMT-MIB"
+
 # Metadata
 LAST_UPDATED = "2009-06-16"
-COMPILED = "2014-11-21"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "CISCO-VPDN-MGMT-MIB::ciscoVpdnMgmtMIB": "1.3.6.1.4.1.9.10.24",
@@ -173,3 +175,5 @@ MIB = {
     "CISCO-VPDN-MGMT-MIB::ciscoVpdnMgmtMIBCompliances": "1.3.6.1.4.1.9.10.24.3.1",
     "CISCO-VPDN-MGMT-MIB::ciscoVpdnMgmtMIBGroups": "1.3.6.1.4.1.9.10.24.3.2",
 }
+
+DISPLAY_HINTS = {}

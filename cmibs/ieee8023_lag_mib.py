@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # IEEE8023-LAG-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "IEEE8023-LAG-MIB"
+
 # Metadata
 LAST_UPDATED = "2000-06-27"
-COMPILED = "2018-06-16"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "IEEE8023-LAG-MIB::lagMIB": "1.2.840.10006.300.43",
@@ -90,4 +92,31 @@ MIB = {
     "IEEE8023-LAG-MIB::dot3adAggConformance": "1.2.840.10006.300.43.2",
     "IEEE8023-LAG-MIB::dot3adAggGroups": "1.2.840.10006.300.43.2.1",
     "IEEE8023-LAG-MIB::dot3adAggCompliances": "1.2.840.10006.300.43.2.2",
+}
+
+DISPLAY_HINTS = {
+    "1.2.840.10006.300.43.1.1.1.1.2": (
+        "OctetString",
+        "1x:",
+    ),  # IEEE8023-LAG-MIB::dot3adAggMACAddress
+    "1.2.840.10006.300.43.1.1.1.1.4": (
+        "OctetString",
+        "1x:",
+    ),  # IEEE8023-LAG-MIB::dot3adAggActorSystemID
+    "1.2.840.10006.300.43.1.1.1.1.8": (
+        "OctetString",
+        "1x:",
+    ),  # IEEE8023-LAG-MIB::dot3adAggPartnerSystemID
+    "1.2.840.10006.300.43.1.2.1.1.3": (
+        "OctetString",
+        "1x:",
+    ),  # IEEE8023-LAG-MIB::dot3adAggPortActorSystemID
+    "1.2.840.10006.300.43.1.2.1.1.8": (
+        "OctetString",
+        "1x:",
+    ),  # IEEE8023-LAG-MIB::dot3adAggPortPartnerAdminSystemID
+    "1.2.840.10006.300.43.1.2.1.1.9": (
+        "OctetString",
+        "1x:",
+    ),  # IEEE8023-LAG-MIB::dot3adAggPortPartnerOperSystemID
 }

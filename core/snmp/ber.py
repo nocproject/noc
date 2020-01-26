@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ASN.1 BER utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,12 +11,13 @@ import math
 import struct
 
 # Third-party modules
-from typing import Tuple, Any, List
+from typing import Tuple, Any, List, Optional
 import six
 
 # NOC modules
 from noc.core.comp import bord, smart_bytes, smart_text
 from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int, encode_oid
+from noc.core.mib import mib
 
 
 def did(tag_class, is_constructed, tag_id):
@@ -35,6 +36,10 @@ def did(tag_class, is_constructed, tag_id):
 
 
 class BERDecoder(object):
+    def __init__(self, display_hints=None):
+        self.last_oid = None  # type: Optional[six.text_type]
+        self.display_hints = display_hints
+
     @staticmethod
     def split_tlv(msg):
         # type: (bytes) -> Tuple[bytes, bytes]
@@ -161,18 +166,20 @@ class BERDecoder(object):
 
     def parse_p_octetstring(self, msg):
         # type: (bytes) -> six.text_type
+        if self.last_oid:
+            return mib.render(self.last_oid, msg, self.display_hints)
         return msg
 
     def parse_p_t61_string(self, msg):
         # type: (bytes) -> six.text_type
-        return msg
+        return smart_text(msg, errors="ignore")
 
     def parse_c_octetstring(self, msg):
         # type: (bytes) -> List[six.text_type]
         r = []
         while msg:
             v, msg = self.parse_tlv(msg)
-            r += [v]
+            r += [smart_text(v, errors="ignore")]
         return r
 
     def parse_c_t61_string(self, msg):
@@ -198,8 +205,8 @@ class BERDecoder(object):
         >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
         "1.3.6.1.2.1.1.5.0"
         """
-        self.last_oid = parse_p_oid(msg)
-        return smart_text(self.last_oid)
+        self.last_oid = smart_text(parse_p_oid(msg))
+        return self.last_oid
 
     def parse_compressed_oid(self, msg):
         # type: (bytes) -> six.text_type
@@ -208,7 +215,7 @@ class BERDecoder(object):
         :return:
         """
         pos = bord(msg[0]) - 1
-        parts = self.last_oid.split(".")[:pos] + [str(bord(d)) for d in msg[1:]]
+        parts = self.last_oid.split(".")[:pos] + [six.text_type(bord(d)) for d in msg[1:]]
         self.last_oid = ".".join(parts)
         return smart_text(self.last_oid)
 
@@ -474,11 +481,14 @@ class BEREncoder(object):
         return encode_oid(smart_bytes(data))
 
 
-decoder = BERDecoder()
+# Internal state, singleton is not possible
+# decoder = BERDecoder()
+# No state, singleton is possible
 encoder = BEREncoder()
 
 
 def decode(msg):
+    decoder = BERDecoder()
     data, _ = decoder.parse_tlv(msg)
     return data
 

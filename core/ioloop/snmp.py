@@ -45,6 +45,7 @@ def snmp_get(
     ioloop=None,
     udp_socket=None,
     raw_varbinds=False,
+    display_hints=None,
 ):
     """
     Perform SNMP get request and returns Future to be used
@@ -88,7 +89,7 @@ def snmp_get(
         if raw_varbinds:
             resp = parse_get_response_raw(data)
         else:
-            resp = parse_get_response(data)
+            resp = parse_get_response(data, display_hints=display_hints)
     except ValueError:
         # Broken response
         raise SNMPError(code=BER_ERROR, oid=oids[0])
@@ -261,6 +262,7 @@ def snmp_getnext(
     udp_socket=None,
     max_retries=0,
     raw_varbinds=False,
+    display_hints=None,
 ):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
@@ -322,7 +324,7 @@ def snmp_getnext(
             if raw_varbinds:
                 resp = parse_get_response_raw(data)
             else:
-                resp = parse_get_response(data)
+                resp = parse_get_response(data, display_hints=display_hints)
         except ValueError:
             raise SNMPError(code=BER_ERROR, oid=oid)
         if resp.error_status == NO_SUCH_NAME:

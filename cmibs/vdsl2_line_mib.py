@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # VDSL2-LINE-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make-cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ NAME = "VDSL2-LINE-MIB"
 
 # Metadata
 LAST_UPDATED = "2009-09-30"
-COMPILED = "2019-10-17"
+COMPILED = "2020-01-19"
 
 # MIB Data: name -> oid
 MIB = {
@@ -414,3 +414,5 @@ MIB = {
     "VDSL2-LINE-MIB::xdsl2Groups": "1.3.6.1.2.1.10.251.2.1",
     "VDSL2-LINE-MIB::xdsl2Compliances": "1.3.6.1.2.1.10.251.2.2",
 }
+
+DISPLAY_HINTS = {}

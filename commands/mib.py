@@ -170,6 +170,19 @@ class Command(BaseCommand):
             f(ujson.dumps(data))
 
     def handle_make_cmib(self, mib_name, *args, **kwargs):
+        def has_worth_hint(syntax):
+            if not syntax:
+                return False
+            hint = syntax.get("display_hint")
+            if not hint:
+                return False
+            base_type = syntax["base_type"]
+            if base_type == "Integer32" and hint == "d":
+                return False
+            if base_type == "OctetString" and hint == "255a":
+                return False
+            return True
+
         if len(mib_name) != 1:
             self.print("Specify one MIB")
             self.die("")
@@ -184,9 +197,9 @@ class Command(BaseCommand):
             "# -*- coding: utf-8 -*-",
             "# ----------------------------------------------------------------------",
             "# %s" % mib,
-            "#     Compiled MIB",
-            "#     Do not modify this file directly",
-            "#     Run ./noc mib make-cmib instead",
+            "# Compiled MIB",
+            "# Do not modify this file directly",
+            "# Run ./noc mib make-cmib instead",
             "# ----------------------------------------------------------------------",
             "# Copyright (C) 2007-%s The NOC Project" % year,
             "# See LICENSE for details",
@@ -202,18 +215,24 @@ class Command(BaseCommand):
             "# MIB Data: name -> oid",
             "MIB = {",
         ]
+        mib_data = list(
+            sorted(
+                MIBData.objects.filter(mib=mib.id),
+                key=lambda x: [int(y) for y in x.oid.split(".")],
+            )
+        )
+        r += ["\n".join('    "%s": "%s",' % (md.name, md.oid) for md in mib_data)]
+        r += ["}", "", "DISPLAY_HINTS = {"]
         r += [
-            ",\n".join(
-                '    "%s": "%s"' % (md.name, md.oid)
-                for md in sorted(
-                    MIBData.objects.filter(mib=mib.id),
-                    key=lambda x: [int(y) for y in x.oid.split(".")],
-                )
+            "\n".join(
+                '    "%s": ("%s", "%s"),  # %s'
+                % (md.oid, md.syntax["base_type"], md.syntax["display_hint"], md.name)
+                for md in mib_data
+                if has_worth_hint(md.syntax)
             )
         ]
-        r[-1] += ","
         r += ["}", ""]
-        data = "\n".join(r) + "\n"
+        data = "\n".join(r)
         with self.open_output(kwargs.get("output")) as f:
             f(data)
 

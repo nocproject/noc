@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # ENTITY-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "ENTITY-MIB"
+
 # Metadata
 LAST_UPDATED = "2005-08-10"
-COMPILED = "2018-03-03"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "ENTITY-MIB::entityMIB": "1.3.6.1.2.1.47",
@@ -69,4 +71,20 @@ MIB = {
     "ENTITY-MIB::entityConformance": "1.3.6.1.2.1.47.3",
     "ENTITY-MIB::entityCompliances": "1.3.6.1.2.1.47.3.1",
     "ENTITY-MIB::entityGroups": "1.3.6.1.2.1.47.3.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.2.1.47.1.1.1.1.2": ("OctetString", "255t"),  # ENTITY-MIB::entPhysicalDescr
+    "1.3.6.1.2.1.47.1.1.1.1.7": ("OctetString", "255t"),  # ENTITY-MIB::entPhysicalName
+    "1.3.6.1.2.1.47.1.1.1.1.8": ("OctetString", "255t"),  # ENTITY-MIB::entPhysicalHardwareRev
+    "1.3.6.1.2.1.47.1.1.1.1.9": ("OctetString", "255t"),  # ENTITY-MIB::entPhysicalFirmwareRev
+    "1.3.6.1.2.1.47.1.1.1.1.10": ("OctetString", "255t"),  # ENTITY-MIB::entPhysicalSoftwareRev
+    "1.3.6.1.2.1.47.1.1.1.1.12": ("OctetString", "255t"),  # ENTITY-MIB::entPhysicalMfgName
+    "1.3.6.1.2.1.47.1.1.1.1.13": ("OctetString", "255t"),  # ENTITY-MIB::entPhysicalModelName
+    "1.3.6.1.2.1.47.1.1.1.1.17": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # ENTITY-MIB::entPhysicalMfgDate
+    "1.3.6.1.2.1.47.1.2.1.1.2": ("OctetString", "255t"),  # ENTITY-MIB::entLogicalDescr
+    "1.3.6.1.2.1.47.1.2.1.1.8": ("OctetString", "255t"),  # ENTITY-MIB::entLogicalContextName
 }

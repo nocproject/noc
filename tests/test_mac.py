@@ -43,6 +43,11 @@ def test_mac_bin(raw, expected):
     assert MAC(raw) == expected
 
 
+@pytest.mark.parametrize("raw,expected", [(b"\xe0\xd9\xe3:\x07\xc0", "E0:D9:E3:3A:07:C0")])
+def test_mac_str_bin(raw, expected):
+    assert MAC(raw) == expected
+
+
 @pytest.mark.parametrize(
     "raw,expected",
     [

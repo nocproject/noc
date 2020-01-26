@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # ENTITY-SENSOR-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "ENTITY-SENSOR-MIB"
+
 # Metadata
 LAST_UPDATED = "2002-12-16"
-COMPILED = "2018-03-03"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "ENTITY-SENSOR-MIB::entitySensorMIB": "1.3.6.1.2.1.99",
@@ -31,4 +33,11 @@ MIB = {
     "ENTITY-SENSOR-MIB::entitySensorConformance": "1.3.6.1.2.1.99.3",
     "ENTITY-SENSOR-MIB::entitySensorCompliances": "1.3.6.1.2.1.99.3.1",
     "ENTITY-SENSOR-MIB::entitySensorGroups": "1.3.6.1.2.1.99.3.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.2.1.99.1.1.1.6": (
+        "OctetString",
+        "255t",
+    ),  # ENTITY-SENSOR-MIB::entPhySensorUnitsDisplay
 }

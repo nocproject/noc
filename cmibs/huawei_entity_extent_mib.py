@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # HUAWEI-ENTITY-EXTENT-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make-cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ NAME = "HUAWEI-ENTITY-EXTENT-MIB"
 
 # Metadata
 LAST_UPDATED = "2011-07-15"
-COMPILED = "2019-11-08"
+COMPILED = "2020-01-19"
 
 # MIB Data: name -> oid
 MIB = {
@@ -248,4 +248,99 @@ MIB = {
     "HUAWEI-ENTITY-EXTENT-MIB::hwDisposeEntPhysicalClass": "1.3.6.1.4.1.2011.5.25.31.8.4.1.5",
     "HUAWEI-ENTITY-EXTENT-MIB::hwDisposeEntPhysicalParentRelPos": "1.3.6.1.4.1.2011.5.25.31.8.4.1.6",
     "HUAWEI-ENTITY-EXTENT-MIB::hwDisposeEntPhysicalName": "1.3.6.1.4.1.2011.5.25.31.8.4.1.7",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.30": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityCPUType
+    "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.31": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemoryType
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.1": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityBomId
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.2": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityBomEnDesc
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.3": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityBomLocalDesc
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.4": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityManufacturedDate
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.6": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityCLEICode
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.7": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityUpdateLog
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.8": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityArchivesInfoVersion
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.9": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpenBomId
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.10": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityIssueNum
+    "1.3.6.1.4.1.2011.5.25.31.1.1.2.1.11": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityBoardType
+    "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.4": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntityOpticalVendorSn
+    "1.3.6.1.4.1.2011.5.25.31.5.1.1": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwHardwareCapaSequenceNo
+    "1.3.6.1.4.1.2011.5.25.31.6.2": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntitySoftwareName
+    "1.3.6.1.4.1.2011.5.25.31.6.3": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntitySoftwareVersion
+    "1.3.6.1.4.1.2011.5.25.31.6.4": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntitySoftwareVendor
+    "1.3.6.1.4.1.2011.5.25.31.6.5": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntitySystemModel
+    "1.3.6.1.4.1.2011.5.25.31.6.6": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntitySystemTime
+    "1.3.6.1.4.1.2011.5.25.31.6.7": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwEntitySystemMacAddress
+    "1.3.6.1.4.1.2011.5.25.31.8.1.1": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwPreDisposeSequenceNo
+    "1.3.6.1.4.1.2011.5.25.31.8.4.1.2": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwDisposeEntPhysicalDescr
+    "1.3.6.1.4.1.2011.5.25.31.8.4.1.7": (
+        "OctetString",
+        "255t",
+    ),  # HUAWEI-ENTITY-EXTENT-MIB::hwDisposeEntPhysicalName
 }
