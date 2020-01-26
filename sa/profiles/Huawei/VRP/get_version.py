@@ -92,7 +92,7 @@ class Script(BaseScript):
     rx_hw_version = re.compile(r"HUAWEI\s(?P<platform>\S+)\s")
     rx_hw_extended_platform = re.compile(r"(?P<platform>\S+)[-,](CX|LS)\S+[-,].+")
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
-    hw_series = {"S2300", "S5300"}
+    hw_series = {"S2300", "S5300", "S3328"}
 
     def fix_platform_name(self, platform):
         """
