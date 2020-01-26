@@ -1,0 +1,8 @@
+{
+    "name": "Combined",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f3a6ce28-bdf7-463f-bce5-55b529a31874",
+    "description": "Only one connection for multiple ports (ex. switch combo-port)",
+    "c_group": [],
+    "genders": "s"
+}
