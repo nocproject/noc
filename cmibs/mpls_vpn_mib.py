@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # MPLS-VPN-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "MPLS-VPN-MIB"
+
 # Metadata
 LAST_UPDATED = "2001-10-15"
-COMPILED = "2018-06-23"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "MPLS-VPN-MIB::mplsVpnMIB": "1.3.6.1.3.118",
@@ -121,4 +123,8 @@ MIB = {
     "MPLS-VPN-MIB::mplsVpnConformance": "1.3.6.1.3.118.3",
     "MPLS-VPN-MIB::mplsVpnGroups": "1.3.6.1.3.118.3.1",
     "MPLS-VPN-MIB::mplsVpnCompliances": "1.3.6.1.3.118.3.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.3.118.1.2.2.1.2": ("OctetString", "255t"),  # MPLS-VPN-MIB::mplsVpnVrfDescription
 }

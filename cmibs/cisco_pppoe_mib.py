@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # CISCO-PPPOE-MIB
-#    Compiled MIB
-#    Do not modify this file directly
-#    Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "CISCO-PPPOE-MIB"
+
 # Metadata
 LAST_UPDATED = "2011-04-25"
-COMPILED = "2014-11-21"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "CISCO-PPPOE-MIB::ciscoPppoeMIB": "1.3.6.1.4.1.9.9.194",
@@ -77,4 +79,15 @@ MIB = {
     "CISCO-PPPOE-MIB::ciscoPppoeMIBConformance": "1.3.6.1.4.1.9.9.194.3",
     "CISCO-PPPOE-MIB::ciscoPppoeMIBCompliances": "1.3.6.1.4.1.9.9.194.3.1",
     "CISCO-PPPOE-MIB::ciscoPppoeMIBGroups": "1.3.6.1.4.1.9.9.194.3.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.4.1.9.9.194.1.5.1": (
+        "OctetString",
+        "1x:",
+    ),  # CISCO-PPPOE-MIB::cPppoeSystemSessionClientMacAddress
+    "1.3.6.1.4.1.9.9.194.1.5.3": (
+        "Unsigned32",
+        "d",
+    ),  # CISCO-PPPOE-MIB::cPppoeSystemSessionInnerVlanID
 }

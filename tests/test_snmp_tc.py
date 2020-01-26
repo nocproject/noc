@@ -41,6 +41,22 @@ from noc.core.snmp.util import render_tc
             "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
             "2014-2-2,3:42:11.1,+1:1",
         ),
+        (b"\x80", "OctetString", "1x", "80"),
+        (b"\x80\xff", "OctetString", "2x", "80ff"),
+        (b"\x01\x02\x03\x04", "OctetString", "1d:1d:1d:1d", "1:2:3:4"),
+        (b"\x80", "OctetString", "1d", "128"),
+        (b"\x80\xff", "OctetString", "2d", "33023"),
+        (b"\x80", "OctetString", "1o", "200"),
+        (b"\x04\x74\x65\x73\x74", "OctetString", "*1a", "test"),
+        (b"\x74\x65\x73\x74", "OctetString", "255a", "test"),
+        (b"UTF8", "OctetString", "255t", "UTF8"),
+        (b"abcdef", "OctetString", "1x:", "61:62:63:64:65:66"),
+        (
+            b"\x07\xde\x02\x02\x03*\x0b\x01+\x01\x01",
+            "OctetString",
+            "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+            "2014-2-2,3:42:11.1,+1:1",
+        ),
     ],
 )
 def test_render_tc(value, base_type, format, expected):

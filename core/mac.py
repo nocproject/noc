@@ -12,19 +12,21 @@ import re
 # Third-party modules
 import six
 
+from noc.core.comp import smart_text
+
 # Regular expressions
 
 # Cisco-like AABB.CCDD.EEFF
 rx_mac_address_cisco = re.compile(r"^[0-9A-F]{4}(?P<sep>[.\-])[0-9A-F]{4}(?P=sep)[0-9A-F]{4}$")
 # Alternative Cisco form 01AA.BBCC.DDEE.FF
-rx_mac_address_cisco_media = re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
+rx_mac_address_cisco_media = re.compile(r"^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
 # Size blocks, leading zeroes can be ommited
 # AA:BB:C:DD:EE:F
 rx_mac_address_sixblock = re.compile(
-    "^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$"
+    r"^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$"
 )
 # HP-like AABBCC-DDEEFF
-rx_mac_address_hp = re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
+rx_mac_address_hp = re.compile(r"^[0-9A-F]{6}-[0-9A-F]{6}$")
 # Unseparated block
 rx_mac_address_solid = re.compile(r"^[0-9A-F]{12}$")
 
@@ -69,6 +71,8 @@ class MAC(str):
     'AA:BB:CC:DD:EE:FF'
     >>> MAC("AABBCCDDEEFF") + " -- " + MAC("0011.2233.4455")
     'AA:BB:CC:DD:EE:FF -- 00:11:22:33:44:55'
+    >>> MAC(b"\xe0\xd9\xe3:\x07\xc0")
+    'E0:D9:E3:3A:07:C0'
     """
 
     def __new__(cls, mac):
@@ -91,12 +95,12 @@ class MAC(str):
                 (mac >> 8) & 0xFF,
                 mac & 0xFF,
             )
-
         if len(mac) == 6:
+            if six.PY3 and isinstance(mac, six.binary_type):
+                return ":".join(["%02X" % c for c in mac])
             return ":".join(["%02X" % ord(c) for c in mac])
 
-        value = mac
-        value = value.upper()
+        value = smart_text(mac).upper()
         match = rx_mac_address_solid.match(value)
         if match:
             return "%s:%s:%s:%s:%s:%s" % (

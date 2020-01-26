@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SA Profile Base
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import warnings
 # Third-party modules
 import tornado.gen
 import six
+from typing import Dict, Callable, Union, Optional
 
 # NOC modules
 from noc.core.ip import IPv4
@@ -84,6 +85,16 @@ class BaseProfileMetaclass(type):
         n.pattern_more = pattern_more
         # Build patterns
         n.patterns = n._get_patterns()
+        # Build effective snmp_display_hints for subclasses
+        if n.name:
+            snmp_display_hints = {}
+            for b in bases:
+                if issubclass(b, BaseProfile):
+                    snmp_display_hints.update(b.snmp_display_hints)
+            snmp_display_hints.update(attrs.get("snmp_display_hints", {}))
+            n.snmp_display_hints = {
+                k: snmp_display_hints[k] for k in snmp_display_hints if snmp_display_hints[k]
+            }
         return n
 
 
@@ -257,6 +268,18 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # Amount of retries for enable passwords
     # Increase if box asks for enable password twice
     cli_retries_super_password = 1
+    # Additional hints for snmp binary OctetString data processing
+    # Contains mapping of
+    # oid -> render_callable
+    # if render_callable is None, translation is disabled and binary data processed by default way
+    # Otherwise it must be a callable, accepting (oid, raw_data) parameter
+    # where oid is varbind's oid value, while raw_data is raw binary data of varbind value.
+    # Callable should return six.text_type
+    # It is possible to return six.binary_type in very rare specific cases,
+    # when you have intention to process binary output in script directly
+    snmp_display_hints = (
+        {}
+    )  # type: Dict[six.text_type, Optional[Callable[[six.text_type, six.binary_type], Union[six.text_type, six.binary_type]]]]
     # Aggregate up to *snmp_metrics_get_chunk* oids
     # to one SNMP GET request
     snmp_metrics_get_chunk = 15
@@ -718,6 +741,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :return:
         """
         return cls.http_request_middleware
+
+    @classmethod
+    def get_snmp_display_hints(cls, script):
+        """
+        Returns a dict of snmp display_hints mapping.
+        matchers.XXXX can be used
+        :param script: Script instance
+        :return:
+        """
+        return cls.snmp_display_hints
 
     @classmethod
     def has_confdb_support(cls, object):

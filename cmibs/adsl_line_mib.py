@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # ADSL-LINE-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make-cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ NAME = "ADSL-LINE-MIB"
 
 # Metadata
 LAST_UPDATED = "1999-08-19"
-COMPILED = "2019-10-02"
+COMPILED = "2020-01-19"
 
 # MIB Data: name -> oid
 MIB = {
@@ -268,3 +268,5 @@ MIB = {
     "ADSL-LINE-MIB::adslGroups": "1.3.6.1.2.1.10.94.1.3.1",
     "ADSL-LINE-MIB::adslCompliances": "1.3.6.1.2.1.10.94.1.3.2",
 }
+
+DISPLAY_HINTS = {}

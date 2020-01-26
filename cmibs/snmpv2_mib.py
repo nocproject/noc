@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # SNMPv2-MIB
-#    Compiled MIB
-#    Do not modify this file directly
-#    Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "SNMPv2-MIB"
+
 # Metadata
 LAST_UPDATED = "2002-10-16"
-COMPILED = "2014-10-28"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "SNMPv2-MIB::system": "1.3.6.1.2.1.1",
@@ -77,3 +79,5 @@ MIB = {
     "SNMPv2-MIB::snmpMIBCompliances": "1.3.6.1.6.3.1.2.1",
     "SNMPv2-MIB::snmpMIBGroups": "1.3.6.1.6.3.1.2.2",
 }
+
+DISPLAY_HINTS = {}

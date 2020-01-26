@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # CISCO-CDP-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "CISCO-CDP-MIB"
+
 # Metadata
 LAST_UPDATED = "2005-03-21"
-COMPILED = "2018-06-09"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "CISCO-CDP-MIB::ciscoCdpMIB": "1.3.6.1.4.1.9.9.23",
@@ -74,4 +76,17 @@ MIB = {
     "CISCO-CDP-MIB::ciscoCdpMIBConformance": "1.3.6.1.4.1.9.9.23.2",
     "CISCO-CDP-MIB::ciscoCdpMIBCompliances": "1.3.6.1.4.1.9.9.23.2.1",
     "CISCO-CDP-MIB::ciscoCdpMIBGroups": "1.3.6.1.4.1.9.9.23.2.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.4.1.9.9.23.1.2.1.1.4": ("OctetString", "1x:"),  # CISCO-CDP-MIB::cdpCacheAddress
+    "1.3.6.1.4.1.9.9.23.1.2.1.1.20": (
+        "OctetString",
+        "1x:",
+    ),  # CISCO-CDP-MIB::cdpCachePrimaryMgmtAddr
+    "1.3.6.1.4.1.9.9.23.1.2.1.1.22": (
+        "OctetString",
+        "1x:",
+    ),  # CISCO-CDP-MIB::cdpCacheSecondaryMgmtAddr
+    "1.3.6.1.4.1.9.9.23.1.2.2.1.5": ("OctetString", "1x:"),  # CISCO-CDP-MIB::cdpCtAddress
 }

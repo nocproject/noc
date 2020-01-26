@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # IP-MIB
-#    Compiled MIB
-#    Do not modify this file directly
-#    Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "IP-MIB"
+
 # Metadata
 LAST_UPDATED = "2006-02-02"
-COMPILED = "2014-11-08"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "IP-MIB::ipv6IpForwarding": "1.3.6.1.2.1.4.25",
@@ -222,4 +224,8 @@ MIB = {
     "IP-MIB::ipMIBConformance": "1.3.6.1.2.1.48.2",
     "IP-MIB::ipMIBCompliances": "1.3.6.1.2.1.48.2.1",
     "IP-MIB::ipMIBGroups": "1.3.6.1.2.1.48.2.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.2.1.4.30.1.3": ("OctetString", "2x:"),  # IP-MIB::ipv6InterfaceIdentifier
 }

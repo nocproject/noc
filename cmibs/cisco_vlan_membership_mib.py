@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # CISCO-VLAN-MEMBERSHIP-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "CISCO-VLAN-MEMBERSHIP-MIB"
+
 # Metadata
 LAST_UPDATED = "2007-12-14"
-COMPILED = "2018-06-09"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "CISCO-VLAN-MEMBERSHIP-MIB::ciscoVlanMembershipMIB": "1.3.6.1.4.1.9.9.68",
@@ -73,3 +75,5 @@ MIB = {
     "CISCO-VLAN-MEMBERSHIP-MIB::vmMIBCompliances": "1.3.6.1.4.1.9.9.68.3.1",
     "CISCO-VLAN-MEMBERSHIP-MIB::vmMIBGroups": "1.3.6.1.4.1.9.9.68.3.2",
 }
+
+DISPLAY_HINTS = {}

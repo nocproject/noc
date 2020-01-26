@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # HUAWEI-SYS-MAN-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc make-cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "HUAWEI-SYS-MAN-MIB"
+
 # Metadata
 LAST_UPDATED = "2002-12-20"
-COMPILED = "2019-03-03"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIB": "1.3.6.1.4.1.2011.5.25.19",
@@ -258,4 +260,27 @@ MIB = {
     "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIBConformance": "1.3.6.1.4.1.2011.5.25.19.3",
     "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIBCompliances": "1.3.6.1.4.1.2011.5.25.19.3.1",
     "HUAWEI-SYS-MAN-MIB::huaweiSystemManMIBGroups": "1.3.6.1.4.1.2011.5.25.19.3.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.4.1.2011.5.25.19.1.1.1": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-SYS-MAN-MIB::hwSysLocalClock
+    "1.3.6.1.4.1.2011.5.25.19.1.8.5.1.1.11": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-SYS-MAN-MIB::hwPatchBuildTime
+    "1.3.6.1.4.1.2011.5.25.19.1.8.5.1.1.12": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-SYS-MAN-MIB::hwPatchActiveTime
+    "1.3.6.1.4.1.2011.5.25.19.1.8.5.3.1.8": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-SYS-MAN-MIB::hwPatchHistoryBeginTime
+    "1.3.6.1.4.1.2011.5.25.19.1.8.5.3.1.9": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # HUAWEI-SYS-MAN-MIB::hwPatchHistoryEndTime
 }

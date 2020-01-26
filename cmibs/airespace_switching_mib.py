@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # AIRESPACE-SWITCHING-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "AIRESPACE-SWITCHING-MIB"
+
 # Metadata
 LAST_UPDATED = "2006-04-10"
-COMPILED = "2018-06-19"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "AIRESPACE-SWITCHING-MIB::bsnSwitching": "1.3.6.1.4.1.14179.1",
@@ -333,4 +335,23 @@ MIB = {
     "AIRESPACE-SWITCHING-MIB::powerSupplyStatusChangeTrap": "1.3.6.1.4.1.14179.1.50.12",
     "AIRESPACE-SWITCHING-MIB::bsnSwitchingGroups": "1.3.6.1.4.1.14179.1.51",
     "AIRESPACE-SWITCHING-MIB::bsnSwitchingCompliances": "1.3.6.1.4.1.14179.1.52",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.4.1.14179.1.1.1.9": (
+        "OctetString",
+        "1x:",
+    ),  # AIRESPACE-SWITCHING-MIB::agentInventoryBurnedInMacAddress
+    "1.3.6.1.4.1.14179.1.2.3.4": (
+        "OctetString",
+        "1x:",
+    ),  # AIRESPACE-SWITCHING-MIB::agentNetworkBurnedInMacAddress
+    "1.3.6.1.4.1.14179.1.2.4.4": (
+        "OctetString",
+        "1x:",
+    ),  # AIRESPACE-SWITCHING-MIB::agentServicePortBurnedInMacAddress
+    "1.3.6.1.4.1.14179.1.2.13.1.4": (
+        "OctetString",
+        "1x:",
+    ),  # AIRESPACE-SWITCHING-MIB::agentInterfaceMacAddress
 }

@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # MPLS-L3VPN-STD-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "MPLS-L3VPN-STD-MIB"
+
 # Metadata
 LAST_UPDATED = "2006-01-23"
-COMPILED = "2018-06-07"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "MPLS-L3VPN-STD-MIB::mplsL3VpnMIB": "1.3.6.1.2.1.10.166.11",
@@ -102,4 +104,19 @@ MIB = {
     "MPLS-L3VPN-STD-MIB::mplsL3VpnConformance": "1.3.6.1.2.1.10.166.11.2",
     "MPLS-L3VPN-STD-MIB::mplsL3VpnGroups": "1.3.6.1.2.1.10.166.11.2.1",
     "MPLS-L3VPN-STD-MIB::mplsL3VpnCompliances": "1.3.6.1.2.1.10.166.11.2.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.2.1.10.166.11.1.2.2.1.3": (
+        "OctetString",
+        "255t",
+    ),  # MPLS-L3VPN-STD-MIB::mplsL3VpnVrfDescription
+    "1.3.6.1.2.1.10.166.11.1.2.3.1.5": (
+        "OctetString",
+        "255t",
+    ),  # MPLS-L3VPN-STD-MIB::mplsL3VpnVrfRTDescr
+    "1.3.6.1.2.1.10.166.11.1.4.1.1.11": (
+        "Unsigned32",
+        "d",
+    ),  # MPLS-L3VPN-STD-MIB::mplsL3VpnVrfRteInetCidrNextHopAS
 }

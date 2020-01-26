@@ -22,7 +22,8 @@ from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_COMPONENT,
     LLDP_CHASSIS_SUBTYPE_MAC,
 )
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_text
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -97,13 +98,17 @@ class Script(BaseScript):
                 ],
                 bulk=True,
                 max_retries=1,
+                display_hints={
+                    "1.0.8802.1.1.2.1.4.1.1.7": render_bin,
+                    "1.0.8802.1.1.2.1.4.1.1.5": render_bin,
+                },
             ):
                 if v:
                     neigh = dict(zip(neighb, v[2:]))
                     # cleaning
                     if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
                         neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
-                    neigh["remote_port"] = smart_bytes(neigh["remote_port"]).replace(b" \x00", b"")
+                    neigh["remote_port"] = neigh["remote_port"].replace(b" \x00", b"")
                     if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
                         neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
                     if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
@@ -114,12 +119,14 @@ class Script(BaseScript):
                                 "Bad MAC address on Remote Neighbor: %s", neigh["remote_port"]
                             )
                     else:
-                        neigh["remote_port"] = neigh["remote_port"].replace(b"\x00", b"")
+                        neigh["remote_port"] = smart_text(neigh["remote_port"]).rstrip("\x00")
                     if "remote_system_name" in neigh:
-                        neigh["remote_system_name"] = neigh["remote_system_name"].rstrip(b"\x00")
+                        neigh["remote_system_name"] = smart_text(
+                            neigh["remote_system_name"]
+                        ).rstrip("\x00")
                     if "remote_port_description" in neigh:
                         neigh["remote_port_description"] = neigh["remote_port_description"].rstrip(
-                            b"\x00"
+                            "\x00"
                         )
                     r += [
                         {

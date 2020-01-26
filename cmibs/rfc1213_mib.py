@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # RFC1213-MIB
-#    Compiled MIB
-#    Do not modify this file directly
-#    Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "RFC1213-MIB"
+
 # Metadata
 LAST_UPDATED = "1970-01-01"
-COMPILED = "2014-11-10"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "RFC1213-MIB::at": "1.3.6.1.2.1.3",
@@ -153,3 +155,5 @@ MIB = {
     "RFC1213-MIB::egpNeighEventTrigger": "1.3.6.1.2.1.8.5.1.15",
     "RFC1213-MIB::egpAs": "1.3.6.1.2.1.8.6",
 }
+
+DISPLAY_HINTS = {}

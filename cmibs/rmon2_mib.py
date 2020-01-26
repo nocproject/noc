@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # RMON2-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "RMON2-MIB"
+
 # Metadata
 LAST_UPDATED = "1999-06-22"
-COMPILED = "2018-02-28"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "RMON2-MIB::etherStats2Table": "1.3.6.1.2.1.16.1.4",
@@ -296,3 +298,5 @@ MIB = {
     "RMON2-MIB::rmon2MIBCompliances": "1.3.6.1.2.1.16.20.1",
     "RMON2-MIB::rmon2MIBGroups": "1.3.6.1.2.1.16.20.2",
 }
+
+DISPLAY_HINTS = {}

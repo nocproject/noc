@@ -14,6 +14,7 @@ import pytest
 
 # NOC modules
 from noc.core.mib import mib
+from noc.core.snmp.render import render_mac
 
 
 @pytest.mark.parametrize(
@@ -103,3 +104,50 @@ def test_invalid_name(clean_mib, name):
     mib = clean_mib
     with pytest.raises(KeyError):
         assert mib[name]
+
+
+@pytest.mark.parametrize(
+    "mib_name,oid,value,display_hints,expected",
+    [
+        ("IF-MIB", "1.3.6.1.2.1.2.2.1.2.1", b"description", None, "description"),
+        (
+            "IF-MIB",
+            "1.3.6.1.2.1.2.2.1.6.3",
+            b"\x00\x01\x02\x03\x04\x05\x06",
+            None,
+            "00:01:02:03:04:05:06",
+        ),
+        (
+            "IF-MIB",
+            "1.3.6.1.2.1.2.2.1.6.3",
+            b"\x00\x01\x02\x03\x04\x0a\x0b",
+            None,
+            "00:01:02:03:04:0a:0b",
+        ),
+        (
+            "IF-MIB",
+            "1.3.6.1.2.1.2.2.1.6.3",
+            b"\x00\x01\x02\x03\x04\x0a\x0b",
+            {"1.3.6.1.2.1.2.2.1.5": render_mac},  # Must be skipped
+            "00:01:02:03:04:0a:0b",
+        ),
+        (
+            "IF-MIB",
+            "1.3.6.1.2.1.2.2.1.6.3",
+            b"\x00\x01\x02\x03\x04\x0a\x0b",  # Length mismatch
+            {"1.3.6.1.2.1.2.2.1.6": render_mac},
+            "",
+        ),
+        (
+            "IF-MIB",
+            "1.3.6.1.2.1.2.2.1.6.3",
+            b"\x01\x02\x03\x04\x0a\x0b",  # Length mismatch
+            {"1.3.6.1.2.1.2.2.1.6": render_mac},
+            "01:02:03:04:0A:0B",
+        ),
+    ],
+)
+def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected):
+    mib = clean_mib
+    mib.load_mib(mib_name)
+    assert mib.render(oid, value, display_hints) == expected

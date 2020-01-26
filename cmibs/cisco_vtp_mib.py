@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # CISCO-VTP-MIB
-#     Compiled MIB
-#     Do not modify this file directly
-#     Run ./noc mib make_cmib instead
+# Compiled MIB
+# Do not modify this file directly
+# Run ./noc mib make-cmib instead
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "CISCO-VTP-MIB"
+
 # Metadata
 LAST_UPDATED = "2010-05-12"
-COMPILED = "2018-06-09"
+COMPILED = "2020-01-19"
+
 # MIB Data: name -> oid
 MIB = {
     "CISCO-VTP-MIB::ciscoVtpMIB": "1.3.6.1.4.1.9.9.46",
@@ -197,4 +199,15 @@ MIB = {
     "CISCO-VTP-MIB::vtpMIBConformance": "1.3.6.1.4.1.9.9.46.3",
     "CISCO-VTP-MIB::vtpMIBCompliances": "1.3.6.1.4.1.9.9.46.3.1",
     "CISCO-VTP-MIB::vtpMIBGroups": "1.3.6.1.4.1.9.9.46.3.2",
+}
+
+DISPLAY_HINTS = {
+    "1.3.6.1.4.1.9.9.46.1.2.1.1.6": (
+        "OctetString",
+        "2d-1d-1d,1d:1d:1d.1d,1a1d:1d",
+    ),  # CISCO-VTP-MIB::managementDomainLastChange
+    "1.3.6.1.4.1.9.9.46.1.3.2.2.1.1": (
+        "OctetString",
+        "255t",
+    ),  # CISCO-VTP-MIB::vtpInternalVlanOwner
 }
