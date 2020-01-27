@@ -1104,6 +1104,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         if self.has_capability("SNMP", allow_zero=True):
             # If having SNMP caps - check it and credential
             return bool(self.credentials.get("snmp_ro")) and self.has_capability("SNMP")
+        elif self.is_beefed:
+            return True
         else:
             # if SNMP caps not exist check credential
             return bool(self.credentials.get("snmp_ro"))

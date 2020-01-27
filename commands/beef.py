@@ -462,6 +462,7 @@ class Command(BaseCommand):
                 "beef_storage_url": test_st.url,
                 "beef_path": beef_path,
                 "access_preference": test.get("access_preference", "SC"),
+                "snmp_ro": "",
             }
             # Build version
             version = {
