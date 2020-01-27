@@ -52,7 +52,9 @@ class Command(BaseCommand):
         make_collection_parser.add_argument(
             "-b", "--bump", dest="bump", action="store_true", default=False
         )
-        make_collection_parser.add_argument(dest="mib_name", nargs=1, help="MIB Name")
+        make_collection_parser.add_argument(
+            dest="mib_name", nargs=argparse.REMAINDER, help="MIB Name"
+        )
         # Make cmib "Make compiled MIB for SA and PM scripts"
         make_cmib_parser = subparsers.add_parser("make-cmib")
         make_cmib_parser.add_argument("-o", "--output", dest="output", default="")
@@ -116,58 +118,56 @@ class Command(BaseCommand):
             yield self.print
 
     def handle_make_collection(self, mib_name, bump=False, *args, **kwargs):
-        if len(mib_name) != 1:
-            self.print("Specify one MIB")
-            self.die("")
-        # Get MIB
-        mib = MIB.get_by_name(mib_name[0])
-        if not mib:
-            self.print("MIB not found: %s" % mib_name[0])
-            self.die("")
-        # Prepare MIB data
-        mib_data = list(
-            sorted(
-                [
-                    {
-                        "oid": dd.oid,
-                        "name": dd.name,
-                        "description": dd.description,
-                        "syntax": dd.syntax,
-                    }
-                    for dd in MIBData.objects.filter(mib=mib.id)
-                ]
-                + [
-                    {
-                        "oid": dd.oid,
-                        "name": next((a for a in dd.aliases if a.startswith(mib.name + "::"))),
-                        "description": dd.description,
-                        "syntax": dd.syntax,
-                    }
-                    for dd in MIBData.objects.filter(aliases__startswith="%s::" % mib.name)
-                ],
-                key=lambda x: x["oid"],
-            )
-        )
-        # Prepare MIB
-        if mib.last_updated:
-            last_updated = mib.last_updated.strftime("%Y-%m-%d")
+        if not mib_name:
+            mibs = MIB.objects.filter()
         else:
-            last_updated = "1970-01-01"
-        version = mib.version
-        if bump:  # Bump to next version
-            version += 1
-        data = {
-            "name": mib.name,
-            "description": mib.description,
-            "last_updated": last_updated,
-            "version": version,
-            "depends_on": mib.depends_on,
-            "typedefs": mib.typedefs,
-            "data": mib_data,
-        }
-        # Serialize and write
-        with self.open_output(kwargs.get("output")) as f:
-            f(ujson.dumps(data))
+            mibs = MIB.objects.filter(name__in=mib_name)
+        for mib in mibs:
+            # Get MIB
+            mib_data = list(
+                sorted(
+                    [
+                        {
+                            "oid": dd.oid,
+                            "name": dd.name,
+                            "description": dd.description,
+                            "syntax": dd.syntax,
+                        }
+                        for dd in MIBData.objects.filter(mib=mib.id)
+                    ]
+                    + [
+                        {
+                            "oid": dd.oid,
+                            "name": next((a for a in dd.aliases if a.startswith(mib.name + "::"))),
+                            "description": dd.description,
+                            "syntax": dd.syntax,
+                        }
+                        for dd in MIBData.objects.filter(aliases__startswith="%s::" % mib.name)
+                    ],
+                    key=lambda x: x["oid"],
+                )
+            )
+            # Prepare MIB
+            if mib.last_updated:
+                last_updated = mib.last_updated.strftime("%Y-%m-%d")
+            else:
+                last_updated = "1970-01-01"
+            version = mib.version
+            if bump:  # Bump to next version
+                version += 1
+            data = {
+                "name": mib.name,
+                "description": mib.description,
+                "last_updated": last_updated,
+                "version": version,
+                "depends_on": mib.depends_on,
+                "typedefs": mib.typedefs,
+                "data": mib_data,
+            }
+            # Serialize and write
+            path = kwargs.get("output") + mib.name + ".json.gz"
+            with self.open_output(path) as f:
+                f(smart_bytes(ujson.dumps(data)))
 
     def handle_make_cmib(self, mib_name, *args, **kwargs):
         def has_worth_hint(syntax):
