@@ -95,6 +95,9 @@
             "height": 442,
             "width": 225
         },
+        "management": {
+            "managed": true
+        },
         "rackmount": {
             "unit": "6"
         }

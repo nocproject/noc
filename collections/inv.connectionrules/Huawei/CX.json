@@ -6,6 +6,16 @@
     "context": [
         {
             "reset_scopes": [],
+            "scope": "sic",
+            "type": "SIC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "scu",
+            "type": "SCU"
+        },
+        {
+            "reset_scopes": [],
             "scope": "lsb",
             "type": "LSB"
         },
@@ -109,6 +119,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "sic",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "SIC"
+        },
+        {
+            "match_connection": "in",
             "match_type": "PIC",
             "scope": "chassis",
             "target_connection": "{N}",
@@ -174,6 +192,22 @@
         {
             "match_connection": "in",
             "match_type": "LPU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SCU",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SIC",
             "scope": "chassis",
             "target_connection": "{N}",
             "target_number": null,
