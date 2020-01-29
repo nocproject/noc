@@ -34,7 +34,7 @@ class Script(BaseScript):
         r"[^ \t\n\r\f\v\-]+)[^\n]+",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
-    rx_ver_snmp1 = re.compile(
+    rx_ver_snmp_cx_ex_atn = re.compile(
         r"Huawei Versatile Routing Platform Software\s*"
         r"VRP \(R\) software, Version (?P<version>\d+.\d+) \((?:C[EX]\S+|ATN\S+|ATN(?: \S+){0,2}) (?P<image>\S+)\)\s*"
         r"Copyright \(C\) \d+-\d+ Huawei Technologies Co., Ltd.\s*"
@@ -85,11 +85,12 @@ class Script(BaseScript):
         re.IGNORECASE | re.MULTILINE,
     )
 
+    rx_quidwai_metro_platform = re.compile(r"Quidway\s*(?P<platform>\S+)\s*Metro Services Platform")
+
     rx_patch = re.compile(
         r"Patch Package Name\s*:(?P<patch_name>.+)\n"
         r"Patch Package Version\s*:(?P<patch_version>\S+)"
     )
-    rx_hw_version = re.compile(r"HUAWEI\s(?P<platform>\S+)\s")
     rx_hw_extended_platform = re.compile(r"(?P<platform>\S+)[-,](CX|LS)\S+[-,].+")
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
     hw_series = {"S2300", "S5300", "S3328"}
@@ -165,23 +166,23 @@ class Script(BaseScript):
     def parse_version(self, v):
         match_re_list = [
             self.rx_ver,
+            self.rx_ver_snmp_cx_ex_atn,  # More specific OID
             self.rx_ver_snmp,
-            self.rx_ver_snmp1,
             self.rx_ver_snmp2,
             self.rx_ver_snmp3,
             self.rx_ver_snmp5,
         ]
         platform = None
+        if self.rx_quidwai_metro_platform.search(v):
+            # Fix CX300 platform
+            platform = self.rx_quidwai_metro_platform.search(v).group("platform")
         if "NetEngine" in v or "MultiserviceEngine" in v or "HUAWEINE" in v or "HUAWEI NE" in v:
             # Use specified regex for this platform
             match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
         elif "Eudemon" in v:
             match_re_list.insert(0, self.rx_ver_snmp7_eudemon)
         elif "Quidway S5600-HI" in v:  # Bad platform
-            return "Quidway S5600-HI", None, None
-        elif self.rx_hw_version.search(v):
-            # For HUAWEI CX600-X2-M8 string
-            platform = self.rx_hw_version.search(v).group("platform")
+            return "S5600-HI", None, None
         try:
             rx = self.find_re(match_re_list, v)
         except self.UnexpectedResultError:
@@ -202,6 +203,9 @@ class Script(BaseScript):
             platform = p.strip()
         if "image" in match.groupdict():
             image = match.group("image")
+        if platform.startswith("Quidway"):
+            # Strip Quidway keyword from platform name
+            platform = platform[8:]
         return platform, match.group("version"), image
 
     def execute_snmp(self, **kwargs):

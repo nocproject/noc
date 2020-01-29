@@ -278,6 +278,8 @@ class Script(BaseScript):
             return "FPIC", slot, part_no
         elif "Fixed Card" in descr:
             return "FPIC", slot, part_no
+        elif "General Switch Control Unit" in descr:
+            return "SCU", slot, part_no
         elif "Fan Box" in descr or "Fan Module" in descr:
             if name and (name.startswith("A") or name.startswith("B")):
                 slot = name
@@ -458,6 +460,17 @@ class Script(BaseScript):
                 }
             ]
             # raise NotImplementedError("Not supported 'display elabel' command")
+        if self.is_cx300:
+            # Chassis without SN ex. CX300
+            r += [
+                {
+                    "type": "CHASSIS",
+                    "number": 0,
+                    "vendor": "Huawei",
+                    "description": "",
+                    "part_no": self.version["platform"],
+                }
+            ]
         parent_num = None
         for item in parse_result:
             self.logger.debug("Inventory item: %s", item)
