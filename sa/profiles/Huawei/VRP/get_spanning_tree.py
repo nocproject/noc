@@ -92,6 +92,12 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
+    rx_stp_bridge = re.compile(
+        r"Bridge\sID\s+:(?P<bridge_priority>\d+)(\s*|)\.(?P<bridge_id>\S+).+?"
+        r"Root\sID\s*/\s*[IE ]RPC\s+:(?P<root_priority>\d+)(\s*|)\.(?P<root_id>\S+)\s",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+
     rx_mstp0_interfaces = re.compile(
         r"^----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
         r"\s+Port\sProtocol\s+:(?P<status>\S+).+?"
@@ -109,14 +115,17 @@ class Script(BaseScript):
         r"----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
         r"\s+Port\sRole\s+:(?P<role>\S+).+?"
         r"\s+Port\sPriority\s+:(?P<priority>\d+).*?"
-        r"\s+Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
+        r"\s+Port\sCost\(Dot1T\s*\)\s+:.+?Active=(?P<cost>\d+).+?"
         r"\s+(Desg\.|Designated)\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).*?",
         re.MULTILINE | re.IGNORECASE,
     )
 
+    check_d = re.compile(r"\s*\d+\s*")
+
+    rx_check_column_num = re.compile(r"Instance\s*Mode\s*VLANs Mapped")
+
     def process_mstp(self, ports=None):
-        check_d = re.compile(r"\s*\d+\s*")
         #
         v = self.cli("display stp region-configuration")
         match = self.rx_mstp_region.search(v)
@@ -129,13 +138,20 @@ class Script(BaseScript):
         }
         iv = {}  # instance -> vlans
         instance_table = v.splitlines()[6:]
-
+        c_num = 2
+        if self.rx_check_column_num.search(v):
+            # For third-column format
+            c_num = 3
         # vlans = ""
         for row in instance_table:
             # s = row[0:13]
-            if check_d.match(row[0:13]):
-                instance = int(row[0:13].strip())
-                vlans = row[14:]
+            if self.check_d.match(row[0:13]):
+                if c_num == 3:
+                    instance, mode, vlans = row.split(None, 2)
+                else:
+                    instance, vlans = row.split(None, 1)
+                instance = int(instance.strip())
+                # vlans = row[14:]
                 iv[int(instance)] = vlans
             else:
                 iv[int(instance)] += row[14:]
@@ -158,8 +174,11 @@ class Script(BaseScript):
                 if instance_id == 0:
                     match = self.rx_mstp0_bridge.search(I)
                     v2 = self.rx_mstp0_interfaces.finditer(I)
-                else:
+                elif "MSTI" in I:
                     match = self.rx_mstp_bridge.search(I)
+                    v2 = self.rx_mstp_interfaces.finditer(I)
+                else:
+                    match = self.rx_stp_bridge.search(I)
                     v2 = self.rx_mstp_interfaces.finditer(I)
                 r["instances"] += [
                     {
