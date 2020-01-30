@@ -93,7 +93,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     PORT_STATE = {"Forwarding": "forwarding", "Blocking": "blocking"}
-    PORT_ROLE = {"DesignatedPort": "designated"}
+    PORT_ROLE = {"DesignatedPort": "designated", "RootPort": "root"}
 
     def execute_cli(self):
         try:
