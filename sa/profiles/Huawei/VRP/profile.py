@@ -85,6 +85,7 @@ class Profile(BaseProfile):
         "is_s85xx": {"platform": {"$regex": r"^(S85.+)$"}},
         "is_ar12_93xx": {"platform": {"$regex": r"^(S93..|AR[12].+)$"}},
         "is_cloud_engine": {"platform": {"$regex": r"^CE\S+"}},
+        "is_cx300": {"platform": {"$regex": r"^CX300\S*"}},
     }
 
     rx_ver = re.compile(
