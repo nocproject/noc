@@ -121,7 +121,7 @@ class Script(BaseScript):
                 "number": 0,
                 "vendor": "Huawei",
                 "description": "",
-                "part_no": [{10: "S8508", 7: "S8505"}[slot_num]],
+                "part_no": [{14: "S8512", 10: "S8508", 7: "S8505", 4: "S8502"}[slot_num]],
             }
         ]
         for slot in slots:
@@ -343,6 +343,8 @@ class Script(BaseScript):
                 slot_num += 1
             except ValueError:
                 self.logger.warning("Slot have unknown text format...")
+            except TypeError:
+                self.logger.warning("Unknown 'display device' format..")
             if i_type == "POWER":
                 i_type = "PWR"
             # Detect sub slot number
