@@ -31,7 +31,7 @@ class MIBAPI(API):
     """
 
     name = "mib"
-    rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
+    rx_module_not_found = re.compile(b"{module-not-found}.*`([^']+)'")
     rx_oid = re.compile(r"^\d+(\.\d+)+")
     TRY_ENCODINGS = ["utf-8", "big5"]
 
@@ -97,7 +97,7 @@ class MIBAPI(API):
                 [config.path.smilint, "-m", tmp_path], stderr=subprocess.PIPE, env=self.SMI_ENV
             ).stderr
             for l in f:
-                match = self.rx_module_not_found.search(smart_text(l).strip())
+                match = self.rx_module_not_found.search(l.strip())
                 if match:
                     return {
                         "status": False,
@@ -141,7 +141,7 @@ class MIBAPI(API):
                 last_updated = datetime.datetime.strptime(
                     sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1], "%Y-%m-%d %H:%M"
                 )
-            except ValueError:
+            except (ValueError, KeyError):
                 last_updated = datetime.datetime(year=1970, month=1, day=1)
             self.logger.debug("Extract MIB typedefs")
             # Extract MIB typedefs
