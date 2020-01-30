@@ -31,6 +31,27 @@ class Script(BaseScript):
     rx_sfp_vendor = re.compile("SFP vendor name:(?P<vendor>\S+)")
     rx_sfp_serial = re.compile("SFP serial number:(?P<serial>\S+)")
 
+    def get_e1_inventory(self):
+        v = self.cli("?", command_submit=b"")
+        if "enter E1 context" in v:
+            with self.profile.e1(self):
+                v = self.cli("info")
+                if "E1 functionality is disabled." in v:
+                    return []
+                part_no = self.rx_e1_part_no.search(v).group("part_no")
+                serial = self.rx_e1_serial.search(v).group("serial")
+                revision = self.rx_e1_revision.search(v).group("revision")
+                return [
+                    {
+                        "type": "MODULE",
+                        "vendor": "SKS",
+                        "part_no": part_no,
+                        "serial": serial,
+                        "revision": revision,
+                    }
+                ]
+        return []
+
     def execute(self):
         v = self.cli("show version", cached=True)
         if "Unit" in v:
@@ -69,24 +90,7 @@ class Script(BaseScript):
             ]
             if "Serial Number" in v["attributes"]:
                 r[0]["serial"] = v["attributes"]["Serial Number"]
-
-            v = self.cli("?", command_submit="")
-            if "enter E1 context" in v:
-                with self.profile.e1(self):
-                    v = self.cli("info")
-                    part_no = self.rx_e1_part_no.search(v).group("part_no")
-                    serial = self.rx_e1_serial.search(v).group("serial")
-                    revision = self.rx_e1_revision.search(v).group("revision")
-                    r += [
-                        {
-                            "type": "MODULE",
-                            "vendor": "SKS",
-                            "part_no": part_no,
-                            "serial": serial,
-                            "revision": revision,
-                        }
-                    ]
-
+            r += self.get_e1_inventory()
             try:
                 v = self.cli("show interfaces status", cached=True)
                 rx_port = self.rx_port1
