@@ -48,6 +48,10 @@ class Script(BaseScript):
             version = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.13.0")
         except Exception:
             raise NotImplementedError
+        if not platform:
+            # if device output
+            # SNMPv2-SMI::enterprises.27142.1.1.1.2.2.1.0 = "" (on device SNMPv2-SMI::enterprises.4413)
+            raise NotImplementedError
         return {
             "vendor": "Alstec",
             "platform": platform,

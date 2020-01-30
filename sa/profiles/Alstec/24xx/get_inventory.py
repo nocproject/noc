@@ -23,12 +23,12 @@ class Script(BaseScript):
         port_num = self.snmp.get("1.3.6.1.2.1.2.1.0")
         if port_num in self.port_map:
             platform = "%s-0%s" % (platform, self.port_map[port_num])
-        return [
-            {
-                "type": "CHASSIS",
-                "vendor": "Alstec",
-                "part_no": platform,
-                "revision": revision,
-                "serial": serial,
-            }
-        ]
+        r = {
+            "type": "CHASSIS",
+            "vendor": "Alstec",
+            "part_no": platform,
+            "revision": revision,
+        }
+        if len(serial) > 5:
+            r["serial"] = serial
+        return [r]
