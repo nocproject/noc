@@ -196,6 +196,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             renderer: NOC.render.Lookup("type")
                         },
                         {
+                            text: __("Combo"),
+                            dataIndex: "combo",
+                            editor: "textfield",
+                            width: 50
+                        },
+                        {
                             text: __("Group"),
                             dataIndex: "group",
                             editor: "textfield",

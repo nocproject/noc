@@ -52,6 +52,7 @@ class ObjectModelConnection(EmbeddedDocument):
     type = PlainReferenceField(ConnectionType)
     direction = StringField(choices=["i", "o", "s"])  # Inner slot  # Outer slot  # Connection
     gender = StringField(choices=["s", "m", "f"])
+    combo = StringField(required=False)
     group = StringField(required=False)
     cross = StringField(required=False)
     protocols = ListField(StringField(), required=False)
@@ -101,8 +102,12 @@ class ObjectModelConnection(EmbeddedDocument):
         return r
 
     def clean(self):
-        if self.type.name == "Composed" and (self.direction != "s" or self.gender != "s"):
-            raise ValidationError('Direction and gender fields on Composed type must be "s"')
+        if self.type.name in {"Composed", "Combined"} and (
+            self.direction != "s" or self.gender != "s"
+        ):
+            raise ValidationError(
+                'Direction and gender fields on Composed or Combined connection type must be "s"'
+            )
         if self.composite_pins and not rx_composite_pins_validate.match(self.composite_pins):
             raise ValidationError("Composite pins not match format: N-N")
         super(ObjectModelConnection, self).clean()
