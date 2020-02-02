@@ -36,7 +36,7 @@ class Script(BaseScript):
                     "vendor": "Alcatel",
                     "part_no": b_type,
                     "revision": b_revision,
-                    "serial": b_serial,
+                    "serial": b_serial.strip().strip("\x00"),
                 }
             ]
         r.insert(
