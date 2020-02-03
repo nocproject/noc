@@ -230,7 +230,7 @@ class Script(BaseScript):
         for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
             if not x:
                 continue
-            serial += [x.strip(smart_text(" \x00"))]
+            serial += [smart_text(x, errors="replace").strip(smart_text(" \x00"))]
         if platform in self.hw_series:
             # series name, fix
             platform = self.fix_platform_name(platform)
