@@ -28,8 +28,8 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_port2 = re.compile(r"^(?P<port>[fgt]\d\S*)\s+.+?\s+(?P<type>\S+)\s*\n", re.MULTILINE)
-    rx_sfp_vendor = re.compile("SFP vendor name:(?P<vendor>\S+)")
-    rx_sfp_serial = re.compile("SFP serial number:(?P<serial>\S+)")
+    rx_sfp_vendor = re.compile(r"SFP vendor name:(?P<vendor>\S+)")
+    rx_sfp_serial = re.compile(r"SFP serial number:(?P<serial>\S+)")
 
     def get_e1_inventory(self):
         v = self.cli("?", command_submit=b"")
@@ -38,7 +38,12 @@ class Script(BaseScript):
                 v = self.cli("info")
                 if "E1 functionality is disabled." in v:
                     return []
-                part_no = self.rx_e1_part_no.search(v).group("part_no")
+                part_no = self.rx_e1_part_no.search(v)
+                if part_no:
+                    part_no = part_no.group("part_no")
+                else:
+                    # If no module data
+                    return []
                 serial = self.rx_e1_serial.search(v).group("serial")
                 revision = self.rx_e1_revision.search(v).group("revision")
                 return [
