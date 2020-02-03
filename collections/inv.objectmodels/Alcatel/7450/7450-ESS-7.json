@@ -14,7 +14,7 @@
             "gender": "f",
             "internal_name": "imm1",
             "name": "iom1",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 2",
@@ -22,7 +22,7 @@
             "gender": "f",
             "internal_name": "imm2",
             "name": "iom2",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 2",
@@ -30,7 +30,7 @@
             "gender": "f",
             "internal_name": "imm2",
             "name": "iom2",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 3",
@@ -38,7 +38,7 @@
             "gender": "f",
             "internal_name": "imm3",
             "name": "iom3",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 4",
@@ -46,7 +46,7 @@
             "gender": "f",
             "internal_name": "imm4",
             "name": "iom4",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "CFM slot A",
