@@ -1,5 +1,5 @@
 {
-    "name": "Alcatel | 7x50 | M2-10GB-XP-XFP",
+    "name": "Alcatel | 7450 | M2-10GB-XP-XFP",
     "$collection": "inv.objectmodels",
     "uuid": "231088b8-598c-4bda-b29d-217efdce56b4",
     "vendor__code": "ALU",
@@ -12,7 +12,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "TeX/1 XFP port",

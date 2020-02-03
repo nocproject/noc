@@ -1,5 +1,5 @@
 {
-    "name": "Alcatel | 7750 | 7750-SR-7",
+    "name": "Alcatel | 7450 | 7750-SR-7",
     "$collection": "inv.objectmodels",
     "uuid": "8610619a-e7b6-4f0d-ad0c-2be6ffac1dcf",
     "vendor__code": "ALU",
@@ -14,7 +14,7 @@
             "gender": "f",
             "internal_name": "imm1",
             "name": "iom1",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 2",
@@ -22,7 +22,7 @@
             "gender": "f",
             "internal_name": "imm2",
             "name": "iom2",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 2",
@@ -30,7 +30,7 @@
             "gender": "f",
             "internal_name": "imm2",
             "name": "iom2",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 3",
@@ -38,7 +38,7 @@
             "gender": "f",
             "internal_name": "imm3",
             "name": "iom3",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "IO slot 4",
@@ -46,7 +46,7 @@
             "gender": "f",
             "internal_name": "imm4",
             "name": "iom4",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "CFM slot A",

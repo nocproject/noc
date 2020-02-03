@@ -12,21 +12,21 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Alcatel | 7x50 | IO"
+            "type__name": "Alcatel | 7450 | IO"
         },
         {
             "description": "MDA slot 1 connection",
             "direction": "i",
             "gender": "f",
             "name": "mda1",
-            "type__name": "Alcatel | 7x50 | MDA"
+            "type__name": "Alcatel | 7450 | MDA"
         },
         {
             "description": "MDA slot 2 connection",
             "direction": "i",
             "gender": "f",
             "name": "mda2",
-            "type__name": "Alcatel | 7x50 | MDA"
+            "type__name": "Alcatel | 7450 | MDA"
         }
     ],
     "data": {

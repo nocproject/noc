@@ -1,0 +1,77 @@
+{
+    "name": "Alcatel | 7302 | ECNT-A",
+    "$collection": "inv.objectmodels",
+    "uuid": "d14b3c90-1d0c-48af-a771-f0b73ba5089d",
+    "vendor__code": "ALU",
+    "description": "The ECNT-A has three ethernet uplinks (Port 1, Port 2, Port 3), These uplinks can either be electrical or optical.",
+    "connection_rule__name": "Alcatel | 7302",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
+            "description": "Ethernet port 1",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "Ethernet0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet port 1 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "sfp1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet port 2",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "name": "Ethernet0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet port 2 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "name": "sfp2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet port 3",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "name": "Ethernet0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet port 3 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "group": "3",
+            "name": "sfp3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ECNT-A"]
+        }
+    }
+}
