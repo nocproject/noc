@@ -44,7 +44,8 @@ class Profile(BaseProfile):
         r"% Ambiguous command found at|"
         r"Error:\s*Unrecognized command found at|"
         r"Error:\s*Wrong parameter found at|"
-        r"Error:\s*Incomplete command found at)"
+        r"Error:\s*Incomplete command found at)|"
+        r"Error:\s*Instance can not be used when stp in vbst mode"
     )
 
     command_more = " "
