@@ -15,6 +15,22 @@ from noc.core.text import parse_table
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.validators import is_ipv4, is_ipv6
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+)
 
 
 class Script(BaseScript):
@@ -27,7 +43,17 @@ class Script(BaseScript):
         re.IGNORECASE,
     )
 
-    CAPS = {"": 0, "O": 1, "r": 2, "B": 4, "W": 8, "R": 16, "T": 32, "D": 64, "H": 128}
+    CAPS = {
+        "": 0,
+        "O": LLDP_CAP_OTHER,
+        "r": LLDP_CAP_REPEATER,
+        "B": LLDP_CAP_BRIDGE,
+        "W": LLDP_CAP_WLAN_ACCESS_POINT,
+        "R": LLDP_CAP_ROUTER,
+        "T": LLDP_CAP_TELEPHONE,
+        "D": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+        "H": LLDP_CAP_STATION_ONLY,
+    }
 
     def execute(self):
         r = []
@@ -42,31 +68,29 @@ class Script(BaseScript):
                 data[-1] = [s[0] + s[1] for s in zip(data[-1], l)]
                 continue
             data += [l]
-
         for d in data:
             chassis_id = d[2]
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
-                chassis_id_subtype = 5
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             else:
                 try:
                     MACAddressParameter().clean(chassis_id)
-                    chassis_id_subtype = 4
+                    chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
                 except ValueError:
-                    chassis_id_subtype = 7
+                    chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
             port_id = d[3]
             if is_ipv4(port_id) or is_ipv6(port_id):
-                port_id_subtype = 4
+                port_id_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             else:
                 try:
                     MACAddressParameter().clean(port_id)
-                    port_id_subtype = 3
+                    port_id_subtype = LLDP_PORT_SUBTYPE_MAC
                 except ValueError:
-                    port_id_subtype = 7
+                    port_id_subtype = LLDP_PORT_SUBTYPE_LOCAL
             # caps = sum([self.CAPS[s.strip()] for s in d[4].split(",")])
             caps = 0
             if not chassis_id:
                 continue
-
             neighbor = {
                 "remote_chassis_id": chassis_id,
                 "remote_chassis_id_subtype": chassis_id_subtype,
