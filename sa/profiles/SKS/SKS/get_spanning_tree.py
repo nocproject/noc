@@ -89,7 +89,7 @@ class Script(BaseScript):
         r"^\s*Designated bridge has priority "
         r"(?P<designated_bridge_priority>\d+), address "
         r"(?P<designated_bridge_id>\S+)\s*\n"
-        r"^\s*Designated port id is (?P<designated_port_id>\S+)",
+        r"^\s*Designated port id is (?P<designated_port_id>\d+\.\d+|\d+)",
         re.MULTILINE,
     )
     PORT_STATE = {"Forwarding": "forwarding", "Blocking": "blocking"}
