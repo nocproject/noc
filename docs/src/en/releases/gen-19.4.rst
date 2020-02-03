@@ -8,3 +8,5 @@
     :titlesonly:
 
     /releases/release-19.4
+    /releases/release-19.4.1
+
