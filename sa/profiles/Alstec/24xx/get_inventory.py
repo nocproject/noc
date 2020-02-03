@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
@@ -23,12 +23,15 @@ class Script(BaseScript):
         port_num = self.snmp.get("1.3.6.1.2.1.2.1.0")
         if port_num in self.port_map:
             platform = "%s-0%s" % (platform, self.port_map[port_num])
+        if not platform:
+            raise NotImplementedError
         r = {
             "type": "CHASSIS",
             "vendor": "Alstec",
             "part_no": platform,
-            "revision": revision,
         }
-        if len(serial) > 5:
+        if serial and len(serial) > 5:
             r["serial"] = serial
+        if revision:
+            r["revision"] = revision
         return [r]
