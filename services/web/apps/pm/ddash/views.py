@@ -14,6 +14,7 @@ from __future__ import absolute_import
 from noc.lib.app.extapplication import ExtApplication, view
 from .dashboards.base import BaseDashboard
 from .dashboards.mo import MODashboard
+from .dashboards.mocard import MOCardDashboard
 from .dashboards.link import LinkDashboard
 from .dashboards.ipsla import IPSLADashboard
 from .dashboards.container import ContainerDashboard
@@ -29,6 +30,7 @@ class DynamicDashboardApplication(ExtApplication):
 
     dashboards = {
         "mo": MODashboard,
+        "mocard": MOCardDashboard,
         "link": LinkDashboard,
         "ipsla": IPSLADashboard,
         "container": ContainerDashboard,
