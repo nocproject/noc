@@ -26,6 +26,8 @@ class Profile(BaseProfile):
     config_tokenizer_settings = {"line_comment": "#", "rewrite": [(re.compile(r"[\.=\[\]]"), " ")]}
     config_normalizer = "DHNormalizer"
 
+    matchers = {"is_rvi": {"platform": {"$regex": "RVi.+"}}}
+
     rx_depth = re.compile(r"\S+(\[[\S\d]+\])")
 
     @staticmethod

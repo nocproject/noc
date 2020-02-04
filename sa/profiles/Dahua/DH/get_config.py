@@ -22,7 +22,7 @@ class Script(BaseScript):
         "VideoInOptions",
         "Encode",
         "VideoStandard",
-        "Ptz",
+        # "Ptz",
         "VideoInDayNight",
         "NTP",
         "VideoWidget",
@@ -34,6 +34,13 @@ class Script(BaseScript):
             "/cgi-bin/configManager.cgi?action=getConfig&%s"
             % "&".join(["%s=%s" % ("name", c) for c in self.config_sections])
         )
+        ptz = ""
+        if not self.is_rvi:
+            # Ptz check
+            try:
+                ptz = self.http.get("/cgi-bin/configManager.cgi?action=getConfig&name=Ptz")
+            except self.http.HTTPError:
+                pass
         users_info = self.http.get("/cgi-bin/userManager.cgi?action=getUserInfoAll")
 
-        return res + users_info
+        return res + ptz + users_info
