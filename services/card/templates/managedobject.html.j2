@@ -375,7 +375,8 @@
                     <tbody>
                         {% for i in interfaces %}
                         <tr>
-                            <td>{{ i["name"] }}
+                            <td>
+                            <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'iface', 'name': '{{i["name"]}}'}"><i class="fa fa-dashboard"></i> - {{i["name"]}} </a>
                             <a href="/api/card/view/interfacepath/{{ i["id"] }}/" target="_"><i class="fa fa-road" title="{{ _("trace vpn") }}"></i></a>
                             </td>
                             <td{% if not i["oper_status"] %} class="danger"{% endif %}>
