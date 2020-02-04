@@ -37,7 +37,6 @@ def humanize_speed(speed, type_speed):
 
 
 def handler(mo, event):
-    threshold_interval = 60
     # Date Time Block
     from_date = datetime.datetime.now() - datetime.timedelta(hours=6)
     date_limit = datetime.datetime.now() - datetime.timedelta(days=6)
@@ -50,74 +49,76 @@ def handler(mo, event):
     periodic_interval = mo.object.object_profile.periodic_discovery_interval
     if event["window_type"] == "m":
         threshold_interval = int(periodic_interval) * int(event["window"])
+    else:
+        threshold_interval = int(event["window"])
     iface = Interface.objects.get(
         name=event["path"].split("|")[-1::][0].strip(), managed_object=mo.object
     )
     try:
-        if iface:
-            event["interface"] = event["path"].split("|")[-1::][0].strip()
-            if iface.description:
-                event["description"] = str(iface.description)
-            event["threshold_interval"] = int(threshold_interval) / 60
-            event["ts_from_date"] = str(int(ts_from_date * 1000))
-            if "Load" in event["metric"]:
-                if iface.in_speed and iface.out_speed:
-                    if "In" in event["metric"]:
-                        iface_speed = iface.in_speed
-                    else:
-                        iface_speed = iface.out_speed
-                    event["percent"] = round((100.0 / int(iface_speed)) * ((event["value"]) / 1000))
-                event["convert_value"] = humanize_speed(event["value"], metric.measure)
-            if "Duplex" in event["metric"]:
-                if event["value"] != 2:
-                    logger.debug("Value %s is not True" % event["value"])
-                    return None
-            if "Status" in event["metric"]:
-                if "Admin" in event["metric"]:
-                    if iface.is_linked:
-                        linked_object = iface.link.interfaces
-                        if linked_object and len(linked_object) == 2:
-                            linked_object.remove(iface)
-                            event["linked_object"] = linked_object[0].managed_object.name
-                            event["linked_object_interface"] = linked_object[0].name
-                            event["linked_object_status"] = linked_object[
-                                0
-                            ].managed_object.get_status()
+        event["interface"] = event["path"].split("|")[-1::][0].strip()
+        if iface.description:
+            event["description"] = str(iface.description)
+        event["threshold_interval"] = int(threshold_interval) / 60
+        event["ts_from_date"] = str(int(ts_from_date * 1000))
+        if "Load" in event["metric"]:
+            if iface.in_speed and iface.out_speed:
+                if "In" in event["metric"]:
+                    iface_speed = iface.in_speed
                 else:
-                    ifaces_metrics, last_ts = get_interface_metrics(mo.object)
-                    im = ifaces_metrics[mo.object][event["path"].split("|")[-1::][0].strip()]
-                    error_in = im.get("Interface | Errors | In")
-                    error_out = im.get("Interface | Errors | Out")
-                    if error_in is not None:
-                        event["error_in"] = error_in
-                    if error_out is not None:
-                        event["error_out"] = error_out
-                    if iface.is_linked:
-                        linked_object = iface.link.interfaces
-                        if linked_object and len(linked_object) == 2:
-                            linked_object.remove(iface)
-                            event["linked_object"] = linked_object[0].managed_object.name
-                            event["linked_object_interface"] = linked_object[0].name
-                            event["linked_object_status"] = linked_object[
-                                0
-                            ].managed_object.get_status()
-                            linked_ifaces_metrics, linked_last_ts = get_interface_metrics(
-                                linked_object[0].managed_object
-                            )
-                            if linked_ifaces_metrics:
-                                lim = linked_ifaces_metrics[linked_object[0].managed_object][
-                                    linked_object[0].name
-                                ]
-                                linked_error_in = lim.get("Interface | Errors | In")
-                                linked_error_out = lim.get("Interface | Errors | Out")
-                                if linked_error_in is not None:
-                                    event["linked_error_in"] = linked_error_in
-                                if linked_error_out is not None:
-                                    event["linked_error_out"] = linked_error_out
-            if "Errors" in event["metric"]:
-                event["current_value"] = event["value"] * (threshold_interval * 300.0)
+                    iface_speed = iface.out_speed
+                event["percent"] = round((100.0 / int(iface_speed)) * ((event["value"]) / 1000))
+            event["convert_value"] = humanize_speed(event["value"], metric.measure)
+        if "Duplex" in event["metric"]:
+            if event["value"] != 2:
+                logger.debug("Value %s is not True" % event["value"])
+                return None
+        if "Status" in event["metric"]:
+            if "Admin" in event["metric"]:
+                if iface.is_linked:
+                    linked_object = iface.link.interfaces
+                    if linked_object and len(linked_object) == 2:
+                        linked_object.remove(iface)
+                        event["linked_object"] = linked_object[0].managed_object.name
+                        event["linked_object_interface"] = linked_object[0].name
+                        event["linked_object_status"] = linked_object[0].managed_object.get_status()
+            else:
+                ifaces_metrics, last_ts = get_interface_metrics(mo.object)
+                im = ifaces_metrics[mo.object][event["path"].split("|")[-1::][0].strip()]
+                error_in = im.get("Interface | Errors | In")
+                error_out = im.get("Interface | Errors | Out")
+                if error_in is not None:
+                    event["error_in"] = error_in
+                if error_out is not None:
+                    event["error_out"] = error_out
+                if iface.is_linked:
+                    linked_object = iface.link.interfaces
+                    if linked_object and len(linked_object) == 2:
+                        linked_object.remove(iface)
+                        event["linked_object"] = linked_object[0].managed_object.name
+                        event["linked_object_interface"] = linked_object[0].name
+                        event["linked_object_status"] = linked_object[0].managed_object.get_status()
+                        linked_ifaces_metrics, linked_last_ts = get_interface_metrics(
+                            linked_object[0].managed_object
+                        )
+                        if linked_ifaces_metrics:
+                            lim = linked_ifaces_metrics[linked_object[0].managed_object][
+                                linked_object[0].name
+                            ]
+                            linked_error_in = lim.get("Interface | Errors | In")
+                            linked_error_out = lim.get("Interface | Errors | Out")
+                            if linked_error_in is not None:
+                                event["linked_error_in"] = linked_error_in
+                            if linked_error_out is not None:
+                                event["linked_error_out"] = linked_error_out
+        if "Errors" in event["metric"]:
+            if iface.is_linked:
+                linked_object = iface.link.interfaces
+                if linked_object and len(linked_object) == 2:
+                    linked_object.remove(iface)
+                    event["linked_object"] = linked_object[0].managed_object.name
+                    event["linked_object_interface"] = linked_object[0].name
 
-            return event
+        return event
     except Exception as e:
         logger.info("Error: \n %s" % (event["path"].split("|")[-1::][0].strip(), e))
         return event
