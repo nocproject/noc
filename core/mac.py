@@ -71,8 +71,6 @@ class MAC(str):
     'AA:BB:CC:DD:EE:FF'
     >>> MAC("AABBCCDDEEFF") + " -- " + MAC("0011.2233.4455")
     'AA:BB:CC:DD:EE:FF -- 00:11:22:33:44:55'
-    >>> MAC(b"\xe0\xd9\xe3:\x07\xc0")
-    'E0:D9:E3:3A:07:C0'
     """
 
     def __new__(cls, mac):
