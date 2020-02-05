@@ -94,7 +94,9 @@ class Command(BaseCommand):
         create_test_case_parser.add_argument("--test-storage", help="External storage name")
         create_test_case_parser.add_argument("--test-path", type=smart_text, help="Path name")
         create_test_case_parser.add_argument("--config-storage", help="External storage name")
-        create_test_case_parser.add_argument("--config-path", default="/", help="Path name")
+        create_test_case_parser.add_argument(
+            "--config-path", type=smart_text, default="/", help="Path name"
+        )
         create_test_case_parser.add_argument(
             "--build", action="store_true", default=False, help="Build test case after create"
         )
