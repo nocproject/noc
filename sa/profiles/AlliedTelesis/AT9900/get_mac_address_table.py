@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT9900.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ class Script(BaseScript):
                         "vlan_id": match.group("vlan_id"),
                         "mac": match.group("mac"),
                         "interfaces": [match.group("interfaces")],
-                        "type": match.group("type"),
+                        "type": {"dynamic": "D", "static": "S"}[match.group("type")],
                     }
                 ]
         return r
