@@ -277,7 +277,7 @@ class ExtDocApplication(ExtApplication):
         return perm_name in Permission.get_effective_permissions(get_user())
 
     def has_field_editable(self, field):
-        return ModelProtectionProfile.has_editable(self.model, get_user(), field)
+        return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}

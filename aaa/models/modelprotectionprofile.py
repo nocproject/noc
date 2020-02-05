@@ -53,7 +53,7 @@ class FieldAccess(EmbeddedDocument):
     )
 
     def __str__(self):
-        return self.name
+        return "%s:%s" % (self.name, self.permission)
 
 
 @six.python_2_unicode_compatible
@@ -72,6 +72,9 @@ class ModelProtectionProfile(Document):
     groups = ListField(ForeignKeyField(Group))
 
     _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
+
+    def __str__(self):
+        return self.name
 
     def save(
         self,
