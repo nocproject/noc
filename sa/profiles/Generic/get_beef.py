@@ -16,6 +16,7 @@ import codecs
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbeef import IGetBeef
 from noc.core.comp import smart_bytes
+from noc.core.snmp.error import SNMPError
 
 
 class Script(BaseScript):
@@ -103,12 +104,20 @@ class Script(BaseScript):
     def collect_snmp(self, spec):
         # Collect
         for ans in spec["answers"]:
-            if ans["type"] == "snmp-get":
-                value = self.snmp.get(ans["value"], raw_varbinds=True)
-                yield {"oid": str(ans["value"]), "value": self.encode_mib(value).strip()}
-            elif ans["type"] == "snmp-getnext":
-                for oid, value in self.snmp.getnext(ans["value"], raw_varbinds=True, max_retries=2):
-                    yield {"oid": str(oid), "value": self.encode_mib(value).strip()}
+            try:
+                if ans["type"] == "snmp-get":
+                    value = self.snmp.get(ans["value"], raw_varbinds=True)
+                    yield {
+                        "oid": str(ans["value"]),
+                        "value": self.encode_mib(value).strip(),
+                    }
+                elif ans["type"] == "snmp-getnext":
+                    for oid, value in self.snmp.getnext(
+                        ans["value"], raw_varbinds=True, max_retries=2
+                    ):
+                        yield {"oid": str(oid), "value": self.encode_mib(value).strip()}
+            except SNMPError:
+                continue
 
     def get_snmp_results(self, spec):
         r = []
