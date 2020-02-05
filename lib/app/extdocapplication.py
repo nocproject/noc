@@ -44,11 +44,13 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.validators import is_int, is_uuid
 from noc.aaa.models.permission import Permission
+from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
 from noc.core.collection.base import Collection
 from noc.core.comp import smart_bytes, smart_text
+from noc.models import get_model_id
 from .extapplication import ExtApplication, view
 
 
@@ -64,8 +66,6 @@ class ExtDocApplication(ExtApplication):
     secret_fields = (
         None  # Set of sensitive fields. "secret" permission is required to show of modify
     )
-    protected_fields = None  # Set of protected fields. Individually permission to modify
-    PROTECTED_MESSAGE = "Field is blocked for changing. Contact to Administrator"
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
@@ -144,9 +144,6 @@ class ExtDocApplication(ExtApplication):
         p = super(ExtDocApplication, self).get_permissions()
         if self.secret_fields:
             p.add("%s:secret" % self.get_app_id().replace(".", ":"))
-        if self.protected_fields:
-            for f in self.protected_fields:
-                p.add("%s:protect#%s" % (self.get_app_id().replace(".", ":"), f))
         return p
 
     def get_custom_fields(self):
@@ -166,6 +163,10 @@ class ExtDocApplication(ExtApplication):
                     "cust_grid_columns": [f.ext_grid_column for f in cf],
                     "cust_form_fields": [f.ext_form_field for f in cf if not f.is_hidden],
                 }
+            )
+        if self.model:
+            li["params"]["protected_field"] = ModelProtectionProfile.get_effective_permissions(
+                model_id=get_model_id(self.model), user=request.user
             )
         return li
 
@@ -216,16 +217,12 @@ class ExtDocApplication(ExtApplication):
             (str(k), data[k] if data[k] != "" else None)
             for k in data
             if k not in self.ignored_fields
+            and self.has_field_editable(k)  # Protect individually fields
         )
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
             for f in self.secret_fields:
                 if f in data:
-                    del data[f]
-        # Protect individually fields
-        if self.protected_fields:
-            for f in self.protected_fields:
-                if f in data and self.has_protected(f):
                     del data[f]
         # Clean up fields
         for f in self.clean_fields:
@@ -279,9 +276,8 @@ class ExtDocApplication(ExtApplication):
         perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
         return perm_name in Permission.get_effective_permissions(get_user())
 
-    def has_protected(self, field):
-        perm_name = "%s:protect#%s" % (self.get_app_id().replace(".", ":"), field)
-        return perm_name in Permission.get_effective_permissions(get_user())
+    def has_field_editable(self, field):
+        return ModelProtectionProfile.has_editable(self.model, get_user(), field)
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
@@ -358,7 +354,7 @@ class ExtDocApplication(ExtApplication):
     @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
     def api_lookup_tree(self, request):
         def trim(s):
-            return smart_text(o).rsplit(" | ")[-1]
+            return smart_text(s).rsplit(" | ")[-1]
 
         if not self.parent_field:
             return None
@@ -386,7 +382,6 @@ class ExtDocApplication(ExtApplication):
         except ValueError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.response(str(e), status=self.BAD_REQUEST)
-
         if self.pk in attrs:
             del attrs[self.pk]
         if self.has_uuid and not attrs.get("uuid"):
@@ -461,7 +456,7 @@ class ExtDocApplication(ExtApplication):
                 Tag.register_tag(t, repr(self.model))
         # @todo: Check for duplicates
         for k in attrs:
-            if self.protected_fields and k in self.protected_fields and self.has_protected(k):
+            if not self.has_field_editable(k):
                 continue
             if k != self.pk and "__" not in k:
                 setattr(o, k, attrs[k])

@@ -46,8 +46,10 @@ from noc.models import is_document
 from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
 from noc.aaa.models.permission import Permission
+from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.core.middleware.tls import get_user
 from noc.core.comp import smart_text
+from noc.models import get_model_id
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter
 
@@ -66,8 +68,6 @@ class ExtModelApplication(ExtApplication):
     secret_fields = (
         None  # Set of sensitive fields. "secret" permission is required to show of modify
     )
-    protected_fields = None  # Set of protected fields. Individually permission to modify
-    PROTECTED_MESSAGE = "Field is blocked for changing. Contact to Administrator"
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
@@ -124,9 +124,6 @@ class ExtModelApplication(ExtApplication):
         p = super(ExtModelApplication, self).get_permissions()
         if self.secret_fields:
             p.add("%s:secret" % self.get_app_id().replace(".", ":"))
-        if self.protected_fields:
-            for f in self.protected_fields:
-                p.add("%s:protect#%s" % (self.get_app_id().replace(".", ":"), f))
         return p
 
     def get_validator(self, field):
@@ -180,6 +177,10 @@ class ExtModelApplication(ExtApplication):
                     "cust_form_fields": [f.ext_form_field for f in cf if not f.is_hidden],
                 }
             )
+        if self.model:
+            li["params"]["protected_field"] = ModelProtectionProfile.get_effective_permissions(
+                model_id=get_model_id(self.model), user=request.user
+            )
         return li
 
     def get_Q(self, request, query):
@@ -226,16 +227,12 @@ class ExtModelApplication(ExtApplication):
             (str(k), data[k] if data[k] != "" else None)
             for k in data
             if k not in self.ignored_fields
+            and self.has_field_editable(k)  # Protect individually fields
         )
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
             for f in self.secret_fields:
                 if f in data:
-                    del data[f]
-        # Protect individually fields
-        if self.protected_fields:
-            for f in self.protected_fields:
-                if f in data and self.has_protected(f):
                     del data[f]
         # Set defaults
         for f in data:
@@ -331,9 +328,8 @@ class ExtModelApplication(ExtApplication):
         perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
         return perm_name in Permission.get_effective_permissions(get_user())
 
-    def has_protected(self, field):
-        perm_name = "%s:protect#%s" % (self.get_app_id().replace(".", ":"), field)
-        return perm_name in Permission.get_effective_permissions(get_user())
+    def has_field_editable(self, field):
+        return ModelProtectionProfile.has_editable(self.model, get_user(), field)
 
     def instance_to_dict(self, o, fields=None):
         r = {}
@@ -658,9 +654,12 @@ class ExtModelApplication(ExtApplication):
                 Tag.register_tag(t, repr(self.model))
         # Update attributes
         for k, v in six.iteritems(attrs):
-            if self.secret_fields and k in self.secret_fields and not self.has_secret():
-                continue
-            if self.protected_fields and k in self.protected_fields and self.has_protected(k):
+            if (
+                self.secret_fields
+                and k in self.secret_fields
+                and not self.has_secret()
+                and self.has_field_editable(k)
+            ):
                 continue
             setattr(o, k, v)
         # Run models validators

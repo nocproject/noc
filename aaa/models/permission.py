@@ -208,7 +208,7 @@ class Permission(NOCModel):
                 raise ValueError("Implied permission '%s' is not found" % p)
             nf = [pp for pp in implied_permissions[p] if pp not in new_perms]
             if nf:
-                raise ValueError("Invalid implied permissions: %s" % pp)
+                raise ValueError("Invalid implied permissions: %s" % nf)
         #
         old_perms = set(Permission.objects.values_list("name", flat=True))
         # New permissions
