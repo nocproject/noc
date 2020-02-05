@@ -43,8 +43,14 @@ def check_model(model_name):
 class FieldAccess(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
-    permission = IntField(choices=[
-        (MFAL_HIDDEN, "Hidden"), (MFAL_PROTECTED, "Protected"), (MFAL_RO, "Read-only"), (MFDAL_MODIFY, "Editable")])
+    permission = IntField(
+        choices=[
+            (MFAL_HIDDEN, "Hidden"),
+            (MFAL_PROTECTED, "Protected"),
+            (MFAL_RO, "Read-only"),
+            (MFDAL_MODIFY, "Editable"),
+        ]
+    )
 
     def __str__(self):
         return self.name
@@ -67,9 +73,19 @@ class ModelProtectionProfile(Document):
 
     _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
 
-    def save(self, force_insert=False, validate=True, clean=True,
-             write_concern=None, cascade=None, cascade_kwargs=None,
-             _refs=None, save_condition=None, signal_kwargs=None, **kwargs):
+    def save(
+        self,
+        force_insert=False,
+        validate=True,
+        clean=True,
+        write_concern=None,
+        cascade=None,
+        cascade_kwargs=None,
+        _refs=None,
+        save_condition=None,
+        signal_kwargs=None,
+        **kwargs
+    ):
         if "field_access" in getattr(self, "_changed_fields", []):
             # Check unique
             processed = set()
@@ -99,7 +115,9 @@ class ModelProtectionProfile(Document):
             return {}
         perms = defaultdict(list)
 
-        for mpp in ModelProtectionProfile.objects.filter(model=model_id, groups__in=user.groups.all()):
+        for mpp in ModelProtectionProfile.objects.filter(
+            model=model_id, groups__in=user.groups.all()
+        ):
             for fa in mpp.field_access:
                 perms[fa.name] += [fa.permission]
         return {p: max(perms[p]) for p in perms}
@@ -107,5 +125,8 @@ class ModelProtectionProfile(Document):
     @classmethod
     def has_editable(cls, model_id, user, field):
         return not ModelProtectionProfile.objects.filter(
-            model=model_id, groups__in=user.groups.all(), field_access__permission__lt=3, field_access__name=field
+            model=model_id,
+            groups__in=user.groups.all(),
+            field_access__permission__lt=3,
+            field_access__name=field,
         ).first()
