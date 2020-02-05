@@ -114,7 +114,7 @@ class Object(Document):
                     if (
                         o.data
                         and "management" in o.data
-                        and self.data["management"].get("managed_object")
+                        and o.data["management"].get("managed_object")
                     ):
                         yield "managedobject", o.data["management"]["managed_object"]
 
