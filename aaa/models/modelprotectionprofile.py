@@ -25,7 +25,7 @@ from noc.core.mongo.fields import ForeignKeyField
 
 MFAL_NONE = -1
 MFAL_HIDDEN = 0
-MFAL_PROTECTED = 1
+MFAL_DISABLE = 1
 MFAL_RO = 2
 MFDAL_MODIFY = 3
 
@@ -46,7 +46,7 @@ class FieldAccess(EmbeddedDocument):
     permission = IntField(
         choices=[
             (MFAL_HIDDEN, "Hidden"),
-            (MFAL_PROTECTED, "Protected"),
+            (MFAL_DISABLE, "Disable"),
             (MFAL_RO, "Read-only"),
             (MFDAL_MODIFY, "Editable"),
         ]
@@ -65,7 +65,6 @@ class ModelProtectionProfile(Document):
     }
 
     name = StringField(required=True)
-    # uuid = UUIDField(binary=True)
     description = StringField()
     model = StringField(validation=check_model, required=True)
     field_access = ListField(EmbeddedDocumentField(FieldAccess))
