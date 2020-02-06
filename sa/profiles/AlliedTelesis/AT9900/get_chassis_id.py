@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT9900
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,4 +22,6 @@ class Script(BaseScript):
 
     def execute(self):
         match = self.re_search(self.rx_ver, self.cli("show switch", cached=True))
-        return match.group("id")
+        first_mac = match.group("id")
+        last_mac = first_mac
+        return {"first_chassis_mac": first_mac, "last_chassis_mac": last_mac}
