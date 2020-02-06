@@ -22,6 +22,8 @@ class Script(BaseScript):
         pkv = parse_kv(
             {"1.hardware version": "hw", "2.software version": "sw", "3.serial number": "serial"}, v
         )
+        if not pkv:
+            return []
 
         return {
             "vendor": "Nateks",
