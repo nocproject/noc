@@ -41,7 +41,7 @@ class StubTTSystem(BaseTTSystem):
         )
         return str(uuid.uuid4())
 
-    def add_comment(self, tt_id, subject=None, body=None, login=None):
+    def add_comment(self, tt_id, subject=None, body=None, login=None, queue=None):
         self.logger.info(
             "add_comment(tt_id=%s, subject=%s, body=%s, login=%s)", tt_id, subject, body, login
         )
@@ -63,7 +63,7 @@ class StubTTSystem(BaseTTSystem):
         """
         self.logger.info("Object %s appended to group TT %s", obj, gtt_id)
 
-    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None):
+    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None, queue=None):
         """
         Close TT
         :param tt_id: TT id, as returned by create_tt
@@ -71,6 +71,7 @@ class StubTTSystem(BaseTTSystem):
         :param body: Closing message body
         :param reason: Final reason
         :param login: User login
+        :param queue: ticket queue
         :returns: Boolean. True, when alarm is closed properly
         :raises TTError:
         """

@@ -41,7 +41,7 @@ retry_lock = threading.Lock()
 next_retry = datetime.datetime.now()
 
 
-def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
+def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *args, **kwargs):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
@@ -187,7 +187,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                                     reason=pre_reason,
                                     subject=subject,
                                     body=body,
-                                    login="correlator",
+                                    login=login,
                                     timestamp=alarm.timestamp,
                                 )
                             except TemporaryTTError as e:
@@ -247,7 +247,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                             try:
                                 log("Appending comment to TT %s", tt_id)
                                 tts.add_comment(
-                                    c_tt_id, body="Covered by TT %s" % tt_id, login="correlator"
+                                    c_tt_id,
+                                    body="Covered by TT %s" % tt_id,
+                                    login=login,
+                                    queue=mo.tt_queue,
                                 )
                                 metrics["escalation_tt_comment"] += 1
                             except NotImplementedError:
@@ -294,17 +297,22 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                     if alarm.clear_notification_group
                     else None,
                     close_tt=alarm.close_tt,
+                    login=login,
+                    queue=mo.tt_queue,
                 )
         elif nalarm == "A" and not nalarm.escalation_tt and tt_id:
             logger.error("[%s] Alarm without escalation TT: %s", alarm.id, tt_id)
         logger.info("[%s] Escalations loop end", alarm_id)
 
 
-def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt=False):
+def notify_close(
+    alarm_id, tt_id, subject, body, notification_group_id, close_tt=False, login=None, queue=None
+):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
 
+    login = login or "correlator"
     if tt_id:
         alarm = get_alarm(alarm_id)
         alarm.set_escalation_close_ctx()
@@ -325,7 +333,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt
                     # Close tt
                     try:
                         log("Closing TT %s", tt_id)
-                        tts.close_tt(c_tt_id, subject=subject, body=body, login="correlator")
+                        tts.close_tt(c_tt_id, subject=subject, body=body, login=login, queue=queue)
                         metrics["escalation_tt_close"] += 1
                         if alarm:
                             alarm.close_escalation()
@@ -349,7 +357,9 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt
                     # Append comment to tt
                     try:
                         log("Appending comment to TT %s", tt_id)
-                        tts.add_comment(c_tt_id, subject=subject, body=body, login="correlator")
+                        tts.add_comment(
+                            c_tt_id, subject=subject, body=body, login=login, queue=queue
+                        )
                         metrics["escalation_tt_comment"] += 1
                     except TTError as e:
                         log("Failed to add comment to %s: %s", tt_id, e)
