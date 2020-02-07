@@ -337,6 +337,8 @@ class ActiveAlarm(Document):
                 if self.clear_notification_group
                 else None,
                 close_tt=self.close_tt,
+                login="correlator",
+                queue=a.managed_object.tt_queue,
             )
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)

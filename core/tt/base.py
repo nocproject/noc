@@ -90,7 +90,7 @@ class BaseTTSystem(object):
         """
         raise NotImplementedError()
 
-    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None):
+    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None, queue=None):
         """
         Close TT
         :param tt_id: TT id, as returned by create_tt
@@ -98,18 +98,20 @@ class BaseTTSystem(object):
         :param body: Closing message body
         :param reason: Final reason
         :param login: User login
+        :param queue: ticket queue
         :returns: Boolean. True, when alarm is closed properly
         :raises TTError:
         """
         raise NotImplementedError()
 
-    def add_comment(self, tt_id, subject=None, body=None, login=None):
+    def add_comment(self, tt_id, subject=None, body=None, login=None, queue=None):
         """
         Append comment to TT
         :param tt_id: TT id, as returned by create_tt
         :param subject: Closing message subject
         :param body: Closing message body
         :param login: User login
+        :param queue: ticket queue
         :raises TTError:
         """
         raise NotImplementedError()
