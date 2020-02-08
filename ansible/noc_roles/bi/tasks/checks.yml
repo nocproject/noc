@@ -8,7 +8,7 @@
         Current version selected:  {{ mongod_version }}
         Otherwise you can disable bi service on services tab
     when:
-      - mongod_version is version_compare('3.4', operator='lt', strict=True)
+      - mongod_version is version('3.4', operator='lt', strict=True)
 
   - name: fail if noc is not selected
     fail:

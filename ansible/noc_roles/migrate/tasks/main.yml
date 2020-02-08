@@ -1,14 +1,15 @@
 # Migrate database schema
 ---
 - name: create noc user
-  import_role:
+  include_role:
     name: postgres
     tasks_from: users
+    apply:
+      delegate_to: "{{ postgres_master_node }}"
   vars:
     db_name: "{{ postgres_noc_db }}"
     db_password: "{{ postgres_noc_password }}"
     db_user: "{{ postgres_noc_user }}"
-  delegate_to: "{{ postgres_master_node }}"
   when: postgres_master_node is defined
   tags:
     - postgres

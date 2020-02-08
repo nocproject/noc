@@ -15,14 +15,15 @@
     - requirements
 
 - name: create grafana users
-  import_role:
+  include_role:
     name: postgres
     tasks_from: users
+    apply:
+      delegate_to: "{{ postgres_master_node }}"
   vars:
     db_name: "{{ grafana_pg_db }}"
     db_password: "{{ grafana_pg_password }}"
     db_user: "{{ grafana_pg_user }}"
-  delegate_to: "{{ postgres_master_node }}"
   tags:
     - postgres
 

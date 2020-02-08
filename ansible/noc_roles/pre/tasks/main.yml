@@ -20,12 +20,13 @@
   tags:
     - always
 
-- name: "Include OS-specific tasks"
-  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+- block:
+    - name: "Include OS-specific tasks"
+      include_tasks: "os/{{ ansible_distribution }}/main.yml"
+      tags:
+        - config
+        - always
   become: "True"
-  tags:
-    - config
-    - always
 
 - name: notify deploy started
   run_once: "True"

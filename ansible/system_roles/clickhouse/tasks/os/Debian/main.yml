@@ -49,6 +49,6 @@
     replace: '#ssl_conf = ssl_sect'
   when:
     - ansible_distribution == "Debian"
-    - ansible_distribution_version | version_compare('10.0', '>=')
+    - ansible_distribution_version is version('10', '>=')
   tags:
     - requirements

@@ -1,5 +1,5 @@
 ---
-- name: Install Debian 10- system packages
+- name: Install pre Debian 10 system packages
   apt:
     name: "{{ packages }}"
     update_cache: "True"
@@ -25,7 +25,7 @@
     http_proxy: "{{ http_proxy }}"
   when:
     - ansible_distribution == "Debian"
-    - ansible_distribution_version | version_compare('10.0', '<')
+    - ansible_distribution_version is version('10', '<')
   tags:
     - requirements
 
@@ -55,7 +55,7 @@
     http_proxy: "{{ http_proxy }}"
   when:
     - ansible_distribution == "Debian"
-    - ansible_distribution_version | version_compare('10.0', '>=')
+    - ansible_distribution_version is version('10', '>=')
   tags:
     - requirements
 

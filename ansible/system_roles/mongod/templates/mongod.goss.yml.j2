@@ -22,14 +22,14 @@ file:
     contains: []
   {{ mongo_db_path }}/index:
     exists: true
-    mode: "0750"
+    mode: "0700"
     owner: {{ mongo_user }}
     group: {{ mongo_user }}
     filetype: directory
     contains: []
   {{ mongo_db_path }}/journal:
     exists: true
-    mode: "0750"
+    mode: "0700"
     owner: {{ mongo_user }}
     group: {{ mongo_user }}
     filetype: directory

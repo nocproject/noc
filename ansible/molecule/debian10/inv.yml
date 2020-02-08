@@ -121,7 +121,7 @@ all:
           mongod_power: server
           mongod_rs: noc
           mongod_user: noc
-          mongod_version: 4.0
+          mongod_version: 4.2
           mrt_loglevel: info
           mrt_max_concurrency: 50
           mrt_power: 2

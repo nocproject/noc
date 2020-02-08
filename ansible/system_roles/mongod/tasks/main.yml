@@ -116,10 +116,12 @@
 
 - name: rs_reinit
   include_tasks: "rs_update.yml"
+  args:
+    apply:
+      delegate_to: "{{ groups['svc-mongo-primary'][0] }}"
   when:
     - "mongod_power != 'bootstrap'"
     - mongo_master_init_done is defined
-  delegate_to: "{{ groups['svc-mongo-primary'][0] }}"
   tags:
     - rs_init
 
@@ -161,5 +163,6 @@
   file:
     state: directory
     path: "{{ mongo_db_path }}"
+    owner: "{{ mongo_user }}"
+    group: "{{ mongo_user }}"
     mode: 0750
-    recurse: "True"
