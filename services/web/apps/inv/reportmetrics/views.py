@@ -284,6 +284,13 @@ class ReportMetricsDetailApplication(ExtApplication):
             ),
             "errors_in": ("errors_in", "err_in", "quantile(0.90)(errors_in)"),
             "errors_out": ("errors_out", "err_out", "quantile(0.90)(errors_out)"),
+            "interface_flap": (
+                "interface_flap",
+                "flap_count",
+                "countEqual(arrayMap((a,p) -> a + p, arrayPushFront(groupArray(status_oper),"
+                "groupArray(status_oper)[1]), arrayPushBack(groupArray(status_oper),"
+                "groupArray(status_oper)[-1])), 1)",
+            ),
             "cpu_usage": ("usage", "cpu_usage", "quantile(0.90)(usage)"),
             "ping_rtt": ("rtt", "ping_rtt", "round(quantile(0.90)(rtt) / 1000, 2)"),
             "ping_attempts": ("attempts", "ping_attempts", "avg(attempts)"),
