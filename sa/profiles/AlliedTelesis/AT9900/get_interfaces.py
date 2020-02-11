@@ -43,7 +43,7 @@ class Script(BaseScript):
         ifaces = []
         v = self.cli("show switch port")
         for match in self.rx_port.finditer(v):
-            port = match.group("port")
+            port = "port" + match.group("port")
             i = {
                 "name": port,
                 "type": "physical",
