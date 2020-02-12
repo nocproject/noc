@@ -46,7 +46,7 @@ class Script(BaseScript):
             port = "port" + match.group("port")
             i = {
                 "name": port,
-                "type": "physical",
+                "type": self.profile.get_interface_type(port),
                 "admin_status": True,
                 "oper_status": match.group("oper_status") == "Up",
                 "subinterfaces": [
@@ -96,7 +96,7 @@ class Script(BaseScript):
                     vlan_id = vlan.replace("vlan", "")
                     i = {
                         "name": vlan,
-                        "type": "SVI",
+                        "type": self.profile.get_interface_type(vlan),
                         "admin_status": True,
                         "oper_status": True,
                         "subinterfaces": [
