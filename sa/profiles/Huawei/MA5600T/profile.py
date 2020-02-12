@@ -31,16 +31,17 @@ class Profile(BaseProfile):
         (r"\{ <cr>\|mode<K> \}", "\n"),
         (r"\{ <cr>\|frameid\/slotid\<S\>\<Length \d+\-15\>(?:\|spm\<K\>|) \}\:", "\n"),
         (r"\{ (?:spm\<K\>\|)?\<cr\>\|frameid/slotid\<S\>\<\d+,15\> \}\:", "\n"),
-        (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\> \}", "\n"),
+        (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\>(\|\|\<K\>|) \}", "\n"),
         (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
         (r"\{ groupindex\<K\>\|<cr> \}\:", "\n"),
         (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n"),
         # The ONT automatic loading policy will be deleted
         (r"\s*Are you sure to proceed\(y/n\)\[[yn]\]", "y\n"),
     ]
+    # { <cr>|backplane<K>|frameid/slotid<S><Length 3-15>||<K> }:
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = (
-        r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?(\(diagnose\))?(#|%%)"
+        r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?(\(diagnose\))?(#$|#\s|%%)"
     )
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
     pattern_operation_error = "Configuration console time out, please retry to log on"
