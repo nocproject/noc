@@ -38,9 +38,10 @@ class Script(BaseScript):
             "/RPC2", data={"method": "magicBox.getSubModules", "params": None}, json=True
         )
         # @todo add PTZ to caps
-        for sm in r["params"].get("subModules", []):
-            if sm["ModuleName"] == "PTZ":
-                return sm["SoftwareVersion"]
+        if "subModules" in r["params"] and r["params"]["subModules"]:
+            for sm in r["params"]["subModules"]:
+                if sm["ModuleName"] == "PTZ":
+                    return sm["SoftwareVersion"]
         return None
 
     def execute(self):
