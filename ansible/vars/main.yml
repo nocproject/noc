@@ -22,7 +22,7 @@ tower_run_checks: "{{ lookup('env','TOWER_RUN_CHECKS') or False | bool }}"
 tower_run_tests: "{{ lookup('env','TOWER_RUN_TESTS') or False | bool }}"
 tower_stop_noc: "{{ lookup('env','TOWER_STOP_NOC') or True | bool }}"
 tower_serial_restart_noc: "{{ lookup('env','TOWER_SERIAL_RESTART_NOC') or False | bool }}"
-tower_minimum_version: "0.4.0"
+tower_minimum_version: "0.4.7"
 
 noc_system_service: noc
 mongo_dir: "{{ etc_prefix }}/mongod"
