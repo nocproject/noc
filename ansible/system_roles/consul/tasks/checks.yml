@@ -45,7 +45,7 @@
           when:
             - installed_version.stat.exists
 
-        - name: Fail if version is not sane
+        - name: Fail if version is not suitable
           fail:
             msg: |
               Consul installed version not the same as requered. You have to update it.
@@ -55,6 +55,7 @@
             - "'stdout' in current_consul_version"
             - current_consul_version.stdout != consul_version
             - has_svc_migrate_consul is not defined
+            - current_consul_version.stdout != "1.2.2"
       when:
         - ansible_distribution != 'FreeBSD'
 
