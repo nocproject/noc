@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"Partner's information:(?P<part_info>.+)\n",
         re.IGNORECASE | re.DOTALL,
     )
-    rx_sys_id = re.compile(r",(?P<sys_id>\w{4}\.\w{4}\.\w{4})")
+    rx_sys_id = re.compile(r",\s*(?P<sys_id>\w{4}\.\w{4}\.\w{4})")
 
     def execute(self):
         r = []
@@ -74,7 +74,6 @@ class Script(BaseScript):
                         }
                     ]
 
-            pass
             """
             for port in self.split_port_re.split(block):
                 port_info = self.split_info_re.match(port)
