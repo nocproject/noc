@@ -197,12 +197,14 @@ class MODiscoveryJob(PeriodicJob):
         :return:
         """
         from noc.fm.models.activealarm import ActiveAlarm
+        from noc.fm.models.alarmescalation import AlarmEscalation
 
         now = datetime.datetime.now()
         umbrella = ActiveAlarm.objects.filter(
             alarm_class=umbrella_cls.id, managed_object=self.object.id
         ).first()
         u_sev = sum(d.get("severity", 0) for d in details)
+        umbrella_changed = False
         if not umbrella and not details:
             # No money, no honey
             return
@@ -216,10 +218,12 @@ class MODiscoveryJob(PeriodicJob):
             )
             umbrella.save()
             self.logger.info("Opening umbrella alarm %s (%s)", umbrella.id, umbrella_cls.name)
+            umbrella_changed = True
         elif umbrella and not details:
             # Close existing umbrella
             self.logger.info("Clearing umbrella alarm %s (%s)", umbrella.id, umbrella_cls.name)
             umbrella.clear_alarm("Closing umbrella")
+            umbrella_changed = True
         elif umbrella and details and u_sev != umbrella.severity:
             self.logger.info(
                 "Change umbrella alarm %s severity %s -> %s (%s)",
@@ -229,6 +233,7 @@ class MODiscoveryJob(PeriodicJob):
                 umbrella_cls.name,
             )
             umbrella.change_severity(severity=u_sev)
+            umbrella_changed = True
         # Get existing details for umbrella
         active_details = {}  # (alarm class, path) -> alarm
         if umbrella:
@@ -253,6 +258,7 @@ class MODiscoveryJob(PeriodicJob):
                     d_sev,
                 )
                 active_details[d_key].change_severity(severity=d_sev)
+                umbrella_changed = True
             elif d_key not in active_details:
                 # Create alarm
                 self.logger.info("Create detail alarm to path %s", d_key)
@@ -276,10 +282,14 @@ class MODiscoveryJob(PeriodicJob):
                 self.logger.info(
                     "Opening detail alarm %s %s (%s)", da.id, d_path, da.alarm_class.name
                 )
+                umbrella_changed = True
         # Close details when necessary
         for d in set(active_details) - seen:
             self.logger.info("Clearing detail alarm %s", active_details[d].id)
             active_details[d].clear_alarm("Closing")
+            umbrella_changed = True
+        if umbrella and umbrella_changed:
+            AlarmEscalation.watch_escalations(umbrella)
 
     def update_alarms(self):
         from noc.fm.models.alarmseverity import AlarmSeverity
