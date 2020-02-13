@@ -10,6 +10,7 @@
 # Python modules
 import os
 import sys
+from __future__ import print_function
 # NOC modules
 from noc.settings import INSTALLED_APPS
 
@@ -48,17 +49,17 @@ class Cleanup(object):
     def run(self):
         self.cleanup()
         if self.errors:
-            print "ERROR"
+            print("ERROR")
             for e in self.errors:
-                print e
+                print(e)
             return 1
         elif self.changed:
-            print "CHANGED"
+            print("CHANGED")
             for c in self.changed:
-                print "Removed %s" % c
+                print("Removed %s" % c)
             return 0
         else:
-            print "OK"
+            print("OK")
             return 0
 
 
