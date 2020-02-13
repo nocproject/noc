@@ -206,7 +206,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *arg
                                 log("Promoting to group tt")
                                 gtt = tts.create_group_tt(tt_id, alarm.timestamp)
                                 # Append affected objects
-                                if tts.promote_affected_tt:
+                                if a.promote_affected_tt:
                                     for ao in alarm.iter_affected():
                                         if ao.can_escalate(True):
                                             if ao.tt_system == mo.tt_system:
