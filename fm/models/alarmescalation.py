@@ -65,6 +65,7 @@ class EscalationItem(EmbeddedDocument):
     clear_template = ForeignKeyField(Template)
     create_tt = BooleanField(default=False)
     promote_group_tt = BooleanField(default=True)
+    promote_affected_tt = BooleanField(default=True)
     close_tt = BooleanField(default=False)
     wait_tt = BooleanField(default=False)
     # Stop or continue to next rule
