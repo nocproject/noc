@@ -9,6 +9,7 @@
 
 # Third-party modules
 import yaml
+from __future__ import print_function
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.config import config
@@ -47,9 +48,9 @@ def main():
             ).save()
             changed = True
     if changed:
-        print "CHANGED"
+        print("CHANGED")
     else:
-        print "OK"
+        print("OK")
 
 
 if __name__ == "__main__":
