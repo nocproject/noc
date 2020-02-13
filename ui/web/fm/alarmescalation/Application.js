@@ -166,6 +166,13 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             renderer: NOC.render.Bool
                         },
                         {
+                            text: __("ATT"),
+                            dataIndex: "promote_affected_tt",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
                             text: __("Wait TT"),
                             dataIndex: "wait_tt",
                             editor: "checkboxfield",

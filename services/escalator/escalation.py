@@ -206,28 +206,33 @@ def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *arg
                                 log("Promoting to group tt")
                                 gtt = tts.create_group_tt(tt_id, alarm.timestamp)
                                 # Append affected objects
-                                for ao in alarm.iter_affected():
-                                    if ao.can_escalate(True):
-                                        if ao.tt_system == mo.tt_system:
-                                            log("Appending object %s to group tt %s", ao.name, gtt)
-                                            try:
-                                                tts.add_to_group_tt(gtt, ao.tt_system_id)
-                                            except TTError as e:
-                                                alarm.set_escalation_error(
-                                                    "[%s] %s" % (mo.tt_system.name, e)
+                                if tts.promote_affected_tt:
+                                    for ao in alarm.iter_affected():
+                                        if ao.can_escalate(True):
+                                            if ao.tt_system == mo.tt_system:
+                                                log(
+                                                    "Appending object %s to group tt %s",
+                                                    ao.name,
+                                                    gtt,
+                                                )
+                                                try:
+                                                    tts.add_to_group_tt(gtt, ao.tt_system_id)
+                                                except TTError as e:
+                                                    alarm.set_escalation_error(
+                                                        "[%s] %s" % (mo.tt_system.name, e)
+                                                    )
+                                            else:
+                                                log(
+                                                    "Cannot append object %s to group tt %s: Belongs to other TT system",
+                                                    ao.name,
+                                                    gtt,
                                                 )
                                         else:
                                             log(
-                                                "Cannot append object %s to group tt %s: Belongs to other TT system",
+                                                "Cannot append object %s to group tt %s: Escalations are disabled",
                                                 ao.name,
                                                 gtt,
                                             )
-                                    else:
-                                        log(
-                                            "Cannot append object %s to group tt %s: Escalations are disabled",
-                                            ao.name,
-                                            gtt,
-                                        )
                             metrics["escalation_tt_create"] += 1
                         except TTError as e:
                             log("Failed to create TT: %s", e)
