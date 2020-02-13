@@ -49,7 +49,7 @@ class Script(BaseScript):
         r"^Local Intf\s+: (?P<local_port>.*?)\n"
         r"^Time Remaining.*?\n"
         r"(^System Capabilities Supported\s+:.*?\n)?"
-        r"^System Capabilities (?:Enabled|Tlv)\s+:(?P<caps>.*?)\n",
+        r"^System Capabilities (?:Enabled|Tlv)\s+:\s*(?P<caps>.*?)\n",
         re.MULTILINE | re.DOTALL,
     )
 
