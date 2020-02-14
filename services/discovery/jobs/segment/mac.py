@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Segment MAC discovery
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         fib = {}  # object -> interface -> {seen objects}
         for mo, mac, iface, ts in mtable:
             ro = object_macs.get(mac)
-            if not ro:
+            if not ro or ro == mo:
                 continue
             if mo not in fib:
                 fib[mo] = {}
