@@ -113,15 +113,13 @@ class Command(BaseCommand):
         :return:
         """
         from coverage.results import Numbers
-        from coverage.report import Reporter
         from coverage.misc import NoSource
         from noc.tests.conftest import _stats as stats
 
         self.print("---[ Test session statistics ]------")
-        cov.get_data()
-        reporter = Reporter(cov, cov.config)
+        cov_data = cov.get_data()
         totals = Numbers()
-        for fr in reporter.find_file_reporters(None):
+        for fr in cov_data.measured_files():
             try:
                 analysis = cov._analyze(fr)
             except NoSource:
