@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Huawei.VRP config normalizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -300,3 +300,17 @@ class VRPNormalizer(BaseNormalizer):
         #     instance=tokens[5], address=self.to_prefix(tokens[4], None)
         # )
         yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
+
+    @match("interface", ANY, "vrrp", "vrid", ANY, "virtual-ip", ANY)
+    def normalize_vrrp_group(self, tokens):
+        yield self.make_vrrp_group(group=tokens[4])
+        yield self.make_vrrp_address(group=tokens[4], address=tokens[6])
+
+    @match("interface", ANY, "vrrp", "vrid", ANY, "authentication-mode", "md5", ANY)
+    def normalize_vrrp_address(self, tokens):
+        yield self.make_vrrp_md5_key(group=tokens[4], key=tokens[7])
+
+    @match("interface", ANY, "vrrp", "vrid", ANY, "priority", ANY)
+    def normalize_vrrp_priority(self, tokens):
+        yield self.make_vrrp_interface(group=tokens[4], interface=tokens[1])
+        yield self.make_vrrp_priority(group=tokens[4], priority=tokens[6])
