@@ -20,6 +20,7 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
     queryCaching: false,
     queryDelay: 200,
     minChars: 2,
+    pageSize: true,
     store: {
         fields: ["id", "label"],
         pageSize: 25,
