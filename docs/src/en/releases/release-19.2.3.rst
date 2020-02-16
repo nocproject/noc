@@ -4,7 +4,7 @@
 NOC 19.2.3
 ==========
 
-19.2.3 release contains 1 bugfix.
+19.2.3 release contains `1 <https://code.getnoc.com/noc/noc/merge_requests?scope=all&state=merged&milestone_title=19.2.3>`_ bugfix.
 
 End of Life Notice
 ------------------
