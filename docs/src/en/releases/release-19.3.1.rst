@@ -4,7 +4,9 @@
 NOC 19.3.1
 ==========
 
-19.3.1 release contains 54 bugfixes, optimisations and improvements.
+19.3.1 release contains
+`54 <https://code.getnoc.com/noc/noc/merge_requests?scope=all&state=merged&milestone_title=19.3.1>`_
+bugfixes, optimisations and improvements.
 Release is fully binary compatible with :ref:`NOC 19.3 <release-19.3>`.
 All users of :ref:`19.3 <release-19.3>` are urged to upgrade to 19.3.1.
 

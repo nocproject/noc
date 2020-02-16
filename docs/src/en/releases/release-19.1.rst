@@ -7,7 +7,9 @@ NOC 19.1
 In accordance to our :ref:`Release Policy <releases-policy>`
 `we're <https://getnoc.com/devteam/>` proudly present release `19.1 <https://code.getnoc.com/noc/noc/tags/19.1>`_.
 
-19.1 release contains of 272 bugfixes, optimisations and improvements.
+19.1 release contains of
+`272 <https://code.getnoc.com/noc/noc/merge_requests?scope=all&state=merged&milestone_title=19.1>`_
+bugfixes, optimisations and improvements.
 
 Highlights
 ----------
