@@ -161,6 +161,7 @@ class Command(BaseCommand):
         """
         from noc.tests.conftest import _stats as stats
 
+        stats = stats or {}
         failed = sorted(tr.nodeid for tr in stats.get("failed", []))
         if not failed:
             return
