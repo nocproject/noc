@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.IOS config normalizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -234,3 +234,16 @@ class CiscoIOSNormalizer(BaseNormalizer):
         #     instance=tokens[4], address=tokens[3]
         # )
         yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[4])
+
+    @match("interface", ANY, "vrrp", ANY, "description", ANY)
+    def normalize_vrrp_group(self, tokens):
+        yield self.make_vrrp_group(group=tokens[3], description=tokens[5])
+
+    @match("interface", ANY, "vrrp", ANY, "ip", ANY)
+    def normalize_vrrp_address(self, tokens):
+        yield self.make_vrrp_address(group=tokens[3], address=tokens[5])
+        yield self.make_vrrp_interface(group=tokens[3], interface=tokens[1])
+
+    @match("interface", ANY, "vrrp", ANY, "priority", ANY)
+    def normalize_vrrp_priority(self, tokens):
+        yield self.make_vrrp_priority(group=tokens[3], priority=tokens[5])

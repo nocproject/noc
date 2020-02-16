@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# <describe module here>
+# ConfDB VR protocols
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ from .rsvp.base import RSVP_SYNTAX
 from .snmp.base import SNMP_SYNTAX
 from .ssh.base import SSH_SYNTAX
 from .telnet.base import TELNET_SYNTAX
+from .vrrp.base import VRRP_SYNTAX
 
 VR_PROTOCOLS_SYNTAX = DEF(
     "protocols",
@@ -36,5 +37,6 @@ VR_PROTOCOLS_SYNTAX = DEF(
         PIM_SYNTAX,
         IGMP_SNOOPING_SYNTAX,
         MPLS_SYNTAX,
+        VRRP_SYNTAX,
     ],
 )
