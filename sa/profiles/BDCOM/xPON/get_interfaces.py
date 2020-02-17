@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # BDCOM_xPON.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ class Script(BaseScript):
         "GigaEthernet-LLID": "other",  # EPON port
         "Giga-TX": "physical",  # GigabitEthernet
         "Giga-FX": "physical",  # GigabitEthernet
+        "Giga-FX-SFP": "physical",  # GigabitEthernet
         "Giga-PON": "physical",  # EPON port
         "Giga-LLID": "other",  # EPON port
         "EtherSVI": "SVI",
