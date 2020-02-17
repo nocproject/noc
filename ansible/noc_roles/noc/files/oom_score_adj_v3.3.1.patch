@@ -1,7 +1,5 @@
-diff --git a/supervisor/options.py b/lib/python/site-packages/supervisor/options.py
-index c1e52a0..8f66c57 100644
---- a/supervisor/options.py
-+++ b/lib/python/site-packages/supervisor/options.py
+--- lib/python/site-packages/supervisor/options.py
++++ lib/python/site-packages/supervisor/options.py
 @@ -867,6 +867,7 @@ class ServerOptions(Options):
          serverurl = get(section, 'serverurl', None)
          if serverurl and serverurl.strip().upper() == 'AUTO':
@@ -50,10 +48,8 @@ index c1e52a0..8f66c57 100644
      optional_param_names = [ 'environment', 'serverurl' ]
 
      def __init__(self, options, **params):
-diff --git a/supervisor/process.py b/lib/python/site-packages/supervisor/process.py
-index f9ddcd9..44fadbc 100644
---- a/supervisor/process.py
-+++ b/lib/python/site-packages/supervisor/process.py
+--- lib/python/site-packages/supervisor/process.py
++++ lib/python/site-packages/supervisor/process.py
 @@ -292,6 +292,13 @@ class Subprocess:
              self._prepare_child_fds()
              # sending to fd 2 will put this output in the stderr log

@@ -7,6 +7,16 @@
     mode: 0755
   when: "'python' in python_interpreter"
 
+- name: Create required directories on py3  #hack. have to be fixed
+  file:
+    path: "{{ noc_root }}/lib/python{{ ansible_python.version.major }}.{{ ansible_python.version.minor }}/site-packages/__pycache__"
+    state: "directory"
+    owner: "{{ noc_user }}"
+    mode: 0755
+  when:
+    - "'python' in python_interpreter"
+    - ansible_python.version.major == 3
+
 - name: Create required directories
   file:
     path: "{{ item }}"

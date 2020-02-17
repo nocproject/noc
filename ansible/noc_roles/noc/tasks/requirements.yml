@@ -15,7 +15,7 @@
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   when:
     - "'prod' in noc_env_type"
-    - "noc_python_interpreter == 'python'"
+    - noc_python_interpreter is search "python"
   tags:
     - requirements
 

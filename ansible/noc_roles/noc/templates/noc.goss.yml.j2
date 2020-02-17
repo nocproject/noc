@@ -54,6 +54,7 @@ file:
 {% if noc_custom_path is defined %}
     - {{ noc_custom_path }}
 {% endif %}
+{% if noc_python_interpreter != "python3" %}
   {{ noc_root }}/lib/python/site-packages/sitecustomize.py:
     exists: true
     mode: "0644"
@@ -69,6 +70,7 @@ file:
     linked-to: python
     filetype: symlink
     contains: []
+{% endif %}
   {{ noc_etc }}/activator.conf:
     exists: false
   {{ noc_etc }}/bi.conf:
@@ -129,7 +131,7 @@ command:
   {{ noc_root }}/bin/pip freeze | grep supervisor:
     exit-status: 0
     stdout:
-    - supervisor==3.3.1
+    - supervisor=={{ sup_ver }}
 {% if noc_env_type == 'prod' %}
     - supervisor-serialrestart==0.1.1
     - supervisor-wildcards==0.1.3
@@ -142,12 +144,6 @@ command:
     - tornado==4.5
     stderr: []
     timeout: 10000
-  {{ noc_root }}/bin/python -c 'import sys;print sys.getdefaultencoding()':
-    exit-status: 0
-    stdout:
-    - utf-8
-    stderr: []
-    timeout: 10000
   cd {{ noc_root }}/; git status -sb:
     exit-status: 0
     stdout:
@@ -155,6 +151,14 @@ command:
     - '!/\\sM/'
     stderr: []
     timeout: 10000
+{% if noc_python_interpreter != "python3" %}
+  {{ noc_root }}/bin/python -c 'import sys;print sys.getdefaultencoding()':
+    exit-status: 0
+    stdout:
+    - utf-8
+    stderr: []
+    timeout: 10000
+{% endif %}
 {#  consul catalog nodes -service=nsqd -near=_agent|sed -n 2p|cut -f1 -d " ":#}
 {#    exit-status: 0#}
 {#    stdout:#}

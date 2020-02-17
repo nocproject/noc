@@ -68,6 +68,21 @@
       - libmemcached-devel
   environment:
     http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+
+- name: Install RedHat system packages for python3
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - python3
+      - python3-devel
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - noc_python_interpreter == 'python3'
 
 - name: Install supervisord init script
   template:
