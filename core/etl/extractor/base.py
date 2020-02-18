@@ -14,11 +14,13 @@ import csv
 import itertools
 from collections import namedtuple
 import six
+import io
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
 from noc.core.backport.time import perf_counter
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +64,9 @@ class BaseExtractor(object):
             os.makedirs(self.import_dir)
         path = os.path.join(self.import_dir, "import.csv.gz")
         self.logger.info("Writing to %s", path)
-        return gzip.GzipFile(path, "w")
+        if six.PY3:
+            return io.TextIOWrapper(gzip.GzipFile(path, "r"))
+        return gzip.GzipFile(path, "r")
 
     def get_problem_file(self):
         if not os.path.isdir(self.import_dir):
@@ -70,7 +74,9 @@ class BaseExtractor(object):
             os.makedirs(self.import_dir)
         path = os.path.join(self.import_dir, "import.csv.rej.gz")
         self.logger.info("Writing to %s", path)
-        return gzip.GzipFile(path, "w")
+        if six.PY3:
+            return io.TextIOWrapper(gzip.GzipFile(path, "r"))
+        return gzip.GzipFile(path, "r")
 
     def iter_data(self):
         for row in self.data:
@@ -87,7 +93,7 @@ class BaseExtractor(object):
             if s == "" or s is None:
                 return ""
             elif isinstance(s, six.text_type):
-                return s.encode("utf-8")
+                return smart_text(s)
             else:
                 return str(s)
 
@@ -142,7 +148,7 @@ class BaseExtractor(object):
                 writer = csv.writer(f, delimiter=";")
                 for p in itertools.chain(self.quality_problems, self.fatal_problems):
                     writer.writerow(
-                        [str(c).encode("utf-8") for c in p.row]
+                        [smart_text(c) for c in p.row]
                         + [
                             "Fatal problem, line was rejected"
                             if p.is_rej
