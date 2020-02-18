@@ -10,7 +10,7 @@ grafana_plugin_simple_datasource_version: 1.4.0
 grafana_plugin_clickhouse_datasource_version: 1.9.5
 nsq_version: "0.3.8"
 
-consul_version: "1.7.0"
+consul_version: "1.6.2"
 consul_template_version: "0.24.1"
 
 tower_ip: 127.0.0.1
