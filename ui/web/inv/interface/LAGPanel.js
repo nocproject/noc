@@ -44,12 +44,6 @@ Ext.define("NOC.inv.interface.LAGPanel", {
                             renderer: NOC.render.ClickableLookup("profile"),
                             onClick: me.onChangeProfile
                         },
-                                                {
-                            text: __("Profile"),
-                            dataIndex: "profile",
-                            renderer: NOC.render.ClickableLookup("profile"),
-                            onClick: me.onChangeProfile
-                        },
                         {
                             text: __("Project"),
                             dataIndex: "project",
