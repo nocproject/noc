@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Discovery id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -306,6 +306,24 @@ class DiscoveryID(Document):
             while start < ll and s <= mlist[start] <= e:
                 r[MAC(mlist[start])] = mo
                 start += 1
+        return r
+
+    @classmethod
+    def find_all_objects(cls, mac):
+        """
+        Find objects for mac
+        :return: dict of ManagedObjects ID for resolved MAC
+        """
+        r = []
+        if not mac:
+            return r
+        metrics["discoveryid_mac_requests"] += 1
+        for d in DiscoveryID._get_collection().find(
+            {"macs": int(MAC(mac))}, {"_id": 0, "object": 1, "chassis_mac": 1}
+        ):
+            mo = ManagedObject.get_by_id(d["object"])
+            if mo:
+                r.append(mo.id)
         return r
 
     @classmethod
