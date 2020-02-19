@@ -18,6 +18,7 @@
     name: "{{ packages }}"
     state: present
     update_cache: "True"
+    allow_downgrade: "True"
   vars:
     packages:
       - "grafana-{{ grafana_version }}"

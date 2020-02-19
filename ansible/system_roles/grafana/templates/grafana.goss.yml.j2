@@ -30,6 +30,8 @@ file:
 package:
   grafana:
     installed: true
+    versions:
+    - {{ grafana_version }}
 port:
   tcp6:{{ grafana_http_port }}:
     listening: true
