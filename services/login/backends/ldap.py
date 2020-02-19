@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # LDAP Authentication backend
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ class LdapBackend(BaseAuthBackend):
         if not servers:
             self.logger.error("No active servers configured for domain '%s'", ldap_domain.name)
             return None
-        pool = ldap3.ServerPool(servers, ldap3.POOLING_STRATEGY_ROUND_ROBIN, active=2)
+        pool = ldap3.ServerPool(servers, ldap3.ROUND_ROBIN, active=2)
         return pool
 
     def get_connection_kwargs(self, ldap_domain, user, password):
@@ -188,9 +188,9 @@ class LdapBackend(BaseAuthBackend):
             self.logger.info("Cannot find user %s", user)
             return user_info
         entry = connection.entries[0]
-        attrs = entry.entry_get_attributes_dict()
+        attrs = entry.entry_attributes_as_dict
         self.logger.debug("User attributes: %s", attrs if attrs else "No attributes response")
-        user_info["user_dn"] = entry.entry_get_dn()
+        user_info["user_dn"] = entry.entry_dn
         for k, v in six.iteritems(ldap_domain.get_attr_mappings()):
             if k in attrs:
                 value = attrs[k]
@@ -213,5 +213,5 @@ class LdapBackend(BaseAuthBackend):
         gsf = ldap_domain.get_group_search_filter() % user_info
         self.logger.debug("Group search from %s: %s", group_search_dn, gsf)
         connection.search(group_search_dn, gsf, ldap3.SUBTREE, attributes=["cn"])
-        self.logger.debug("Groups found: %s", [e.entry_get_dn() for e in connection.entries])
-        return [e.entry_get_dn() for e in connection.entries]
+        self.logger.debug("Groups found: %s", [e.entry_dn for e in connection.entries])
+        return [e.entry_dn for e in connection.entries]
