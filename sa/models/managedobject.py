@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -1408,9 +1408,9 @@ class ManagedObject(NOCModel):
                     mac = MACAddressParameter().clean(query)
                     from noc.inv.models.discoveryid import DiscoveryID
 
-                    mo = DiscoveryID.find_object(mac)
+                    mo = DiscoveryID.find_all_objects(mac)
                     if mo:
-                        return Q(pk=mo.pk)
+                        return Q(id__in=mo)
                 except ValueError:
                     pass
         return None
