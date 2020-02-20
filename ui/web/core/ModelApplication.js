@@ -629,7 +629,29 @@ Ext.define("NOC.core.ModelApplication", {
             formFields = formFields.concat(me.noc.cust_form_fields);
         }
         formFields = formFields.concat(formInlines);
-
+        // process protected fields
+        if(me.noc.hasOwnProperty("protected_field")) {
+            Ext.Object.each(me.noc.protected_field, function(fieldName, value) {
+                var find = function(object) {
+                    if(object.hasOwnProperty("name") && object.name === fieldName) {
+                        switch(value) {
+                            case 0:
+                                object.hidden = true;
+                                break;
+                            case 1:
+                            case 2:
+                                object.disabled = true;
+                                break;
+                        }
+                        return;
+                    }
+                    if(object.hasOwnProperty("items")) {
+                        Ext.Array.each(object.items, find);
+                    }
+                };
+                Ext.Array.each(formFields, find);
+            });
+        }
         me.formPanel = Ext.create("Ext.container.Container", {
             itemId: "form",
             layout: "fit",
