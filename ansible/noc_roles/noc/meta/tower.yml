@@ -40,7 +40,7 @@ forms:
       description: System group
       type: str
     python_interpreter:
-      default: python3
+      default: python
       label: Interpreter
       description: Python interpreter either <strong>python</strong> or <strong>pypy</strong> or <strong>python3</strong>.
       type: list
