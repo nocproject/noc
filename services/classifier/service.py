@@ -44,6 +44,7 @@ from noc.core.perf import metrics
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.services.classifier.exception import EventProcessingFailed
 from noc.core.backport.time import perf_counter
+from noc.core.handler import get_handler
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -159,7 +160,11 @@ class ClassifierService(Service):
                         # Register trigger
                         h = t.handler
                         if h:
-                            h = self.resolve_handler(h)
+                            try:
+                                h = get_handler(h)
+                            except ImportError:
+                                self.logger.error("Failed to load handler '%s'. Ignoring", h)
+                                h = None
                         if c_id in self.triggers:
                             self.triggers[c_id] += [Trigger(t, handler=h)]
                         else:
@@ -271,25 +276,14 @@ class ClassifierService(Service):
                     self.logger.debug("        disabling handler %s", h)
                     continue
                 # Resolve handler
-                hh = self.resolve_handler(h)
-                if hh:
+                try:
+                    hh = get_handler(h)
                     hl += [hh]
+                except ImportError:
+                    self.logger.error("Failed to load handler '%s'. Ignoring", h)
             if hl:
                 self.handlers[ec.id] = hl
         self.logger.info("Handlers are loaded")
-
-    def resolve_handler(self, h):
-        mn, s = h.rsplit(".", 1)
-        try:
-            m = __import__(mn, {}, {}, s)
-        except ImportError:
-            self.logger.error("Failed to load handler '%s'. Ignoring", h)
-            return None
-        try:
-            return getattr(m, s)
-        except AttributeError:
-            self.logger.error("Failed to load handler '%s'. Ignoring", h)
-            return None
 
     def retry_failed_events(self):
         """
