@@ -12,7 +12,7 @@
             "gender": "m",
             "name": "1",
             "type__name": "Optical | LC",
-            "protocols": [">1000BASEX"],
+            "protocols": [">1000BASEX"]
         },
         {
             "cross": "1",
@@ -21,7 +21,7 @@
             "gender": "m",
             "name": "2",
             "type__name": "Optical | LC",
-            "protocols": ["<1000BASEX"],
+            "protocols": ["<1000BASEX"]
         }
     ],
     "data": {
