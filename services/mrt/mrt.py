@@ -22,6 +22,7 @@ from noc.core.span import Span
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
 from noc.core.debug import error_report
+from noc.core.error import ERR_UNKNOWN
 from noc.config import config
 
 
@@ -52,23 +53,19 @@ class MRTRequestHandler(AuthRequestHandler):
                 r = yield self.service.sae.script(oid, script, args)
                 metrics["mrt_success"] += 1
             except RPCRemoteError as e:
-                span.error_code = getattr(e, "remote_code", 1)
-                span.error_text = str(e)
+                span.set_error_from_exc(e, getattr(e, "remote_code", 1))
                 raise tornado.gen.Return({"id": str(oid), "error": str(e)})
             except RPCError as e:
                 logger.error("RPC Error: %s" % str(e))
-                span.error_code = getattr(e, "code", 1)
-                span.error_text = str(e)
+                span.set_error_from_exc(e, getattr(e, "code", 1))
                 raise tornado.gen.Return({"id": str(oid), "error": str(e)})
             except Exception as e:
                 error_report()
                 metrics["mrt_failed"] += 1
-                span.error_code = 1
-                span.error_text = str(e)
+                span.set_error_from_exc(e)
                 raise tornado.gen.Return({"id": str(oid), "error": str(e)})
             if r["errors"]:
-                span.error_code = 1
-                span.error_text = r["output"]
+                span.set_error(ERR_UNKNOWN, r["output"])
                 raise tornado.gen.Return({"id": str(oid), "error": r["output"]})
             span.out_label = r["output"]
             raise tornado.gen.Return({"id": str(oid), "result": r["output"]})

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Service API handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,6 @@ import ujson
 from noc.core.error import NOCError
 from noc.core.debug import error_report
 from noc.core.span import Span
-from noc.core.error import ERR_UNKNOWN
 from noc.config import config
 
 
@@ -98,13 +97,11 @@ class APIRequestHandler(tornado.web.RequestHandler):
                     # Dump output
                     self.write(ujson.dumps({"id": id, "error": None, "result": result}))
             except NOCError as e:
-                span.error_code = e.code
-                span.error_text = str(e)
+                span.set_error_from_exc(e, e.code)
                 self.api_error("Failed: %s" % e, id=id, code=e.code)
             except Exception as e:
                 error_report()
-                span.error_code = ERR_UNKNOWN
-                span.error_text = str(e)
+                span.set_error_from_exc(e)
                 self.api_error("Failed: %s" % e, id=id)
 
     def api_error(self, msg, id=None, code=None):

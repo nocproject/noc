@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # RPC Wrapper
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -94,11 +94,11 @@ class RPCProxy(object):
                         r = yield make_call(url, data, limit - 1)
                         raise tornado.gen.Return(r)
                     elif code in (598, 599):
-                        span.error_code = code
+                        span.set_error(code)
                         self._logger.debug("Timed out")
                         raise tornado.gen.Return(None)
                     else:
-                        span.error_code = code
+                        span.set_error(code)
                         raise RPCHTTPError("HTTP Error %s: %s" % (code, body))
 
             t0 = perf_counter()
