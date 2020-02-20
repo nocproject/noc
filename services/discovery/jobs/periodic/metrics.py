@@ -339,15 +339,25 @@ class MetricsCheck(DiscoveryCheck):
             )
             time_delta = None
         # Process collected metrics
+        seen = set()
         for m in result:
             path = m.path
             cfg = self.id_metrics.get(m.id)
+            if path:
+                key = "%x|%s" % (cfg.metric_type.bi_id, "|".join(str(p) for p in path))
+            else:
+                key = "%x" % cfg.metric_type.bi_id
+            if key in seen:
+                # Prevent duplicated metrics
+                self.logger.error(
+                    "Duplicated metric %s [%s]. Ignoring",
+                    cfg.metric_type.name,
+                    "|".join(str(p) for p in path),
+                )
+                continue
+            seen.add(key)
             if m.type in MT_COUNTER_DELTA:
                 # Counter type
-                if path:
-                    key = "%x|%s" % (cfg.metric_type.bi_id, "|".join(str(p) for p in path))
-                else:
-                    key = "%x" % cfg.metric_type.bi_id
                 # Restore old value and save new
                 r = counters.get(key)
                 counters[key] = (m.ts, m.value)
