@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # External call spans
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,6 +18,8 @@ from collections import namedtuple
 
 # Third-party modules
 import tornado.gen
+import six
+from typing import Optional
 
 # NOC modules
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
@@ -179,6 +181,29 @@ class Span(object):
     @staticmethod
     def is_ignorable_error(exc_type):
         return exc_type == tornado.gen.Return
+
+    def set_error(self, code=None, text=None):
+        # type: (Optional[int], Optional[six.text_type]) -> None
+        """
+        Set error result and code for current span
+        :param code: Optional error code
+        :param text: Optional error text
+        :return:
+        """
+        if code is not None:
+            self.error_code = code
+        if text is not None:
+            self.error_text = text
+
+    def set_error_from_exc(self, exc, code=ERR_UNKNOWN):
+        #  type: (Exception, Optional[int]) -> None
+        """
+        Set error result and code for current span from exception
+        :param exc: Raised exception
+        :param code: Optional error code
+        :return:
+        """
+        self.set_error(code=code, text=str(exc))
 
 
 def get_spans():
