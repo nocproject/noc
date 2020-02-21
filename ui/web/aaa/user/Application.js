@@ -203,8 +203,7 @@ Ext.define("NOC.aaa.user.Application", {
                     renderer: NOC.render.DateTime
                 }
             ]
-        })
-        ;
+        });
         me.callParent();
     },
     filters: [
