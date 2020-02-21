@@ -46,8 +46,10 @@ from noc.models import is_document
 from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
 from noc.aaa.models.permission import Permission
+from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.core.middleware.tls import get_user
 from noc.core.comp import smart_text
+from noc.models import get_model_id
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter
 
@@ -175,6 +177,10 @@ class ExtModelApplication(ExtApplication):
                     "cust_form_fields": [f.ext_form_field for f in cf if not f.is_hidden],
                 }
             )
+        if self.model:
+            li["params"]["protected_field"] = ModelProtectionProfile.get_effective_permissions(
+                model_id=get_model_id(self.model), user=request.user
+            )
         return li
 
     def get_Q(self, request, query):
@@ -221,6 +227,7 @@ class ExtModelApplication(ExtApplication):
             (str(k), data[k] if data[k] != "" else None)
             for k in data
             if k not in self.ignored_fields
+            and self.has_field_editable(k)  # Protect individually fields
         )
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
@@ -320,6 +327,9 @@ class ExtModelApplication(ExtApplication):
         """
         perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
         return perm_name in Permission.get_effective_permissions(get_user())
+
+    def has_field_editable(self, field):
+        return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
 
     def instance_to_dict(self, o, fields=None):
         r = {}
@@ -644,7 +654,12 @@ class ExtModelApplication(ExtApplication):
                 Tag.register_tag(t, repr(self.model))
         # Update attributes
         for k, v in six.iteritems(attrs):
-            if self.secret_fields and k in self.secret_fields and not self.has_secret():
+            if (
+                self.secret_fields
+                and k in self.secret_fields
+                and not self.has_secret()
+                and self.has_field_editable(k)
+            ):
                 continue
             setattr(o, k, v)
         # Run models validators

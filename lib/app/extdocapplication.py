@@ -30,7 +30,12 @@ from mongoengine.errors import ValidationError
 from mongoengine.queryset import Q
 
 # NOC modules
-from noc.core.mongo.fields import DateField, ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import (
+    DateField,
+    ForeignKeyField,
+    PlainReferenceField,
+    ForeignKeyListField,
+)
 from noc.sa.interfaces.base import (
     BooleanParameter,
     GeoPointParameter,
@@ -44,11 +49,13 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.validators import is_int, is_uuid
 from noc.aaa.models.permission import Permission
+from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
 from noc.core.collection.base import Collection
 from noc.core.comp import smart_bytes, smart_text
+from noc.models import get_model_id
 from .extapplication import ExtApplication, view
 
 
@@ -81,6 +88,8 @@ class ExtDocApplication(ExtApplication):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, GeoPointField):
                 self.clean_fields[name] = GeoPointParameter()
+            elif isinstance(f, ForeignKeyListField):
+                self.clean_fields[f.name] = ListOfParameter(element=ModelParameter(f.document_type))
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(f.document_type, required=f.required)
             elif isinstance(f, ListField):
@@ -162,6 +171,10 @@ class ExtDocApplication(ExtApplication):
                     "cust_form_fields": [f.ext_form_field for f in cf if not f.is_hidden],
                 }
             )
+        if self.model:
+            li["params"]["protected_field"] = ModelProtectionProfile.get_effective_permissions(
+                model_id=get_model_id(self.model), user=request.user
+            )
         return li
 
     def get_Q(self, request, query):
@@ -211,6 +224,7 @@ class ExtDocApplication(ExtApplication):
             (str(k), data[k] if data[k] != "" else None)
             for k in data
             if k not in self.ignored_fields
+            and self.has_field_editable(k)  # Protect individually fields
         )
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
@@ -269,6 +283,9 @@ class ExtDocApplication(ExtApplication):
         perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
         return perm_name in Permission.get_effective_permissions(get_user())
 
+    def has_field_editable(self, field):
+        return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
+
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
         for n, f in six.iteritems(o._fields):
@@ -286,6 +303,8 @@ class ExtDocApplication(ExtApplication):
                     v = str(v)
                 elif isinstance(f, GeoPointField):
                     pass
+                elif isinstance(f, ForeignKeyListField):
+                    v = [{"label": str(vv.name), "id": vv.id} for vv in v]
                 elif isinstance(f, ForeignKeyField):
                     r["%s__label" % f.name] = smart_text(v)
                     v = v.id
@@ -320,6 +339,8 @@ class ExtDocApplication(ExtApplication):
                         v = v.id
                     else:
                         v = smart_text(v)
+            elif v is None and isinstance(f, ForeignKeyListField):
+                v = []
             r[n] = v
         # Add custom fields
         if not nocustom:
@@ -344,7 +365,7 @@ class ExtDocApplication(ExtApplication):
     @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
     def api_lookup_tree(self, request):
         def trim(s):
-            return smart_text(o).rsplit(" | ")[-1]
+            return smart_text(s).rsplit(" | ")[-1]
 
         if not self.parent_field:
             return None
@@ -372,7 +393,6 @@ class ExtDocApplication(ExtApplication):
         except ValueError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.response(str(e), status=self.BAD_REQUEST)
-
         if self.pk in attrs:
             del attrs[self.pk]
         if self.has_uuid and not attrs.get("uuid"):
@@ -447,6 +467,8 @@ class ExtDocApplication(ExtApplication):
                 Tag.register_tag(t, repr(self.model))
         # @todo: Check for duplicates
         for k in attrs:
+            if not self.has_field_editable(k):
+                continue
             if k != self.pk and "__" not in k:
                 setattr(o, k, attrs[k])
         try:

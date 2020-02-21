@@ -50,7 +50,7 @@ Ext.apply(NOC.render, {
     Lookup: function(name) {
         var l = name + "__label";
         return function(value, meta, record) {
-            if(value) {
+            if(!Ext.isEmpty(value)) {
                 return record.get(l)
             } else {
                 return "";
