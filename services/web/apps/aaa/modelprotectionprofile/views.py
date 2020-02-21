@@ -8,7 +8,11 @@
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile, FieldAccess, FIELD_PERMISSIONS
+from noc.aaa.models.modelprotectionprofile import (
+    ModelProtectionProfile,
+    FieldAccess,
+    FIELD_PERMISSIONS,
+)
 from noc.core.translation import ugettext as _
 from noc.models import get_model, is_document
 from noc.core.comp import smart_text
@@ -45,9 +49,9 @@ class ModelProtectionProfileApplication(ExtDocApplication):
     def instance_to_dict(self, o, fields=None, nocustom=False):
         if isinstance(o, FieldAccess):
             return {
-                 "name": smart_text(o.name),
-                 "name__label": smart_text(o.name),
-                 "permission": o.permission,
-                 "permission__label": FIELD_PERMISSIONS[o.permission],
-             }
+                "name": smart_text(o.name),
+                "name__label": smart_text(o.name),
+                "permission": o.permission,
+                "permission__label": FIELD_PERMISSIONS[o.permission],
+            }
         return super(ModelProtectionProfileApplication, self).instance_to_dict(o, fields, nocustom)

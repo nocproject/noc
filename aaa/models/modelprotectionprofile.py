@@ -51,9 +51,7 @@ def check_model(model_name):
 class FieldAccess(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
-    permission = IntField(
-        choices=[(x, FIELD_PERMISSIONS[x]) for x in FIELD_PERMISSIONS]
-    )
+    permission = IntField(choices=[(x, FIELD_PERMISSIONS[x]) for x in FIELD_PERMISSIONS])
 
     def __str__(self):
         return "%s:%s" % (self.name, self.permission)
@@ -129,11 +127,8 @@ class ModelProtectionProfile(Document):
 
     @classmethod
     def has_editable(cls, model_id, user, field):
-        print("editable check", model_id, user.groups.all(), field)
         query = Q(model=model_id, groups__in=list(user.groups.all()))
         query &= Q(
-            __raw__={
-                "field_access": {"$elemMatch": {"name": field, "permission": {"$lt": 3}}}
-            }
+            __raw__={"field_access": {"$elemMatch": {"name": field, "permission": {"$lt": 3}}}}
         )
         return not ModelProtectionProfile.objects.filter(query).first()

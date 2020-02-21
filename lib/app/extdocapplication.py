@@ -31,7 +31,10 @@ from mongoengine.queryset import Q
 
 # NOC modules
 from noc.core.mongo.fields import (
-    DateField, ForeignKeyField, PlainReferenceField, ForeignKeyListField,
+    DateField,
+    ForeignKeyField,
+    PlainReferenceField,
+    ForeignKeyListField,
 )
 from noc.sa.interfaces.base import (
     BooleanParameter,
@@ -86,9 +89,7 @@ class ExtDocApplication(ExtApplication):
             elif isinstance(f, GeoPointField):
                 self.clean_fields[name] = GeoPointParameter()
             elif isinstance(f, ForeignKeyListField):
-                self.clean_fields[f.name] = ListOfParameter(
-                    element=ModelParameter(f.document_type)
-                )
+                self.clean_fields[f.name] = ListOfParameter(element=ModelParameter(f.document_type))
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(f.document_type, required=f.required)
             elif isinstance(f, ListField):
