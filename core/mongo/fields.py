@@ -176,9 +176,7 @@ class ForeignKeyField(BaseField):
 
     def __init__(self, model, **kwargs):
         if not issubclass(model, Model):
-            raise ValidationError(
-                "Argument to ForeignKeyField constructor " "must be a Model class"
-            )
+            raise ValidationError("Argument to ForeignKeyField constructor must be a Model class")
         self.document_type = model
         self.set_dereference()
         super(ForeignKeyField, self).__init__(**kwargs)
@@ -229,7 +227,7 @@ class ForeignKeyField(BaseField):
             id_ = document.pk
             if id_ is None:
                 raise ValidationError(
-                    "You can only reference models once " "they have been saved to the database"
+                    "You can only reference models once they have been saved to the database"
                 )
         else:
             id_ = document
@@ -242,6 +240,57 @@ class ForeignKeyField(BaseField):
         if value is None:
             return None
         return self.to_mongo(value)
+
+
+class ForeignKeyListField(ForeignKeyField):
+    def __get__(self, instance, owner):
+        def convert(value):
+            # Get value from document instance if available
+            # Dereference
+            if isinstance(value, int):
+                v = self.dereference(value)
+                if v is not None:
+                    instance._data[self.name] = v
+                    return v
+                else:
+                    raise ValidationError(
+                        "Unable to dereference %s:%s" % (self.document_type, value)
+                    )
+            else:
+                return value
+
+        if instance is None:
+            # Document class being used rather than a document object
+            return self
+        # Get value from document instance if available
+        value = instance._data.get(self.name)
+        # Dereference DBRefs
+        if value is not None:
+            instance._data[self.name] = [convert(v) for v in value]
+        return super(ForeignKeyListField, self).__get__(instance, owner)
+
+    def to_mongo(self, document):
+        def convert(value):
+            if isinstance(value, Model):
+                # We need the id from the saved object to create the DBRef
+                id_ = value.pk
+                if id_ is None:
+                    raise ValidationError(
+                        "You can only reference models once they have been saved to the database"
+                    )
+                return id_
+            else:
+                return value
+
+        if document:
+            return [convert(v) for v in document]
+        else:
+            return document
+
+    def prepare_query_value(self, op, value):
+        if value is None:
+            return None
+        return ForeignKeyField.to_mongo(self, value)
 
 
 class DateField(DateTimeField):
@@ -265,7 +314,7 @@ ESC2 = "^^"  # Escape for '$'
 class RawDictField(DictField):
     def validate(self, value):
         if not isinstance(value, dict):
-            raise ValidationError("Only dictionaries may be used in a " "RawDictField")
+            raise ValidationError("Only dictionaries may be used in a RawDictField")
 
     def to_python(self, value):
         return dict(

@@ -16,12 +16,13 @@ from collections import defaultdict
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
+from mongoengine.queryset.visitor import Q
 import cachetools
 
 # NOC modules
 from noc.models import get_model
 from noc.aaa.models.group import Group
-from noc.core.mongo.fields import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyListField
 
 MFAL_NONE = -1
 MFAL_HIDDEN = 0
@@ -30,6 +31,13 @@ MFAL_RO = 2
 MFDAL_MODIFY = 3
 
 perm_lock = Lock()
+
+FIELD_PERMISSIONS = {
+    MFAL_HIDDEN: "Hidden",
+    MFAL_DISABLE: "Disable",
+    MFAL_RO: "Read-only",
+    MFDAL_MODIFY: "Editable",
+}
 
 
 def check_model(model_name):
@@ -44,12 +52,7 @@ class FieldAccess(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
     permission = IntField(
-        choices=[
-            (MFAL_HIDDEN, "Hidden"),
-            (MFAL_DISABLE, "Disable"),
-            (MFAL_RO, "Read-only"),
-            (MFDAL_MODIFY, "Editable"),
-        ]
+        choices=[(x, FIELD_PERMISSIONS[x]) for x in FIELD_PERMISSIONS]
     )
 
     def __str__(self):
@@ -68,7 +71,7 @@ class ModelProtectionProfile(Document):
     description = StringField()
     model = StringField(validation=check_model, required=True)
     field_access = ListField(EmbeddedDocumentField(FieldAccess))
-    groups = ListField(ForeignKeyField(Group))
+    groups = ForeignKeyListField(Group)
 
     _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
 
@@ -126,9 +129,11 @@ class ModelProtectionProfile(Document):
 
     @classmethod
     def has_editable(cls, model_id, user, field):
-        return not ModelProtectionProfile.objects.filter(
-            model=model_id,
-            groups__in=user.groups.all(),
-            field_access__permission__lt=3,
-            field_access__name=field,
-        ).first()
+        print("editable check", model_id, user.groups.all(), field)
+        query = Q(model=model_id, groups__in=list(user.groups.all()))
+        query &= Q(
+            __raw__={
+                "field_access": {"$elemMatch": {"name": field, "permission": {"$lt": 3}}}
+            }
+        )
+        return not ModelProtectionProfile.objects.filter(query).first()

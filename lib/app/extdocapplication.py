@@ -30,7 +30,9 @@ from mongoengine.errors import ValidationError
 from mongoengine.queryset import Q
 
 # NOC modules
-from noc.core.mongo.fields import DateField, ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import (
+    DateField, ForeignKeyField, PlainReferenceField, ForeignKeyListField,
+)
 from noc.sa.interfaces.base import (
     BooleanParameter,
     GeoPointParameter,
@@ -83,6 +85,10 @@ class ExtDocApplication(ExtApplication):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, GeoPointField):
                 self.clean_fields[name] = GeoPointParameter()
+            elif isinstance(f, ForeignKeyListField):
+                self.clean_fields[f.name] = ListOfParameter(
+                    element=ModelParameter(f.document_type)
+                )
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(f.document_type, required=f.required)
             elif isinstance(f, ListField):
@@ -296,6 +302,8 @@ class ExtDocApplication(ExtApplication):
                     v = str(v)
                 elif isinstance(f, GeoPointField):
                     pass
+                elif isinstance(f, ForeignKeyListField):
+                    v = [{"label": str(vv.name), "id": vv.id} for vv in v]
                 elif isinstance(f, ForeignKeyField):
                     r["%s__label" % f.name] = smart_text(v)
                     v = v.id
@@ -330,6 +338,8 @@ class ExtDocApplication(ExtApplication):
                         v = v.id
                     else:
                         v = smart_text(v)
+            elif v is None and isinstance(f, ForeignKeyListField):
+                v = []
             r[n] = v
         # Add custom fields
         if not nocustom:
