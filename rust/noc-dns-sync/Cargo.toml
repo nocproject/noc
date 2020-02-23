@@ -1,0 +1,22 @@
+[package]
+name = "noc-dns-sync"
+version = "0.2.0"
+authors = ["The NOC Project"]
+edition = "2018"
+description = "NOC's DNS Syncer"
+
+# See more keys and their definitions
+# at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["bind"]
+bind = []
+
+[dependencies]
+datastream = {path = "../datastream"}
+clap = "2.33"
+serde = {version = "1.0", features=["derive"]}
+serde_json = "1.0"
+idna = "0.2"
+log = "0.4"
+env_logger = "0.7"

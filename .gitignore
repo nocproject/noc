@@ -49,6 +49,7 @@ lib_pypy/
 site-packages/
 lib/tcl/
 lib/tk/
+rust/Cargo.lock
 docs/src/en/src/
 docs/src/en/include/auto
 docs/src/en/platforms/
