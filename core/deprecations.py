@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Deprecation Warning classes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 """
@@ -15,13 +15,13 @@ On every new NOC release ensure:
 """
 
 
-class RemovedInNOC2001Warning(DeprecationWarning):
-    """
-    Features to be removed in NOC 20.1
-    """
-
-
-class RemovedInNOC2002Warning(PendingDeprecationWarning):
+class RemovedInNOC2002Warning(DeprecationWarning):
     """
     Features to be removed in NOC 20.2
+    """
+
+
+class RemovedInNOC2003Warning(PendingDeprecationWarning):
+    """
+    Features to be removed in NOC 20.3
     """
