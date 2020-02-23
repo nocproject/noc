@@ -85,9 +85,18 @@ class Script(BaseScript):
                 }
                 ri["interfaces"] += [i]
             for i, s in zip(ri["interfaces"], parse_table(s3)):
-                interface, role, port_id, priority, cost, status, cost2, link_type, edge, boundary = (
-                    s
-                )
+                (
+                    interface,
+                    role,
+                    port_id,
+                    priority,
+                    cost,
+                    status,
+                    cost2,
+                    link_type,
+                    edge,
+                    boundary,
+                ) = s
                 i["role"] = {
                     "dis": "disabled",
                     "?": "alternate",

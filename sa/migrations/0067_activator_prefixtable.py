@@ -40,9 +40,9 @@ class Migration(BaseMigration):
                 """,
                 [pt_name],
             )
-            pt_id, = self.db.execute("SELECT id FROM main_prefixtable WHERE name = %s", [pt_name])[
-                0
-            ]
+            (pt_id,) = self.db.execute(
+                "SELECT id FROM main_prefixtable WHERE name = %s", [pt_name]
+            )[0]
             for p in IPv4.range_to_prefixes(ip, to_ip):
                 self.db.execute(
                     """

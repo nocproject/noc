@@ -17,9 +17,7 @@ class Profile(BaseProfile):
     pattern_more = "^<--- More --->"
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
-    pattern_username = (
-        r"^\s*([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
-    )  # Fix for exclude "...Last login: 10:48:33 MS..." match
+    pattern_username = r"^\s*([Uu]ser ?[Nn]ame|[Ll]ogin): ?"  # Fix for exclude "...Last login: 10:48:33 MS..." match
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"

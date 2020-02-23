@@ -20,7 +20,10 @@ class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_more = [
         (r"CTRL\+C.+?a A[Ll][Ll]\s*", "a"),
-        (r"System will reboot immediately after upgrade firmware complete\, continue\? \(y\/n\)\s*", "y"),
+        (
+            r"System will reboot immediately after upgrade firmware complete\, continue\? \(y\/n\)\s*",
+            "y",
+        ),
     ]
     pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = r"(Available commands|Next possible completions|Ambiguous token):"
