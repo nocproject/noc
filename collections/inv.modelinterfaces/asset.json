@@ -45,6 +45,20 @@
             "description": "Manufacturing Date",
             "required": false,
             "is_const": false
+        },
+        {
+            "name": "cpe_22",
+            "type": "str",
+            "description": "CPE v2.2 identification string",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "cpe_23",
+            "type": "str",
+            "description": "CPE v2.3 identification string",
+            "required": false,
+            "is_const": true
         }
     ]
 }
