@@ -39,7 +39,7 @@ class Quantile(Summary):
         # Prepare labels
         ext_labels = ['%s="%s"' % (i.lower(), labels[i]) for i in labels]
         for quantile in config.metrics.default_quantiles:
-            value, = self.query(quantile, 0)
+            (value,) = self.query(quantile, 0)
             all_labels = ext_labels + [
                 'quantile="%s"' % quantile,
                 'window="%s"' % config.metrics.default_quantiles_window,

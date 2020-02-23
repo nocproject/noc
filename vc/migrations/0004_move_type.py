@@ -24,10 +24,10 @@ class Migration(BaseMigration):
             ),
         )
         # VLAN Type
-        vlan_type, = self.db.execute("SELECT id FROM vc_vctype WHERE name=%s", ["802.1Q VLAN"])[0]
+        (vlan_type,) = self.db.execute("SELECT id FROM vc_vctype WHERE name=%s", ["802.1Q VLAN"])[0]
         # Fill vc_domain.type_id
         for vc_domain_id, domain_name in self.db.execute("SELECT id,name FROM vc_vcdomain"):
-            count, = self.db.execute(
+            (count,) = self.db.execute(
                 "SELECT COUNT(DISTINCT type_id) FROM vc_vc WHERE vc_domain_id=%s", [vc_domain_id]
             )[0]
             if count == 0:  # Set default type for empty domains
@@ -35,7 +35,7 @@ class Migration(BaseMigration):
                     "UPDATE vc_vcdomain SET type_id=%s WHERE id=%s", [vlan_type, vc_domain_id]
                 )
             elif count == 1:
-                type_id, = self.db.execute(
+                (type_id,) = self.db.execute(
                     "SELECT DISTINCT type_id FROM vc_vc WHERE vc_domain_id=%s", [vc_domain_id]
                 )[0]
                 self.db.execute(
@@ -55,7 +55,7 @@ class Migration(BaseMigration):
                         "INSERT INTO vc_vcdomain(name,type_id,description) VALUES(%s,%s,%s)",
                         [n, t, "Collision Resolved"],
                     )
-                    d_id, = self.db.execute("SELECT id FROM vc_vcdomain WHERE name=%s", [n])[0]
+                    (d_id,) = self.db.execute("SELECT id FROM vc_vcdomain WHERE name=%s", [n])[0]
                     # Fix collisions
                     self.db.execute(
                         "UPDATE vc_vc SET vc_domain_id=%s WHERE vc_domain_id=%s AND type_id=%s",
