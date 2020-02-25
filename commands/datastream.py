@@ -46,6 +46,7 @@ class Command(BaseCommand):
         # rebuild
         rebuild_parser = subparsers.add_parser("rebuild")
         rebuild_parser.add_argument("--datastream", help="Datastream name")
+        rebuild_parser.add_argument("--jobs", type=int, default=0, help="Number of concurrent jobs")
         # get
         get_parser = subparsers.add_parser("get")
         get_parser.add_argument("--datastream", help="Datastream name")
@@ -79,7 +80,7 @@ class Command(BaseCommand):
                         break
                     match = {"_id": {"$gt": d["_id"]}}
             else:
-                for id in m.objects.values_list("id", flat=True):
+                for id in m.objects.values_list("id", flat=True).order_by("id"):
                     yield id
 
     def get_total(self, model):
@@ -101,7 +102,11 @@ class Command(BaseCommand):
             self.die("Invalid model")
         return model
 
-    def handle_rebuild(self, datastream, *args, **kwargs):
+    def handle_rebuild(self, datastream, jobs=0, *args, **kwargs):
+        def update_object(obj_id):
+            ds.update_object(obj_id)
+            return obj_id
+
         if not datastream:
             self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
         model = self.get_model(datastream)
@@ -114,8 +119,15 @@ class Command(BaseCommand):
         n = 1
         report_interval = max(total // STEP, 1)
         next_report = report_interval
-        for obj_id in self.progress(self.iter_id(model), max_value=total):
-            ds.update_object(obj_id)
+        if jobs:
+            from multiprocessing.pool import ThreadPool
+
+            pool = ThreadPool(jobs)
+            iter = pool.imap_unordered(update_object, self.iter_id(model))
+        else:
+            iter = (update_object(obj_id) for obj_id in self.iter_id(model))
+
+        for _ in self.progress(iter, max_value=total):
             if self.no_progressbar and n == next_report:
                 self.print("[%02d%%]" % ((n * 100) // total))
                 next_report += report_interval
