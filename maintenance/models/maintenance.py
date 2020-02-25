@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -106,7 +106,12 @@ class Maintenance(Document):
             if not self.is_completed:
                 call_later(
                     "noc.services.escalator.maintenance.start_maintenance",
-                    delay=(dateutil.parser.parse(self.start) - datetime.datetime.now()).seconds,
+                    delay=max(
+                        (
+                            dateutil.parser.parse(self.start) - datetime.datetime.now()
+                        ).total_seconds(),
+                        60,
+                    ),
                     scheduler="escalator",
                     pool=self.escalate_managed_object.escalator_shard,
                     maintenance_id=self.id,
