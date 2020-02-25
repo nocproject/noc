@@ -34,7 +34,7 @@ class Script(BaseScript):
         Check box has lldp enabled on Qtech
         """
         r = self.snmp.get(mib["LLDP-MIB::lldpStatsRemTablesInserts", 0])
-        if r > 0:
+        if r:
             return True
 
     @false_on_snmp_error
@@ -52,7 +52,7 @@ class Script(BaseScript):
         Check box has memory usage 1.3.6.1.4.1.27514.100.1.11.11.0 enabled on Qtech
         """
         x = self.snmp.get("1.3.6.1.4.1." + str(oid) + ".100.1.11.11.0")
-        if x > 0:
+        if x:
             return True
 
     @false_on_cli_error
