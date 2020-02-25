@@ -633,8 +633,11 @@ class ManagedObjectProfile(NOCModel):
         periodic_changed = (
             self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery
         )
-        access_changed = (self.initial_data["access_preference"] != self.access_preference) or (
-            self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy
+        access_changed = (
+            (self.initial_data["access_preference"] != self.access_preference)
+            or (self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy)
+            or (self.initial_data["beef_storage"] != self.beef_storage)
+            or (self.initial_data["beef_path_template"] != self.beef_path_template)
         )
 
         if box_changed or periodic_changed:
