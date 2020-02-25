@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # nbi service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.config import config
 from noc.services.nbi.loader import loader
 from noc.core.perf import metrics
 from noc.services.nbi.base import NBIAPI
+from noc.core.comp import smart_text
 
 
 class NBIService(Service):
@@ -58,7 +59,7 @@ class NBIService(Service):
         uri = request.uri
         user = request.headers.get("Remote-User", "-")
         if user != "-":
-            user = user.encode("quopri")
+            user = smart_text(user)
         remote_ip = request.remote_ip
         agent = request.headers.get("User-Agent", "-")
         referer = request.headers.get("Referer", "-")
