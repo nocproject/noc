@@ -106,8 +106,8 @@ class ProfileChecker(object):
                             # @todo: process MAYBE rule
                             return profile
                 except NOCError as e:
-                    self.logger.error(e.message)
-                    self.error = str(e.message)
+                    self.logger.error(e)
+                    self.error = str(e)
                     return None
         if snmp_result or http_result:
             self.error = "Not find profile for OID: %s or HTTP string: %s" % (
