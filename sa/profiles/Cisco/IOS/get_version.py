@@ -75,37 +75,37 @@ class Script(BaseScript):
         return platform
 
     def execute_snmp(self, **kwargs):
-        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
+        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         if v:
             s = ""
             match = self.rx_snmp_ver.search(v)
             platform = match.group("platform")
             # inventory
             # p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
-            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1001"])
+            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1001])
             if p and (p.startswith("WS-C") or p.startswith("ME-3")):
                 platform = p
-                s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1001"])
+                s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1001])
             else:
                 # Found in WS-C3650-48TD
-                p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1000"])
+                p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1000])
                 if p and p.startswith("WS-C"):
                     platform = p
-                    s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1000"])
+                    s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1000])
                 else:
                     # CISCO-ENTITY-MIB::entPhysicalModelName
-                    p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1"])
+                    p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 1])
                     # WS-C4500X-32 return '  ', WS-C4900M return 'MIDPLANE'
                     if p is None or p.strip() in ["", "MIDPLANE"]:
                         # Found in WS-C4500X-32 and WS-C4900M
-                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1000"])
-                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1000"])
+                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 1000])
+                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1000])
                         if p is None:
                             # Found on C2600 series
-                            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1"])
-                            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
+                            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1])
+                            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
                     else:
-                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
+                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
                     if p:
                         p = p.strip()  # Cisco 3845 return 'CISCO3845         '
                         if p.startswith("CISCO"):

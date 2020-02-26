@@ -11,7 +11,7 @@ import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 from noc.core.mib import mib
 from noc.core.validators import is_int
 
@@ -33,6 +33,7 @@ class Script(BaseScript):
 
     SYNTAX_IP_SLA_CONFIGURATION = ["show ip sla configuration", "show ip sla monitor configuration"]
 
+    @false_on_snmp_error
     def has_lldp_snmp(self):
         """
         Check box has lldp enabled
@@ -48,6 +49,7 @@ class Script(BaseScript):
         r = self.cli("show lldp neighbors")
         return "% LLDP is not enabled" not in r
 
+    @false_on_snmp_error
     def has_cdp_snmp(self):
         """
         Check box has cdp enabled
