@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Managed Object Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from collections import defaultdict
 # Third-party modules
 from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q
+import six
 
 # NOC modules
 from .base import BaseExtractor
@@ -45,6 +46,23 @@ class ManagedObjectsExtractor(BaseExtractor):
         "SNMP": "has_snmp",
         "SNMP | v1": "has_snmp_v1",
         "SNMP | v2c": "has_snmp_v2c",
+    }
+
+    # Link discovery method to field mapping
+    LD_MAP = {
+        "bfd": "bfd_links",
+        "cdp": "cdp_links",
+        "fdp": "fdp_links",
+        "huawei_ndp": "huawei_ndp_links",
+        "lacp": "lacp_links",
+        "lldp": "lldp_links",
+        "mac": "mac_links",
+        "nri": "nri_links",
+        "oam": "oam_links",
+        "rep": "rep_links",
+        "stp": "stp_links",
+        "udld": "udld_links",
+        "xmac": "xmac_links",
     }
 
     def __init__(self, prefix, start, stop):
@@ -122,31 +140,33 @@ class ManagedObjectsExtractor(BaseExtractor):
         Build discovery method summary
         :return:
         """
+
+        def link_data(mo):
+            links_left = t[mo]
+            ld = {
+                "n_neighbors": len(neighbors[mo]) - 1,
+                "n_links": links_left,
+            }
+            for lm, field in six.iteritems(self.LD_MAP):
+                n = r.get((mo, lm), 0)
+                ld[field] = n
+                links_left -= n
+            ld["other_links"] = links_left
+            return ld
+
         t = defaultdict(int)  # object -> count
         r = defaultdict(int)  # object_id, method -> count
         neighbors = defaultdict(set)  # object_id -> {objects}
-        for d in Link._get_collection().find():
+        for d in Link._get_collection().find(
+            {}, {"_id": 0, "discovery_method": 1, "linked_objects": 1}
+        ):
             method = d.get("discovery_method")
             linked = d.get("linked_objects", [])
             for o in linked:
                 r[o, method] += 1
                 t[o] += 1
                 neighbors[o].update(linked)
-        return dict(
-            (
-                o,
-                {
-                    "n_neighbors": len(neighbors[o]),
-                    "n_links": t[o],
-                    "nri_links": r[o, "nri"],
-                    "mac_links": r[o, "mac"],
-                    "stp_links": r[o, "stp"],
-                    "lldp_links": r[o, "lldp"],
-                    "cdp_links": r[o, "cdp"],
-                },
-            )
-            for o in t
-        )
+        return {o: link_data(o) for o in t}
 
     def get_interfaces(self):
         """
