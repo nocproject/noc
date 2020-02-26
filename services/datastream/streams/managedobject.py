@@ -123,7 +123,11 @@ class ManagedObjectDataStream(DataStream):
     @staticmethod
     def _apply_object_profile(mo, r):
         # Object profile
-        r["object_profile"] = {"id": str(mo.object_profile.id), "name": qs(mo.object_profile.name)}
+        r["object_profile"] = {
+            "id": str(mo.object_profile.id),
+            "name": qs(mo.object_profile.name),
+            "level": mo.object_profile.level,
+        }
         if mo.object_profile.remote_system and mo.object_profile.remote_id:
             r["object_profile"]["remote_system"] = {
                 "id": str(mo.object_profile.remote_system.id),
@@ -195,9 +199,9 @@ class ManagedObjectDataStream(DataStream):
             subs[s["interface"]] += [s]
         # Get links
         links = defaultdict(list)
-        for l in Link._get_collection().find({"linked_objects": mo.id}):
-            for li in l.get("interfaces", []):
-                links[li] += [l]
+        for link in Link._get_collection().find({"linked_objects": mo.id}):
+            for li in link.get("interfaces", []):
+                links[li] += [link]
         # Populate cache with linked interfaces
         if links:
             for i in Interface._get_collection().find(
@@ -206,18 +210,21 @@ class ManagedObjectDataStream(DataStream):
                 ifcache[i["_id"]] = (i["managed_object"], i["name"])
         # Populate
         r["interfaces"] = [
-            ManagedObjectDataStream._get_interface(i, subs[i["_id"]], links[i["_id"]], ifcache)
+            ManagedObjectDataStream._get_interface(
+                i, subs[i["_id"]], links[i["_id"]], ifcache, set(mo.data.uplinks)
+            )
             for i in interfaces
         ]
 
     @staticmethod
-    def _get_interface(iface, subs, links, ifcache):
+    def _get_interface(iface, subs, links, ifcache, uplinks):
         r = {
             "name": qs(iface["name"]),
             "type": iface["type"],
             "description": qs(iface.get("description")),
             "enabled_protocols": iface.get("enabled_protocols") or [],
             "admin_status": iface.get("admin_status", False),
+            "hints": iface.get("hints", []),
         }
         if iface.get("ifindex"):
             r["snmp_ifindex"] = iface["ifindex"]
@@ -236,7 +243,7 @@ class ManagedObjectDataStream(DataStream):
         ]
         # Apply links
         if links:
-            r["link"] = ManagedObjectDataStream._get_link(iface, links, ifcache)
+            r["link"] = ManagedObjectDataStream._get_link(iface, links, ifcache, uplinks)
         return r
 
     @staticmethod
@@ -270,7 +277,7 @@ class ManagedObjectDataStream(DataStream):
         return r
 
     @staticmethod
-    def _get_link(iface, links, ifcache):
+    def _get_link(iface, links, ifcache, uplinks):
         r = []
         for link in links:
             for i in link["interfaces"]:
@@ -282,6 +289,7 @@ class ManagedObjectDataStream(DataStream):
                         "object": str(ro),
                         "interface": qs(rname),
                         "method": link.get("discovery_method") or "",
+                        "is_uplink": ro in uplinks,
                     }
                 ]
         return r
