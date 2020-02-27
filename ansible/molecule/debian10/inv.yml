@@ -226,7 +226,7 @@ all:
           noc_env_type: eval
           noc_group: noc
           noc_installation_name: Unconfigured installation
-          noc_python_interpreter: python3
+          noc_python_interpreter: python
           noc_repo: https://github.com/nocproject/noc.git
           noc_root: /opt/noc
           noc_services:
