@@ -8,7 +8,7 @@ forms:
       <strong>docs</strong>: <a href=https://github.com/aelsabbahy/goss/blob/master/docs/manual.md target=_blank>goss Manual</a> <br/>
       <strong>Placement constraint</strong>: On every node. <br/>
     version:
-      default: 0.3.5
+      default: 0.3.10
       label: "Goss version"
       type: str
     validate_fw:
