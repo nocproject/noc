@@ -23,6 +23,8 @@
     - name: Register test files
       shell: "ls {{ goss_test_directory }}/*.yml"
       register: test_files
+      when:
+        - has_svc_goss is defined
 
     - name: Execute Goss tests
       command: "{{ goss_dst }} -g {{ item }} validate"
@@ -30,3 +32,5 @@
       with_items: "{{ test_files.stdout_lines }}"
       ignore_errors: true
       failed_when: false
+      when:
+        - has_svc_goss is defined

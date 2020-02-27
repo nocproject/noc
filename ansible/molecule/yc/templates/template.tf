@@ -31,7 +31,8 @@ resource "yandex_compute_instance" "vm-1" {
   }
 
   metadata = {
-    ssh-keys = "{{ item.ssh_user }}:${file("{{ molecule_yml.driver.ssh_identity_file_pub }}")}"
+    ssh-keys = "{{ item.ssh_user }}:${file("{{ molecule_yml.driver.ssh_identity_file_pub }}")}",
+    serial-port-enable = 1
   }
 }
 
