@@ -103,7 +103,7 @@ services:
     command: >
       sh -c "set -xe
       && /usr/bin/python ./scripts/deploy/install-packages requirements/collections.json
-      && ./noc test run --coverage-report=/opt/noc/var/coverage --statistics
+      && ./noc test run --junit-report=build/reports/junit-py2.xml --statistics
       "
     environment:
       NOC_TEST_DB: noc_tests
@@ -171,7 +171,7 @@ services:
     command: >
       sh -c "set -xe
       && /usr/bin/python3 ./scripts/deploy/install-packages requirements/collections.json
-      && ./noc test run --coverage-report=/opt/noc/var/coverage --statistics
+      && ./noc test run --junit-report=build/reports/junit-py3.xml --statistics
       "
     environment:
       NOC_TEST_DB: noc_tests

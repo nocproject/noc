@@ -33,6 +33,7 @@ class Command(BaseCommand):
         run_parser.add_argument(
             "--coverage-report", help="Write coverage report to specified directory"
         )
+        run_parser.add_argument("--junit-report", help="Write JUnit XML report to specified file")
         run_parser.add_argument("--idea-bookmarks", help="Dump warnings as IDEA bookmarks XML")
         run_parser.add_argument("--statistics", action="store_true", help="Dump statistics")
         run_parser.add_argument("tests", nargs=argparse.REMAINDER, help="Paths to tests")
@@ -49,7 +50,8 @@ class Command(BaseCommand):
         verbose=False,
         test_db=None,
         statistics=False,
-        coverage_report=False,
+        coverage_report=None,
+        junit_report=None,
         idea_bookmarks=None,
         *args,
         **options
@@ -76,6 +78,8 @@ class Command(BaseCommand):
         args = []
         if verbose:
             args += ["-" + ("v" * verbose)]
+        if junit_report:
+            args += ["--junitxml", junit_report]
         if tests:
             args += tests
         else:
