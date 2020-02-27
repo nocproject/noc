@@ -91,18 +91,21 @@ class Script(BaseScript):
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
-        for l in self.cli("display ip interface").splitlines():
-            match = self.rx_dis_ip_int.search(l)
-            if match:
-                c_iface = self.profile.convert_interface_name(match.group("interface"))
-                continue
-            # Primary ip
-            match = self.rx_ip.search(l)
-            if not match:
-                continue
-            ip = match.group("ip")
-            ipv4_interfaces[c_iface] += [ip]
-
+        try:
+            v = self.cli("display ip interface")
+            for l in v.splitlines():
+                match = self.rx_dis_ip_int.search(l)
+                if match:
+                    c_iface = self.profile.convert_interface_name(match.group("interface"))
+                    continue
+                # Primary ip
+                match = self.rx_ip.search(l)
+                if not match:
+                    continue
+                ip = match.group("ip")
+                ipv4_interfaces[c_iface] += [ip]
+        except self.CLISyntaxError:
+            pass
         interfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()

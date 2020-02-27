@@ -11,20 +11,13 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
 
 
 class Script(BaseScript):
     name = "H3C.VRP.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
-
-    #
-    # No lldp on 3.02 and older
-    #
-    @BaseScript.match(version__startswith="3.02")
-    def execute_old(self):
-        raise self.NotSupportedError()
 
     #
     # Other (3.03 and newer)
@@ -34,14 +27,16 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
-    @BaseScript.match()
-    def execute_other(self):
+    def execute_cli(self, **kwargs):
+        if self.is_old_version:
+            # No lldp on 3.02 and older
+            raise self.NotSupportedError()
         r = []
         i = {}
         try:
             lldp = self.cli("display lldp neighbor")
         except self.CLISyntaxError:
-            return []
+            raise NotImplementedError
         while True:
             match = self.rx_ifc_line.search(lldp)
             if not match:
@@ -65,7 +60,11 @@ def parse_neighbor(text):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_neigh = re.compile(
-        r"\s+Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>[\w\s]+)\n\s+Port\s*ID\s*:\s*(?P<p_id>.+?)\n.+?Sys.*?name\s*:\s*(?P<name>[^\n]+)\n.*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",
+        r"\s+Chassis\s*ID\s*:\s*(?P<id>\S+).*?"
+        r"Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>[\w\s]+)\n\s+"
+        r"Port\s*ID\s*:\s*(?P<p_id>.+?)\n.+?"
+        r"Sys.*?name\s*:\s*(?P<name>[^\n]+)\n.*?"
+        r"Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     n = []

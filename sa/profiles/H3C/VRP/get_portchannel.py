@@ -16,7 +16,10 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     def execute(self):
-        r = self.cli("display link-aggregation summary")
-        if "No link-aggregation" in r:
+        try:
+            r = self.cli("display link-aggregation summary")
+            if "No link-aggregation" in r:
+                return []
+        except self.CLISyntaxError:
             return []
         raise self.NotSupportedError()
