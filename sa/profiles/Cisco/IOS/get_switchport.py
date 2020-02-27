@@ -16,6 +16,7 @@ from binascii import hexlify
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.core.mib import mib
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -65,8 +66,12 @@ class Script(BaseScript):
         for line in vlans.splitlines():
             for vlan_pack in line.split()[0]:
                 # for is_v in bin(int(vlan_pack, 16)):
-                for is_v in "{0:04b}".format(int(vlan_pack, 16)):
-                    yield int(is_v)
+                if six.PY2:
+                    for is_v in "{0:04b}".format(int(vlan_pack, 16)):
+                        yield int(is_v)
+                else:
+                    for is_v in "{0:04b}".format(vlan_pack):
+                        yield int(is_v)
 
     def execute_snmp(self, **kwargs):
 
@@ -110,13 +115,22 @@ class Script(BaseScript):
                 mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined2k"],
                 mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"],
                 mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"],
-            ]
+            ],
+            display_hints={
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined"]: render_bin,
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined2k"]: render_bin,
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"]: render_bin,
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"]: render_bin,
+            },
         ):
             # print(ifindex, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k)
             if int(enc_type) != 4:
                 # not dot1Q
                 continue
-            vlans_bank = hexlify("".join([vlans_base, vlans_2k, vlans_3k, vlans_4k]))
+            if six.PY2:
+                vlans_bank = hexlify("".join([vlans_base, vlans_2k, vlans_3k, vlans_4k]))
+            else:
+                vlans_bank = b"".join([vlans_base, vlans_2k, vlans_3k, vlans_4k])
             # vlans_bank = hexlify(vlans_bank)
             if int(ifindex) in r:
                 r[int(ifindex)]["tagged"] += list(
