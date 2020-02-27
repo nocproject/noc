@@ -5,13 +5,12 @@
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
 # NOC Modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_vlans import Script as BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 
 
@@ -24,8 +23,7 @@ class Script(BaseScript):
         re.IGNORECASE | re.DOTALL | re.MULTILINE,
     )
 
-    @BaseScript.match()
-    def execute_vrp3(self):
+    def execute_cli(self, **kwargs):
         vlans = self.cli("display vlan all")
         return [
             {"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}
