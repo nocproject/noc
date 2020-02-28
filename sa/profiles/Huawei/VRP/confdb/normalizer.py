@@ -314,3 +314,8 @@ class VRPNormalizer(BaseNormalizer):
     def normalize_vrrp_priority(self, tokens):
         yield self.make_vrrp_interface(group=tokens[4], interface=tokens[1])
         yield self.make_vrrp_priority(group=tokens[4], priority=tokens[6])
+
+    @match("interface", ANY, "vrrp", "vrid", ANY, "preempt-mode", "timer", "delay", ANY)
+    def normalize_vrrp_preempt_timer(self, tokens):
+        yield self.make_vrrp_preempt(group=tokens[4], enabled=True)
+        yield self.make_vrrp_preempt_timer(group=tokens[4], timer=tokens[8])
