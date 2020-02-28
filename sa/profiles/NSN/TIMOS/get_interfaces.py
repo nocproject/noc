@@ -316,6 +316,8 @@ class Script(BaseScript):
                                         my_dict["vlan_ids"] = [int(up_tag)]
                                 elif "*" in vlans:
                                     my_dict["vlan_ids"] = []
+                                elif int(vlans) == 0:
+                                    my_dict["vlan_ids"] = []
                                 else:
                                     my_dict["vlan_ids"] = [int(vlans)]
                         my_dict["subinterfaces"] = [{"name": my_dict["name"]}]
