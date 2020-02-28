@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,10 +25,11 @@ class Script(BaseScript):
 
     port_map = {
         7: "7330",
+        14: "7330",
         18: "7302",
         19: "7302",
         21: "7302",
-    }  # show equipment slot for devices with one control plate return 19 slots
+    }  # show equipment slot for 7302 with one control plate return 19 slots
 
     def execute_cli(self, **kwargs):
         self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
