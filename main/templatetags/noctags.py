@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Various tags
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ from noc.sa.models.managedobject import ManagedObject
 
 register = template.Library()
 
-NOCTableTemplate = """
+NOCTableTemplate = r"""
 <link rel="stylesheet" type="text/css" href="/ui/web/css/tablesorter.css" />
 <script type="text/javascript" src="/ui/pkg/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script type="text/javascript">

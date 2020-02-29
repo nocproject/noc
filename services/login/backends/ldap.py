@@ -164,7 +164,7 @@ class LdapBackend(BaseAuthBackend):
         """
         if ldap_domain.type == "ad":
             if "\\" not in user and "@" not in user:
-                user = "%s\%s" % (ldap_domain.name, user)
+                user = r"%s\%s" % (ldap_domain.name, user)
             kwargs = {"user": user, "authentication": ldap3.NTLM}
         else:
             kwargs = {"user": "uid=%s,%s" % (user, ldap_domain.get_user_search_dn())}

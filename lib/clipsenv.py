@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CLIPS Environment Pool
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ def _clips_bool(r):
 
 
 def clips_match_re(rx, s):
-    """
+    r"""
     Check string matches regular expression
     Usage:
         (match-re r"^\s+test" ?f)
