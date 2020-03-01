@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Peer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -94,7 +94,6 @@ class Peer(NOCModel):
         if self.export_filter_name is not None and not self.export_filter_name.strip():
             self.export_filter_name = None
         super(Peer, self).save(*args, **kwargs)
-        self.peering_point.sync_cm_prefix_list()
         self.touch_rpsl()
 
     @property
