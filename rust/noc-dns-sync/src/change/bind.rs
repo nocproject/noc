@@ -10,6 +10,7 @@ use crate::error::Error;
 use core::cmp::{max, min};
 use datastream::change::{Change, ChangeService};
 use log::{debug, error, info};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 use std::process::Command;

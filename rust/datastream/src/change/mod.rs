@@ -6,6 +6,7 @@
  * ---------------------------------------------------------------------
  */
 use crate::error::Error;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Change<T> {

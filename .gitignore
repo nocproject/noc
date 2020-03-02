@@ -50,6 +50,7 @@ site-packages/
 lib/tcl/
 lib/tk/
 rust/Cargo.lock
+rust/target/
 docs/src/en/src/
 docs/src/en/include/auto
 docs/src/en/platforms/

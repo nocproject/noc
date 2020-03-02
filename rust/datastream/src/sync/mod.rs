@@ -100,7 +100,7 @@ where
                             std::thread::sleep(std::time::Duration::from_millis(MIN_PULL_TIME - d));
                         }
                     }
-                    Err(e) => error!("Failed to detect elapsed time"),
+                    Err(_) => error!("Failed to detect elapsed time"),
                 }
             }
         }
