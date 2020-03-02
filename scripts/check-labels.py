@@ -231,6 +231,7 @@ class TestSuite(object):
         test_affected("migration", lambda x: len(x) > 2 and x[1] == "migration")
         test_affected("tests", lambda x: x[0] == "tests")
         test_affected("nbi", lambda x: x[:3] == ["services", "nbi", "api"])
+        test_affected("rust", lambda x: x[0] == "rust")
 
 
 def main():
