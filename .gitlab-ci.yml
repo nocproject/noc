@@ -123,33 +123,6 @@ prettier:
     - docker
   allow_failure: true
 
-# waiting for https://github.com/rubik/xenon/issues/21
-xenon:
-  stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
-  script:
-    - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
-    - x=0
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        for i in "${FLIST}";
-        do
-          (xenon --max-absolute B --max-modules B --max-average B "$i"; let x+=$?);
-        done;
-      fi
-    - if [ "$x" -gt 0 ] ; then exit 1; fi
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
-  allow_failure: true
-
 pylint:
   stage: Lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
@@ -160,29 +133,6 @@ pylint:
       if [ ! -z "$FLIST" ];
       then
         pylint "$FLIST";
-      else
-        echo "No files to lint"
-        true;
-      fi
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
-
-pylint3k:
-  stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
-  script:
-    - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        pylint --py3k "$FLIST";
       else
         echo "No files to lint"
         true;
@@ -210,76 +160,6 @@ futurize:
       - "**/*.py"
   tags:
     - docker
-
-py2:migrate:
-  stage: Test
-  before_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2migrate
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-  script:
-    # see docker/docker-compose.yml for complete list of migrations
-    - >
-     docker-compose
-     -f .docker/docker-compose.yml
-     -p "${DOCKER_COMPOSE_PROJECT}"
-     build py2migrate
-    - >
-      docker-compose
-      -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}"
-      up
-      --exit-code-from py2migrate
-      py2migrate
-  after_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2migrate
-    - >
-      docker-compose
-      -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}"
-      down -v
-  only:
-    refs:
-      - merge_requests
-      - master
-      - /^release-\d+\.\d+/
-  tags:
-    - shell
-  allow_failure: false
-
-py3:migrate:
-  stage: Test
-  before_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3migrate
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-  script:
-    # see docker/docker-compose.yml for complete list of migrations
-    - >
-     docker-compose
-     -f .docker/docker-compose.yml
-     -p "${DOCKER_COMPOSE_PROJECT}"
-     build py3migrate
-    - >
-      docker-compose
-      -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}"
-      up
-      --exit-code-from py3migrate
-      py3migrate
-  after_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3migrate
-    - >
-      docker-compose
-      -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}"
-      down -v
-  only:
-    refs:
-      - merge_requests
-      - master
-      - /^release-\d+\.\d+/
-  tags:
-    - shell
-  allow_failure: false
 
 py2:test:
   stage: Test
@@ -488,9 +368,11 @@ build:rust:
       - master
     changes:
       - "rust/**"
+      - "rust/**/*"
   artifacts:
     paths:
       - build/rust/release/
+    expire_in: 7 days
 
 upload docs:
   stage: Upload

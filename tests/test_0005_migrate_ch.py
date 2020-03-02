@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Test ensure-indexes
+# Test migrate-ch
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,11 +11,11 @@ import pytest
 
 
 @pytest.mark.usefixtures("database")
-def test_ensure_indexes(database):
+def test_migrate_ch(database):
     """
-    Create indexes
+    Test migrate-ch
     :param database:
     :return:
     """
-    m = __import__("noc.commands.ensure-indexes", {}, {}, "Command")
+    m = __import__("noc.commands.migrate-ch", {}, {}, "Command")
     assert m.Command().run_from_argv([]) == 0
