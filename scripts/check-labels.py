@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Check gitlab MR labels
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,9 @@
 from __future__ import print_function
 import os
 import sys
+import argparse
+import time
+from xml.sax.saxutils import escape
 
 
 ENV_LABELS = "CI_MERGE_REQUEST_LABELS"
@@ -18,174 +21,230 @@ ENV_CI = "CI"
 ERR_OK = 0
 ERR_FAIL = 1
 
-PRI_LABELS = ["pri::p1", "pri::p2", "pri::p3", "pri::p4"]
-COMP_LABELS = ["comp::trivial", "comp::low", "comp::medium", "comp::high"]
-KIND_LABELS = ["kind::feature", "kind::improvement", "kind::bug", "kind::cleanup"]
-BACKPORT = "backport"
+
+JUNIT_CLASS_NAME = "scripts.check_labels"
+JUNIT_FILE = escape(sys.argv[0])
 
 
-def get_labels():
-    """
-    Get list of labels.
-    :return: List of labels or None if environment is not set
-    """
-    if ENV_LABELS not in os.environ and ENV_CI not in os.environ:
-        return None
-    return os.environ.get(ENV_LABELS, "").split(",")
+class FatalError(Exception):
+    pass
 
 
-def go_url(anchor):
-    return "https://docs.getnoc.com/master/en/go.html#%s" % anchor
+class TestCase(object):
+    def __init__(self, name=None, path=None, fatal=False, ref=None):
+        self.name = name
+        self.path = path
+        self.fatal = fatal
+        self.start = None
+        self.stop = None
+        self.failure = None
+        self.ref = ref
 
+    def __enter__(self):
+        self.start = time.time()
 
-def check_pri(labels):
-    """
-    Check `pri::*`
-    :param labels:
-    :return: List of problems
-    """
-    pri = [x for x in labels if x.startswith("pri::")]
-    if not pri:
-        return [
-            "'pri::*' label is not set. Must be one of %s.\n"
-            "Refer to %s for details." % (", ".join(PRI_LABELS), go_url("dev-mr-labels-pri"))
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop = time.time()
+        if exc_type is None:
+            return
+        self.failure = str(exc_val)
+        if exc_type is AssertionError:
+            if self.ref:
+                self.failure += (
+                    "\nRefer to https://docs.getnoc.com/master/en/go.html#%s for details."
+                    % self.ref
+                )
+            if self.fatal:
+                raise FatalError
+            return True
+
+    @property
+    def is_failed(self):
+        return bool(self.failure)
+
+    def to_junit_xml(self):
+        duration = self.stop - self.start
+        if self.path:
+            test_name = "%s[%s]" % (self.name, self.path)
+        else:
+            test_name = self.name
+        r = [
+            '  <testcase classname="%s" file="%s" line="1" '
+            'name="%s" '
+            'time="%.3f">' % (JUNIT_CLASS_NAME, JUNIT_FILE, test_name, duration),
         ]
-    if len(pri) > 1:
-        return [
-            "Multiple 'pri::*' labels defined. Must be exactly one.\n"
-            "Refer to %s for details." % go_url("dev-mr-labels-priority")
+        if self.is_failed:
+            r += ['    <failure message="%s"></failure>' % (escape(self.failure))]
+        r += [
+            "  </testcase>",
         ]
-    pri = pri[0]
-    if pri not in PRI_LABELS:
-        return [
-            "Invalid label %s. Must be one of %s.\n"
-            "Refer to %s for details." % (", ".join(PRI_LABELS), go_url("dev-mr-labels-pri"))
+        return "\n".join(r)
+
+
+class TestSuite(object):
+    PRI_LABELS = ["pri::p1", "pri::p2", "pri::p3", "pri::p4"]
+    COMP_LABELS = ["comp::trivial", "comp::low", "comp::medium", "comp::high"]
+    KIND_LABELS = ["kind::feature", "kind::improvement", "kind::bug", "kind::cleanup"]
+    BACKPORT = "backport"
+
+    def __init__(self, files):
+        self.files = files
+        self.tests = []
+        self.start = None
+        self.stop = None
+        self._is_failed = None
+        self._labels = None
+
+    def to_junit_xml(self):
+        pass
+
+    def test(self, name, path=None, fatal=False, ref=None):
+        t = TestCase(name=name, path=path, fatal=fatal, ref=ref)
+        self.tests += [t]
+        return t
+
+    def check(self):
+        self.start = time.time()
+        try:
+            self.do_check()
+        except FatalError:
+            pass
+        self.stop = time.time()
+
+    def do_check(self):
+        self.check_env_labels()
+        if self.is_contribution():
+            print("Thank you for contributing to the project!")
+        else:
+            self.check_required_scoped_labels()
+            self.check_backport_label()
+            self.check_affected()
+
+    @property
+    def is_failed(self):
+        if self._is_failed is None:
+            self._is_failed = any(t for t in self.tests if t.is_failed)
+        return self._is_failed
+
+    def report(self):
+        print("\n\n".join(t.failure for t in self.tests if t.is_failed))
+
+    def report_junit(self, path):
+        duration = self.stop - self.start
+        n_tests = len(self.tests)
+        n_failures = sum(1 for t in self.tests if t.is_failed)
+        r = [
+            '<?xml version="1.0" encoding="utf-8"?>',
+            '<testsuite errors="0" failures="%d" name="check-labels" skipped="0" tests="%d" time="%.3f">'
+            % (n_failures, n_tests, duration),
         ]
-    return []
+        for t in self.tests:
+            r += [t.to_junit_xml()]
+        r += ["</testsuite>"]
+        report = "\n".join(r)
+        # Write report
+        rdir = os.path.dirname(path)
+        if not os.path.exists(rdir):
+            os.makedirs(rdir)
+        with open(path, "w") as f:
+            f.write(report)
+        print(os.path.dirname(path))
 
+    @property
+    def labels(self):
+        if self._labels is None:
+            self._labels = os.environ.get(ENV_LABELS, "").split(",")
+        return self._labels
 
-def check_comp(labels):
-    """
-    Check `comp::*`
-    :param labels:
-    :return:
-    """
-    comp = [x for x in labels if x.startswith("comp::")]
-    if not comp:
-        return [
-            "'comp::*' label is not set. Must be one of %s.\n"
-            "Refer to %s for details." % (", ".join(COMP_LABELS), go_url("dev-mr-labels-comp"))
-        ]
-    if len(comp) > 1:
-        return [
-            "Multiple 'comp::*' labels defined. Must be exactly one.\n"
-            "Refer to %s for details." % go_url("dev-mr-labels-comp")
-        ]
-    comp = comp[0]
-    if comp not in COMP_LABELS:
-        return [
-            "Invalid label %s. Must be one of %s.\n"
-            "Refer to %s for details." % (", ".join(COMP_LABELS), go_url("dev-mr-labels-comp"))
-        ]
-    return []
+    def is_contribution(self):
+        """
+        Check if MR is from forked repo
+        :return:
+        """
+        return os.environ.get("CI_MERGE_REQUEST_SOURCE_PROJECT_PATH") != os.environ.get(
+            "CI_MERGE_REQUEST_PROJECT_PATH"
+        )
 
+    def check_env_labels(self):
+        """
+        Check ENV_LABELS is exit
+        :return:
+        """
+        with self.test("test_env_labels", fatal=True):
+            assert ENV_LABELS in os.environ or ENV_CI in os.environ, (
+                "%s environment variable is not defined. Must be called within Gitlab CI"
+                % ENV_LABELS
+            )
 
-def check_kind(labels):
-    """
-    Check `kind::*`
-    :param labels:
-    :return:
-    """
-    kind = [x for x in labels if x.startswith("kind::")]
-    if not kind:
-        return [
-            "'kind::*' label is not set. Must be one of %s.\n"
-            "Refer to %s for details." % (", ".join(KIND_LABELS), go_url("dev-mr-labels-kind"))
-        ]
-    if len(kind) > 1:
-        return [
-            "Multiple 'kind::*' labels defined. Must be exactly one.\n"
-            "Refer to %s for details." % go_url("dev-mr-labels-kind")
-        ]
-    kind = kind[0]
-    if kind not in KIND_LABELS:
-        return [
-            "Invalid label %s. Must be one of %s.\n"
-            "Refer to %s for details." % (", ".join(KIND_LABELS), go_url("dev-mr-labels-kind"))
-        ]
-    return []
+    def check_backport_label(self):
+        with self.test("test_backport"):
+            if self.BACKPORT not in self.labels:
+                return
+            kind = [x for x in self.labels if x.startswith("kind::")]
+            for label in kind:
+                assert label == "kind::bug", (
+                    "'%s' cannot be used with '%s'.\n Use only with 'kind::bug'"
+                    % (self.BACKPORT, label)
+                )
 
+    def check_required_scoped_labels(self):
+        def test_required(label, choices):
+            prefix = "%s::" % label
+            seen_labels = [x for x in self.labels if x.startswith(prefix)]
+            n_labels = len(seen_labels)
+            # Check label is exists
+            with self.test("test_%s_label_set" % label, ref="dev-mr-labels-%s" % label):
+                assert n_labels > 0, "'%s::*' label is not set. Must be one of %s." % (
+                    label,
+                    ", ".join(choices),
+                )
+            # Check label is defined only once
+            with self.test("test_%s_label_single" % label, ref="dev-mr-labels-%s" % label):
+                assert n_labels < 2, "Multiple '%s::*' labels defined. Must be exactly one." % label
+            # Check label is known one
+            with self.test("test_%s_known" % label, ref="dev-mr-labels-%s" % label):
+                for x in seen_labels:
+                    assert x in choices, "Invalid label '%s'. Must be one of %s." % (
+                        x,
+                        ", ".join(choices),
+                    )
 
-def check_backport(labels):
-    if BACKPORT not in labels:
-        return []
-    kind = [x for x in labels if x.startswith("kind::")]
-    if len(kind) != 1:
-        return []  # Already have problems
-    if kind[0] != "kind::bug":
-        return [
-            "'%s' cannot be used with '%s'.\n" "Use only with 'kind::bug'" % (BACKPORT, kind[0])
-        ]
-    return []
+        test_required("pri", self.PRI_LABELS)
+        test_required("comp", self.COMP_LABELS)
+        test_required("kind", self.KIND_LABELS)
 
+    def check_affected(self):
+        def test_affected(label, checker):
+            with self.test("test_%s" % label, ref="dev-mr-labels-affected"):
+                has_changed = any(1 for p in file_parts if checker(p))
+                if has_changed:
+                    assert label in self.labels, "'%s' label is not set." % label
+                else:
+                    assert label not in self.labels, "'%s' label must not be set." % label
 
-def check_affected(labels):
-    # Get required labels
-    should_have = set()
-    for f in sys.argv[1:]:
-        parts = f.split(os.sep)
-        if parts[0] == "core":
-            should_have.add("core")
-            if len(parts) > 3 and parts[1] == "confdb" and parts[2] == "syntax":
-                should_have.add("confdb")
-        elif parts[0] == "docs":
-            should_have.add("documentation")
-        elif parts[0] == "ui":
-            should_have.add("ui")
-        elif parts[0] == "sa" and parts[1] == "profiles":
-            should_have.add("profiles")
-        elif len(parts) > 1 and parts[1] == "migrations":
-            should_have.add("migration")
-        elif parts[0] == "tests":
-            should_have.add("tests")
-        elif parts[:3] == ["services", "nbi", "api"]:
-            should_have.add("nbi")
-    return [
-        "'%s' label is not set.\n"
-        "Refer to %s for details." % (l, go_url("dev-mr-labels-affected"))
-        for l in should_have
-        if l not in labels
-    ]
-
-
-def check(labels):
-    """
-    Perform all checks
-    :param labels: List of labels
-    :return: List of policy violations
-    """
-    problems = []
-    problems += check_pri(labels)
-    problems += check_comp(labels)
-    problems += check_kind(labels)
-    problems += check_backport(labels)
-    problems += check_affected(labels)
-    return problems
+        file_parts = [f.split(os.sep) for f in self.files]
+        test_affected("core", lambda x: x[0] == "core")
+        test_affected("confdb", lambda x: x[:3] == ["core", "confdb", "syntax"])
+        test_affected("documentation", lambda x: x[0] == "docs")
+        test_affected("ui", lambda x: x[0] == "ui")
+        test_affected("profiles", lambda x: x[:2] == ["sa", "profiles"])
+        test_affected("migration", lambda x: len(x) > 2 and x[1] == "migration")
+        test_affected("tests", lambda x: x[0] == "tests")
+        test_affected("nbi", lambda x: x[:3] == ["services", "nbi", "api"])
 
 
 def main():
-    labels = get_labels()
-    problems = []
-    if labels is None:
-        problems += [
-            "%s environment variable is not defined. Must be called within Gitlab CI" % ENV_LABELS
-        ]
-    else:
-        problems += check(labels)
-    if problems:
-        print("\n\n".join(problems))
-        sys.exit(ERR_FAIL)
-    sys.exit(ERR_OK)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--junit-report", help="Write JUnit XML report to file")
+    parser.add_argument("files", nargs="*", help="List of affected files")
+    args = parser.parse_args()
+    suite = TestSuite(args.files)
+    suite.check()
+    if suite.is_failed:
+        suite.report()
+    if args.junit_report:
+        suite.report_junit(args.junit_report)
+    sys.exit(ERR_FAIL if suite.is_failed else ERR_OK)
 
 
 if __name__ == "__main__":
