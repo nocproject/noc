@@ -10,11 +10,15 @@ check labels:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA)
-    - python ./scripts/check-labels.py $FLIST
+    - python ./scripts/check-labels.py --junit-report=build/reports/labels-junit.xml $FLIST
   only:
     - merge_requests
   tags:
     - docker
+  artifacts:
+    reports:
+      junit: ./build/reports/labels-junit.xml
+    expire_in: 7 days
 
 flake8:
   stage: Lint
@@ -305,6 +309,12 @@ py2:test:
       py2tests
   after_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2tests
+    - JUNIT_XML_REPORT=build/reports/py2-test-junit.xml
+    - mkdir -p build/reports/
+    - >
+      docker cp
+      "${DOCKER_COMPOSE_PROJECT}_py2tests_1:/opt/noc/${JUNIT_XML_REPORT}"
+      "${JUNIT_XML_REPORT}"
     - mv .dockerignore.prod .dockerignore
     - >
       docker-compose
@@ -320,12 +330,9 @@ py2:test:
     - shell
   allow_failure: false
   artifacts:
-    paths:
-      - collections/
-      - ./build/reports/junit-py2.xml
     reports:
-      junit: ./build/reports/junit-py2.xml
-    expire_in: 1 day
+      junit: ./build/reports/py2-test-junit.xml
+    expire_in: 7 days
 
 py3:test:
   stage: Test
@@ -350,6 +357,12 @@ py3:test:
       py3tests
   after_script:
     - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3tests
+    - JUNIT_XML_REPORT=build/reports/py3-test-junit.xml
+    - mkdir -p build/reports/
+    - >
+      docker cp
+      "${DOCKER_COMPOSE_PROJECT}_py3tests_1:/opt/noc/${JUNIT_XML_REPORT}"
+      "${JUNIT_XML_REPORT}"
     - mv .dockerignore.prod .dockerignore
     - >
       docker-compose
@@ -365,11 +378,9 @@ py3:test:
     - shell
   allow_failure: false
   artifacts:
-    paths:
-      - ./build/reports/junit-py3.xml
     reports:
-      junit: ./build/reports/junit-py3.xml
-    expire_in: 1 day
+      junit: ./build/reports/py3-test-junit.xml
+    expire_in: 7 days
 
 build:Docs:
   stage: Build
