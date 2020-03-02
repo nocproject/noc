@@ -224,6 +224,18 @@ class GridVCS(object):
         for r in self.files.find({"object": object}).sort("ts", d):
             yield Revision(r["_id"], r["ts"], r["ft"], r.get("c"), r["length"])
 
+    def find_last_revision(self, object):
+        # type: (int) -> Optional[Revision]
+        """
+        Find last revision or return None
+        :param object:
+        :return:
+        """
+        r = self.files.find_one({"object": object}, sort=[("ts", pymongo.DESCENDING)])
+        if r:
+            return Revision(r["_id"], r["ts"], r["ft"], r.get("c"), r["length"])
+        return None
+
     def find_revision(self, object, revision):
         # type: (int, six.text_type) -> Optional[Revision]
         """
