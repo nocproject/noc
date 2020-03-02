@@ -33,6 +33,7 @@ Following labels shows subsystems affected by MR. Any combination of labels is p
 * `migration` - Database migrations
 * `tests` - Unittests
 * `nbi` - :ref:`NBI API<api-nbi>`
+* `rust` - Rust infrastructure and modules
 
 .. _dev-mr-labels-pri:
 

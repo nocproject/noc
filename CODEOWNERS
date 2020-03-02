@@ -46,6 +46,9 @@ models/ @dv @aversant
 # Services
 /services/ @dv @aversant
 
+# Rust
+/rust/ @dv
+
 # Documentation
 /docs/ @dv
 /docs/src/en/ @dv
