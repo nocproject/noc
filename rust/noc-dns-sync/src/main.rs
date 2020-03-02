@@ -5,14 +5,6 @@
  * See LICENSE for details
  * ---------------------------------------------------------------------
  */
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate serde;
-extern crate idna;
-extern crate log;
-extern crate serde_json;
-
 use datastream::client::http::HttpClientService;
 use datastream::state::plain::PlainStateService;
 use datastream::sync::SyncService;

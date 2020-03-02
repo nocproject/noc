@@ -5,6 +5,7 @@
  * See LICENSE for details
  * ---------------------------------------------------------------------
  */
+use clap::{clap_app, crate_authors, crate_description, crate_version, value_t};
 use std::ffi::OsString;
 
 const DEFAULT_ERR_TIMEOUT: u64 = 5;
