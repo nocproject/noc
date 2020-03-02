@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,8 @@ class Script(BaseScript):
     name = "Juniper.JUNOS.get_chassis_id"
     cache = True
     interface = IGetChassisID
+
+    SNMP_GETNEXT_OIDS = {"SNMP": ["1.3.6.1.4.1.2636.3.40.1.4.1.1.1.4"]}
 
     rx_range = re.compile(
         r"(?P<type>Public|Private) base address\s+(?P<mac>\S+)\s+"
