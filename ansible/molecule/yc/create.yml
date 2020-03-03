@@ -5,15 +5,21 @@
   gather_facts: false
   tasks:
 
+    - name: Create folder for terraform files
+      file:
+        path: "../yc/{{ item.distr }}"
+        state: directory
+      with_items: "{{ molecule_yml.platforms }}"
+
     - name: Generate terraform file
       template:
         src: templates/template.tf
-        dest: "../yc/{{ item.distr }}.tf"
+        dest: "../yc/{{ item.distr }}/{{ item.distr }}.tf"
       with_items: "{{ molecule_yml.platforms }}"
 
     - name: Create molecule instance(s)
       terraform:
-        project_path: "../yc/"
+        project_path: "../yc/{{ item.distr }}/"
         state: present
         force_init: true
       register: server

@@ -7,9 +7,16 @@
     #    - name: expose vars to playbook
     #      set_fact:
     #        use_cache: "{{ lookup('env','USE_CACHE') or True | bool }}"
+
+    - name: "Stop unattended upgrade"
+      raw: "systemctl stop unattended-upgrades.service"
+      changed_when: false
+      when: molecule_yml.platforms[0].distr is match("ubuntu.*")
+
     - name: Check if not python2 on host
       raw: test -e /usr/bin/python || (apt -qy update && apt install -y python-minimal)
       when: molecule_yml.platforms[0].distr is match("ubuntu.*|debian.*")
+      changed_when: false
 
 #    - name: download caches
 #      import_tasks: cache_download.yml
