@@ -299,7 +299,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["DES-3810-28"]
+            "part_no": ["DES-3810-28"],
+            "cpe_22": "cpe:/h:dlink:des-3810-28:-",
+            "cpe_23": "cpe:2.3:h:dlink:des-3810-28:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true
