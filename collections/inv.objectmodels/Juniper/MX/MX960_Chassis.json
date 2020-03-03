@@ -170,7 +170,9 @@
             "intake": "r"
         },
         "asset": {
-            "order_part_no": ["MX960"]
+            "order_part_no": ["MX960"],
+            "cpe_22": "cpe:/h:juniper:mx960:-",
+            "cpe_23": "cpe:2.3:h:juniper:mx960:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

@@ -91,7 +91,9 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["MX104"]
+            "order_part_no": ["MX104"],
+            "cpe_22": "cpe:/h:juniper:mx104:-",
+            "cpe_23": "cpe:2.3:h:juniper:mx104:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

@@ -102,7 +102,9 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["MX80", "MX40", "MX10", "MX5"]
+            "order_part_no": ["MX80", "MX40", "MX10", "MX5"],
+            "cpe_22": "cpe:/h:juniper:mx80:-",
+            "cpe_23": "cpe:2.3:h:juniper:mx80:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true
