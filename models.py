@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NOC models lazy loading and utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -164,8 +164,6 @@ _MODELS = {
     "inv.ModelMapping": "noc.inv.models.modelmapping.ModelMapping",
     "inv.NetworkSegment": "noc.inv.models.networksegment.NetworkSegment",
     "inv.NetworkSegmentProfile": "noc.inv.models.networksegmentprofile.NetworkSegmentProfile",
-    "inv.NewAddressDiscoveryLog": "noc.inv.models.newaddressdiscoverylog.NewAddressDiscoveryLog",
-    "inv.NewPrefixDiscoveryLog": "noc.inv.models.newprefixdiscoverylog.NewPrefixDiscoveryLog",
     "inv.Object": "noc.inv.models.object.Object",
     "inv.ObjectConnection": "noc.inv.models.objectconnection.ObjectConnection",
     "inv.ObjectFile": "noc.inv.models.objectfile.ObjectFile",
