@@ -50,7 +50,6 @@ provisioner:
 scenario:
   name: ubuntu16
   test_sequence:
-    - destroy
     - create
     - prepare
     - converge

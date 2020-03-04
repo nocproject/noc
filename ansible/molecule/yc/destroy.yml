@@ -6,7 +6,7 @@
   tasks:
     - name: Destroy molecule instance(s)
       terraform:
-        project_path: "../yc/"
+        project_path: "../yc/{{ item.distr }}/"
         state: absent
         force_init: true  # yamllint disable-line rule:truthy
         purge_workspace: true  # yamllint disable-line rule:truthy
