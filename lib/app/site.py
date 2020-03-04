@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Site implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -80,6 +80,7 @@ class Site(object):
     """
 
     folder_glyps = {"Setup": "wrench noc-edit", "Reports": "file-text noc-preview"}
+    JSON_CONTENT_TYPES = {"text/json", "application/json"}
 
     def __init__(self):
         self.apps = {}  # app_id -> app instance
@@ -175,8 +176,7 @@ class Site(object):
                                 if k != "_dc"
                             )
                         else:
-                            ct = request.META.get("CONTENT_TYPE")
-                            if ct and ("text/json" in ct or "application/json" in ct):
+                            if self.is_json(request.META.get("CONTENT_TYPE")):
                                 try:
                                     g = ujson.loads(request.body)
                                 except ValueError as e:
@@ -491,6 +491,22 @@ class Site(object):
             if pr:
                 for pr in self.apps[app].predefined_reports:
                     yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
+
+    @classmethod
+    def is_json(cls, content_type):
+        # type: (six.text_type) -> bool
+        """
+        Check if content-type is JSON
+        :param content_type:
+        :return:
+        """
+        if content_type in cls.JSON_CONTENT_TYPES:
+            return True
+        # Complex content-type
+        if ";" in content_type:
+            ct, _ = content_type.rsplit(content_type, 1)
+            return ct.strip() in cls.JSON_CONTENT_TYPES
+        return False
 
 
 # Site singletone
