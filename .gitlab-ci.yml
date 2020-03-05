@@ -29,7 +29,8 @@ flake8:
     - >
       if [ ! -z "$FLIST" ];
       then
-        flake8 $FLIST;
+        mkdir -p build/reports;
+        flake8 --format junit-xml $FLIST > build/reports/flake8-junit.xml || flake8 $FLIST;
       else
         echo "No files to lint"
         true;
@@ -42,6 +43,10 @@ flake8:
       - "**/*.py"
   tags:
     - docker
+  artifacts:
+    reports:
+      junit: ./build/reports/flake8-junit.xml
+    expire_in: 7 days
 
 black:
   stage: Lint
