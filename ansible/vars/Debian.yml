@@ -16,3 +16,4 @@ postgresql_conf_prefix: "/etc/postgresql/{{ postgres_version }}/main"
 postgres_proccess: postgres
 
 jemalloc_path: /usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+jemalloc2_path: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2

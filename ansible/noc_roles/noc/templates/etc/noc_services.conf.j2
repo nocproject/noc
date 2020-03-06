@@ -45,6 +45,10 @@ environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodenam
     ,LD_PRELOAD="{{ jemalloc_path }}"
 {%- endif -%}
 
+{%- if 'Debian' in ansible_distribution and '10' in ansible_distribution_major_version and jemalloc2_path -%}
+    ,LD_PRELOAD="{{ jemalloc2_path }}"
+{%- endif -%}
+
 {%- if service.pool -%}
     ,NOC_POOL="{{ service.pool }}"
 {%- endif %}
