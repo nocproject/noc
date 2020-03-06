@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016, The NOC Project
+# Copyright (C) 2007-2020, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ def start_maintenance(maintenance_id):
     try:
         logger.info("[%s] Creating TT", maintenance_id)
         tt_id = tts.create_tt(
-            queue=1,
+            queue=m.escalate_managed_object.tt_queue if m.escalate_managed_object.tt_queue else 1,
             obj=tts_id,
             reason=0,
             subject=m.subject,
@@ -67,6 +67,9 @@ def start_maintenance(maintenance_id):
                 for d in ManagedObject.objects.filter(id__in=list(objects)):
                     logger.info("[%s] Appending object %s to group TT %s", maintenance_id, d, gtt)
                     tts.add_to_group_tt(gtt, d.tt_system_id)
+        if tt_id and not m.escalation_tt:
+            m.escalation_tt = "%s:%s" % (m.escalate_managed_object.tt_system.name, tt_id)
+            m.save()
         metrics["maintenance_tt_create"] += 1
     except tts.TTError as e:
         logger.error("[%s] Failed to escalate: %s", maintenance_id, e)
@@ -83,13 +86,13 @@ def close_maintenance(maintenance_id):
         logger.info("[%s] Not escalated, skipping", maintenance_id)
         return
     tts_name, tt_id = m.escalation_tt.split(":", 1)
-    tts = TTSystem.get_by_name(tts_name)
+    tts = TTSystem.get_by_name(tts_name).get_system()
     if not tts:
         logger.error("[%s] TT system '%s' is not found", maintenance_id, tts_name)
         return
     try:
         logger.info("[%s] Closing TT %s", maintenance_id, tt_id)
-        tts.close_tt(m.escalation_tt, subject="Closed", body="Closed", login="correlator")
+        tts.close_tt(tt_id, subject="Closed", body="Closed", login="correlator")
         metrics["maintenance_tt_close"] += 1
     except tts.TTError as e:
         logger.error("[%s] Failed to close TT %s: %s", maintenance_id, tt_id, e)
