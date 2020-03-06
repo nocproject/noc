@@ -5,6 +5,10 @@
     state: present
   tags:
     - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
 
 - name: check if timezone is selected
   stat:
@@ -23,7 +27,7 @@
   file:
     path: "{{ item }}"
     state: "directory"
-    mode: 0775
+    mode: 0755
     group: clickhouse
     owner: clickhouse
     recurse: "True"

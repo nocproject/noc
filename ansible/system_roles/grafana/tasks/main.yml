@@ -4,7 +4,7 @@
 - name: Create Grafana config
   template:
     src: grafana.ini
-    dest: "{{ etc_prefix }}/grafana/grafana.ini"
+    dest: "{{ grafana_ini }}"
     owner: "root"
     group: "grafana"
     mode: "0640"

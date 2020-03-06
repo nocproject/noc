@@ -23,6 +23,7 @@ grafana_system_service: grafana
 grafana_dashboard_dir: /var/db/grafana/dashboards
 grafana_plugins_dir: /var/db/grafana/plugins
 grafana_provisioning_dir: /var/db/grafana/provisioning
+grafana_ini: "{{ etc_prefix }}/grafana.conf"
 
 mongo_arbiter_pid: " "
 mongo_log_path: /var/db/mongodb/mongod.log
@@ -47,21 +48,19 @@ pgbouncer_path_pid: /var/run/pgbouncer
 
 postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
-postgres_user: pgsql
-postgres_home: /usr/local/pgsql
-postgres_data_dir: "{{ postgres_home }}/data"
-postgresql_conf_prefix: "{{ postgres_home }}/data"
-postgres_superuser: pgsql
-postgres_version: 9.5
+postgres_home: /var/db/postgres
+postgres_version: "11"
+postgres_data_dir: '{{ postgres_home }}/data{{ postgres_version|replace(".","") }}'
+postgresql_conf_prefix: '{{ postgres_home }}/data{{ postgres_version|replace(".","") }}'
+postgres_superuser: postgres
 postgres_proccess: postgres
 
 tower_path: /usr/local/tower
 
-telegraf_reload_command: "service telegraf restart"
 nsqd_reload_command: "service nsqd restart"
 nsqadmin_reload_command: "service nsqadmin restart"
 
-pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -I/usr/local/include"
+pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -Wno-return-type -I/usr/local/include"
 pip_ldflags: "-L/usr/local/lib"
 
 fake_shell: /sbin/nologin

@@ -21,7 +21,9 @@ forms:
       type: int
     version:
       default: 9.6
-      description: "<strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field."
+      description: >
+        <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field. <br/>
+        <strong>On FreeBSD only 11 version is supported</strong> <br/>
       label: "PostgreSQL version"
       type: str
       common: environment

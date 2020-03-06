@@ -18,7 +18,7 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: noc_node_freebsd12
+  - name: noc-node-freebsd12
     template: packer-freebsd12
     memory: 4096
     cpu: 2

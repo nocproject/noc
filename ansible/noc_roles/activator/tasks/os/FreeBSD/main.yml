@@ -1,7 +1,15 @@
 ---
 - name: Install FreeBSD system packages
   pkgng:
-    name: "libssh2"
+    name: "{{ packages }}"
     state: present
+  vars:
+    packages:
+      - libssh2
+      - cmake
   tags:
     - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded

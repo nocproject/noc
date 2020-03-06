@@ -15,6 +15,10 @@
     IGNORE_OSVERSION: "yes"
   when:
     - molecule_yml is defined
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
 
 - name: Install FreeBSD system packages
   pkgng:
@@ -30,6 +34,10 @@
       - gtar
   tags:
     - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
 
 - name: Update hostname
   become: "True"

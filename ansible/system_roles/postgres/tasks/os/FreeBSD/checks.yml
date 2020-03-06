@@ -1,1 +1,6 @@
 ---
+- name: Fail if PostgreSQL version is not equal to "11"
+  fail:
+    msg: Only "11" version of PostgreSQL is supported now
+  when:
+    - postgres_version is version_compare("11", '<>')

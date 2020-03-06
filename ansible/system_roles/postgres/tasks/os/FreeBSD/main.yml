@@ -5,6 +5,10 @@
     state: present
   tags:
     - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
 
 - name: "Install PostgreSQL 2/2"
   pkgng:
@@ -16,6 +20,10 @@
       - 'postgresql{{ postgres_version|replace(".","") }}-contrib'
   tags:
     - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
 
 - name: Enable postgres system service
   service:
@@ -32,4 +40,4 @@
   # pg_ctl: could not read file "/usr/local/pgsql/data/postmaster.opts"
   command: service postgresql start
   args:
-    creates: /usr/local/pgsql/data/postmaster.opts
+    creates: '{{ postgres_data_dir }}/postmaster.opts'

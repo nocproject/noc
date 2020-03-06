@@ -26,6 +26,7 @@ tower_minimum_version: "0.4.7"
 
 noc_system_service: noc
 mongo_dir: "{{ etc_prefix }}/mongod"
+grafana_ini: "{{ etc_prefix }}/grafana/grafana.ini"
 
 postgres_user: postgres
 

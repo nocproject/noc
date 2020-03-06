@@ -35,7 +35,7 @@
   file:
     path: "{{ item }}"
     state: directory
-    mode: 0770
+    mode: 0744
     group: nsq
     owner: nsq
   with_items:
