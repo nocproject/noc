@@ -1,0 +1,21 @@
+{
+    "name": "Environment | UPS | Input Power Failed (SNMP)",
+    "uuid": "519a7450-dbd5-4537-b66b-a69e6cf49866",
+    "description": "XPPC-MIB::ppc",
+    "event_class__name": "Environment | UPS | Input Power Failed",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^XPPC-MIB::ppc$"
+        },
+        {
+            "key_re": "^XPPC-MIB::ppc$",
+            "value_re": "^UPS has switched to battery power.$"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S9300 | S9300 FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "420c277a-a102-4d2a-9567-34af975d4ebb",
+    "description": "S9303,S9306,S9312 FAN slot",
+    "c_group": [],
+    "genders": "mf"
+}

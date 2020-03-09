@@ -1,0 +1,22 @@
+{
+    "name": "Juniper | EX | EX8208-FPM",
+    "$collection": "inv.objectmodels",
+    "uuid": "4568c3fb-84b9-46a1-9dee-52843b34893b",
+    "vendor__code": "JUNIPER",
+    "description": "Front Panel Display",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "FPM connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["760-049617"]
+        }
+    }
+}

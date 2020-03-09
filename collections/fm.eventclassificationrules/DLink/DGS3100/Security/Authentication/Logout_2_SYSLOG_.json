@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Security | Authentication | Logout #2 (SYSLOG)",
+    "uuid": "18fa0c62-c114-4c30-95f3-4f7af7cdd8a3",
+    "description": "SYSLOG: %AAA-I-DISCONNECT: http connection for user admin, source 10.8.4.4 destination 10.8.25.150 TERMINATED",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%AAA-I-DISCONNECT: (?:http|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED"
+        }
+    ]
+}

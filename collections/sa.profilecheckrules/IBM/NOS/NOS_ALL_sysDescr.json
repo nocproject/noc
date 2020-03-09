@@ -1,0 +1,13 @@
+{
+    "name": "IBM | NOS | NOS_ALL sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "97932364-672f-4d0d-914d-819dd47de09c",
+    "description": "IBM Flex System Fabric EN4093R 10Gb Scalable Switch(Upgrade1)",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^(IBM|Lenovo) Flex System Fabric",
+    "action": "match",
+    "profile__name": "IBM.NOS"
+}

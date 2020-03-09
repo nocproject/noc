@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DAS-3224DC",
+    "$collection": "inv.platforms",
+    "uuid": "cb93ca50-e784-4790-b734-2e74a4e0b125",
+    "snmp_sysobjectid": "1.3.6.1.4.1.3646.1300.13"
+}

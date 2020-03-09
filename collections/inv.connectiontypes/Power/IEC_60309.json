@@ -1,0 +1,8 @@
+{
+    "name": "Power | IEC 60309",
+    "$collection": "inv.connectiontypes",
+    "uuid": "6af4c6f7-040b-4886-88c4-a92e4e18c549",
+    "description": "Non-polarized connector",
+    "c_group": [],
+    "genders": "m"
+}

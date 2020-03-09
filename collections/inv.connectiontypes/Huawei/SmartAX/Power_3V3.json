@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | Power 3V3",
+    "$collection": "inv.connectiontypes",
+    "uuid": "3964af26-4a4a-438d-b77a-f5b16a5645e8",
+    "description": "3V3 D-SUB power connector",
+    "c_group": [],
+    "genders": "m"
+}

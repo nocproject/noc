@@ -1,0 +1,52 @@
+{
+    "name": "Cisco | 4500X",
+    "$collection": "inv.connectionrules",
+    "uuid": "b286ffd2-7cf6-4e24-b157-5d0dba6ceeaf",
+    "description": "Cisco 4500X series connection rules",
+    "context": [
+        {
+            "reset_scopes": ["UM"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "um",
+            "type": "UM"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "UM",
+            "scope": "chassis",
+            "target_connection": "Linecard(slot {N})",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "um",
+            "target_connection": "Te2/{N}_sfp",
+            "target_number": null,
+            "target_type": "UM"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Te1/{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

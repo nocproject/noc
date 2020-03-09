@@ -1,0 +1,8 @@
+{
+    "name": "OneAccess",
+    "uuid": "9b6f41d4-ccf3-4388-b161-93533ab099b5",
+    "full_name": "OneAccess",
+    "code": ["ONEACCESS"],
+    "site": "https://www.oneaccess-net.com/",
+    "$collection": "inv.vendors"
+}

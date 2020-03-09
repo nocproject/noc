@@ -1,0 +1,13 @@
+{
+    "name": "Nateks | NetXpert  | NX 3408 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "1fad0613-af1a-4119-94f5-a4951d82e7e6",
+    "description": "NX 3408",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3320.1.145.0",
+    "action": "match",
+    "profile__name": "Nateks.NetXpert"
+}

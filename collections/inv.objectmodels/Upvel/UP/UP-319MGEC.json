@@ -1,0 +1,231 @@
+{
+    "name": "Upvel | UP | UP-319MGEC",
+    "$collection": "inv.objectmodels",
+    "uuid": "be7a3765-7c7c-4337-a7b1-da34bb3197a4",
+    "vendor__code": "UPVEL",
+    "description": "16x 10/100/1000Base-T/POE+, 2x Combo 10/100/1000Base-T/1000Base-X",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "connections": [
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/11 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/12 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/13 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/14 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/15 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/16 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/17 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "17",
+            "name": "gi17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/18 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "18",
+            "name": "gi18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/17 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "17",
+            "name": "sfp17",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/18 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "18",
+            "name": "sfp18",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["UP-319MGEC"]
+        },
+        "dimensions": {
+            "depth": 210,
+            "height": 44,
+            "width": 330
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 250.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "weight": 2.5
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Vapel",
+    "uuid": "f754a267-19d8-4ff2-b11f-baa933e436d8",
+    "full_name": "Vapel",
+    "code": ["VAPEL"],
+    "site": "http://www.vapel.com",
+    "$collection": "inv.vendors"
+}

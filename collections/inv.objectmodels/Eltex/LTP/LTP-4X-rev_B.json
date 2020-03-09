@@ -1,0 +1,177 @@
+{
+    "name": "Eltex | LTP | LTP-4X-rev.B",
+    "$collection": "inv.objectmodels",
+    "uuid": "01e0279a-2c74-4922-a030-4bc49cdaac02",
+    "vendor__code": "ELTEX",
+    "description": "Оптический станционный терминал LTP-4X",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "port", "fan"],
+    "connections": [
+        {
+            "description": "0",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "1",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "1",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "name": "2",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "3",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "name": "3",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 0",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "sfp0",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Fiber port 1",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "sfp1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Fiber port 2",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "name": "sfp2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Fiber port 3",
+            "direction": "i",
+            "gender": "f",
+            "group": "3",
+            "name": "sfp3",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "SFP+ port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "SFP+ port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "gpon 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon0",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon1",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon2",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "pon3",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Power slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "description": "Power slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Eltex | MES | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["LTP-4X-rev.B", "LTP-4X:rev.B"]
+        },
+        "dimensions": {
+            "depth": 259,
+            "height": 44,
+            "width": 420
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 40.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3.5
+        }
+    }
+}

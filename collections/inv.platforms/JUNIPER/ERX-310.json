@@ -1,0 +1,7 @@
+{
+    "vendor__code": "JUNIPER",
+    "name": "ERX-310",
+    "$collection": "inv.platforms",
+    "uuid": "bce2a3aa-89ef-4faa-967a-f4ede0644a6c",
+    "snmp_sysobjectid": "1.3.6.1.4.1.4874.1.1.1.1.5"
+}

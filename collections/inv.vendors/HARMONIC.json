@@ -1,0 +1,8 @@
+{
+    "name": "Harmonic",
+    "uuid": "c4da2c0b-4ad0-4bf9-8448-41161d92718d",
+    "full_name": "Harmonic Inc",
+    "code": ["HARMONIC"],
+    "site": "https://www.harmonicinc.com",
+    "$collection": "inv.vendors"
+}

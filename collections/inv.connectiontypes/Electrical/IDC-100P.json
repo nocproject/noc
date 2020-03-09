@@ -1,0 +1,8 @@
+{
+    "name": "Electrical | IDC-100P",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b7f2b3a1-3881-491f-a7f2-90763f3f4bfd",
+    "description": "100 Pin Plug IDC Connector",
+    "c_group": [],
+    "genders": "mf"
+}

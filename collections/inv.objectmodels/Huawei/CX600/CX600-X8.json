@@ -1,0 +1,154 @@
+{
+    "name": "Huawei | CX600 | CX600-X8",
+    "$collection": "inv.objectmodels",
+    "uuid": "6118dcb4-99c7-4216-a314-932e90623a79",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X8 Integrated Chassis Components(Including 4 DC Power)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "LPU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "LPU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "LPU Slot #3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "LPU Slot #4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "LPU Slot #5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "LPU Slot #6",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "LPU Slot #7",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "LPU Slot #8",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "SRU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Huawei | CX&NE | SRU"
+        },
+        {
+            "description": "SRU Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Huawei | CX&NE | SRU"
+        },
+        {
+            "description": "SFU Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "11",
+            "type__name": "Huawei | CX&NE | SFU"
+        },
+        {
+            "description": "Power Slot A1",
+            "direction": "i",
+            "gender": "f",
+            "name": "A1",
+            "type__name": "Huawei | CX&NE | CX600 PEM"
+        },
+        {
+            "description": "Power Slot A2",
+            "direction": "i",
+            "gender": "f",
+            "name": "A2",
+            "type__name": "Huawei | CX&NE | CX600 PEM"
+        },
+        {
+            "description": "Fan Slot A3",
+            "direction": "i",
+            "gender": "f",
+            "name": "A3",
+            "type__name": "Huawei | CX&NE | CX600 FAN"
+        },
+        {
+            "description": "Power Slot B1",
+            "direction": "i",
+            "gender": "f",
+            "name": "B1",
+            "type__name": "Huawei | CX&NE | CX600 PEM"
+        },
+        {
+            "description": "Power Slot B2",
+            "direction": "i",
+            "gender": "f",
+            "name": "B2",
+            "type__name": "Huawei | CX&NE | CX600 PEM"
+        },
+        {
+            "description": "Fan Slot B3",
+            "direction": "i",
+            "gender": "f",
+            "name": "B3",
+            "type__name": "Huawei | CX&NE | CX600 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02351932"],
+            "part_no": ["CX6Z1BKP08A"]
+        },
+        "dimensions": {
+            "depth": 650,
+            "height": 620,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 3300.0
+        },
+        "rackmount": {
+            "units": 14.0
+        },
+        "weight": {
+            "weight": 130.0
+        }
+    }
+}

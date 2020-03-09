@@ -1,0 +1,59 @@
+{
+    "name": "Huawei | S9300 | SRUA",
+    "$collection": "inv.objectmodels",
+    "uuid": "08e29521-6429-4286-b579-336d093e17b8",
+    "vendor__code": "HUAWEI",
+    "description": "Quidway S9306/S9312 Main Control Unit A,1*1 (256G Switch Capacity)",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "SRU",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | SRU"
+        },
+        {
+            "description": "SubCard slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "sc",
+            "type__name": "Huawei | S9300 | SC"
+        },
+        {
+            "description": "Management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "MEth0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console for on-site system configuration",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": ["<RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020KQR"],
+            "part_no": ["LE02SRUA"]
+        },
+        "dimensions": {
+            "depth": 427,
+            "height": 36,
+            "width": 395
+        },
+        "power": {
+            "power": 81.0
+        },
+        "weight": {
+            "weight": 6.17
+        }
+    }
+}

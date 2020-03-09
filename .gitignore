@@ -40,7 +40,6 @@ speedup/*.c
 speedup/*.so
 ui/bi/**
 ui/bi2/**
-collections/
 include
 lib/*.so.*
 lib/*.so

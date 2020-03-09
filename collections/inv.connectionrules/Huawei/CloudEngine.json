@@ -1,0 +1,39 @@
+{
+    "name": "Huawei | CloudEngine",
+    "$collection": "inv.connectionrules",
+    "uuid": "c9822651-d2b7-4afb-84d6-1b8127678f37",
+    "description": "Huawei CloudEngine switch following convenction:\n\nTransceiver slots: Port_N\nPower Supply: powerN\nFan module: fanN",
+    "context": [
+        {
+            "reset_scopes": ["em"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Port_{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PWR",
+            "scope": "chassis",
+            "target_connection": "power{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

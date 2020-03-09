@@ -1,0 +1,59 @@
+{
+    "name": "Zyxel | MSAN | ALC1248G-51",
+    "$collection": "inv.objectmodels",
+    "uuid": "eee7b75c-0cf1-4952-b7a6-435b19d20e44",
+    "vendor__code": "ZYXEL",
+    "description": "Hot swappable 48-port ADSL2/ADSL2+ Annex A line card ",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "xDSL ports 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL1",
+            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "xDSL ports 25-48",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL2",
+            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ9"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ALC1248G-51"]
+        },
+        "dimensions": {
+            "depth": 231,
+            "height": 24,
+            "width": 390
+        },
+        "power": {
+            "power": 70.0
+        },
+        "weight": {
+            "weight": 0.5
+        }
+    }
+}

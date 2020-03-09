@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-3470-28T-AC-POE",
+    "$collection": "inv.platforms",
+    "uuid": "88d147d7-483d-4ff1-b677-43e3125714e9",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.1.354"
+}

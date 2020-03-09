@@ -1,0 +1,41 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H802X2CS",
+    "$collection": "inv.objectmodels",
+    "uuid": "1427fb8d-973a-4a7c-bd8c-373901e1ebac",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600T,H802X2CS,2-port 10GE Uplink Interface",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | DB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801GICE0"]
+        },
+        "power": {
+            "power": 4.0
+        }
+    }
+}

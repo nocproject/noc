@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H837ASPB",
+    "$collection": "inv.objectmodels",
+    "uuid": "83f82212-b711-47ac-837d-e1f92ad3f140",
+    "vendor__code": "HUAWEI",
+    "description": "The H837ASPB board is a 64-channel VoIP subscriber board, providing 64-channels VoIP POTS services. H837ASPB can substitute for H838ASPB",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "32 channels of POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "32 channels of POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN1",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H837ASPB"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 41.0
+        }
+    }
+}

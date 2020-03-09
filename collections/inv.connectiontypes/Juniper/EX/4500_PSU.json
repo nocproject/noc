@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 4500 PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f62bd38d-8da0-4016-a447-176a31921fd1",
+    "description": "Juniper EX4500 PSU Slot (Power module)",
+    "c_group": [],
+    "genders": "mf"
+}

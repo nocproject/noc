@@ -1,0 +1,8 @@
+{
+    "name": "Sencore",
+    "uuid": "189c139b-95dd-4e72-808d-6814683f2189",
+    "full_name": "Sencore",
+    "code": ["SENCORE"],
+    "site": "http://www.sencore.com/",
+    "$collection": "inv.vendors"
+}

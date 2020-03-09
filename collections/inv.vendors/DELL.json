@@ -1,0 +1,8 @@
+{
+    "name": "Dell",
+    "uuid": "d08ee7e9-aa28-4eb2-9b0a-3c12caf7513f",
+    "full_name": "DELL EMC",
+    "code": ["DELL"],
+    "site": "https://www.dellemc.com",
+    "$collection": "inv.vendors"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+    "uuid": "4b293402-92da-4630-8bc7-956caeafeaba",
+    "description": "DDM Port 9 optic module RX power exceeded the low alarm threshold",
+    "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) exceeded the (?P<threshold>low|high) alarm threshold"
+        }
+    ]
+}

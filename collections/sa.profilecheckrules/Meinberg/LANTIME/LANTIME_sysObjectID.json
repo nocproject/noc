@@ -1,0 +1,14 @@
+{
+    "name": "Meinberg | LANTIME",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "d6a8071f-7e1b-4fac-a5e6-076ac2a965da",
+    "description": "Meinberg LANTIME M1000 V6.24.005",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Meinberg LANTIME .*",
+    "action": "match",
+    "profile__name": "Meinberg.LANTIME"
+}
+

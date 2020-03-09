@@ -1,0 +1,20 @@
+{
+    "name": "Chassis | Stack | Stack Degraded",
+    "$collection": "fm.alarmclasses",
+    "uuid": "ed3566d9-75dc-46e6-a012-1c05387cd5dd",
+    "is_unique": true,
+    "discriminator": ["unit"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars": [
+        {
+            "name": "unit",
+            "description": "Unit number"
+        }
+    ],
+    "subject_template": "Unit {{unit}} is out of stack",
+    "body_template": "Unit {{unit}} is out of stack",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

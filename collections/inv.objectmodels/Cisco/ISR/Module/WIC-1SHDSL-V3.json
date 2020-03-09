@@ -1,0 +1,31 @@
+{
+    "name": "Cisco | ISR | Module | WIC-1SHDSL-V3",
+    "$collection": "inv.objectmodels",
+    "uuid": "e5891b01-5df6-4b8f-8ffd-c023a9facec3",
+    "vendor__code": "CISCO",
+    "description": "G.SHDSL WAN interface card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "description": "WAN Interface Card connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "SHDSL ports",
+            "direction": "s",
+            "gender": "f",
+            "name": "shdsl",
+            "protocols": ["SHDSL"],
+            "type__name": "Electrical | RJ11"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WIC-1SHDSL-V3", "WIC-1SHDSL-V3="]
+        }
+    }
+}

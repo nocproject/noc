@@ -1,0 +1,8 @@
+{
+    "name": "Planar",
+    "full_name": "ООО ПЛАНАР",
+    "uuid": "0eec6271-a35d-44e2-914f-80a131781030",
+    "code": ["PLANAR"],
+    "site": "http://www.planarchel.ru/",
+    "$collection": "inv.vendors"
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "JUNIPER",
+    "name": "mx104",
+    "$collection": "inv.platforms",
+    "uuid": "394c76c2-9860-4053-8c62-df68692c6b47",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2636.1.1.1.2.97"
+}

@@ -1,0 +1,34 @@
+{
+    "name": "Cisco | NXOS | Network | Link | Link Up #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "009fd499-cfef-481d-94da-1b9e8ef41f60",
+    "description": "IF-MIB::linkUp",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.NXOS$"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus.436277248$",
+            "value_re": "^up$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr.436277248$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IF-MIB::linkUp$"
+        },
+        {
+            "key_re": "^IF-MIB::ifAdminStatus.436277248$",
+            "value_re": "^up$"
+        }
+    ]
+}

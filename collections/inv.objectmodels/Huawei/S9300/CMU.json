@@ -1,0 +1,50 @@
+{
+    "name": "Huawei | S9300 | CMU",
+    "$collection": "inv.objectmodels",
+    "uuid": "21ea98f7-7258-4830-a158-870f243b6fde",
+    "vendor__code": "HUAWEI",
+    "description": "S9300,LE02CMUA,Centralized Monitoring Board,1*1",
+    "tags": ["soft"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | CMU"
+        },
+        {
+            "description": "RS485 port (reserved)",
+            "direction": "s",
+            "gender": "f",
+            "name": "RS485",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "MON port (reserved)",
+            "direction": "s",
+            "gender": "f",
+            "name": "mon",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020LCU"],
+            "part_no": ["LE02CMUA"]
+        },
+        "dimensions": {
+            "depth": 413,
+            "height": 1,
+            "width": 113
+        },
+        "power": {
+            "power": 18.0
+        },
+        "weight": {
+            "weight": 0.22
+        }
+    }
+}

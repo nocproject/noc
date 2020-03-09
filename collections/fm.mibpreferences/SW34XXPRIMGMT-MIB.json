@@ -1,0 +1,6 @@
+{
+    "mib": "SW34XXPRIMGMT-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "0b33750a-60ec-441d-b60c-82ce2cfea504",
+    "preference": 6600
+}

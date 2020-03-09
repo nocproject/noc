@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ELTEX",
+    "name": "MA4000",
+    "$collection": "inv.platforms",
+    "uuid": "f7502e82-225c-4dce-8faf-5021d6c8bb6b",
+    "snmp_sysobjectid": "1.3.6.1.4.1.35265.1.13"
+}

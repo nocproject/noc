@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | AR 2240 | SIC",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c2399337-0e2e-4462-bb2c-dccdc0a7cfdb",
+    "description": "Huawei AR 2240 SIC slot",
+    "c_group": [],
+    "genders": "mf"
+}

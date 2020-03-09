@@ -1,0 +1,38 @@
+{
+    "name": "APC | SmartUPS | NMC2",
+    "$collection": "inv.objectmodels",
+    "uuid": "c8974022-2855-48b6-8998-c5d951c736a0",
+    "vendor__code": "APC",
+    "description": "UPS Network Management Card 2",
+    "cr_context": "MGMT",
+    "connections": [
+        {
+            "description": "APC Smart Slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "APC | UPS | SS"
+        },
+        {
+            "description": "Outband Management",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | 2.5mm-jack"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["AP9537SUM"]
+        }
+    }
+}

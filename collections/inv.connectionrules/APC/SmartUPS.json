@@ -1,0 +1,23 @@
+{
+    "name": "APC | SmartUPS",
+    "$collection": "inv.connectionrules",
+    "uuid": "2d81225d-732f-4447-8ef3-60a019a2cfce",
+    "description": "APC SmartUPS connection rules",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "MGMT",
+            "scope": "chassis",
+            "target_connection": "in",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

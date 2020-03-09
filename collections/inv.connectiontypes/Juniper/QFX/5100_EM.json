@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | QFX | 5100 EM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "d70658e7-6d65-475a-a1e5-e647106c5741",
+    "description": "Juniper QFX5100/EX4600 EM Slot (Expansion module)",
+    "c_group": [],
+    "genders": "mf"
+}

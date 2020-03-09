@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5605 | H521MFEB",
+    "$collection": "inv.objectmodels",
+    "uuid": "89ad6ffd-d03d-4bcc-a9b3-58f18b554585",
+    "vendor__code": "HUAWEI",
+    "description": "MA5605 It is system control and FE subtending/uplink Electrical Interface Board (Support Optical Cascading), providing 1×100Base-TX interfaces (uplink) and 1xSFP (subtending).",
+    "cr_context": "BOARD",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5105 | CB"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "con",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Uplink",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Downlink port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Downlink",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H521MFEB"]
+        }
+    }
+}

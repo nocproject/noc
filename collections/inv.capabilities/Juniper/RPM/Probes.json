@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | RPM | Probes",
+    "$collection": "inv.capabilities",
+    "uuid": "8827005c-5378-48af-97a8-3146fa44890b",
+    "description": "Number of discovered RPM probes",
+    "type": "int",
+    "card_template": null
+}

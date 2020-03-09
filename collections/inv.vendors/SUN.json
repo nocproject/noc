@@ -1,0 +1,8 @@
+{
+    "name": "Sun",
+    "uuid": "aa29561c-8bf2-4d49-b13a-bd86e5574b06",
+    "full_name": "Sun Microsystems",
+    "code": ["SUN"],
+    "site": "https://www.oracle.com/Sun/",
+    "$collection": "inv.vendors"
+}

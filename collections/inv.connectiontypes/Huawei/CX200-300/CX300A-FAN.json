@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX200-300 | CX300A-FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c074c363-21f8-463b-8dba-82380cf140c7",
+    "description": "CX300A FAN Slot",
+    "c_group": [],
+    "genders": "mf"
+}

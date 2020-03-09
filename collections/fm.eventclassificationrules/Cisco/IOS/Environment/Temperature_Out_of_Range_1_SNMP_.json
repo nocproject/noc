@@ -1,0 +1,33 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #1 (SNMP)",
+    "uuid": "97b707ca-4b39-4b65-bf1e-da5e08234c9b",
+    "description": "CISCO-ENVMON-MIB::ciscoEnvMonTemperatureNotification",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureState\\.\\d+$",
+            "value_re": "warning"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusDescr\\.\\d+$",
+            "value_re": "(?P<name>.+) t\\S+"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusValue\\.\\d+$",
+            "value_re": "(?P<measure>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
+            "value_re": "CISCO-ENVMON-MIB::(?:ciscoEnvMonTemperatureNotification|ciscoEnvMonTempStatusChangeNotif)"
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "mib": "DLINK-ID-REC-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "e844cbde-d999-4e78-a198-53d0f9b6caf5",
+    "preference": 6300
+}

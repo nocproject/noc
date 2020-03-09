@@ -1,0 +1,7 @@
+{
+    "vendor__name": "Cisco Systems",
+    "name": "C9300-48P",
+    "$collection": "inv.platforms",
+    "uuid": "c3817059-0775-4aab-b012-a8b4d9ddb386",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.2494"
+}

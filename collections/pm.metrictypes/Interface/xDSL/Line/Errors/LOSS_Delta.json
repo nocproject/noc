@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | Errors | LOSS | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "7bea84fc-4e09-44e5-a1e1-0c92556e16d3",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_errors_loss_delta",
+    "field_type": "UInt32",
+    "description": "Count of the number of Loss of Signal failures since agent reset.",
+    "measure": "count"
+}

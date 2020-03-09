@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Status | Admin",
+    "$collection": "pm.metrictypes",
+    "uuid": "fc2117b2-9da5-4af4-82e0-4f97f0db42a3",
+    "scope__name": "Interface",
+    "field_name": "status_admin",
+    "field_type": "UInt8",
+    "description": "Interface admin status",
+    "measure": ""
+}

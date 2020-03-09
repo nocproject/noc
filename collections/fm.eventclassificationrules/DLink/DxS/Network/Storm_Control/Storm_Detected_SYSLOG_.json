@@ -1,0 +1,22 @@
+{
+    "name": "DLink | DxS | Network | Storm Control | Storm Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d1e1c6d5-69a6-4346-b52d-f411be740230",
+    "description": "Mar 30 14:06:06 10.137.10.100 WARN: Port 30 is currently shut down due to a packet storm",
+    "event_class__name": "Network | Storm Control | Storm Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "DLink.DxS"
+        },
+        {
+            "key_re": "source",
+            "value_re": "syslog"
+        },
+        {
+            "key_re": "message",
+            "value_re": "WARN: Port (?P<interface>\\S+) is currently shut down due to a packet storm$"
+        }
+    ]
+}

@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H563ADEF",
+    "$collection": "inv.objectmodels",
+    "uuid": "67d805f2-542f-44c3-b4f6-13c2b8f92edb",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600,H563ADEF,64-channel ADSL2+ Board, (over POTS) (ext. Splitter)",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SB"
+        },
+        {
+            "description": "Provides a 32-channel xDSL service port",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL0",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
+            "description": "Provides a 32-channel xDSL service port",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL1",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H563ADEF", "H563ADEF1", "H563ADEF2"]
+        },
+        "dimensions": {
+            "depth": 372,
+            "height": 400,
+            "width": 26
+        },
+        "power": {
+            "power": 46.0
+        }
+    }
+}

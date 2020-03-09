@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | CX&NE | CX600-X3A DC PSU",
+    "$collection": "inv.objectmodels",
+    "uuid": "13919921-bb5c-44cd-acd3-6aadf47bbe62",
+    "vendor__code": "HUAWEI",
+    "description": "CX600-X3A -48V,60A,1,2880,DC Power Entry Module",
+    "cr_context": "PWR",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | CX600-X3A PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02121615"],
+            "part_no": ["CR5M0PWRDC70"]
+        },
+        "dimensions": {
+            "depth": 450,
+            "height": 127,
+            "width": 184
+        },
+        "power": {
+            "power": 3000.0
+        },
+        "weight": {
+            "weight": 9.0
+        }
+    }
+}

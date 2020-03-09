@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "ES-3124",
+    "$collection": "inv.platforms",
+    "uuid": "5d1dd172-256f-4291-8f48-a6e99a3b8bfd",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.12"
+}

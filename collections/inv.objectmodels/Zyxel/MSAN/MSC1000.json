@@ -1,0 +1,86 @@
+{
+    "name": "Zyxel | MSAN | MSC1000",
+    "$collection": "inv.objectmodels",
+    "uuid": "c51ff3cf-f4aa-47d9-b0c3-d38cf7b3474b",
+    "vendor__code": "ZYXEL",
+    "description": "Management and switching card with 4 FE/GE uplink/subtending",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "tags": ["lc", "sum", "port"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "OUTPUT ALARM",
+            "direction": "s",
+            "gender": "f",
+            "name": "output",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": "INPUT ALARM",
+            "direction": "s",
+            "gender": "f",
+            "name": "input",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "description": "Module Front Panel",
+            "direction": "o",
+            "gender": "m",
+            "name": "subtending1",
+            "type__name": "Zyxel | MSAN | MFP"
+        },
+        {
+            "description": "Module Front Panel",
+            "direction": "o",
+            "gender": "m",
+            "name": "subtending2",
+            "type__name": "Zyxel | MSAN | MFP"
+        },
+        {
+            "description": "Module Front Panel",
+            "direction": "o",
+            "gender": "m",
+            "name": "uplink1",
+            "type__name": "Zyxel | MSAN | MFP"
+        },
+        {
+            "description": "port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "mgmt port",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ11"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MSC1000", "msc"]
+        },
+        "weight": {
+            "weight": 1.8
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Terayon",
+    "uuid": "fcd87933-51e1-4006-ad07-e50686ff6970",
+    "full_name": "Terayon Communication Systems",
+    "code": ["TERAYON"],
+    "site": "https://en.wikipedia.org/wiki/Terayon",
+    "$collection": "inv.vendors"
+}

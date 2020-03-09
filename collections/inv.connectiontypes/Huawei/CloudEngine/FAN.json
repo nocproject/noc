@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CloudEngine | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "2fe9c814-299f-4f51-8add-f422b8b55903",
+    "description": "Huawei CloudEngine FAN slot (Fan module)",
+    "c_group": [],
+    "genders": "mf"
+}

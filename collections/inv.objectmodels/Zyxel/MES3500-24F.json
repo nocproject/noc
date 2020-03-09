@@ -1,0 +1,312 @@
+{
+    "name": "Zyxel | MES3500-24F",
+    "$collection": "inv.objectmodels",
+    "uuid": "64287ebd-8c62-4d8e-aeec-4247cc9e48ee",
+    "vendor__code": "ZYXEL",
+    "description": "L2+ switch with 24 ports 100Base-FX, 4 combo ports 10/100/1000Base-TX / SFP",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Management console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp3",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp4",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp5",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp6",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp7",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp8",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 9",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp9",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 10",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp10",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 11",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp11",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 12",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp12",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 13",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp13",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 14",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp14",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 15",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp15",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 16",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp16",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 17",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp17",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 18",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp18",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 19",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp19",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 20",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp20",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 21",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp21",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 22",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp22",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 23",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp23",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 24",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp24",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 25 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "25",
+            "name": "25",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 25 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "25",
+            "name": "sfp25",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 26 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "26",
+            "name": "26",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 26 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "26",
+            "name": "sfp26",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 27 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "27",
+            "name": "27",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 27 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "27",
+            "name": "sfp27",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 28 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "28",
+            "name": "28",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 28 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "28",
+            "name": "sfp28",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES3500-24F"]
+        },
+        "dimensions": {
+            "depth": 200,
+            "height": 44,
+            "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 2.6
+        }
+    }
+}

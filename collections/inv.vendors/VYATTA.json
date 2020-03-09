@@ -1,0 +1,8 @@
+{
+    "name": "Vyatta",
+    "uuid": "31393675-96e6-42a2-85d1-bd457354571c",
+    "full_name": "Vyatta Software Technology",
+    "code": ["VYATTA"],
+    "site": "https://en.wikipedia.org/wiki/Vyatta",
+    "$collection": "inv.vendors"
+}

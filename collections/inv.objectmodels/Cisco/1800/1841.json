@@ -1,0 +1,43 @@
+{
+    "name": "Cisco | 1800 | 1841",
+    "$collection": "inv.objectmodels",
+    "uuid": "a283d08a-65b9-4833-bc39-eee0e3043f83",
+    "vendor__code": "CISCO",
+    "description": "Cisco 1841 Series Integrated Services Routers",
+    "connection_rule__name": "Cisco | 2800",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "1841 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 1800 | MOTHERBOARD"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO1841"]
+        },
+        "dimensions": {
+            "depth": 274,
+            "height": 48,
+            "width": 343
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

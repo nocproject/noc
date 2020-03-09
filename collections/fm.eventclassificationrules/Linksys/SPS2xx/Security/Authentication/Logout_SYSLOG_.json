@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "d6892fd8-af4c-417b-8162-7d52e032b60f",
+    "description": "%AAA-I-DISCONNECT: User CLI session for user admin over telnet , source 10.8.4.19 destination  10.8.2.13  TERMINATED. The Telnet/SSH session may still be connected.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-I-DISCONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) ?, source (?P<ip>\\S+) destination  \\S+  TERMINATED\\. The Telnet/SSH session may still be connected\\.$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "93e804ce-9a36-409b-87a2-8acb1e7f7418",
+    "description": "Aug 31 15:37:23 test snmp LoginFailure,admin,TELNET,172.16.3.254",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "snmp LoginFailure,(?P<user>.*),(?:TELNET|Console|WEB),(?P<ip>\\S+)$"
+        }
+    ]
+}

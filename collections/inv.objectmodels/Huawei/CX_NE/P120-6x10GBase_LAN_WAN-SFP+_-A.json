@@ -1,0 +1,90 @@
+{
+    "name": "Huawei | CX&NE | P120-6x10GBase LAN/WAN-SFP+ -A",
+    "$collection": "inv.objectmodels",
+    "uuid": "4692a561-40f5-4c8c-94aa-8f9a0cf9cda9",
+    "vendor__code": "HUAWEI",
+    "description": "6-Port 10GBase LAN/WAN-SFP+ Flexible Card A(P120-A)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "LPU",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | FPIC"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "name": "GigabitEthernetX/0/0",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernetX/0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernetX/0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_3",
+            "name": "GigabitEthernetX/0/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_4",
+            "name": "GigabitEthernetX/0/4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_5",
+            "name": "GigabitEthernetX/0/5",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03030QDE"],
+            "part_no": ["CR57L6XF0"]
+        },
+        "dimensions": {
+            "depth": 194,
+            "height": 38,
+            "width": 179
+        },
+        "power": {
+            "power": 34.0
+        },
+        "weight": {
+            "weight": 0.7
+        }
+    }
+}

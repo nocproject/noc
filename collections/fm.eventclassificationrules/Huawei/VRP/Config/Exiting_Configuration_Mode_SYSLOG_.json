@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Config | Exiting Configuration Mode (SYSLOG)",
+    "uuid": "238bd254-28de-494e-90c8-ff698a6572af",
+    "description": "%%01HWCM/4/EXIT(l)[1498]:Exit from configure mode.",
+    "event_class__name": "Config | Exiting Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Exit from configure mode\\."
+        }
+    ]
+}

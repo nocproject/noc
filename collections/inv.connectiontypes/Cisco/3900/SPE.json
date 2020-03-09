@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 3900 | SPE",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b1a72e89-de5a-4334-a0bd-f9cc743a60a2",
+    "description": "Cisco 3900 SPE slot",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Sumavision",
+    "uuid": "05dabf70-f7a6-48e2-89b1-8694965725f7",
+    "full_name": "Sumavision Technologies",
+    "code": ["SUMAVISION"],
+    "site": "http://www.sumavision.com/",
+    "$collection": "inv.vendors"
+}

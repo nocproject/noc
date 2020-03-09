@@ -1,0 +1,25 @@
+{
+    "name": "Juniper | MX | FANTRAY-MX104-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "d034f24f-cdda-4e21-adc5-53c631d6e704",
+    "vendor__code": "JUNIPER",
+    "description": "MX104 Fan Tray",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX104 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FANTRAY-MX104-S"],
+            "part_no": ["711-049570"]
+        }
+    }
+}

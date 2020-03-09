@@ -1,0 +1,32 @@
+{
+    "name": "Zyxel | Transceiver | 1G | SFP-BX1310-10",
+    "$collection": "inv.objectmodels",
+    "uuid": "a9902308-0c75-4a5b-919b-e9d95c39811c",
+    "vendor__code": "ZYXEL",
+    "description": "Zyxel SFP BX-U 10km transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1310", ">1000BASELX-1490"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP-BX1310-10"]
+        }
+    }
+}

@@ -1,0 +1,97 @@
+{
+    "name": "Huawei | AR 2240 | AR2240-SRU40",
+    "$collection": "inv.objectmodels",
+    "uuid": "d4231dda-82c0-424a-b112-ede3af0ba149",
+    "vendor__code": "HUAWEI",
+    "description": "AR,AR01SRU2C,Service and Router Unit 40,3GE WAN(2GE Combo),2 USB,3 DSP Slots,1*1",
+    "connection_rule__name": "Huawei | AR2200",
+    "cr_context": "SRU",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | AR 2240 | SRU"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Outband Management",
+            "direction": "s",
+            "gender": "f",
+            "name": "MEthX/0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port 0",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB port 1",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "usb1",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "GigabitEthernet 0/0/0 interface sfp",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/0_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/0/0 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/1 interface sfp",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/0/1 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/2 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["AR01SRU2C"]
+        }
+    }
+}

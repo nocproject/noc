@@ -1,0 +1,55 @@
+{
+    "name": "Juniper | MX | MIC-3D-4COC3-1COC12-CE",
+    "$collection": "inv.objectmodels",
+    "uuid": "21eb5596-db96-4249-bec8-415e3a99cdcf",
+    "vendor__code": "JUNIPER",
+    "description": "Channelized OC3/STM1 (Multi-Rate) Circuit Emulation MIC with SFP",
+    "cr_context": "MIC",
+    "connections": [
+        {
+            "description": "MPC connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "protocols": ["OC3/STM1"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/1",
+            "protocols": ["OC3/STM1"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "1/0",
+            "protocols": ["OC3/STM1"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "1/1",
+            "protocols": ["OC3/STM1"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["MIC-3D-4COC3-1COC12-CE"],
+            "part_no": ["750-045104"]
+        }
+    }
+}

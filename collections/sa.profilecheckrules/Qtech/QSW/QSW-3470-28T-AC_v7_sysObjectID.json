@@ -1,0 +1,13 @@
+{
+    "name": "Qtech | QSW | QSW-3470-28T-AC_v7 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ed04da4c-e804-47ca-9dc6-7a29643afae3",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.6339.1.1.1.3",
+    "action": "match",
+    "profile__name": "Qtech.QSW2800"
+}

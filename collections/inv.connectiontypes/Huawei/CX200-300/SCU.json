@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX200-300 | SCU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "cc3b50f5-ad2e-4e33-8ae2-dc007db6bc31",
+    "description": "CX300 Swith and Control Unit Slot",
+    "c_group": [],
+    "genders": "mf"
+}

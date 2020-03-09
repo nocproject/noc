@@ -1,0 +1,44 @@
+{
+    "name": "NOC | SA | Leave Activator Pool ",
+    "uuid": "b1e3f3a7-1ca2-4a27-be29-79b26189cd61",
+    "event_class__name": "NOC | SA | Leave Activator Pool",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^pool_sessions$",
+            "value_re": "^(?P<pool_sessions>\\d+)$"
+        },
+        {
+            "key_re": "^min_sessions$",
+            "value_re": "^(?P<min_sessions>\\d+)$"
+        },
+        {
+            "key_re": "^name$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^instance$",
+            "value_re": "^(?P<instance>.+)$"
+        },
+        {
+            "key_re": "^sessions$",
+            "value_re": "^(?P<sessions>\\d+)$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^event$",
+            "value_re": "^activator_leave$"
+        },
+        {
+            "key_re": "^pool_members$",
+            "value_re": "^(?P<pool_members>\\d+)$"
+        },
+        {
+            "key_re": "^min_members$",
+            "value_re": "^(?P<min_members>\\d+)$"
+        }
+    ]
+}

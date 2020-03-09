@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "ES3500-8PD",
+    "$collection": "inv.platforms",
+    "uuid": "e12bbce6-f073-438b-a00b-2363a72187bc",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.72"
+}

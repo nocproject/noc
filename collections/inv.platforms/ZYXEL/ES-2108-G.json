@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "ES-2108-G",
+    "$collection": "inv.platforms",
+    "uuid": "36b4d0e4-5eba-47c4-9aea-7db835adc9c6",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.19"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | System | Started #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ebdbe4eb-1580-4a09-bedb-4705dff9bfb5",
+    "description": "%INIT-I-Startup: Warm Startup",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%INIT-I-Startup: Warm Startup$"
+        }
+    ]
+}

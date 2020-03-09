@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX600-X1-X2 | CX600-X1-M4 FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "65d9d980-1dba-4b03-82f8-94595ce13206",
+    "description": "CX600-X1-M4 FAN Slot",
+    "c_group": [],
+    "genders": "mf"
+}

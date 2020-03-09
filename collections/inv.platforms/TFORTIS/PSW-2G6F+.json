@@ -1,0 +1,7 @@
+{
+    "vendor__code": "TFORTIS",
+    "name": "PSW-2G6F+",
+    "$collection": "inv.platforms",
+    "uuid": "64dea3df-8f37-49e3-ab1d-c17979346195",
+    "snmp_sysobjectid": "1.3.6.1.4.1.30982.1.1"
+}

@@ -1,0 +1,50 @@
+{
+    "name": "Huawei | SmartAX | Upstream Interface Board | H801GICF",
+    "$collection": "inv.objectmodels",
+    "uuid": "593a6074-87e7-4e3d-aaa9-3292925d2d08",
+    "vendor__code": "HUAWEI",
+    "description": "The H801GICF board is a 2-port GE optical interface card, providing upstream or cascading optical ports.",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        },
+        {
+            "description": "Upstream or cascading optical port",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Upstream or cascading optical port",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801GICF"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 197,
+            "width": 25
+        },
+        "power": {
+            "power": 18.0
+        },
+        "weight": {
+            "weight": 2.0
+        }
+    }
+}

@@ -1,0 +1,130 @@
+{
+    "name": "Huawei | SmartAX | MA5603T",
+    "$collection": "inv.objectmodels",
+    "uuid": "1eb06577-1d1d-4dcb-b03e-bfcb416c0bb0",
+    "vendor__code": "HUAWEI",
+    "description": null,
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "Fan tray",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan",
+            "type__name": "Huawei | SmartAX | MA5603T | FAN"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Huawei | SmartAX | MA560xT | SCU"
+        },
+        {
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Huawei | SmartAX | MA560xT | SCU"
+        },
+        {
+            "description": "Upstream interface board",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        },
+        {
+            "description": "Upstream interface board (Reserved)",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        },
+        {
+            "description": "Power interface board",
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Huawei | SmartAX | MA560xT | PWR"
+        },
+        {
+            "description": "Power interface board",
+            "direction": "i",
+            "gender": "f",
+            "name": "11",
+            "type__name": "Huawei | SmartAX | MA560xT | PWR"
+        },
+        {
+            "description": "Universal interface board",
+            "direction": "i",
+            "gender": "f",
+            "name": "12",
+            "type__name": "Huawei | SmartAX | MA560xT | GPIO"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801MABO","H802MABO", "MA5603T"]
+        },
+        "dimensions": {
+            "depth": 283,
+            "height": 263,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 6.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 30.53
+        }
+    }
+}

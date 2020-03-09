@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | MIB | ADSL-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "6865fd4f-6c38-47b2-b98f-4d396f90a96b",
+    "description": "SNMP ADSL-MIB support.",
+    "type": "bool",
+    "card_template": null
+}

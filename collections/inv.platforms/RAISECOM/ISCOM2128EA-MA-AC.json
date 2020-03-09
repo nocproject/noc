@@ -1,0 +1,7 @@
+{
+    "vendor__code": "RAISECOM",
+    "name": "ISCOM2128EA-MA-AC",
+    "$collection": "inv.platforms",
+    "uuid": "40847ce9-3247-4d11-b6bb-398db2c709fa",
+    "snmp_sysobjectid": "1.3.6.1.4.1.8886.6.140"
+}

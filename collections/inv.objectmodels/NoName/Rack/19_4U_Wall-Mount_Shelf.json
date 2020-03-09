@@ -1,0 +1,23 @@
+{
+    "name": "NoName | Rack | 19\" 4U Wall-Mount Shelf",
+    "$collection": "inv.objectmodels",
+    "uuid": "5b41b121-8d9e-49b8-842e-cdd3a59f30d6",
+    "vendor__code": "NONAME",
+    "description": "19\" 4U Wall-Mount Shelf",
+    "connections": [],
+    "data": {
+        "asset": {
+            "part_no": ["noname"]
+        },
+        "container": {
+            "container": true
+        },
+        "rack": {
+            "depth": 600,
+            "front_door": "l",
+            "rear_door": "c",
+            "units": 4,
+            "width": 600
+        }
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H832PDVAA",
+    "$collection": "inv.objectmodels",
+    "uuid": "9bb66326-ddb5-4536-8831-a6a8fa301db6",
+    "vendor__code": "HUAWEI",
+    "description": "MA5616 DC Vector-supporting secondary High-power Board",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "PWR",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | PWR"
+        },
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "description": "Daughter board",
+            "direction": "i",
+            "gender": "f",
+            "name": "db1",
+            "type__name": "Huawei | SmartAX | MA5616 | DBPWR"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H832PDVAA"]
+        },
+        "dimensions": {
+            "depth": 442,
+            "height": 245,
+            "width": 88
+        }
+    }
+}

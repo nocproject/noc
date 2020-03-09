@@ -1,0 +1,6 @@
+{
+    "mib": "DLINK-3100-BRIDGEMIBOBJECTS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "d17135c3-3807-4491-9008-d59fc84fef7c",
+    "preference": 6200
+}

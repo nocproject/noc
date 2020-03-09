@@ -1,0 +1,69 @@
+{
+    "name": "Huawei | S8500 | LSBSRP1N1",
+    "$collection": "inv.objectmodels",
+    "uuid": "42512cce-569b-40bb-bbac-6bfae1992fff",
+    "vendor__code": "HUAWEI",
+    "description": null,
+    "cr_context": "LSB",
+    "tags": ["lc", "sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S8500 | SRPU"
+        },
+        {
+            "description": "CF Card slot",
+            "direction": "s",
+            "gender": "f",
+            "name": "cf",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux EIA/TIA-232",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "monitoring and communication with the external subsystem",
+            "direction": "s",
+            "gender": "f",
+            "name": "rs232_485",
+            "protocols": [">RS232", ">RS485"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LSB1SRP1N1"]
+        },
+        "dimensions": {
+            "depth": 367,
+            "width": 340
+        },
+        "power": {
+            "power": 60.0
+        }
+    }
+}

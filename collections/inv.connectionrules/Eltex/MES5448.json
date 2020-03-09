@@ -1,0 +1,31 @@
+{
+    "name": "Eltex | MES5448",
+    "$collection": "inv.connectionrules",
+    "uuid": "331edcba-6474-459f-9c0a-9f8c85ef8425",
+    "description": null,
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "1/0/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "{N}_psu",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        }
+    ]
+}

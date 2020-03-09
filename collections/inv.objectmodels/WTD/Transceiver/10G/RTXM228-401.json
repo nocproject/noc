@@ -1,0 +1,40 @@
+{
+    "name": "WTD | Transceiver | 10G | RTXM228-401",
+    "$collection": "inv.objectmodels",
+    "uuid": "f589a198-e3e2-46f8-b3c2-885a32c002da",
+    "vendor__code": "WTD",
+    "description": "Wavelength:1310 nm VCSEL; RX sensitivity:<-14.5 dBm; TX power: -9~0.5 dBm; Distance: 10 km; DDMI; RoHS; Bitrate: 10G, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["RTXM228-401"]
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "name": "Alcatel | 7302 | AACU-E",
+    "$collection": "inv.objectmodels",
+    "uuid": "c68afa5c-8981-4cdc-b73a-5ce79b6964ae",
+    "vendor__code": "ALU",
+    "description": "AACU-E is as a ADSL ALARM CONTROL UNIT VER.E for the 7300 ASAM product line",
+    "connection_rule__name": "Alcatel | 7302",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
+            "description": "Craft Management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Ethernet port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["AACU-E"]
+        }
+    }
+}

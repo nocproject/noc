@@ -1,0 +1,21 @@
+{
+    "name": "stack",
+    "uuid": "c3cb0577-9ed2-4edb-b3e3-eaca6f1fed38",
+    "description": "Stack/Virtual Chassis/Cluster",
+    "attrs": [
+        {
+            "name": "stackable",
+            "type": "bool",
+            "description": "Object can be stacked",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "member",
+            "type": "str",
+            "description": "Stack member id",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

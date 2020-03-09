@@ -1,0 +1,13 @@
+{
+    "name": "Ubiquiti | AirOS | sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f5f0e4d5-b68c-4191-98ab-77f6e015a97e",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.41112.1.4",
+    "action": "match",
+    "profile__name": "Ubiquiti.AirOS"
+}

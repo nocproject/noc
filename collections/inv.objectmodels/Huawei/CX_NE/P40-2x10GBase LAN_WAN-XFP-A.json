@@ -1,0 +1,54 @@
+{
+    "name": "Huawei | CX&NE | P40-2x10GBase LAN/WAN-XFP -A",
+    "$collection": "inv.objectmodels",
+    "uuid": "fc5e2dff-8612-461f-8958-8a4d0d96ae86",
+    "vendor__code": "HUAWEI",
+    "description": "CX600,CR52L2XXNB0,2-Port 10GBase LAN/WAN-XFP Flexible Card A(P40-A,Supporting 1588v2)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "FPIC",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | FPIC"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "name": "0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03038466"],
+            "part_no": ["CR52L2XXNB0"]
+        },
+        "dimensions": {
+            "depth": 145,
+            "height": 40,
+            "width": 180
+        },
+        "power": {
+            "power": 12.0
+        },
+        "weight": {
+            "weight": 0.6
+        }
+    }
+}

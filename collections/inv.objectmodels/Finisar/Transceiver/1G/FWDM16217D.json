@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 1G | FWDM16217D",
+    "$collection": "inv.objectmodels",
+    "uuid": "d71e8dba-cb60-4235-aa87-5de7dc571d70",
+    "vendor__code": "OPTICIN",
+    "description": "SFP (mini-GBIC) transceiver module - GigE, Fibre Channel, 1610nm, DDM, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEZX-1610"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEZX-1610"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FWDM-16217D51CSC", "FWDM-16217D55CSC", "FWDM-1621-7D-55"],
+            "part_no": ["FWDM-1621-7D"]
+        }
+    }
+}

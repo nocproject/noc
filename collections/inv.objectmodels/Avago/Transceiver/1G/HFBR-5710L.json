@@ -1,0 +1,40 @@
+{
+    "name": "Avago | Transceiver | 1G | HFBR-5710L",
+    "$collection": "inv.objectmodels",
+    "uuid": "d57f53f8-25aa-4145-b09f-0029741114fa",
+    "vendor__code": "AVAGO",
+    "description": "Avago/Broadcom 1000BASE-LX SFP, MMF, 850nm, 550m, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-850"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-850"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["HFBR-5710L", "HFBR-5710LP-H3C"]
+        }
+    }
+}

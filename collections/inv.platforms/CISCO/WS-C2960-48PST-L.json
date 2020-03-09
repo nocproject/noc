@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C2960-48PST-L",
+    "$collection": "inv.platforms",
+    "uuid": "6587ca2b-6fae-4329-acef-3ab8e1e2250d",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.1016"
+}

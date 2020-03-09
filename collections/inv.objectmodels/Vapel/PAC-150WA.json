@@ -1,0 +1,29 @@
+{
+    "name": "Vapel | PAC-150WA",
+    "$collection": "inv.objectmodels",
+    "uuid": "7323c172-1b8d-447c-a421-a625b8ee44fa",
+    "vendor__code": "VAPEL",
+    "description": "Vapel AC Power Supply Unit PAC-150WA",
+    "connections": [
+        {
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CloudEngine | PSU"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PAC-150WA"]
+        }
+    }
+}

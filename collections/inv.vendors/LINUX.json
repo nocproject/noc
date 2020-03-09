@@ -1,0 +1,8 @@
+{
+    "name": "Linux",
+    "uuid": "56a901c0-3856-4afa-8d99-9a304bc853d3",
+    "full_name": "Linux",
+    "code": ["LINUX"],
+    "site": "https://www.linuxfoundation.org",
+    "$collection": "inv.vendors"
+}

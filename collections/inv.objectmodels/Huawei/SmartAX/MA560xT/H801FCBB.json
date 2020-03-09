@@ -1,0 +1,31 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H801FCBB",
+    "$collection": "inv.objectmodels",
+    "uuid": "387df415-d595-4544-90dc-0ef0bf4e0d48",
+    "vendor__code": "HUAWEI",
+    "description": "Fan Box for Huawei 5600T-ETSI fan tray FCBB",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5600T | FAN-ETSI"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801FCBB"]
+        },
+        "dimensions": {
+            "depth": 246,
+            "height": 44,
+            "width": 486
+        },
+        "power": {
+            "power": 65.0
+        }
+    }
+}

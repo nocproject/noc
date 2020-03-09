@@ -1,0 +1,57 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H801GICE",
+    "$collection": "inv.objectmodels",
+    "uuid": "465d2efe-4110-4d90-946a-b1a24045b7a7",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600T,H801GICE,GE Electrical Interface Card",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | DB"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801GICE0"]
+        },
+        "power": {
+            "power": 4.0
+        }
+    }
+}

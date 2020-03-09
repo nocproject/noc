@@ -1,0 +1,50 @@
+{
+    "name": "Huawei | CX&NE | LPUF-100",
+    "$collection": "inv.objectmodels",
+    "uuid": "774d91cc-e7ff-4fd7-81fb-d502aeaef02e",
+    "vendor__code": "HUAWEI",
+    "description": "100Gbps Flexible Card Line Processing Unit (LPUF-100,4 sub-slots)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "LPU",
+    "tags": ["lc", "fabric"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | LPU"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | CX&NE | FPIC"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | CX&NE | FPIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03053589"],
+            "part_no": ["CR57LPUF101A0"]
+        },
+        "dimensions": {
+            "depth": 520,
+            "height": 41,
+            "width": 400
+        },
+        "power": {
+            "power": 260.0
+        },
+        "weight": {
+            "weight": 6.8
+        }
+    }
+}

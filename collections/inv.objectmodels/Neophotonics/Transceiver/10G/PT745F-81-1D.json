@@ -1,0 +1,40 @@
+{
+    "name": "Neophotonics | Transceiver | 10G | PT745F-81-1D",
+    "$collection": "inv.objectmodels",
+    "uuid": "ac04e5ce-0b72-4ccd-899c-8fd49e556d2a",
+    "vendor__code": "NEOPHOTONICS",
+    "description": "Wavelength:1310 nm VCSEL; RX sensitivity:<-14.5 dBm; TX power: -9~0.5 dBm; Distance: 10 km; DDMI; RoHS; Bitrate: 10G, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PT745F-81-1D"]
+        }
+    }
+}

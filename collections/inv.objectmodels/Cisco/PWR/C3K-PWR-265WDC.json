@@ -1,0 +1,55 @@
+{
+    "name": "Cisco | PWR | C3K-PWR-265WDC",
+    "$collection": "inv.objectmodels",
+    "uuid": "6a8bd945-4028-4532-9b3f-00e8adf19b27",
+    "vendor__code": "CISCO",
+    "description": "265 Watt DC PSU for Cisco Catalyst 3650E / 3750E Series switches",
+    "cr_context": "PSU",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "DC A input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        },
+        {
+            "description": "DC A input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        },
+        {
+            "description": "DC B input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        },
+        {
+            "description": "DC B input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "PSU",
+            "type__name": "Cisco | C3560E-C3750E | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["C3K-PWR-265WDC", "C3K-PWR-265WDC="]
+        }
+    }
+}

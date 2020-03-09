@@ -1,0 +1,50 @@
+{
+    "name": "Huawei | SmartAX | Upstream Interface Board | H801GICG",
+    "$collection": "inv.objectmodels",
+    "uuid": "58b0ab49-b475-45ad-b88c-bfd84076c4de",
+    "vendor__code": "HUAWEI",
+    "description": "The H801GICG board is a 2-port GE electrical interface card, providing upstream or cascading electrical ports.",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        },
+        {
+            "description": "GE upstream or cascaded port (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GE upstream or cascaded port (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801GICG"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 197,
+            "width": 25
+        },
+        "power": {
+            "power": 5.3
+        },
+        "weight": {
+            "weight": 2.0
+        }
+    }
+}

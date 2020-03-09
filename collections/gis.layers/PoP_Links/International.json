@@ -1,0 +1,17 @@
+{
+    "name": "PoP Links | International",
+    "uuid": "02b9f82f-4c41-493e-8019-65c46b95f268",
+    "description": "Links between international level points of presence",
+    "code": "pop_links7",
+    "default_zoom": 12,
+    "fill_color": 16711680,
+    "max_zoom": 19,
+    "min_zoom": 0,
+    "point_graphic": "circle",
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 16711680,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 590
+}

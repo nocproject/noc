@@ -1,0 +1,8 @@
+{
+    "name": "3Com",
+    "uuid": "e840256d-dcfa-4557-9432-d20c85961fd1",
+    "full_name": "3Com Corporation",
+    "code": ["3COM"],
+    "site": "https://en.wikipedia.org/wiki/3Com",
+    "$collection": "inv.vendors"
+}

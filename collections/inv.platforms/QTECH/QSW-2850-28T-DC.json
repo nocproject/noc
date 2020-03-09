@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-2850-28T-DC",
+    "$collection": "inv.platforms",
+    "uuid": "8aa5faf9-b7c5-41ed-8bfd-2f56118706b4",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.1.337"
+}

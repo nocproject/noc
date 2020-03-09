@@ -1,0 +1,23 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H831FCBB",
+    "$collection": "inv.objectmodels",
+    "uuid": "809e8cb4-dc62-402c-9249-f31d66d2e532",
+    "vendor__code": "HUAWEI",
+    "description": "Fan Box for Huawei 5608T",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5608T | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H831FCBB","H831FCBB0"]
+        }
+    }
+}

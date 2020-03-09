@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "AAM1212-51",
+    "$collection": "inv.platforms",
+    "uuid": "df04168e-5465-4604-84c7-201ceeb61620",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.11.11"
+}

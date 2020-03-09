@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Network | Link | Link Up #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5afac00e-a263-4d22-8d0d-5f4253861128",
+    "description": "%LINK-I-Up:  ch1",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%LINK-I-Up:\\s+(?P<interface>(\\S+ \\d+|\\S+))$"
+        }
+    ]
+}

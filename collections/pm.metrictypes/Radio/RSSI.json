@@ -1,0 +1,10 @@
+{
+    "name": "Radio | RSSI",
+    "$collection": "pm.metrictypes",
+    "uuid": "0497c151-06e8-43bb-bc76-ec6d860fc656",
+    "scope__name": "Interface",
+    "field_name": "rssi",
+    "field_type": "Int16",
+    "description": "Received signal strength indicator",
+    "measure": "dBm"
+}

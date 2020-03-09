@@ -1,0 +1,22 @@
+{
+    "name": "Juniper | EX | EX8216-SF320",
+    "$collection": "inv.objectmodels",
+    "uuid": "4e7a1977-8603-4882-9bef-442a725c8a2b",
+    "vendor__code": "JUNIPER",
+    "description": "Switch Fabric for EX8216",
+    "tags": ["lc", "fabric"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 8216 SF"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["710-021613"]
+        }
+    }
+}

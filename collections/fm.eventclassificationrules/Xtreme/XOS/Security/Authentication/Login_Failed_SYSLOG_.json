@@ -1,0 +1,22 @@
+{
+    "name": "Xtreme | XOS | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "3f647ccc-9552-4b37-a91e-0b79ab7d6cdb",
+    "description": "Oct 16 15:11:48 USER: Login failed for user admin through telnet (10.10.1.250)\n\n\n\n",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "message",
+            "value_re": "Login failed for user (?P<user>.*) through"
+        },
+        {
+            "key_re": "profile",
+            "value_re": "^Extreme\\.XOS$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        }
+    ]
+}

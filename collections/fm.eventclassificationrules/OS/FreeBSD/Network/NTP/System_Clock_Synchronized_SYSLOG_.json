@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Network | NTP | System Clock Synchronized (SYSLOG)",
+    "uuid": "82cb1f7b-8d1b-409f-9b88-16190d963be7",
+    "description": "ntpd[1433]: synchronized to 10.30.99.111, stratum 1",
+    "event_class__name": "Network | NTP | System Clock Synchronized",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ntpd\\[\\d+\\]: synchronized to (?P<server_address>\\S+), stratum (?P<stratum>\\d+)$"
+        }
+    ]
+}

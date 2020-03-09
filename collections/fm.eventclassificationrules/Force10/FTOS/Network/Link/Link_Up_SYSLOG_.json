@@ -1,0 +1,21 @@
+{
+    "name": "Force10 | FTOS | Network | Link | Link Up (SYSLOG)",
+    "uuid": "6e1f10a9-89d7-40d7-9635-f11b7fa82141",
+    "description": "%IFMGR-5-OSTATE_UP: Changed interface state to up: Gi 0/19",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IFMGR-5-OSTATE_UP: Changed interface state to up: (?P<interface>.+)$"
+        }
+    ]
+}

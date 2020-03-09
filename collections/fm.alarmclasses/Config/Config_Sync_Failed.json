@@ -1,0 +1,39 @@
+{
+    "name": "Config | Config Sync Failed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "16c2b30a-4378-40ae-889f-c78e09f5c335",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "config",
+            "description": "Config type"
+        }
+    ],
+    "subject_template": "Configuration Synchronization Failed",
+    "body_template": "Configuration synchronization failed{% if service %}: {{config}} config{% endif %}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "root_cause": [
+        {
+            "name": "Stack Degraded",
+            "root__name": "Chassis | Stack | Stack Degraded",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "Supervisor Down",
+            "root__name": "Chassis | Supervisor | Supervisor Down",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ]
+}

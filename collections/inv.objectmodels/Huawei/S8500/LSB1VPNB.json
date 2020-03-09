@@ -1,0 +1,27 @@
+{
+    "name": "Huawei | S8500 | LSB1VPNB",
+    "$collection": "inv.objectmodels",
+    "uuid": "92660d4a-47eb-4237-8ea1-329489b987de",
+    "vendor__code": "HUAWEI",
+    "description": "The VPLS service processor card provides no external port",
+    "cr_context": "LSB",
+    "tags": ["lc", "soft"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S8500 | LSB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LSB1VPNB0"]
+        },
+        "dimensions": {
+            "depth": 367,
+            "width": 340
+        }
+    }
+}

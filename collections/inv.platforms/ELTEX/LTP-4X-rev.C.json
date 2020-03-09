@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ELTEX",
+    "name": "LTP-4X-rev.C",
+    "$collection": "inv.platforms",
+    "uuid": "f517dea2-679b-48a8-a8c9-eeab38a40c4a",
+    "snmp_sysobjectid": "1.3.6.1.4.1.35265.1.70"
+}

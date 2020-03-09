@@ -1,0 +1,29 @@
+{
+    "name": "DLink | DxS | Network | MAC | MAC Flood (SNMP)",
+    "uuid": "972772e1-6fc1-4edb-b1d5-d15b9698584c",
+    "description": "DES3028-L2MGMT-MIB::swL2FloodMacDetectedTrap",
+    "event_class__name": "Network | MAC | MAC Flood",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2FloodMacDetectedTrap$"
+        },
+        {
+            "key_re": "^D[EG]S-?\\d{4}.+-MIB::swL2FloodMacDetectedMacAddress(\\.\\d+)?$",
+            "value_re": "^(?P<mac__bin_to_mac>.+)$"
+        },
+        {
+            "key_re": "^D[EG]S-?\\d{4}.+-MIB::swL2FloodMacDetectedMacVid(\\.\\d+)?$",
+            "value_re": "^(?P<vlan>\\d+)$"
+        }
+    ]
+}

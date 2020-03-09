@@ -1,0 +1,54 @@
+{
+    "name": "Cisco | ISR | Module | NM-4A-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "8f09ab0e-284d-4e34-95f9-f680465a115a",
+    "vendor__code": "CISCO",
+    "description": "4 port Async/Sync Network Module",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se2",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        },
+        {
+            "description": "Serial3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se3",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB60"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NM-4A/S", "NM-4A/S="]
+        }
+    }
+}

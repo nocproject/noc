@@ -1,0 +1,10 @@
+{
+    "name": "CPU | Load | 1min",
+    "$collection": "pm.metrictypes",
+    "uuid": "aff29f17-ee6d-4ede-9a50-95545173ce4e",
+    "scope__name": "CPU",
+    "field_name": "load_1min",
+    "field_type": "UInt8",
+    "description": null,
+    "measure": "%"
+}

@@ -1,0 +1,13 @@
+{
+    "name": "APC | AOS | sysName",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ff671ae9-7205-4a35-bdf6-2c3725640f11",
+    "description": "Examples:\nSmart-UPS5000",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysName.0",
+    "match_method": "re",
+    "value": "^Smart-UPS",
+    "action": "match",
+    "profile__name": "APC.AOS"
+}

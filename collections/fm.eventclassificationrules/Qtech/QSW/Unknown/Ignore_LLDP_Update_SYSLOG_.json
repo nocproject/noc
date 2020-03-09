@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Ignore LLDP Update (SYSLOG)",
+    "uuid": "04d554b1-7aa0-4c90-95f9-0b704c978eb5",
+    "description": "0000002810: Jan 11 14:54:55: torgovaja_4: %LLDP-4-lldpUpdateNeignborEntry: 917708:12: Update neignbor entry 1 of port 25",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LLDP-4-lldpUpdateNeignborEntry: \\d+:\\d+: Update neignbor entry \\d+ of port \\d+$"
+        }
+    ]
+}

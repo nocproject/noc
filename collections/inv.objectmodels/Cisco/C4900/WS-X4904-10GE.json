@@ -1,0 +1,54 @@
+{
+    "name": "Cisco | C4900 | WS-X4904-10GE",
+    "$collection": "inv.objectmodels",
+    "uuid": "3a48ea9a-8e17-446d-a3d6-0c866eedc484",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-X4904-10GE Half-Card Ethernet Module",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | C4900 | LINECARD"
+        },
+        {
+            "description": "TenGigabitEthernet X/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te2_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te3_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/4",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te4_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-X4904-10GE"]
+        }
+    }
+}

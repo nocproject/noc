@@ -1,0 +1,25 @@
+{
+    "name": "Force10 | FTOS | Chassis | Linecard | LC Down (SNMP)",
+    "uuid": "6d057d1a-6323-4119-924b-d23bf837f786",
+    "description": "F10-CHASSIS-MIB::chAlarmObjects, CARD_DOWN",
+    "event_class__name": "Chassis | Linecard | LC Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^F10-CHASSIS-MIB::chAlarmVarString$",
+            "value_re": "CARD_DOWN: .*Line card (?P<number>\\d+) down - (?P<reason>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^F10-CHASSIS-MIB::chAlarmObjects$"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Network | HSRP",
+    "$collection": "inv.capabilities",
+    "uuid": "ac83b6a9-07c6-4d33-a377-6700c7acc160",
+    "description": "HSRP (Hot Standby Router Protocol, Hot Standby Redundancy Protocol) is enabled",
+    "type": "bool",
+    "card_template": null
+}

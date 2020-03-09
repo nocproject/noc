@@ -1,0 +1,8 @@
+{
+    "name": "Composed",
+    "$collection": "inv.connectiontypes",
+    "uuid": "62af5b29-45e7-4295-9db4-c056693c6adf",
+    "description": "One connection composed from multiple line",
+    "c_group": [],
+    "genders": "s"
+}

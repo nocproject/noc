@@ -1,0 +1,32 @@
+{
+    "name": "MikroTik | Transceiver | 1G | S-RJ01",
+    "$collection": "inv.objectmodels",
+    "uuid": "6ba10e81-19ef-40b5-9cb6-2b0f4b67beaa",
+    "vendor__code": "MIKROTIK",
+    "description": "MikroTik SFP TX transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["S-RJ01"]
+        }
+    }
+}

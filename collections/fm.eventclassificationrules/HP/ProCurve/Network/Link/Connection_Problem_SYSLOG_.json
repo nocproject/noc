@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve | Network | Link | Connection Problem (SYSLOG)",
+    "uuid": "c6994c4d-7758-4e7d-a1b9-475ae0353125",
+    "description": "FFI: port 43-Excessive CRC/alignment errors. See help.",
+    "event_class__name": "Network | Link | Connection Problem",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "FFI: port (?P<interface>\\d+)-Excessive CRC/alignment errors. See help."
+        }
+    ]
+}

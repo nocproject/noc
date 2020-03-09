@@ -1,0 +1,6 @@
+{
+    "name": "SNMP | IF-MIB | HC",
+    "uuid": "1b523e76-7341-4d27-913b-1125a136e9e4",
+    "description": "SNMP IF-MIB 64bit counters support",
+    "type": "bool"
+}

@@ -1,0 +1,76 @@
+{
+    "name": "Cisco | ASR1000",
+    "$collection": "inv.connectionrules",
+    "uuid": "8e1618f8-0a08-4b67-a769-bb0a962043d8",
+    "description": "Cisco ASR1000 series connection rules",
+    "context": [
+        {
+            "reset_scopes": ["sip", "spa", "esp", "rp"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": ["spa"],
+            "scope": "sip",
+            "type": "SIP"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "RP",
+            "scope": "chassis",
+            "target_connection": "r{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "ESP",
+            "scope": "chassis",
+            "target_connection": "f{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SIP",
+            "scope": "chassis",
+            "target_connection": "sip{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SPA",
+            "scope": "sip",
+            "target_connection": "spa{N}",
+            "target_number": "",
+            "target_type": "SIP"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "spa",
+            "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "SPA"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "spa",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "SPA"
+        }
+    ]
+}

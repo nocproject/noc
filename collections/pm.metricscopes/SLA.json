@@ -1,0 +1,21 @@
+{
+    "name": "SLA",
+    "$collection": "pm.metricscopes",
+    "uuid": "c2cb029b-4cda-4187-b92b-386c27ea561f",
+    "table_name": "sla",
+    "description": "SLA-related metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "probe"
+        },
+        {
+            "is_required": false,
+            "name": "test"
+        }
+    ]
+}

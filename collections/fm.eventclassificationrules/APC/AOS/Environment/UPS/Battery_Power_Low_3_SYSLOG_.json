@@ -1,0 +1,22 @@
+{
+    "name": "APC | AOS | Environment | UPS | Battery Power Low #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a4388010-c133-475c-bddd-e17e36f0e7a3",
+    "description": "UPS: Battery power is low and will soon be exhausted. 0x010F",
+    "event_class__name": "Environment | UPS | Battery Power Low",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: Battery power is low and will soon be exhausted. 0x010F"
+        }
+    ]
+}

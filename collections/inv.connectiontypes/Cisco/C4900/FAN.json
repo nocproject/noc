@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | C4900 | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "283e3b9c-029a-4128-84b3-ce3f6cde2d55",
+    "description": "Cisco C4900M Fan connection",
+    "c_group": [],
+    "genders": "mf"
+}

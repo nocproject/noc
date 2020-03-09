@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS_Smart | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "08e4d03f-aa4d-4fdd-af66-c3a08df66076",
+    "description": "CLI-6:Login failed throughh Telnet( IP: 192.168.1.3 )",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS_Smart$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Login failed through (?:Web|Telnet)\\s*\\(\\s*IP: (?P<ip>\\S+)\\s*\\)"
+        }
+    ]
+}

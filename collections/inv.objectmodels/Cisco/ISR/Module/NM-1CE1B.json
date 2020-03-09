@@ -1,0 +1,30 @@
+{
+    "name": "Cisco | ISR | Module | NM-1CE1B",
+    "$collection": "inv.objectmodels",
+    "uuid": "3dc232ba-b26e-44bd-81b6-45ad20dd7933",
+    "vendor__code": "CISCO",
+    "description": "2-port channelized E1/T1/ISDN-PRI network module",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "description": "CE1/PRI-B port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["T1", "E1", "G703"],
+            "type__name": "Electrical | DB15"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NM-1CE1B", "NM-1CE1B="]
+        }
+    }
+}

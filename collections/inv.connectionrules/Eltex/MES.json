@@ -1,0 +1,39 @@
+{
+    "name": "Eltex | MES",
+    "$collection": "inv.connectionrules",
+    "uuid": "87d674ad-3f30-4ada-88ba-f72910caea71",
+    "description": "\nFixed TX ports: {Fa|Gi}N\nTransceiver slots: giN_sfp\nPower Supply: psuN",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "{N}_sfp+",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "{N}_psu",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Interface | Admin Status Down",
+    "uuid": "96b43e7a-2062-4de8-b6d4-bcac6fd26866",
+    "description": "Interface must be up",
+    "subject_template": "Interface {{object.name}} must be administratively enabled",
+    "body_template": "Interface {{object.name}} must be administratively enabled"
+}

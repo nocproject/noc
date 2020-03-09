@@ -1,0 +1,58 @@
+{
+    "name": "Cisco | 2900 | 2951 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "00e64b98-c095-4bf1-b5aa-79948fa81980",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2900 Series Integrated Services Routers with 2 SM slot and K9 Encryption",
+    "connection_rule__name": "Cisco | 2900",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "2921 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 2900 | MOTHERBOARD"
+        },
+        {
+            "description": "Service Module Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sm1",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "description": "Service Module Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "sm2",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "description": "Power Supply slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu",
+            "type__name": "Cisco | 2921-2951 | PSU"
+        },
+        {
+            "description": "Redundant power supply connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "rsp",
+            "type__name": "Cisco | Electrical | RSP22"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2951/K9"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        }
+    }
+}

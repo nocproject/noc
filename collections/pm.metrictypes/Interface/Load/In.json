@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Load | In",
+    "$collection": "pm.metrictypes",
+    "uuid": "b43cc414-1067-4c18-ada0-2eb4feac28a2",
+    "scope__name": "Interface",
+    "field_name": "load_in",
+    "field_type": "UInt64",
+    "description": "Interface input throughput",
+    "measure": "bit/s"
+}

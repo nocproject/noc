@@ -1,0 +1,8 @@
+{
+    "name": "InfiNet",
+    "uuid": "3fd2f98b-38e9-4d1d-b112-10129dea040c",
+    "full_name": "InfiNet Wireless",
+    "code": ["INFINET"],
+    "site": "https://infinet.ru/",
+    "$collection": "inv.vendors"
+}

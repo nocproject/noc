@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Config | Config Synced #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "17407f4f-d306-41c1-b0c3-809804008f02",
+    "description": "%COPY-N-TRAP: The copy operation was completed successfully",
+    "event_class__name": "Config | Config Synced",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%COPY-N-TRAP: The copy operation was completed successfully$"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "H3C",
+    "uuid": "c78955a6-64bb-4d6c-9bbf-e7f57d318d29",
+    "full_name": "H3C",
+    "code": ["H3C"],
+    "site": "http://www.hp.com/",
+    "$collection": "inv.vendors"
+}

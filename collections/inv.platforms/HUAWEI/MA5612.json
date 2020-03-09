@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "MA5612",
+    "$collection": "inv.platforms",
+    "uuid": "055c201f-9633-4ce8-b660-63f29f4ce53c",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.184"
+}

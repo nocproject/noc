@@ -1,0 +1,76 @@
+{
+    "name": "Cisco | ASR1000 | ASR1004",
+    "$collection": "inv.objectmodels",
+    "uuid": "5e74817f-9c1b-48c1-99a1-f1364bc9cc5e",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR1004 Chassis",
+    "connection_rule__name": "Cisco | ASR1000",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "PSU slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu0",
+            "type__name": "Cisco | ASR1000 | ASR1004 PSU"
+        },
+        {
+            "description": "PSU slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | ASR1000 | ASR1004 PSU"
+        },
+        {
+            "description": "SPA Interface Processor slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "sip0",
+            "type__name": "Cisco | ASR1000 | SIP"
+        },
+        {
+            "description": "SPA Interface Processor slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sip1",
+            "type__name": "Cisco | ASR1000 | SIP"
+        },
+        {
+            "description": "Embedded Services Processor slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "f0",
+            "type__name": "Cisco | ASR1000 | ESP"
+        },
+        {
+            "description": "Route Processor slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "r0",
+            "type__name": "Cisco | ASR1000 | RP"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "r",
+            "inlet": "f"
+        },
+        "asset": {
+            "part_no": ["ASR1004"]
+        },
+        "dimensions": {
+            "depth": 461,
+            "height": 267,
+            "width": 438
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 4.0
+        },
+        "weight": {
+            "weight": 31.16
+        }
+    }
+}

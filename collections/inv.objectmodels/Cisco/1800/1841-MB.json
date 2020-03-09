@@ -1,0 +1,99 @@
+{
+    "name": "Cisco | 1800 | 1841-MB",
+    "$collection": "inv.objectmodels",
+    "uuid": "55b5cc9d-46ed-48cf-9a31-41ed65e63114",
+    "vendor__code": "CISCO",
+    "description": "Modular router with 2 WAN slots, 2 Fast Ethernet slots",
+    "connection_rule__name": "Cisco | 2800",
+    "cr_context": "MOTHERBOARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 1800 | MOTHERBOARD"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Compact Flash slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": [">USB1.1"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Fa0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0/0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DaughterCard Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs0",
+            "protocols": ["HWIC", "WIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs1",
+            "protocols": ["HWIC", "WIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "AIM Container Slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "aim0",
+            "type__name": "Cisco | ISR | AIM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO1841-MB"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

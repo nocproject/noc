@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DES-3200-28P/C1",
+    "$collection": "inv.platforms",
+    "uuid": "25778ae9-baac-4a61-bad0-38a586715abc",
+    "snmp_sysobjectid": "1.3.6.1.4.1.171.10.113.8.1"
+}

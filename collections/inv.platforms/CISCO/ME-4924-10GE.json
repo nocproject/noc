@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "ME-4924-10GE",
+    "$collection": "inv.platforms",
+    "uuid": "c95ca95b-a81a-427b-be46-82fea4d2374b",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.788"
+}

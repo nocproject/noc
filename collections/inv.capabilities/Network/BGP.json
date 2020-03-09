@@ -1,0 +1,8 @@
+{
+    "name": "Network | BGP",
+    "$collection": "inv.capabilities",
+    "uuid": "75b8068a-3cf0-4c32-a75a-38dd4e888d36",
+    "description": "BGP (Border Gateway Protocol) is enabled",
+    "type": "bool",
+    "card_template": null
+}

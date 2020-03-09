@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | ISR | Module | HWIC-2T",
+    "$collection": "inv.objectmodels",
+    "uuid": "b1f4bf06-33f1-4001-a54a-3c17369e2c37",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2-Port Serial High-Speed WAN Interface Card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "Serial1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "WAN Interface Card slot connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["HWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["HWIC-2T"]
+        }
+    }
+}

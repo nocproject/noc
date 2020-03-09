@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | SSH - Invalid user (SYSLOG)",
+    "uuid": "b1f36b9d-e4bd-49b1-947a-a704ff3fea7e",
+    "description": "sshd[67611]: Invalid user jxen from 10.88.5.4",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "sshd\\[\\d+\\]: Invalid user (?P<user>.+?) from (?P<ip>\\S+)$"
+        }
+    ]
+}

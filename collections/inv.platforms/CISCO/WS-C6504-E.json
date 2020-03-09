@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C6504-E",
+    "$collection": "inv.platforms",
+    "uuid": "731b90c9-137c-485c-bf3d-d7ab8a9e8d51",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.657"
+}

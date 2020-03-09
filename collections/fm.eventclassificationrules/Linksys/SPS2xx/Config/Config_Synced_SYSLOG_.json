@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Config | Config Synced (SYSLOG)",
+    "uuid": "d8d01e8f-8b71-4115-8872-e50dd6fc1eca",
+    "description": "%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config",
+    "event_class__name": "Config | Config Synced",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config$"
+        }
+    ]
+}

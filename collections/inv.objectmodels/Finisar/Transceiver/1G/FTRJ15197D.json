@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTRJ15197D",
+    "$collection": "inv.objectmodels",
+    "uuid": "61cd1724-9dca-41b0-bd2b-5f18c1737b96",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-LX, Small Form-factor Pluggable (SFP), 1550nm Transmitter Wavelength, Single-mode Fiber (SMF), 1x, 2x Fibre Channel, Digital Diagnostics Function (DDM)",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FTRJ-1519-7D-CS", "FTRJ-1519-7D-CSC", "FTRJ-1519-7D-C"],
+            "part_no": ["FTRJ-1519-7D"]
+        }
+    }
+}

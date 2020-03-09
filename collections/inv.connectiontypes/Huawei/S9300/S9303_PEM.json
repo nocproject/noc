@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S9300 | S9303 PEM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5aa5ce82-9097-486a-a0c2-0a917d598ceb",
+    "description": "S9303 Power slot",
+    "c_group": [],
+    "genders": "mf"
+}

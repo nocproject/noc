@@ -1,0 +1,22 @@
+{
+    "name": "APC | AOS | Config | Config Changed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6adc7b90-16e7-4c72-adb6-3ffc69e7d0b5",
+    "description": "System: Configuration change. System administrator password. 0x0033",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "System: Configuration change. System administrator password. 0x0033"
+        }
+    ]
+}

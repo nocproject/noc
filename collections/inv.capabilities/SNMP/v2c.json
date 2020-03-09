@@ -1,0 +1,6 @@
+{
+    "name": "SNMP | v2c",
+    "uuid": "60282ea7-fa4b-45c7-924d-5cf0449c3b94",
+    "description": "SNMP v2c support",
+    "type": "bool"
+}

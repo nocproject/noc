@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 4500 VC/I",
+    "$collection": "inv.connectiontypes",
+    "uuid": "a00617b1-b042-418c-8c9a-84b0a98b2fad",
+    "description": "Juniper EX4500 Virtual Chassis/Intraconnect module slot",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,67 @@
+{
+    "name": "DCN | AP | WL8200-I2",
+    "$collection": "inv.objectmodels",
+    "uuid": "f1ea38df-f5b0-45da-96bd-0dc8bc098b1c",
+    "vendor__code": "DCN",
+    "description": "The WL8200-I2 802.11abgn indoor high-performance wireless AP (2.4 GHz & 5 GHz dual-channel dual-frequency, 802.3at PoE) ",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "port"],
+    "connections": [
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": ["<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power",
+            "direction": "s",
+            "gender": "f",
+            "name": "12VDC",
+            "protocols": ["<12VDC"],
+            "type__name": "Power | CEE 7/4 Type F"
+        },
+        {
+            "description": "2.4G intrernal antenna interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "2.4G",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        },
+        {
+            "description": "5G intrernal antenna interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "5G-2",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WL8200-I2"]
+        },
+        "dimensions": {
+            "depth": 30,
+            "height": 153,
+            "width": 247
+        },
+        "power": {
+            "power": 15.0
+        },
+        "weight": {
+            "weight": 2.0
+        }
+    }
+}

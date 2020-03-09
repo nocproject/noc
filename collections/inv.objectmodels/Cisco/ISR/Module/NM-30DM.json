@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | ISR | Module | NM-1CE1B",
+    "$collection": "inv.objectmodels",
+    "uuid": "f578ca49-4491-4fab-a00d-7150025d1b31",
+    "vendor__code": "CISCO",
+    "description": "Network Module with 30 Digital Modems installed",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | NM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NM-30DM", "NM-30DM="]
+        }
+    }
+}

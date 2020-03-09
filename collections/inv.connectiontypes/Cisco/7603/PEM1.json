@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 7600 | 7603-PEM1",
+    "$collection": "inv.connectiontypes",
+    "uuid": "40c2a8f7-d520-4fa9-ab4b-06a2be4708d5",
+    "description": "Cisco 7603/6503 PEM version 1",
+    "c_group": [],
+    "genders": "mf"
+}
