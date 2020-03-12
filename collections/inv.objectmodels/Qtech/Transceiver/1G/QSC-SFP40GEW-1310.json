@@ -1,0 +1,40 @@
+{
+    "name": "Qtech | Transceiver | 1G | QSC-SFP40GEW-1310",
+    "$collection": "inv.objectmodels",
+    "uuid": "593dd7f5-c572-4118-930c-f39642e90abf",
+    "vendor__code": "QTECH",
+    "description": "Qtech SFP, 1310nm, LC, 40km, LX transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["QSCSFP40GEW-LC"]
+        }
+    }
+}

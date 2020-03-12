@@ -1,0 +1,14 @@
+{
+    "name": "AlliedTelesis | ATI | AT-9400 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "9f994f04-dcad-4a7c-bc82-f0322905f22c",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "re",
+    "value": "1.3.6.1.4.1.207.1.4.13[13]",
+    "action": "match",
+    "profile__name": "AlliedTelesis.AT9400"
+}
+

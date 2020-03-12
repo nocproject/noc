@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | C6500ME | ME-C6524-PFC3C",
+    "$collection": "inv.objectmodels",
+    "uuid": "1b59ade0-426d-4962-be6c-c57e035fcac8",
+    "vendor__code": "CISCO",
+    "description": "Policy Feature Card 3C",
+    "cr_context": "PFC",
+    "connections": [
+        {
+            "description": "PFC Policy Feature Card",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | C6500ME | PFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ME-C6524-PFC3C"]
+        }
+    }
+}

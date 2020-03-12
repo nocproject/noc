@@ -1,0 +1,40 @@
+{
+    "name": "Raisecom | Transceiver | 1G | USFP-Gb/S2-D-R",
+    "$collection": "inv.objectmodels",
+    "uuid": "3cd72ad6-57a9-49df-91d1-93de9b705ca9",
+    "vendor__code": "RAISECOM",
+    "description": "Wavelength:1310 nm DFB; RX sensitivity:<-23 dBm; TX power: -3~3 dBm; Distance: 40 km; DDMI; RoHS; Bitrate: 1.25G, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEFX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEFX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["USFP-GB/S2", "USFP-Gb/S2"]
+        }
+    }
+}

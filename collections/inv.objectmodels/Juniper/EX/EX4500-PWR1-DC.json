@@ -1,0 +1,43 @@
+{
+    "name": "Juniper | EX | EX4500-PWR1-DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "bab2d8b0-7b1a-4031-8173-5b80c05f3ca0",
+    "vendor__code": "JUNIPER",
+    "description": "PS 1000W/1200W DC Front to back airflow",
+    "cr_context": "PEM",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 4500 PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["EX4500-PWR1-DC"],
+            "part_no": ["740-034590"]
+        },
+        "power": {
+            "power": 1000.0
+        }
+    }
+}

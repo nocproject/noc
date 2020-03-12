@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Octets | In",
+    "$collection": "pm.metrictypes",
+    "uuid": "06470639-102f-4399-9c65-fd81ca91f117",
+    "scope__name": "Interface",
+    "field_name": "octets_in",
+    "field_type": "UInt64",
+    "description": "The total number of octets received on the interface, including framing characters. ",
+    "measure": "bytes"
+}

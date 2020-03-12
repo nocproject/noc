@@ -1,0 +1,40 @@
+{
+    "name": "Juniper | MX | PWR-MX960-4100-DC-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "c48d541c-c70c-4e5a-b740-02f4b2fca288",
+    "vendor__code": "JUNIPER",
+    "description": "4100W DC Power Supply",
+    "cr_context": "PEM",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX960 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["PWR-MX960-4100-DC-S"],
+            "part_no": ["740-063048"]
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Eltex | MES | Network | LLDP | LLDP Aged Out (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "db5b9b47-de93-435f-ac92-14aec6774f87",
+    "description": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex gi1/0/25.",
+    "event_class__name": "Network | LLDP | LLDP Aged Out",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry deleted on ifindex (?P<interface>\\S+)\\.$"
+        }
+    ]
+}

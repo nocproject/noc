@@ -1,0 +1,14 @@
+{
+    "name": "pop",
+    "uuid": "0f161fa9-5b69-4bbe-9efb-c6f80814305a",
+    "description": "Point of Presence",
+    "attrs": [
+        {
+            "name": "level",
+            "type": "int",
+            "description": "PoP level",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

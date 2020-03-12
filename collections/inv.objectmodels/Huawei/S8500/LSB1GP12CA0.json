@@ -1,0 +1,126 @@
+{
+    "name": "Huawei | S8500 | LSB1GP12CA0",
+    "$collection": "inv.objectmodels",
+    "uuid": "42c534c6-3980-4736-bf7f-7853dcefcebe",
+    "vendor__code": "HUAWEI",
+    "description": "The GP12 module provides 12 × 1000 Mbps SFP optical ports.",
+    "cr_context": "LSB",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/4",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/5",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/6",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/7",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/8",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/9",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/10",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/11",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernetX/0/12",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LSB1GP12CA0"]
+        },
+        "dimensions": {
+            "depth": 367,
+            "width": 340
+        },
+        "power": {
+            "power": 55.0
+        }
+    }
+}

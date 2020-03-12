@@ -1,0 +1,29 @@
+{
+    "name": "DLink | DGS3100 | Config | Config Changed (SNMP)",
+    "uuid": "c00a8463-a708-4988-b39b-a64cc652b166",
+    "description": "RFC1155-SMI::enterprises.89 (RND MIB. Why? I don't know!)",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^RFC1155-SMI::enterprises\\.89$"
+        },
+        {
+            "key_re": "^DLINK-3100-DEVICEPARAMS-MIB::rndErrorSeverity\\.0$",
+            "value_re": "^warning$"
+        },
+        {
+            "key_re": "^DLINK-3100-DEVICEPARAMS-MIB::rndErrorDesc\\.0$",
+            "value_re": "%COPY-N-TRAP: The copy operation was completed successfully"
+        }
+    ]
+}

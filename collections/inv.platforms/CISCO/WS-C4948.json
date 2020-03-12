@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C4948",
+    "$collection": "inv.platforms",
+    "uuid": "cb9363ae-e8a7-4fa5-a355-54f4cb6c862a",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.626"
+}

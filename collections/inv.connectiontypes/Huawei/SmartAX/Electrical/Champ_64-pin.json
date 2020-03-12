@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | Electrical | Champ 64-pin",
+    "$collection": "inv.connectiontypes",
+    "uuid": "826a9244-31b2-42f3-86b4-8e0d4b56b44c",
+    "description": "Huawei Champ 64-pin connector",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S3352P-SI",
+    "$collection": "inv.platforms",
+    "uuid": "7e508745-283b-4af4-adef-6cce6856dcd8",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.78"
+}

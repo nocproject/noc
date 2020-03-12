@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Link | DOM | Warning: Out of Threshold (SYSLOG)",
+    "uuid": "65814ad5-343b-4d80-a8af-c35e383a69e9",
+    "description": "DDM Port 9 optic module RX power exceeded the low warning threshold",
+    "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) exceeded the (?P<threshold>low|high) warning threshold"
+        }
+    ]
+}

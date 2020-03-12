@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-3900",
+    "$collection": "inv.platforms",
+    "uuid": "26d0fa66-bcf1-4a62-afc4-de235446a906",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.3.26.2"
+}

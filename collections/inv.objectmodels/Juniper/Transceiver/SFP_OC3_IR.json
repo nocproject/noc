@@ -1,0 +1,41 @@
+{
+    "name": "Juniper | Transceiver | SFP OC3 IR",
+    "$collection": "inv.objectmodels",
+    "uuid": "e85076d7-c7a5-4326-9cbb-9dbd240a9b71",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper OC-3 SFP 1310 nm 15 km reach single-mode",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["OC3/STM1"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">OC3-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<OC3-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["SFP-OC3-IR-J"],
+            "part_no": ["740-016063"]
+        }
+    }
+}

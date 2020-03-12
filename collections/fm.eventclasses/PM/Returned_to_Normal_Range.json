@@ -1,0 +1,43 @@
+{
+    "name": "PM | Returned to Normal Range",
+    "$collection": "fm.eventclasses",
+    "uuid": "fd3e8b36-161b-41bf-a57c-4ad5d6207987",
+    "action": "L",
+    "vars": [
+        {
+            "name": "metric",
+            "description": "Metric name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "metric_type",
+            "description": "Metric type",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "old_state",
+            "description": "Old state",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "new_state",
+            "description": "New state",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "value",
+            "description": "Value",
+            "type": "float",
+            "required": false
+        }
+    ],
+    "subject_template": "Value of {{metric}} returned to normal range",
+    "body_template": "Value {% if value %}{{value}} {% endif %}of {{metric}}{% if metric_type %} ({{metric_type}}){% endif %} returned to normal range.\nState changed from {{old_state}} to {{new_state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

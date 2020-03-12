@@ -1,0 +1,13 @@
+{
+    "name": "HP | ProCurve | ALL",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ae14e6ac-58cf-42fa-9da4-1cb439dbd337",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.11.2.3.7.11.",
+    "action": "match",
+    "profile__name": "HP.ProCurve"
+}

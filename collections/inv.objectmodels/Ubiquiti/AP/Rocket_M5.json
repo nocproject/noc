@@ -1,0 +1,50 @@
+{
+    "name": "Ubiquiti | AP | Rocket M5",
+    "$collection": "inv.objectmodels",
+    "uuid": "d7fa2259-356d-4de8-9794-510c0fc31997",
+    "vendor__code": "UBIQUITI",
+    "description": "Powerful 2x2 MIMO airMAX BaseStation, 5170-5875 MHz, 27dBm, 24V-1A",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Main port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth1",
+            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "MIMO 2x2 5GHz",
+            "direction": "s",
+            "gender": "f",
+            "name": "rf1",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | RP SMA"
+        },
+        {
+            "description": "MIMO 2x2 5GHz",
+            "direction": "s",
+            "gender": "f",
+            "name": "rf2",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | RP SMA"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["Rocket M5"]
+        },
+        "dimensions": {
+            "depth": 80,
+            "height": 30,
+            "width": 160
+        },
+        "power": {
+            "power": 8.0
+        },
+        "weight": {
+            "weight": 0.5
+        }
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "name": "System | Reboot",
+    "$collection": "fm.alarmclasses",
+    "uuid": "16f51199-4c36-477c-b311-2110a87666a0",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "INFO",
+    "vars": [
+
+    ],
+    "subject_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

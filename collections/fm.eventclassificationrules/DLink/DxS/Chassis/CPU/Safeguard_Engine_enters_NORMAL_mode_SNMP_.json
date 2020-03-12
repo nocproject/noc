@@ -1,0 +1,25 @@
+{
+    "name": "DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode (SNMP)",
+    "uuid": "31906ce7-124c-48f5-a797-547be0d2887f",
+    "description": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification",
+    "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification$"
+        },
+        {
+            "key_re": "^SAFEGUARD-ENGINE-MIB::swSafeGuardCurrentStatus(\\.0)?$",
+            "value_re": "normal$"
+        }
+    ]
+}

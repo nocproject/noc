@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S2309TP-SI",
+    "$collection": "inv.platforms",
+    "uuid": "41caacff-b29f-40e0-972b-92b6eddf4331",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.87"
+}

@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H561ADBF",
+    "$collection": "inv.objectmodels",
+    "uuid": "5e87b28c-85c2-4554-9c2c-9337fad320f5",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600,H565ADBF,64-channel ADSL2+ Board, (over ISDN) (ext. Splitter)",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SB"
+        },
+        {
+            "description": "Provides a 32-channel xDSL service port",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL0",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
+            "description": "Provides a 32-channel xDSL service port",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL1",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H561ADBF", "H561ADBF1", "H561ADBF2"]
+        },
+        "dimensions": {
+            "depth": 372,
+            "height": 400,
+            "width": 26
+        },
+        "power": {
+            "power": 46.0
+        }
+    }
+}

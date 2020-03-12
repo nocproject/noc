@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 1941-2901 | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b4a91655-892d-4370-92c1-c0668d805991",
+    "description": "Cisco 1941-2901 Container of Power Supply",
+    "c_group": [],
+    "genders": "mf"
+}

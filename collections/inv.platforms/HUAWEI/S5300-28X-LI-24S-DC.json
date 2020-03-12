@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S5300-28X-LI-24S-DC",
+    "$collection": "inv.platforms",
+    "uuid": "5a04d4a1-f193-4be1-a660-9a48dedd0bba",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.219"
+}

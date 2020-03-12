@@ -1,0 +1,29 @@
+{
+    "name": "NOC | Periodic | Periodic OK",
+    "uuid": "4abf6f8c-7ec6-4272-9ff1-16c793b993a7",
+    "description": "Periodic task has been completed successfully",
+    "event_class__name": "NOC | Periodic | Periodic OK",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^status$",
+            "value_re": "^success$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^task$",
+            "value_re": "^(?P<task>\\S+)$"
+        },
+        {
+            "key_re": "^type$",
+            "value_re": "^periodic status$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NOC\\.SAE$"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "name": "Chassis | PSU | Internal Voltage Out of Range",
+    "$collection": "fm.eventclasses",
+    "uuid": "231540ae-bf6f-4587-9be2-1041eda26303",
+    "action": "A",
+    "vars": [
+
+    ],
+    "subject_template": "Internal Voltage Out of Range",
+    "body_template": "Internal Voltage Out of Range",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

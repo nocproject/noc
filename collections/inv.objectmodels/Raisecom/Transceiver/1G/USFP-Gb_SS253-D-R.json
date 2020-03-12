@@ -1,0 +1,32 @@
+{
+    "name": "Raisecom | Transceiver | 1G | USFP-Gb/SS253-D-R",
+    "$collection": "inv.objectmodels",
+    "uuid": "1c8bbb1c-e3b9-42bc-89b2-6045cd9d8eee",
+    "vendor__code": "RAISECOM",
+    "description": "Wavelength: 1550 nm DFB; RX sensitivity:< -23 dBm; TX power: -3~3 dBm; Distance: 40 km; DDMI; RoHS;Bitrate: 1.25G,  LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1550", ">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["USFP-Gb/SS253", "USFP-Gb\\SS253"]
+        }
+    }
+}

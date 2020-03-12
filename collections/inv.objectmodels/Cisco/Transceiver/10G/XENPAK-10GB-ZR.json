@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 10G | XENPAK-10GB-ZR",
+    "$collection": "inv.objectmodels",
+    "uuid": "899c0f3c-19a1-4e58-8706-305ff6efb12a",
+    "vendor__code": "CISCO",
+    "description": "Cisco XENPAK 10G ZR transceiver, 80 km on SMF, not part of the 10 Gigabyte Ethernet standard but is built according to Cisco optical specifications.",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XENPAK Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XENPAK | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASEZR-1550"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASEZR-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["XENPAK-10GB-ZR", "XENPAK-10GB-ZR="]
+        }
+    }
+}

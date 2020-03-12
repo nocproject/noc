@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-2800-10T-AC",
+    "$collection": "inv.platforms",
+    "uuid": "933a209f-a578-466f-83d5-7f948ed1b657",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.1.48"
+}

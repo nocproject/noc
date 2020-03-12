@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 8216 RE",
+    "$collection": "inv.connectiontypes",
+    "uuid": "071458fe-ed83-4cad-87f7-9faf1ee351e5",
+    "description": "Juniper EX8216 Routing Engine",
+    "c_group": [],
+    "genders": "mf"
+}

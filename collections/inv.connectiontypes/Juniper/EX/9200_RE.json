@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 9200 RE",
+    "$collection": "inv.connectiontypes",
+    "uuid": "4d8be674-3a5c-4575-a661-06c90179f6ad",
+    "description": "Juniper EX9200 Routing Engine",
+    "c_group": [],
+    "genders": "mf"
+}

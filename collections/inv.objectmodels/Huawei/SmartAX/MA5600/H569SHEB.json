@@ -1,0 +1,39 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H569SHEB",
+    "$collection": "inv.objectmodels",
+    "uuid": "93cfbce6-94c8-4bee-bc90-e74f5903a64b",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600   SHEB board ,supported by MA5600,supports ATM/PTM SHDSL.BIS access and adopts the GE bus. The board is hot swappable.",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SB"
+        },
+        {
+            "description": "32-channel SHDSL.BIS port",
+            "direction": "s",
+            "gender": "f",
+            "name": "SHDSL",
+            "protocols": ["SHDSL.BIS"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H569SHEB"]
+        },
+        "dimensions": {
+            "depth": 372,
+            "height": 400,
+            "width": 26
+        },
+        "power": {
+            "power": 34.0
+        }
+    }
+}

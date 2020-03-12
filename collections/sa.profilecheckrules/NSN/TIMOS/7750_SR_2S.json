@@ -1,0 +1,13 @@
+{
+    "name": "NSN | TIMOS | 7750 SR-2S",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "7421b70b-b9d7-43ea-902f-45213d30e440",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.6527.1.3.19",
+    "action": "match",
+    "profile__name": "NSN.TIMOS"
+}

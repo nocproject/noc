@@ -1,0 +1,46 @@
+{
+    "name": "Cisco | ASR1000 | RP1",
+    "$collection": "inv.objectmodels",
+    "uuid": "7622b9d4-93ba-48ab-a178-c1f16b0b6094",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR1001 Route Processor",
+    "cr_context": "RP",
+    "connections": [
+        {
+            "description": "AUX port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR1000 | RP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1001-RP"]
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Rubytech",
+    "uuid": "9ca5f359-31fa-4310-9376-56887e56b854",
+    "full_name": "Rubytech",
+    "code": ["RUBYTECH"],
+    "site": "https://www.rubytech.com.tw",
+    "$collection": "inv.vendors"
+}

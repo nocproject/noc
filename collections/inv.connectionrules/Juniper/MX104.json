@@ -1,0 +1,78 @@
+{
+    "name": "Juniper | MX104",
+    "$collection": "inv.connectionrules",
+    "uuid": "3ff0f46d-6ffb-46c2-9b19-a12b99484435",
+    "description": "Juniper MX104 connection rules",
+    "context": [
+        {
+            "reset_scopes": ["fpc", "pic"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "fpc",
+            "type": "FPC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "mic",
+            "type": "MIC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PEM",
+            "scope": "chassis",
+            "target_connection": "pem{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "RE",
+            "scope": "chassis",
+            "target_connection": "re",
+            "target_number": "{N}",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MIC",
+            "scope": "chassis",
+            "target_connection": "mic{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "mic",
+            "target_connection": "{Npic}/{N}",
+            "target_number": "",
+            "target_type": "MIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "2/0/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

@@ -1,0 +1,89 @@
+{
+    "name": "c3x3",
+    "uuid": "93cb3179-61ac-4e97-9c21-e2f28efda54e",
+    "description": "",
+    "cells": [
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c1-1",
+            "row": 0,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c1-2",
+            "row": 0,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c1-3",
+            "row": 0,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c2-1",
+            "row": 1,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c2-2",
+            "row": 1,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c2-3",
+            "row": 1,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c3-1",
+            "row": 1,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c3-2",
+            "row": 1,
+            "sm": null,
+            "xs": null
+        },
+        {
+            "height": 240,
+            "lg": null,
+            "md": 4,
+            "name": "c3-3",
+            "row": 1,
+            "sm": null,
+            "xs": null
+        }
+    ],
+    "$collection": "bi.dashboardlayouts"
+}

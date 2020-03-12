@@ -1,0 +1,8 @@
+{
+    "name": "Interface | IP Proxy ARP Enabled",
+    "$collection": "cm.errortypes",
+    "uuid": "d930ff12-acc0-41c9-8519-2091655a980f",
+    "description": "Interface must not have IP proxy arp enabled",
+    "subject_template": "Interface {{obj}} has enabled IP proxy arp",
+    "body_template": "Interface {{obj}} must have IP proxy arp disabled"
+}

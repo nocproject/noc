@@ -1,0 +1,10 @@
+{
+    "name": "Mikrotik | RouterOS | set_description",
+    "uuid": "896bd858-bbdc-48cc-956a-4e719f97a237",
+    "action__name": "set_interface_description",
+    "description": "",
+    "profile__name": "MikroTik.RouterOS",
+    "config_mode": true,
+    "match": [],
+    "commands": "/interface ethernet set {{interface}} comment=\"{{description}}\""
+}

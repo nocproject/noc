@@ -1,0 +1,162 @@
+{
+    "name": "Eltex | MES | 3508P",
+    "$collection": "inv.objectmodels",
+    "uuid": "4776ff7b-c997-41b8-8224-f1baa4d92090",
+    "vendor__code": "ELTEX",
+    "description": "8x10/100/1000BASE-T(PoE/PoE+, RJ-45), 2x10/100/1000BASE-T/1000BASE-X/100BASE-FXCombo",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "connections": [
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "9",
+            "name": "gi9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "10",
+            "name": "gi10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/9 port sfp",
+            "direction": "i",
+            "gender": "f",
+            "group": "9",
+            "name": "gi9_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/10 port sfp",
+            "direction": "i",
+            "gender": "f",
+            "group": "10",
+            "name": "gi10_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES-3508P"]
+        },
+        "dimensions": {
+            "depth": 152,
+            "height": 115,
+            "width": 85
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 255.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true
+        }
+    }
+}

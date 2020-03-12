@@ -1,0 +1,8 @@
+{
+    "name": "Rotek",
+    "uuid": "7208ba42-7200-439c-9493-7c9d3076848e",
+    "full_name": "АО «НПК РОТЕК»",
+    "code": ["ROTEK"],
+    "site": "http://www.rotek.ru/",
+    "$collection": "inv.vendors"
+}

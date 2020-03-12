@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | MX | MX104 PEM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "6803d3f2-bff6-481d-b478-505fccdd83e8",
+    "description": "Juniper MX104 PEM Slot (Power module)",
+    "c_group": [],
+    "genders": "mf"
+}

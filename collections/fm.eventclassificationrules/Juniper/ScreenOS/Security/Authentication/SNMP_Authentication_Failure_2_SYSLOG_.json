@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | ScreenOS | Security | Authentication | SNMP Authentication Failure #2 (SYSLOG)",
+    "uuid": "c290e3ba-ca97-4006-86b5-a851232dd917",
+    "description": "fw-1-sc: NetScreen device_id=fw-1-sc  [Root]system-information-00524: SNMP request from an unknown SNMP community public at 10.55.13.10:31675 has been received. (2011-07-29 11:02:29)",
+    "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.ScreenOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "system-information-00524: SNMP request from an unknown SNMP community .+? at (?P<ip>\\S+):\\d+ has been received\\."
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C2940-8TT-S",
+    "$collection": "inv.platforms",
+    "uuid": "3aa39231-3af9-45ea-b678-441dcec3d290",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.540"
+}

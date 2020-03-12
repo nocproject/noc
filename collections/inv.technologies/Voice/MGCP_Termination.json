@@ -1,0 +1,11 @@
+{
+    "name": "Voice | MGCP Termination",
+    "$collection": "inv.technologies",
+    "uuid": "70d33f8e-db7e-456c-9367-ac8009c8eb2b",
+    "description": "MGCP Temination (media gateway -> softswitch)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

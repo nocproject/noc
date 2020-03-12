@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | SB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "6dd442dd-857d-4a7a-8479-be3c8e1e74c4",
+    "description": "MA560xT Service Board",
+    "c_group": [],
+    "genders": "mf"
+}

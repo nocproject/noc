@@ -1,0 +1,7 @@
+{
+    "name": "Network | STP",
+    "$collection": "inv.capabilities",
+    "uuid": "e9dde151-ecff-4354-a45e-7f5ea5bdf2a8",
+    "description": "STP is enabled",
+    "type": "bool"
+}

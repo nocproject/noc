@@ -1,0 +1,310 @@
+{
+    "name": "Cisco | C3500 | WS-C2950G-24-EI-DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "0d26d232-7d57-4eab-a1c1-633e64b03a3c",
+    "vendor__code": "CISCO",
+    "description": "Cisco Catalyst 2950 with 24 10/100 + 2 1000BASE-X. DC power",
+    "connection_rule__name": "Generic | Switch GBIC Prefixed",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "FastEthernet 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/11 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/12 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/13 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/14 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/15 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/16 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/17 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/18 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/19 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/20 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/21 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/22 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/23 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0/24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi0/1 GBIC port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "Gi0/2 GBIC port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi2_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "DC A input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "DC A input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "DC B input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "DC B input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-C2950G-24-EI-DC"],
+            "cpe_22": "cpe:/h:cisco:catalyst_2950:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_2950:-:*:*:*:*:*:*:*"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "power": {
+            "power": 30.0
+        },
+        "weight": {
+            "weight": 3.0
+        },
+        "dimensions": {
+            "depth": 241,
+            "height": 44,
+            "width": 445
+        }
+    }
+}

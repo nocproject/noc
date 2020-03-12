@@ -1,0 +1,8 @@
+{
+    "name": "DES3526-L2MGMT-MIB::swL2IpMacBindingViolationIP",
+    "uuid": "e5980dd8-6763-4c40-8235-86ddf9eeb1d9",
+    "syntax": {
+        "base_type": "OctetString",
+        "display_hint": "1d."
+    }
+}

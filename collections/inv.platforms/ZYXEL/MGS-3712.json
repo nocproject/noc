@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "MGS-3712",
+    "$collection": "inv.platforms",
+    "uuid": "9a045fec-69e6-4dda-ab08-d092b533f79f",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.47"
+}

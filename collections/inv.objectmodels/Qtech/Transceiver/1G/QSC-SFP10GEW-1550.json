@@ -1,0 +1,40 @@
+{
+    "name": "Qtech | Transceiver | 1G | QSC-SFP10GEW-1550",
+    "$collection": "inv.objectmodels",
+    "uuid": "92989812-82cf-401a-be33-a8f9990bc95a",
+    "vendor__code": "QTECH",
+    "description": "Qtech SFP, 1550nm, LC, 10km, LX transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["QSC-SFP10GEW-1", "QSCSFP10GEW1"]
+        }
+    }
+}

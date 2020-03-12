@@ -1,0 +1,85 @@
+{
+    "name": "Alcatel | 7302 | PWIO-B",
+    "$collection": "inv.objectmodels",
+    "uuid": "8049bde8-bb07-4e72-b3e4-7f13f27ffe1f",
+    "vendor__code": "ALU",
+    "description": "Power I/O board including the fan unit",
+    "connection_rule__name": "Alcatel | 7302",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
+            "description": "Craft port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Craft",
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Alarm port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Alarm",
+            "type__name": "Electrical | DB15"
+        },
+        {
+            "description": "Up Stream port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet0/0",
+            "protocols": ["100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+         {
+            "description": "Down Stream port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet0/1",
+            "protocols": ["100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "BATRET A",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        },
+        {
+            "description": "-48V BAT A",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        },
+        {
+            "description": "BATRET B",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        },
+        {
+            "description": "-48V BAT B",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 4 Pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PWIO-B"]
+        }
+    }
+}

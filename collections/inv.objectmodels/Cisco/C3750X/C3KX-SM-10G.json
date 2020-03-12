@@ -1,0 +1,58 @@
+{
+    "name": "Cisco | C3750X | C3KX-SM-10G",
+    "$collection": "inv.objectmodels",
+    "uuid": "ba734275-d1ad-4bee-9649-289b3dbf3b8d",
+    "vendor__code": "CISCO",
+    "description": "Two 10GbE SFP+ ports service module for Cisco Catalyst 3560-X and 3750-X",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "port 4",
+            "direction": "i",
+            "gender": "f",
+            "group": "port4",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "port 2",
+            "direction": "i",
+            "gender": "f",
+            "group": "port2",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 3750X | NM"
+        },
+        {
+            "description": "port 2",
+            "direction": "i",
+            "gender": "f",
+            "group": "port2",
+            "name": "Te1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
+        },
+        {
+            "description": "port 4",
+            "direction": "i",
+            "gender": "f",
+            "group": "port4",
+            "name": "Te2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["C3KX-SM-10G"]
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | ISR | SM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "4c3025df-bbde-46ce-8a29-9e4ac63cc44c",
+    "description": "Cisco 2900/3900 Service Module Slot",
+    "c_group": [],
+    "genders": "mf"
+}

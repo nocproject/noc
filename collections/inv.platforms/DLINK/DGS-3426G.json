@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DGS-3426G",
+    "$collection": "inv.platforms",
+    "uuid": "229c59c2-50c6-409c-84c3-90f51ecf77db",
+    "snmp_sysobjectid": "1.3.6.1.4.1.171.10.70.11"
+}

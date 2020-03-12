@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C2960-24TC-L",
+    "$collection": "inv.platforms",
+    "uuid": "eefd8153-8538-4a3a-a69e-a953ba0ea39e",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.694"
+}

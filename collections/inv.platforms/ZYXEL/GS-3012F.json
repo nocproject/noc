@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "GS-3012F",
+    "$collection": "inv.platforms",
+    "uuid": "ec7af9e7-cb06-4170-8cf7-c2ad95be1ecc",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.11"
+}

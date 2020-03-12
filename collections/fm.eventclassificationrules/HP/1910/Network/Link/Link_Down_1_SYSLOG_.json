@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Network | Link | Link Down #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6f40b4d7-a9d4-4972-95fb-2d44ca6079d4",
+    "description": "Oct  2 19:07:53 2000 3Com Baseline Switch %%10IFNET/4/LINK UPDOWN(l):   GigabitEthernet1/0/2: link status is DOWN",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10IFNET/4/LINK UPDOWN\\(l\\):\\s+(?P<interface>.+): link status is DOWN$"
+        }
+    ]
+}

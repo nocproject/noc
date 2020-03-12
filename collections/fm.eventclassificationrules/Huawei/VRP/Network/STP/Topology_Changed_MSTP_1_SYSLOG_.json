@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | STP | Topology Changed MSTP #1 (SYSLOG)",
+    "uuid": "1c9f43ee-502e-480b-9341-e0093c0d8845",
+    "description": "Jul 19 2012 18:11:46 kie-bro-smp-r3-t4-asw0 %%01MSTP/6/RECEIVE_MSTITC(l)[1011]:MSTP received BPDU with TC, MSTP process 0 instance 5, port name is GigabitEthernet0/0/2.",
+    "event_class__name": "Network | STP | Topology Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "RECEIVE_(?:MSTITC|CISTTC).+instance (?P<instance>\\d+), port name is (?P<interface>.+)."
+        }
+    ]
+}

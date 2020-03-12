@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C2924-XL",
+    "$collection": "inv.platforms",
+    "uuid": "aa0a9294-8ccb-40c9-9a08-8451e597db98",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.217"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | CloudEngine | FAN-060A-B",
+    "$collection": "inv.objectmodels",
+    "uuid": "a6409744-d178-442d-8216-878b7216ddd9",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei CloudEngine Fan Module FAN-060A-B",
+    "connections": [
+        {
+            "description": "Fan Slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CloudEngine | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FAN-060A-B"]
+        }
+    }
+}

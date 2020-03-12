@@ -1,0 +1,6 @@
+{
+    "name": "GWD.GFA",
+    "uuid": "b03ac316-47b1-4df2-ab6b-2b73eabbd30e",
+    "description": "EasyPath GFA XPON OLT",
+    "$collection": "sa.profiles"
+}

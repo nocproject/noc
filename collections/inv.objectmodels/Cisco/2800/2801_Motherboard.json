@@ -1,0 +1,134 @@
+{
+    "name": "Cisco | 2800 | 2801 Motherboard",
+    "$collection": "inv.objectmodels",
+    "uuid": "172458e3-8d5d-4244-bfcf-02e311c4400f",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2801 Motherboard with 2 Fast Ethernet",
+    "connection_rule__name": "Cisco | 2800",
+    "cr_context": "MOTHERBOARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 2800 | MOTHERBOARD"
+        },
+        {
+            "description": "Compact Flash slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "FastEthernet 0/0",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/1",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DaughterCard Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs0",
+            "protocols": ["VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs1",
+            "protocols": ["WIC", "VIC", "VWIC", "HWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs2",
+            "protocols": ["WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs3",
+            "protocols": ["WIC", "VIC", "VWIC", "HWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "PVDM (DSP) Slots 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm0",
+            "protocols": ["PVDM2"],
+            "type__name": "Cisco | ISR | PVDM2"
+        },
+        {
+            "description": "PVDM (DSP) Slots 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm1",
+            "protocols": ["PVDM2"],
+            "type__name": "Cisco | ISR | PVDM2"
+        },
+        {
+            "description": "AIM Container Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "aim0",
+            "type__name": "Cisco | ISR | AIM"
+        },
+        {
+            "description": "AIM Container Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "aim1",
+            "type__name": "Cisco | ISR | AIM"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2801-MB"]
+        }
+    }
+}

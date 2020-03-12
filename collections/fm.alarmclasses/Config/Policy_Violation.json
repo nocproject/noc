@@ -1,0 +1,21 @@
+{
+    "name": "Config | Policy Violation",
+    "$collection": "fm.alarmclasses",
+    "uuid": "4b6d0752-859e-42dc-8ead-b271fc312f8c",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+
+    ],
+    "subject_template": "Configuration Policy Violation",
+    "body_template": "Configuration policy violation has been detected by config validators",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "Refer to Validation tab and fix errors",
+    "plugins": [
+        {
+            "name": "validation"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ELTEX",
+    "name": "MES-1024",
+    "$collection": "inv.platforms",
+    "uuid": "05a065f1-3eab-4c0c-a09f-082af091d77a",
+    "snmp_sysobjectid": "1.3.6.1.4.1.35265.1.42"
+}

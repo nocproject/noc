@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | System | Started (SYSLOG)",
+    "uuid": "8f0ace4a-b436-46e1-b164-6a6b0dfa8b23",
+    "description": "Jul 21 13:06:34 snmpd[966]: SNMPD_TRAP_COLD_START: trap_generate_cold: SNMP trap: cold start",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SNMPD_TRAP_COLD_START: trap_generate_cold: SNMP trap: cold start$"
+        }
+    ]
+}

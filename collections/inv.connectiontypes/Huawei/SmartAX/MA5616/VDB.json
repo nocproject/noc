@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | VDB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "159ad037-524f-4ed2-83eb-48a541ed8267",
+    "description": "MA5616 voice daughter board port",
+    "c_group": [],
+    "genders": "mf"
+}

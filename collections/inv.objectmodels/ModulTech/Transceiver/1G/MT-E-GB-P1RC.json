@@ -1,0 +1,32 @@
+{
+    "name": "ModulTech | Transceiver | 1G | MT-E-GB-P1RC",
+    "$collection": "inv.objectmodels",
+    "uuid": "f50d01fb-347c-4d33-b4e6-60fb322a618c",
+    "vendor__code": "MODULTECH",
+    "description": "ModulTech SFP TX transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MT-E-GB-P1RC"]
+        }
+    }
+}

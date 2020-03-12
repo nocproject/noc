@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Security | Authentication | Logout #2 (SYSLOG)",
+    "uuid": "a37eb29a-175c-45aa-859b-cd006801e99d",
+    "description": "0000000015: Jan 26 21:57:05: %CMDLINE-5-LOGOUT: The remote client 194.28.204.26 has logged out at terminal 1.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CMDLINE-5-LOGOUT: The remote client (?P<ip>\\S+) has logged out at terminal \\d+\\.$"
+        }
+    ]
+}

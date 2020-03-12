@@ -1,0 +1,8 @@
+{
+    "name": "AddPac",
+    "uuid": "20c859a5-c808-4c65-8975-cca8c871eea1",
+    "full_name": "AddPac Technology Co",
+    "code": ["ADDPAC"],
+    "site": "http://www.addpac.com/",
+    "$collection": "inv.vendors"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX&NE | MPU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "4dcfdf83-8b3f-4108-af60-5ed95939486c",
+    "description": "NE40E&CX600&ME60&NE20E Main Processing Units (MPU)",
+    "c_group": [],
+    "genders": "mf"
+}

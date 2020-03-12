@@ -1,0 +1,151 @@
+{
+    "name": "Eltex | MES | 3108",
+    "$collection": "inv.objectmodels",
+    "uuid": "34cd770b-7822-476e-a395-63203264cc76",
+    "vendor__code": "ELTEX",
+    "description": "8x 10/100/1000Base-T, 2x 10GBase-R (SFP+)/1000Base-X (SFP)",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "gigabitethernet 1/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "tengigabitethernet 1/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te1_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te2_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Power slot main",
+            "direction": "i",
+            "gender": "f",
+            "name": "Main_psu",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "description": "Power slot redundant",
+            "direction": "i",
+            "gender": "f",
+            "name": "Redundant_psu",
+            "type__name": "Eltex | MES | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES-3108"]
+        },
+        "dimensions": {
+            "depth": 265,
+            "height": 44,
+            "width": 430
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 50.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3.0
+        }
+    }
+}

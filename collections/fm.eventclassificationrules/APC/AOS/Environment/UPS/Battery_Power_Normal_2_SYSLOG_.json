@@ -1,0 +1,22 @@
+{
+    "name": "APC | AOS | Environment | UPS | Battery Power Normal #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "66125ebd-44a2-4e96-ba43-80932a5052c5",
+    "description": "UPS: Returned from a Low-Battery condition. 0x0110",
+    "event_class__name": "Environment | UPS | Battery Power Normal",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: Returned from a Low-Battery condition. 0x0110"
+        }
+    ]
+}

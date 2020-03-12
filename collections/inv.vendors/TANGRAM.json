@@ -1,0 +1,8 @@
+{
+    "name": "Tangram",
+    "uuid": "8adb8d8f-22e6-4808-9c80-96c3349e6348",
+    "full_name": "Tangram",
+    "code": ["TANGRAM"],
+    "site": "https://www.wisi.de",
+    "$collection": "inv.vendors"
+}

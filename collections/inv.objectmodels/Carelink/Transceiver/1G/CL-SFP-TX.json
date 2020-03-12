@@ -1,0 +1,32 @@
+{
+    "name": "Carelink | Transceiver | 1G | CL-SFP-TX",
+    "$collection": "inv.objectmodels",
+    "uuid": "23bee1cc-56ed-4df7-9e54-737fc8965c9b",
+    "vendor__code": "CARELINK",
+    "description": "Carelink SFP TX transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CLSFPTX-100/1000"]
+        }
+    }
+}

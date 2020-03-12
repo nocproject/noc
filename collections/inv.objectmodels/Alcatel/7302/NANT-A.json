@@ -1,0 +1,65 @@
+{
+    "name": "Alcatel | 7302 | NANT-A",
+    "$collection": "inv.objectmodels",
+    "uuid": "d4b042d0-edce-4cc5-82b6-8d99db79f462",
+    "vendor__code": "ALU",
+    "description": "The NANT-A has two uplinks (Port 0, Port 1), + Port 0 uplink can either be electrical or optical.",
+    "connection_rule__name": "Alcatel | 7302",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
+            "description": "CRAFT Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "craft",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "LOM Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "lom",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet port 0",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Ethernet0/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet port 0 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "sfp0",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "port 1 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NANT-A"]
+        }
+    }
+}

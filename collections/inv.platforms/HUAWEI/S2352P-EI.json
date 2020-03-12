@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S2352P-EI",
+    "$collection": "inv.platforms",
+    "uuid": "c6d85121-c9bf-4294-ace5-20b0c54b5b3d",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.94"
+}

@@ -1,0 +1,38 @@
+{
+    "name": "Cisco | IOS | Network | Link | Link Up #6 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "eefe3979-5478-46e3-adff-4841a3b7269f",
+    "description": "CISCO-SYSLOG-MIB::clogMessageGenerated",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-SYSLOG-MIB::clogMessageGenerated$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistSeverity\\.\\d+$",
+            "value_re": "^notice$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistFacility\\.\\d+$",
+            "value_re": "^LINEPROTO$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgName\\.\\d+$",
+            "value_re": "^UPDOWN$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgText\\.\\d+$",
+            "value_re": "^Line protocol on Interface (?P<interface>\\S+), changed state to up$"
+        }
+    ]
+}

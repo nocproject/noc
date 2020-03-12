@@ -1,0 +1,7 @@
+{
+    "vendor__name": "Cisco Systems",
+    "name": "C9500-12Q",
+    "$collection": "inv.platforms",
+    "uuid": "8f3400ae-f029-4f1b-8d9b-840830ea2295",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.2593"
+}

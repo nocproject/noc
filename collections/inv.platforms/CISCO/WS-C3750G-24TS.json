@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C3750G-24TS",
+    "$collection": "inv.platforms",
+    "uuid": "c0f67124-499b-41f7-9159-82c81e8c8e12",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.516"
+}

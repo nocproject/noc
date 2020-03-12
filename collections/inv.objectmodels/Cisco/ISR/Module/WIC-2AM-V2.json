@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | ISR | Module | WIC-2AM-V2",
+    "$collection": "inv.objectmodels",
+    "uuid": "12d6c6b4-ac9c-4899-b62b-03779e61f3d4",
+    "vendor__code": "CISCO",
+    "description": "Two-port V.90 analog modem",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "description": "Line 0 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port0",
+            "protocols": ["V34bis", "V42", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "Line 1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port1",
+            "protocols": ["V34bis", "V42", "V42bis", "V44", "V90", "V92"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "WAN Interface Card connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["WIC"],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WIC-2AM-V2"]
+        }
+    }
+}

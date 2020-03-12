@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Unknown | Ignore #29 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f92c3477-6196-4a9e-8c29-8afb7b526bb7",
+    "description": "Sep 6 03:53:46 2013 Batalion %%10NTP/5/NTP_CHANGE_STRATUM(l): System stratum changed from 7 to 6 after clock update.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%%10NTP/5/NTP_CHANGE_STRATUM\\(l\\):\\s+System stratum changed from \\d+ to \\d+ after clock update.$"
+        }
+    ]
+}

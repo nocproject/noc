@@ -1,0 +1,40 @@
+{
+    "name": "Gateray | Transceiver | 1G | GR-S1-M8505L-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "99be19b5-4a65-4678-a7c5-c2e8b5fc58b5",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP, MMF, 850nm, LC, 0.5km",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-850"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-850"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-S1-M8505L-D"]
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | SCU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "8bf9ccf8-7d59-40df-b636-318c680363fa",
+    "description": "MA560xT Control Board",
+    "c_group": [],
+    "genders": "mf"
+}

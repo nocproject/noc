@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S5624F",
+    "$collection": "inv.platforms",
+    "uuid": "16fdd8a7-16e6-4be3-828f-829df5ec2ca5",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.10.1.100"
+}

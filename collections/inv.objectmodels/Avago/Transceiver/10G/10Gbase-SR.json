@@ -1,0 +1,40 @@
+{
+    "name": "Avago | Transceiver | 10G | 10Gbase-SR",
+    "$collection": "inv.objectmodels",
+    "uuid": "c288e7d5-a7cb-4450-b5e2-1a611bd6f137",
+    "vendor__code": "AVAGO",
+    "description": "Avago SFP+ SR transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFBR-709SMZ-CS1"]
+        }
+    }
+}

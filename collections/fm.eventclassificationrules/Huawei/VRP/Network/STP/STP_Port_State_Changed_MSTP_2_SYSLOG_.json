@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | STP | STP Port State Changed MSTP #2 (SYSLOG)",
+    "uuid": "353f82f5-f7c2-4764-b611-fa31cafc0797",
+    "description": "Jul 19 2012 18:12:13 kie-bro-smp-r3-t4-asw0 MSTP/4/PFWD:OID 1.3.6.1.4.1.2011.5.25.42.4.2.1 The port has been set to forwarding state. (InstanceID=5, PortInstanceID=5, PortID=24, IfIndex=30, PortName=GigabitEthernet0/0/1)",
+    "event_class__name": "Network | STP | STP Port State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "port has been set to (?P<state__enum__stp_state>\\S+) state.+InstanceID=(?P<instance>\\S+),.+PortName=(?P<interface>\\S+)\\)$"
+        }
+    ]
+}

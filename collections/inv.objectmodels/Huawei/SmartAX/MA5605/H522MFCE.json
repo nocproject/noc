@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5605 | H522MFCE",
+    "$collection": "inv.objectmodels",
+    "uuid": "3d9af674-63f8-4a26-82a0-0628e21da4c4",
+    "vendor__code": "HUAWEI",
+    "description": "MA5605 Control board",
+    "cr_context": "BOARD",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5105 | CB"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "con",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Uplink",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Downlink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Downlink",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H522MFCE"]
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "name": "UTST",
+    "uuid": "ca0d8362-4218-4a4a-a619-8bfdb459de55",
+    "full_name": "UTSTARCOM TELECOM CO",
+    "code": ["UTST"],
+    "site": "https://www.utstar.com",
+    "$collection": "inv.vendors"
+}

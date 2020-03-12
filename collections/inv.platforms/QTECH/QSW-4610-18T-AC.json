@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-4610-18T-AC",
+    "$collection": "inv.platforms",
+    "uuid": "40251757-4729-4233-bf23-3997a215dfcc",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.1.344"
+}

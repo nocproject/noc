@@ -1,0 +1,34 @@
+{
+    "name": "Huawei | S9300 | LE0MFSUA",
+    "$collection": "inv.objectmodels",
+    "uuid": "65b4d83c-0186-4674-a171-53f1f8dda75c",
+    "vendor__code": "HUAWEI",
+    "description": "The LE0MFSUA is an optional subcard that enhances service features such as operation, administration and maintenance (OAM), bidirectional forwarding detection (BFD), and security.",
+    "connection_rule__name": "Huawei | Quidway",
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020NTU"],
+            "part_no": ["LE02FSUA", "LE0MFSUA"]
+        },
+        "dimensions": {
+            "depth": 244,
+            "height": 36,
+            "width": 170
+        },
+        "power": {
+            "power": 20.0
+        },
+        "weight": {
+            "weight": 0.42
+        }
+    }
+}

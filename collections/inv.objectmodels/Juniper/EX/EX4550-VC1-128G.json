@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | EX | EX4550-VC1-128G",
+    "$collection": "inv.objectmodels",
+    "uuid": "79d31eff-323c-43d9-b3a4-504a5ed7068a",
+    "vendor__code": "JUNIPER",
+    "description": "2x 32GE Virtual Chassis Module",
+    "cr_context": "PIC",
+    "tags": ["lc", "fabric"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | Uplink"
+        },
+        {
+            "description": "VCP-0",
+            "direction": "i",
+            "gender": "f",
+            "name": "vcp-0",
+            "type__name": "Juniper | EX | VCP"
+        },
+        {
+            "description": "VCP-1",
+            "direction": "i",
+            "gender": "f",
+            "name": "vcp-1",
+            "type__name": "Juniper | EX | VCP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["EX4550-VC1-128G"],
+            "part_no": ["711-039072"]
+        }
+    }
+}

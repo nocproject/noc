@@ -1,0 +1,6 @@
+{
+    "mib": "HUAWEI-DEVICE-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "cf9e5b3a-3d26-4259-9065-4d66d722100e",
+    "preference": 5300
+}

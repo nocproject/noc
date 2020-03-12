@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C3548-XL",
+    "$collection": "inv.platforms",
+    "uuid": "53de6c04-c716-4be6-9edf-cce8d1570743",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.278"
+}

@@ -1,0 +1,40 @@
+{
+    "name": "Finisar | Transceiver | 10G | FTLX8574D3BCL-C3",
+    "$collection": "inv.objectmodels",
+    "uuid": "951b7cd7-8358-404b-b016-2a3fd33117c0",
+    "vendor__code": "FINISAR",
+    "description": "10GBASE-SR  850nm MMF / 300m SFP+ transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "TX",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FTLX8574D3BCL-C3"]
+        }
+    }
+}

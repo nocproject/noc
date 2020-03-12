@@ -1,0 +1,51 @@
+{
+    "name": "Rotek | AP | RT-BS24-WFN2E",
+    "$collection": "inv.objectmodels",
+    "uuid": "5b0d18a3-65ab-4b02-a69a-49f687a93493",
+    "vendor__code": "ROTEK",
+    "description": "The RT-BS24-WFN2E 802.11abgn outdoor high-performance wireless AP (2.4 GHz, external antenna, 802.3at PoE) ",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "port"],
+    "connections": [
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2.4G antenna interface 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "2.4G-1",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        },
+        {
+            "description": "2.4G antenna interface 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2.4G-2",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["RT-BS24-WFN2E"]
+        },
+        "dimensions": {
+            "depth": 150,
+            "height": 40,
+            "width": 430
+        },
+        "power": {
+            "power": 7.0
+        },
+        "weight": {
+            "weight": 1.0
+        }
+    }
+}

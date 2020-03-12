@@ -1,0 +1,7 @@
+{
+    "vendor__code": "RAISECOM",
+    "name": "ISCOM2624G-4GE-AC",
+    "$collection": "inv.platforms",
+    "uuid": "58aeb43f-8de9-4958-a5f7-c5fab7acd8fc",
+    "snmp_sysobjectid": "1.3.6.1.4.1.8886.6.191"
+}

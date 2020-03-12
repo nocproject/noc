@@ -1,0 +1,40 @@
+{
+    "name": "Neophotonics | Transceiver | 10G | PT765F-81-2TD+",
+    "$collection": "inv.objectmodels",
+    "uuid": "505eb7dc-6be5-41cf-ac47-2401c4174acb",
+    "vendor__code": "NEOPHOTONICS",
+    "description": "Wavelength:1550 nm VCSEL; RX sensitivity:<-16 dBm; TX power: -1~2 dBm; Distance: 40 km; DDMI; RoHS-6; Bitrate: 10G, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PT765F-81-2TD+"]
+        }
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H802ADQD",
+    "$collection": "inv.objectmodels",
+    "uuid": "b753001b-3087-4a66-a6cf-4626c2e2bf68",
+    "vendor__code": "HUAWEI",
+    "description": "The H802ADQD,64-port ADSL2+ over ISDN Service Board,With Line",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["lc"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "ADSL 0-23",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL0",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "ADSL 24-47",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL1",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H802ADQD"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
+        },
+        "power": {
+            "power": 31.0
+        }
+    }
+}

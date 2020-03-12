@@ -1,0 +1,22 @@
+{
+    "name": "Juniper | MX | CPU",
+    "$collection": "inv.objectmodels",
+    "uuid": "9df58db9-b68b-4dc8-bb58-46e602c0e920",
+    "vendor__code": "JUNIPER",
+    "description": "MPC/DPC CPU",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "CPU connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | CPU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["711-029089", "711-038484", "711-045719", "711-035209", "711-062860"]
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 10G | FTLX1413M3BCL",
+    "$collection": "inv.objectmodels",
+    "uuid": "9a3b3dc2-7d9f-4745-8df3-bf8dec5c74b0",
+    "vendor__code": "FINISAR",
+    "description": "10GBASE-LR, XFP Module, 1310nm Transmitter Wavelength, LC Connector, up to 10km reach, DDM",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "TX",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASE-LR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASE-LR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FTLX1413M3BCL-HW"],
+            "part_no": ["FTLX1413M3BCL"]
+        }
+    }
+}

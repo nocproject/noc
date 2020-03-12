@@ -1,0 +1,61 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H801GPBC",
+    "$collection": "inv.objectmodels",
+    "uuid": "a5ea74ab-8b79-400b-9300-87b154ad17e0",
+    "vendor__code": "HUAWEI",
+    "description": "4-port GPON OLT interface board",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801GPBC"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
+        }
+    }
+}

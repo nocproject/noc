@@ -1,0 +1,25 @@
+{
+    "name": "Neighbors",
+    "$collection": "pm.metricscopes",
+    "uuid": "bdc6f9ed-604b-447d-b394-066d2aef9874",
+    "table_name": "neighbors",
+    "description": "Metrics for L2/L3 protocols neighbors",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "vr"
+        },
+        {
+            "is_required": false,
+            "name": "instance"
+        },
+        {
+            "is_required": false,
+            "name": "neighbor"
+        }
+    ]
+}

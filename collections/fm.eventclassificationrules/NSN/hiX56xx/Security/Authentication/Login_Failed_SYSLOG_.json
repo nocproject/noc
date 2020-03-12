@@ -1,0 +1,21 @@
+{
+    "name": "NSN | hiX56xx | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "b4f18be1-3649-4afa-8710-4371b62dcb18",
+    "description": "invalid password for `root' on",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NSN\\.hiX56xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "invalid password for `(?P<user>\\S+)' on `ttyp\\d' from `(?P<ip>\\S+)'$"
+        }
+    ]
+}

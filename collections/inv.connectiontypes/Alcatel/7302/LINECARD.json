@@ -1,0 +1,8 @@
+{
+    "name": "Alcatel | 7302 | LINECARD",
+    "$collection": "inv.connectiontypes",
+    "uuid": "1bd16891-d4a2-420f-a578-38e57ff7bf80",
+    "description": "Alcatel 7302/7330 Slot",
+    "c_group": [],
+    "genders": "mf"
+}

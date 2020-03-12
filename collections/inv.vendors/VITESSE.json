@@ -1,0 +1,8 @@
+{
+    "name": "Vitesse",
+    "uuid": "7516919b-c6c0-494c-8eed-4ab2bb632f5b",
+    "full_name": "Vitesse Semiconductor",
+    "code": ["VITESSE"],
+    "site": "https://www.microsemi.com",
+    "$collection": "inv.vendors"
+}

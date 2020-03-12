@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Unknown | Syslog #25 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f20b748e-b3ad-4e00-90a3-5b574392f3c4",
+    "description": "Apr 16 10:10:33 2013 3com2952 %%10VLAN/5/WEBOPT_HYBRID_DEL_VLAN(l): (by admin via web from host 192.168.1.3)   Deleting hybrid port GigabitEthernet1/0/40 from VLAN 1.",
+    "event_class__name": "Unknown | Syslog",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10VLAN/5/WEBOPT_HYBRID_DEL_VLAN\\(\\d+\\): \\(by admin via web from host \\S+\\)\\s+Deleting hybrid port \\S+ from VLAN \\d+\\.$"
+        }
+    ]
+}

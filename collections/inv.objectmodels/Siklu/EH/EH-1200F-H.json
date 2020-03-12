@@ -1,0 +1,101 @@
+{
+    "name": "Siklu | EH | EH-1200F-H",
+    "$collection": "inv.objectmodels",
+    "uuid": "8d5c28a8-10af-4aec-a58c-a3fc0a7391f3",
+    "vendor__code": "SIKLU",
+    "description": "Siklu EH 1200F-H, 2 RJ-45 + 2 SFP slots, 71-76Ghz Rx / 81-86Ghz Tx, FDD, Antenna 1ft 43dBi, 16/8 non-overlapping channels, 250/500MHz wide",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "port"],
+    "connections": [
+        {
+            "description": "RF Board 71-76Ghz Rx FDD",
+            "direction": "s",
+            "gender": "s",
+            "name": "eth0_RX",
+            "group": "0",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        },
+        {
+            "description": "RF Board 81-86Ghz Tx FDD",
+            "direction": "s",
+            "gender": "s",
+            "name": "eth0_TX",
+            "group": "0",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        },
+        {
+            "description": "RJ1 eth1 POE",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth1",
+            "group": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "SFP1 eth2",
+            "direction": "i",
+            "gender": "f",
+            "name": "eth2",
+            "group": "1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RJ2 eth3",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth3",
+            "group": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "SFP2 eth4",
+            "direction": "i",
+            "gender": "f",
+            "name": "eth4",
+            "group": "2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ground connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "GND",
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        },
+        {
+            "description": "DC input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        },
+        {
+            "description": "DC input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["EH-1200F-ODU-H-1ft"]
+        },
+        "management": {
+            "managed": true
+        },
+        "dimensions": {
+            "depth": 130,
+            "height": 310,
+            "width": 225
+        }
+    }
+}

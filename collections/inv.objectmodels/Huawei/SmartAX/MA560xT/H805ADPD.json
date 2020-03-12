@@ -1,0 +1,48 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H805ADPD",
+    "$collection": "inv.objectmodels",
+    "uuid": "7021d664-fa24-4204-9e67-da02320dd26c",
+    "vendor__code": "HUAWEI",
+    "description": "The H805ADPD board is a 64-port ADSL2+ over POTS Service Board,With Line",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["lc"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        },
+        {
+            "description": "ADSL2+ 0-31",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL0",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "ADSL2+ 31-63",
+            "direction": "s",
+            "gender": "f",
+            "name": "xDSL1",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H805ADPD"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
+        },
+        "power": {
+            "power": 66.0
+        }
+    }
+}

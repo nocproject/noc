@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Config | Config Changed (SYSLOG)",
+    "uuid": "d93eb303-e463-4889-832f-dd3303ad7787",
+    "description": "%%01HWCM/5/TRAPLOG(l)[500]:OID 1.3.6.1.4.1.2011.6.10.2.1 configure changed. (EventIndex=16, CommandSource=1, ConfigSource=2, ConfigDestination=4)",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:[Cc]onfigure changed|[Cc]onfigurations have been changed)\\."
+        }
+    ]
+}

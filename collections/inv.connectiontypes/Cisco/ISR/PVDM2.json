@@ -1,0 +1,9 @@
+{
+    "name": "Cisco | ISR | PVDM2",
+    "$collection": "inv.connectiontypes",
+    "uuid": "a90a5a7c-11e8-4cfb-8f75-99a62fc7778a",
+    "description": "Cisco ISR 1800/2800/3800 DSP module slot",
+    "c_group": [],
+    "extend__name": "Cisco | ISR | PVDM3",
+    "genders": "mf"
+}

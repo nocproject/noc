@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 3560E-3750E | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c0dde9bf-9596-4cab-b9ce-5d17c056441e",
+    "description": "Cisco 3560E/3750E FAN module slot",
+    "c_group": [],
+    "genders": "mf"
+}

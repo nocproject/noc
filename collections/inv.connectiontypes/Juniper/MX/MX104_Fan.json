@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | MX | MX104 Fan",
+    "$collection": "inv.connectiontypes",
+    "uuid": "3adf5542-76f0-4cb5-9faf-a4a6573eed3e",
+    "description": "Juniper MX104 Fan Tray Slot",
+    "c_group": [],
+    "genders": "mf"
+}

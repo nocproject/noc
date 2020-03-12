@@ -1,0 +1,8 @@
+{
+    "name": "Telindus",
+    "uuid": "8ef45351-3ba2-4e8d-8d9a-f800c1436638",
+    "full_name": "Telindus",
+    "code": ["TELINDUS"],
+    "site": "https://en.wikipedia.org/wiki/Telindus",
+    "$collection": "inv.vendors"
+}

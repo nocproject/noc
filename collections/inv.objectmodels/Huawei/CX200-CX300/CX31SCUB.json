@@ -1,0 +1,48 @@
+{
+    "name": "Huawei | CX200-CX300 | CX31SCUB",
+    "$collection": "inv.objectmodels",
+    "uuid": "dea99474-6dce-44f3-9a45-6196999ead05",
+    "vendor__code": "HUAWEI",
+    "description": "General Switch Control Unit B(24G Switch Capacity)",
+    "cr_context": "SCU",
+    "tags": ["lc", "sup", "fabric"],
+    "connections": [
+        {
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX200-300 | SCU"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": ["<RS232", ">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console for on-site system configuration",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "MEth0/0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03030BEG"],
+            "part_no": ["CX31SCUB"]
+        }
+    }
+}

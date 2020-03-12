@@ -1,0 +1,216 @@
+{
+    "name": "Huawei | CX&NE | P40-20xGE/FE-SFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "5660980a-c70a-4bc8-8bea-6a483cf91365",
+    "vendor__code": "HUAWEI",
+    "description": "The P40-20xGE/FE-SFP occupies one 1/2-width flexible card slot, is compatible with LPUF-40-A, but is not hot-swappable.",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "FPIC",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX&NE | FPIC"
+        },
+        {
+            "description": "SFP",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "name": "GigabitEthernetX/X/0",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernetX/X/1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernetX/X/2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_3",
+            "name": "GigabitEthernetX/X/3",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_4",
+            "name": "GigabitEthernetX/X/4",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_5",
+            "name": "GigabitEthernetX/X/5",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_6",
+            "name": "GigabitEthernetX/X/6",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_7",
+            "name": "GigabitEthernetX/X/7",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_8",
+            "name": "GigabitEthernetX/X/8",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_9",
+            "name": "GigabitEthernetX/X/9",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_10",
+            "name": "GigabitEthernetX/X/10",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_11",
+            "name": "GigabitEthernetX/X/11",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_12",
+            "name": "GigabitEthernetX/X/12",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_13",
+            "name": "GigabitEthernetX/X/13",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_14",
+            "name": "GigabitEthernetX/X/14",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_15",
+            "name": "GigabitEthernetX/X/15",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_16",
+            "name": "GigabitEthernetX/X/16",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_17",
+            "name": "GigabitEthernetX/X/17",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_18",
+            "name": "GigabitEthernetX/X/18",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_19",
+            "name": "GigabitEthernetX/X/19",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03037070"],
+            "part_no": ["CR52EEGFNB0"]
+        },
+        "dimensions": {
+            "depth": 145,
+            "height": 40,
+            "width": 180
+        },
+        "power": {
+            "power": 41.0
+        },
+        "weight": {
+            "weight": 0.6
+        }
+    }
+}

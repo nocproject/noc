@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "MA5608T",
+    "$collection": "inv.platforms",
+    "uuid": "fc15fc60-01fb-463a-bd96-b5df67ec8289",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.248"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Electrical | DB15",
+    "$collection": "inv.connectiontypes",
+    "uuid": "d0b742f3-4450-44af-9790-4a657447960e",
+    "description": "DB-15. DTE-DCE X.21 cable",
+    "c_group": [],
+    "genders": "mf"
+}

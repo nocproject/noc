@@ -1,0 +1,40 @@
+{
+    "name": "Zyxel | MSAN",
+    "$collection": "inv.connectionrules",
+    "uuid": "42fe6ae9-e9a4-4149-878e-4931547249df",
+    "description": "Zyxel MSAN connection rules",
+    "context": [
+        {
+            "reset_scopes": ["linecard"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}
+

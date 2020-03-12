@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Security | Authentication | Login #2 (SYSLOG)",
+    "uuid": "0b37c3dd-ce65-49d9-a3ce-4c3acc539ac0",
+    "description": "Jul 20 2012 11:37:29 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGIN(l):  amt login from 212.40.34.7.",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%01SHELL/5/LOGIN\\(l\\):\\s+(?P<user>\\S+) login from (?P<ip>\\S+)\\.$"
+        }
+    ]
+}

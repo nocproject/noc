@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C6509-E",
+    "$collection": "inv.platforms",
+    "uuid": "c18ea567-822c-4e34-bf03-1258d2288e49",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.283"
+}

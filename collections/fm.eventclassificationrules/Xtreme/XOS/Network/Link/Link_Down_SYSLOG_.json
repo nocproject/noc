@@ -1,0 +1,22 @@
+{
+    "name": "Xtreme | XOS | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a74bb33c-faa4-4413-b6b8-3d664514881f",
+    "description": "10/15/2019 14:11:03.82 <Info:vlan.msgs.portLinkStateDown> Port 11 link down\n\n",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "message",
+            "value_re": "Port (?P<interface>\\d+) link down"
+        },
+        {
+            "key_re": "profile",
+            "value_re": "^Extreme\\.XOS$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        }
+    ]
+}

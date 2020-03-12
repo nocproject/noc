@@ -1,0 +1,6 @@
+{
+    "name": "TPLink.EAP",
+    "uuid": "3045776c-6431-4bbb-a0cd-e5f27402c818",
+    "description": "EAP Wireless MU-MIMO Gigabit Indoor/Outdoor Access Point",
+    "$collection": "sa.profiles"
+}

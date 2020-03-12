@@ -1,0 +1,11 @@
+{
+    "name": "Network | IPoE Termination",
+    "$collection": "inv.technologies",
+    "uuid": "ef42d9fe-d217-4754-b628-a1f71f6159da",
+    "description": "IPoE Temination (access equipment -> BRAS)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

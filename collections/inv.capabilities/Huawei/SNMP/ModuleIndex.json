@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SNMP | ModuleIndex",
+    "$collection": "inv.capabilities",
+    "uuid": "c5054bda-d013-4c65-aa92-5bfddf66c1bc",
+    "description": "SNMP entPhysicalIndex for modules. Needed for generate CPU/Memory OIDS.",
+    "type": "str",
+    "card_template": null
+}

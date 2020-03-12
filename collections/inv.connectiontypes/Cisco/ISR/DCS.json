@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | ISR | DCS",
+    "$collection": "inv.connectiontypes",
+    "uuid": "620fa03f-4f31-43ba-9736-6f3aa8b9832f",
+    "description": "Cisco ISR DaughterCard Slot",
+    "c_group": [],
+    "genders": "mf"
+}

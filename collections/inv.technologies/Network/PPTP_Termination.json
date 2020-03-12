@@ -1,0 +1,11 @@
+{
+    "name": "Network | PPTP Termination",
+    "$collection": "inv.technologies",
+    "uuid": "8ce08fc8-a5b1-448d-9c2c-ac1419ad9816",
+    "description": "PPTP Temination (access equipment -> BRAS)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

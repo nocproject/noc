@@ -1,0 +1,8 @@
+{
+    "name": "NSN",
+    "uuid": "284646ef-cb09-4487-aed9-365ad08e5796",
+    "full_name": "Nokia Siemens Networks",
+    "code": ["NSN"],
+    "site": "https://networks.nokia.com",
+    "$collection": "inv.vendors"
+}

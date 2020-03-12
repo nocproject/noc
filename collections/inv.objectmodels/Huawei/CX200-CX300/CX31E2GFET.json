@@ -1,0 +1,43 @@
+{
+    "name": "Huawei | CX200-CX300 | CX31E2GFET",
+    "$collection": "inv.objectmodels",
+    "uuid": "ea1b6df7-b4e3-4ba8-af4b-8a75ef9eadd6",
+    "vendor__code": "HUAWEI",
+    "description": "2-Port 1000BASE-X Interface Card(Timing,Enhanced I,SFP),1*1",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "SIC",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX200-300 | SIC"
+        },
+        {
+            "description": "GigabitEthernetX/0/2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernet0/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernetX/0/2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernet0/2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020DXT"],
+            "part_no": ["CX31E2GFET"]
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "name": "PoP Links | Aggregation",
+    "uuid": "af03f09c-da75-4d41-be11-fca70784de78",
+    "description": "Links between aggregation points of presence",
+    "code": "pop_links3",
+    "default_zoom": 12,
+    "fill_color": 13390336,
+    "max_zoom": 19,
+    "min_zoom": 11,
+    "point_graphic": "circle",
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 16737792,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 190
+}

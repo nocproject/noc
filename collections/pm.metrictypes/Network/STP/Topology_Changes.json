@@ -1,0 +1,10 @@
+{
+    "name": "Network | STP | Topology Changes",
+    "$collection": "pm.metrictypes",
+    "uuid": "c83f647b-00ac-48b3-8afe-b15c9d16629d",
+    "scope__name": "Routing",
+    "field_name": "stp_topology_changes",
+    "field_type": "UInt32",
+    "description": "The total number of topology changes detected by this bridge since the management entity was last reset or initialized.",
+    "measure": "C"
+}

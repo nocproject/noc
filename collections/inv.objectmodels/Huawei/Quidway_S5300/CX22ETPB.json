@@ -1,0 +1,34 @@
+{
+    "name": "Huawei | Quidway S5300 | CX22ETPB",
+    "$collection": "inv.objectmodels",
+    "uuid": "8e8f10cc-8a08-4ab7-ae68-d8f9c6322080",
+    "vendor__code": "HUAWEI",
+    "description": "CX22ETPB,Extend Channel Card,1*1",
+    "tags": ["lc", "fabric"],
+    "connections": [
+        {
+            "description": "Rear slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | Quidway S5300 | Rear slot"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020MLA"],
+            "part_no": ["CX22ETPB"]
+        },
+        "dimensions": {
+            "depth": 126,
+            "height": 43,
+            "width": 143
+        },
+        "power": {
+            "power": 0.1
+        },
+        "weight": {
+            "weight": 0.2
+        }
+    }
+}

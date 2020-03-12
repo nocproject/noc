@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | C6500ME | MSFC",
+    "$collection": "inv.connectiontypes",
+    "uuid": "d2bd7c01-ef1b-4b71-8ac1-efafbc817b3e",
+    "description": "Cisco MSFC C6500ME virtual slot",
+    "c_group": [],
+    "genders": "mf"
+}

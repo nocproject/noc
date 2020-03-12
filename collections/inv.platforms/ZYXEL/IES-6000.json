@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "IES-6000",
+    "$collection": "inv.platforms",
+    "uuid": "f9da7600-fe7a-493d-8296-8d534ab89ead",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.13.8"
+}

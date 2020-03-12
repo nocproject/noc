@@ -1,0 +1,13 @@
+{
+    "name": "H3C | VRP | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "57699eb8-f87a-4a8f-a3d9-0d13f7b24b26",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "H3C",
+    "action": "match",
+    "profile__name": "H3C.VRP"
+}

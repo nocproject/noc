@@ -1,0 +1,11 @@
+{
+    "name": "Network | DPI Termination",
+    "$collection": "inv.technologies",
+    "uuid": "9fff5989-d503-4a3e-af5d-2156d0e3815c",
+    "description": "DPI Temination (access equipment -> DPI equipment)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

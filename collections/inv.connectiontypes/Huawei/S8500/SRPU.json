@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S8500 | SRPU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "ac0463b2-cf27-41f9-aa5b-109616ff9c8f",
+    "description": "S8500 SRPU",
+    "c_group": [],
+    "genders": "mf"
+}

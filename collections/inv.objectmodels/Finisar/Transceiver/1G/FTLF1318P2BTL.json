@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTLF1318P2BTL",
+    "$collection": "inv.objectmodels",
+    "uuid": "e3643477-c214-4d88-adf2-586d081123c7",
+    "vendor__code": "FINISAR",
+    "description": "Fiber Optic Transceiver Module Ethernet 1.25Gbps 1310nm 3V ~ 3.6V LC Duplex Pluggable, SFP",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FTLF1318P2BTL-J3"],
+            "part_no": ["FTLF1318P2BTL"]
+        }
+    }
+}

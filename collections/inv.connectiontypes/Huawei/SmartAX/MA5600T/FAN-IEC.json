@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5600T | FAN-IEC",
+    "$collection": "inv.connectiontypes",
+    "uuid": "fafa8f12-ce8b-4a18-8e35-28fcccf8209a",
+    "description": "MA5600T  IEC Fan Tray",
+    "c_group": [],
+    "genders": "mf"
+}

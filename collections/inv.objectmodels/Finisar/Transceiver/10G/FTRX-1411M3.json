@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 10G | FTRX-1411M3",
+    "$collection": "inv.objectmodels",
+    "uuid": "0eeab2c1-25a3-400a-84ae-57e603a110ef",
+    "vendor__code": "FINISAR",
+    "description": "10GBASE-LR, XFP Module, 1310nm Transmitter Wavelength, LC Connector, up to 10km reach",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "TX",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASE-LR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASE-LR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FTRX1411M3MT"],
+            "part_no": ["FTRX-1411M3"]
+        }
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "name": "Juniper | ACX",
+    "$collection": "inv.connectionrules",
+    "uuid": "51bae4eb-d6af-4ce5-a9e0-93045513e081",
+    "description": "Juniper ACX connection rules",
+    "context": [
+        {
+            "reset_scopes": ["pic"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "PEM",
+            "scope": "chassis",
+            "target_connection": "pem{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "{pic}/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

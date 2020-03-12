@@ -1,0 +1,54 @@
+{
+    "name": "Cisco | ISR | Module | NM-2CE1T1-PRI",
+    "$collection": "inv.objectmodels",
+    "uuid": "9e18480c-7f7a-45f5-9b63-b1fc039edca5",
+    "vendor__code": "CISCO",
+    "description": "2-port channelized E1/T1/ISDN-PRI network module",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "description": "CTRL 0",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port0",
+            "protocols": ["T1", "E1", "G703"],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "CTRL 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port1",
+            "protocols": ["T1", "E1", "G703"],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "RX mon port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx_mon",
+            "protocols": ["MON"],
+            "type__name": "Electrical | 2.5mm-jack"
+        },
+        {
+            "description": "TX mon port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx_mon",
+            "protocols": ["MON"],
+            "type__name": "Electrical | 2.5mm-jack"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NM-2CE1T1-PRI", "NM-2CE1T1-PRI="]
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H83BVDLE",
+    "$collection": "inv.objectmodels",
+    "uuid": "744c221c-9cad-4b81-b2f7-ae8b5e378ecd",
+    "vendor__code": "HUAWEI",
+    "description": "H83BVDLE is a 32-channel VDSL2 and POTS combo service board that provides VDSL2 and POTS integrated access services. It has an embedded splitter . Vectoring not supported.",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "32 channels of VDSL over POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE",
+            "protocols": ["VDSL2"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "32 channels of the POTS signals",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H83BVDLE"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 32.0
+        }
+    }
+}

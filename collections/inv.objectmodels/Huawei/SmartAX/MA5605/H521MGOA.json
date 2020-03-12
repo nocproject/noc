@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5605 | H521MGOA",
+    "$collection": "inv.objectmodels",
+    "uuid": "781b33e7-554f-4c53-85b7-db541bff8677",
+    "vendor__code": "HUAWEI",
+    "description": "MA5605 It is system control and GE Uplink Optical Interface Board, providing 2×SFP 1G interfaces (uplink and subtending).",
+    "cr_context": "BOARD",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5105 | CB"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "con",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Uplink port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Uplink",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Downlink port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Downlink",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H521MGOA"]
+        }
+    }
+}

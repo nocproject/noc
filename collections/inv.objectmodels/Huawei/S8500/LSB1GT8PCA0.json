@@ -1,0 +1,126 @@
+{
+    "name": "Huawei | S8500 | LSB1GT8PCA0",
+    "$collection": "inv.objectmodels",
+    "uuid": "68fb9dd4-5fa4-4aeb-989e-33f358f77ba1",
+    "vendor__code": "HUAWEI",
+    "description": "The GT8P module provides 8 × 1000 Mbps Ethernet electrical ports and 4 SFP ports.",
+    "cr_context": "LSB",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S8500 | LSB"
+        },
+        {
+            "description": "GigabitEthernet 0/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/1/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/1/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/1/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/1/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/2/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/2/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/2/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/2/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/2/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/2/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/2/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEtherntX/2/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/3/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEtherntX/3/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/3/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEtherntX/3/2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/3/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEtherntX/3/3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/3/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEtherntX/3/4",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LSB1GT8PCA0"]
+        },
+        "dimensions": {
+            "depth": 367,
+            "width": 340
+        },
+        "power": {
+            "power": 55.0
+        }
+    }
+}

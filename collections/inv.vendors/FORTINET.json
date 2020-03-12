@@ -1,0 +1,8 @@
+{
+    "name": "Fortinet",
+    "uuid": "840e90ac-e095-46dd-a9c9-985995327f55",
+    "full_name": "FORTINET",
+    "code": ["FORTINET"],
+    "site": "https://www.fortinet.com/",
+    "$collection": "inv.vendors"
+}

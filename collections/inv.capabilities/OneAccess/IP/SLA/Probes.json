@@ -1,0 +1,8 @@
+{
+  "name": "OneAccess | IP | SLA | Probes",
+  "$collection": "inv.capabilities",
+  "uuid": "10432562-5cc3-40b2-9d79-924252993353",
+  "description": "Number of discovered IP SLA probes",
+  "type": "int",
+  "card_template": null
+}

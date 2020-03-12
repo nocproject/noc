@@ -1,0 +1,8 @@
+{
+    "name": "Stack | Members",
+    "$collection": "inv.capabilities",
+    "uuid": "5500cc3e-5d5a-4f3f-8ff8-f06057ad0e71",
+    "description": "Maximum number members use in stack",
+    "type": "int",
+    "card_template": ""
+}

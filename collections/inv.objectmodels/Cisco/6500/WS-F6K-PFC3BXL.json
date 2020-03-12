@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | WS-F6K-PFC3BXL",
+    "$collection": "inv.objectmodels",
+    "uuid": "83ec7e78-63df-44dc-960a-c516ee6cff94",
+    "vendor__code": "CISCO",
+    "description": "WS-F6K-PFC3BXL Policy Feature Card plus 2x1Gig Mem",
+    "cr_context": "PFC",
+    "connections": [
+        {
+            "description": "PFC Policy Feature Card",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500-7600 | PFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-F6K-PFC3BXL"]
+        }
+    }
+}

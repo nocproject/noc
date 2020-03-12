@@ -1,0 +1,63 @@
+{
+    "name": "Huawei | SmartAX | MA5600 | H565ADEE",
+    "$collection": "inv.objectmodels",
+    "uuid": "211892c0-2423-4528-be5e-7c9763db3599",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600,H565ADEE2,64-channel ADSL2+ Board,with 600 ohm Splitter,1*1 (over POTS) SPLF + ADEE",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | SB"
+        },
+        {
+            "description": "32-channel POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
+            "description": "32-channel POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN1",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
+            "description": "32-channel ADSL2",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE0",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        },
+        {
+            "description": "32-channel ADSL2",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE1",
+            "protocols": ["ADSL2+"],
+            "type__name": "Huawei | Electrical | Delander 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H565ADEE", "H565ADEE1", "H565ADEE2"]
+        },
+        "dimensions": {
+            "depth": 372,
+            "height": 400,
+            "width": 26
+        },
+        "power": {
+            "power": 32.0
+        }
+    }
+}

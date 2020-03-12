@@ -1,0 +1,28 @@
+{
+    "name": "Network | STP | BPDU Guard Recovery",
+    "$collection": "fm.eventclasses",
+    "uuid": "c3facb7a-e5e7-476a-97f6-6c9e80a79f06",
+    "description": "BPDU Guard Recovery",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "subject_template": "BPDU Guard Recovery on {{interface}}",
+    "body_template": "BPDU Guard Recovery on {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | STP | BPDU Guard Violation"
+        }
+    ]
+}

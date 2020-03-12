@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Security | Authentication | Login (SYSLOG)",
+    "uuid": "7eef7964-e9ec-4f6d-85a5-b2fed033f0f8",
+    "description": "%AAA-I-CONNECT: User CLI session for user admin over telnet , source 10.8.4.19 destination  10.8.2.13 ACCEPTED",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) ?, source (?P<ip>\\S+) destination  \\S+ ACCEPTED$"
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Errors | Frame",
+    "$collection": "pm.metrictypes",
+    "uuid": "f7a8ceb9-c579-4187-b0c8-066f6be08ee8",
+    "scope__name": "Interface",
+    "field_name": "errors_frame_in",
+    "field_type": "UInt32",
+    "description": "Errors when received frames whose actual length differs with 802.3 ",
+    "measure": "packet/s"
+}

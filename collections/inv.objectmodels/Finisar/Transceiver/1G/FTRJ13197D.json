@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTRJ13197D",
+    "$collection": "inv.objectmodels",
+    "uuid": "eda16365-3e64-492f-9405-167022998ad4",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-LX and 1G Fibre Channel (1GFC) 10km Industrial Temperature Gen 3 SFP Optical Transceiver\n",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FTRJ-1319-7D-CS", "FTRJ-1319-7D-CSC", "FTRJ-1319-7D-C"],
+            "part_no": ["FTRJ-1319-7D"]
+        }
+    }
+}

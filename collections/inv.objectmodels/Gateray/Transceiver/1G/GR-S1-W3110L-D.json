@@ -1,0 +1,40 @@
+{
+    "name": "Gateray | Transceiver | 1G | GR-S1-W3110L-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "7682b21d-ca52-490f-8a0e-d1b0edb617d1",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP, 1310nm, LC, 10km, DOM",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-S1-W3110L-D"]
+        }
+    }
+}

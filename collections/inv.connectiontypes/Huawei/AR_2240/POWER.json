@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | AR 2240 | POWER",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5582ad4c-3112-4976-bdc1-2c40ac9e2b80",
+    "description": "Huawei AR2240 power slot",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S5320-32C-HI-24S-DC",
+    "$collection": "inv.platforms",
+    "uuid": "d95b3d60-b056-4221-879e-5c0ba184071e",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.381"
+}

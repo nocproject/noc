@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Network | IP | ARP Moved (SYSLOG)",
+    "uuid": "4a8eaaf8-189c-4c7c-9c2d-44acd7b2aa38",
+    "description": "kernel: arp: 10.111.0.8 moved from 00:0c:46:65:9b:42 to 00:1e:49:10:5f:41 on em0",
+    "event_class__name": "Network | IP | ARP Moved",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "kernel: arp: (?P<ip>\\S+) moved from (?P<from_mac>\\S+) to (?P<to_mac>\\S+) on (?P<interface>\\S+)?"
+        }
+    ]
+}

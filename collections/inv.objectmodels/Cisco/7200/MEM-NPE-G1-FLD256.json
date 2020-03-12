@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 7200 | MEM-NPE-G1-FLD256",
+    "$collection": "inv.objectmodels",
+    "uuid": "b73d37ba-1779-4d04-bb38-3cdc713609e9",
+    "vendor__code": "CISCO",
+    "description": "256MB Compact Flash Disk for NPE-G1",
+    "connections": [
+        {
+            "description": "Compact Flash Disk slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Flash | CF"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MEM-NPE-G1-FLD256", "MEM-NPE-G1-FLD256="]
+        }
+    }
+}

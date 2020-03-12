@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | C4900 | PWR-C49M-1000DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "a29bc6af-cc1c-41b6-acab-323ba7ccdb94",
+    "vendor__code": "CISCO",
+    "description": "Cisco Catalyst C4900M DC Power supply",
+    "cr_context": "PSU",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "DC 1 input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "DC 1 input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | C4900 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PWR-C49M-1000DC"]
+        }
+    }
+}

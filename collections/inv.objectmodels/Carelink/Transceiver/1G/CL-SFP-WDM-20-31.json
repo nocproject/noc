@@ -1,0 +1,32 @@
+{
+    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-20-31",
+    "$collection": "inv.objectmodels",
+    "uuid": "837f8d41-5a03-4018-83bc-eb335f91aa90",
+    "vendor__code": "CARELINK",
+    "description": "Carelink TX-1310/RX-1550 nm Single-mode Bi-directional, 20km, SC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": ["<1000BASELX-1310", ">1000BASELX-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CL-SFP-WDM-20-31"]
+        }
+    }
+}

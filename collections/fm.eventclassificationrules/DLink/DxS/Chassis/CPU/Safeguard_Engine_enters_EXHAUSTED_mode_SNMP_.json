@@ -1,0 +1,25 @@
+{
+    "name": "DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode (SNMP)",
+    "uuid": "230ea16c-ff3c-47a1-89d9-edb45364e44a",
+    "description": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification",
+    "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification$"
+        },
+        {
+            "key_re": "^SAFEGUARD-ENGINE-MIB::swSafeGuardCurrentStatus(\\.0)?$",
+            "value_re": "exhausted$"
+        }
+    ]
+}
