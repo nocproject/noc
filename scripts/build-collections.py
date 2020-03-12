@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # USAGE: build <spec>
 
+from __future__ import print_function
+
 import tarfile
 import json
 import sys
@@ -30,14 +32,13 @@ def build(spath):
         for ff in glob.glob(gf):
             rn = ff[pl:]
             tn = os.path.join(dst_prefix, rn)
-            print ff, "->", tn
+            print(ff, "->", tn)
             tf.add(ff, tn, recursive=True)
     tf.close()
-    print "Writing dist_path"
+    print("Writing dist_path")
     shutil.move(tmp_path, dist_path)
 
 
 if __name__ == "__main__":
     build(sys.argv[1])
-
 
