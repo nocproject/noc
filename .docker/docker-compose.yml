@@ -77,7 +77,6 @@ services:
         condition: service_started
     command: >
       sh -c "set -xe
-      && /usr/bin/python ./scripts/deploy/install-packages requirements/collections.json
       && ./noc test run --junit-report=build/reports/py2-test-junit.xml --statistics
       "
     environment:
@@ -114,7 +113,6 @@ services:
         condition: service_started
     command: >
       sh -c "set -xe
-      && /usr/bin/python3 ./scripts/deploy/install-packages requirements/collections.json
       && ./noc test run --junit-report=build/reports/py3-test-junit.xml --statistics
       "
     environment:
