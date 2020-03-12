@@ -10,6 +10,7 @@ import os
 import glob
 import shutil
 
+
 def build(spath):
     with open(spath) as f:
         spec = json.load(f)
@@ -41,4 +42,3 @@ def build(spath):
 
 if __name__ == "__main__":
     build(sys.argv[1])
-
