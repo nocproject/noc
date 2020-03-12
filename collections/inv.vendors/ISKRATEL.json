@@ -1,0 +1,8 @@
+{
+    "name": "Iskratel",
+    "uuid": "0bea26f0-b9e5-4ec0-ab4e-ae9720fd186e",
+    "full_name": "Iskratel, d. o. o., Kranj",
+    "code": ["ISKRATEL"],
+    "site": "https://iskratel.com",
+    "$collection": "inv.vendors"
+}

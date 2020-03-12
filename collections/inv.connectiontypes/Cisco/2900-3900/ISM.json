@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 2900-3900 | ISM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "6bb242f8-c5e2-4c92-b874-b380f0963fcf",
+    "description": "Cisco 2900/3900 ISM Container Slot",
+    "c_group": [],
+    "genders": "mf"
+}

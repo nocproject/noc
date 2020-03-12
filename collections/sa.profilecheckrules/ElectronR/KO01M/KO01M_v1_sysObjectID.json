@@ -1,0 +1,13 @@
+{
+    "name": "ElectronR | KO01M_1 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "38ab33a0-9e45-4cae-94c3-3790dfad81ed",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "Electron KO1-M",
+    "action": "match",
+    "profile__name": "ElectronR.KO01M"
+}

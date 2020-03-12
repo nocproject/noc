@@ -1,0 +1,36 @@
+{
+    "name": "Alcatel | 7302",
+    "uuid": "ae81d536-87e2-45fe-b577-73d430942bdc",
+    "$collection": "inv.connectionrules",
+    "description": "Alcatel 7302(7330) series connection rules",
+    "context": [
+        {
+            "reset_scopes": ["linecard"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "linecard",
+            "type": "LINECARD"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "linecard{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "sfp{N}",
+            "target_number": "",
+            "target_type": "LINECARD"
+        }
+    ]
+}

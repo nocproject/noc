@@ -1,0 +1,54 @@
+{
+    "name": "Huawei | Quidway S5300 | E2XY-2-Port 10GE SFP+ subcard",
+    "$collection": "inv.objectmodels",
+    "uuid": "9de47eab-4bc3-40b7-a496-0c9ee025e74b",
+    "vendor__code": "HUAWEI",
+    "description": "2-Port 10GE SFP+ Optical Interface Card,2*1",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "CARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Extension slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | Quidway S5300 | Front slot"
+        },
+        {
+            "description": "XFP port 1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "GigabitEternetX/1/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "XFP port 2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "GigabitEternetX/1/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020LUB"],
+            "part_no": ["CX22E2XY"]
+        },
+        "dimensions": {
+            "depth": 69,
+            "height": 22,
+            "width": 200
+        },
+        "power": {
+            "power": 11.0
+        },
+        "weight": {
+            "weight": 0.2
+        }
+    }
+}

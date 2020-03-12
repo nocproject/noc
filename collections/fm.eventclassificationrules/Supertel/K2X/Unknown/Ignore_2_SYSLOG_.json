@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Unknown | Ignore #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "7edb289d-6eaf-444d-b4c3-71a1f0f629ac",
+    "description": "%STP-I-EDGEPORT: Attention: port ch3 from which the bpdu was received is configured as Fast Port",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%STP-I-EDGEPORT: Attention: port \\S+ from which the bpdu was received is configured as Fast Port$"
+        }
+    ]
+}

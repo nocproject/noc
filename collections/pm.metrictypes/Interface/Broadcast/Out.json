@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Broadcast | Out",
+    "$collection": "pm.metrictypes",
+    "uuid": "5d1465af-bebc-42d3-8d68-f08e7f0d9b8e",
+    "scope__name": "Interface",
+    "field_name": "broadcast_out",
+    "field_type": "UInt64",
+    "description": "Broadcast packets on output interface",
+    "measure": "packet/s"
+}

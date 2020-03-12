@@ -1,0 +1,22 @@
+{
+    "name": "Xtreme | Summit200 | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "92787bbc-a772-47f1-b43b-7e3dc88858ff",
+    "description": "Oct 17 05:24:41 SYST: Port 1 link down\n\n",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "message",
+            "value_re": "Port (?P<interface>\\d+) link down"
+        },
+        {
+            "key_re": "profile",
+            "value_re": "^Extreme\\.Summit200$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        }
+    ]
+}

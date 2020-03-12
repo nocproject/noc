@@ -1,0 +1,8 @@
+{
+    "name": "TPLink",
+    "uuid": "da2be751-771c-43f9-a7d9-7b58a095c4f2",
+    "full_name": "TP-LINK Technologies CO",
+    "code": ["TPLINK"],
+    "site": "https://www.tp-link.com/",
+    "$collection": "inv.vendors"
+}

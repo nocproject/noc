@@ -1,0 +1,103 @@
+{
+    "name": "DLink | DAS | DAS-3224/E/C",
+    "$collection": "inv.objectmodels",
+    "uuid": "53b1299e-da58-45f6-979f-37f92bf25cb4",
+    "vendor__code": "DLINK",
+    "description": "DAS-3224/E 24-Port IP DSLAM",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "port", "fan"],
+    "connections": [
+        {
+            "description": "1",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "uplink1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "uplink1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "3",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "3",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "name": "3",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE",
+            "protocols": ["ADSL/ADSL2/ADSL2+"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Splitter",
+            "direction": "s",
+            "gender": "f",
+            "name": "POTS",
+            "protocols": ["POTS"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DAS-3224/E"]
+        },
+        "dimensions": {
+            "depth": 320,
+            "height": 50,
+            "width": 450
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

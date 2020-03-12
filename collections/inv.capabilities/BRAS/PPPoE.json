@@ -1,0 +1,6 @@
+{
+    "name": "BRAS | PPPoE",
+    "uuid": "fe0aa70a-1bec-4b9a-b124-24ba76ae2b91",
+    "description": "PPPoE-capable BRAS",
+    "type": "bool"
+}

@@ -1,0 +1,52 @@
+{
+    "name": "Cisco | C4900",
+    "$collection": "inv.connectionrules",
+    "uuid": "107ab1ba-1557-4d88-b2a6-509eb308ad83",
+    "description": "Cisco C4900 series connection rules",
+    "context": [
+        {
+            "reset_scopes": ["linecard"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "linecard",
+            "type": "LINECARD"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "linecard{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "Te{N}_X2",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

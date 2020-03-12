@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S2700-26TP-EI-AC",
+    "$collection": "inv.platforms",
+    "uuid": "99f60df2-02bc-47f4-b097-b3c9fe818326",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.117"
+}

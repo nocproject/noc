@@ -1,0 +1,7 @@
+{
+    "vendor__code": "JUNIPER",
+    "name": "mx960",
+    "$collection": "inv.platforms",
+    "uuid": "f2bb1b86-3488-4ea9-9360-e5f7287b5e37",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2636.1.1.1.2.21"
+}

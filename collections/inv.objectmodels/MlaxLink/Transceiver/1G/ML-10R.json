@@ -1,0 +1,32 @@
+{
+    "name": "MlaxLink | Transceiver | 1G | ML-10R",
+    "$collection": "inv.objectmodels",
+    "uuid": "31cc15b5-05d3-4db1-aa29-38987f4ee6b8",
+    "vendor__code": "MLAXLINK",
+    "description": "MlaxLink SFP WDM transceiver, 1550 tx, 1310 rx, SC, 3km without dom",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ML-10R"]
+        }
+    }
+}

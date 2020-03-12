@@ -1,0 +1,7 @@
+{
+    "vendor__code": "JUNIPER",
+    "name": "mx10-t",
+    "$collection": "inv.platforms",
+    "uuid": "741c260c-2c34-45bd-a54e-174656b97f2a",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2636.1.1.1.2.89"
+}

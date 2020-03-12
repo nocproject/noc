@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Ignore LLDP local link Up/Down (SYSLOG)",
+    "uuid": "bae86fbe-8f3d-4065-8483-41b748b8f394",
+    "description": "0000001977: Jan  8 19:16:01: torgovaja_4: %LLDP-4-lldpSomthingChangedLoc: 674174:20: MAC PHY status of Port 11 has changed",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LLDP-4-lldpSomthingChangedLoc: \\S+: (MAC PHY|VLAN ID) status of Port \\S+ has changed$"
+        }
+    ]
+}

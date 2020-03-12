@@ -1,0 +1,13 @@
+{
+    "name": "Zhone | MXK | PonoXL sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "6ad8a79e-8d62-430b-9085-3b02e0a46439",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.5504.1.7.1",
+    "action": "match",
+    "profile__name": "Zhone.MXK"
+}

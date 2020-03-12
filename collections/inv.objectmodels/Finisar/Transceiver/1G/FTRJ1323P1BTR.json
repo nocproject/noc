@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTRJ1323P1BTR",
+    "$collection": "inv.objectmodels",
+    "uuid": "fee79b87-588a-4754-a2ce-db743c87110a",
+    "vendor__code": "FINISAR",
+    "description": "OC-3/STM-1 IR-1, Small Form-factor Pluggable (SFP), 1310nm, LC, DDM, 15km ",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FTRJ1323P1BTR-M1"],
+            "part_no": ["FTRJ1323P1BTR"]
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "MikroTik | RouterOS | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "9fbb9bd6-ec94-418b-99f0-38cfd4a80cbf",
+    "description": "critical login failure for user root from 217.119.114.126 via ssh",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^MikroTik\\.RouterOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "critical login failure for user (?P<user>.+?) from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)"
+        }
+    ]
+}

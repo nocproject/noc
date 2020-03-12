@@ -1,0 +1,8 @@
+{
+    "name": "Network | OSFP | v2",
+    "$collection": "inv.capabilities",
+    "uuid": "6d7be6c0-f452-43ce-a32b-826f7074aaec",
+    "description": "OSPF (Open Shortest Path First) routing protocol version 2",
+    "type": "bool",
+    "card_template": null
+}

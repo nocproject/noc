@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Security | Authentication | Logout #2 (SYSLOG)",
+    "uuid": "5b745eed-6b0d-41fb-9b20-86b0648672a2",
+    "description": "%AAA-I-DISCONNECT: http connection for user admin, source 10.8.4.19 destination 10.8.2.13 TERMINATED",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-I-DISCONNECT: http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ TERMINATED$"
+        }
+    ]
+}

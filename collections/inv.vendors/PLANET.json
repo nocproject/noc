@@ -1,0 +1,8 @@
+{
+    "name": "Planet",
+    "uuid": "70c2da7c-7679-42ad-ad26-3a759521f4fd",
+    "full_name": "Planet Technology",
+    "code": ["PLANET"],
+    "site": "https://www.planet.com.ru",
+    "$collection": "inv.vendors"
+}

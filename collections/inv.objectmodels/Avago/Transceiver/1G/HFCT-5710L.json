@@ -1,0 +1,40 @@
+{
+    "name": "Avago | Transceiver | 1G | HFCT-5710L",
+    "$collection": "inv.objectmodels",
+    "uuid": "b188a99f-cd33-4131-8aa6-452643fb1755",
+    "vendor__code": "AVAGO",
+    "description": "Avago/Broadcom 1000BASE-LX SFP, MMF/SMF, 1310nm, 550m/10km, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["HFCT-5710L", "HFCT-5710LPQ-E5", "HFCT-5710LP-H3C"]
+        }
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | S9300 | 1600W DC PSU",
+    "$collection": "inv.objectmodels",
+    "uuid": "bc08b6b8-42b1-41f7-891d-68d2fc76d6cb",
+    "vendor__code": "HUAWEI",
+    "description": "S9300 1600 W DC Power Module",
+    "cr_context": "PWR",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02316867"],
+            "part_no": ["LE02PSD16"]
+        },
+        "dimensions": {
+            "depth": 393,
+            "height": 130,
+            "width": 41
+        },
+        "power": {
+            "power": 1600.0
+        },
+        "weight": {
+            "weight": 2.5
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Errors | In",
+    "$collection": "pm.metrictypes",
+    "uuid": "1b761068-6bb0-4c98-84c3-67851179fb61",
+    "scope__name": "Interface",
+    "field_name": "errors_in",
+    "field_type": "UInt32",
+    "description": "Errors when receive packet",
+    "measure": "packet/s"
+}

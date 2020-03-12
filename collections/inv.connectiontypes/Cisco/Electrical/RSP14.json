@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Electrical | RSP14",
+    "$collection": "inv.connectiontypes",
+    "uuid": "6ced32da-d1e2-4202-b9d2-a7132dec1f89",
+    "description": "Cisco redundant power supply 14 pin connector",
+    "c_group": [],
+    "genders": "mf"
+}

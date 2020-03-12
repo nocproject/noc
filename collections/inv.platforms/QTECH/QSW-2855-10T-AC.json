@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-2855-10T-AC",
+    "$collection": "inv.platforms",
+    "uuid": "6a46c008-52ad-439a-95ec-153f9a3314d7",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.1.282"
+}

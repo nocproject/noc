@@ -1,0 +1,40 @@
+{
+    "name": "Sopto | Transceiver | 10G | SPT-XFP-LR",
+    "$collection": "inv.objectmodels",
+    "uuid": "12995673-a7fe-4d54-b430-6b364c3f425c",
+    "vendor__code": "SOPTO",
+    "description": "10G 1310nm 10km XFP Optical Transceiver, ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SPT-XFP-LR", "SPT-SFP+LR"]
+        }
+    }
+}

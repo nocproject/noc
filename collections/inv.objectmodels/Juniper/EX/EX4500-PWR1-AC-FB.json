@@ -1,0 +1,35 @@
+{
+    "name": "Juniper | EX | EX4500-PWR1-AC-FB",
+    "$collection": "inv.objectmodels",
+    "uuid": "2dda2ef3-40c9-4783-b248-557440a39d0a",
+    "vendor__code": "JUNIPER",
+    "description": "PS 1000W AC FORWARD AIR FLOW CONTROL",
+    "cr_context": "PEM",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 4500 PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["EX4500-PWR1-AC-FB"],
+            "part_no": ["740-044237"]
+        },
+        "power": {
+            "power": 1000.0
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-2900-24T",
+    "$collection": "inv.platforms",
+    "uuid": "5fe33691-52de-4122-8eaa-e23a2ff54de7",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.3.13"
+}

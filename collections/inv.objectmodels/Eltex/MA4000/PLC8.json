@@ -1,0 +1,104 @@
+{
+    "name": "Eltex | MA4000 | PLC8",
+    "$collection": "inv.objectmodels",
+    "uuid": "16483f7f-0726-4e06-8dc2-e63e6cefaf59",
+    "vendor__code": "ELTEX",
+    "description": "Eltex MA4000 модуль PLC8",
+    "connection_rule__name": "Eltex | MA4000",
+    "cr_context": "LINECARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
+            "description": "gpon 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "10/100/1000Base-T RJ45 – Management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PLC8"]
+        }
+    }
+}

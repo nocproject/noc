@@ -1,0 +1,8 @@
+{
+    "name": "Dahua",
+    "uuid": "00df26c7-ef47-4829-8a41-0a57f7f6f78d",
+    "full_name": "Dahua Technology",
+    "code": ["DAHUA"],
+    "site": "https://www.dahuasecurity.com/",
+    "$collection": "inv.vendors"
+}

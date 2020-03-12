@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | CCU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c078136e-bbd1-4977-9762-7e9b21eb688a",
+    "description": "MA5616 Centralized Control Unit Board",
+    "c_group": [],
+    "genders": "mf"
+}

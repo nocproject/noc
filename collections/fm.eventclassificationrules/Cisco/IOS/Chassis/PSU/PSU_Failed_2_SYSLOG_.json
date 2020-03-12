@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #2 (SYSLOG)",
+    "uuid": "0264f03a-155b-4058-865e-4a0cd648cd22",
+    "description": "%ENVM-4-RPSFAIL: Power Supply may have a failed channel",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ENVM-4-RPSFAIL: (?P<name>.+) may have a failed channel"
+        }
+    ]
+}

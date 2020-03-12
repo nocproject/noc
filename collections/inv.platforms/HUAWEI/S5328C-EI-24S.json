@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S5328C-EI-24S",
+    "$collection": "inv.platforms",
+    "uuid": "7570bb8a-f2df-47c1-b470-d0acd514630a",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.96"
+}

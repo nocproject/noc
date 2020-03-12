@@ -1,0 +1,150 @@
+{
+    "name": "Cisco | ISR | Module | NM-16A",
+    "$collection": "inv.objectmodels",
+    "uuid": "4ce7e1f3-4815-4904-a7df-e58e8de1e70e",
+    "vendor__code": "CISCO",
+    "description": "Cisco 16-Port Serial High-Speed WAN Interface Card",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se2",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se3",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se4",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se5",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se6",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se7",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se8",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se9",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se10",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial11",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se11",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial12",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se12",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial13",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se13",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial14",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se14",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Serial15",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se15",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | DB68"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ISR | NM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NM-16A="]
+        }
+    }
+}

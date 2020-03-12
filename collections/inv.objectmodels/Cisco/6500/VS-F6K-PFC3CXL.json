@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | VS-F6K-PFC3CXL",
+    "$collection": "inv.objectmodels",
+    "uuid": "f664f2c8-4f1c-45f7-8d55-28874bd7d21b",
+    "vendor__code": "CISCO",
+    "description": "VS-F6K-PFC3CXL Policy Feature Card 3",
+    "cr_context": "PFC",
+    "connections": [
+        {
+            "description": "PFC Policy Feature Card",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500-7600 | PFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["VS-F6K-PFC3CXL"]
+        }
+    }
+}

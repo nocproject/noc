@@ -1,0 +1,29 @@
+{
+    "name": "Huawei | CloudEngine | PAC-600WB-B",
+    "$collection": "inv.objectmodels",
+    "uuid": "3a54a826-f06e-4b30-95d4-7c7dc177ac48",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei CloudEngine AC Power Supply Unit PAC-600WB-B",
+    "connections": [
+        {
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CloudEngine | PSU"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PAC-600WB-B"]
+        }
+    }
+}

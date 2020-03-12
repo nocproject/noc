@@ -1,0 +1,85 @@
+{
+    "name": "Zyxel | MSAN | IES-2000",
+    "$collection": "inv.objectmodels",
+    "uuid": "b6001e98-405c-43b9-818d-89ee8ecd67bb",
+    "vendor__code": "ZYXEL",
+    "description": "IES-2000 main chassis with 6 slots, 1 for management and switching card (MSC) and 5 for line cards, DC power input",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 4 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 5 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Linecard 6 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">-36VDC", ">-57VDC"],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["IES-2000"]
+        },
+        "dimensions": {
+            "depth": 268,
+            "height": 178,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 300.0
+        },
+        "rackmount": {
+            "units": 4.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 8.4
+        }
+    }
+}

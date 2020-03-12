@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "ME60-X8",
+    "$collection": "inv.platforms",
+    "uuid": "bc3182cb-ea7b-427d-a249-24899143aa83",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.89.5"
+}

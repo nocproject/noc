@@ -1,0 +1,32 @@
+{
+    "name": "Gateray | Transceiver | 1G | GR-S1-W3140L-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "49d2a5f7-91a4-476b-8e4a-16848d8bf012",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP, 1550 rx, 1310 tx, LC, 40km, DOM",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-S1-W3140L-D"]
+        }
+    }
+}

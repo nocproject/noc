@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5605 | H521MFEA",
+    "$collection": "inv.objectmodels",
+    "uuid": "bcdba95d-995e-4a92-91d5-23314f5ff5ae",
+    "vendor__code": "HUAWEI",
+    "description": "MA5605 It is system control and FE subtending/uplink interface board, providing 2×100Base-TX interfaces (uplink and subtending), with reach of 100 m.",
+    "cr_context": "BOARD",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5105 | CB"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "con",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Uplink",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Downlink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Downlink",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H521MFEA"]
+        }
+    }
+}

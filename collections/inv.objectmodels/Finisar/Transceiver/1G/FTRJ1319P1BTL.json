@@ -1,0 +1,41 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTRJ1319P1BTL",
+    "$collection": "inv.objectmodels",
+    "uuid": "e2665247-4955-478e-a5d2-368a3f317f5b",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-LX and 1G Fibre Channel (1GFC) 10km Industrial Temperature Gen 3 SFP Optical Transceiver\n",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FTRJ1319P1BTL-C6", "FTRJ1319P1BTL-PT", "FTRJ1319P1BTL-J2", "FTRJ1319P1BTL-J4", "FTRJ1319P1BTL-AT", "FTRJ1319P1BTL-C7", "FTRJ1319P1BTL-CB"],
+            "part_no": ["FTRJ1319P1BTL"]
+        }
+    }
+}

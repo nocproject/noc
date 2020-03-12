@@ -1,0 +1,93 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H806GPBH",
+    "$collection": "inv.objectmodels",
+    "uuid": "70c929c3-2491-4314-bf5b-30d003241c8c",
+    "vendor__code": "HUAWEI",
+    "description": "8-port GPON OLT interface board (4-level HQoS Not Supported)",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H806GPBH"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
+        }
+    }
+}

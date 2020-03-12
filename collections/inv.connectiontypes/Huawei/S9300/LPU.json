@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S9300 | LPU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "796b074a-8f51-450d-8639-93beec1e956b",
+    "description": "S9300 series Line Processing Units (LPUs)",
+    "c_group": [],
+    "genders": "mf"
+}

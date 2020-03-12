@@ -1,0 +1,180 @@
+{
+    "name": "Huawei | S9300 | LE02X16SFC",
+    "$collection": "inv.objectmodels",
+    "uuid": "26891299-0f55-49b1-8440-b64c50454422",
+    "vendor__code": "HUAWEI",
+    "description": "16-Port 10GBASE-X Interface Card(FC,SFP+) ,128K MAC,1*1",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "LPU",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "name": "GigabitEthernetX/0/0",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernetX/0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernetX/0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_3",
+            "name": "GigabitEthernetX/0/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_4",
+            "name": "GigabitEthernetX/0/4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_5",
+            "name": "GigabitEthernetX/0/5",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_6",
+            "name": "GigabitEthernetX/0/6",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_7",
+            "name": "GigabitEthernetX/0/7",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_8",
+            "name": "GigabitEthernetX/0/8",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_9",
+            "name": "GigabitEthernetX/0/9",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_10",
+            "name": "GigabitEthernetX/0/10",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_11",
+            "name": "GigabitEthernetX/0/11",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_12",
+            "name": "GigabitEthernetX/0/12",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_13",
+            "name": "GigabitEthernetX/0/13",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_14",
+            "name": "GigabitEthernetX/0/14",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_15",
+            "name": "GigabitEthernetX/0/15",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03021JUM"],
+            "part_no": ["LE02X16SFC"]
+        },
+        "dimensions": {
+            "depth": 427,
+            "height": 35,
+            "width": 395
+        },
+        "power": {
+            "power": 150.0
+        },
+        "weight": {
+            "weight": 2.6
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "NSN | hiX56xx | Network | Link | Link Up (SNMP)",
+    "uuid": "ab58db7a-e524-4576-9171-4338b37c7bb7",
+    "description": "SNMPv2-SMI::enterprises.231.7.1.2.2.1.1.5.7.2",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NSN\\.hiX56xx$"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus\\.(?P<interface>\\d+)$",
+            "value_re": "^1$"
+        }
+    ]
+}

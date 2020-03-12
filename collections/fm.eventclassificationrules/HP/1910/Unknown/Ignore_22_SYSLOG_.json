@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Unknown | Ignore #22 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "9691c08a-af50-4afd-939d-9a2a3108f132",
+    "description": "Feb 12 10:36:37 2013 Teh %%10IPTRAP/5/WEBOPT_IPADDR_ADDMAIN(l): (by admin via web from host 192.168.1.3) Primary IP address 192.168.2.102 with subnet mask 255.255.255.0 was configured on interface Vlan-interface2.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10IPTRAP/5/WEBOPT_IPADDR_ADDMAIN\\(l\\): \\(by \\S+ via \\S+ from host \\S+\\) Primary IP address \\S+ with subnet mask \\S+ was configured on interface Vlan-interface\\d+\\.$"
+        }
+    ]
+}

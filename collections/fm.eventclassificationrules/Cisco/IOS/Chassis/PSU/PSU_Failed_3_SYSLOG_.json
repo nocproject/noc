@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #3 (SYSLOG)",
+    "uuid": "fe20e201-d646-431f-b3fb-1b4780617051",
+    "description": "%SYS-2-PS_FAIL: Power supply 2 failed",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-PS_(?:NFAN)?FAIL: Power supply (?P<name>\\d+)(?: and power supply fan)? failed"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S5352C-EI",
+    "$collection": "inv.platforms",
+    "uuid": "d6f0e6d3-05c5-4c0a-bd2a-cc28924a16d7",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.97"
+}

@@ -1,0 +1,6 @@
+{
+    "name": "BRAS | PPTP",
+    "uuid": "ccd687f9-6529-463a-99c9-e565f2988caa",
+    "description": "PPTP-capable BRAS/VPN concentrator",
+    "type": "bool"
+}

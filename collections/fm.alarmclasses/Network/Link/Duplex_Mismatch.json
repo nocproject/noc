@@ -1,0 +1,35 @@
+{
+    "name": "Network | Link | Duplex Mismatch",
+    "$collection": "fm.alarmclasses",
+    "uuid": "10d86131-7073-4671-9c9f-91924f86af62",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "MINOR",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+            }
+        }
+    ],
+    "vars": [
+        {
+            "name": "interface",
+            "description": "interface name"
+        },
+        {
+            "name": "description",
+            "description": "Interface description",
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "subject_template": "Duplex mismatch on interface {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "Duplex mismatch on interface {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

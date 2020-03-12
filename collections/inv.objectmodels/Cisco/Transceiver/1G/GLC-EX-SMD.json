@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 1G | GLC-EX-SMD",
+    "$collection": "inv.objectmodels",
+    "uuid": "2b2f2c07-5d1a-4d22-b67e-5f356fe44e2a",
+    "vendor__code": "CISCO",
+    "description": "1000BASE-EX long-wavelength, 40km, with DOM",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEEX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEEX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GLC-EX-SMD"]
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "name": "DCN | DCWS | DCWS-6028 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f2e8e463-62f5-4fd7-a0aa-9156e9994e5a",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.6339.1.5.1.1",
+    "action": "match",
+    "profile__name": "DCN.DCWS"
+}

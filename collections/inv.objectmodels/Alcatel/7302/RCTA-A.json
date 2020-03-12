@@ -1,0 +1,37 @@
+{
+    "name": "Alcatel | 7302 | RCTA-A",
+    "$collection": "inv.objectmodels",
+    "uuid": "c281fabc-6032-4f96-90ec-95d56b530fce",
+    "vendor__code": "ALU",
+    "description": "COMBO SPLITTER DSL 48 Line",
+    "connection_rule__name": "Alcatel | 7302",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
+            "description": "Line 0-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "Line0-24",
+            "type__name": "Electrical | RJ21"
+        },
+        {
+            "description": "Line 25-48",
+            "direction": "s",
+            "gender": "f",
+            "name": "Line25-48",
+            "type__name": "Electrical | RJ21"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["RCTA-A"]
+        }
+    }
+}

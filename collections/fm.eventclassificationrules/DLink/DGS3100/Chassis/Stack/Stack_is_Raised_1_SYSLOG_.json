@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Chassis | Stack | Stack is Raised #1 (SYSLOG)",
+    "uuid": "9e6965b5-9e9c-43ab-8ad2-4a4ffcac1997",
+    "description": "%DSYNCH-I-SYNCH_SUCCEEDED: Synchronization with unit 2 is finished successfully",
+    "event_class__name": "Chassis | Stack | Stack is Raised",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DSYNCH-I-SYNCH_SUCCEEDED: Synchronization with unit (?P<unit>\\d+) is finished successfully"
+        }
+    ]
+}

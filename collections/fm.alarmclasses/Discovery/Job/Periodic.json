@@ -1,0 +1,17 @@
+{
+    "name": "Discovery | Job | Periodic",
+    "$collection": "fm.alarmclasses",
+    "uuid": "6aed4ced-a4ca-4ed7-9ad0-37c051895572",
+    "desciption": "Umbrella alarm class for Periodic discovery alarms",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+
+    ],
+    "subject_template": "Periodic discovery umbrella alarms",
+    "body_template": "Periodic discovery raise umbrella alarms",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

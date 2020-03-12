@@ -1,0 +1,10 @@
+{
+    "name": "Interface | xDSL | Line | Errors | LPRS | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "b4a87f62-9740-4d07-baa3-ca0320450a5a",
+    "scope__name": "Interface",
+    "field_name": "xdsl_line_errors_lprs_delta",
+    "field_type": "UInt32",
+    "description": "Count of the number of Loss of Power failures since agent reset.",
+    "measure": "count"
+}

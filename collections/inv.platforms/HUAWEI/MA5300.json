@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "MA5300",
+    "$collection": "inv.platforms",
+    "uuid": "d499e5fb-5024-4ae8-b9a2-4e86b687e663",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.6.6.1"
+}

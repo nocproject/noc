@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S9300 | MPU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "9242ab95-e265-4b60-ad01-00c543b9e653",
+    "description": "S9300 series Main Processing Units (MPUs)",
+    "c_group": [],
+    "genders": "mf"
+}

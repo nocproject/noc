@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | S8500 | LSB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c451db54-bc7f-4d26-9528-626652b59e88",
+    "description": "S8500 ",
+    "c_group": [],
+    "genders": "mf"
+}

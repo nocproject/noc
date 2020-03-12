@@ -1,0 +1,23 @@
+{
+    "name": "Ubiquiti | AP | PowerBeam M2",
+    "$collection": "inv.objectmodels",
+    "uuid": "88afeb13-9758-4c91-8d1c-a2c57fc23b5c",
+    "vendor__code": "UBIQUITI",
+    "description": "High-Performance airMAX Bridge, PtP/PtMP 2.4 GHz, 18 dBi",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PowerBeam M2"]
+        }
+    }
+}

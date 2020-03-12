@@ -1,0 +1,21 @@
+{
+    "name": "Routing",
+    "$collection": "pm.metricscopes",
+    "uuid": "59ecc1ac-f151-47d9-b513-c2049f77f1ab",
+    "table_name": "routing",
+    "description": "Scope for L2/L3 protocols metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "vr"
+        },
+        {
+            "is_required": false,
+            "name": "instance"
+        }
+    ]
+}

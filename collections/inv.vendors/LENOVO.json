@@ -1,0 +1,8 @@
+{
+    "name": "LENOVO",
+    "uuid": "4a7e3941-f71b-4908-8a36-19c2aa129585",
+    "full_name": "LENOVO",
+    "code": ["LENOVO"],
+    "site": "https://www.lenovo.com/",
+    "$collection": "inv.vendors"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Eltex | MES | Network | LAG | Unbundle (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "75728f46-1b04-432e-b368-4200ac3e102a",
+    "description": "%TRUNK-W-PORTREMOVED: Port gi1/0/12 removed from po1",
+    "event_class__name": "Network | LAG | Unbundle",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)$"
+        }
+    ]
+}

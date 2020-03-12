@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Network | Link | Link Up (SYSLOG)",
+    "uuid": "b397f3c1-f186-4d2f-b797-071f401ee85d",
+    "description": "%LINK-I-Up:  gi0/3",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%LINK-I-Up:  ?(?P<interface>.+)$"
+        }
+    ]
+}

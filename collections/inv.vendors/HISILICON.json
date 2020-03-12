@@ -1,0 +1,8 @@
+{
+    "name": "HISILICON",
+    "uuid": "cf1f76cc-99ae-4510-b3d7-d7808a891dca",
+    "full_name": "HiSilicon Co., Ltd.",
+    "code": ["HISILICON"],
+    "site": "http://www.hisilicon.com/",
+    "$collection": "inv.vendors"
+}

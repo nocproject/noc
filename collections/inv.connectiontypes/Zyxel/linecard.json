@@ -1,0 +1,8 @@
+{
+    "name": "Zyxel | MSAN | Linecard",
+    "$collection": "inv.connectiontypes",
+    "uuid": "bd6c7f52-3caa-4da4-b7a6-d7a2dd852345",
+    "description": "Zyxel Linecard slot",
+    "c_group": [],
+    "genders": "mf"
+}

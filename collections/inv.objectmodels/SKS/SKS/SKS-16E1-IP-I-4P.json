@@ -1,0 +1,107 @@
+{
+    "name": "SKS | SKS | SKS-16E1-IP-I-4P",
+    "$collection": "inv.objectmodels",
+    "uuid": "47c5d85a-bf87-46ca-80fb-58d6ff6e903c",
+    "vendor__code": "SKS",
+    "description": "L2 Managed Switch witch 4 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP with PoE",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port"],
+    "connections": [
+        {
+            "description": "f0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "f0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "g0/5",
+            "direction": "s",
+            "gender": "f",
+            "group": "5",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 5",
+            "direction": "i",
+            "gender": "f",
+            "group": "5",
+            "name": "sfp5",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "g0/6",
+            "direction": "s",
+            "gender": "f",
+            "group": "6",
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 6",
+            "direction": "i",
+            "gender": "f",
+            "group": "6",
+            "name": "sfp6",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SKS-16E1-IP-I-4P"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

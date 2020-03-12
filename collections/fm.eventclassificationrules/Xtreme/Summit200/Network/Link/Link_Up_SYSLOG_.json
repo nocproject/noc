@@ -1,0 +1,22 @@
+{
+    "name": "Xtreme | Summit200 | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4e6f0956-fc24-474c-8e31-5e1896979bba",
+    "description": "Oct 17 05:24:43 SYST: Port 1 link active 100Mbs FULL duplex\n\n",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "message",
+            "value_re": "Port (?P<interface>\\d+) link active"
+        },
+        {
+            "key_re": "profile",
+            "value_re": "^Extreme\\.Summit200$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        }
+    ]
+}

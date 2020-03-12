@@ -1,0 +1,48 @@
+{
+    "name": "Iskratel | SI3000 | SGN (SBB1049AD)",
+    "$collection": "inv.objectmodels",
+    "uuid": "5383f951-bf2e-45d0-968a-9e020fd3c75c",
+    "vendor__code": "ISKRATEL",
+    "description": "Плата абонентского ADSL 2+доступа SGN (48 абонентов)",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Iskratel | SI3000 | SB"
+        },
+        {
+            "description": "24-channel ADSL",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE1",
+            "protocols": ["ADSL", "АDSL2", "АDSL2+"],
+            "type__name": "Electrical | CENC-64"
+        },
+        {
+            "description": "24-channel ADSL",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE2",
+            "protocols": ["ADSL", "АDSL2", "АDSL2+"],
+            "type__name": "Electrical | CENC-64"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": [
+                "UTA6044AD",
+                "UTA6044AD05M",
+                "UTA6044AD05P",
+                "UTA6044AD070",
+                "UTA6044AD09M",
+                "UTA6044AD09N",
+                "UTA6044AD16M",
+                "UTA6044DD010"
+            ]
+        }
+    }
+}

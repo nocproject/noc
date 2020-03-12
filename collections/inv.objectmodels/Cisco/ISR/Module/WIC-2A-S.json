@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | ISR | Module | WIC-2A-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "27cfc776-8228-4cff-a4ae-4a868c18e65e",
+    "vendor__code": "CISCO",
+    "description": "2-Port A/S Serial WIC Front Panel",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "description": "Serial 0 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "Serial 1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["V35", "X21", "RS232", "RS449", "EIA530", "EIA530A"],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "description": "WAN Interface Card connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["WIC"],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WIC-2A/S", "WIC-2A/S="]
+        }
+    }
+}

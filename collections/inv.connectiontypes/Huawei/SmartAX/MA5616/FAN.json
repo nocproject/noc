@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "080c1375-a59e-4b02-9035-2241204a8bd5",
+    "description": "FAN module",
+    "c_group": [],
+    "genders": "mf"
+}

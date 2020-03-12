@@ -1,0 +1,8 @@
+{
+    "name": "Linksys",
+    "uuid": "92329c5b-9751-43e6-80e7-72922eeb46be",
+    "full_name": "Linksys",
+    "code": ["LINKSYS"],
+    "site": "https://www.linksys.com",
+    "$collection": "inv.vendors"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | WS-SVC-IDS1",
+    "$collection": "inv.objectmodels",
+    "uuid": "2def793d-3383-4203-af75-f2c1cb04c3b3",
+    "vendor__code": "CISCO",
+    "description": "Cisco Catalyst 6500 Series Intrusion Detection System",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-SVC-IDSUPG"]
+        }
+    }
+}

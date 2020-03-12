@@ -1,0 +1,88 @@
+{
+    "name": "Cisco | 6500 | WS-C6503-E",
+    "$collection": "inv.objectmodels",
+    "uuid": "28f94435-2eaf-437d-8230-f351756ea3cd",
+    "vendor__code": "CISCO",
+    "description": "Cisco Systems Cisco 6500 3-slot Chassis System",
+    "connection_rule__name": "Cisco | 6500-E",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "Fan module slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan",
+            "type__name": "Cisco | 7600 | 7603 Fan"
+        },
+        {
+            "description": "PEM slot 1",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "PEM0",
+            "type__name": "Cisco | 7600 | 7603-PEM1"
+        },
+        {
+            "description": "PEM slot 2",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "PEM1",
+            "type__name": "Cisco | 7600 | 7603-PEM1"
+        },
+        {
+            "description": "CLK module slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "clk1",
+            "type__name": "Cisco | 7600 | CLK"
+        },
+        {
+            "description": "Linecard slot 1/Supervisor slot 1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sup1",
+            "name": "linecard1",
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
+        },
+        {
+            "description": "Linecard slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Power Supply  slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 7603 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 7603 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-C6503-E", "WS-C6503-E="],
+            "cpe_22": "cpe:/h:cisco:catalyst_6503-e:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_6503-e:-:*:*:*:*:*:*:*"
+        },
+        "dimensions": {
+            "depth": 552,
+            "height": 178,
+            "width": 441
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 4
+        }
+    }
+}

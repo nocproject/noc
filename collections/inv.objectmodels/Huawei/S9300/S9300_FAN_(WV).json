@@ -1,0 +1,35 @@
+{
+    "name": "Huawei | S9300 | S9300 FAN (WV)",
+    "$collection": "inv.objectmodels",
+    "uuid": "864eb594-0548-4eb3-b431-7df58542e0e1",
+    "vendor__code": "HUAWEI",
+    "description": "Quidway S9300,LE0E2FBX,Wide Voltage Fan Box",
+    "cr_context": "FAN",
+    "tags": ["fan"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | S9300 | S9300 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02120554"],
+            "part_no": ["LE0E2FBX"]
+        },
+        "dimensions": {
+            "depth": 75,
+            "height": 127,
+            "width": 324
+        },
+        "power": {
+            "power": 43.0
+        },
+        "weight": {
+            "weight": 1.2
+        }
+    }
+}

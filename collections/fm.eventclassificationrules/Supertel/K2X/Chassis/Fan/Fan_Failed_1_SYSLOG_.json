@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Chassis | Fan | Fan Failed #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "331d0f23-55a3-431f-a432-cc7eeedcc174",
+    "description": "%Environment-A-FAN-STAT-CHNG: FAN# 1 status changed - not operational.",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%Environment-A-FAN-STAT-CHNG: (?P<name>\\S+ \\d+) status changed - not operational.$"
+        }
+    ]
+}

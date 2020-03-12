@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Status | Duplex",
+    "$collection": "pm.metrictypes",
+    "uuid": "3c18a1ca-b297-48fe-a105-98e29605c357",
+    "scope__name": "Interface",
+    "field_name": "status_duplex",
+    "field_type": "UInt8",
+    "description": "Interface duplex status (1 - unknown, 2 - half, 3 - full)",
+    "measure": " "
+}

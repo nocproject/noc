@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | DB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f7643f84-33f9-4462-90de-3beb760a5853",
+    "description": "MA560xT daughter board port",
+    "c_group": [],
+    "genders": "mf"
+}

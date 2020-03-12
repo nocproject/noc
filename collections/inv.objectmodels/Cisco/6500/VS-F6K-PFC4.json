@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | VS-F6K-PFC4",
+    "$collection": "inv.objectmodels",
+    "uuid": "68fef03d-5d69-4517-9ed5-fb21a3b7eab6",
+    "vendor__code": "CISCO",
+    "description": "VS-F6K-PFC4 Policy Feature Card",
+    "cr_context": "PFC",
+    "connections": [
+        {
+            "description": "PFC Policy Feature Card",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500-7600 | PFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["VS-F6K-PFC4"]
+        }
+    }
+}

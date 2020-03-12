@@ -1,0 +1,175 @@
+{
+    "name": "Eltex | MES | ESR-12V",
+    "$collection": "inv.objectmodels",
+    "uuid": "8f6f99d5-4af6-4922-88da-24b95d90f96f",
+    "vendor__code": "ELTEX",
+    "description": "8 x Ethernet 10/100/1000BASE-T, 3xFXS,1xFXO",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "USB Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": [">USB10", ">USB11", ">USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "usb2",
+            "protocols": [">USB10", ">USB11", ">USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "voice-port 1 telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port1",
+            "protocols": ["FXS"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port 2 telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port2",
+            "protocols": ["FXS"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port 3 telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port3",
+            "protocols": ["FXS"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port fxo telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port1",
+            "protocols": ["FXO"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "gigabitethernet 1/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ESR-12V"]
+        },
+        "dimensions": {
+            "depth": 160,
+            "height": 44,
+            "width": 267
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 27.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 1
+        }
+    }
+}

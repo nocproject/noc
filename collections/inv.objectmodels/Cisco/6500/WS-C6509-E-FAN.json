@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | WS-C6509-E-FAN",
+    "$collection": "inv.objectmodels",
+    "uuid": "1b1b2b0c-afd1-4ffa-9323-74f067c193cf",
+    "vendor__code": "CISCO",
+    "description": "WS-C6509-E FAN tray",
+    "cr_context": "FAN-E",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | FAN-E"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-C6509-E-FAN"]
+        }
+    }
+}

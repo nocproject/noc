@@ -1,0 +1,13 @@
+{
+    "name": "Cisco | SMB | sysDescrSG300",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "a347b902-d5b0-4f15-bf6c-27d9c9151c12",
+    "description": "Examples:\nSG300-52 52-Port Gigabit Managed Switch",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^SG300",
+    "action": "match",
+    "profile__name": "Cisco.SMB"
+}

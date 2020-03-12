@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX&NE | SRU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5590eefa-1433-4267-8bbb-28d0168a9124",
+    "description": "NE40E&CX600&ME60&NE20E Switch and Route Processing Unit (SRU)",
+    "c_group": [],
+    "genders": "mf"
+}

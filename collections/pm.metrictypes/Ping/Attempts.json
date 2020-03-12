@@ -1,0 +1,10 @@
+{
+    "name": "Ping | Attempts",
+    "$collection": "pm.metrictypes",
+    "uuid": "f26fd98b-66ab-4a99-90b2-0b4313efce6c",
+    "scope__name": "Ping",
+    "field_name": "attempts",
+    "field_type": "UInt16",
+    "description": "ICMP Ping packet loss in per request",
+    "measure": "int"
+}

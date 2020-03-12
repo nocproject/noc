@@ -1,0 +1,32 @@
+{
+    "name": "Gateray | Transceiver | 1G | GR-S1-RJ",
+    "$collection": "inv.objectmodels",
+    "uuid": "3606459a-ef94-468a-a2ff-4617acc5cadb",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP TX transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-S1-RJ"]
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | IS-IS | Adjacency Up (SYSLOG)",
+    "uuid": "ad637cd6-c8a6-4eda-a8cf-760adea5d2c6",
+    "description": "Jul 21 07:56:31 rpd[968]: RPD_ISIS_ADJUP: IS-IS new L2 adjacency to 0100.9900.0002 on em1.0",
+    "event_class__name": "Network | IS-IS | Adjacency Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "RPD_ISIS_ADJUP: IS-IS new (?P<level>\\S+) adjacency to (?P<neighbor>.+?) on (?P<interface>.+)$"
+        }
+    ]
+}

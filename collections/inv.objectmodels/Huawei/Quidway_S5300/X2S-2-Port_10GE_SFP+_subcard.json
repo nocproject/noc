@@ -1,0 +1,54 @@
+{
+    "name": "Huawei | Quidway S5300 | X2S-2-Port 10GE SFP+ subcard",
+    "$collection": "inv.objectmodels",
+    "uuid": "3d9599cb-326c-47a0-8926-82ce1714e9c6",
+    "vendor__code": "HUAWEI",
+    "description": "2 10 Gig SFP+ interface card(used in S5700SI and S5700EI series),2*1",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "CARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Extension slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | Quidway S5300 | Front slot"
+        },
+        {
+            "description": "SFP port 1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernet0/0/1",
+            "protocols": ["TransEth1G", "TransEth01G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "SFP port 2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernet0/0/2",
+            "protocols": ["TransEth1G", "TransEth01G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020XEV"],
+            "part_no": ["ES510X2S"]
+        },
+        "dimensions": {
+            "depth": 69,
+            "height": 22,
+            "width": 200
+        },
+        "power": {
+            "power": 6.5
+        },
+        "weight": {
+            "weight": 0.2
+        }
+    }
+}

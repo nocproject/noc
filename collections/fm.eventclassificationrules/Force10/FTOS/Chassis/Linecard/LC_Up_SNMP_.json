@@ -1,0 +1,25 @@
+{
+    "name": "Force10 | FTOS | Chassis | Linecard | LC Up (SNMP)",
+    "uuid": "f59a8c52-1bbb-4577-bfb6-fc24e47f5bdd",
+    "description": "F10-CHASSIS-MIB::chAlarmObjects, LINECARDUP",
+    "event_class__name": "Chassis | Linecard | LC Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^F10-CHASSIS-MIB::chAlarmVarString$",
+            "value_re": "LINECARDUP: .*Line card (?P<number>\\d+) is up$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^F10-CHASSIS-MIB::chAlarmObjects$"
+        }
+    ]
+}

@@ -1,0 +1,84 @@
+         {
+    "name": "Huawei | CX600-X1-X2 | MPUK",
+    "$collection": "inv.objectmodels",
+    "uuid": "820368a6-55f8-43d4-b17d-b6f3fe12f3b1",
+    "vendor__code": "HUAWEI",
+    "description": "CX600,CX67MPUK0,Main Processing Unit K(Including 1*1G CF Card)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "MPU",
+    "tags": ["lc", "sup"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX600-X1-X2 | MPU"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "MEth0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "RS-232 serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": " input one channel or output one channel 2-Mbit/s clock signals, or one channel 2-MHz clock signals",
+            "direction": "s",
+            "gender": "f",
+            "name": "clk",
+            "protocols": ["G.703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "1 output of 1PPS+TOD time signals",
+            "direction": "s",
+            "gender": "f",
+            "name": "tod",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "RS-485 monitoring serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "RS-485",
+            "protocols": [">RS485"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03030QAB"],
+            "part_no": ["CX67MPUK0"]
+        },
+        "dimensions": {
+            "depth": 226,
+            "height": 20,
+            "width": 194
+        },
+        "power": {
+            "power": 20.0
+        },
+        "weight": {
+            "weight": 0.6
+        }
+    }
+}

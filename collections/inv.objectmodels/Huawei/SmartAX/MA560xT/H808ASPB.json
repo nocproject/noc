@@ -1,0 +1,48 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H808ASPB",
+    "$collection": "inv.objectmodels",
+    "uuid": "b3f8778a-0ea7-4053-910c-89a0f65ae7e0",
+    "vendor__code": "HUAWEI",
+    "description": "The H801ASPB board is a 64-port VOIP subscriber board, providing 64 channels of VoIP POTS access services.",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["lc", "dsp"],
+    "connections": [
+        {
+            "description": "PSTN 0-31",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "PSTN 32-63",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN1",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H808ASPB"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 23
+        },
+        "power": {
+            "power": 31.0
+        }
+    }
+}

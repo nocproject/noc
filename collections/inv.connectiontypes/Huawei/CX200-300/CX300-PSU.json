@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX200-300 | CX300-PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "48e92bcb-4b06-4af1-b308-842e431620cb",
+    "description": "CX300 PSU Slot",
+    "c_group": [],
+    "genders": "mf"
+}

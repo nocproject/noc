@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | MX | MPC3E-3D-NG",
+    "$collection": "inv.objectmodels",
+    "uuid": "dbdf7898-d27f-4f01-a5c0-a052648af5fe",
+    "vendor__code": "JUNIPER",
+    "description": "MPC with two MIC slots and 130gb/s to fabric",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "MIC connection",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic0",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "MIC connection",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic1",
+            "type__name": "Juniper | MX | MIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["MPC3E-3D-NG"],
+            "part_no": ["750-063181"]
+        }
+    }
+}

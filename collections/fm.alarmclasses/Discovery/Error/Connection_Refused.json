@@ -1,0 +1,24 @@
+{
+    "name": "Discovery | Error | Connection Refused",
+    "$collection": "fm.alarmclasses",
+    "uuid": "9e07201b-b14b-4628-b244-d39b7a88de2a",
+    "desciption": "Device refused CLI connection",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarm"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message"
+        }
+    ],
+    "subject_template": "Connection Refused",
+    "body_template": "Managed object refuse connection {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
+    "symptoms": "Connection refused when setup session with managed object",
+    "probable_causes": "Firewall or ACL settings on device or device busy",
+    "recommended_actions": "Check ACL settings on device and it availability"
+}

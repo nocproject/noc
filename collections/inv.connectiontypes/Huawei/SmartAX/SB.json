@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | SB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "bb971327-105e-44e7-8982-aa5089e0c6dc",
+    "description": "MA5600 and MA5616 Service Board connector",
+    "c_group": [],
+    "genders": "mf"
+}

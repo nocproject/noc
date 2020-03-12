@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Network | Link | Link Down (SYSLOG)",
+    "uuid": "bb5c53c0-a2b0-4619-941a-ae8b3e6fb7d1",
+    "description": "%LINK-W-Down:  gi0/3",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%LINK-W-Down:  ?(?P<interface>.+)$"
+        }
+    ]
+}

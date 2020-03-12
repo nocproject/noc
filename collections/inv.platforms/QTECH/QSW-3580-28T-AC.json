@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-3580-28T-AC",
+    "$collection": "inv.platforms",
+    "uuid": "abf9fd2a-376e-460d-b68b-855b68bf3706",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.1.310"
+}

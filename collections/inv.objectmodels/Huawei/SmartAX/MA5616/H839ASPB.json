@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H839ASPB",
+    "$collection": "inv.objectmodels",
+    "uuid": "8e86f38f-b3da-4edc-9f63-77e9a09c3824",
+    "vendor__code": "HUAWEI",
+    "description": "The H839ASPB board is a 64-channel VoIP subscriber board, providing 64-channels VoIP POTS services. Compared with H837ASPB/H838ASPB, H839ASPB supports a new function: direct current-isolated (DC-I) grounding.",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "32 channels of POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN0",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "32 channels of POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN1",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H839ASPB"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 46.0
+        }
+    }
+}

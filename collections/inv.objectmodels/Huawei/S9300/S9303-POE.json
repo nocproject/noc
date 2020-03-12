@@ -1,0 +1,91 @@
+{
+    "name": "Huawei | S9300 | S9303-POE",
+    "$collection": "inv.objectmodels",
+    "uuid": "f48510ff-b442-46c0-9c82-b3d2425cf71d",
+    "vendor__code": "HUAWEI",
+    "description": "S9303 POE Chassis Backplane",
+    "connection_rule__name": "Huawei | Quidway",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Huawei | S9300 | MPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Huawei | S9300 | MPU"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Huawei | S9300 | S9300 FAN"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03020PBT"],
+            "part_no": ["LE02BAKN"]
+        },
+        "dimensions": {
+            "depth": 585,
+            "height": 175,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 1000.0
+        },
+        "rackmount": {
+            "units": 4.0
+        },
+        "weight": {
+            "weight": 31.6
+        }
+    }
+}

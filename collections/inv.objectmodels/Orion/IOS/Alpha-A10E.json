@@ -1,0 +1,157 @@
+{
+    "name": "Orion | IOS | Alpha-A10E",
+    "$collection": "inv.objectmodels",
+    "uuid": "d231004d-8812-45bd-a649-0fffe8c50198",
+    "vendor__code": "ORION",
+    "description": "8  x 10/100 Base-TX RJ45 port, 2 x COMBO (2 x 100/1000Base-X SFP; 2 x 10/100/1000Base-T RJ45)",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "3",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "4",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "5",
+            "direction": "s",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "6",
+            "direction": "s",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "7",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "8",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "9",
+            "direction": "s",
+            "gender": "f",
+            "group": "9",
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 9",
+            "direction": "i",
+            "gender": "f",
+            "group": "9",
+            "name": "sfp9",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "10",
+            "direction": "s",
+            "gender": "f",
+            "group": "10",
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 10",
+            "direction": "i",
+            "gender": "f",
+            "group": "10",
+            "name": "sfp10",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">48VDC"],
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["Alpha A10E", "Alpha-A10E"]
+        },
+        "dimensions": {
+            "depth": 210,
+            "height": 44,
+            "width": 210
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 12.9
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "weight": 1.2
+        }
+    }
+}

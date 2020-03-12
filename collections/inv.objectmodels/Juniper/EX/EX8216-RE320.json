@@ -1,0 +1,54 @@
+{
+    "name": "Juniper | EX | EX8216-RE320",
+    "$collection": "inv.objectmodels",
+    "uuid": "7fc9f054-ce83-43e4-8107-9b1457c47ff4",
+    "vendor__code": "JUNIPER",
+    "description": "Routing Engine for EX8216",
+    "tags": ["lc", "sup"],
+    "connections": [
+        {
+            "description": "Managemen Ethernet",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "AUX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 8216 RE"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["710-020771"]
+        }
+    }
+}

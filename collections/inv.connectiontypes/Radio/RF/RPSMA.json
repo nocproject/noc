@@ -1,0 +1,8 @@
+{
+    "name": "Radio | RF | RP SMA",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f7fa3787-e567-4652-a704-00be81118074",
+    "description": "RF connector used to join coaxial cables",
+    "c_group": [],
+    "genders": "mf"
+}

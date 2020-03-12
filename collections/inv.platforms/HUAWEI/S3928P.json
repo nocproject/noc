@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S3928P",
+    "$collection": "inv.platforms",
+    "uuid": "1f55518e-adac-4e8b-b153-e9cd7a225382",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.10.1.13"
+}

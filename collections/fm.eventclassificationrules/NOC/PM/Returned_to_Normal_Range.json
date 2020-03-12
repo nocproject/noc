@@ -1,0 +1,32 @@
+{
+    "name": "NOC | PM | Returned to Normal Range",
+    "uuid": "7db85eb7-613e-4dd9-bf7d-7b2247af49bb",
+    "event_class__name": "PM | Returned to Normal Range",
+    "preference": 999,
+    "patterns": [
+        {
+            "key_re": "^new_state$",
+            "value_re": "^(?P<new_state>NORMAL)$"
+        },
+        {
+            "key_re": "^metric$",
+            "value_re": "^(?P<metric>.+)$"
+        },
+        {
+            "key_re": "^value$",
+            "value_re": "^(?P<value>.+)$"
+        },
+        {
+            "key_re": "^old_state$",
+            "value_re": "^(?P<old_state>.+)$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^metric_type$",
+            "value_re": "^(?P<metric_type>.+)$"
+        }
+    ]
+}

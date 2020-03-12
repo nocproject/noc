@@ -1,0 +1,23 @@
+{
+    "name": "Alcatel | 7302 | EBLT-C",
+    "$collection": "inv.objectmodels",
+    "uuid": "2f6ba742-2eb0-4073-8d1c-c5fb00d56e41",
+    "vendor__code": "ALU",
+    "description": "The ISAM ADSL L3 48-PORT LINE TERMINATION UNIT for the 7300 ASAM product line. 7302 7342 7360",
+    "connection_rule__name": "Alcatel | 7302",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["EBLT-C"]
+        }
+    }
+}

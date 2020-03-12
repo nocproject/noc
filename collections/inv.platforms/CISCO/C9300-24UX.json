@@ -1,0 +1,7 @@
+{
+    "vendor__name": "Cisco Systems",
+    "name": "C9300-24UX",
+    "$collection": "inv.platforms",
+    "uuid": "a66ac759-558c-4a19-864e-49edcc3f10ba",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.2494"
+}

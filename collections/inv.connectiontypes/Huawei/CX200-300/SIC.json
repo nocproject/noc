@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX200-300 | SIC",
+    "$collection": "inv.connectiontypes",
+    "uuid": "4ccaf4ba-e3a9-4cfe-9dc2-70bd71efc46b",
+    "description": "CX200,CX300 Service Interface Card Slot",
+    "c_group": [],
+    "genders": "mf"
+}

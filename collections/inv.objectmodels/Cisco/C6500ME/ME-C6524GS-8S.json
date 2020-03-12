@@ -1,0 +1,370 @@
+{
+    "name": "Cisco | C6500ME | ME-C6524GS-8S",
+    "$collection": "inv.objectmodels",
+    "uuid": "5dd421af-544f-4c7a-948d-efd7c6e80d2e",
+    "vendor__code": "CISCO",
+    "description": "Cisco ME6524 Switch - 24 10/100/1000 + 8GE SFP, Fan tray",
+    "connection_rule__name": "Cisco | C6500ME",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Compact Flash slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "USB port 0",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB-type-B"
+        },
+        {
+            "description": "USB port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "GigabitEthernet 0/1 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/1_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/2 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/2_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/3 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/3_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/4 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/4_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/5 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/5_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/6 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/6_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/7 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/7_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/8 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/8_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/9 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/9_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/10 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/10_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/11 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/11_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/12 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/12_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/13 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/13_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/14 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/14_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/15 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/15_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/16 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/16_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/17 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/17_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/18 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/18_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/19 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/19_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/20 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/21 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/21_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/22 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/22_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/23 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/23_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/24 SFP port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0/24_sfp",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/0 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/0_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/3_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/5 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/5_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/6 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/6_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/7 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1/7_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "PSU1 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu1",
+            "type__name": "Cisco | C6500ME | PSU"
+        },
+        {
+            "description": "PSU2 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu2",
+            "type__name": "Cisco | C6500ME | PSU"
+        },
+        {
+            "description": " Fan Tray",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Cisco | C6500ME | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ME-C6524GS-8S", "ME-C6524GS-8S="]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.5
+        },
+        "dimensions": {
+            "depth": 482,
+            "height": 66,
+            "width": 440
+        }
+    }
+}

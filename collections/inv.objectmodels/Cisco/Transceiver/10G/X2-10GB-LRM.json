@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 10G | X2-10GB-LRM",
+    "$collection": "inv.objectmodels",
+    "uuid": "c014844d-bae9-453a-a597-fde733f75440",
+    "vendor__code": "CISCO",
+    "description": "Cisco 10GBASE-LRM X2 Module for MMF, 1300-nm wavelength",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "X2 Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1310"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["X2-10GB-LRM"]
+        }
+    }
+}

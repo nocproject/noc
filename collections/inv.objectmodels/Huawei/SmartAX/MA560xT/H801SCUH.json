@@ -1,0 +1,88 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H801SCUH",
+    "$collection": "inv.objectmodels",
+    "uuid": "a1c9ca16-d2cd-4d3f-86ab-beeab76c0acb",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei MA5600T/MA5603T super control unit board integrated with 4 SFP+ port GE/10GE optical uplink",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "tags": ["sup"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA560xT | SCU"
+        },
+        {
+            "description": "100M Base-T maintenance network port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RS-232 serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "RS-485 monitoring serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "esc",
+            "protocols": [">RS485"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801SCUH", "H801SCUH0"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 396,
+            "width": 26
+        },
+        "power": {
+            "power": 89.0
+        }
+    }
+}

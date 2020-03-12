@@ -1,0 +1,22 @@
+{
+    "name": "Xtreme | Summit200 | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "de43ae36-ec46-41d1-b62a-5ec842b67864",
+    "description": "Oct 16 15:11:48 USER: Login failed for user admin through telnet (10.10.1.250)\n\n\n\n",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "message",
+            "value_re": "Login failed for user (?P<user>.*) through"
+        },
+        {
+            "key_re": "profile",
+            "value_re": "^Extreme\\.Summit200$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        }
+    ]
+}

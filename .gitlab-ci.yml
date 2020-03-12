@@ -19,6 +19,7 @@ check labels:
     reports:
       junit: ./build/reports/labels-junit.xml
     expire_in: 7 days
+  allow_failure: true
 
 flake8:
   stage: Lint
@@ -47,6 +48,7 @@ flake8:
     reports:
       junit: ./build/reports/flake8-junit.xml
     expire_in: 7 days
+  allow_failure: true
 
 black:
   stage: Lint
@@ -70,7 +72,7 @@ black:
       - "**/*.py"
   tags:
     - docker
-  allow_failure: false
+  allow_failure: true
 
 # @todo: Rust fmt
 
@@ -165,6 +167,7 @@ futurize:
       - "**/*.py"
   tags:
     - docker
+  allow_failure: true
 
 py2:test:
   stage: Test
@@ -277,7 +280,6 @@ build:Docs:
     - >
       if [ ! -z "$FLIST" ];
       then
-        wget -q -O- https://cdn.getnoc.com/noc/collections%40$(wget -q -O- https://cdn.getnoc.com/noc/collections.latest).tar.bz2 | tar xjf - collections/inv.platforms
         cd docs/
         python ./scripts/build-auto-include.py
         sphinx-build -a -E -b html src/en ../build/docs/en
@@ -301,7 +303,6 @@ build:Master Docs:
   image: registry.getnoc.com/infrastructure/docs:master
   script:
     - set -x
-    - wget -q -O- https://cdn.getnoc.com/noc/collections%40$(wget -q -O- https://cdn.getnoc.com/noc/collections.latest).tar.bz2 | tar xjf - collections/inv.platforms
     - cd docs/
     - python ./scripts/build-auto-include.py
     - NOC_SRC_PATH=../../.. sphinx-build -a -E -b html src/en ../build/docs/en

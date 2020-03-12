@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | C3560E-C3750E | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "2795b08d-95c4-4257-a454-1e940144b28c",
+    "description": "Cisco C3560E - C3750E PWR Slot",
+    "c_group": [],
+    "genders": "mf"
+}

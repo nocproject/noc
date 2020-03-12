@@ -1,0 +1,40 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTR1319P5A",
+    "$collection": "inv.objectmodels",
+    "uuid": "dc76b635-e3ad-4da7-aa05-3c185778000d",
+    "vendor__code": "FINISAR",
+    "description": "1Gbps 1000Base-LX Single-mode Fiber 10km 1310nm GBIC Transceiver Module",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FTR-1319P-5A"]
+        }
+    }
+}

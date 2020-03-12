@@ -1,0 +1,11 @@
+{
+    "name": "Voice | H.248 Termination",
+    "$collection": "inv.technologies",
+    "uuid": "af99724b-d032-486e-8039-74fd782fed26",
+    "description": "H.248/MEGACO Temination (media gateway -> softswitch)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

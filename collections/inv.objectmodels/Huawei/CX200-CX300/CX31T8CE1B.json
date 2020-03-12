@@ -1,0 +1,88 @@
+{
+    "name": "Huawei | CX200-CX300 | CX31T8CE1B",
+    "$collection": "inv.objectmodels",
+    "uuid": "06ab518a-e40d-4759-a688-6dc1d23a29e1",
+    "vendor__code": "HUAWEI",
+    "description": "8-Port,Channelized E1,TDM,DB68,120ohm,Interface Card,1*1",
+    "cr_context": "SIC",
+    "tags": ["lc", "dsp"],
+    "connections": [
+        {
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CX200-300 | SIC"
+        },
+        {
+            "description": "controller E1 X/0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/1",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "controller E1 X/0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/2",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "controller E1 X/0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/3",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "controller E1 X/0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/4",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "controller E1 X/0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/5",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "controller E1 X/0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/6",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "controller E1 X/0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/7",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "controller E1 X/0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "E1_0/8",
+            "protocols": ["E1"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03028947"],
+            "part_no": ["CX31T8CE1B"]
+        }
+    }
+}

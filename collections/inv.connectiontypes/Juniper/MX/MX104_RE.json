@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | MX | MX104 RE",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5be54f85-7aed-4543-b592-33abf24d1a4b",
+    "description": "Juniper MX104 Routing Engine slot",
+    "c_group": [],
+    "genders": "mf"
+}

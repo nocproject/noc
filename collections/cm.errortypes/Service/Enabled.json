@@ -1,0 +1,7 @@
+{
+    "name": "Service | Enabled",
+    "uuid": "93b907f1-a7c4-470e-9528-db3122446510",
+    "description": "Service must be disabled",
+    "subject_template": "Service {{object}} must be disabled",
+    "body_template": "Service {{object.name}} must be disabled"
+}

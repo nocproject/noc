@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-2910-10T-POE",
+    "$collection": "inv.platforms",
+    "uuid": "77131b56-4faa-4c9b-8ccb-ef6df74ee0d7",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.3.26.9"
+}

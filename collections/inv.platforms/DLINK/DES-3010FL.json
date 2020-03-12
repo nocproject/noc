@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DES-3010FL",
+    "$collection": "inv.platforms",
+    "uuid": "26d64a34-690e-4e86-98a7-5edd9cc5cca2",
+    "snmp_sysobjectid": "1.3.6.1.4.1.171.10.63.4"
+}

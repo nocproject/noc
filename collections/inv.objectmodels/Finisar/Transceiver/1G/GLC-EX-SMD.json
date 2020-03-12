@@ -1,0 +1,40 @@
+{
+    "name": "Finisar | Transceiver | 1G | GLC-EX-SMD",
+    "$collection": "inv.objectmodels",
+    "uuid": "f51f745c-a4b2-43a6-a6c6-8fe4816d0143",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-EX long-wavelength, 40km, with DOM",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEEX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEEX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GLC-EX-SMD"]
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S2326TP-EI",
+    "$collection": "inv.platforms",
+    "uuid": "a6c41152-47fc-44f3-9db8-fd66e11a2e03",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.92"
+}

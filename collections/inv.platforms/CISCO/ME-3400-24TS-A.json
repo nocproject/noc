@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "ME-3400-24TS-A",
+    "$collection": "inv.platforms",
+    "uuid": "c44f5653-3294-43f1-bada-b672ac93193b",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.736"
+}

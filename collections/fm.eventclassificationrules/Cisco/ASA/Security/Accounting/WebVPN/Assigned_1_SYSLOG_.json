@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | ASA | Security | Accounting | WebVPN | Assigned #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cd6a7d20-a9da-4372-8b4c-74d7c9455c8d",
+    "description": "Apr 04 2016 10:06:31: %ASA-4-722051: Group <GroupPolicy> User <user> IP <user outside ip> IPv4 Address <user inside ip> IPv6 address <user inside ipv6> assigned to session",
+    "event_class__name": "Security | Accounting | WebVPN | Assigned",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-4-722051: Group <(?P<group>\\S+)> User <(?P<user>\\S+)> IP <(?P<src_ip>\\S+)> IPv4 Address <(?P<dst_ip>\\S+)> IPv6 address <(?P<dst_ipv6>\\S+)>"
+        }
+    ]
+}

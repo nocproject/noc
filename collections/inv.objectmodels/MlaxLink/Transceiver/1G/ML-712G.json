@@ -1,0 +1,32 @@
+{
+    "name": "MlaxLink | Transceiver | 1G | ML-712G",
+    "$collection": "inv.objectmodels",
+    "uuid": "840bc785-ff6f-4be7-b3cb-8f39e1dc762b",
+    "vendor__code": "MLAXLINK",
+    "description": "MlaxLink SFP TX transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ML-712G", "ML-712", "ML-SG-01UTP-SDRJ"]
+        }
+    }
+}

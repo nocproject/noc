@@ -1,0 +1,8 @@
+{
+    "name": "Siklu",
+    "uuid": "07e5977e-9fef-4884-bbe9-6798c1ab7307",
+    "full_name": "Siklu Communication Ltd",
+    "code": ["SIKLU"],
+    "site": "http://www.siklu.com",
+    "$collection": "inv.vendors"
+}

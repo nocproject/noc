@@ -1,0 +1,22 @@
+{
+    "name": "Xtreme | XOS | Security | Authentication | Login (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4164e36e-77ef-4d3f-aad3-61e0c5f1c56a",
+    "description": "Oct 16 19:12:38 AAA: Login passed for user admin through telnet (10.25.1.250)\n\n",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "message",
+            "value_re": "Login passed for user (?P<user>.*) through"
+        },
+        {
+            "key_re": "profile",
+            "value_re": "^Extreme\\.XOS$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        }
+    ]
+}

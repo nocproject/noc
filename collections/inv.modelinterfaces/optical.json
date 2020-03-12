@@ -1,0 +1,64 @@
+{
+    "name": "optical",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "1ebf0a6a-5809-4c21-bae8-d93317763f25",
+    "description": "Additional interface for describing optical part of transceiver",
+    "attrs": [
+        {
+            "name": "laser_type",
+            "type": "str",
+            "description": "Laser type: FP, VCSEL, DFB",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "tx_wavelength",
+            "type": "int",
+            "description": "Transmit wavelength, nm",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "rx_wavelength",
+            "type": "int",
+            "description": "Receive wavelength, nm",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "min_tx_power",
+            "type": "float",
+            "description": "Minimum transmit level, dBm",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "max_tx_power",
+            "type": "float",
+            "description": "Maximum transmit level, dBm",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "min_rx_power",
+            "type": "float",
+            "description": "Minimum receive level, dBm",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "max_rx_power",
+            "type": "float",
+            "description": "Maximum receive level, dBm",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "bidi",
+            "type": "bool",
+            "description": "True if singlefiber, WDM. Otherwise False",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

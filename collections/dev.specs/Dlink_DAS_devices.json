@@ -1,0 +1,168 @@
+{
+    "name": "Dlink DAS devices",
+    "$collection": "dev.specs",
+    "uuid": "f8d66ac4-e6e3-4337-9a94-82b4358d02a9",
+    "description": "Specs for DLink DAS DSLAM",
+    "revision": 1,
+    "quiz__name": "General DSLAM",
+    "author": "avs",
+    "profile__name": "DLink.DAS",
+    "answers": [
+        {
+            "name": "vendor",
+            "type": "str",
+            "value": "Huawei"
+        },
+        {
+            "name": "has.l3",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "has.cli",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "has.snmp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "has.slots",
+            "type": "bool",
+            "value": "false"
+        },
+        {
+            "name": "support.adsl_mib",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.1"
+        },
+        {
+            "name": "get.version.cli.1",
+            "type": "cli",
+            "value": "get system info"
+        },
+        {
+            "name": "get.version.snmp.1",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.1.1.0"
+        },
+        {
+            "name": "get.version.snmp.2",
+            "type": "snmp-get",
+            "value": "1.3.6.1.4.1.171.10.65.1.6.1.3.0"
+        },
+        {
+            "name": "has.stp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.stp.cli",
+            "type": "cli",
+            "value": "get stp info"
+        },
+        {
+            "name": "get.caps.stp.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.17.2.1.0"
+        },
+        {
+            "name": "get.neighbors.stp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.2.15"
+        },
+        {
+            "name": "has.lacp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.lacp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.1.1"
+        },
+        {
+            "name": "get.caps.lacp.cli",
+            "type": "cli",
+            "value": "get lacp aggrport info"
+        },
+        {
+            "name": "get.neighbors.lacp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1"
+        },
+        {
+            "name": "get.fqdn.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.1.5.0"
+        },
+        {
+            "name": "get.interface_name.cli",
+            "type": "cli",
+            "value": "show interface"
+        },
+        {
+            "name": "get.interface_name.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.2.2"
+        },
+        {
+            "name": "get.interface.dsl.1",
+            "type": "cli",
+            "value": "get interface stats"
+        },
+        {
+            "name": "get.interface.dsl.2",
+            "type": "cli",
+            "value": "get vlan curr info"
+        },
+        {
+            "name": "get.interface_ip.cli",
+            "type": "cli",
+            "value": "get ethernet intf"
+        },
+        {
+            "name": "get.interface_ip.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.4.20"
+        },
+        {
+            "name": "get.interface_agg.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1.1.12"
+        },
+        {
+            "name": "get.interface_agg.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1.1.13"
+        },
+        {
+            "name": "get.interface_load.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.31.1.1"
+        },
+        {
+            "name": "get.inventory.cli.1",
+            "type": "cli",
+            "value": "get system manuf info"
+        },
+        {
+            "name": "get.xdsl.line.metrics.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.10.94.1.1.1"
+        },
+        {
+            "name": "get.interface.dsl.3",
+            "type": "cli",
+            "value": "get bridge port intf"
+        }
+    ],
+    "changes": []
+}

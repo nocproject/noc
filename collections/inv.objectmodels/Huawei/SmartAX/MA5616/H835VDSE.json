@@ -1,0 +1,47 @@
+{
+    "name": "Huawei | SmartAX | MA5616 | H835VDSE",
+    "$collection": "inv.objectmodels",
+    "uuid": "cabc68f8-56a8-4aac-9f3c-b727fa627e0f",
+    "vendor__code": "HUAWEI",
+    "description": "MA5616 H835VDSE,24-port VDSL2 over POTS Service Board(with 600 ohm Impedance Splitter)-1*1",
+    "cr_context": "BOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | SmartAX | MA5616 | SB"
+        },
+        {
+            "description": "24 channels of VDSL2 over POTS",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE",
+            "protocols": ["VDSL2"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        },
+        {
+            "description": "24 channels of the POTS signals",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN",
+            "protocols": ["PSTN"],
+            "type__name": "Huawei | Electrical | Champ 64-pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H835VDSE"]
+        },
+        "dimensions": {
+            "depth": 21,
+            "height": 265,
+            "width": 220
+        },
+        "power": {
+            "power": 32.0
+        }
+    }
+}

@@ -1,0 +1,137 @@
+{
+    "name": "MikroTik | RouterBoard | CCR1009-7G-1C-1S+",
+    "$collection": "inv.objectmodels",
+    "uuid": "3edb5de4-92e2-41a6-aacd-6217dae9867e",
+    "vendor__code": "MIKROTIK",
+    "description": null,
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "combo1",
+            "direction": "s",
+            "gender": "f",
+            "group": "combo1",
+            "name": "combo1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "TransEth1G", "TransEth10G"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "combo1",
+            "direction": "i",
+            "gender": "f",
+            "group": "combo1",
+            "name": "combo1",
+            "internal_name": "sfpcombo1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ether1",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether2",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether3",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether4",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether5",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether6",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ether7",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "sfp-sfpplus1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp-sfpplus1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB type AB",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC"],
+            "type__name": "Power | IEC 60130-10"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC"],
+            "type__name": "Power | IEC 60130-10"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CCR1009-7G-1C-1S+"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

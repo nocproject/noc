@@ -1,0 +1,8 @@
+{
+    "name": "System | Hostname is Empty",
+    "$collection": "cm.errortypes",
+    "uuid": "ca9694e8-95b1-4ded-9d7c-3bd19ed18ca6",
+    "description": "Hostname must not be empty",
+    "subject_template": "Hostname is empty",
+    "body_template": "Hostname must not be empty"
+}

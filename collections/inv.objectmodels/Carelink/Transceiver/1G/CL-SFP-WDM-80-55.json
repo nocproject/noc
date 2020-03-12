@@ -1,0 +1,32 @@
+{
+    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-80-55",
+    "$collection": "inv.objectmodels",
+    "uuid": "7366835c-437e-4557-a4a9-fefa23a37528",
+    "vendor__code": "CARELINK",
+    "description": "Carelink RX-1490/TX-1550 nm Single-mode Bi-directional, 80km, SC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1490", "<1000BASELX-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CL-SFP-WDM-80-55"]
+        }
+    }
+}

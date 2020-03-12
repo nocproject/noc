@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Chassis | CPU | CoPP Drop (SYSLOG)",
+    "uuid": "af51618d-0f56-4e12-bd81-1ed21683c7dc",
+    "description": "Jul 20 2012 06:26:49 od-agg-2-starizkogo20d1 %%01DEFD/4/CPCAR_DROP_MPU(l)[29]:Some packets are dropped by cpcar on the MPU. (Protocol=reserved-multicast, Drop-Count=03)",
+    "event_class__name": "Chassis | CPU | CoPP Drop",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "CPCAR_DROP_MPU\\(l\\)\\[\\d+\\]:Some packets are dropped by cpcar on the MPU.+Protocol=(?P<proto>\\S+), Drop-Count=(?P<count>\\S+)\\)$"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Nexus 3k | 3064 SUP",
+    "$collection": "inv.connectiontypes",
+    "uuid": "e3ff2153-1819-4855-99e9-dd7edc808396",
+    "description": "Cisco Nexus 3064 SUP connection (internal motherboard)",
+    "c_group": [],
+    "genders": "mf"
+}

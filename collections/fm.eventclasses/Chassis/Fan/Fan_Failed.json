@@ -1,0 +1,41 @@
+{
+    "name": "Chassis | Fan | Fan Failed",
+    "$collection": "fm.eventclasses",
+    "uuid": "c606a185-2ace-43c5-8a4d-58f0cbf0e4b8",
+    "description": "Fan failed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Fan Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Fan Failed: {{name}}",
+    "body_template": "Fan Unit Failed: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Fan | Fan Failed"
+        }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Suppress repeated events",
+            "condition": "True",
+            "event_class__name": "Chassis | Fan | Fan Failed",
+            "match_condition": {
+                "managed_object": "event.managed_object.id",
+                "vars__name": "vars['name']"
+            },
+            "window": 120,
+            "suppress": true
+        }
+    ]
+}

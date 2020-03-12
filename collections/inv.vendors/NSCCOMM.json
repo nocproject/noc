@@ -1,0 +1,8 @@
+{
+    "name": "NSCComm",
+    "uuid": "a37417ff-5463-4966-97d5-340d20b7d29d",
+    "full_name": "NSC Communication",
+    "code": ["NSCCOMM"],
+    "site": "http://www.nsc-com.com/",
+    "$collection": "inv.vendors"
+}

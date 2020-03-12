@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Electrical | RSP22",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c6509995-cddf-4970-8c59-f1a3bfe79d8e",
+    "description": "Cisco redundant power supply 22 pin connector",
+    "c_group": [],
+    "genders": "mf"
+}

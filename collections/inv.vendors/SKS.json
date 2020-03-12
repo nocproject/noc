@@ -1,0 +1,8 @@
+{
+    "name": "SKS",
+    "uuid": "3715fab5-133d-4c45-988f-bdf33a2971f5",
+    "full_name": "SVYAZKOMPLEKTSERVICE, LLC.",
+    "code": ["SKS"],
+    "site": "https://www.nposkss.ru",
+    "$collection": "inv.vendors"
+}

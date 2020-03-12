@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | CX&NE | CX600-X3A FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "667efc2b-e696-415d-9831-4ca5660c5a68",
+    "description": "CX600-X3A Fan slot",
+    "c_group": [],
+    "genders": "mf"
+}

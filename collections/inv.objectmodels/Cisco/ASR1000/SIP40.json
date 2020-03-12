@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | ASR1000 | SIP40",
+    "$collection": "inv.objectmodels",
+    "uuid": "a9f8169e-4afe-4345-b9e3-64388eb0d48c",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR1000 Series SPA Interface Processor 40G",
+    "cr_context": "SIP",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR1000 | SIP"
+        },
+        {
+            "description": "SPA subslot x/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "spa0",
+            "type__name": "Cisco | SPA"
+        },
+        {
+            "description": "SPA subslot x/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "spa1",
+            "type__name": "Cisco | SPA"
+        },
+        {
+            "description": "SPA subslot x/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "spa2",
+            "type__name": "Cisco | SPA"
+        },
+        {
+            "description": "SPA subslot x/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "spa3",
+            "type__name": "Cisco | SPA"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1000-SIP40"]
+        }
+    }
+}
