@@ -210,7 +210,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C2924-XL"]
+            "part_no": ["WS-C2924-XL"],
+            "cpe_22": "cpe:/h:cisco:catalyst_2900xl:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_2900xl:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

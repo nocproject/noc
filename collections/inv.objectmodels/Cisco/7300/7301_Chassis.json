@@ -8,7 +8,9 @@
     "connections": [],
     "data": {
         "asset": {
-            "part_no": ["Cisco7301", "CISCO7301"]
+            "part_no": ["Cisco7301", "CISCO7301"],
+            "cpe_22": "cpe:/h:cisco:7300_router:-",
+            "cpe_23": "cpe:2.3:h:cisco:7300_router:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

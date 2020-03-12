@@ -26,7 +26,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["CISCO1841"]
+            "part_no": ["CISCO1841"],
+            "cpe_22": "cpe:/h:cisco:1841_integrated_service_router:-",
+            "cpe_23": "cpe:2.3:h:cisco:1841_integrated_service_router:-:*:*:*:*:*:*:*"
         },
         "dimensions": {
             "depth": 274,

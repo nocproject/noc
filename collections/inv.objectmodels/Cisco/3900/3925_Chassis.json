@@ -45,7 +45,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["CISCO3925-CHASSIS"]
+            "part_no": ["CISCO3925-CHASSIS"],
+            "cpe_22": "cpe:/h:cisco:3925_integrated_services_router:-",
+            "cpe_23": "cpe:2.3:h:cisco:3925_integrated_services_router:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

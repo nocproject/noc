@@ -69,7 +69,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C6503-E", "WS-C6503-E="]
+            "part_no": ["WS-C6503-E", "WS-C6503-E="],
+            "cpe_22": "cpe:/h:cisco:catalyst_6503-e:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_6503-e:-:*:*:*:*:*:*:*"
         },
         "dimensions": {
             "depth": 552,

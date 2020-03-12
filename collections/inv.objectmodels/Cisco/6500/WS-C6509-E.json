@@ -134,7 +134,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C6509-E"]
+            "part_no": ["WS-C6509-E"],
+            "cpe_22": "cpe:/h:cisco:catalyst_6509-e:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_6509-e:-:*:*:*:*:*:*:*"
         },
         "dimensions": {
             "depth": 460,

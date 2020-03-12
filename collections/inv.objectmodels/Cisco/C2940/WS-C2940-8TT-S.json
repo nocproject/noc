@@ -98,7 +98,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C2940-8TT-S"]
+            "part_no": ["WS-C2940-8TT-S"],
+            "cpe_22": "cpe:/h:cisco:catalyst_2940:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_2940:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

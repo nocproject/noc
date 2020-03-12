@@ -190,7 +190,9 @@
             "intake": "f"
         },
         "asset": {
-            "part_no": ["ASR-9010-DC-V2"]
+            "part_no": ["ASR-9010-DC-V2"],
+            "cpe_22": "cpe:/h:cisco:asr_9010:-",
+            "cpe_23": "cpe:2.3:h:cisco:asr_9010:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

@@ -280,7 +280,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3560G-24TS-S", "WS-C3560G-24TS"]
+            "part_no": ["WS-C3560G-24TS-S", "WS-C3560G-24TS"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3560:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3560:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

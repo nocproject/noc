@@ -285,7 +285,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C2950G-24-EI-DC"]
+            "part_no": ["WS-C2950G-24-EI-DC"],
+            "cpe_22": "cpe:/h:cisco:catalyst_2950:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_2950:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

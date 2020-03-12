@@ -258,7 +258,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ME-C3750-24TE-M", "ME-C3750-24TE"]
+            "part_no": ["ME-C3750-24TE-M", "ME-C3750-24TE"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3750_metro:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3750_metro:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

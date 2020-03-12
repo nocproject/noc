@@ -231,7 +231,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3850-24T"]
+            "part_no": ["WS-C3850-24T"],
+            "cpe_22": "cpe:/h:cisco:ws-c3850:-",
+            "cpe_23": "cpe:2.3:h:cisco:ws-c3850:-:*:*:*:*:*:*:*"
         },
         "dimensions": {
             "depth": 460,

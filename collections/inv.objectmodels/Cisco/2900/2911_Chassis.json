@@ -39,7 +39,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["CISCO2911/K9"]
+            "part_no": ["CISCO2911/K9"],
+            "cpe_22": "cpe:/h:cisco:2911_integrated_services_router:-",
+            "cpe_23": "cpe:2.3:h:cisco:2911_integrated_services_router:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

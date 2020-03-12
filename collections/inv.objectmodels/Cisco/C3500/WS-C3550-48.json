@@ -482,7 +482,9 @@
             "intake": "l"
         },
         "asset": {
-            "part_no": ["WS-C3550-48-SMI", "WS-C3550-48", "WS-C3550-48-EMI"]
+            "part_no": ["WS-C3550-48-SMI", "WS-C3550-48", "WS-C3550-48-EMI"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3550:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3550:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true
