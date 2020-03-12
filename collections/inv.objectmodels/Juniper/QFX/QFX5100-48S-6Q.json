@@ -540,7 +540,9 @@
         "asset": {
             "description": ["QFX5100-48S-6Q"],
             "order_part_no": ["QFX5100-48S-AFI", "QFX5100-48S-AFO", "QFX5100-48S-DC-AFI", "QFX5100-48S-DC-AFO"],
-            "part_no": ["QFX5100-48S-6Q", "650-064377"]
+            "part_no": ["QFX5100-48S-6Q", "650-064377"],
+            "cpe_22": "cpe:/h:juniper:qfx5100:-",
+            "cpe_23": "cpe:2.3:h:juniper:qfx5100:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

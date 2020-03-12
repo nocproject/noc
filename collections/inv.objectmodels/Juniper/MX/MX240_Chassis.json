@@ -85,7 +85,9 @@
             "intake": "r"
         },
         "asset": {
-            "order_part_no": ["MX240"]
+            "order_part_no": ["MX240"],
+            "cpe_22": "cpe:/h:juniper:mx240:-",
+            "cpe_23": "cpe:2.3:h:juniper:mx240:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

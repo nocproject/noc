@@ -113,7 +113,9 @@
             "intake": "r"
         },
         "asset": {
-            "order_part_no": ["MX480"]
+            "order_part_no": ["MX480"],
+            "cpe_22": "cpe:/h:juniper:mx480:-",
+            "cpe_23": "cpe:2.3:h:juniper:mx480:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true
