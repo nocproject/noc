@@ -158,7 +158,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ASR-9001", "ASR-9001-S"]
+            "part_no": ["ASR-9001", "ASR-9001-S"],
+            "cpe_22": "cpe:/h:cisco:asr_9001:-",
+            "cpe_23": "cpe:2.3:h:cisco:asr_9001:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

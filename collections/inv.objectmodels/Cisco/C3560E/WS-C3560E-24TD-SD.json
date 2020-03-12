@@ -276,7 +276,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3560E-24TD-SD", "WS-C3560E-24TD-E", "WS-C3560E-24TD-S"]
+            "part_no": ["WS-C3560E-24TD-SD", "WS-C3560E-24TD-E", "WS-C3560E-24TD-S"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3560-e:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3560-e:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

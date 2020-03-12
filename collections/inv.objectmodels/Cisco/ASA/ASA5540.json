@@ -96,7 +96,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ASA5540"]
+            "part_no": ["ASA5540"],
+            "cpe_22": "cpe:/h:cisco:asa_5500:-",
+            "cpe_23": "cpe:2.3:h:cisco:asa_5500:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

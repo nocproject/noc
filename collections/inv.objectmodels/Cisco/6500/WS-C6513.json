@@ -161,7 +161,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C6513"]
+            "part_no": ["WS-C6513"],
+            "cpe_22": "cpe:/h:cisco:catalyst_6513:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_6513:-:*:*:*:*:*:*:*"
         },
         "dimensions": {
             "depth": 460,

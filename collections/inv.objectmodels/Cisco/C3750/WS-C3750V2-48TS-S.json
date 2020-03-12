@@ -496,7 +496,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750V2-48TS-S"]
+            "part_no": ["WS-C3750V2-48TS-S"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3750:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3750:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

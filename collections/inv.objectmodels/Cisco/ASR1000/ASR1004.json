@@ -56,7 +56,9 @@
             "inlet": "f"
         },
         "asset": {
-            "part_no": ["ASR1004"]
+            "part_no": ["ASR1004"],
+            "cpe_22": "cpe:/h:cisco:asr_1004:-",
+            "cpe_23": "cpe:2.3:h:cisco:asr_1004:-:*:*:*:*:*:*:*"
         },
         "dimensions": {
             "depth": 461,

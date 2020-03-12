@@ -119,7 +119,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["CISCO7201"]
+            "part_no": ["CISCO7201"],
+            "cpe_22": "cpe:/h:cisco:7200_router:-",
+            "cpe_23": "cpe:2.3:h:cisco:7200_router:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

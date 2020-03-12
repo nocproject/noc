@@ -468,7 +468,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C4948", "WS-C4948-S", "WS-C4948-E"]
+            "part_no": ["WS-C4948", "WS-C4948-S", "WS-C4948-E"],
+            "cpe_22": "cpe:/h:cisco:catalyst_4948:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_4948:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

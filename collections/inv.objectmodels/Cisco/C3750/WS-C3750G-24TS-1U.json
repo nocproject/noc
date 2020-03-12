@@ -280,7 +280,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750G-24TS-S1U", "WS-C3750G-24TS-E1U"]
+            "part_no": ["WS-C3750G-24TS-S1U", "WS-C3750G-24TS-E1U"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3750g:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3750g:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

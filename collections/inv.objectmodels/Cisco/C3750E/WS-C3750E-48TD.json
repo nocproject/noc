@@ -442,7 +442,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750E-48TD", "WS-C3750E-48TD-E", "WS-C3750E-48TD-S"]
+            "part_no": ["WS-C3750E-48TD", "WS-C3750E-48TD-E", "WS-C3750E-48TD-S"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3750-e:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3750-e:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

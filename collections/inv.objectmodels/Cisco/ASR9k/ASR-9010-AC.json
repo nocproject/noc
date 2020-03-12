@@ -174,7 +174,9 @@
             "intake": "f"
         },
         "asset": {
-            "part_no": ["ASR-9010-AC"]
+            "part_no": ["ASR-9010-AC"],
+            "cpe_22": "cpe:/h:cisco:asr_9010:-",
+            "cpe_23": "cpe:2.3:h:cisco:asr_9010:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

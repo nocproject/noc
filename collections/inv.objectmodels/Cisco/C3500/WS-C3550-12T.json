@@ -136,7 +136,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3550-12T", "WS-C3550-12T-EMI"]
+            "part_no": ["WS-C3550-12T", "WS-C3550-12T-EMI"],
+            "cpe_22": "cpe:/h:cisco:catalyst_3550:-",
+            "cpe_23": "cpe:2.3:h:cisco:catalyst_3550:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true

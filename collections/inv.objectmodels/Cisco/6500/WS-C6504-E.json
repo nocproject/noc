@@ -68,7 +68,9 @@
   	],
   	"data": {
 		"asset": {
-	  		"part_no": ["WS-C6504-E"]
+	  		"part_no": ["WS-C6504-E"],
+			"cpe_22": "cpe:/h:cisco:catalyst_6504-e:-",
+			"cpe_23": "cpe:2.3:h:cisco:catalyst_6504-e:-:*:*:*:*:*:*:*"
 		},
 		"dimensions": {
 			"depth": 552,
