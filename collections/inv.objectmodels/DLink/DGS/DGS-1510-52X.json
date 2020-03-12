@@ -445,7 +445,9 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["DGS-1510-52X"]
+            "part_no": ["DGS-1510-52X"],
+            "cpe_22": "cpe:/h:dlink:dgs-1510-52x:-",
+            "cpe_23": "cpe:2.3:h:dlink:dgs-1510-52x:-:*:*:*:*:*:*:*"
         },
         "management": {
             "managed": true
