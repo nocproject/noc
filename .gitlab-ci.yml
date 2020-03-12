@@ -15,6 +15,7 @@ test:empty:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
+    POSTGRES_PASSWORD: noc
   services:
     - name: registry.getnoc.com/infrastructure/postgres:master
       alias: postgres 
@@ -43,6 +44,7 @@ test:with data:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
+    POSTGRES_PASSWORD: noc
   services:
     - name: registry.getnoc.com/infrastructure/postgres:master
       alias: postgres 
