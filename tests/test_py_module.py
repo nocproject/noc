@@ -23,6 +23,7 @@ ALLOW_XFAIL = {
     "noc.services.web.apps.kb.parsers.mediawiki",
     "noc.services.classifier.xrulelookup",
     "noc.commands.translation",
+    "noc.scripts.build-collections",
     "noc.scripts.build-pop-links",
     "noc.scripts.build-models",
     "noc.scripts.build.compile-handlebars",
