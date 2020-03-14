@@ -12,11 +12,4 @@ exclude=.git,var,share
 #    Needs global refactoring, postponed for a while
 # W503 line break before binary operator
 #    Not PEP8 compliant
-# W605 invalid escape sequence 'x'
-#    As of Python 3.6, a backslash-character pair that is
-#    not a valid escape sequence now generates a DeprecationWarning.
-#    Although this will eventually become a SyntaxError,
-#    that will not be for several Python releases.
-#    Not an actual error for Python2 and breaks already passed tests.
-#    Postponed for a while
-ignore=E203,E402,E501,F403,F405,W503,W605
+ignore=E203,E402,E501,F403,F405,W503
