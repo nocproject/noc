@@ -64,7 +64,7 @@ class VPNCheck(DiscoveryCheck):
     def sync_vpns(self, vpns):
         """
         Apply VPNs to database.
-        Temporary solution, applies only type == "VRF"
+        Temporary solution, applies only type == "vrf"
         :param vpns:
         :return:
         """
@@ -76,7 +76,7 @@ class VPNCheck(DiscoveryCheck):
         # Apply changes
         for vpn_id in vpns:
             vpn = vpns[vpn_id]
-            if vpn.type != "VRF":
+            if vpn.type != "vrf":
                 continue  # @todo: Only VRFs for now
             if vpn_id in vrfs:
                 # Confirmed VPN, apply changes and touch
@@ -85,7 +85,7 @@ class VPNCheck(DiscoveryCheck):
         # Create new VPNs
         for vpn_id in set(vpns) - seen:
             vpn = vpns[vpn_id]
-            if vpn.type != "VRF":
+            if vpn.type != "vrf":
                 continue  # @todo: Only VRFs for now
             self.create_vpn(vpn)
 
