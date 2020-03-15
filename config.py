@@ -247,7 +247,6 @@ class Config(BaseConfig):
         alarm_close_retries = IntParameter(default=5)
         outage_refresh = SecondsParameter(default="60s")
         total_outage_refresh = SecondsParameter(default="60s")
-        enable_rca_neighbor_cache = BooleanParameter(default=False)
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")

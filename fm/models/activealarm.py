@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -709,31 +709,7 @@ class ActiveAlarm(Document):
                 bulk += [UpdateOne({"_id": root}, op)]
         return bulk
 
-    def set_root_plain(self, root_alarm):
-        """
-        Set root cause
-        """
-        if self.root:
-            return
-        if self.id == root_alarm.id:
-            raise Exception("Cannot set self as root cause")
-        # Detect loop
-        root = root_alarm
-        while root and root.root:
-            root = root.root
-            if root == self.id:
-                return
-            root = get_alarm(root)
-        # Set root
-        self.root = root_alarm.id
-        self.log_message("Alarm %s has been marked as root cause" % root_alarm.id)
-        # self.save()  Saved by log_message
-        root_alarm.log_message("Alarm %s has been marked as child" % self.id)
-        root_alarm.update_summary()
-        # Clear pending notifications
-        # Notification.purge_delayed("alarm:%s" % self.id)
-
-    def set_root_rca_cache(self, root_alarm):
+    def set_root(self, root_alarm):
         """
         Set root cause
         """
@@ -752,11 +728,6 @@ class ActiveAlarm(Document):
         # self.save()  Saved by log_message
         root_alarm.log_message("Alarm %s has been marked as child" % self.id, bulk=bulk)
         ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
-
-    if config.fm.enable_rca_neighbor_cache:
-        set_root = set_root_rca_cache
-    else:
-        set_root = set_root_plain
 
     def escalate(self, tt_id, close_tt=False, wait_tt=None):
         self.escalation_tt = tt_id

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ./noc rca-debug
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -52,10 +52,6 @@ class Command(BaseCommand):
             return s.split("#", 1)[0]
 
         connect()
-        if config.fm.enable_rca_neighbor_cache:
-            self.topology_rca = self.topology_rca_neighbor
-        else:
-            self.topology_rca = self.topology_rca_uplink
         try:
             a0 = ArchivedAlarm.objects.get(id=alarm[0])
         except ArchivedAlarm.DoesNotExist:
@@ -122,7 +118,7 @@ class Command(BaseCommand):
                 if hasattr(amap[a], "_trace_root"):
                     self.print("%s -> %s" % (a, amap[a]._trace_root))
 
-    def topology_rca_neighbor(self, alarm, alarms, ts=None):
+    def topology_rca(self, alarm, alarms, ts=None):
         def can_correlate(a1, a2):
             """
             Check if alarms can be correlated together (within corellation window)
@@ -213,68 +209,6 @@ class Command(BaseCommand):
         # Correlate all downlink alarms
         for a in iter_downlink_alarms(alarm):
             correlate(a)
-        self.print("<<< done")
-
-    def topology_rca_uplink(self, alarm, alarms, seen=None, ts=None):
-        def can_correlate(a1, a2):
-            return (
-                not config.correlator.topology_rca_window
-                or (a1.timestamp - a2.timestamp).total_seconds()
-                <= config.correlator.topology_rca_window
-            )
-
-        ts = ts or alarm.timestamp
-        seen = seen or set()
-        self.print(
-            ">>> topology_rca(%s, %s)" % (alarm.id, "{%s}" % ", ".join(str(x) for x in seen))
-        )
-        if hasattr(alarm, "_trace_root"):
-            self.print("<<< already correlated")
-            return
-        if alarm.id in seen:
-            self.print("<<< already seen")
-            return  # Already correlated
-        seen.add(alarm.id)
-        o_id = alarm.managed_object.id
-        # Get neighbor objects
-        neighbors = set()
-        uplinks = []
-        ou = ObjectData.get_by_id(object=o_id)
-        if ou and ou.uplinks:
-            uplinks = ou.uplinks
-            neighbors.update(uplinks)
-        for du in ObjectData.get_neighbors(o_id):
-            neighbors.add(du)
-        if not neighbors:
-            self.print("<<< no neighbors")
-            return
-        # Get neighboring alarms
-        na = {}
-        for n in neighbors:
-            a = alarms.get(n)
-            if a and a.timestamp <= ts:
-                na[n] = a
-        self.print(
-            "    Neighbor alarms: %s"
-            % ", ".join(
-                "%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name)
-                for x in na
-            )
-        )
-        self.print("    Uplinks: %s" % ", ".join(ManagedObject.get_by_id(u).name for u in uplinks))
-        if uplinks and len([na[o] for o in uplinks if o in na]) == len(uplinks):
-            # All uplinks are faulty
-            # uplinks are ordered according to path length
-            # Correlate with first applicable
-            for u in uplinks:
-                a = na[u]
-                if can_correlate(alarm, a):
-                    self.print("+++ SET ROOT %s -> %s" % (alarm.id, a.id))
-                    alarm._trace_root = a.id
-                    break
-        # Correlate neighbors' alarms
-        for d in na:
-            self.topology_rca_uplink(na[d], alarms, seen, ts)
         self.print("<<< done")
 
 
