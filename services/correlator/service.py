@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019, The NOC Project
+# Copyright (C) 2007-2020, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,6 @@ from threading import Lock
 
 # Third-party modules
 import six
-from mongoengine.queryset import Q
 
 # NOC modules
 from noc.config import config
@@ -60,10 +59,6 @@ class CorrelatorService(Service):
         self.scheduler = None
         self.rca_lock = Lock()
         self.topology_rca_lock = Lock()
-        if config.fm.enable_rca_neighbor_cache:
-            self.topology_rca = self.topology_rca_neighbor
-        else:
-            self.topology_rca = self.topology_rca_uplinks
 
     def on_activate(self):
         self.scheduler = Scheduler(
@@ -581,10 +576,9 @@ class CorrelatorService(Service):
                     break
         self.logger.info("[%s] Disposition complete", event_id)
 
-    def topology_rca_neighbor(self, alarm):
+    def topology_rca(self, alarm):
         """
-        RCA neighbor cache implementation of `topology_rca`.
-        Used when `fm.enable_rca_neighbor_cache` config parameter is enabled
+        Topology-based RCA
         :param alarm:
         :return:
         """
@@ -669,56 +663,6 @@ class CorrelatorService(Service):
         # Correlate all downlink alarms
         for a in iter_downlink_alarms(alarm):
             correlate(a)
-        self.logger.debug("[%s] Correlation completed", alarm.id)
-
-    def topology_rca_uplinks(self, alarm, seen=None):
-        """
-        Legacy uplink-based implementation of `topology_rca`.
-        Used when `fm.enable_rca_neighbor_cache` config parameter is disabled
-        :param alarm:
-        :param seen:
-        :return:
-        """
-
-        def can_correlate(a1, a2):
-            return (
-                not config.correlator.topology_rca_window
-                or (a1.timestamp - a2.timestamp).total_seconds()
-                <= config.correlator.topology_rca_window
-            )
-
-        self.logger.debug("[%s] Topology RCA", alarm.id)
-        seen = seen or set()
-        if alarm.root or alarm.id in seen:
-            self.logger.debug("[%s] Already correlated", alarm.id)
-            return  # Already correlated
-        seen.add(alarm.id)
-        # Get neighboring alarms
-        na = {}
-        # Downlinks
-        q = Q(alarm_class=alarm.alarm_class.id, uplinks=alarm.managed_object.id)
-        # Uplinks
-        # @todo: Try to use $graphLookup to find affinity alarms
-        if alarm.uplinks:
-            q |= Q(alarm_class=alarm.alarm_class.id, managed_object__in=list(alarm.uplinks))
-        for a in ActiveAlarm.objects.filter(q):
-            na[a.managed_object.id] = a
-        # Correlate with uplinks
-        if alarm.uplinks and len([na[o] for o in alarm.uplinks if o in na]) == len(alarm.uplinks):
-            # All uplinks are faulty
-            # uplinks are ordered according to path length
-            # Correlate with first applicable
-            self.logger.info("[%s] All uplinks are faulty. Correlating", alarm.id)
-            for u in alarm.uplinks:
-                a = na[u]
-                if can_correlate(alarm, a):
-                    self.logger.info("[%s] Set root to %s", alarm.id, a.id)
-                    alarm.set_root(a)
-                    metrics["alarm_correlated_topology"] += 1
-                    break
-        # Correlate neighbors' alarms
-        for d in na:
-            self.topology_rca_uplinks(na[d], seen)
         self.logger.debug("[%s] Correlation completed", alarm.id)
 
 
