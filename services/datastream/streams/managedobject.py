@@ -71,6 +71,7 @@ class ManagedObjectDataStream(DataStream):
         cls._apply_interfaces(mo, r)
         cls._apply_resource_groups(mo, r)
         cls._apply_asset(mo, r)
+        cls._apply_config(mo, r)
         return r
 
     @staticmethod
@@ -389,6 +390,13 @@ class ManagedObjectDataStream(DataStream):
                     }
                 ]
         return r
+
+    @staticmethod
+    def _apply_config(mo, r):
+        rev = mo.config.get_last_revision()
+        if not rev:
+            return
+        r["config"] = {"revision": str(rev.id), "size": rev.length, "updated": rev.ts.isoformat()}
 
     @classmethod
     def get_meta(cls, data):

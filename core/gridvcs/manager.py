@@ -98,6 +98,10 @@ class GridVCSObjectProxy(object):
             r = g.find_revision(self.id, r)
         return g.get(self.id, r)
 
+    def get_last_revision(self):
+        g = self.get_gridvcs()
+        return g.find_last_revision(self.id)
+
     def has_revision(self, r):
         """
         Check config has revision
