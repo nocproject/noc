@@ -350,12 +350,11 @@ class AlarmApplication(ExtApplication):
             raise Exception("Invalid status")
         model = self.model_map[status]
         if request.user.is_superuser:
-            return model.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all()
+            return model.objects.filter().read_preference(ReadPreference.SECONDARY_PREFERRED).all()
         else:
             return model.objects.filter(
                 adm_path__in=UserAccess.get_domains(request.user),
-                read_preference=ReadPreference.SECONDARY_PREFERRED,
-            )
+            ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
     @view(url=r"^$", access="launch", method=["GET"], api=True)
     def api_list(self, request):

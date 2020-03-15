@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Mongo connection setup
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ import sys
 # Third-party modules
 from pymongo.errors import AutoReconnect
 from mongoengine.connection import (
-    MongoEngineConnectionError,
+    ConnectionFailure,
     connect as mongo_connect,
     _get_connection,
     _get_db,
@@ -39,7 +39,7 @@ def connect():
     global _connected
     if _connected:
         return
-    temporary_errors = (MongoEngineConnectionError, AutoReconnect)
+    temporary_errors = (ConnectionFailure, AutoReconnect)
     retries = config.mongo.retries
     timeout = config.mongo.timeout
 

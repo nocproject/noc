@@ -114,9 +114,9 @@ class CapabilitiesIsolator(IsolatorClass):
                         "capability": Capability.objects.get(name="SNMP").id,
                         "value": "true" == "true",
                     },
-                    read_preference=ReadPreference.SECONDARY_PREFERRED,
                 )
             )
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .values_list("object")
             .as_pymongo()
         )
@@ -157,14 +157,11 @@ class CapabilitiesIsolator(IsolatorClass):
             ObjectCapabilities.objects.filter(
                 m_Q(
                     caps__capability__in=[
-                        cp.id
-                        for cp in Capability.objects.filter(
-                            name__startswith="Network |",
-                            read_preference=ReadPreference.SECONDARY_PREFERRED,
-                        )
+                        cp.id for cp in Capability.objects.filter(name__startswith="Network |",)
                     ]
                 )
             )
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .values_list("object")
             .as_pymongo()
         )
@@ -242,9 +239,9 @@ class StatusIsolator(IsolatorClass):
     def _3_is(self, index):
         # Status - Is Availability
         return set(
-            ObjectStatus.objects.filter(
-                status=bool(int(index) - 1), read_preference=ReadPreference.SECONDARY_PREFERRED
-            ).values_list("object")
+            ObjectStatus.objects.filter(status=bool(int(index) - 1))
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
+            .values_list("object")
         )
 
     def _4_is(self, index):

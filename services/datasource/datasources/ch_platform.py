@@ -20,7 +20,8 @@ class CHPlatformDataSource(BaseDataSource):
 
     def extract(self):
         for p in (
-            Platform.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            Platform.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):

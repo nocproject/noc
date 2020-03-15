@@ -137,11 +137,8 @@ class MonMapCard(BaseCard):
         # Getting containers name and coordinates
         containers = {
             str(o["_id"]): (o["name"], o["data"])
-            for o in Object.objects.filter(
-                data__geopoint__exists=True,
-                id__in=con,
-                read_preference=ReadPreference.SECONDARY_PREFERRED,
-            )
+            for o in Object.objects.filter(data__geopoint__exists=True, id__in=con,)
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .fields(id=1, name=1, data__geopoint__x=1, data__geopoint__y=1, data__address__text=1)
             .as_pymongo()
         }

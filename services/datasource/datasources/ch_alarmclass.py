@@ -20,7 +20,8 @@ class CHAlarmClassDataSource(BaseDataSource):
 
     def extract(self):
         for ac in (
-            AlarmClass.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            AlarmClass.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):

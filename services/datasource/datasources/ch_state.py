@@ -20,7 +20,8 @@ class CHStateDataSource(BaseDataSource):
 
     def extract(self):
         for a in (
-            State.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            State.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):

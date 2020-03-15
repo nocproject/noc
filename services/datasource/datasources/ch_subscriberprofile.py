@@ -20,7 +20,8 @@ class CHProfileClassDataSource(BaseDataSource):
 
     def extract(self):
         for a in (
-            SubscriberProfile.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            SubscriberProfile.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):

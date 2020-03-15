@@ -20,7 +20,7 @@ class CHCPEDataSource(BaseDataSource):
 
     def extract(self):
         # mos_id = dict(ManagedObject.objects.filter().values_list("id", "bi_id"))
-        for cpe in CPEStatus.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED):
+        for cpe in CPEStatus.objects.filter().read_preference(ReadPreference.SECONDARY_PREFERRED):
             yield (
                 cpe.managed_object.bi_id,
                 cpe.global_id,

@@ -20,7 +20,8 @@ class CHVendorDataSource(BaseDataSource):
 
     def extract(self):
         for a in (
-            Vendor.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            Vendor.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):
