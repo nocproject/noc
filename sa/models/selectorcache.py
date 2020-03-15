@@ -56,9 +56,11 @@ class SelectorCache(Document):
         oid = object
         if hasattr(object, "id"):
             oid = object.id
-        return cls.objects.filter(
-            object=oid, read_preference=ReadPreference.SECONDARY_PREFERRED
-        ).values_list("selector")
+        return (
+            cls.objects.filter(object=oid)
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
+            .values_list("selector")
+        )
 
     @classmethod
     def is_in_selector(cls, object, selector):

@@ -58,11 +58,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
         interfaces = dict(
             (i.name, i)
             for i in Interface.objects.filter(
-                managed_object=self.object.id,
-                type="physical",
-                profile__in=self.get_profiles(None),
-                read_preference=ReadPreference.SECONDARY_PREFERRED,
-            )
+                managed_object=self.object.id, type="physical", profile__in=self.get_profiles(None),
+            ).read_preference(ReadPreference.SECONDARY_PREFERRED)
         )
         if not interfaces:
             self.logger.info("No interfaces with status discovery enabled. Skipping")

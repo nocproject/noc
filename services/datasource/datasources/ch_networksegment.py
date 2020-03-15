@@ -20,9 +20,9 @@ class CHNetworkSegmentDataSource(BaseDataSource):
 
     def extract(self):
         ns_id = dict(
-            NetworkSegment.objects.filter(
-                read_preference=ReadPreference.SECONDARY_PREFERRED
-            ).scalar("id", "bi_id")
+            NetworkSegment.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
+            .scalar("id", "bi_id")
         )
         ns = NetworkSegment._get_collection().with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED

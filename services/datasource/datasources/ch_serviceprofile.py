@@ -20,7 +20,8 @@ class CHServiceProfileClassDataSource(BaseDataSource):
 
     def extract(self):
         for a in (
-            ServiceProfile.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            ServiceProfile.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):

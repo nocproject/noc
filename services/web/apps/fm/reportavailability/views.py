@@ -62,7 +62,7 @@ class ReportAvailabilityApplication(SimpleReport):
         b = now - d
         outages = defaultdict(int)
         q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
-        for o in Outage.objects.filter(q, read_preference=ReadPreference.SECONDARY_PREFERRED):
+        for o in Outage.objects.filter(q).read_preference(ReadPreference.SECONDARY_PREFERRED):
             start = max(o.start, b)
             stop = o.stop if o.stop else now
             outages[o.object] += (stop - start).total_seconds()

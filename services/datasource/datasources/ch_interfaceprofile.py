@@ -20,7 +20,8 @@ class CHInterfaceProfileDataSource(BaseDataSource):
 
     def extract(self):
         for p in (
-            InterfaceProfile.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            InterfaceProfile.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):

@@ -20,7 +20,8 @@ class CHPoolDataSource(BaseDataSource):
 
     def extract(self):
         for pool in (
-            Pool.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            Pool.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):

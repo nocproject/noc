@@ -20,7 +20,8 @@ class CHWorkflowDataSource(BaseDataSource):
 
     def extract(self):
         for a in (
-            Workflow.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            Workflow.objects.filter()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .all()
             .order_by("id")
         ):
