@@ -29,6 +29,8 @@
   tags:
     - requirements
     - coll_sync
+  when:
+    - not noc_coll_canary.stat.exists
 
 - name: Migrate db
   command: ./noc migrate
