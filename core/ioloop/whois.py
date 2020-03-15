@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Whois client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,10 +12,11 @@ import logging
 # Third-party modules
 from tornado.tcpclient import TCPClient
 import tornado.gen
-import tornado.ioloop
+from tornado.ioloop import IOLoop
 
 # NOC modules
 from noc.core.validators import is_fqdn
+from noc.core.comp import smart_bytes, smart_text
 
 DEFAULT_WHOIS_SERVER = "whois.ripe.net"
 DEFAULT_WHOIS_PORT = 43
@@ -23,30 +24,12 @@ DEFAULT_TIMEOUT = 60
 
 logger = logging.getLogger(__name__)
 
-VERISIGN_MAP = {
+FIELDS_MAP = {
     "domain name": "domain",
     "name server": "nserver",
     "creation date": "created",
     "registry expiry date": "paid-till",
 }
-
-
-def parse_verisign(data):
-    """
-    Parse whois response from verisign
-    :param data:
-    :return:
-    """
-    r = []
-    for line in data.splitlines():
-        if not line.startswith("  "):
-            continue
-        line = line.strip()
-        k, v = line.split(":", 1)
-        k = k.strip().lower()
-        k = VERISIGN_MAP.get(k, k)
-        r += [(k, v.strip())]
-    return r
 
 
 def parse_response(data):
@@ -55,8 +38,16 @@ def parse_response(data):
     :param data:
     :return:
     """
-    if data.startswith(" ") and ">>> Last update of whois database" in data:
-        return parse_verisign(data)
+    r = []
+    for line in data.splitlines():
+        line = line.strip()
+        if line.startswith(">>>"):
+            break
+        k, v = line.split(":", 1)
+        k = k.strip().lower()
+        k = FIELDS_MAP.get(k, k)
+        r += [(k, v.strip())]
+    return r
 
 
 @tornado.gen.coroutine
@@ -83,10 +74,11 @@ def whois_async(query, fields=None):
         logger.error("Cannot resolve host '%s': %s", server, e)
         raise tornado.gen.Return()
     try:
-        yield stream.write(str(query) + "\r\n")
+        yield stream.write(smart_bytes(query) + b"\r\n")
         data = yield stream.read_until_close()
     finally:
         yield stream.close()
+    data = smart_text(data)
     data = parse_response(data)
     if fields:
         data = [(k, v) for k, v in data if k in fields]
@@ -99,7 +91,6 @@ def whois(query, fields=None):
         result = yield whois_async(query, fields)
         r.append(result)
 
-    ioloop = tornado.ioloop.IOLoop.instance()
     r = []
-    ioloop.run_sync(_whois)
+    IOLoop().run_sync(_whois)
     return r[0]
