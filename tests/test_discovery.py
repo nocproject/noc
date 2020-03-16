@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # Discovery test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os.path
 from collections import defaultdict
 
