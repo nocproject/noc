@@ -11,6 +11,7 @@ from __future__ import absolute_import
 
 # Third-party modules
 import ldap3
+from ldap3.utils.conv import escape_filter_chars
 from ldap3.core.exceptions import LDAPCommunicationError, LDAPServerPoolExhaustedError
 import six
 
@@ -76,6 +77,8 @@ class LdapBackend(BaseAuthBackend):
         user_info["user"] = user
         user_info["domain"] = domain
         user_info["is_active"] = True
+        # Default ldap3 convert user_dn:
+        user_info["user_dn"] = escape_filter_chars(user_info.get("user_dn"))
         # Get user groups
         user_groups = set(g.lower() for g in self.get_user_groups(connect, ldap_domain, user_info))
         if ldap_domain.require_any_group and not user_groups:
@@ -179,10 +182,7 @@ class LdapBackend(BaseAuthBackend):
         user_search_dn = ldap_domain.get_user_search_dn()
         self.logger.debug("User search from %s: %s", user_search_dn, usf)
         connection.search(
-            user_search_dn,
-            ldap_domain.get_user_search_filter() % {"user": user},
-            ldap3.SUBTREE,
-            attributes=ldap_domain.get_user_search_attributes(),
+            user_search_dn, usf, ldap3.SUBTREE, attributes=ldap_domain.get_user_search_attributes()
         )
         if not connection.entries:
             self.logger.info("Cannot find user %s", user)
