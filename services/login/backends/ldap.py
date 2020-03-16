@@ -182,7 +182,7 @@ class LdapBackend(BaseAuthBackend):
         user_search_dn = ldap_domain.get_user_search_dn()
         self.logger.debug("User search from %s: %s", user_search_dn, usf)
         connection.search(
-            search_dn, usf, ldap3.SUBTREE, attributes=ldap_domain.get_user_search_attributes()
+            user_search_dn, usf, ldap3.SUBTREE, attributes=ldap_domain.get_user_search_attributes()
         )
         if not connection.entries:
             self.logger.info("Cannot find user %s", user)
