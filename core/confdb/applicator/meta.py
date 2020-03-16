@@ -12,6 +12,7 @@ from __future__ import absolute_import
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.script.scheme import PROTOCOLS
 from .base import BaseApplicator
 
@@ -20,6 +21,7 @@ class MetaApplicator(BaseApplicator):
     def apply(self):
         self.confdb.insert_bulk(self.iter_object_meta())
         self.confdb.insert_bulk(self.iter_interfaces_meta())
+        self.confdb.insert_bulk(self.chassis_mac_meta())
 
     def iter_object_meta(self):
         """
@@ -53,6 +55,14 @@ class MetaApplicator(BaseApplicator):
         if self.object.tags:
             for tag in self.object.tags:
                 yield "meta", "tags", tag
+
+    def chassis_mac_meta(self):
+        ch_id = DiscoveryID.objects.filter(object=self.object.id).first()
+        ch_macs = ch_id.chassis_mac if ch_id else []
+        for n, mac in enumerate(ch_macs):
+            mac1 = mac.first_mac
+            mac2 = mac.last_mac
+            yield "meta", "chassis_id", n, "range", mac1, mac2
 
     def iter_interfaces_meta(self):
         # Get all interfaces
