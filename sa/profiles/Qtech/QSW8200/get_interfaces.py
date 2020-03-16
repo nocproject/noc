@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW8200.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -82,6 +82,8 @@ class Script(BaseScript):
                 iface["type"] = "loopback"
             elif ifname.startswith("NULL"):  # NULL has iftype `unknown`
                 iface["type"] = "null"
+            elif ifname.startswith("port-channel"):  # port-channel no has iftype
+                iface["type"] = "aggregated"
             else:
                 iface["type"] = self.profile.get_interface_type(ifname)
                 iface["mac"] = match.group("mac")
