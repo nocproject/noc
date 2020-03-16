@@ -71,6 +71,8 @@ class SuggestCLICheck(DiscoveryCheck):
                     "password": password,
                     "super_password": super_password,
                     "path": None,
+                    "raise_privileges": self.object.to_raise_privileges,
+                    "access_preference": self.object.get_access_preference(),
                 },
             )
             self.logger.info("Result: %s, %s", r, r["message"])
