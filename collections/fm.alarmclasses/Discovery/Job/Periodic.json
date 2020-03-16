@@ -2,16 +2,17 @@
     "name": "Discovery | Job | Periodic",
     "$collection": "fm.alarmclasses",
     "uuid": "6aed4ced-a4ca-4ed7-9ad0-37c051895572",
-    "desciption": "Umbrella alarm class for Periodic discovery alarms",
+    "desciption": "Base Alarm Class for Periodic discovery alarms.",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
     "vars": [
 
     ],
-    "subject_template": "Periodic discovery umbrella alarms",
-    "body_template": "Periodic discovery raise umbrella alarms",
+    "subject_template": "Umbrella for Periodic discovery alarms",
+    "body_template": "Alarms on Box discovery processed\n \n{% for aa in alarm.iter_consequences  %}\n==============\n   {{ aa.body }}\n==============\n{% endfor %}",
     "symptoms": "",
-    "probable_causes": "",
-    "recommended_actions": ""
+    "probable_causes": "Various errors connecting to the equipment",
+    "recommended_actions": "Connection error - check telnet/ssh port availability on device\nAuthentication error - check allow access to device with credentials\nSNMP error - check SNMP community settings on device",
+    "recover_time": 300
 }

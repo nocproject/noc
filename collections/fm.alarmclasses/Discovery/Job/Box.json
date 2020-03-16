@@ -2,16 +2,17 @@
     "name": "Discovery | Job | Box",
     "$collection": "fm.alarmclasses",
     "uuid": "bcb92084-18ed-4229-9a1f-f85fc80c6a96",
-    "desciption": "Umbrella alarm class for Box discovery alarms",
+    "desciption": "Base Alarm Class for Box discovery alarms.",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
     "vars": [
 
     ],
-    "subject_template": "Box discovery umbrella alarms",
-    "body_template": "Box discovery raise umbrella alarms",
+    "subject_template": "Umbrella for Box discovery alarms",
+    "body_template": "Alarms on Box discovery processed\n \n{% for aa in alarm.iter_consequences  %}\n==============\n   {{ aa.body }}\n==============\n{% endfor %}",
     "symptoms": "",
-    "probable_causes": "",
-    "recommended_actions": ""
+    "probable_causes": "Various errors connecting to the equipment",
+    "recommended_actions": "Connection error - check telnet/ssh port availability on device\nAuthentication error - check allow access to device with credentials\nSNMP error - check SNMP community settings on device",
+    "recover_time": 300
 }
