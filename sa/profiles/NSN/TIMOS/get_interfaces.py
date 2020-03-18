@@ -513,7 +513,6 @@ class Script(BaseScript):
             match = self.re_port_info.search(line)
             if match:
                 port_detail = self.cli("show port %s detail" % match.group("name"))
-                print(port_detail)
                 match_detail = self.re_port_detail_info.search(port_detail)
                 if not match_detail:
                     match_detail = self.re_port_detail_info_sr.search(port_detail)
