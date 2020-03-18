@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # mailsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -58,12 +58,15 @@ class MailSenderService(Service):
         :returns: sending status as boolean
         """
         attachments = attachments or []
+        self.tz = pytz.timezone(config.timezone)
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
+        if isinstance(address, str):
+            address = [address]
         from_address = config.mailsender.from_address
         message = MIMEMultipart()
         message["From"] = from_address
-        message["To"] = address
+        message["To"] = ", ".join(address)
         message["Date"] = md
         message["Subject"] = Header(subject, "utf-8")
         message.attach(MIMEText(body, _charset="utf-8"))
@@ -124,14 +127,15 @@ class MailSenderService(Service):
                 metrics["smtp_response", ("code", code)] += 1
                 return False
             # RCPT TO
-            code, resp = smtp.rcpt(address, [])
-            if code not in (250, 251):
-                smtp.rset()
-                self.logger.error(
-                    "[%s] RCPT TO '%s' failed: %s %s", message_id, address, code, resp
-                )
-                metrics["smtp_response", ("code", code)] += 1
-                return False
+            for addrs in address:
+                code, resp = smtp.rcpt(addrs, [])
+                if code not in (250, 251):
+                    smtp.rset()
+                    self.logger.error(
+                        "[%s] RCPT TO '%s' failed: %s %s", message_id, addrs, code, resp
+                    )
+                    metrics["smtp_response", ("code", code)] += 1
+                    return False
             # Data
             code, resp = smtp.data(msg)
             if code != 250:
