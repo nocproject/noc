@@ -108,14 +108,14 @@ class BoxDiscoveryJob(MODiscoveryJob):
             VersionCheck(self).run()
         if self.object.object_profile.enable_box_discovery_config:
             ConfigCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_asset:
+            AssetCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:
             CapsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_interface:
             InterfaceCheck(self).run()
         if self.object.object_profile.enable_box_discovery_id:
             IDCheck(self).run()
-        if self.object.object_profile.enable_box_discovery_asset:
-            AssetCheck(self).run()
         if self.object.object_profile.enable_box_discovery_config:
             ConfigValidationCheck(self).run()
         if self.object.object_profile.enable_box_discovery_vlan:
