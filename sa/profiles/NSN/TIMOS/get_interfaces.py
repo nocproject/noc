@@ -2,10 +2,9 @@
 # ----------------------------------------------------------------------
 #  NSN.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
 
 # Python modules
 import re
@@ -133,12 +132,11 @@ class Script(BaseScript):
     )
     re_port_info = re.compile(
         r"""
-        ^(?P<name>\d+/\d+/\d+)\s+
+        ^(?P<name>((esat-|)\d+/\d+/(c\d+|\d+)(/\d+|/u\d+|)|\w+\/\d+))\s+
         (?P<admin_status>\S*)\s+
         (?P<bad_stat>\S*)\s+
         (?:Link\s)?(?P<oper_status>\S*)\s+
-        (?P<mtu>\d*)\s+
-        (?P<oper_mtu>\d*)\s+
+        (?P<mtu>\d*)\s+(?P<oper_mtu>\d*)\s+
         (?P<aggregated_interface>\d*)\s
         """,
         re.VERBOSE | re.MULTILINE | re.DOTALL,
@@ -157,6 +155,16 @@ class Script(BaseScript):
         IfIndex\s*?:\s(?P<snmp_ifindex>\d*)\s
         .*?
         Configured\sAddress\s*?:\s(?P<mac>.*?)\s
+        """,
+        re.VERBOSE | re.MULTILINE | re.DOTALL,
+    )
+    re_port_detail_info_sr = re.compile(
+        r"""
+        Description\s*?:\s(?P<description>.*?)\n
+        Interface\s*?:\s(?P<name>((esat-|)\d+/\d+/(c\d+|\d+)(/\d+|/u\d+|)|\w+\/\d+))\s*[\S\s]+
+        Admin\sState\s*?:\s(?P<admin_status>.*?)\s.*?
+        Oper\sState\s*?:\s(?P<oper_status>.*?)\s.*?
+        IfIndex\s*?:\s(?P<snmp_ifindex>\d*)\s.*?
         """,
         re.VERBOSE | re.MULTILINE | re.DOTALL,
     )
@@ -500,14 +508,15 @@ class Script(BaseScript):
 
     def get_base_router(self):
         fi = {"forwarding_instance": "default", "type": "ip", "interfaces": []}
-
         port_info = self.cli("show port")
-
         for line in port_info.splitlines():
             match = self.re_port_info.search(line)
             if match:
                 port_detail = self.cli("show port %s detail" % match.group("name"))
+                print(port_detail)
                 match_detail = self.re_port_detail_info.search(port_detail)
+                if not match_detail:
+                    match_detail = self.re_port_detail_info_sr.search(port_detail)
                 my_dict = match.groupdict()
                 my_dict.update(match_detail.groupdict())
                 if "aggregated_interface" in my_dict:
