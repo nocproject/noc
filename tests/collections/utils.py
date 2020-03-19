@@ -8,6 +8,7 @@
 
 # Python modules
 import os
+from collections import defaultdict
 
 # Third-party modules
 import ujson
@@ -22,6 +23,7 @@ class CollectionTestHelper(object):
         self.cache = None
         self._params = []
         self._ids = []
+        self._uuid_count = defaultdict(int)
 
     def _init_fixture_params(self):
         for root, _, files in os.walk(os.path.join(self.COLLECTIONS, self.collection)):
@@ -50,4 +52,14 @@ class CollectionTestHelper(object):
             self.cache = {}
             for obj in self.model.objects.all():
                 self.cache[str(obj.uuid)] = obj
+        self._uuid_count[data["uuid"]] += 1
         return self.cache[data["uuid"]]
+
+    def get_uuid_count(self, uuid):
+        return self._uuid_count[str(uuid)]
+
+    def teardown(self):
+        self.cache = None
+        self._params = []
+        self._ids = []
+        self._uuid_count = defaultdict(int)
