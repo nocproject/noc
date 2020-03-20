@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BI decorators
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,10 +15,25 @@ import bson
 import six
 
 # NOC modules
+from noc.config import config
 from noc.models import is_document
 from noc.core.comp import smart_bytes
 
-SIPHASH_SEED = b"\x00" * 16
+_ZEROx16 = b"\x00" * 16
+
+
+def _get_siphash_seed():
+    if not config.installation_id:
+        # Plain bi_id space
+        return _ZEROx16
+    # Try to reach globally-unique space
+    # Installation name is UUID, giving exact 16 bytes of seed
+    import uuid
+
+    return uuid.UUID(config.installation_id).bytes
+
+
+SIPHASH_SEED = _get_siphash_seed()
 BI_ID_FIELD = "bi_id"
 
 
