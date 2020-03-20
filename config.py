@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import os
 import socket
@@ -289,6 +290,7 @@ class Config(BaseConfig):
         admin_email = StringParameter(default="test@example.com")
 
     installation_name = StringParameter(default="Unconfigured installation")
+    installation_id = StringParameter(default="")
 
     instance = IntParameter(default=0)
 
