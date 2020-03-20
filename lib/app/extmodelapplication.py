@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ExtModelApplication implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -535,7 +535,7 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["POST"], url=r"^$", access="create", api=True)
     def api_create(self, request):
-        if request.META.get("CONTENT_TYPE") == "application/json":
+        if self.site.is_json(request.META.get("CONTENT_TYPE")):
             attrs, m2m_attrs = self.split_mtm(self.deserialize(request.body))
         else:
             attrs, m2m_attrs = self.split_mtm(self.deserialize_form(request))
@@ -617,7 +617,7 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url=r"^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
-        if request.META.get("CONTENT_TYPE") == "application/json":
+        if self.site.is_json(request.META.get("CONTENT_TYPE")):
             attrs, m2m_attrs = self.split_mtm(self.deserialize(request.body))
         else:
             attrs, m2m_attrs = self.split_mtm(self.deserialize_form(request))
@@ -628,11 +628,6 @@ class ExtModelApplication(ExtApplication):
             self.logger.info(
                 "Bad request: %r (%s)", request.body if not request._read_started else request, e
             )
-            return self.render_json(
-                {"success": False, "message": "Bad request", "traceback": str(e)},
-                status=self.BAD_REQUEST,
-            )
-        except InterfaceTypeError as e:
             return self.render_json(
                 {"success": False, "message": "Bad request", "traceback": str(e)},
                 status=self.BAD_REQUEST,
