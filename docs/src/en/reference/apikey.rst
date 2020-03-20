@@ -32,27 +32,27 @@ Access to :ref:`api-datastream`
 +-----------------------------------+------------------------------------------------------------------------------------+
 | API:Role                          | Description                                                                        |
 +===================================+====================================================================================+
-| `datastream:administrativedomain` | ref:`administrativedomain datastream <api-datastream-administrativedomain>` access |
+| `datastream:administrativedomain` | :ref:`administrativedomain datastream <api-datastream-administrativedomain>` access|
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:alarm`                | ref:`alarm datastream <api-datastream-alarm>` access                               |
+| `datastream:alarm`                | :ref:`alarm datastream <api-datastream-alarm>` access                              |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:resourcegroup`        | ref:`resourcegroup datastream <api-datastream-resourcegroup>` access               |
+| `datastream:resourcegroup`        | :ref:`resourcegroup datastream <api-datastream-resourcegroup>` access              |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:managedobject`        | ref:`managedobject datastream <api-datastream-managedobject>` access               |
+| `datastream:managedobject`        | :ref:`managedobject datastream <api-datastream-managedobject>` access              |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:dnszone`              | ref:`dnszone datastream <api-datastream-dnszone>` access                           |
+| `datastream:dnszone`              | :ref:`dnszone datastream <api-datastream-dnszone>` access                          |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:cfgping`              | ref:`cfgping datastream <api-datastream-cfgping>` access                           |
+| `datastream:cfgping`              | :ref:`cfgping datastream <api-datastream-cfgping>` access                          |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:cfgsyslog`            | ref:`cfgsyslog datastream <api-datastream-cfgsyslog>` access                       |
+| `datastream:cfgsyslog`            | :ref:`cfgsyslog datastream <api-datastream-cfgsyslog>` access                      |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:cfgtrap`              | ref:`cfgtrap datastream <api-datastream-cfgtrap>` access                           |
+| `datastream:cfgtrap`              | :ref:`cfgtrap datastream <api-datastream-cfgtrap>` access                          |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:vrf`                  | ref:`vrf datastream <api-datastream-vrf>` access                                   |
+| `datastream:vrf`                  | :ref:`vrf datastream <api-datastream-vrf>` access                                  |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:prefix`               | ref:`prefix datastream <api-datastream-prefix>` access                             |
+| `datastream:prefix`               | :ref:`prefix datastream <api-datastream-prefix>` access                            |
 +-----------------------------------+------------------------------------------------------------------------------------+
-| `datastream:address`              | ref:`address datastream <api-datastream-address>` access                           |
+| `datastream:address`              | :ref:`address datastream <api-datastream-address>` access                          |
 +-----------------------------------+------------------------------------------------------------------------------------+
 
 .. _reference-apikey-roles-nbi:
@@ -63,17 +63,19 @@ NBI API
 +-----------------------+----------------------------------------------------------------+
 | API:Role              | Description                                                    |
 +===========================+============================================================+
-| `nbi:config`          | ref:`NBI config API <api-nbi-config>` access                   |
+| `nbi:config`          | :ref:`NBI config API <api-nbi-config>` access                  |
 +-----------------------+----------------------------------------------------------------+
-| `nbi:configrevisions` | ref:`NBI configrevisions API <api-nbi-configrevisions>` access |
+| `nbi:configrevisions` | :ref:`NBI configrevisions API <api-nbi-configrevisions>` access|
 +-----------------------+----------------------------------------------------------------+
-| `nbi:objectmetrics`   | ref:`NBI objectmetrics API <api-nbi-objectmetrics>` access     |
+| `nbi:getmappings`     | :ref:`NBI getmappings API <api-nbi-getmappings>` access        |
 +-----------------------+----------------------------------------------------------------+
-| `nbi:objectstatus`    | ref:`NBI objectstatus API <api-nbi-objectstatus>` access       |
+| `nbi:objectmetrics`   | :ref:`NBI objectmetrics API <api-nbi-objectmetrics>` access    |
 +-----------------------+----------------------------------------------------------------+
-| `nbi:path`            | ref:`NBI path API <api-nbi-path>` access                       |
+| `nbi:objectstatus`    | :ref:`NBI objectstatus API <api-nbi-objectstatus>` access      |
 +-----------------------+----------------------------------------------------------------+
-| `nbi:telemetry`       | ref:`NBI telemetry API <api-nbi-telemetry>` access             |
+| `nbi:path`            | :ref:`NBI path API <api-nbi-path>` access                      |
++-----------------------+----------------------------------------------------------------+
+| `nbi:telemetry`       | :ref:`NBI telemetry API <api-nbi-telemetry>` access            |
 +-----------------------+----------------------------------------------------------------+
 
 .. _reference-apikey-best-practices:
