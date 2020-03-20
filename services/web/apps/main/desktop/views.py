@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.desktop application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -94,9 +94,7 @@ class DesktopApplication(ExtApplication):
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
             "debug_js": False,
-            "gitlab_url": config.gitlab_url,
             "collections_allow_sharing": config.collections.allow_sharing,
-            "collections_project_id": config.collections.project_id,
             "enable_gis_base_osm": config.gis.enable_osm,
             "enable_gis_base_google_sat": config.gis.enable_google_sat,
             "enable_gis_base_google_roadmap": config.gis.enable_google_roadmap,
@@ -143,11 +141,7 @@ class DesktopApplication(ExtApplication):
             "favicon_mime": favicon_mime,
             "favicon_url": favicon_url,
             "enable_search": enable_search,
-            "gitlab_url": config.gitlab_url,
-            "collections": {
-                "allow_sharing": config.collections.allow_sharing,
-                "project_id": config.collections.project_id,
-            },
+            "collections": {"allow_sharing": config.collections.allow_sharing},
             "gis": {
                 "base": {
                     "enable_osm": config.gis.enable_osm,
