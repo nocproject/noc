@@ -12,6 +12,7 @@ from collections import defaultdict
 
 # Third-party modules
 import ujson
+import pytest
 
 
 class CollectionTestHelper(object):
@@ -22,44 +23,48 @@ class CollectionTestHelper(object):
         self.collection = model._meta["json_collection"]
         self.cache = None
         self._params = []
-        self._ids = []
         self._uuid_count = defaultdict(int)
+        self._name_count = defaultdict(int)
 
-    def _init_fixture_params(self):
+    def _iter_params(self):
         for root, _, files in os.walk(os.path.join(self.COLLECTIONS, self.collection)):
             for f in files:
                 if not f.endswith(".json"):
                     continue
-                path = os.path.join(root, f)
-                self._params += [path]
-                self._ids += [os.path.join(*path.split(os.path.sep)[2:])]
+                yield os.path.join(root, f)
 
     def get_fixture_params(self):
         if not self._params:
-            self._init_fixture_params()
+            self._params = sorted(self._iter_params())
         return self._params
 
-    def get_fixture_ids(self):
-        if not self._ids:
-            self._init_fixture_params()
-        return self._ids
+    @classmethod
+    def fixture_id(cls, path):
+        return os.path.join(*path.split(os.path.sep)[2:])
 
     def get_object(self, path):
         with open(path) as f:
             data = ujson.load(f)
+            self._uuid_count[data["uuid"]] += 1
+            self._name_count[data["name"]] += 1
         if self.cache is None:
             # Fill cache
-            self.cache = {}
-            for obj in self.model.objects.all():
-                self.cache[str(obj.uuid)] = obj
-        self._uuid_count[data["uuid"]] += 1
-        return self.cache[data["uuid"]]
+            self.cache = {str(o.uuid): o for o in self.model.objects.all()}
+        try:
+            return self.cache[data["uuid"]]
+        except KeyError:
+            pytest.fail(
+                "Failed to get object. Pair %s/'%s' is not unique" % (data["uuid"], data["name"])
+            )
 
     def get_uuid_count(self, uuid):
         return self._uuid_count[str(uuid)]
 
+    def get_name_count(self, name):
+        return self._name_count[str(name)]
+
     def teardown(self):
         self.cache = None
         self._params = []
-        self._ids = []
         self._uuid_count = defaultdict(int)
+        self._name_count = defaultdict(int)

@@ -1,7 +1,7 @@
 {
     "name": "Gateray | Transceiver | 10G | GR-SP10-W2710L-D",
     "$collection": "inv.objectmodels",
-    "uuid": "9be01d95-62ab-48af-b6c1-1ddbe58d5c7a",
+    "uuid": "f8e20129-a7e6-456a-953c-65ff0bf72e08",
     "vendor__code": "GATERAY",
     "description": "GateRay SFP WDM transceiver 10km (1270 tx, 1330 rx) with ddm",
     "cr_context": "XCVR",

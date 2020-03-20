@@ -1,7 +1,7 @@
 {
     "name": "Cisco | C2960 | WS-C2960X-24TS-LL",
     "$collection": "inv.objectmodels",
-    "uuid": "65d38afc-c2ff-444b-9cfd-b295ca36e481",
+    "uuid": "ba43a959-9311-48c8-94ec-b5f4cb0d09ee",
     "vendor__code": "CISCO",
     "description": "24 Ethernet 10/100/1000 ports and 2 SFP",
     "connection_rule__name": "Generic | Switch SFP Prefixed",

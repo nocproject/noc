@@ -1,7 +1,7 @@
 {
     "name": "Juniper | EX | EX8208-SRE320",
     "$collection": "inv.objectmodels",
-    "uuid": "7fc9f054-ce83-43e4-8107-9b1457c47ff4",
+    "uuid": "b300f016-f62f-491b-83c9-9345347a9c35",
     "vendor__code": "JUNIPER",
     "description": "Switch and Routing Engine for EX8208",
     "tags": ["lc", "fabric"],

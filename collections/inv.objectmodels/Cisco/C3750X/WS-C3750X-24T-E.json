@@ -1,7 +1,7 @@
 {
     "name": "Cisco | C3750X | WS-C3750X-24T-E",
     "$collection": "inv.objectmodels",
-    "uuid": "c403e064-09e8-4fb5-b137-261621d9b73d",
+    "uuid": "bf9b8362-0d61-4d28-b7e6-272a6025353f",
     "vendor__code": "CISCO",
     "description": "24 Ethernet 10/100/1000 ports, with 350W AC power supply, IP Base feature set ",
     "connection_rule__name": "Cisco | 3750X",
