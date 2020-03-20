@@ -1,7 +1,7 @@
 {
     "name": "Nateks | Transceiver | 1G | SFP-GE-SM-60KM-1513",
     "$collection": "inv.objectmodels",
-    "uuid": "c1536454-4f72-4b39-a4d0-4e5499c909dd",
+    "uuid": "74e07205-bea7-497f-854e-c190e09c20ed",
     "vendor__code": "NATEKS",
     "description": "Nateks SFP WDM 60km transceiver 1550",
     "cr_context": "XCVR",

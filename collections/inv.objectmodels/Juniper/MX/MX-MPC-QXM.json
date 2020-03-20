@@ -1,7 +1,7 @@
 {
     "name": "Juniper | MX | MX-MPC-QXM",
     "$collection": "inv.objectmodels",
-    "uuid": "7392f81e-984d-4a3e-866c-959f99efd52f",
+    "uuid": "709d9ecf-aaa2-4ed2-bdd9-8fb40dbc6ef8",
     "vendor__code": "JUNIPER",
     "description": "MPC QXM",
     "connection_rule__name": "Juniper | MX",

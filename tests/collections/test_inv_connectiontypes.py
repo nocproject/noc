@@ -28,7 +28,7 @@ def teardown_module(module=None):
     helper.teardown()
 
 
-@pytest.fixture(scope="module", params=helper.get_fixture_params(), ids=helper.get_fixture_ids())
+@pytest.fixture(scope="module", params=helper.get_fixture_params(), ids=helper.fixture_id)
 def model(request):
     yield helper.get_object(request.param)
 
@@ -36,3 +36,7 @@ def model(request):
 @pytest.mark.xfail
 def test_uuid_unique(model):
     assert helper.get_uuid_count(model.uuid) == 1, "UUID %s is not unique" % model.uuid
+
+
+def test_name_unique(model):
+    assert helper.get_name_count(model.name) == 1, "Name '%s' is not unique" % model.name
