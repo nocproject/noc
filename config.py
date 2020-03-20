@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -163,7 +163,6 @@ class Config(BaseConfig):
 
     class collections(ConfigSection):
         allow_sharing = BooleanParameter(default=True)
-        project_id = IntParameter(default=59)
 
     class consul(ConfigSection):
         token = SecretParameter()
@@ -314,7 +313,6 @@ class Config(BaseConfig):
     log_format = StringParameter(default="%(asctime)s [%(name)s] %(message)s")
 
     thread_stack_size = IntParameter(default=0)
-    gitlab_url = StringParameter("https://code.getnoc.com/")
     version_format = StringParameter(default="%(version)s+%(branch)s.%(number)s.%(changeset)s")
 
     class logging(ConfigSection):

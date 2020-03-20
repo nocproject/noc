@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.JSONPreview
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.JSONPreview");
@@ -14,27 +14,16 @@ Ext.define("NOC.core.JSONPreview", {
     restUrl: null,
     previewName: null,
     apiPrefix: null,
-    getnocAPIPrefix: "https://api.getnoc.com",
-    apiTokenURL: null,
+    getnocAPIContribURL: "https://api.getnoc.com/api/v1/contrib",
     gitlabAPIToken: null,
-    gitlabUsername: null,
-    gitlabProjectId: NOC.settings.collections.project_id,
-    sharedFilePath: null,
-    sharedFileExists: false,
-    sharedContent: false,
-    sharedBranch: null,
-    MASTER_BRANCH: "master",
+    sharedInfo: null,
     // Progress Steps
     SS_START: 0,
     SS_ASK_API_KEY: 1,
     SS_SAVE_API_KEY: 2,
-    SS_CHECK_GITLAB_LOGIN: 3,
-    SS_CHECK_GITLAB_GROUP: 4,
-    SS_GET_SHARE_INFO: 5,
-    SS_CHECK_FILE: 6,
-    SS_CREATE_BRANCH: 7,
-    SS_UPLOAD_FILE: 8,
-    SS_MERGE_REQUEST: 9,
+    SS_GET_SHARE_INFO: 3,
+    SS_GET_DESCRIPTION: 4,
+    SS_CONTRIB: 5,
 
     shareState: [
         // SS_START
@@ -44,7 +33,7 @@ Ext.define("NOC.core.JSONPreview", {
         },
         // SS_ASK_API_KEY
         {
-            value: 0.05,
+            value: 0.1,
             text: __("Asking API key")
         },
         // SS_SAVE_API_KEY
@@ -52,40 +41,20 @@ Ext.define("NOC.core.JSONPreview", {
             value: 0.1,
             text: __("Saving API key")
         },
-        // SS_CHECK_GITLAB_LOGIN
+        // SS_GET_SHARE_INFO
         {
-            value: 0.2,
-            text: __("Checking Gitlab login")
+            value: 0.1,
+            text: __("Getting share info")
         },
-        // SS_CHECK_GITLAB_GROUP
+        // SS_GET_DESCRIPTION
         {
-            value: 0.3,
-            text: __("Checking Gitlab project access")
+            value: 0.1,
+            text: __("Getting details")
         },
-        // SS_SHARE_INFO
-        {
-            value: 0.4,
-            text: __("Getting sharing information")
-        },
-        // SS_CHECK_FILE
-        {
-            value: 0.5,
-            text: __("Checking repository file")
-        },
-        // SS_CREATE_BRANCH
+        // SS_CONTRIB
         {
             value: 0.6,
-            text: __("Creating branch")
-        },
-        // SS_UPLOAD_FILE
-        {
-            value: 0.7,
-            text: __("Uploading File")
-        },
-        // SS_MERGE_REQUEST
-        {
-            value: 0.9,
-            text: __("Creating merge request")
+            text: __("Contributing")
         }
     ],
 
@@ -93,15 +62,6 @@ Ext.define("NOC.core.JSONPreview", {
         var me = this,
             tb = [],
             collection = me.app.noc.collection;
-
-        // Calculate api prefix
-        if(Ext.String.endsWith(NOC.settings.gitlab_url, "/")) {
-            me.apiPrefix = NOC.settings.gitlab_url + "api/v4/";
-            me.apiTokenURL = NOC.settings.gitlab_url + "profile/personal_access_token"
-        } else {
-            me.apiPrefix = NOC.settings.gitlab_url + "/api/v4/";
-            me.apiTokenURL = NOC.settings.gitlab_url + "/profile/personal_access_token"
-        }
 
         // Close button
         tb.push(Ext.create("Ext.button.Button", {
@@ -239,7 +199,7 @@ Ext.define("NOC.core.JSONPreview", {
         var me = this;
         Ext.Msg.show({
             title: __("Share item?"),
-            msg: __("Would you like to share item and contribute to opensource project?"),
+            msg: __("Would you like to share item and contribute to Open-Source project?"),
             buttons: Ext.Msg.YESNO,
             modal: true,
             fn: function(button) {
@@ -260,26 +220,20 @@ Ext.define("NOC.core.JSONPreview", {
         var me = this;
         me.shareProgress.show();
         me.setupAPIToken().then(function(result) {
-            return me.checkGitlabLogin()
+            return me.getSharedInfo()
         }).then(function(result) {
-            return me.checkGroupAccess()
+            return me.getShareDescription()
         }).then(function(result) {
-            return me.getShareInfo()
-        }).then(function(result) {
-            return me.checkFile()
-        }).then(function(result) {
-            return me.createBranch()
-        }).then(function(result) {
-            return me.uploadFile()
-        }).then(function(result) {
-            return me.createMergeRequest()
+            return me.doContrib()
         }).then(function(result) {
             NOC.info("Shared");
             me.shareProgress.hide();
+            me.sharedInfo = null;
             window.open(result, "_blank")
         }).catch(function(err) {
             NOC.error(err);
-            me.shareProgress.hide()
+            me.shareProgress.hide();
+            me.sharedInfo = null;
         });
     },
     // Get or ask API token
@@ -370,178 +324,83 @@ Ext.define("NOC.core.JSONPreview", {
             )
         })
     },
-    // Check user is authorized in gitlab
-    checkGitlabLogin: function() {
-        var me = this;
-        me.setSharingState(me.SS_CHECK_GITLAB_LOGIN);
-        return new Ext.Promise(function(resolve, reject) {
-            Ext.Ajax.request({
-                url: me.apiPrefix + "user",
-                method: "GET",
-                headers: {
-                    "Private-Token": me.gitlabAPIToken
-                },
-                scope: me,
-                success: function(response) {
-                    var data = Ext.decode(response.responseText);
-                    me.gitlabUsername = data.username;
-                    resolve("OK")
-                },
-                failure: function(response) {
-                    reject("Cannot access GitLab")
-                }
-            })
-        })
-    },
-    //
-    checkGroupAccess: function() {
-        var me = this;
-        me.setSharingState(me.SS_CHECK_GITLAB_GROUP);
-        return new Ext.Promise(function(resolve, reject) {
-            Ext.Ajax.request({
-                url: me.getnocAPIPrefix + "/api/v1/ensure_collections_access",
-                method: "POST",
-                headers: {
-                    "Private-Token": me.gitlabAPIToken
-                },
-                scope: me,
-                success: function (response) {
-                    resolve("OK")
-                },
-                failure: function (response) {
-                    reject("Cannot check GitLab group access")
-                }
-            })
-        })
-    },
-    //
-    getShareInfo: function() {
+    // Getting sharing information
+    getSharedInfo: function() {
         var me = this;
         me.setSharingState(me.SS_GET_SHARE_INFO);
+        var url = me.restUrl.apply(me.currentRecord.data).replace("/json/", "/share_info/");
         return new Ext.Promise(function(resolve, reject) {
             Ext.Ajax.request({
-                url: me.restUrl.apply(me.currentRecord.data).replace("/json/", "/share_info/"),
+                url: url,
                 method: "GET",
                 scope: me,
                 success: function(response) {
-                    var data = Ext.decode(response.responseText);
-                    me.sharedFilePath = encodeURIComponent(data.file_path);
-                    me.sharedContent = data.content;
-                    me.sharedBranch = "contrib-" + me.gitlabUsername + "-" + data.hash;
-                    resolve()
+                    me.sharedInfo = Ext.decode(response.responseText);
+                    resolve("OK")
                 },
                 failure: function(response) {
-                    reject("Cannot get share info")
+                    reject("Failed to get sharing info")
                 }
             })
         })
     },
     //
-    checkFile: function() {
+    getShareDescription: function() {
         var me = this;
-        me.setSharingState(me.SS_CHECK_FILE);
+        me.setSharingState(me.SS_GET_DESCRIPTION);
         return new Ext.Promise(function(resolve, reject) {
-            Ext.Ajax.request({
-                url: me.apiPrefix + "projects/" + me.gitlabProjectId + "/repository/files/" + me.sharedFilePath + "?ref=" + me.MASTER_BRANCH,
-                method: "GET",
-                headers: {
-                    "Private-Token": me.gitlabAPIToken
-                },
-                scope: me,
-                success: function (response) {
-                    var data = Ext.decode(response.responseText);
-                    me.sharedFileExists = true;
-                    resolve()
-                },
-                failure: function (response) {
-                    if(response.status === 404) {
-                        me.sharedFileExists = false;
+            Ext.Msg.prompt(
+                "Enter Description",
+                "Please enter optional contribution description",
+                function(button, value) {
+                    if(button === "ok") {
+                        me.sharedInfo.description = value || "";
                         resolve()
                     } else {
-                        reject("Cannot check repository file")
+                        reject(__("Cancelled"))
                     }
+                },
+                me,
+                true,
+                null,
+                {
+                    placeHolder: "Optional contribution description"
                 }
-            })
+            )
         })
     },
-    //
-    createBranch: function() {
+    // Send contribution
+    doContrib: function() {
         var me = this;
-        me.setSharingState(me.SS_CREATE_BRANCH);
+        me.setSharingState(me.SS_CONTRIB);
         return new Ext.Promise(function(resolve, reject) {
             Ext.Ajax.request({
-                url: me.apiPrefix + "projects/" + me.gitlabProjectId + "/repository/branches/",
+                url: me.getnocAPIContribURL,
                 method: "POST",
                 headers: {
                     "Private-Token": me.gitlabAPIToken
                 },
-                jsonData: {
-                    branch: me.sharedBranch,
-                    ref: me.MASTER_BRANCH
-                },
                 scope: me,
-                success: function (response) {
-                    resolve()
-                },
-                failure: function (response) {
-                    reject("Cannot create branch")
-                }
-            })
-        })
-    },
-    //
-    uploadFile: function() {
-        var me = this;
-        me.setSharingState(me.SS_UPLOAD_FILE);
-        return new Ext.Promise(function(resolve, reject) {
-            Ext.Ajax.request({
-                url: me.apiPrefix + "projects/" + me.gitlabProjectId + "/repository/files/" + me.sharedFilePath,
-                method: me.sharedFileExists ? "PUT" : "POST",
-                headers: {
-                    "Private-Token": me.gitlabAPIToken
-                },
                 jsonData: {
-                    file_path: me.sharedFilePath,
-                    branch: me.sharedBranch,
-                    start_branch: me.sharedBranch,
-                    content: me.sharedContent,
-                    commit_message: me.previewName.apply(me.currentRecord.data)
+                    title: me.sharedInfo.title,
+                    description: me.sharedInfo.description,
+                    content: [
+                        {
+                            path: me.sharedInfo.path,
+                            content: me.sharedInfo.content
+                        }
+                    ]
                 },
-                scope: me,
-                success: function (response) {
+                success: function(response) {
                     var data = Ext.decode(response.responseText);
-                    resolve("Shared")
+                    if(data.status) {
+                        resolve(data.url)
+                    } else {
+                        reject(data.msg)
+                    }
                 },
-                failure: function (response) {
-                    reject("Cannot upload file")
-                }
-            })
-        })
-    },
-    //
-    createMergeRequest: function() {
-        var me = this;
-        me.setSharingState(me.SS_MERGE_REQUEST);
-        return new Ext.Promise(function(resolve, reject) {
-            Ext.Ajax.request({
-                url: me.apiPrefix + "projects/" + me.gitlabProjectId + "/merge_requests",
-                method: "POST",
-                headers: {
-                    "Private-Token": me.gitlabAPIToken
-                },
-                jsonData: {
-                    source_branch: me.sharedBranch,
-                    target_branch: me.MASTER_BRANCH,
-                    title: me.previewName.apply(me.currentRecord.data),
-                    remove_source_branch: true
-                },
-                scope: me,
-                success: function (response) {
-                    var data = Ext.decode(response.responseText);
-                    resolve(data.web_url)
-                },
-                failure: function (response) {
-                    reject("Cannot create merge request")
+                failure: function(response) {
+                    reject("Failed to contribute")
                 }
             })
         })

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import uuid
 from functools import reduce
 import os
 import re
-import hashlib
 
 # Third-party modules
 import six
@@ -54,7 +53,7 @@ from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
 from noc.core.collection.base import Collection
-from noc.core.comp import smart_bytes, smart_text
+from noc.core.comp import smart_text
 from noc.models import get_model_id
 from .extapplication import ExtApplication, view
 
@@ -517,14 +516,12 @@ class ExtDocApplication(ExtApplication):
         :return:
         """
         o = self.get_object_or_404(self.model, id=id)
-        content = o.to_json()
-        hash = hashlib.sha256(smart_bytes(content)).hexdigest()[:8]
+        coll_name = self.model._meta["json_collection"]
         return {
-            "file_path": os.path.join(
-                "src", self.model._meta["json_collection"], o.get_json_path()
-            ),
-            "content": content,
-            "hash": hash,
+            "path": os.path.join("collections", coll_name, o.get_json_path()),
+            "title": "%s: %s" % (coll_name, str(o)),
+            "content": o.to_json(),
+            "description": "",
         }
 
     def _bulk_field_is_builtin(self, data):
