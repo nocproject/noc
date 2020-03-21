@@ -228,7 +228,7 @@ class TestSuite(object):
         test_affected("documentation", lambda x: x[0] == "docs")
         test_affected("ui", lambda x: x[0] == "ui")
         test_affected("profiles", lambda x: x[:2] == ["sa", "profiles"])
-        test_affected("migration", lambda x: len(x) > 2 and x[1] == "migration")
+        test_affected("migration", lambda x: len(x) > 2 and x[1] == "migrations")
         test_affected("tests", lambda x: x[0] == "tests")
         test_affected("nbi", lambda x: x[:3] == ["services", "nbi", "api"])
         test_affected("rust", lambda x: x[0] == "rust")
