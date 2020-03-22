@@ -514,7 +514,8 @@ class Config(BaseConfig):
     class tgsender(ConfigSection):
         token = SecretParameter()
         retry_timeout = IntParameter(default=2)
-        use_proxy = BooleanParameter(default=False)
+        socks = BooleanParameter(default=False)
+        socks_url = StringParameter()
 
     class threadpool(ConfigSection):
         idle_timeout = SecondsParameter(default="30s")

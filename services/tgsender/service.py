@@ -12,6 +12,7 @@ import re
 import datetime
 import json
 import time
+import requests
 
 # Third-party modules
 from six.moves.urllib.parse import urlencode
@@ -54,7 +55,6 @@ class TgSenderService(Service):
         return re.sub(r"([%s])" % escape_chars, r"\\\1", text)
 
     def send_tb(self, messages, address, subject, body):
-        # proxy_addres = config.proxy.https_proxy  # not used.
         sendMessage = {
             "chat_id": address,
             "text": "*"
@@ -64,7 +64,35 @@ class TgSenderService(Service):
             "parse_mode": "Markdown",
         }
         time.sleep(config.tgsender.retry_timeout)
-        if self.url:
+        if not self.url:
+            self.logger.info("No token, no Url.")
+            return False
+        if config.tgsender.socks and config.tgsender.socks_url:
+            socks = {"https": "socks5://%s" % config.tgsender.socks_url}
+            get = self.url + "/sendMessage?" + urlencode(sendMessage)
+            self.logger.info("SOCKS GET %s", get)
+            try:
+                response = requests.get(get, proxies=socks, timeout=5)
+                if 200 <= response.status_code <= 299:
+                    check = response.json()
+                    self.logger.info("Result: %s" % check.get("result"))
+                    metrics["telegram_socks_sended_ok"] += 1
+                    return True
+                else:
+                    self.logger.error(
+                        "SOCKS GET %s failed: %s %s", get, response.status_code, response.reason
+                    )
+                    metrics["telegram_socks_failed_httperror"] += 1
+                    return False
+            except requests.exceptions.Timeout as e:
+                metrics["telegram_socks_failed_timeout"] += 1
+                self.logger.error("SOCKS TimeOut: %s", e)
+                return False
+            except requests.exceptions.RequestException as e:
+                metrics["telegram_socks_failed_error"] += 1
+                self.logger.error("SOCKS Error: %s", e)
+                return False
+        else:
             get = self.url + "/sendMessage?" + urlencode(sendMessage)
             self.logger.info("HTTP GET %s", get)
             code, header, body = fetch_sync(
@@ -83,9 +111,6 @@ class TgSenderService(Service):
                 self.logger.error("HTTP GET %s failed: %s %s", get, code, body)
                 metrics["telegram_proxy_failed_httperror"] += 1
                 return False
-        else:
-            self.logger.info("No token, no Url.")
-            return False
 
 
 if __name__ == "__main__":
