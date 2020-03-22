@@ -162,7 +162,7 @@
         {
             "description": "Power input",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "pwr_in",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60309"
@@ -170,7 +170,7 @@
         {
             "description": "Power output",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "pwr_out",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60309"

@@ -19,6 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Craft",
+            "protocols": [">RS232"],
             "type__name": "Electrical | DB9"
         },
         {
