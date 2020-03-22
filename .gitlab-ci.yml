@@ -20,6 +20,7 @@ check labels:
       junit: ./build/reports/labels-junit.xml
     expire_in: 7 days
   allow_failure: false
+  retry: 2
 
 flake8:
   stage: Lint
