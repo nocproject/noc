@@ -1306,7 +1306,7 @@ Ext.define("NOC.core.ModelApplication", {
             url: me.base_url + "actions/" + action.itemId + "/",
             method: "POST",
             scope: me,
-            params: params,
+            jsonData: params,
             success: function(response) {
                 var r = Ext.decode(response.responseText) || "OK";
                 if(action.resultTemplate) {
