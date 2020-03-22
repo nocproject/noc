@@ -117,7 +117,7 @@
         {
             "description": "DC power input A",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "DC PowerA",
             "protocols": [">-48VDC"],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
@@ -125,7 +125,7 @@
         {
             "description": "DC power input B",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "DC PowerB",
             "protocols": [">-48VDC"],
             "type__name": "Power | MSTB 2.5/3-G-5.08"

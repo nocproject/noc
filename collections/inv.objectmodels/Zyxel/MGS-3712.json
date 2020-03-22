@@ -19,7 +19,7 @@
         {
             "description": "Power input",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "Power",
             "protocols": [">48VDC"],
             "type__name": "Power | MSTB 2.5/4-G-5.08"

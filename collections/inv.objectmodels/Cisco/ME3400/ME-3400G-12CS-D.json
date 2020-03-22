@@ -271,7 +271,7 @@
         {
             "description": "Power input DC A + DC B",
             "direction": "i",
-            "gender": "f",
+            "gender": "m",
             "group": "0",
             "name": "DC Power1",
             "protocols": [">-48VDC", ">+24VDC"],
@@ -280,7 +280,7 @@
         {
             "description": "Power input DC A + DC B",
             "direction": "i",
-            "gender": "f",
+            "gender": "m",
             "group": "0",
             "name": "DC Power2",
             "protocols": [">-48VDC", ">+24VDC"],
