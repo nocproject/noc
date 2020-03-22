@@ -271,7 +271,7 @@
         {
             "description": "Power input AC1",
             "direction": "i",
-            "gender": "f",
+            "gender": "m",
             "group": "0",
             "name": "Power AC1",
             "protocols": [">220VAC", ">110VAC"],
@@ -280,7 +280,7 @@
         {
             "description": "Power input AC2",
             "direction": "i",
-            "gender": "f",
+            "gender": "m",
             "group": "0",
             "name": "Power AC2",
             "protocols": [">220VAC", ">110VAC"],
