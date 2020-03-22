@@ -10,7 +10,7 @@
         {
             "description": "Power input",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "power",
             "type__name": "Power | IEC 60320 C14"
         },

@@ -73,7 +73,7 @@
         {
             "description": "Power input",
             "direction": "i",
-            "gender": "f",
+            "gender": "m",
             "group": "0",
             "name": "Power",
             "protocols": [">220VAC", ">110VAC"],
