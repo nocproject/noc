@@ -11,7 +11,7 @@
         {
             "description": "Power AC",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "power1",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"

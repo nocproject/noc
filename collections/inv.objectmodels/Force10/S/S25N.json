@@ -247,7 +247,7 @@
         {
             "description": "AC Power outlet",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "ac power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"
