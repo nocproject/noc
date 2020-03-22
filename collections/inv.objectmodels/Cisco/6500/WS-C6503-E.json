@@ -5,6 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco Systems Cisco 6500 3-slot Chassis System",
     "connection_rule__name": "Cisco | 6500-E",
+    "cr_context": "CHASSIS",
     "tags": ["chassis"],
     "connections": [
         {
