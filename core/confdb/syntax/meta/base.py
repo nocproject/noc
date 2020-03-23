@@ -109,5 +109,9 @@ META_SYNTAX = DEF(
                 ),
             ],
         ),
+        DEF(
+            "matchers",
+            [DEF(ANY, name="matcher", required=True, multi=True, gen="make_meta_matcher")],
+        ),
     ],
 )
