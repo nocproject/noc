@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/1",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -27,7 +27,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/2",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -35,7 +35,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/3",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -43,7 +43,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/4",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -51,7 +51,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/5",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -59,7 +59,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/6",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -67,7 +67,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/7",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -75,7 +75,7 @@
             "direction": "s",
             "gender": "f",
             "name": "E1_0/8",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         }
     ],

@@ -13,6 +13,7 @@
             "gender": "f",
             "group": "0",
             "name": "Alarm",
+            "protocols": [">DryContact"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -21,6 +22,7 @@
             "gender": "f",
             "group": "0",
             "name": "BITS",
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {

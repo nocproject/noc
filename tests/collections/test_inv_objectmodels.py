@@ -41,14 +41,12 @@ def test_name_unique(model):
     assert helper.get_name_count(model.name) == 1, "Name '%s' is not unique" % model.name
 
 
-@pytest.mark.xfail
 def test_cr_context(model):
     if model.connection_rule is None:
         pytest.skip("No connection rule")
     assert model.cr_context is not None, "'cr_context' must be filled"
 
 
-@pytest.mark.xfail
 def test_connection_gender(model):
     for c in model.connections:
         with pytest.assume:
@@ -77,13 +75,12 @@ def check_protocols(c, protocols):
         )
 
 
-@pytest.mark.xfail
 def test_connection_checklist(model):
     for c in model.connections:
         checklist = CONNECTION_CHECKLIST.get(c.type.name)
         if not checklist:
             continue
-        if c.direction and "direction" in checklist:
+        if c.direction and "directions" in checklist:
             with pytest.assume:
                 check_direction(c, checklist["directions"])
         if "protocols" in checklist:
@@ -95,22 +92,30 @@ def test_connection_checklist(model):
 # * direction - list of possible directions
 # * protocols - list of possible protocols. At least one protocol must be met
 CONNECTION_CHECKLIST = {
-    "Electrical | DB9": {"direction": "s", "protocols": [">RS232"]},
+    "Electrical | DB9": {"directions": "s", "protocols": [">RS232", ">DryContact"]},
     "Electrical | RJ45": {
         "directions": "s",
         "protocols": [
             "10BASET",
             "100BASETX",
             "1000BASET",
+            "1000BASETX",
             "2.5GBASET",
             "5GBASET",
             "10GBASET",
             ">RS232",
+            ">RS485",
             ">DryContact",
+            "G.703",
+            "ToD",
+            "EM",  # Telephony E&M over PBX
+            ">TL1",
+            "IEEE1588",
+            "ADSLoPOTS",
         ],
     },
     "Electrical | Power | IEC 60320 C14": {
-        "direction": "s",
+        "directions": "s",
         "protocols": [">220VAC", "<220VAC", ">110VAC", "<110VAC"],
     },
 }

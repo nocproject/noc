@@ -10,7 +10,7 @@
         {
             "description": "RF Board 71-76Ghz Rx FDD",
             "direction": "s",
-            "gender": "s",
+            "gender": "f",
             "name": "eth0_RX",
             "group": "0",
             "protocols": ["802.11abgn"],
@@ -19,7 +19,7 @@
         {
             "description": "RF Board 81-86Ghz Tx FDD",
             "direction": "s",
-            "gender": "s",
+            "gender": "f",
             "name": "eth0_TX",
             "group": "0",
             "protocols": ["802.11abgn"],

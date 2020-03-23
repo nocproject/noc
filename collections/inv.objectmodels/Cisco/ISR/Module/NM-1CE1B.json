@@ -18,7 +18,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se0",
-            "protocols": ["T1", "E1", "G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | DB15"
         }
     ],

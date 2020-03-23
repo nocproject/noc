@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se0",
-            "protocols": ["E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ48"
         }
     ],

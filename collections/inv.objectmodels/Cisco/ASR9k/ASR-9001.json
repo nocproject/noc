@@ -42,13 +42,15 @@
             "direction": "s",
             "gender": "f",
             "name": "IEEE1588",
+            "protocols": ["IEEE1588"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "TOD port",
+            "description": "ToD port",
             "direction": "s",
             "gender": "f",
             "name": "TOD",
+            "protocols": ["ToD"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -56,6 +58,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Sync0",
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -63,6 +66,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Sync1",
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {

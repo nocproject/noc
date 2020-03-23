@@ -12,6 +12,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Alarms",
+            "protocols": [">DryContact"],
             "type__name": "Electrical | RJ45"
         },
         {

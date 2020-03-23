@@ -133,7 +133,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Gi23",
-            "protocols": ["TransEth1G"],
+            "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -149,7 +149,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Gi24",
-            "protocols": ["TransEth1G"],
+            "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
