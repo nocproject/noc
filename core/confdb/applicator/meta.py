@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # MetaApplicator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.script.scheme import PROTOCOLS
+from noc.core.matcher import match
 from .base import BaseApplicator
 
 
@@ -55,6 +56,20 @@ class MetaApplicator(BaseApplicator):
         if self.object.tags:
             for tag in self.object.tags:
                 yield "meta", "tags", tag
+        # meta matchers
+        if self.object.version:
+            for r in self.iter_object_meta_matchers():
+                yield r
+
+    def iter_object_meta_matchers(self):
+        ctx = {
+            "vendor": self.object.vendor.name,
+            "platform": self.object.platform.name,
+            "version": self.object.version.version,
+        }
+        for matcher in self.object.get_profile().matchers:
+            if match(ctx, self.object.get_profile().matchers[matcher]):
+                yield "meta", "matchers", matcher
 
     def chassis_mac_meta(self):
         ch_id = DiscoveryID.objects.filter(object=self.object.id).first()
