@@ -18,7 +18,6 @@
     name: ol7_optional_latest
     state: present
     description: "Oracle Linux $releasever Optional Latest ($basearch)"
-    file: public-yum-ol7
     enabled: "True"
     baseurl: https://yum.oracle.com/repo/OracleLinux/OL7/optional/latest/$basearch/
     gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
@@ -34,7 +33,6 @@
     name: ol7_developer_EPEL
     state: present
     description: "Oracle Linux $releasever Development Packages ($basearch)"
-    file: public-yum-ol7
     enabled: "True"
     baseurl: https://yum.oracle.com/repo/OracleLinux/OL7/developer_EPEL/$basearch/
     gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
@@ -45,7 +43,7 @@
   tags:
     - requirements
 
-- name: Install OEL system packages
+- name: Install OEL system packages 2/2
   yum:
     name: "{{ packages }}"
     state: present
@@ -57,20 +55,29 @@
       - python-virtualenv
       - gcc
       - postgresql{{ postgres_version|replace(".","") }}
-      - postgresql-devel
       - postgresql{{ postgres_version|replace(".","") }}-devel
       - libffi
       - libffi-devel
       - libmemcached
-      - libmemcached-devel
       - zlib-devel
-      - jemalloc
       - bzip2
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
+
+- name: Install OEL system packages 2/2
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - jemalloc
+      - libmemcached-devel
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
 
 - name: Install OEL system packages for python3
   yum:

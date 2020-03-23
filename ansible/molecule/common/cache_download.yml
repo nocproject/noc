@@ -27,6 +27,7 @@
     src: /tmp/dist/mc
     dest: /tmp/mc
     mode: 0755
+    remote_src: true
 
 - name: config cache url
   command: "/tmp/mc config host add myminio {{ minio_url }} {{ minio_key }} {{ minio_secret }}"

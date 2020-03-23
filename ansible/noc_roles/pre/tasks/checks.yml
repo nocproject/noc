@@ -12,7 +12,7 @@
   fail:
     msg: "{{ ansible_distribution }} is not supported by NOC"
   when:
-    - ansible_distribution not in ['RedHat', 'CentOS', 'Debian', 'Ubuntu', 'FreeBSD']
+    - ansible_distribution not in ['RedHat', 'CentOS', 'Debian', 'Ubuntu', 'FreeBSD', 'OracleLinux']
   tags:
     - checks
 
