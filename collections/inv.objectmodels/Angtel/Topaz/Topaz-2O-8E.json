@@ -99,10 +99,10 @@
         {
             "description": "Power outlet",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "power",
             "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
+            "type__name": "Power | TB Barrier Screw 2 Pin"
         }
     ],
     "data": {

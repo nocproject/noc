@@ -236,7 +236,7 @@
         },
         {
             "description": "GigabitEthernet 0/0/3 port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "group": "GigabitEthernet0/0/3",
             "name": "GigabitEthernet0/0/3",
@@ -255,7 +255,7 @@
         },
         {
             "description": "GigabitEthernet 0/0/4 port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "group": "GigabitEthernet0/0/4",
             "name": "GigabitEthernet0/0/4",

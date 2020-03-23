@@ -35,7 +35,7 @@
             "direction": "s",
             "gender": "f",
             "name": "console",
-            "protocols": ["<RS232"],
+            "protocols": [">RS232"],
             "type__name": "Electrical | RJ45"
         }
     ],

@@ -11,7 +11,7 @@
         {
             "description": "-48V",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "group": "0",
             "name": "-48V",
             "protocols": [">-48VDC"],
@@ -20,7 +20,7 @@
         {
             "description": "RTN (+)",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "group": "0",
             "name": "RTN",
             "protocols": [">-48VDC"],
@@ -44,7 +44,7 @@
         },
         {
             "description": "Ethernet 0/0/2 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/2",
             "protocols": ["TransEth100M"],
@@ -52,7 +52,7 @@
         },
         {
             "description": "Ethernet 0/0/3 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/3",
             "protocols": ["TransEth100M"],
@@ -60,7 +60,7 @@
         },
         {
             "description": "Ethernet 0/0/4 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/4",
             "protocols": ["TransEth100M"],
@@ -68,7 +68,7 @@
         },
         {
             "description": "Ethernet 0/0/5 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/5",
             "protocols": ["TransEth100M"],
@@ -76,7 +76,7 @@
         },
         {
             "description": "Ethernet 0/0/6 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/6",
             "protocols": ["TransEth100M"],
@@ -84,7 +84,7 @@
         },
         {
             "description": "Ethernet 0/0/7 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/7",
             "protocols": ["TransEth100M"],
@@ -92,7 +92,7 @@
         },
         {
             "description": "Ethernet 0/0/8 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/8",
             "protocols": ["TransEth100M"],
@@ -100,7 +100,7 @@
         },
         {
             "description": "Ethernet 0/0/9 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/9",
             "protocols": ["TransEth100M"],
@@ -108,7 +108,7 @@
         },
         {
             "description": "Ethernet 0/0/10 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/10",
             "protocols": ["TransEth100M"],
@@ -116,7 +116,7 @@
         },
         {
             "description": "Ethernet 0/0/11 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/11",
             "protocols": ["TransEth100M"],
@@ -124,7 +124,7 @@
         },
         {
             "description": "Ethernet 0/0/12 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/12",
             "protocols": ["TransEth100M"],
@@ -132,7 +132,7 @@
         },
         {
             "description": "Ethernet 0/0/13 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/13",
             "protocols": ["TransEth100M"],
@@ -140,7 +140,7 @@
         },
         {
             "description": "Ethernet 0/0/14 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/14",
             "protocols": ["TransEth100M"],
@@ -148,7 +148,7 @@
         },
         {
             "description": "Ethernet 0/0/15 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/15",
             "protocols": ["TransEth100M"],
@@ -156,7 +156,7 @@
         },
         {
             "description": "Ethernet 0/0/16 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/16",
             "protocols": ["TransEth100M"],
@@ -164,7 +164,7 @@
         },
         {
             "description": "Ethernet 0/0/17 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/17",
             "protocols": ["TransEth100M"],
@@ -172,7 +172,7 @@
         },
         {
             "description": "Ethernet 0/0/18 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/18",
             "protocols": ["TransEth100M"],
@@ -180,7 +180,7 @@
         },
         {
             "description": "Ethernet 0/0/19 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/19",
             "protocols": ["TransEth100M"],
@@ -188,7 +188,7 @@
         },
         {
             "description": "Ethernet 0/0/20 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/20",
             "protocols": ["TransEth100M"],
@@ -196,7 +196,7 @@
         },
         {
             "description": "Ethernet 0/0/21 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/21",
             "protocols": ["TransEth100M"],
@@ -204,7 +204,7 @@
         },
         {
             "description": "Ethernet 0/0/22 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/22",
             "protocols": ["TransEth100M"],
@@ -212,7 +212,7 @@
         },
         {
             "description": "Ethernet 0/0/23 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/23",
             "protocols": ["TransEth100M"],
@@ -220,7 +220,7 @@
         },
         {
             "description": "Ethernet 0/0/24 port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Ethernet0/0/24",
             "protocols": ["TransEth100M"],
@@ -246,7 +246,7 @@
         },
         {
             "description": "GigabitEthernet 0/0/3 port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "group": "GigabitEthernet0/0/3",
             "name": "GigabitEthernet0/0/3",
@@ -265,7 +265,7 @@
         },
         {
             "description": "GigabitEthernet 0/0/4 port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "group": "GigabitEthernet0/0/4",
             "name": "GigabitEthernet0/0/4",

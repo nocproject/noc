@@ -53,6 +53,7 @@
             "direction": "s",
             "gender": "f",
             "name": "alarm",
+            "protocols": [">DryContact"],
             "type__name": "Electrical | DB9"
         },
         {

@@ -10,7 +10,7 @@
         {
             "description": "RF Board 71-76Ghz TDD",
             "direction": "s",
-            "gender": "s",
+            "gender": "f",
             "name": "eth0",
             "protocols": ["802.11abgn"],
             "type__name": "Radio | RF | N"

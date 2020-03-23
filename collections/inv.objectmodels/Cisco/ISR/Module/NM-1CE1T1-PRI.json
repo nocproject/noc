@@ -18,7 +18,7 @@
             "direction": "s",
             "gender": "f",
             "name": "voice-port0",
-            "protocols": ["T1", "E1", "G703"],
+            "protocols": ["G703"],
             "type__name": "Electrical | RJ48"
         },
         {

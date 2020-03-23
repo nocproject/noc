@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se0",
-            "protocols": ["T1", "E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | DB60"
         },
         {
@@ -27,7 +27,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se1",
-            "protocols": ["T1", "E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | DB60"
         },
         {
@@ -35,7 +35,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se2",
-            "protocols": ["T1", "E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | DB60"
         },
         {
@@ -43,7 +43,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se3",
-            "protocols": ["T1", "E1"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | DB60"
         }
     ],

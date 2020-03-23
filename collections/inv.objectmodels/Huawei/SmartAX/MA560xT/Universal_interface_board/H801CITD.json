@@ -18,7 +18,7 @@
             "direction": "s",
             "gender": "f",
             "name": "IN0",
-            "protocols": ["BITS"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -26,7 +26,7 @@
             "direction": "s",
             "gender": "f",
             "name": "IN1",
-            "protocols": ["BITS"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -34,7 +34,7 @@
             "direction": "s",
             "gender": "f",
             "name": "OUT",
-            "protocols": ["BITS"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -50,7 +50,7 @@
             "direction": "s",
             "gender": "f",
             "name": "con",
-            "protocols": ["<RS232"],
+            "protocols": [">RS232"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,6 +58,7 @@
             "direction": "s",
             "gender": "f",
             "name": "ALM_upper",
+            "protocols": [">DryContact"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -65,6 +66,7 @@
             "direction": "s",
             "gender": "f",
             "name": "ALM_lower",
+            "protocols": [">DryContact"],
             "type__name": "Electrical | RJ45"
         }
     ],

@@ -83,6 +83,7 @@
             "description": "Dry contacts",
             "direction": "s",
             "gender": "f",
+            "protocols": [">DryContact"],
             "name": "Alarm",
             "type__name": "Electrical | RJ48"
         },
@@ -90,7 +91,8 @@
             "description": "Time-of-Day interface",
             "direction": "s",
             "gender": "f",
-            "name": "TOD",
+            "name": "ToD",
+            "protocols":["ToD"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -98,6 +100,7 @@
             "direction": "s",
             "gender": "f",
             "name": "BITS",
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -151,7 +154,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se0",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -159,7 +162,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se1",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -167,7 +170,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se2",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -175,7 +178,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se3",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -183,7 +186,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se4",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -191,7 +194,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se5",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -199,7 +202,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se6",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -207,7 +210,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Se7",
-            "protocols": ["G703"],
+            "protocols": ["G.703"],
             "type__name": "Electrical | RJ45"
         },
         {
