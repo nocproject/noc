@@ -59,6 +59,27 @@
             "description": "CPE v2.3 identification string",
             "required": false,
             "is_const": true
+        },
+        {
+            "name": "serial_mask",
+            "type": "str",
+            "description": "Regex for validate Serial Number",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "min_serial_size",
+            "type": "int",
+            "description": "Min len for Serial Number",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "max_serial_size",
+            "type": "int",
+            "description": "Max len for Serial Number",
+            "required": false,
+            "is_const": true
         }
     ]
 }

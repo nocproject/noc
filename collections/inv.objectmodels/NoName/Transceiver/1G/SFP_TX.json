@@ -24,5 +24,9 @@
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {}
+    "data": {
+        "asset": {
+            "min_serial_size": 5
+        }
+    }
 }
