@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Managed Object loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -49,6 +49,7 @@ class ManagedObjectLoader(BaseLoader):
         "tt_system",
         "tt_queue",
         "tt_system_id",
+        "fm_pool",
     ]
 
     mapped_fields = {
@@ -72,6 +73,7 @@ class ManagedObjectLoader(BaseLoader):
         """
         v = super(ManagedObjectLoader, self).clean(row)
         v["pool"] = self.pools[v["pool"]]
+        v["fm_pool"] = self.pools[v["fm_pool"]] if v["fm_pool"] else v["pool"]
         if "tags" in v:
             v["tags"] = (
                 [x.strip().strip('"') for x in v["tags"].split(",") if x.strip()]

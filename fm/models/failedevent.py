@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # FailedEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ class FailedEvent(Document):
             "object": self.managed_object.id,
             "data": data,
         }
-        nsq_pub("events.%s" % self.managed_object.pool.name, msg)
+        nsq_pub("events.%s" % self.managed_object.get_effective_fm_pool().name, msg)
         self.delete()
 
     def log_message(self, message):

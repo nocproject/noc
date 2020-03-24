@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # cfgsyslog datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ class CfgSyslogDataStream(DataStream):
             "bi_id",
             "is_managed",
             "pool",
+            "fm_pool",
             "address",
             "syslog_source_ip",
             "syslog_source_type",
@@ -38,6 +39,7 @@ class CfgSyslogDataStream(DataStream):
             bi_id,
             is_managed,
             pool,
+            fm_pool,
             address,
             syslog_source_ip,
             syslog_source_type,
@@ -65,10 +67,12 @@ class CfgSyslogDataStream(DataStream):
         if not effective_epp and not effective_sap:
             raise KeyError()
         # Process syslog sources
+        pool = str(Pool.get_by_id(pool).name)
         r = {
             "id": str(mo_id),
             "bi_id": str(bi_id),
-            "pool": str(Pool.get_by_id(pool).name),
+            "pool": pool,
+            "fm_pool": str(Pool.get_by_id(fm_pool).name) if fm_pool else pool,
             "addresses": [],
             "process_events": effective_epp,
             "archive_events": effective_sap,

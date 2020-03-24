@@ -25,7 +25,7 @@ from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 
 SourceConfig = namedtuple(
-    "SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events"]
+    "SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events", "fm_pool"]
 )
 
 
@@ -86,7 +86,7 @@ class SyslogCollectorService(Service):
             # Send to classifier
             metrics["events_out"] += 1
             self.pub(
-                "events.%s" % config.pool,
+                "events.%s" % cfg.fm_pool,
                 {
                     "ts": timestamp,
                     "object": cfg.id,
@@ -162,6 +162,7 @@ class SyslogCollectorService(Service):
             data.get("bi_id"),  # For backward compatibility
             data.get("process_events", True),  # For backward compatibility
             data.get("archive_events", False),
+            data.get("fm_pool", None) or config.pool,
         )
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining

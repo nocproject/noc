@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Classifier service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -545,7 +545,7 @@ class ClassifierService(Service):
         cache.set("activeent-%s" % event.id, event, ttl=900)
         # @todo: Use config.pool instead
         self.pub(
-            "correlator.dispose.%s" % event.managed_object.pool.name,
+            "correlator.dispose.%s" % event.managed_object.get_effective_fm_pool().name,
             {"event_id": str(event.id), "event": event.to_json()},
         )
         metrics[CR_DISPOSED] += 1

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # cfgtrap datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ class CfgTrapDataStream(DataStream):
             "id",
             "is_managed",
             "pool",
+            "fm_pool",
             "address",
             "trap_community",
             "trap_source_ip",
@@ -35,6 +36,7 @@ class CfgTrapDataStream(DataStream):
             mo_id,
             is_managed,
             pool,
+            fm_pool,
             address,
             trap_community,
             trap_source_ip,
@@ -51,9 +53,11 @@ class CfgTrapDataStream(DataStream):
         ):
             raise KeyError()
         # Process trap sources
+        pool = str(Pool.get_by_id(pool).name)
         r = {
             "id": str(mo_id),
-            "pool": str(Pool.get_by_id(pool).name),
+            "pool": pool,
+            "fm_pool": str(Pool.get_by_id(fm_pool).name) if fm_pool else pool,
             "addresses": [],
             "trap_community": trap_community,
         }

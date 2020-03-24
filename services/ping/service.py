@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Ping service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -74,11 +74,11 @@ class PingService(Service):
         r["throttled"] = self.is_throttled
         return r
 
-    def register_message(self, object, timestamp, data):
+    def register_message(self, cfg, timestamp, data):
         """
         Spool message to be sent
         """
-        self.pub("events.%s" % config.pool, {"ts": timestamp, "object": object, "data": data})
+        self.pub("events.%s" % cfg.fm_pool, {"ts": timestamp, "object": cfg.id, "data": data})
 
     @tornado.gen.coroutine
     def get_object_mappings(self):
@@ -144,6 +144,8 @@ class PingService(Service):
         if ps.address != data["address"]:
             self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
             ps.address = data["address"]
+        if ps.fm_pool != data["fm_pool"]:
+            ps.fm_pool = data["fm_pool"]
         ps.update(**data)
         metrics["ping_probe_update"] += 1
         metrics["ping_objects"] = len(self.probes)
@@ -200,7 +202,7 @@ class PingService(Service):
             ps.status = s
         if ps and not self.is_throttled and s != ps.sent_status:
             self.register_message(
-                ps.id, t0, {"source": "system", "$event": {"class": self.PING_CLS[s], "vars": {}}}
+                ps, t0, {"source": "system", "$event": {"class": self.PING_CLS[s], "vars": {}}}
             )
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)

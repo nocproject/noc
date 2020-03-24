@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SNMP Trap Server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,4 +51,4 @@ class TrapServer(UDPServer):
         body = {"source": "SNMP Trap", "collector": config.pool}
         body.update(varbinds)
         body = dict((k, fm_escape(body[k])) for k in body)
-        self.service.register_message(cfg.id, ts, body)
+        self.service.register_message(cfg, ts, body)

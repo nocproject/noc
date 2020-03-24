@@ -156,6 +156,8 @@ class ManagedObject(NOCModel):
     )
     segment = DocumentReferenceField(NetworkSegment, null=False, blank=False)
     pool = DocumentReferenceField(Pool, null=False, blank=False)
+    # Optional pool to route FM events
+    fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
     profile = DocumentReferenceField(Profile, null=False, blank=False)
     vendor = DocumentReferenceField(Vendor, null=True, blank=True)
     platform = DocumentReferenceField(Platform, null=True, blank=True)
@@ -548,6 +550,7 @@ class ManagedObject(NOCModel):
                 "bi_id",
                 "is_managed",
                 "pool",
+                "fm_pool",
                 "address",
                 "object_profile",
                 "time_pattern",
@@ -561,6 +564,7 @@ class ManagedObject(NOCModel):
                 "bi_id",
                 "is_managed",
                 "pool",
+                "fm_pool",
                 "address",
                 "object_profile",
                 "event_processing_policy",
@@ -576,6 +580,7 @@ class ManagedObject(NOCModel):
                 "bi_id",
                 "is_managed",
                 "pool",
+                "fm_pool",
                 "address",
                 "object_profile",
                 "event_processing_policy",
@@ -1750,6 +1755,11 @@ class ManagedObject(NOCModel):
         for o in Object.get_managed(self):
             for r in o.iter_scope(scope):
                 yield r
+
+    def get_effective_fm_pool(self):
+        if self.fm_pool:
+            return self.fm_pool
+        return self.pool
 
 
 @on_save
