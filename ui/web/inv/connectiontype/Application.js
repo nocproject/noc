@@ -114,6 +114,25 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     name: "c_group",
                     xtype: "stringlistfield",
                     fieldLabel: __("Compatible groups")
+                },
+                {
+                    name: "matchers",
+                    xtype: "gridfield",
+                    fieldLabel: __("Matchers"),
+                    columns: [
+                        {
+                            text: __("Scope"),
+                            dataIndex: "scope",
+                            editor: "textfield",
+                            width: 100
+                        },
+                        {
+                            text: __("Protocol"),
+                            dataIndex: "protocol",
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
                 }
             ],
             formToolbar: [

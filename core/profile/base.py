@@ -331,6 +331,9 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         # Finally apply meta
         "noc.core.confdb.applicator.meta.MetaApplicator",
     ]
+    # Collators
+    # List of (<collator handler>, <collator settings>) or <collator_handler>
+    collators = None
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
@@ -727,10 +730,30 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
                     yield a
         # Apply profile local applicators
         if cls.config_applicators:
-            for acfg in cls.default_config_applicators:
+            for acfg in cls.config_applicators:
                 a = get_applicator(acfg)
                 if a:
                     yield a
+
+    @classmethod
+    def iter_collators(cls, obj):
+        def get_collator(cfg):
+            if isinstance(cfg, six.string_types):
+                c_handler, c_cfg = cfg, {}
+            else:
+                c_handler, c_cfg = cfg
+            if not c_handler.startswith("noc."):
+                c_handler = "noc.sa.profiles.%s.confdb.collator.%s" % (profile_name, c_handler)
+            c_cls = get_handler(c_handler)
+            assert c_cls, "Invalid collator %s" % c_handler
+            return c_cls(**c_cfg)
+
+        profile_name = obj.get_profile().name
+        if cls.collators:
+            for c_cfg in cls.collators:
+                c = get_collator(c_cfg)
+                if c:
+                    yield c
 
     @classmethod
     def get_http_request_middleware(cls, script):

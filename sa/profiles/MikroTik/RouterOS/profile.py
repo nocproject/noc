@@ -34,6 +34,7 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "mode", "server"),
         ("hints", "protocols", "ntp", "version", "3"),
     ]
+    collators = ["noc.core.confdb.collator.ifname.IfNameCollator"]
 
     # telnet_naws = "\x00\xfa\x00\xfa"
 

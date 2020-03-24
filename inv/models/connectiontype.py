@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ConnectionType model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import os
 
 # Third-party modules
 import six
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     BooleanField,
@@ -19,6 +19,7 @@ from mongoengine.fields import (
     ListField,
     UUIDField,
     ObjectIdField,
+    EmbeddedDocumentField,
 )
 
 # NOC modules
@@ -27,6 +28,24 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.main.models.doccategory import category
 from noc.core.model.decorator import on_delete_check
+
+
+@six.python_2_unicode_compatible
+class ConnectionMatcher(EmbeddedDocument):
+    # Matched scope
+    scope = StringField()
+    # Matching protocol
+    protocol = StringField()
+
+    def __str__(self):
+        return "<ConnectionMatcher %s:%s>" % (self.scope, self.protocol)
+
+    @property
+    def json_data(self):
+        return {
+            "scope": self.scope,
+            "protocol": self.protocol,
+        }
 
 
 @category
@@ -71,6 +90,8 @@ class ConnectionType(Document):
     # and all types having any c_group
     c_group = ListField(StringField())
     uuid = UUIDField(binary=True)
+    # Connection matchers
+    matchers = ListField(EmbeddedDocumentField(ConnectionMatcher))
 
     OPPOSITE_GENDER = {"s": "s", "m": "f", "f": "m"}
     category = ObjectIdField()
@@ -90,6 +111,8 @@ class ConnectionType(Document):
         }
         if self.extend:
             r["extend__name"] = self.extend.name
+        if self.matchers:
+            r["matchers"] = [m.json_data for m in self.matchers]
         return r
 
     def to_json(self):
@@ -171,3 +194,20 @@ class ConnectionType(Document):
                 if og in c.genders:
                     r += [c.id]
         return r
+
+    def get_matched_scopes(self, protocols):
+        """
+        Returns set of matched scopes against the list of protocols
+        :param protocols:
+        :return:
+        """
+        return set(m.scope for m in self.matchers if m.protocol in protocols)
+
+    def is_matched_scope(self, scope, protocols):
+        """
+        Check if connection type matches scope against list of protocols
+        :param scope:
+        :param protocols:
+        :return:
+        """
+        return any(True for m in self.matchers if m.scope == scope and m.protocol in protocols)

@@ -589,6 +589,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "description": o.model.description,
             "model": o.model.name,
         }
+        if_map = {c.name: c.interface_name for c in o.connections}
         children = []
         for n in o.model.connections:
             if n.direction == "i":
@@ -602,6 +603,7 @@ class ManagedObjectApplication(ExtModelApplication):
                             "serial": None,
                             "description": "--- EMPTY ---",
                             "model": None,
+                            "interface": if_map.get(n.name) or "",
                         }
                     ]
                 else:
@@ -617,6 +619,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "serial": None,
                         "description": n.description,
                         "model": ", ".join(n.protocols),
+                        "interface": if_map.get(n.name) or "",
                     }
                 ]
         if children:

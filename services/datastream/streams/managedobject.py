@@ -369,6 +369,7 @@ class ManagedObjectDataStream(DataStream):
             "data": o.data or {},
             "slots": [],
         }
+        if_map = {c.name: c.interface_name for c in o.connections if c.interface_name}
         for n in o.model.connections:
             if n.direction == "i":
                 c, r_object, _ = o.get_p2p_connection(n.name)
@@ -389,6 +390,8 @@ class ManagedObjectDataStream(DataStream):
                         "protocols": [str(p) for p in n.protocols],
                     }
                 ]
+            if n.name in if_map:
+                r["slots"][-1]["interface"] = if_map[n.name]
         return r
 
     @staticmethod

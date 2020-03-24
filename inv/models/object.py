@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,13 +11,22 @@ from __future__ import absolute_import
 import datetime
 import operator
 from threading import Lock
+from collections import namedtuple
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, DictField, ListField, PointField, LongField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    DictField,
+    ListField,
+    PointField,
+    LongField,
+    EmbeddedDocumentField,
+)
 from mongoengine import signals
 import cachetools
 import six
+from typing import Iterable, Tuple
 
 # NOC modules
 from noc.gis.models.layer import Layer
@@ -37,8 +46,21 @@ from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
 
+PathItem = namedtuple("PathItem", ["object", "connection"])
+
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+
+@six.python_2_unicode_compatible
+class ObjectConnectionData(EmbeddedDocument):
+    # Connection name (from model)
+    name = StringField()
+    # Bound interface
+    interface_name = StringField()
+
+    def __str__(self):
+        return self.name
 
 
 @bi_sync
@@ -78,6 +100,8 @@ class Object(Document):
     # Map
     layer = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
+    # Additional connection data
+    connections = ListField(EmbeddedDocumentField(ObjectConnectionData))
     #
     tags = ListField(StringField())
     # Object id in BI
@@ -480,7 +504,7 @@ class Object(Document):
                 else:
                     oc = cc
             if sn and oc:
-                yield (sn, oc.object, oc.name)
+                yield sn, oc.object, oc.name
 
     def iter_inner_connections(self):
         """
@@ -630,6 +654,36 @@ class Object(Document):
             for sn, oo, name in self.iter_inner_connections():
                 serials += oo.get_object_serials(chassis_only=False)
         return serials
+
+    def iter_scope(self, scope):
+        # type: (six.text_type) -> Iterable[Tuple[PathItem, ...]]
+        """
+        Yields Full physical path for all connections with given scopes
+        behind the object
+
+        :param scope: Scope name
+        :return:
+        """
+        connections = {name: ro for name, ro, _ in self.iter_inner_connections()}
+        for c in self.model.connections:
+            if c.type.is_matched_scope(scope, c.protocols):
+                # Yield connection
+                yield PathItem(object=self, connection=c),
+            elif c.name in connections:
+                ro = connections[c.name]
+                for part_path in ro.iter_scope(scope):
+                    yield (PathItem(object=self, connection=c),) + part_path
+
+    def set_connection_interface(self, name, if_name):
+        for cdata in self.connections:
+            if cdata.name == name:
+                cdata.interface_name = if_name
+                return
+        # New item
+        self.connections += [ObjectConnectionData(name=name, interface_name=if_name)]
+
+    def reset_connection_interface(self, name):
+        self.connections = [c for c in self.connections if c.name != name]
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

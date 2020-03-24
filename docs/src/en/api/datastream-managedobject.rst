@@ -212,6 +212,8 @@ Fields
 | ** protocols           | Array of String  | List of protocols, supported by slot                                   |
 |                        |                  | (see :ref:`Inventory Protocols <dev-inventory-protocols>`)             |
 +------------------------+------------------+------------------------------------------------------------------------+
+| ** interface           | String           | Optional interface name related to the slot                            |
++------------------------+------------------+------------------------------------------------------------------------+
 | ** slots               | Array of Object  | List of inner slots for `i` direction, same structure as `slots`       |
 +------------------------+------------------+------------------------------------------------------------------------+
 

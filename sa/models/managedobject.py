@@ -91,7 +91,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 19
+MANAGEDOBJECT_CACHE_VERSION = 20
 
 Credentials = namedtuple(
     "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw"]
@@ -1745,6 +1745,11 @@ class ManagedObject(NOCModel):
             mo.profile = Profile.get_by_name(profile)
         mo.is_mock = True
         return mo
+
+    def iter_scope(self, scope):
+        for o in Object.get_managed(self):
+            for r in o.iter_scope(scope):
+                yield r
 
 
 @on_save

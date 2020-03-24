@@ -325,6 +325,9 @@ class IGetInterfaces(BaseInterface):
             "interfaces": DictListParameter(
                 attrs={
                     "name": InterfaceNameParameter(),
+                    # Default interface name,
+                    # in case the `name` can be configured (i.e. RouterOS)
+                    "default_name": StringParameter(required=False),
                     "type": StringParameter(
                         choices=[
                             "physical",
