@@ -75,3 +75,5 @@
   stat:
     path: "{{ noc_root }}/collections/README.md"
   register: noc_coll_canary
+  tags:
+    - get_source
