@@ -24,6 +24,7 @@ msgstr ""
 #: services/web/apps/fm/reportalarmdetail/views.py:108
 #: services/web/apps/inv/reportifacestatus/views.py:98
 #: services/web/apps/inv/reportlinkdetail/views.py:109
+#: services/web/apps/inv/reportmaxmetrics/views.py:75
 #: services/web/apps/inv/reportmetrics/views.py:61
 #: services/web/apps/sa/reportobjectdetail/views.py:95
 msgid "Reports"
@@ -403,10 +404,12 @@ msgid "DURATION_SEC"
 msgstr "Длительность (сек)"
 
 #: services/web/apps/fm/reportalarmdetail/views.py:225
+#: services/web/apps/inv/reportmaxmetrics/views.py:284
 msgid "OBJECT_NAME"
 msgstr "Имя объекта"
 
 #: services/web/apps/fm/reportalarmdetail/views.py:226
+#: services/web/apps/inv/reportmaxmetrics/views.py:285
 msgid "OBJECT_ADDRESS"
 msgstr "IP Адрес"
 
@@ -419,10 +422,12 @@ msgid "OBJECT_PROFILE"
 msgstr "Профиль"
 
 #: services/web/apps/fm/reportalarmdetail/views.py:229
+#: services/web/apps/inv/reportmaxmetrics/views.py:287
 msgid "OBJECT_ADMDOMAIN"
 msgstr "З.О."
 
 #: services/web/apps/fm/reportalarmdetail/views.py:230
+#: services/web/apps/inv/reportmaxmetrics/views.py:286
 msgid "OBJECT_PLATFORM"
 msgstr "Платформа"
 
@@ -1086,6 +1091,87 @@ msgstr "Статусы интерфейсов"
 #: services/web/apps/inv/reportlinkdetail/views.py:110
 msgid "Link Detail"
 msgstr "Детализация по линкам"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:75
+#: services/web/apps/inv/reportmaxmetrics/views.py:76
+msgid "Load Metrics max"
+msgstr "Отчет по пиковой загрузке"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:288
+msgid "OBJECT_SEGMENT"
+msgstr "Сегмент объекта"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:290
+msgid "IFACE_NAME"
+msgstr "Имя интерфейса"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:291
+msgid "IFACE_DESCRIPTION"
+msgstr "Описание интерфейса"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:292
+msgid "IFACE_SPEED"
+msgstr "Скорость интерфейса"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:293
+msgid "MAX_LOAD_IN, Mbps"
+msgstr "Максимальная загрузка входящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:294
+msgid "MAX_LOAD_IN_TIME"
+msgstr "Время максимальной нагрузки, входящий"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:295
+msgid "MAX_LOAD_OUT, Mbps"
+msgstr "Максимальная загрузка исходящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:296
+msgid "MAX_LOAD_OUT_TIME"
+msgstr "Время максимальной нагрузки, исходящий"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:297
+msgid "AVG_LOAD_IN, Mbps"
+msgstr "Средняя загрузка входящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:298
+msgid "AVG_LOAD_OUT, Mbps"
+msgstr "Средняя загрузка исходящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:299
+msgid "UPLINK_IFACE_NAME"
+msgstr "Имя интерфейса Uplink"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:300
+msgid "UPLINK_IFACE_DESCRIPTION"
+msgstr "Описание интерфейса Uplink"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:301
+msgid "UPLINK_MAX_LOAD_IN, Mbps"
+msgstr "Максимальная загрузка Uplink входящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:302
+msgid "UPLINK_MAX_TIME_IN"
+msgstr "Время максимальной нагрузки Uplink, входящий"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:303
+msgid "UPLINK_MAX_LOAD_OUT, Mbps"
+msgstr "Максимальная загрузка Uplink исходящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:304
+msgid "UPLINK_MAX_TIME_OUT"
+msgstr "Время максимальной нагрузки Uplink, исходящий"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:305
+msgid "UPLINK_AVG_LOAD_IN, Mbps"
+msgstr "Средняя загрузка Uplink входящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:306
+msgid "UPLINK_AVG_LOAD_OUT, Mbps"
+msgstr "Средняя загрузка Uplink исходящий, Мбит/с"
+
+#: services/web/apps/inv/reportmaxmetrics/views.py:307
+msgid "UPLINK_IFACE_SPEED"
+msgstr "Скорость интерфейса Uplink"
 
 #: services/web/apps/inv/reportmetrics/views.py:61
 #: services/web/apps/inv/reportmetrics/views.py:62
