@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Asset check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,13 @@
 from collections import defaultdict
 import hashlib
 import base64
+from threading import Lock
+import operator
+import re
 
 # Third-party modules
 import six
+import cachetools
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -33,6 +37,9 @@ class AssetCheck(DiscoveryCheck):
 
     name = "asset"
     required_script = "get_inventory"
+
+    _serial_masks = {}
+    _serial_masks_lock = Lock()
 
     def __init__(self, *args, **kwargs):
         super(AssetCheck, self).__init__(*args, **kwargs)
@@ -93,12 +100,14 @@ class AssetCheck(DiscoveryCheck):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
         if vendor:
+            # Possible dead code
             try:
                 vendor.encode("utf-8")
             except UnicodeDecodeError:
                 self.logger.info("Trash submited as vendor id: %s", vendor.encode("hex"))
                 return
         if serial:
+            # Possible dead code
             try:
                 serial.encode("utf-8")
             except UnicodeDecodeError:
@@ -149,6 +158,9 @@ class AssetCheck(DiscoveryCheck):
                     )
                     self.register_unknown_part_no(vnd, part_no, description)
                     return
+        # Sanitize serial number against the model
+        serial = self.clean_serial(m, number, serial)
+        #
         if m.cr_context and type != m.cr_context:
             # Override type with object mode's one
             self.logger.info("Model changes type to '%s'", m.cr_context)
@@ -170,10 +182,6 @@ class AssetCheck(DiscoveryCheck):
                 scope = self.rule_context[type][0]
                 if scope:
                     self.set_context(scope, number)
-        #
-        if not serial or serial == "None":
-            serial = self.generate_serial(m, number)
-            self.logger.info("Generating virtual serial: %s", serial)
         # Find existing object or create new
         o = Object.objects.filter(model=m.id, data__asset__serial=serial).first()
         if not o:
@@ -387,9 +395,10 @@ class AssetCheck(DiscoveryCheck):
                     managed_object=self.object,
                     op="CONNECT",
                 )
-            if (o2, c2, o1, c1) in self.to_disconnect:
-                # Rmove if connection on system
-                self.to_disconnect.remove((o2, c2, o1, c1))
+            c_name = o2.model.get_model_connection(c2)  # If internal_name use
+            if (o2, c_name.name, o1, c1) in self.to_disconnect:
+                # Remove if connection on system
+                self.to_disconnect.remove((o2, c_name.name, o1, c1))
         except ConnectionError as e:
             self.logger.error("Failed to connect: %s", e)
 
@@ -700,3 +709,61 @@ class AssetCheck(DiscoveryCheck):
                 cn.delete()
         except ConnectionError as e:
             self.logger.error("Failed to disconnect: %s", e)
+
+    def clean_serial(self, model, number, serial):
+        # Empty value
+        if not serial or serial == "None":
+            new_serial = self.generate_serial(model, number)
+            self.logger.info("Empty serial number. Generating virtual serial %s", new_serial)
+            return new_serial
+        # Too short value
+        slen = len(serial)
+        min_serial_size = model.get_data("asset", "min_serial_size")
+        if min_serial_size is not None and slen < min_serial_size:
+            new_serial = self.generate_serial(model, number)
+            self.logger.info(
+                "Invalid serial number '%s': Too short, must be %d symbols or more. "
+                "Replacing with virtual serial %s",
+                serial,
+                min_serial_size,
+                new_serial,
+            )
+            return new_serial
+        # Too long value
+        max_serial_size = model.get_data("asset", "max_serial_size")
+        if min_serial_size is not None and slen > max_serial_size:
+            new_serial = self.generate_serial(model, number)
+            self.logger.info(
+                "Invalid serial number '%s': Too long, must be %d symbols or less. "
+                "Replacing with virtual serial %s",
+                serial,
+                max_serial_size,
+                new_serial,
+            )
+            return new_serial
+        # Regular expression
+        serial_mask = model.get_data("asset", "serial_mask")
+        if serial_mask:
+            rx = self.get_serial_mask(serial_mask)
+            if not rx.match(serial):
+                new_serial = self.generate_serial(model, number)
+                self.logger.info(
+                    "Invalid serial number '%s': Must match mask '%s'. "
+                    "Replacing with virtual serial %s",
+                    serial,
+                    serial_mask,
+                    new_serial,
+                )
+                return new_serial
+        return serial
+
+    @cachetools.cachedmethod(
+        operator.attrgetter("_serial_masks"), lock=operator.attrgetter("_serial_masks_lock")
+    )
+    def get_serial_mask(self, mask):
+        """
+        Compile serial mask and cache value
+        :param mask:
+        :return:
+        """
+        return re.compile(mask)
