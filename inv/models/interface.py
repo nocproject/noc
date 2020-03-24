@@ -81,6 +81,8 @@ class Interface(Document):
     }
     managed_object = ForeignKeyField(ManagedObject)
     name = StringField()  # Normalized via Profile.convert_interface_name
+    # Optional default interface name in case the `name` can be reconfigured
+    default_name = StringField()
     type = StringField(choices=[(x, x) for x in INTERFACE_TYPES])
     description = StringField(required=False)
     ifindex = IntField(required=False)

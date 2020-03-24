@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from collections import defaultdict
 
 # Third-party modules
 import six
+from typing import Dict
 
 # NOC modules
 from noc.core.text import ranges_to_list
@@ -72,6 +73,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         if not result:
             self.logger.error("Failed to get interfaces")
             return
+        if_map = {}  # type: Dict[six.string_types, Interface]
         # Process forwarding instances
         for fi in result:
             vpn_id = fi.get("vpn_id")
@@ -105,6 +107,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 mac = i.get("mac")
                 iface = self.submit_interface(
                     name=i["name"],
+                    default_name=i.get("default_name"),
                     type=i["type"],
                     mac=mac,
                     description=i.get("description"),
@@ -156,6 +159,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 )
                 # Perform interface classification
                 self.interface_classification(iface)
+                # Store for future collation
+                if_map[iface.name] = iface
             # Delete hanging interfaces
             self.seen_interfaces += [i["name"] for i in fi["interfaces"]]
         # Delete hanging interfaces
@@ -167,6 +172,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             {"DB | Interfaces": Interface.objects.filter(managed_object=self.object.id).count()},
             source="interface",
         )
+        #
+        self.collate(if_map)
+        # Set artifacts for future use
         self.set_artefact("interface_macs", self.interface_macs)
         self.set_artefact("interface_vpn", self.vrf_artefact)
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
@@ -219,6 +227,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self,
         name,
         type,
+        default_name=None,
         mac=None,
         description=None,
         aggregated_interface=None,
@@ -233,6 +242,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             changes = self.update_if_changed(
                 iface,
                 {
+                    "default_name": default_name,
                     "type": type,
                     "mac": mac,
                     "description": description,
@@ -546,3 +556,101 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             for i in fi["interfaces"]:
                 i["subinterfaces"] = list(six.itervalues(i["subinterfaces"]))
         return IGetInterfaces().clean_result(r)
+
+    def collate(self, if_map):
+        # type: (Dict[six.string_types, Interface]) -> None
+        """
+        Collation is the process of binding between physical and logical inventory.
+        I.e. assigning interface names to inventory slots.
+
+        :param if_map:
+        :returns:
+        """
+
+        def path_to_str(p):
+            return " > ".join(x.connection.name for x in p)
+
+        if not self.object.object_profile.enable_box_discovery_asset:
+            self.logger.info("asset discovery is disabled. Skipping collation process")
+            return
+        if not if_map:
+            self.logger.info("No interfaces found. Skipping collation process")
+            return
+        # Build collators chain
+        chain = list(self.object.profile.get_profile().iter_collators(self.object))
+        if not chain:
+            self.logger.info("Collator chain is empty. Skipping collation process.")
+            return
+        # Perform collation
+        self.logger.info("Starting interface collation")
+        mappings = defaultdict(list)  # object -> [(connection_name, if_name), ...]
+        seen_objects = set()  # {object}
+        obj_combined = {}  # object -> connection name -> parent name
+        obj_ifnames = {}  # object -> connection name -> interface name
+        for path in self.object.iter_scope("physical"):
+            if_name = None
+            obj = path[-1].object
+            if obj not in seen_objects:
+                obj_combined[obj] = {c.name: c.combo for c in obj.model.connections if c.combo}
+                obj_ifnames[obj] = {}
+                seen_objects.add(obj)
+            cn = path[-1].connection.name
+            parent = obj_combined[obj].get(cn)
+            if parent:
+                # Combined port, try to resolve against parent
+                if_name = obj_ifnames[obj].get(parent)
+                if if_name:
+                    # Parent is already bound
+                    obj_ifnames[obj][cn] = if_name
+                    mappings[obj] += [(path, if_name)]
+                    self.logger.info(
+                        "%s mapped to interface %s via parent %s",
+                        path_to_str(path),
+                        if_name,
+                        parent,
+                    )
+            if not if_name:
+                for collator in chain:
+                    if_name = collator.collate(path, if_map)
+                    if if_name:
+                        obj_ifnames[obj][cn] = if_name
+                        mappings[obj] += [(path, if_name)]
+                        self.logger.info("%s mapped to interface %s", path_to_str(path), if_name)
+                        break
+            if not if_name:
+                self.logger.info("Unable to map %s to interface", path_to_str(path))
+        # Bulk update data
+        for obj in seen_objects:
+            old_if_map = {c.name: c.interface_name for c in obj.connections if c.interface_name}
+            changed = False
+            for path, if_name in mappings[obj]:
+                connection_name = path[-1].connection.name
+                if connection_name not in old_if_map:
+                    # New
+                    self.logger.info("Map %s to %s", path_to_str(path), if_name)
+                    obj.set_connection_interface(connection_name, if_name)
+                    changed = True
+                    continue
+                if old_if_map[connection_name] != if_name:
+                    # Changed
+                    self.logger.info(
+                        "Map %s to %s (was %s)",
+                        path_to_str(path),
+                        if_name,
+                        old_if_map[connection_name],
+                    )
+                    obj.set_connection_interface(connection_name, if_name)
+                    changed = True
+                # Mark as processed
+                del old_if_map[connection_name]
+            if old_if_map:
+                # Process removed
+                for connection_name in old_if_map:
+                    self.logger.info(
+                        "Unmap %s from %s", connection_name, old_if_map[connection_name]
+                    )
+                    obj.reset_connection_interface(connection_name)
+                changed = True
+            # Apply changes
+            if changed:
+                obj.save()

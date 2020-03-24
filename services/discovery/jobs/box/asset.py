@@ -57,7 +57,7 @@ class AssetCheck(DiscoveryCheck):
         self.find_managed()
         # Submit objects
         for o in result:
-            self.logger.debug("Submit %s", str_dict(o))
+            self.logger.info("Submit %s", str_dict(o))
             self.submit(
                 type=o["type"],
                 number=o.get("number"),
@@ -115,7 +115,7 @@ class AssetCheck(DiscoveryCheck):
             return  # Builtin must aways have type set
         #
         if is_unknown_xcvr:
-            self.logger.debug("%s S/N %s should be resolved later", part_no[0], serial)
+            self.logger.info("%s S/N %s should be resolved later", part_no[0], serial)
             self.prepare_context(type, number)
             self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial)]
             return
@@ -141,7 +141,7 @@ class AssetCheck(DiscoveryCheck):
                 # Try to resolve via model map
                 m = self.get_model_map(vendor, part_no, serial)
                 if not m:
-                    self.logger.debug(
+                    self.logger.info(
                         "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
                         vnd.name,
                         description,
@@ -151,10 +151,10 @@ class AssetCheck(DiscoveryCheck):
                     return
         if m.cr_context and type != m.cr_context:
             # Override type with object mode's one
-            self.logger.debug("Model changes type to '%s'", m.cr_context)
+            self.logger.info("Model changes type to '%s'", m.cr_context)
             type = m.cr_context
         if not type:
-            self.logger.debug(
+            self.logger.info(
                 "Cannot resolve type for: vendor=%s, part_no=%s (%s). " "Skipping",
                 vnd.name,
                 description,
@@ -314,7 +314,7 @@ class AssetCheck(DiscoveryCheck):
             return
         for i, o in enumerate(self.objects):
             type, object, context, serial = o
-            self.logger.debug("Trying to connect #%d. %s (%s)", i, type, str_dict(context))
+            self.logger.info("Trying to connect #%d. %s (%s)", i, type, str_dict(context))
             if type not in self.rule:
                 continue
             # Find applicable rule
@@ -415,7 +415,7 @@ class AssetCheck(DiscoveryCheck):
             return
         # Connect first free to o2:c2
         c = free_connections[0]
-        self.logger.debug("Using twinax connection '%s' instead of '%s'", c, c1)
+        self.logger.info("Using twinax connection '%s' instead of '%s'", c, c1)
         self.connect_p2p(o1, c, o2, c2)
 
     def submit_stack_members(self):

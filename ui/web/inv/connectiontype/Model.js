@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.connectiontype Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.connectiontype.Model");
@@ -50,6 +50,10 @@ Ext.define("NOC.inv.connectiontype.Model", {
         {
             name: "genders",
             type: "string"
+        },
+        {
+            name: "matchers",
+            type: "auto"
         }
     ]
 });

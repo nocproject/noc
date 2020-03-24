@@ -105,6 +105,8 @@ class Script(BaseScript):
                 misc[r["name"]] = {"type": r["type"]}
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
+                if "default-name" in r:
+                    ifaces[r["name"]]["default_name"] = r["default-name"]
                 if (
                     r["type"].startswith("ipip-")
                     or r["type"].startswith("eoip-")

@@ -52,6 +52,7 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
             useArrows: true,
             stateful: true,
             stateId: "sa.managedobject-inventory",
+            emptyText: __("No data"),
             columns: [
                 {
                     xtype: "treecolumn",
@@ -78,6 +79,11 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1
+                },
+                {
+                    text: __("Interface"),
+                    dataIndex: "interface",
+                    width: 150
                 }
             ]
         });
