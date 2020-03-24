@@ -731,7 +731,7 @@ class AssetCheck(DiscoveryCheck):
             return new_serial
         # Too long value
         max_serial_size = model.get_data("asset", "max_serial_size")
-        if min_serial_size is not None and slen > max_serial_size:
+        if max_serial_size is not None and slen > max_serial_size:
             new_serial = self.generate_serial(model, number)
             self.logger.info(
                 "Invalid serial number '%s': Too long, must be %d symbols or less. "
