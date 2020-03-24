@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
-// inv.reportmetricdetail application
+// inv.reportmetrics application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.reportmetrics.Application");
@@ -21,7 +21,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["object_address", __("IP"), true],
         ["object_platform", __("Object Platform"), true],
         ["object_adm_domain", __("Object Administrative domain"), true],
-        ["object_segment", __("Object Segemnt"), false],
+        ["object_segment", __("Object Segment"), false],
         ["object_container", __("Object Geo Address"), false],
         ["iface_name", __("Interface Name"), true],
         ["iface_description", __("Interface Description"), true],
@@ -41,7 +41,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["object_address", __("IP"), true],
         ["object_platform", __("Object Platform"), true],
         ["object_adm_domain", __("Object Administrative domain"), true],
-        ["object_segment", __("Object Segemnt"), false],
+        ["object_segment", __("Object Segment"), false],
         ["object_container", __("Object Geo Address"), false],
         ["slot", __("Slot"), false],
         ["cpu_usage", __("CPU Usage"), true],
@@ -53,7 +53,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["object_address", __("IP"), true],
         ["object_platform", __("Object Platform"), true],
         ["object_adm_domain", __("Object Administrative domain"), true],
-        ["object_segment", __("Object Segemnt"), false],
+        ["object_segment", __("Object Segment"), false],
         ["object_container", __("Object Geo Address"), false],
         ["ping_rtt", __("Ping RTT"), true],
         ["ping_attempts", __("Ping Attempts"), true]
