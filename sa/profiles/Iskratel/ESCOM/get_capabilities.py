@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,16 +25,24 @@ class Script(BaseScript):
         """
         Check box has LLDP enabled
         """
-        cmd = self.cli("show lldp configuration")
-        return "LLDP state: Enabled" in cmd
+        if self.is_escom_l:
+            cmd = self.cli("show configuration")
+            return "lldp run" in cmd
+        else:
+            cmd = self.cli("show lldp configuration")
+            return "LLDP state: Enabled" in cmd
 
     @false_on_cli_error
     def has_stp_cli(self):
         """
         Check box has STP enabled
         """
-        cmd = self.cli("show spanning-tree active")
-        return "  enabled  " in cmd
+        if self.is_escom_l:
+            cmd = self.cli("show spanning-tree")
+            return "Spanning tree enabled" in cmd
+        else:
+            cmd = self.cli("show spanning-tree active")
+            return "  enabled  " in cmd
 
     def execute_platform_cli(self, caps):
         try:

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -52,10 +52,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_escom_l_port = re.compile(
-        r"(?P<name>\S+)\s+is (?P<admin_status>\S+), line protocol is (?P<oper_status>\S+)\n"
-        r"\s+Ifindex is (?P<ifindex>\d+).*(,\s*unique port number is (?P<unique_port>\d+?))?\n"
-        r"\s+Hardware is (?P<type>\S+), [Aa]ddress is (?P<mac>\S+)\s*(\(.+\))?\n"
-        r"(\s+Interface address is (?P<address>\S+))?",
+        r"(?P<name>\S+)\s+is (administratively |)(?P<admin_status>\S+), line protocol is (?P<oper_status>\S+)\n\s+Ifindex is (?P<ifindex>\d+).*(,\s*unique port number is (?P<unique_port>\d+?))?\n\s+(Description:\s+(?P<description>\S+)\n\s+|)Hardware is (?P<type>\S+), [Aa]ddress is (?P<mac>\S+)\s*(\(.+\))?(\n\s+Interface address is (?P<address>\S+)|)\n\s+MTU\s+(?P<mtu>\d+)?",
         re.MULTILINE,
     )
 
