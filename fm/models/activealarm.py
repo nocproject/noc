@@ -308,7 +308,7 @@ class ActiveAlarm(Document):
             call_later(
                 "noc.services.correlator.check.check_close_consequence",
                 scheduler="correlator",
-                pool=self.managed_object.pool.name,
+                pool=self.managed_object.get_effective_fm_pool().name,
                 delay=t,
                 alarm_id=d["_id"],
             )

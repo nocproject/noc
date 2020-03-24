@@ -2,12 +2,15 @@
 # ----------------------------------------------------------------------
 # Probe Setting
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 import cachetools
+
+# NOC modules
+from noc.config import config
 
 tp_cache = {}
 
@@ -32,6 +35,7 @@ class ProbeSetting(object):
         "time_cond",
         "bi_id",
         "task",
+        "fm_pool",
     ]
 
     def __init__(
@@ -49,6 +53,7 @@ class ProbeSetting(object):
         report_attempts=False,
         time_expr=None,
         bi_id=None,
+        fm_pool=None,
         *args,
         **kwargs
     ):
@@ -68,6 +73,7 @@ class ProbeSetting(object):
         self.time_cond = self.compile(time_expr)
         self.task = None
         self.bi_id = bi_id
+        self.fm_pool = fm_pool or config.pool
 
     def update(
         self,
@@ -79,6 +85,7 @@ class ProbeSetting(object):
         count=3,
         timeout=1000,
         time_expr=None,
+        fm_pool=None,
         *args,
         **kwargs
     ):
@@ -91,6 +98,7 @@ class ProbeSetting(object):
         self.report_attempts = report_attempts
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
+        self.fm_pool = fm_pool or config.pool
 
     def is_differ(self, data):
         return (
@@ -102,6 +110,7 @@ class ProbeSetting(object):
             or self.report_rtt != data.get("report_rtt", False)
             or self.report_attempts != data.get("report_attempts", False)
             or self.time_expr != data.get("time_expr")
+            or self.fm_pool != data.get("fm_pool")
         )
 
     @classmethod

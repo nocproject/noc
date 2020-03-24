@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # cfgping datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,6 +25,7 @@ class CfgPingDataStream(DataStream):
             "bi_id",
             "is_managed",
             "pool",
+            "fm_pool",
             "address",
             "time_pattern",
             "object_profile__enable_ping",
@@ -44,6 +45,7 @@ class CfgPingDataStream(DataStream):
             bi_id,
             is_managed,
             pool,
+            fm_pool,
             address,
             time_pattern,
             enable_ping,
@@ -63,9 +65,11 @@ class CfgPingDataStream(DataStream):
             or ping_interval < 0
         ):
             raise KeyError()
+        pool = str(Pool.get_by_id(pool).name)
         r = {
             "id": str(mo_id),
-            "pool": str(Pool.get_by_id(pool).name),
+            "pool": pool,
+            "fm_pool": str(Pool.get_by_id(fm_pool).name) if fm_pool else pool,
             "address": str(address),
             "interval": ping_interval,
             "policy": ping_policy,

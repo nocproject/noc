@@ -23,7 +23,7 @@ from noc.core.service.base import Service
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
 
-SourceConfig = namedtuple("SourceConfig", ["id", "addresses"])
+SourceConfig = namedtuple("SourceConfig", ["id", "addresses", "fm_pool"])
 
 
 class TrapCollectorService(Service):
@@ -75,12 +75,12 @@ class TrapCollectorService(Service):
             return None
         return cfg
 
-    def register_message(self, object, timestamp, data):
+    def register_message(self, cfg, timestamp, data):
         """
         Spool message to be sent
         """
         metrics["events_out"] += 1
-        self.pub("events.%s" % config.pool, {"ts": timestamp, "object": object, "data": data})
+        self.pub("events.%s" % cfg.fm_pool, {"ts": timestamp, "object": cfg.id, "data": data})
 
     @tornado.gen.coroutine
     def get_object_mappings(self):
@@ -126,7 +126,9 @@ class TrapCollectorService(Service):
         else:
             old_addresses = set()
         # Build new config
-        cfg = SourceConfig(data["id"], tuple(data["addresses"]))
+        cfg = SourceConfig(
+            data["id"], tuple(data["addresses"]), data.get("fm_pool", None) or config.pool,
+        )
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:

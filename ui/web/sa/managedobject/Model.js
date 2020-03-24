@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Model");
@@ -50,6 +50,15 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "pool__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "fm_pool",
+            type: "string"
+        },
+        {
+            name: "fm_pool__label",
             type: "string",
             persist: false
         },

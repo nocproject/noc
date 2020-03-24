@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Pool model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ id_lock = threading.Lock()
     check=[
         ("sa.AdministrativeDomain", "default_pool"),
         ("sa.ManagedObject", "pool"),
+        ("sa.ManagedObject", "fm_pool"),
         ("sa.ManagedObjectSelector", "filter_pool")
         # ("fm.EscalationItem", "administrative_domain")
     ]

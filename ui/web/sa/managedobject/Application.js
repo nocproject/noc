@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Application");
@@ -977,6 +977,20 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "container",
                             items: [
                                 {
+                                    name: "fm_pool",
+                                    xtype: "main.pool.LookupField",
+                                    fieldLabel: __("FM Pool"),
+                                    tooltip: __(
+                                        "Use to override pool for events processing"
+                                    ),
+                                    allowBlank: true,
+                                    tabIndex: 130,
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
                                     name: "event_processing_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Event Policy"),
@@ -986,7 +1000,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["D", __("Disable")]
                                     ],
                                     allowBlank: false,
-                                    tabIndex: 130,
                                     groupEdit: true
                                 },
                                 {

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Managed object status checks
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ def check_down(alarm):
         "noc.fm.handlers.alarm.status.close_oo_alarm",
         delay=OO_CLOSE_DELAY,
         scheduler="correlator",
-        pool=alarm.managed_object.pool.name,
+        pool=alarm.managed_object.get_effective_fm_pool().name,
         alarm_id=alarm.id,
         timestamp=last,
     )

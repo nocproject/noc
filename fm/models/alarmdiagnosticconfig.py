@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmDiagnosticConfig model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -134,7 +134,7 @@ class AlarmDiagnosticConfig(Document):
             call_later(
                 "noc.fm.models.alarmdiagnosticconfig.on_raise",
                 scheduler="correlator",
-                pool=alarm.managed_object.pool.name,
+                pool=alarm.managed_object.get_effective_fm_pool().name,
                 delay=delay,
                 alarm=alarm.id,
                 cfg=r_cfg[delay],
@@ -145,7 +145,7 @@ class AlarmDiagnosticConfig(Document):
                 "noc.fm.models.alarmdiagnosticconfig.periodic",
                 scheduler="correlator",
                 max_runs=PERIODIC_JOB_MAX_RUNS,
-                pool=alarm.managed_object.pool.name,
+                pool=alarm.managed_object.get_effective_fm_pool().name,
                 delay=delay,
                 alarm=alarm.id,
                 cfg={"cfg": p_cfg[delay], "delay": delay},
@@ -184,7 +184,7 @@ class AlarmDiagnosticConfig(Document):
             call_later(
                 "noc.fm.models.alarmdiagnosticconfig.on_clear",
                 scheduler="correlator",
-                pool=alarm.managed_object.pool.name,
+                pool=alarm.managed_object.get_effective_fm_pool().name,
                 delay=delay,
                 alarm=alarm.id,
                 cfg=cfg[delay],
