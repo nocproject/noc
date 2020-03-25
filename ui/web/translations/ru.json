@@ -45,6 +45,14 @@
         null,
         "Ключ API"
     ],
+    "AVG Load In": [
+        null,
+        "Средняя загрузка входящий"
+    ],
+    "AVG Load Out": [
+        null,
+        "Средняя загрузка исходящий"
+    ],
     "About system": [
         null,
         "О системе"
@@ -3181,6 +3189,22 @@
         null,
         "Макс.Увел."
     ],
+    "Maximum Load In": [
+        null,
+        "Максимальная загрузка входящий"
+    ],
+    "Maximum Load In Time": [
+        null,
+        "Время максимальной загрузки, входящий"
+    ],
+    "Maximum Load Out": [
+        null,
+        "Максимальная загрузка исходящий"
+    ],
+    "Maximum Load Out Time": [
+        null,
+        "Время максимальной загрузки, исходящий"
+    ],
     "Measure": [
         null,
         "Единицы измерения"
@@ -3501,6 +3525,10 @@
         null,
         "Фильтрация объектов"
     ],
+    "Object Geo Address": [
+        null,
+        "Почтовый адрес объекта"
+    ],
     "Object Inspector": [
         null,
         "Свойства объекта"
@@ -3521,7 +3549,7 @@
         null,
         "Профиль объекта"
     ],
-    "Object Segemnt": [
+    "Object Segment": [
         null,
         "Сегмент"
     ],
@@ -5456,6 +5484,42 @@
     "Update": [
         null,
         "Обновить"
+    ],
+    "Uplink AVG Load In": [
+        null,
+        "Средняя загрузка Uplink входящий"
+    ],
+    "Uplink AVG Load Out": [
+        null,
+        "Средняя загрузка Uplink исходящий"
+    ],
+    "Uplink Interface Description": [
+        null,
+        "Описание интерфейса Uplink"
+    ],
+    "Uplink Interface Name": [
+        null,
+        "Имя интерфейса Uplink"
+    ],
+    "Uplink Interface Speed": [
+        null,
+        "Скорость интерфейса Uplink"
+    ],
+    "Uplink Maximum Load In": [
+        null,
+        "Максимальная загрузка Uplink входящий"
+    ],
+    "Uplink Maximum Load In Time": [
+        null,
+        "Время максимальной загрузки Uplink, входящий"
+    ],
+    "Uplink Maximum Load Out": [
+        null,
+        "Максимальная загрузка Uplink исходящий"
+    ],
+    "Uplink Maximum Load Out Time": [
+        null,
+        "Время максимальной загрузки Uplink, исходящий"
     ],
     "Uplink Policy": [
         null,

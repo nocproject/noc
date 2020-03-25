@@ -1846,6 +1846,7 @@ msgstr "Изменен"
 #: ui/web/fm/event/Application.js:162 ui/web/fm/event/EventPanel.js:24
 #: ui/web/fm/event/EventPanel.js:138 ui/web/fm/mib/Application.js:37
 #: ui/web/fm/reportalarmdetail/Application.js:152
+#: ui/web/inv/reportmaxmetrics/Application.js:110
 #: ui/web/inv/reportmetrics/Application.js:19
 #: ui/web/inv/reportmetrics/Application.js:37
 #: ui/web/inv/reportmetrics/Application.js:48
@@ -1955,6 +1956,7 @@ msgstr "Оба"
 #: ui/web/fm/event/EventPanel.js:95
 #: ui/web/fm/reportalarmdetail/Application.js:50
 #: ui/web/fm/reportalarmdetail/Application.js:154
+#: ui/web/inv/reportmaxmetrics/Application.js:28
 #: ui/web/inv/reportmetrics/Application.js:92
 msgid "From"
 msgstr "С"
@@ -1963,6 +1965,7 @@ msgstr "С"
 #: ui/web/fm/event/EventPanel.js:101
 #: ui/web/fm/reportalarmdetail/Application.js:59
 #: ui/web/fm/reportalarmdetail/Application.js:155
+#: ui/web/inv/reportmaxmetrics/Application.js:38
 #: ui/web/inv/reportmetrics/Application.js:102
 msgid "To"
 msgstr "По"
@@ -1972,6 +1975,7 @@ msgstr "По"
 #: ui/web/fm/reportalarmdetail/Application.js:67
 #: ui/web/inv/map/Application.js:34
 #: ui/web/inv/reportlinkdetail/Application.js:25
+#: ui/web/inv/reportmaxmetrics/Application.js:47
 #: ui/web/inv/reportmetrics/Application.js:111
 #: ui/web/maintenance/maintenance/Application.js:203
 #: ui/web/sa/managedobject/Application.js:260
@@ -1985,6 +1989,7 @@ msgstr "Сегмент"
 #: ui/web/fm/reportalarmdetail/Application.js:76
 #: ui/web/inv/reportifacestatus/Application.js:38
 #: ui/web/inv/reportlinkdetail/Application.js:34
+#: ui/web/inv/reportmaxmetrics/Application.js:56
 #: ui/web/inv/reportmetrics/Application.js:120
 #: ui/web/sa/reportobjectdetail/Application.js:34
 msgid "By Adm. domain"
@@ -1993,6 +1998,7 @@ msgstr "По З.О."
 #: ui/web/fm/reportalarmdetail/Application.js:86
 #: ui/web/inv/reportifacestatus/Application.js:48
 #: ui/web/inv/reportlinkdetail/Application.js:44
+#: ui/web/inv/reportmaxmetrics/Application.js:66
 #: ui/web/inv/reportmetrics/Application.js:130
 #: ui/web/sa/groupaccess/Application.js:63
 #: ui/web/sa/managedobject/Application.js:1504
@@ -2044,6 +2050,7 @@ msgstr "Продолж."
 
 #: ui/web/fm/reportalarmdetail/Application.js:157
 #: ui/web/inv/reportifacestatus/Application.js:78
+#: ui/web/inv/reportmaxmetrics/Application.js:111
 #: ui/web/inv/reportmetrics/Application.js:20
 #: ui/web/inv/reportmetrics/Application.js:38
 #: ui/web/inv/reportmetrics/Application.js:49
@@ -4363,6 +4370,7 @@ msgid "SNMP OID"
 msgstr ""
 
 #: ui/web/inv/reportifacestatus/Application.js:25
+#: ui/web/inv/reportmaxmetrics/Application.js:86
 #: ui/web/inv/reportmetrics/Application.js:140
 msgid "By Interface Profile"
 msgstr "По профилю интерфейса"
@@ -4495,35 +4503,108 @@ msgstr "Протокол построения линка"
 msgid "Link Last Seen"
 msgstr ""
 
+#: ui/web/inv/reportmaxmetrics/Application.js:113
 #: ui/web/inv/reportmetrics/Application.js:22
 #: ui/web/inv/reportmetrics/Application.js:40
 #: ui/web/inv/reportmetrics/Application.js:51
 msgid "Object Platform"
 msgstr "Платформа"
 
+#: ui/web/inv/reportmaxmetrics/Application.js:114
 #: ui/web/inv/reportmetrics/Application.js:23
 #: ui/web/inv/reportmetrics/Application.js:41
 #: ui/web/inv/reportmetrics/Application.js:52
 msgid "Object Administrative domain"
 msgstr "З.О."
 
+#: ui/web/inv/reportmaxmetrics/Application.js:116
+#: ui/web/inv/reportmetrics/Application.js:25
+#: ui/web/inv/reportmetrics/Application.js:45
+#: ui/web/inv/reportmetrics/Application.js:57
+msgid "Object Geo Address"
+msgstr "Почтовый адрес объекта"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:115
 #: ui/web/inv/reportmetrics/Application.js:24
 #: ui/web/inv/reportmetrics/Application.js:42
 #: ui/web/inv/reportmetrics/Application.js:53
-msgid "Object Segemnt"
+msgid "Object Segment"
 msgstr "Сегмент"
 
+#: ui/web/inv/reportmaxmetrics/Application.js:117
 #: ui/web/inv/reportmetrics/Application.js:25
 msgid "Interface Name"
 msgstr "Имя интерфейса"
 
+#: ui/web/inv/reportmaxmetrics/Application.js:118
 #: ui/web/inv/reportmetrics/Application.js:26
 msgid "Interface Description"
 msgstr "Описание интерфейса"
 
+#: ui/web/inv/reportmaxmetrics/Application.js:119
 #: ui/web/inv/reportmetrics/Application.js:27
 msgid "Interface Speed"
 msgstr "Скорость интерфейса"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:120
+msgid "Maximum Load In"
+msgstr "Максимальная загрузка входящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:121
+msgid "Maximum Load In Time"
+msgstr "Время максимальной загрузки, входящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:122
+msgid "Maximum Load Out"
+msgstr "Максимальная загрузка исходящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:123
+msgid "Maximum Load Out Time"
+msgstr "Время максимальной загрузки, исходящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:124
+msgid "AVG Load In"
+msgstr "Средняя загрузка входящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:125
+msgid "AVG Load Out"
+msgstr "Средняя загрузка исходящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:126
+msgid "Uplink Interface Name"
+msgstr "Имя интерфейса Uplink"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:127
+msgid "Uplink Interface Description"
+msgstr "Описание интерфейса Uplink"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:128
+msgid "Uplink Maximum Load In"
+msgstr "Максимальная загрузка Uplink входящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:129
+msgid "Uplink Maximum Load In Time"
+msgstr "Время максимальной загрузки Uplink, входящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:130
+msgid "Uplink Maximum Load Out"
+msgstr "Максимальная загрузка Uplink исходящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:131
+msgid "Uplink Maximum Load Out Time"
+msgstr "Время максимальной загрузки Uplink, исходящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:132
+msgid "Uplink AVG Load In"
+msgstr "Средняя загрузка Uplink входящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:133
+msgid "Uplink AVG Load Out"
+msgstr "Средняя загрузка Uplink исходящий"
+
+#: ui/web/inv/reportmaxmetrics/Application.js:134
+msgid "Uplink Interface Speed"
+msgstr "Скорость интерфейса Uplink"
 
 #: ui/web/inv/reportmetrics/Application.js:28
 msgid "Load In"
@@ -7883,6 +7964,7 @@ msgstr "Ошибка при запуске скрипта"
 #: ui/web/dns/dnsserver/Application.js:44
 #: ui/web/fm/reportalarmdetail/Application.js:158
 #: ui/web/inv/interface/L3Panel.js:37
+#: ui/web/inv/reportmaxmetrics/Application.js:112
 #: ui/web/inv/reportmetrics/Application.js:21
 #: ui/web/inv/reportmetrics/Application.js:39
 #: ui/web/inv/reportmetrics/Application.js:50
