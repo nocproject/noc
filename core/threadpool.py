@@ -137,7 +137,7 @@ class ThreadPoolExecutor(object):
         return future
 
     def shutdown(self, sync=False):
-        logging.info("Shutdown")
+        logger.info("Shutdown")
         with self.mutex:
             self.done_future = Future()
             if not sync:
@@ -145,7 +145,7 @@ class ThreadPoolExecutor(object):
             self.to_shutdown = True
         for _ in range(len(self.threads)):
             self.stop_one_worker()
-        logging.info("Waiting for workers")
+        logger.info("Waiting for workers")
         if sync:
             self.done_event.wait(timeout=self.shutdown_timeout)
             return self.done_future
@@ -167,7 +167,7 @@ class ThreadPoolExecutor(object):
                     logger.debug("Closing idle thread")
                     break
                 if not future:
-                    logging.debug("Worker %s has no future. Stopping", t.name)
+                    logger.debug("Worker %s has no future. Stopping", t.name)
                     break
                 if not future.set_running_or_notify_cancel():
                     continue
@@ -208,7 +208,7 @@ class ThreadPoolExecutor(object):
             with self.mutex:
                 self.threads.remove(t)
                 if self.to_shutdown and not len(self.threads):
-                    logging.info("ThreadPool terminated")
+                    logger.info("ThreadPool terminated")
                     if self.done_event:
                         self.done_event.set()
                     if self.done_future:

@@ -527,8 +527,9 @@ class Scheduler(object):
     def shutdown(self, sync=False):
         self.to_shutdown = True
         if self.executor:
-            return self.executor.shutdown(sync)
+            f = self.executor.shutdown(sync)
         else:
             f = Future()
             f.set_result(True)
-            return f
+        f.add_done_callback(self.apply_bulk_ops)
+        return f
