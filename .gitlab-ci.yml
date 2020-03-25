@@ -404,3 +404,7 @@ dependency_scanning:
     PIP_REQUIREMENTS_FILE: "requirements/docker3.txt"
   tags:
     - shell
+  only:
+    refs:
+      - merge_requests
+      - master
