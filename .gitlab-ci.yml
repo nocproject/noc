@@ -402,7 +402,8 @@ dependency_scanning:
   stage: Security
   variables:
     PIP_REQUIREMENTS_FILE: "requirements/docker3.txt"
-    PIP_EXTRA_INDEX_URL: "https://cdn.getnoc.com/npkg/simple/"
+    PIP_FIND_LINKS: "https://cdn.getnoc.com/npkg/"
+    PIP_TRUSTED_HOST: "cdn.getnoc.com"
   tags:
     - shell
   only:
