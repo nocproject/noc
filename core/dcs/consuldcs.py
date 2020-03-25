@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Distributed coordinated storage
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -121,6 +121,8 @@ class ConsulResolver(ResolverBase):
                     for svc in services
                 )
                 self.set_services(r)
+            if not self.track:
+                break
         self.logger.info("[%s] Stopping resolver", self.name)
 
 

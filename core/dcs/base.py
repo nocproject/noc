@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Distributed coordinated storage
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -74,6 +74,13 @@ class DCSBase(object):
         :return:
         """
         self.resolver_expiration_task.stop()
+        # Stop all resolvers
+        with self.resolvers_lock:
+            for svc in self.resolvers:
+                r = self.resolvers[svc]
+                self.logger.info("Stopping resolver for service %s", svc)
+                r.stop()
+            self.resolvers = {}
         self.ioloop.stop()
 
     @tornado.gen.coroutine
@@ -105,14 +112,19 @@ class DCSBase(object):
         raise NotImplementedError()
 
     @tornado.gen.coroutine
-    def get_resolver(self, name, critical=False, near=False):
-        with self.resolvers_lock:
-            resolver = self.resolvers.get((name, critical, near))
-            if not resolver:
-                self.logger.info("Running resolver for service %s", name)
-                resolver = self.resolver_cls(self, name, critical=critical, near=near)
-                self.resolvers[name, critical, near] = resolver
-                self.ioloop.add_callback(resolver.start)
+    def get_resolver(self, name, critical=False, near=False, track=True):
+        if track:
+            with self.resolvers_lock:
+                resolver = self.resolvers.get((name, critical, near))
+                if not resolver:
+                    self.logger.info("Running resolver for service %s", name)
+                    resolver = self.resolver_cls(self, name, critical=critical, near=near)
+                    self.resolvers[name, critical, near] = resolver
+                    self.ioloop.add_callback(resolver.start)
+        else:
+            # One-time resolver
+            resolver = self.resolver_cls(self, name, critical=critical, near=near, track=False)
+            self.ioloop.add_callback(resolver.start)
         raise tornado.gen.Return(resolver)
 
     @tornado.gen.coroutine
@@ -125,8 +137,9 @@ class DCSBase(object):
         full_result=False,
         critical=False,
         near=False,
+        track=True,
     ):
-        resolver = yield self.get_resolver(name, critical=critical, near=near)
+        resolver = yield self.get_resolver(name, critical=critical, near=near, track=track)
         r = yield resolver.resolve(hint=hint, wait=wait, timeout=timeout, full_result=full_result)
         raise tornado.gen.Return(r)
 
@@ -205,7 +218,7 @@ class DCSBase(object):
 
 
 class ResolverBase(object):
-    def __init__(self, dcs, name, critical=False, near=False):
+    def __init__(self, dcs, name, critical=False, near=False, track=True):
         self.dcs = dcs
         self.name = name
         self.to_shutdown = False
@@ -219,6 +232,7 @@ class ResolverBase(object):
         self.critical = critical
         self.near = near
         self.ready_event = tornado.locks.Event()
+        self.track = track
 
     def stop(self):
         self.to_shutdown = True

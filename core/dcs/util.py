@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # DCS utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -54,6 +54,7 @@ def resolve(
                     timeout=timeout,
                     full_result=full_result,
                     critical=critical,
+                    track=False,
                 )
             result.append(r)
         except tornado.gen.Return as e:
@@ -68,6 +69,7 @@ def resolve(
     try:
         dcs = get_dcs_class()(url, ioloop=io_loop)
         io_loop.run_sync(_resolve)
+        dcs.stop()
     finally:
         io_loop.close(all_fds=True)
     if error:
