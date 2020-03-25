@@ -3,7 +3,11 @@ stages:
   - Lint
   - Test
   - Build
+  - Security
   - Upload
+
+include:
+  template: Dependency-Scanning.gitlab-ci.yml
 
 check labels:
   stage: Lint
@@ -393,3 +397,10 @@ upload docs:
     refs:
       - master
       - /^release-\d+\.\d+/
+
+dependency_scanning:
+  stage: Security
+  variables:
+    PIP_REQUIREMENTS_FILE: "requirements/docker3.txt"
+  tags:
+    - shell
