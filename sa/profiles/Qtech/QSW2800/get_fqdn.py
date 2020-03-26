@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 from noc.core.mib import mib
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -32,6 +33,6 @@ class Script(BaseScript):
     def execute_cli(self):
         # Getting pattern prompt
         v = self.get_cli_stream()
-        pattern = v.patterns["prompt"].pattern
+        pattern = smart_text(v.patterns["prompt"].pattern)
         fqdn = pattern.split("(?")[0][1:].replace("\\", "")
         return fqdn
