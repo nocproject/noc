@@ -153,8 +153,8 @@ class AssetCheck(DiscoveryCheck):
                     self.logger.info(
                         "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
                         vnd.name,
-                        description,
                         part_no,
+                        description,
                     )
                     self.register_unknown_part_no(vnd, part_no, description)
                     return
