@@ -13,7 +13,7 @@ import csv
 
 # Third-party modules
 import six
-from six import StringIO
+from six import BytesIO
 import xlsxwriter
 from django.http import HttpResponse
 
@@ -42,6 +42,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.platform import Platform
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +164,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 if v is None:
                     return ""
                 if isinstance(v, six.text_type):
-                    return v.encode("utf-8")
+                    return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")
                 elif not isinstance(v, str):
@@ -420,7 +421,7 @@ class ReportObjectDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Objects")

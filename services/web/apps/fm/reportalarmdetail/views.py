@@ -13,7 +13,7 @@ import xlsxwriter
 import bson
 
 # Third-party modules
-from six import StringIO, text_type
+from six import BytesIO, text_type
 from django.http import HttpResponse
 from django.db import connection
 from pymongo import ReadPreference
@@ -39,6 +39,7 @@ from noc.services.web.apps.fm.alarm.views import AlarmApplication
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 def get_column_width(name):
@@ -165,11 +166,11 @@ class ReportAlarmDetailApplication(ExtApplication):
                 if v is None:
                     return ""
                 if isinstance(v, text_type):
-                    return v.encode("utf-8")
+                    return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")
                 elif not isinstance(v, str):
-                    return str(v)
+                    return smart_text(v)
                 else:
                     return v
 
@@ -383,14 +384,14 @@ class ReportAlarmDetailApplication(ExtApplication):
                     translate_row(
                         row(
                             [
-                                str(a["_id"]),
-                                str(a["root"]) if a.get("root") else "",
+                                smart_text(a["_id"]),
+                                smart_text(a["root"]) if a.get("root") else "",
                                 a["timestamp"],
                                 a["clear_timestamp"],
-                                str(duration),
+                                smart_text(duration),
                                 moss[a["managed_object"]][0],
                                 moss[a["managed_object"]][1],
-                                mo_hostname.get(a["managed_object"], ""),
+                                smart_text(mo_hostname.get(a["managed_object"], "")),
                                 Profile.get_by_id(moss[a["managed_object"]][3]).name
                                 if moss[a["managed_object"]][5]
                                 else "",
@@ -398,7 +399,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                                 Platform.get_by_id(moss[a["managed_object"]][9])
                                 if moss[a["managed_object"]][9]
                                 else "",
-                                Firmware.get_by_id(moss[a["managed_object"]][10])
+                                smart_text(
+                                    Firmware.get_by_id(moss[a["managed_object"]][10]).version
+                                )
                                 if moss[a["managed_object"]][10]
                                 else "",
                                 AlarmClass.get_by_id(a["alarm_class"]).name,
@@ -481,15 +484,15 @@ class ReportAlarmDetailApplication(ExtApplication):
                     translate_row(
                         row(
                             [
-                                str(a["_id"]),
-                                str(a["root"]) if a.get("root") else "",
+                                smart_text(a["_id"]),
+                                smart_text(a["root"]) if a.get("root") else "",
                                 a["timestamp"],
                                 # a["clear_timestamp"],
                                 "",
-                                str(duration),
+                                smart_text(duration),
                                 moss[a["managed_object"]][0],
                                 moss[a["managed_object"]][1],
-                                mo_hostname.get(a["managed_object"], ""),
+                                smart_text(mo_hostname.get(a["managed_object"], "")),
                                 Profile.get_by_id(moss[a["managed_object"]][3])
                                 if moss[a["managed_object"]][5]
                                 else "",
@@ -497,7 +500,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                                 Platform.get_by_id(moss[a["managed_object"]][9])
                                 if moss[a["managed_object"]][9]
                                 else "",
-                                Firmware.get_by_id(moss[a["managed_object"]][10])
+                                smart_text(
+                                    Firmware.get_by_id(moss[a["managed_object"]][10]).version
+                                )
                                 if moss[a["managed_object"]][10]
                                 else "",
                                 AlarmClass.get_by_id(a["alarm_class"]).name,
@@ -534,7 +539,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Alarms")

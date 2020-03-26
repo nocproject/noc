@@ -15,7 +15,7 @@ import csv
 
 # Third-party modules
 import xlsxwriter
-from six import StringIO
+from six import BytesIO
 from django.http import HttpResponse
 
 # NOC modules
@@ -36,6 +36,7 @@ from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 def get_column_width(name):
@@ -218,8 +219,8 @@ class ReportMetricsDetailApplication(ExtApplication):
         d_url = {
             "path": "/ui/grafana/dashboard/script/report.js",
             "rname": map_table[reporttype],
-            "from": str(int(ts_from_date * 1000)),
-            "to": str(int(ts_to_date * 1000)),
+            "from": smart_text(int(ts_from_date * 1000)),
+            "to": smart_text(int(ts_to_date * 1000)),
             # o.name.replace("#", "%23")
             "biid": "",
             "oname": "",
@@ -322,9 +323,9 @@ class ReportMetricsDetailApplication(ExtApplication):
                 *[
                     row[1],
                     row[2],
-                    str(Platform.get_by_id(row[3]) if row[3] else ""),
+                    smart_text(Platform.get_by_id(row[3]) if row[3] else ""),
                     row[4],
-                    str(NetworkSegment.get_by_id(row[5])) if row[5] else "",
+                    smart_text(NetworkSegment.get_by_id(row[5])) if row[5] else "",
                     containers_address.get(row[6], "") if containers_address and row[6] else "",
                 ]
             )
@@ -365,7 +366,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Alarms")

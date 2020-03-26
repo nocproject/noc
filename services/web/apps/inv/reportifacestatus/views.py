@@ -12,7 +12,7 @@ import datetime
 import csv
 
 # Third-party modules
-from six import StringIO, text_type
+from six import BytesIO, text_type
 from django.http import HttpResponse
 from pymongo import ReadPreference
 from bson import ObjectId
@@ -29,6 +29,7 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter
 from noc.core.text import list_to_ranges
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -141,7 +142,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
                 if v is None:
                     return ""
                 if isinstance(v, text_type):
-                    return v.encode("utf-8")
+                    return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")
                 elif not isinstance(v, str):
@@ -247,10 +248,10 @@ class ReportInterfaceStatusApplication(ExtApplication):
                             mo[i["managed_object"]]["address"],
                             "%s %s"
                             % (
-                                str(mo[i["managed_object"]]["vendor"]),
-                                str(mo[i["managed_object"]]["platform"]),
+                                smart_text(mo[i["managed_object"]]["vendor"]),
+                                smart_text(mo[i["managed_object"]]["platform"]),
                             ),
-                            str(mo[i["managed_object"]]["version"]),
+                            smart_text(mo[i["managed_object"]]["version"]),
                             i["name"],
                             if_p[i["profile"]]["name"],
                             "UP" if i["admin_status"] is True else "Down",
@@ -275,7 +276,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Objects")
