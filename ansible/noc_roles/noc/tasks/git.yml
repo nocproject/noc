@@ -70,10 +70,3 @@
     - pull_state.failed
   tags:
     - get_source
-
-- name: Check if collections is integrated in NOC
-  stat:
-    path: "{{ noc_root }}/collections/README.md"
-  register: noc_coll_canary
-  tags:
-    - get_source

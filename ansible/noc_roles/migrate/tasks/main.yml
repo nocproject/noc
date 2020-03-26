@@ -16,6 +16,11 @@
 
 - import_tasks: configure_consul.yml
 
+- name: Check if collections is integrated in NOC
+  stat:
+    path: "{{ noc_root }}/collections/README.md"
+  register: noc_coll_canary
+
 - name: download collections
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/collections.json"
   args:
