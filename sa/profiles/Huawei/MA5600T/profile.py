@@ -62,6 +62,7 @@ class Profile(BaseProfile):
     matchers = {
         "is_gpon_uplink": {"platform": {"$in": ["MA5626G"]}},
         "is_dslam": {"platform": {"$in": ["MA5600"]}},
+        "is_ua5k": {"platform": {"$in": ["UA5000"]}},
     }
 
     rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
