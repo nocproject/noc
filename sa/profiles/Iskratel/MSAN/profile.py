@@ -36,8 +36,8 @@ class Profile(BaseProfile):
     password_submit = "\r"
     username_submit = "\r"
     # Iskratel SGR Not clearing command line when SyntaxError
-    send_on_syntax_error = "\x1b[B"
-    rogue_chars = ["\r", "\x00"]
+    send_on_syntax_error = b"\x1b[B"
+    rogue_chars = [b"\r", b"\x00"]
 
     rx_hw = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"

@@ -619,7 +619,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     @tornado.gen.coroutine
     def send_backspaces(cls, cli, command, error_text):
         # Send backspaces to clean up previous command
-        yield cli.iostream.write("\x08" * len(command))
+        yield cli.iostream.write(b"\x08" * len(command))
         # Send command_submit to force prompt
         yield cli.iostream.write(cls.command_submit)
         # Wait until prompt
