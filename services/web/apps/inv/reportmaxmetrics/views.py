@@ -14,7 +14,7 @@ import csv
 
 # Third-party modules
 import xlsxwriter
-from six import StringIO
+from six import BytesIO
 from django.http import HttpResponse
 from pymongo import ReadPreference
 from bson import ObjectId
@@ -35,6 +35,7 @@ from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 def get_column_width(name):
@@ -355,7 +356,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                         if iface_metrics["max_load_in"] == 0 and iface_metrics["max_load_out"] == 0:
                             continue
                     row2 = [
-                        str(mm.id),
+                        smart_text(mm.id),
                         mm.name,
                         mm.address,
                         getattr(mo_id, "object_platform"),
@@ -407,7 +408,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Metrics")
