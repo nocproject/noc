@@ -312,6 +312,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
 
     @classmethod
     def compile_match_filter(cls, *args, **kwargs):
+        # pylint: disable=undefined-variable
         """
         Compile arguments into version check function
         Returns callable accepting self and version hash arguments
@@ -369,7 +370,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 raise Exception("Invalid lookup operation: %s" % o)
         # Combine expressions into single lambda
         return reduce(
-            lambda x, y: lambda self, v, x=x, y=y: (x(self, v) and y(self, v)),
+            lambda x, y: lambda self, v, x=x, y=y: (
+                x(self, v) and y(self, v)
+            ),  # pylint: disable=undefined-variable
             c,
             lambda self, x: True,
         )
@@ -384,6 +387,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             # Append to the execute chain
             if hasattr(f, "_match"):
                 old_filter = f._match
+                # pylint: disable=undefined-variable
                 f._match = lambda self, v, old_filter=old_filter, new_filter=new_filter: new_filter(
                     self, v
                 ) or old_filter(self, v)
@@ -1215,7 +1219,11 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 return None
             from .beef import Beef
 
-            beef = Beef.load(beef_storage_url, beef_path)
+            try:
+                beef = Beef.load(beef_storage_url, beef_path)
+            except IOError as e:
+                self.logger.error("Beef load error: %s", e)
+                return None
             self._beef = beef
         return self._beef
 
