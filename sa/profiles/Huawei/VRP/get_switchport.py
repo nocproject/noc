@@ -17,6 +17,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.core.validators import is_int
 from noc.core.mib import mib
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -61,9 +62,12 @@ class Script(BaseScript):
         """
         for line in vlans.splitlines():
             for vlan_pack in line.split()[0]:
-                # for is_v in bin(int(vlan_pack, 16)):
-                for is_v in "{0:04b}".format(int(vlan_pack, 16)):
-                    yield int(is_v)
+                if six.PY2:
+                    for is_v in "{0:04b}".format(int(vlan_pack, 16)):
+                        yield int(is_v)
+                else:
+                    for is_v in "{0:08b}".format(vlan_pack):
+                        yield int(is_v)
 
     def execute_snmp(self, **kwargs):
         names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
@@ -89,18 +93,20 @@ class Script(BaseScript):
             # Found on ME60-X8 5.160 (V600R008C10SPC300)
             if pvid:
                 r[port_num]["untagged"] = pvid
-        start = 2
-        for oid, vlans_bank in self.snmp.get_tables([mib["HUAWEI-L2IF-MIB::hwL2IfTrunkPortTable"]]):
+
+        for oid, vlans_bank in self.snmp.get_tables(
+            [mib["HUAWEI-L2IF-MIB::hwL2IfTrunkPortTable"]],
+            display_hints={mib["HUAWEI-L2IF-MIB::hwL2IfTrunkPortTable"]: render_bin},
+        ):
+            start, end = 0, 2048
             oid, port_num = oid.rsplit(".", 1)
-            vlans_bank = hexlify(vlans_bank)
-            if oid == "1.3":
+            if six.PY2:
+                vlans_bank = hexlify(vlans_bank)
+            if oid.endswith("1.3"):
                 # HighVLAN
-                start = 2048
-            # if vlans_bank.startswith("?"):
-            # Perhaps 1 vlan
-            #    vlans_bank = vlans_bank[1:]
+                start, end = 2048, 4096
             r[port_num]["tagged"] += list(
-                compress(range(start, 4096), self.convert_vlan(vlans_bank))
+                compress(range(start, end), self.convert_vlan(vlans_bank))
             )
             r[port_num]["802.1Q Enabled"] = True
         # tagged_vlans = list()
