@@ -34,53 +34,6 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        i = {}
-        # Try SNMP first
-        """
-        if self.has_snmp():
-            try:
-                # lldpRemLocalPortNum
-                # lldpRemChassisIdSubtype lldpRemChassisId
-                # lldpRemPortIdSubtype lldpRemPortId
-                # lldpRemSysName lldpRemSysCapEnabled
-                for v in self.snmp.get_tables(
-                    ["1.0.8802.1.1.2.1.4.1.1.4", "1.0.8802.1.1.2.1.4.1.1.5",
-                     "1.0.8802.1.1.2.1.4.1.1.6", "1.0.8802.1.1.2.1.4.1.1.7",
-                     "1.0.8802.1.1.2.1.4.1.1.9", "1.0.8802.1.1.2.1.4.1.1.12"
-                    ], bulk=True):
-                    #local_interface = self.snmp.get(
-                    #    "1.3.6.1.2.1.31.1.1.1.1." + v[1], cached=True)
-                    local_interface = "Gi 1/0/50"
-                    #local_interface = "GigabitEthernet1/0/50"
-
-                    remotechassisid = ":".join(["%02x" % ord(c) for c in v[2]])
-                    remote_chassis_id_subtype = v[1]
-                    remote_port_subtype = v[3]
-                    if remote_port_subtype == 5:
-                        remote_port_subtype = 3
-                    remote_port = v[4]
-                    remote_system_name = v[5]
-                    remote_capabilities = v[6]
-                    if remote_capabilities == "(":
-                        remote_capabilities = 20
-
-                    i = {"local_interface": local_interface, "neighbors": []}
-                    n = {
-                        "remote_chassis_id_subtype": remote_chassis_id_subtype,
-                        "remote_chassis_id": remotechassisid,
-                        "remote_port_subtype": remote_port_subtype,
-                        "remote_port": remote_port,
-                        "remote_capabilities": remote_capabilities,
-                        }
-                    if remote_system_name:
-                        n["remote_system_name"] = remote_system_name
-                    i["neighbors"].append(n)
-                    r.append(i)
-                return r
-
-            except self.snmp.TimeOutError:
-                pass
-        """
         # Fallback to CLI
         lldp = self.cli("display lldp neighbor-information")
         lldp = lldp.splitlines()
