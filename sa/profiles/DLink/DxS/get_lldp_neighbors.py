@@ -20,6 +20,7 @@ from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.base import IPv4Parameter
 from noc.core.mac import MAC
 from noc.core.comp import smart_text
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -81,7 +82,11 @@ class Script(BaseScript):
                 "1.0.8802.1.1.2.1.4.1.1.9",  # LLDP-MIB::lldpRemSysName
                 "1.0.8802.1.1.2.1.4.1.1.10",  # LLDP-MIB::lldpRemSysDesc
                 "1.0.8802.1.1.2.1.4.1.1.12",  # LLDP-MIB::lldpRemSysCapEnabled
-            ]
+            ],
+            display_hints={
+                "1.0.8802.1.1.2.1.4.1.1.7": render_bin,
+                "1.0.8802.1.1.2.1.4.1.1.5": render_bin,
+            },
         ):
             neigh = dict(zip(neighb, v[1:]))
             if neigh["remote_chassis_id_subtype"] == 4:
