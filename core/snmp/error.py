@@ -61,6 +61,7 @@ TIMED_OUT = -1
 UNREACHABLE = -2
 BER_ERROR = -3
 BAD_COMMUNITY = -4
+END_OID_TREE = -5
 
 
 class SNMPError(Exception):

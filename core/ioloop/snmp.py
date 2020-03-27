@@ -25,7 +25,15 @@ from noc.core.snmp.get import (
     parse_get_response_raw,
 )
 from noc.core.snmp.set import set_pdu
-from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME, SNMPError, TIMED_OUT, UNREACHABLE, BER_ERROR
+from noc.core.snmp.error import (
+    NO_ERROR,
+    NO_SUCH_NAME,
+    SNMPError,
+    TIMED_OUT,
+    UNREACHABLE,
+    BER_ERROR,
+    END_OID_TREE,
+)
 from noc.core.ioloop.udp import UDPSocket
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
@@ -330,6 +338,9 @@ def snmp_getnext(
         if resp.error_status == NO_SUCH_NAME:
             # NULL result
             break
+        elif resp.error_status == END_OID_TREE:
+            # End OID Tree
+            raise Return(result)
         elif resp.error_status != NO_ERROR:
             # Error
             close_socket()
