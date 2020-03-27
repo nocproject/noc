@@ -504,13 +504,13 @@ class Script(BaseScript):
             return "Unknown | Transceiver | %s" % match.group(1).upper()
         return None
 
-    @BaseScript.match(platform__regex=r"C2960")
     def execute_2960(self):
         objects = self.get_inv()
         objects += self.get_transceivers("show int status")
         return objects
 
-    @BaseScript.match()
-    def execute_others(self):
+    def execute_cli(self):
+        if self.is_c2960:
+            return self.execute_2960()
         objects = self.get_inv()
         return objects
