@@ -36,7 +36,7 @@ class Script(BaseScript):
         Check box has lldp enabled on Eltex
         """
         r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
-        if r > 0:
+        if r:
             return True
 
     @false_on_cli_error
