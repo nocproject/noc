@@ -1055,8 +1055,8 @@ class ManagedObject(NOCModel):
                     difflib.unified_diff(
                         old_data.splitlines(True),
                         new_data.splitlines(True),
-                        fromfile=os.path.join(b"a", smart_bytes(self.name)),
-                        tofile=os.path.join(b"b", smart_bytes(self.name)),
+                        fromfile=os.path.join("a", smart_text(self.name)),
+                        tofile=os.path.join("b", smart_text(self.name)),
                     )
                 )
         if changed:
