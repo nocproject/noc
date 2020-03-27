@@ -34,6 +34,7 @@ class BaseProfileMetaclass(type):
         "pattern_prompt",
         "pattern_unprivileged_prompt",
         "pattern_syntax_error",
+        "pattern_operation_error",
         "username_submit",
         "password_submit",
         "command_super",
@@ -605,6 +606,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
 
         cls.rx_pattern_syntax_error = compile(cls.pattern_syntax_error)
         cls.rx_pattern_operation_error = compile(cls.pattern_operation_error)
+        cls.rx_pattern_operation_error_str = compile(smart_text(cls.pattern_operation_error))
 
     @classmethod
     def get_telnet_naws(cls):
