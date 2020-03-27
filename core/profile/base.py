@@ -836,10 +836,30 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         if cls.rogue_chars:
             for rc in cls.rogue_chars:
                 if isinstance(rc, six.text_type):
+                    warnings.warn(
+                        "%s: 'rogue_char' %r pattern must be of binary type. "
+                        "Support for text values will be removed in NOC 20.2" % (cls.name, rc)
+                    )
                     chain += [get_bytes_cleaner(smart_bytes(rc))]
                 elif isinstance(rc, six.binary_type):
                     chain += [get_bytes_cleaner(rc)]
                 elif hasattr(rc, "sub"):
+                    if not isinstance(rc.pattern, six.binary_type):
+                        # Recompile as binary re
+                        warnings.warn(
+                            "%s: 'rogue_char' %r pattern must be of binary type. "
+                            "Support for text values will be removed in NOC 20.2"
+                            % (cls.name, rc.pattern)
+                        )
+                        # Remove re.UNICODE flag
+                        flags = rc.flags
+                        if flags & re.UNICODE:
+                            warnings.warn(
+                                "%s: 'rogue_char' %r pattern cannot be compiled with re.UNICODE flag."
+                                % (cls.name, rc.pattern)
+                            )
+                            flags &= ~re.UNICODE
+                        rc = re.compile(smart_bytes(rc.pattern), flags)
                     chain += [get_re_cleaner(rc)]
                 else:
                     raise ValueError("Invalid rogue char expression: %r" % rc)
