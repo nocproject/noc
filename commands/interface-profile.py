@@ -60,7 +60,8 @@ class Command(BaseCommand):
     @staticmethod
     def get_interfaces(mo):
         return sorted(
-            Interface.objects.filter(managed_object=mo.id, type="physical"), key=alnum_key
+            Interface.objects.filter(managed_object=mo.id, type="physical"),
+            key=lambda x: alnum_key(x.name),
         )
 
     @staticmethod
