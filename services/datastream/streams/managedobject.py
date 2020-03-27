@@ -25,6 +25,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.sa.models.service import Service
 from noc.core.text import alnum_key
 
 
@@ -209,16 +210,22 @@ class ManagedObjectDataStream(DataStream):
                 {"_id": {"$in": list(links)}}, {"_id": 1, "managed_object": 1, "name": 1}
             ):
                 ifcache[i["_id"]] = (i["managed_object"], i["name"])
+        # Get services
+        svc_ids = [i["service"] for i in interfaces if i.get("service")]
+        if svc_ids:
+            services = {svc.id: svc for svc in Service.objects.filter(id__in=svc_ids)}
+        else:
+            services = {}
         # Populate
         r["interfaces"] = [
             ManagedObjectDataStream._get_interface(
-                i, subs[i["_id"]], links[i["_id"]], ifcache, set(mo.data.uplinks)
+                i, subs[i["_id"]], links[i["_id"]], ifcache, set(mo.data.uplinks), services
             )
             for i in interfaces
         ]
 
     @staticmethod
-    def _get_interface(iface, subs, links, ifcache, uplinks):
+    def _get_interface(iface, subs, links, ifcache, uplinks, services):
         r = {
             "name": qs(iface["name"]),
             "type": iface["type"],
@@ -245,6 +252,8 @@ class ManagedObjectDataStream(DataStream):
         # Apply links
         if links:
             r["link"] = ManagedObjectDataStream._get_link(iface, links, ifcache, uplinks)
+        # Apply services
+        ManagedObjectDataStream._apply_service(r, iface.get("service"), services)
         return r
 
     @staticmethod
@@ -400,6 +409,20 @@ class ManagedObjectDataStream(DataStream):
         if not rev:
             return
         r["config"] = {"revision": str(rev.id), "size": rev.length, "updated": rev.ts.isoformat()}
+
+    @staticmethod
+    def _apply_service(iface, svc_id, services):
+        svc = services.get(svc_id)
+        if not svc:
+            return
+        r = {"id": str(svc.id)}
+        if svc.remote_system:
+            r["remote_system"] = {
+                "id": str(svc.remote_system.id),
+                "name": qs(svc.remote_system.name),
+            }
+            r["remote_id"] = str(svc.remote_id)
+        iface["services"] = [r]
 
     @classmethod
     def get_meta(cls, data):
