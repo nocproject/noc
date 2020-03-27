@@ -23,8 +23,10 @@ from noc.core.snmp.consts import (
     PDU_GETBULK_REQUEST,
     PDU_RESPONSE,
 )
-from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME
+from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME, END_OID_TREE
+from noc.core.script.error import ScriptError
 from .base import SNMP
+from noc.core.comp import smart_bytes
 
 
 class BeefSNMP(SNMP):
@@ -90,7 +92,9 @@ class BeefSNMP(SNMP):
                             encoder.encode_int(err_index),
                             encoder.encode_sequence(
                                 [
-                                    encoder.encode_sequence([encoder.encode_oid(str(oid)), value])
+                                    encoder.encode_sequence(
+                                        [encoder.encode_oid(str(oid)), smart_bytes(value)]
+                                    )
                                     for oid, value in data
                                 ]
                             ),
@@ -139,6 +143,8 @@ class BeefSNMP(SNMP):
             r = [(oid, beef.get_mib_value(oid))]
             break
         # @todo: empty r == error
+        if not r:
+            err_status = END_OID_TREE
         return err_status, err_index, r
 
     def snmp_getbulk_response(self, pdu):
@@ -180,6 +186,7 @@ class BeefServerIOStream(tornado.iostream.IOStream):
         if not beef:
             # Connection refused
             self.close(exc_info=True)
+            future.set_exception(ScriptError("Beef not found"))
             return future
         future.set_result(True)
         # Start replying start state
@@ -187,8 +194,9 @@ class BeefServerIOStream(tornado.iostream.IOStream):
         return future
 
     def close(self, exc_info=False):
-        self.socket.close()
-        self.socket = None
+        if self.socket:
+            self.socket.close()
+            self.socket = None
 
 
 class BeefClientIOStream(tornado.iostream.IOStream):
