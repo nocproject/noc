@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
 from noc.core.comp import smart_text
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -25,7 +26,8 @@ class Script(BaseScript):
         r"(?P<remote_interface>\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
-    oid_cdp = "1.3.6.1.4.1.9.9.23.1.2.1.1"
+    # oid_cdp = "1.3.6.1.4.1.9.9.23.1.2.1.1"
+    oid_cdp = mib["CISCO-CDP-MIB::cdpCacheEntry"]
     rx_serial_check = re.compile(r"(\S+)\(\S+\)$")
 
     def execute_snmp(self, **kwargs):
@@ -34,7 +36,7 @@ class Script(BaseScript):
         neighbors = []
         # Get interface status
         res = {}
-        vif = self.snmp.get_table("1.3.6.1.2.1.31.1.1.1.1")
+        vif = self.snmp.get_table(mib["IF-MIB::ifName"])
         r = self.snmp.getnext(self.oid_cdp)
         loid = len(self.oid_cdp) + 1
         for v, dv in r:
