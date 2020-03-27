@@ -270,21 +270,27 @@ class SNMP(object):
         r, self.result = self.result, None
         return r
 
-    def get_table(self, oid, community_suffix=None, cached=False):
+    def get_table(self, oid, community_suffix=None, cached=False, display_hints=None):
         """
         GETNEXT wrapper. Returns a hash of <index> -> <value>
         """
         r = {}
-        for o, v in self.getnext(oid, community_suffix=community_suffix, cached=cached):
+        for o, v in self.getnext(
+            oid, community_suffix=community_suffix, cached=cached, display_hints=display_hints
+        ):
             r[int(o.split(".")[-1])] = v
         return r
 
-    def join_tables(self, oid1, oid2, community_suffix=None, cached=False):
+    def join_tables(self, oid1, oid2, community_suffix=None, cached=False, display_hints=None):
         """
         Generator returning a rows of two snmp tables joined by index
         """
-        t1 = self.get_table(oid1, community_suffix=community_suffix, cached=cached)
-        t2 = self.get_table(oid2, community_suffix=community_suffix, cached=cached)
+        t1 = self.get_table(
+            oid1, community_suffix=community_suffix, cached=cached, display_hints=display_hints
+        )
+        t2 = self.get_table(
+            oid2, community_suffix=community_suffix, cached=cached, display_hints=display_hints
+        )
         for k1, v1 in six.iteritems(t1):
             try:
                 yield v1, t2[k1]
