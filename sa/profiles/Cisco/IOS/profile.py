@@ -65,6 +65,7 @@ class Profile(BaseProfile):
         "is_cat4000": {"platform": {"$regex": r"^WS-C4[059]\d\d"}},
         "is_small_cat": {"version": {"$regex": r"SE|EA|EZ|FX|EX|EY|E|WC"}},
         "is_5350": {"platform": {"$regex": r"^5350"}},
+        "is_c2960": {"platform": {"$regex": r"C2960"}},
         "is_ubr": {"version": {"$regex": r"BC"}},
         "is_vlan_switch": {
             "platform": {
