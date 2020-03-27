@@ -854,7 +854,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 # Then check for operation error
                 if (
                     self.profile.rx_pattern_operation_error
-                    and self.profile.rx_pattern_operation_error.search(r)
+                    and self.profile.rx_pattern_operation_error_str.search(r)
                 ):
                     raise self.CLIOperationError(r)
             # Echo cancelation

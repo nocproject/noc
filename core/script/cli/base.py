@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CLI FSM
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -425,7 +425,7 @@ class CLI(object):
         self.logger.debug("Parsing object stream")
         objects = []
         seen = set()
-        buffer = ""
+        buffer = b""
         repeats = 0
         r_key = None
         stop_sent = False
@@ -451,17 +451,18 @@ class CLI(object):
                 break
             # Then check for operation error
             if (
-                self.profile.rx_pattern_operation_error
+                self.profile.rx_pattern_operation_error_str
                 and self.profile.rx_pattern_operation_error.search(self.buffer)
             ):
                 self.error = self.script.CLIOperationError(self.buffer)
                 break
             # Parse all possible objects
             while buffer:
-                pr = parser(buffer)
+                pr = parser(smart_text(buffer))
                 if not pr:
                     break  # No new objects
                 key, obj, buffer = pr
+                buffer = smart_bytes(buffer)
                 if key not in seen:
                     seen.add(key)
                     objects += [obj]
