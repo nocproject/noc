@@ -240,7 +240,9 @@ class CLI(object):
             self.logger.debug("Creating IOLoop")
             self.ioloop = tornado.ioloop.IOLoop()
         if obj_parser:
-            parser = functools.partial(self.parse_object_stream, obj_parser, cmd_next, cmd_stop)
+            parser = functools.partial(
+                self.parse_object_stream, obj_parser, smart_bytes(cmd_next), smart_bytes(cmd_stop)
+            )
         else:
             parser = self.read_until_prompt
         with Span(
