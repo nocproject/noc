@@ -4,7 +4,7 @@
 # OS:     VRP3
 # Compatible: 3.1
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ class Profile(BaseProfile):
         (r"^--More\(Enter: next line, spacebar: next page, " r"any other key: quit\)--", " "),
         (r"\[<frameId/slotId>\]", "\n"),
         (r"\(y/n\) \[n\]", "y\n"),
+        (r"\(y/n\) \[y\]", "y\n"),
         (r"\[to\]\:", "\n"),
     ]
     # Do not match this line: "\r\n>>User name: "
