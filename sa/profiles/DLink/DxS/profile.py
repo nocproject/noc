@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+import codecs
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -230,7 +231,7 @@ class Profile(BaseProfile):
             media_type = match.group("media_type")
             descr = match.group("desc")
             if descr:
-                descr = descr.decode("ascii", "ignore")
+                descr = codecs.decode(descr, encoding="ascii", errors="ignore")
                 descr = descr.strip()
             else:
                 descr = ""
