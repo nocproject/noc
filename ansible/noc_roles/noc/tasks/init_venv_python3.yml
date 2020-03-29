@@ -24,7 +24,7 @@
         state: absent
         path: "{{ item }}"
       with_items:
-        - "{{ noc_root }}"
+        - "{{ noc_root }}/*"
         - /var/lib/noc/var/pkg
 
     - name: Reinitialize git
