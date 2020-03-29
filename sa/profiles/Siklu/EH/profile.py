@@ -6,9 +6,11 @@
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
 import re
+
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -19,9 +21,10 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\"\,\(\)\/]+)?>"
     command_submit = "\r"
 
+    rx_strip_cmd_repeat = re.compile(b".+\x1b\[\d+G\r?\n(.*)", re.MULTILINE | re.DOTALL)  # noqa
+
     def cleaned_input(self, input):
-        rx_strip_cmd_repeat = re.compile(r".+\x1b\[\d+G\r?\n(.*)", re.MULTILINE | re.DOTALL)
-        match = rx_strip_cmd_repeat.search(input)
+        match = self.rx_strip_cmd_repeat.search(input)
         if match:
             input = match.group(1)
         input = super(Profile, self).cleaned_input(input)
