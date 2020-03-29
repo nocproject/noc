@@ -20,6 +20,9 @@
   stat:
     path: "{{ noc_root }}/collections/README.md"
   register: noc_coll_canary
+  tags:
+    - requirements
+    - coll_sync
 
 - name: download collections
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/collections.json"
