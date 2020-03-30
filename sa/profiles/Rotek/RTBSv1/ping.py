@@ -17,13 +17,15 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "Rotek.RTBSv1.ping"
     interface = IPing
+    cache = True
 
     rx_result = re.compile(
-        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss.",
-        re.MULTILINE,
+        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),"
+        r"(?:\s|\s\S+ errors, )\d+% packet loss.", re.MULTILINE
     )
     rx_stat = re.compile(
-        r"^rtt min/avg/max/mdev = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)/(?P<mdev>.+)\s.", re.MULTILINE
+        r"^rtt min/avg/max/mdev = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)/(?P<mdev>.+)\s.",
+        re.MULTILINE
     )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):

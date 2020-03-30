@@ -17,30 +17,35 @@ from noc.core.validators import is_ipv4
 class Script(GetMetricsScript):
     name = "Rotek.RTBSv1.get_metrics"
 
-    @metrics(["Check | Result", "Check | RTT"], volatile=False, access="C")  # CLI version
+    @metrics(["Check | Result"], volatile=False, access="C")  # CLI version
     def get_avail_metrics(self, metrics):
         if not self.credentials["path"]:
             return
-        check_id = 999
-        check_rtt = 998
-        for m in metrics:
-            if m.metric == "Check | Result":
-                check_id = m.id
-            if m.metric == "Check | RTT":
-                check_rtt = m.id
+        self.logger.info("Collecting Check metrics: %s", metrics)
+        metric = metrics[0]
         for ip in self.credentials["path"].split(","):
             if is_ipv4(ip.strip()):
-                result = self.scripts.ping(address=ip, count=4)
+                result = self.scripts.ping(address=ip)
                 self.set_metric(
-                    id=check_id,
+                    id=metric.id,
                     metric="Check | Result",
                     path=("ping", ip),
                     value=bool(result["success"]),
                     multi=True,
                 )
-                if result["success"] and check_rtt != 998:
+
+    @metrics(["Check | RTT"], volatile=False, access="C")  # CLI version
+    def get_avail_rtt_metrics(self, metrics):
+        if not self.credentials["path"]:
+            return
+        self.logger.info("Collecting Check metrics: %s", metrics)
+        metric = metrics[0]
+        for ip in self.credentials["path"].split(","):
+            if is_ipv4(ip.strip()):
+                result = self.scripts.ping(address=ip)
+                if result["success"]:
                     self.set_metric(
-                        id=check_rtt,
+                        id=metric.id,
                         metric="Check | RTT",
                         path=("ping", ip),
                         value=bool(result["success"]),

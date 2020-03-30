@@ -17,6 +17,7 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "Rotek.RTBS.ping"
     interface = IPing
+    cache = True
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss.",
