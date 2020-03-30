@@ -579,6 +579,8 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         Returns full path to BaseParser instance to be used
         as config parser. None means no parser for particular platform
         """
+        if six.PY3:
+            return None
         return cls.default_parser
 
     @classmethod
