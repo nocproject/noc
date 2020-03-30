@@ -15,6 +15,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.http.client import fetch_sync
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
 from noc.core.handler import get_handler
+from noc.core.comp import smart_text
 from .middleware.base import BaseMiddleware
 from .middleware.loader import loader
 
@@ -95,6 +96,7 @@ class HTTP(object):
                 result = ujson.loads(result)
             except ValueError as e:
                 raise HTTPError("Failed to decode JSON: %s" % e)
+        result = smart_text(result)
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
@@ -152,6 +154,7 @@ class HTTP(object):
                 return ujson.loads(result)
             except ValueError as e:
                 raise HTTPError(msg="Failed to decode JSON: %s" % e)
+        result = smart_text(result)
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
