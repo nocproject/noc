@@ -1,6 +1,6 @@
 # FreeBSD settings
 ---
-activator_command: "/bin/sh -c 'exec taskset -c $((%(process_num)d %% $(sysctl -n hw.ncpu))) ./services/activator/service.py'"
+activator_command: "/bin/sh -c 'exec cpuset -l $((%(process_num)d %% $(sysctl -n hw.ncpu))) ./services/activator/service.py'"
 
 etc_prefix: /usr/local/etc
 
