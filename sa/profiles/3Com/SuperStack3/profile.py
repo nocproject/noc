@@ -18,12 +18,12 @@ class Profile(BaseProfile):
     name = "3Com.SuperStack3"
     pattern_prompt = r"^Select menu option.*:"
     pattern_more = [(r"Enter <CR> for more or 'q' to quit--:", "\r")]
-    command_submit = "\r"
-    username_submit = "\r"
-    password_submit = "\r"
+    command_submit = b"\r"
+    username_submit = b"\r"
+    password_submit = b"\r"
     enable_cli_session = False
     command_exit = "logout"
-    telnet_send_on_connect = "\r"
+    telnet_send_on_connect = b"\r"
     convert_mac = BaseProfile.convert_mac_to_dashed
 
     def get_interface_names(self, name):
