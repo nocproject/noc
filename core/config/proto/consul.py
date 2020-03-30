@@ -16,6 +16,7 @@ import tornado.gen
 # NOC modules
 from .base import BaseProtocol
 from noc.core.consul import ConsulClient
+from noc.core.comp import smart_text
 
 
 class ConsulProtocol(BaseProtocol):
@@ -65,7 +66,7 @@ class ConsulProtocol(BaseProtocol):
                 d = k.split("/")
                 if d[0] not in data:
                     data[d[0]] = {}
-                data[d[0]][d[1]] = v
+                data[d[0]][d[1]] = smart_text(v)
         # Upload
         self.config.update(data)
 
