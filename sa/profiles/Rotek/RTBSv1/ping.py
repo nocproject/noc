@@ -21,11 +21,11 @@ class Script(BaseScript):
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),"
-        r"(?:\s|\s\S+ errors, )\d+% packet loss.", re.MULTILINE
+        r"(?:\s|\s\S+ errors, )\d+% packet loss.",
+        re.MULTILINE,
     )
     rx_stat = re.compile(
-        r"^rtt min/avg/max/mdev = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)/(?P<mdev>.+)\s.",
-        re.MULTILINE
+        r"^rtt min/avg/max/mdev = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)/(?P<mdev>.+)\s.", re.MULTILINE
     )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):
