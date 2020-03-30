@@ -44,29 +44,22 @@ class Script(GetMetricsScript):
     def get_avail_metrics(self, metrics):
         if not self.credentials["path"]:
             return
-        check_id = 999
-        check_rtt = 998
-        for m in metrics:
-            if m.metric == "Check | Result":
-                check_id = m.id
-            if m.metric == "Check | RTT":
-                check_rtt = m.id
         for ip in self.credentials["path"].split(","):
             if is_ipv4(ip.strip()):
                 result = self.scripts.ping(address=ip)
                 self.set_metric(
-                    id=check_id,
+                    id=("Check | Result", None),
                     metric="Check | Result",
                     path=("ping", ip),
                     value=bool(result["success"]),
                     multi=True,
                 )
-                if result["success"] and check_rtt != 998:
+                if result["success"]:
                     self.set_metric(
-                        id=check_rtt,
+                        id=("Check | RTT", None),
                         metric="Check | RTT",
                         path=("ping", ip),
-                        value=bool(result["success"]),
+                        value=bool(result["avg"]),
                     )
 
     def get_beacon_iface(self, ifaces):
