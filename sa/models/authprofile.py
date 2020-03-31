@@ -88,9 +88,12 @@ class AuthProfile(NOCModel):
             return None
 
     def on_save(self):
+        from .managedobject import CREDENTIAL_CACHE_VERSION
+
         if not self.enable_suggest:
             cache.delete_many(
-                ["cred-%s" % x for x in self.managedobject_set.values_list("id", flat=True)]
+                ["cred-%s" % x for x in self.managedobject_set.values_list("id", flat=True)],
+                version=CREDENTIAL_CACHE_VERSION,
             )
 
     @property

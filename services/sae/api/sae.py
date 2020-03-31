@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SAE API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,10 @@ import tornado.gen
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
 from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF
-from noc.sa.models.managedobject import ManagedObject  # noqa Do not delete
+from noc.sa.models.managedobject import (
+    ManagedObject,
+    CREDENTIAL_CACHE_VERSION,
+)  # noqa Do not delete
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
@@ -26,6 +29,9 @@ from noc.core.dcs.base import ResolutionError
 from noc.config import config
 from noc.core.perf import metrics
 
+# Increase whenever new field added or removed
+CREDENTIALS_CACHE_VERSION = 1
+
 
 class SAEAPI(API):
     """
@@ -33,9 +39,6 @@ class SAEAPI(API):
     """
 
     name = "sae"
-
-    ACTIVATOR_RESOLUTION_RETRIES = config.sae.activator_resolution_retries
-    ACTIVATOR_RESOLUTION_TIMEOUT = config.sae.activator_resolution_timeout
 
     RUN_SQL = """
         SELECT
@@ -49,7 +52,12 @@ class SAEAPI(API):
             ap.snmp_ro, ap.snmp_rw,
             mo.cli_privilege_policy, mop.cli_privilege_policy,
             mo.access_preference, mop.access_preference,
-            mop.beef_storage, mop.beef_path_template_id
+            mop.beef_storage, mop.beef_path_template_id,
+            (
+              SELECT json_object_agg(key, value)
+              FROM sa_managedobjectattribute
+              WHERE managed_object_id = %s
+            )
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -60,9 +68,11 @@ class SAEAPI(API):
     @tornado.gen.coroutine
     def resolve_activator(self, pool):
         sn = "activator-%s" % pool
-        for i in range(self.ACTIVATOR_RESOLUTION_RETRIES):
+        for i in range(config.sae.activator_resolution_retries):
             try:
-                svc = yield self.service.dcs.resolve(sn, timeout=self.ACTIVATOR_RESOLUTION_TIMEOUT)
+                svc = yield self.service.dcs.resolve(
+                    sn, timeout=config.sae.activator_resolution_timeout
+                )
                 raise tornado.gen.Return(svc)
             except ResolutionError as e:
                 self.logger.info("Cannot resolve %s: %s", sn, e)
@@ -130,7 +140,7 @@ class SAEAPI(API):
         data["pool"] = pool
         raise tornado.gen.Return(data)
 
-    @cachedmethod(key="cred-%s")
+    @cachedmethod(key="cred-%s", version=CREDENTIAL_CACHE_VERSION)
     def get_object_data(self, object_id):
         """
         Worker to resolve credentials
@@ -139,7 +149,7 @@ class SAEAPI(API):
         # Get Object's attributes
         with self.service.get_pg_connect() as connection:
             cursor = connection.cursor()
-            cursor.execute(self.RUN_SQL, [object_id])
+            cursor.execute(self.RUN_SQL, [object_id, object_id])
             data = cursor.fetchall()
         if not data:
             metrics["error", ("type", "object_not_found")] += 1
@@ -176,6 +186,7 @@ class SAEAPI(API):
             p_access_preference,
             beef_storage_id,
             beef_path_template_id,
+            attrs,
         ) = data[0]
         # Check object is managed
         if not is_managed:
@@ -231,6 +242,8 @@ class SAEAPI(API):
             }
             if sw_image:
                 version["image"] = sw_image
+            if attrs:
+                version["attributes"] = attrs
         else:
             version = None
         # Beef processing

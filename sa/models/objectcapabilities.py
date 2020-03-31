@@ -23,7 +23,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.inv.models.capability import Capability
-from .managedobject import ManagedObject
+from .managedobject import ManagedObject, CREDENTIAL_CACHE_VERSION
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
@@ -55,7 +55,7 @@ class ObjectCapabilities(Document):
         return "%s caps" % self.object.name
 
     def on_save(self):
-        cache.delete("cred-%s" % self.object.id)
+        cache.delete("cred-%s" % self.object.id, version=CREDENTIAL_CACHE_VERSION)
 
     def iter_changed_datastream(self, changed_fields=None):
         yield "managedobject", self.object.id
@@ -141,7 +141,7 @@ class ObjectCapabilities(Document):
             ObjectCapabilities._get_collection().update(
                 {"_id": object}, {"$set": {"caps": new_caps}}, upsert=True
             )
-            cache.delete("cred-%s" % object)
+            cache.delete("cred-%s" % object, version=CREDENTIAL_CACHE_VERSION)
         caps = {}
         for ci in new_caps:
             cn = Capability.get_by_id(ci["capability"])
