@@ -67,7 +67,7 @@ class BaseCache(object):
 
     def delete_many(self, keys, version=None):
         for k in keys:
-            self.delete(k, version=None)
+            self.delete(k, version=version)
 
     def __getitem__(self, item):
         self.get(item)
