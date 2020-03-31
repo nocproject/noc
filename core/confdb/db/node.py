@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Node
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ class Node(object):
 
     def iter_nodes(self):
         if self.children:
-            for name in sorted(self.children):
+            for name in sorted(self.children, key=lambda x: x or ""):
                 yield self.children[name]
 
     def has_children(self):
