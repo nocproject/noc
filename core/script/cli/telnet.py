@@ -2,13 +2,14 @@
 # ----------------------------------------------------------------------
 # Telnet CLI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 import logging
+import codecs
 
 # Third-party modules
 from tornado.iostream import IOStream
@@ -235,7 +236,7 @@ class TelnetParser(object):
             self.logger.debug("Received IAC SB TTYPE SEND IAC SE")
             self.send_iac_sb(b"\x18\x00", B_TERMINAL_TYPE)
         else:
-            self.logger.debug("Received IAC SB %s IAC SE", sb.encode("hex"))
+            self.logger.debug("Received IAC SB %s IAC SE", codecs.encode(sb, "hex"))
 
     @staticmethod
     def iac_repr(cmd, opt):
