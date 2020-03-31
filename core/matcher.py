@@ -14,7 +14,7 @@ from collections import Iterable
 import six
 
 # NOC modules
-from noc.core.text import split_alnum
+from noc.core.text import alnum_key
 
 
 __all__ = ["match"]
@@ -70,19 +70,19 @@ def match_in(v, iter):
 
 
 def match_gt(v, cv):
-    return split_alnum(v) > split_alnum(cv)
+    return alnum_key(v) > alnum_key(cv)
 
 
 def match_gte(v, cv):
-    return split_alnum(v) >= split_alnum(cv)
+    return alnum_key(v) >= alnum_key(cv)
 
 
 def match_lt(v, cv):
-    return split_alnum(v) < split_alnum(cv)
+    return alnum_key(v) < alnum_key(cv)
 
 
 def match_lte(v, cv):
-    return split_alnum(v) <= split_alnum(cv)
+    return alnum_key(v) <= alnum_key(cv)
 
 
 matchers = {
