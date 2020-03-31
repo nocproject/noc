@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  Data Loader
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2019 The NOC Project
+#  Copyright (C) 2007-2020 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -153,6 +153,16 @@ class BaseLoader(object):
                 self.mappings[self.clean_str(k)] = v
         self.logger.info("%d mappings restored", len(self.mappings))
 
+    @staticmethod
+    def iter_cleaned(g):
+        """
+        Clean rows from unreadable characters
+        :param g: Iterator yielding lines
+        :return:
+        """
+        for line in g:
+            yield line.replace("\x00", "")
+
     def get_new_state(self):
         """
         Returns file object of new state, or None when not present
@@ -169,7 +179,7 @@ class BaseLoader(object):
             logger.info("Loading from %s", path)
             self.new_state_path = path
             if six.PY3:
-                return io.TextIOWrapper(gzip.GzipFile(path, "r"))
+                return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
             return gzip.GzipFile(path, "r")
         # No data to import
         return None
@@ -194,7 +204,7 @@ class BaseLoader(object):
             path = os.path.join(self.archive_dir, fn[-1])
             logger.info("Current state from %s", path)
             if six.PY3:
-                return io.TextIOWrapper(gzip.GzipFile(path, "r"))
+                return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
             return gzip.GzipFile(path, "r")
         # No current state
         return six.StringIO("")
