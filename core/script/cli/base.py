@@ -30,7 +30,7 @@ from noc.core.text import replace_re_group
 from noc.config import config
 from noc.core.span import Span
 from noc.core.perf import metrics
-from noc.core.comp import smart_bytes, smart_text
+from noc.core.comp import smart_bytes, smart_text, bchr
 from .error import (
     CLIError,
     CLIAuthFailed,
@@ -713,7 +713,7 @@ class CLI(object):
             if v:
                 k = smart_bytes(k)
                 if k == b"hostname" and sl and len(v) > sl:
-                    ss = list(reversed(v[sl:]))
+                    ss = [bchr(x) for x in reversed(v[sl:])]
                     v = re.escape(v[:sl]) + reduce(
                         lambda x, y: b"(?:%s%s)?" % (re.escape(y), x),
                         ss[1:],
