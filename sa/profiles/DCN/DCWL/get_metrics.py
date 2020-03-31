@@ -10,6 +10,7 @@
 from __future__ import division
 import six
 from collections import defaultdict
+import codecs
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
@@ -125,7 +126,7 @@ class Script(GetMetricsScript):
                 ssid = data["ssid"].strip().replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
-                    ssid = ssid.decode("hex")
+                    ssid = codecs.decode(ssid, "hex")
                 iface = "%s.%s" % (data["name"], ssid)
             else:
                 iface = data["name"]

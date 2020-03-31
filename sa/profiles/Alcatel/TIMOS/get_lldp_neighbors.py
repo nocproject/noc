@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+import codecs
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -70,14 +71,14 @@ class Script(BaseScript):
         if port_type == "5" and "\n " in port:
             remote_port = port.replace("\n                        ", "")
             remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = remote_port.decode("hex")
+            remote_port = codecs.decode(remote_port, "hex")
         elif port_type == "5" and "\n" in port:
             remote_port = port.replace("\n", "")
             remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = remote_port.decode("hex")
+            remote_port = codecs.decode(remote_port, "hex")
         elif port_type == "5" and "\n " not in port:
             remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = remote_port.decode("hex")
+            remote_port = codecs.decode(remote_port, "hex")
         elif port_type == "7":
             return port.replace("\n", "")
         return remote_port

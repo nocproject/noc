@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import division
 from collections import defaultdict
+import codecs
 
 # Third-party modules
 # import six
@@ -132,7 +133,7 @@ class Script(GetMetricsScript):
                 ssid = data["ssid"].strip().replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
-                    ssid = ssid.decode("hex")
+                    ssid = codecs.decode(ssid, "hex")
                 iface = "%s.%s" % (data["name"], ssid)
             else:
                 iface = data["name"]

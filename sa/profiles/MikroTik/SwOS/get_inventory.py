@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import codecs
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -30,17 +33,17 @@ class Script(BaseScript):
         if sfps.get("vnd"):
             sfp_count = len(sfps["vnd"])
             for i in range(0, sfp_count):
-                vendor = sfps["vnd"][i].decode("hex").strip()
-                part_no = sfps["pnr"][i].decode("hex").strip()
-                revision = sfps["rev"][i].decode("hex").strip()
-                serial = sfps["ser"][i].decode("hex").strip()
-                date = sfps["dat"][i].decode("hex").strip()
+                vendor = codecs.decode(sfps["vnd"][i], "hex").strip()
+                part_no = codecs.decode(sfps["pnr"][i], "hex").strip()
+                revision = codecs.decode(sfps["rev"][i], "hex").strip()
+                serial = codecs.decode(sfps["ser"][i], "hex").strip()
+                date = codecs.decode(sfps["dat"][i], "hex").strip()
                 dt = date.split("-")
                 year = "20" + dt[0]
                 parts = [year, dt[1], dt[2]]
                 mfd = "-".join(parts)
 
-                descr = sfps["typ"][i].decode("hex").strip()
+                descr = codecs.decode(sfps["typ"][i], "hex").strip()
                 r += [
                     {
                         "type": "XCVR",
@@ -54,11 +57,11 @@ class Script(BaseScript):
                     }
                 ]
         elif sfps.get("vndr"):
-            vendor = sfps["vndr"].decode("hex").strip()
-            part_no = sfps["ptnr"].decode("hex").strip()
-            revision = sfps["rev"].decode("hex").strip()
-            serial = sfps["ser"].decode("hex").strip()
-            date = sfps["date"].decode("hex").strip()
+            vendor = codecs.decode(sfps["vndr"], "hex").strip()
+            part_no = codecs.decode(sfps["ptnr"], "hex").strip()
+            revision = codecs.decode(sfps["rev"], "hex").strip()
+            serial = codecs.decode(sfps["ser"], "hex").strip()
+            date = codecs.decode(sfps["date"], "hex").strip()
             dt = date.split("-")
             year = "20" + dt[0]
             parts = [year, dt[1], dt[2]]
