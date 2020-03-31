@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+import codecs
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -113,7 +114,7 @@ class Script(BaseScript):
                 ssid = value["ssid"].replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
-                    ssid = ssid.decode("hex")
+                    ssid = codecs.decode(ssid, "hex")
                 r = self.get_bss_detail(value["bss"])
                 bss_ifname = "%s.%s" % (ifname, ssid)
                 if r:

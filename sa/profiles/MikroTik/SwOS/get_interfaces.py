@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import codecs
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -57,9 +60,9 @@ class Script(BaseScript):
                 else:
                     ifname = "SFP"
             if links.get("nm"):
-                descr = links["nm"][port - 1].decode("hex")
+                descr = codecs.decode(links["nm"][port - 1], "hex")
             elif links.get("nm%d" % (port - 1)):
-                descr = links["nm%d" % (port - 1)].decode("hex")
+                descr = codecs.decode(links["nm%d" % (port - 1)], "hex")
             else:
                 descr = None
             iface = {
