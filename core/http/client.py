@@ -201,9 +201,9 @@ def fetch(
             logger.debug("Sending CONNECT %s:%s", addr, port)
             # Send CONNECT request
             req = b"CONNECT %s:%s HTTP/1.1\r\nUser-Agent: %s\r\n\r\n" % (
-                addr,
-                port,
-                DEFAULT_USER_AGENT,
+                smart_bytes(addr),
+                smart_bytes(port),
+                smart_bytes(DEFAULT_USER_AGENT),
             )
             try:
                 yield tornado.gen.with_timeout(
