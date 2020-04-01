@@ -87,7 +87,7 @@ class GeocoderCache(Document):
 
     @classmethod
     def get_hash(cls, query):
-        return codecs.encode(hashlib.sha256(smart_bytes(query)).digest(), "base64")[:12]
+        return smart_text(codecs.encode(hashlib.sha256(smart_bytes(query)).digest(), "base64")[:12])
 
     @classmethod
     def forward(cls, query, bounds=None):
