@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NRI Portmapper check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -34,10 +34,11 @@ class NRIPortmapperCheck(DiscoveryCheck):
             self.logger.info("No interfaces discovered. " "Skipping interface status check")
             return
         # Get portmapper instance
-        portmapper = portmapper_loader.get_loader(self.object.remote_system.name)(self.object)
-        if not portmapper:
+        pm_cls = portmapper_loader.get_loader(self.object.remote_system.name)
+        if not pm_cls:
             self.logger.info("[%s] No portmapper for NRI. Skipping checks", nri)
             return
+        portmapper = pm_cls(self.object)
         # Process interfaces
         bulk = []
         icol = Interface._get_collection()

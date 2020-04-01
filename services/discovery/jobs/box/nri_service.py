@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NRI Portmapper check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,9 +31,7 @@ class NRIServiceCheck(DiscoveryCheck):
             self.logger.info("Created directly. No NRI integration. Skipping check")
             return
         if not self.object.remote_system.enable_link:
-            self.logger.info(
-                "NRI does not provide link information. Skipping check", self.object.remote_system
-            )
+            self.logger.info("NRI does not provide link information. Skipping check")
             return
         # Check object has interfaces
         if not self.has_capability("DB | Interfaces"):
