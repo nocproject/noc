@@ -21,6 +21,9 @@ bugfixes, optimisations and improvements.
 
 Highlights
 ----------
+
+.. _release-19.4-py3:
+
 Python3 Compatibility Statement
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Python3 compatibility was one of primal focuses during 19.4 release cycle.
