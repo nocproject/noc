@@ -277,7 +277,10 @@ class ManagedObjectSelector(NOCModel):
                         AND value ~ %s
                 ))
             """
-                % (adapt(s.key_re).getquoted(), adapt(s.value_re).getquoted())
+                % (
+                    smart_text(adapt(s.key_re).getquoted()),
+                    smart_text(adapt(s.value_re).getquoted()),
+                )
             )
         # Restrict to sources
         if self.sources.count():
