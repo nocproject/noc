@@ -272,6 +272,8 @@ class Script(BaseScript):
                 match_obj = self.re_int_desc_group.search(iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
+                    if not my_dict["mac"]:
+                        del my_dict["mac"]
                     my_dict["type"] = "other"
                     my_dict["subinterfaces"] = []
             elif iftypeSubsc in iface:
@@ -329,6 +331,8 @@ class Script(BaseScript):
                                 else:
                                     my_dict["vlan_ids"] = [int(vlans)]
                         my_dict["subinterfaces"] = [{"name": my_dict["name"]}]
+                else:
+                    continue
             else:
                 continue
             if my_dict["description"] == "(Not Specified)":
@@ -370,7 +374,7 @@ class Script(BaseScript):
                             my_sub["enabled_afi"] += ["MPLS"]
                         else:
                             my_sub["enabled_afi"] = ["MPLS"]
-                    if "mac" in my_dict:
+                    if "mac" in my_dict and my_dict["mac"]:
                         my_sub["mac"] = my_dict["mac"]
                     if "mtu" in my_dict:
                         my_sub["mtu"] = my_dict["mtu"]
@@ -499,11 +503,12 @@ class Script(BaseScript):
                     "admin_status": self.fix_status(card[1]),
                     "oper_status": self.fix_status(card[2]),
                     "protocols": [],
-                    "mac": card[3],
                     "type": "physical",
                     "subinterfaces": self.parse_interfaces(sub_iface, ""),
                 }
             )
+            if card[3]:
+                fi["interfaces"][-1]["mac"] = card[3]
         return fi
 
     def get_base_router(self):
