@@ -30,14 +30,14 @@ class NRIServiceCheck(DiscoveryCheck):
         if not self.object.remote_system:
             self.logger.info("Created directly. No NRI integration. Skipping check")
             return
-        if not self.object.remote_system.enable_link:
+        if not self.object.remote_system.enable_service:
             self.logger.info(
-                "NRI does not provide link information. Skipping check", self.object.remote_system
+                "[%s] NRI does not provide service information. Skipping check", self.object.remote_system
             )
             return
         # Check object has interfaces
         if not self.has_capability("DB | Interfaces"):
-            self.logger.info("No interfaces discovered. " "Skipping interface status check")
+            self.logger.info("No interfaces discovered. Skipping interface status check")
             return
         # Get services related to Managed object
         scol = Service._get_collection()
