@@ -31,6 +31,7 @@ class ManagedObjectLoader(BaseLoader):
         "container",
         "administrative_domain",
         "pool",
+        "fm_pool",
         "segment",
         "profile",
         "object_profile",
