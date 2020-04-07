@@ -3,7 +3,7 @@
 # Vendor: Eltex
 # OS:     MES5448
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import re
