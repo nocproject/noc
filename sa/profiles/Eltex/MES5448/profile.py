@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 from noc.core.comp import smart_text
 
 rx_cpu = re.compile(
-    "5\s+Secs\s+\((?:\s+|)(?P<cpu5sec>\S+)\%\)\s+60\s+\Secs\s+\((?:\s+|)(?P<cpu60sec>\S+)\%\)\s+300\s+\Secs\s+\((?:\s+|)(?P<cpu300sec>\S+)\%\)"
+    r"5\s+Secs\s+\((?:\s+|)(?P<cpu5sec>\S+)\%\)\s+60\s+\Secs\s+\((?:\s+|)(?P<cpu60sec>\S+)\%\)\s+300\s+\Secs\s+\((?:\s+|)(?P<cpu300sec>\S+)\%\)"
 )
 
 
