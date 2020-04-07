@@ -55,7 +55,8 @@ class ReportObjectDetailLinks(BaseReportColumn):
                     {"$match": match},
                     {"$group": group},
                     {"$sort": {"_id": 1}},
-                ]
+                ],
+                {"allowDiskUse": True},
             )
         )
         for val in value:

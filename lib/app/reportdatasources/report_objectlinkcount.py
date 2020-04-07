@@ -43,7 +43,8 @@ class ReportObjectLinkCount(BaseReportColumn):
                     # {"$match": {"int.managed_object": {"$in": self.sync_ids}}},
                     {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}},
                     {"$sort": {"_id": 1}},
-                ]
+                ],
+                {"allowDiskUse": True},
             )
         )
         for v in value:
