@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Test python module loading
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ ALLOW_XFAIL = {
     "noc.scripts.migrate-ignored-interfaces",
     "noc.gis.parsers.address.fias",
     "noc.gis.tile",
+    "noc.lib.clipsenv",
+    "noc.cm.engine",
 }
 
 

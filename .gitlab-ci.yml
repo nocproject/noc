@@ -154,79 +154,10 @@ pylint:
   tags:
     - docker
 
-futurize:
-  stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
-  script:
-    - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
-    - /bin/future.sh "$FLIST"
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
-  allow_failure: false
-
-py2:test:
+py:test:
   stage: Test
   before_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2tests
-    - mv .dockerignore .dockerignore.prod
-    - cp .dockerignore.tests .dockerignore
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-  script:
-    - >
-     docker
-     login
-     -u gitlab-ci-token
-     -p ${CI_BUILD_TOKEN}
-     ${CI_REGISTRY}
-    - >
-      docker-compose
-      -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}"
-      build py2tests
-    - >
-      docker-compose
-      -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}"
-      up
-      --exit-code-from py2tests
-      py2tests
-  after_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py2tests
-    - JUNIT_XML_REPORT=build/reports/py2-test-junit.xml
-    - mkdir -p build/reports/
-    - >
-      docker cp
-      "${DOCKER_COMPOSE_PROJECT}_py2tests_1:/opt/noc/${JUNIT_XML_REPORT}"
-      "${JUNIT_XML_REPORT}"
-    - mv .dockerignore.prod .dockerignore
-    - >
-      docker-compose
-      -f .docker/docker-compose.yml
-      -p "${DOCKER_COMPOSE_PROJECT}"
-      down -v
-  only:
-    refs:
-      - merge_requests
-      - master
-      - /^release-\d+\.\d+/
-  tags:
-    - shell
-  allow_failure: false
-  artifacts:
-    reports:
-      junit: ./build/reports/py2-test-junit.xml
-    expire_in: 7 days
-
-py3:test:
-  stage: Test
-  before_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3tests
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-pytests
     - mv .dockerignore .dockerignore.prod
     - cp .dockerignore.tests .dockerignore
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
@@ -236,21 +167,21 @@ py3:test:
       docker-compose
       -f .docker/docker-compose.yml
       -p "${DOCKER_COMPOSE_PROJECT}"
-      build py3tests
+      build pytests
     - >
       docker-compose
       -f .docker/docker-compose.yml
       -p "${DOCKER_COMPOSE_PROJECT}"
       up
-      --exit-code-from py3tests
-      py3tests
+      --exit-code-from pytests
+      pytests
   after_script:
-    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-py3tests
-    - JUNIT_XML_REPORT=build/reports/py3-test-junit.xml
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}-pytests
+    - JUNIT_XML_REPORT=build/reports/py-test-junit.xml
     - mkdir -p build/reports/
     - >
       docker cp
-      "${DOCKER_COMPOSE_PROJECT}_py3tests_1:/opt/noc/${JUNIT_XML_REPORT}"
+      "${DOCKER_COMPOSE_PROJECT}_pytests_1:/opt/noc/${JUNIT_XML_REPORT}"
       "${JUNIT_XML_REPORT}"
     - mv .dockerignore.prod .dockerignore
     - >
@@ -268,7 +199,7 @@ py3:test:
   allow_failure: false
   artifacts:
     reports:
-      junit: ./build/reports/py3-test-junit.xml
+      junit: ./build/reports/py-test-junit.xml
     expire_in: 7 days
 
 build:Docs:
