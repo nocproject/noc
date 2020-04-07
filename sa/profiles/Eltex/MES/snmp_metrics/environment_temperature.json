@@ -9,7 +9,12 @@
     },
     "is_MES23": {
       "platform": {
-        "$regex": "MES-(2|3|5)3"
+         "$regex": "MES-(2|3)3"
+      }
+    },
+    "is_MES53": {
+      "platform": {
+        "$regex": "MES-53"
       }
     }
   },
@@ -32,6 +37,34 @@
         "$type": "oid",
         "oid": "1.3.6.1.4.1.89.53.15.1.14.1",
         "path": ["","","", "Temperature_Sensor3"],
+        "type": "gauge",
+        "scale": 1
+      }]
+   },{
+    "$match": "is_MES53",
+    "$type": "oids",
+      "oids": [{
+      "oid": "1.3.6.1.4.1.89.83.2.1.1.1.4.68420481",
+      "path": ["","","", "Temperature_Sensor1"],
+      "$type": "oid",
+      "type": "gauge",
+      "scale": 1
+      },{
+        "$type": "oid",
+        "oid": "1.3.6.1.4.1.89.83.2.1.1.1.4.68420482",
+        "path": ["","","", "Temperature_Sensor2"],
+        "type": "gauge",
+        "scale": 1
+      },{
+        "$type": "oid",
+        "oid": "1.3.6.1.4.1.89.83.2.1.1.1.4.68420483",
+        "path": ["","","", "Temperature_Sensor3"],
+        "type": "gauge",
+        "scale": 1
+      },{
+        "$type": "oid",
+        "oid": "1.3.6.1.4.1.89.83.2.1.1.1.4.68420484",
+        "path": ["","","", "Temperature_Sensor4"],
         "type": "gauge",
         "scale": 1
       }]
