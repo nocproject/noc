@@ -55,7 +55,7 @@
   tags:
     - requirements
 
-- name: Install RedHat system packages for python3
+- name: Install CentOS system packages for python3
   yum:
     name: "{{ packages }}"
     state: present

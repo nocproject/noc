@@ -26,11 +26,11 @@ forms:
         - error
         - critial
     language:
-      default: "en-us"
+      default: "en"
       label: "Translation language"
       type: list
       options:
-        - "en-us"
+        - "en"
         - "ru"
         - "pt_BR"
     theme:
