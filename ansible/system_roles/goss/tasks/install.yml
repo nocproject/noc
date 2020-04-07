@@ -9,6 +9,8 @@
   run_once: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
+  retries: 3
+  delay: 2
 
 - name: create goss dirs
   file:

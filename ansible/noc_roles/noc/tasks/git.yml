@@ -58,7 +58,7 @@
     msg: |
       There are local modifications to {{ noc_root }} directory. Local modification have to be placed to {{ noc_root | dirname }}/noc_custom/ directory.
       To continue update please do one of the following:
-      * revert them `git checkout microservices`
+      * revert them `git checkout stable`
       * stash them https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning
       for example
       ** `git stash`

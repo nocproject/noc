@@ -6,10 +6,10 @@
     gather_subset:
       - 'min'
 
-- name: Check if we have NOC/bin/ folder with py2
-  register: noc_bin_py2
+- name: Check if we have NOC/bin/ folder with py3
+  register: noc_bin_py3
   stat:
-    path: "{{ noc_root }}/bin/python2"
+    path: "{{ noc_root }}/bin/python3"
 
 - name: Archive old py2 noc folder and delete files in /var/lib
   block:
@@ -19,20 +19,75 @@
         dest: "{{noc_root}}/../noc_on_python2.tbz"
         format: bz2
 
+    - name: check if we have custom settings.yml
+      stat:
+        path: "{{ noc_root }}/etc/settings.yml"
+      register: stat_result
+
+    - name: Copy settings.yml to /tmp
+      copy:
+        src: "{{ noc_root }}/etc/settings.yml"
+        dest: /tmp
+        remote_src: true
+        force: true
+      when: stat_result.stat.exists
+
     - name: Delete old folders
       file:
         state: absent
         path: "{{ item }}"
       with_items:
-        - "{{ noc_root }}/*"
+        - "{{ noc_root }}"
         - /var/lib/noc/var/pkg
+      when: noc_root not in ansible_mounts|json_query('[].mount')
+
+    - name: Handle if /opt/noc/ is mountpoint
+      block:
+        - name: Create temporary empty folder
+          tempfile:
+            state: directory
+            suffix: tempansible
+          register: tempfile_1
+          delegate_to: "{{ inventory_hostname }}"
+
+        - name: Empty noc_root directory
+          synchronize:
+            src: "{{ tempfile_1.path }}/"
+            dest: "{{ item }}"
+            delete: true
+            recursive: true
+            perms: true
+            owner: true
+          delegate_to: "{{ inventory_hostname }}"
+          with_items:
+            - /var/lib/noc/var/pkg
+            - "{{ noc_root }}/"
+
+        - name: Fix permissions on noc dir
+          file:
+            path: "{{ noc_root }}"
+            owner: root
+            group: root
+            mode: '0755'
+
+      when: noc_root in ansible_mounts|json_query('[].mount')
 
     - name: Reinitialize git
       include_tasks: "git.yml"
 
+    - name: Recreate noc dirs
+      include_tasks: "dirs.yml"
+
+    - name: Copy settings.yml back
+      copy:
+        src: /tmp/settings.yml
+        dest: "{{ noc_root }}/etc/settings.yml"
+        remote_src: true
+      when: stat_result.stat.exists
+
   when:
-    - noc_bin_py2 is defined
-    - noc_bin_py2.stat.exists
+    - noc_bin_py3 is defined
+    - not noc_bin_py3.stat.exists
 
 - name: Initialize virtualenv3
   pip:

@@ -4,7 +4,7 @@ noc_system_service: noc
 noc_logs: /var/log/noc
 noc_var_lib: /var/lib/noc
 noc_repo: https://github.com/nocproject/noc.git
-noc_version: microservices
+noc_version: stable
 noc_root: /opt/noc
 noc_etc: "{{ noc_root }}/etc"
 noc_reports_dir: "{{ noc_var_lib }}/reports"

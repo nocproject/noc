@@ -23,6 +23,13 @@
         path: "{{ noc_root }}"
       register: noc_root_state
 
+    - name: Check if python3 was selected on proper releases
+      fail:
+        msg: "At now only Centos7/RHEL7 is supported for Python3 deploy. Use python for now"
+      when:
+        - noc_python_interpreter == "python3"
+        - ansible_distribution not in ['RedHat', 'CentOS', 'OracleLinux']
+
     - block:
         - name: check if noc under mercurial control
           stat:
