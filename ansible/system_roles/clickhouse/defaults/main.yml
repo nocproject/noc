@@ -4,6 +4,7 @@ ch_data_dir: /var/lib/clickhouse
 ch_big_query_dir: "{{ ch_data_dir }}/tmp"
 clickhouse_http_port: 8123
 clickhouse_max_ast_elements: 10000
+clickhouse_timezone: "Europe/Moscow"
 
 clickhouse_service_name: clickhouse-server
 

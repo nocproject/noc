@@ -60,7 +60,7 @@
     <!-- Default database. -->
     <default_database>default</default_database>
 
-    <timezone>Europe/Moscow</timezone>
+    <timezone>{{ clickhouse_timezone }}</timezone>
 
     <!-- Configuration of clusters that could be used in Distributed tables.
                  https://clickhouse.yandex/reference_en.html#Distributed

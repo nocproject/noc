@@ -41,8 +41,11 @@ forms:
       label: "Max ast size"
       type: int
       common: environment
-      description: "Maximum number of elements in a query syntactic tree. Should be increased on lots of managed object "
-
+      description: "Maximum number of elements in a query syntactic tree. Should be increased on lots of managed object"
+    timezone:
+      default: "Europe/Moscow"
+      label: "Timezone of server's node in zoneinfo format"
+      type: str
 services:
   clickhouse:
     level: system
