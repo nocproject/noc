@@ -7,11 +7,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.core.comp import smart_text
 
-rx_cpu = re.compile("5\s+Secs\s+\((?:\s+|)(?P<cpu5sec>\S+)\%\)\s+60\s+\Secs\s+\((?:\s+|)(?P<cpu60sec>\S+)\%\)\s+300\s+\Secs\s+\((?:\s+|)(?P<cpu300sec>\S+)\%\)")
+rx_cpu = re.compile(
+    "5\s+Secs\s+\((?:\s+|)(?P<cpu5sec>\S+)\%\)\s+60\s+\Secs\s+\((?:\s+|)(?P<cpu60sec>\S+)\%\)\s+300\s+\Secs\s+\((?:\s+|)(?P<cpu300sec>\S+)\%\)"
+)
+
+
 def render_regexp(oid, value):
     value = smart_text(value, errors="ignore")
     match = rx_cpu.search(value)
@@ -32,4 +37,3 @@ class Profile(BaseProfile):
     command_super = "enable"
     command_disable_pager = "terminal length 0"
     snmp_display_hints = {"1.3.6.1.4.1.4413.1.1.1.1.4.9.0": render_regexp}
-
