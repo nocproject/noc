@@ -5,5 +5,15 @@
     "description": "SFP transceiver slot",
     "c_group": [],
     "extend__name": "Transceiver | SFP+",
-    "genders": "mf"
+    "genders": "mf",
+    "matchers": [
+        {
+            "protocol": "TransEth100M",
+            "scope": "physical"
+        },
+        {
+            "protocol": "TransEth1G",
+            "scope": "physical"
+        }
+    ]
 }

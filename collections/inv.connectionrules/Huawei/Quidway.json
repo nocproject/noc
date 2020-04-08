@@ -129,6 +129,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "CARD",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
             "match_type": "LPU",
             "scope": "chassis",
             "target_connection": "{N}",
