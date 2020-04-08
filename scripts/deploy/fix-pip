@@ -64,12 +64,12 @@ def main():
         v = get_pip_version()
         if is_broken_version(v):
             fix_pip()
-            print "CHANGED"
+            print("CHANGED")
         else:
-            print "OK"
+            print("OK")
     else:
         fix_pip()
-        print "CHANGED"
+        print("CHANGED")
 
 
 if __name__ == "__main__":

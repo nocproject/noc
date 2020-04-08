@@ -47,8 +47,8 @@ class BytecodeCompiler(object):
     def compile_file(self, f):
         try:
             py_compile.compile(f)
-        except (IOError, SyntaxError), why:
-            self.error(why)
+        except (IOError, SyntaxError) as e:
+            self.error(e)
 
     def compile(self):
         """
@@ -62,15 +62,15 @@ class BytecodeCompiler(object):
     def run(self):
         self.compile()
         if self.errors:
-            print "ERROR"
+            print("ERROR")
             for e in self.errors:
-                print e
+                print(e)
             return 1
         elif self.changed:
-            print "CHANGED"
+            print("CHANGED")
             return 0
         else:
-            print "OK"
+            print("OK")
             return 0
 
 
