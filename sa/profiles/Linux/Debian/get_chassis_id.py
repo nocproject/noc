@@ -7,8 +7,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -16,24 +17,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def execute_snmp(self, **kwargs):
-        # Try SNMP first
-        if self.snmp:
-            try:
-                mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.2", cached=True)
-                if mac is not None:
-                    return {"first_chassis_mac": mac, "last_chassis_mac": mac}
-                else:
-                    return [
-                        {
-                            "first_chassis_mac": "00:00:00:00:00:00",
-                            "last_chassis_mac": "00:00:00:00:00:00",
-                        }
-                    ]
-
-            except self.snmp.TimeOutError:
-                # pass
-                return
+    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 2]}
 
     # TODO: use cli
     # def execute_cli(self, **kwargs):

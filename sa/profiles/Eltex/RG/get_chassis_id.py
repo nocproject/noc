@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.mac import MAC
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -17,9 +17,4 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def execute(self, interface=None):
-        if self.has_snmp():
-            s = self.snmp.get("1.3.6.1.2.1.2.2.1.6.2")
-            return {"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}
-        else:
-            raise self.NotSupportedError
+    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 2]}

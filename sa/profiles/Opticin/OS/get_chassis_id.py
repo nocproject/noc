@@ -9,12 +9,10 @@
 # Python modules
 import re
 
-# Third-party modules
-import six
-
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID, MACAddressParameter
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -23,38 +21,9 @@ class Script(BaseScript):
     interface = IGetChassisID
     rx_mac = re.compile(r"System MAC[^:]*?:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
-    @staticmethod
-    def join_four_tables(
-        snmp, oid1, community_suffix=None, bulk=False, min_index=None, max_index=None, cached=False
-    ):
-        t1 = snmp.get_table(
-            oid1,
-            community_suffix=community_suffix,
-            bulk=bulk,
-            min_index=min_index,
-            max_index=max_index,
-            cached=cached,
-        )
-        for k1, v1 in six.iteritems(t1):
-            try:
-                yield k1, v1
-            except KeyError:
-                pass
+    SNMP_GETNEXT_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress"]]}
 
-    def execute(self):
-        if self.has_snmp():
-            try:
-                # Get interface physAddress
-                # IF-MIB::ifPhysAddress
-                for i, m in self.join_four_tables(self.snmp, "1.3.6.1.2.1.2.2.1.6", bulk=True):
-                    if i == 1:
-                        first_mac = MACAddressParameter().clean(m)
-                    last_mac = MACAddressParameter().clean(m)
-
-                return {"first_chassis_mac": first_mac, "last_chassis_mac": last_mac}
-            except self.snmp.TimeOutError:
-                pass
-
+    def execute_cli(self, **kwargs):
         # Fallback to CLI
         v = self.cli("show system")
         match = self.re_search(self.rx_mac, v)

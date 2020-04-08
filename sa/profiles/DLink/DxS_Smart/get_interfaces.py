@@ -14,6 +14,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.core.mac import MAC
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -52,7 +53,7 @@ class Script(BaseScript):
         mac = {}
         try:
             for i, m in self.snmp.join_tables(
-                "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.6"
+                mib["IF-MIB::ifIndex"], mib["IF-MIB::ifPhysAddress"]
             ):  # IF-MIB
                 if i[:6] == "Slot0/":
                     i = i[6:]

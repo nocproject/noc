@@ -11,6 +11,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -39,23 +40,23 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
-                    i = v[1]
-                    name = self.snmp.get("1.3.6.1.2.1.2.2.1.2." + str(i))
+                    i = v
+                    name = self.snmp.get(mib["IF-MIB::ifDescr", i])
                     if name.lower().startswith("line"):
                         continue
                     iftype = self.get_interface_type(name)
                     if not name:
                         self.logger.info("Ignoring unknown interface type: '%s", iftype)
                         continue
-                    s = self.snmp.get("1.3.6.1.2.1.2.2.1.6." + str(i))
+                    s = self.snmp.get(mib["IF-MIB::ifPhysAddress", i])
                     if s:
                         mac = MACAddressParameter().clean(s)
-                    astat = self.snmp.get("1.3.6.1.2.1.2.2.1.7." + str(i))
+                    astat = self.snmp.get(mib["IF-MIB::ifAdminStatus", i])
                     if astat == 1:
                         a_stat = True
                     else:
                         a_stat = False
-                    ostat = self.snmp.get("1.3.6.1.2.1.2.2.1.8." + str(i))
+                    ostat = self.snmp.get(mib["IF-MIB::ifOperStatus", i])
                     if ostat == 1:
                         o_stat = True
                     else:
