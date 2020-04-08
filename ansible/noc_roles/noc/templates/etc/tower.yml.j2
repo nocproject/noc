@@ -1,7 +1,9 @@
 #jinja2: lstrip_blocks: True
 installation_name: {{ noc_installation_name }}
+{% if web_language is defined %}
 language: {{ web_language }}
 language_code: {{ web_language }}
+{% endif %}
 
 pg:
   db: {{ postgres_noc_db }}
