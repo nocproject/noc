@@ -17,6 +17,14 @@
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
@@ -91,29 +99,29 @@
         {
             "description": "GigabitEthernet 0/0/1 port",
             "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernet0/0/1",
+            "gender": "s",
             "name": "GigabitEthernet0/0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet 0/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/1_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet 0/0/1 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/1",
             "internal_name": "Port_1",
-            "name": "GigabitEthernet0/0/1",
+            "name": "GigabitEthernet0/0/1_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "RTN (+)",
-            "direction": "s",
-            "gender": "m",
-            "name": "RTN",
-            "protocols": [">-48VDC"],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
         }
     ],
     "data": {
