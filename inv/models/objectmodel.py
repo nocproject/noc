@@ -70,6 +70,7 @@ class ObjectModelConnection(EmbeddedDocument):
             and self.type.id == other.type.id
             and self.direction == other.direction
             and self.gender == other.gender
+            and self.combo == other.combo
             and self.group == other.group
             and self.cross == other.cross
             and self.protocols == other.protocols
@@ -87,6 +88,8 @@ class ObjectModelConnection(EmbeddedDocument):
             "direction": self.direction,
             "gender": self.gender,
         }
+        if self.combo:
+            r["combo"] = self.group
         if self.group:
             r["group"] = self.group
         if self.cross:
