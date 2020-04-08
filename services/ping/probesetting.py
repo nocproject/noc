@@ -55,7 +55,7 @@ class ProbeSetting(object):
         bi_id=None,
         fm_pool=None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.address = address
@@ -87,7 +87,7 @@ class ProbeSetting(object):
         time_expr=None,
         fm_pool=None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         self.interval = interval
         self.policy = POLICY_MAP.get(policy, 0)

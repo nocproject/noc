@@ -40,7 +40,7 @@ class System(BaseFact):
         object_profile=None,
         level=None,
         location=None,
-        **kwargs
+        **kwargs,
     ):
         super(System, self).__init__()
         self.hostname = hostname

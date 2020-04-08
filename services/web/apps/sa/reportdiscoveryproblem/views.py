@@ -142,7 +142,7 @@ class ReportFilterApplication(SimpleReport):
         filter_pending_links=None,
         filter_none_objects=None,
         filter_view_other=None,
-        **kwargs
+        **kwargs,
     ):
         data = []
         match = None

@@ -122,7 +122,7 @@ class ReportAvailabilityApplication(SimpleReport):
         skip_avail=False,
         skip_zero_avail=False,
         filter_zero_access=False,
-        **kwargs
+        **kwargs,
     ):
         """
         a1 = self.get_availability(1)

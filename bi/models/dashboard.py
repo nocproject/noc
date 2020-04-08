@@ -92,7 +92,7 @@ class Dashboard(Document):
         cascade_kwargs=None,
         _refs=None,
         save_condition=None,
-        **kwargs
+        **kwargs,
     ):
         # Split DashBoard Acces to {User, level}, {Group, level}
         # self.update(add_to_set__access=[parent_1, parent_2, parent_1])
@@ -131,7 +131,7 @@ class Dashboard(Document):
             cascade_kwargs=cascade_kwargs,
             _refs=_refs,
             save_condition=save_condition,
-            **kwargs
+            **kwargs,
         )
 
     def clean_access(self, item=None):

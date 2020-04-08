@@ -87,7 +87,7 @@ class Command(BaseCommand):
         update_spec,
         beef_output,
         *args,
-        **options
+        **options,
     ):
         # Get object
         obj = self.get_object(object_name[0])

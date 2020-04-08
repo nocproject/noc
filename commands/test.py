@@ -54,7 +54,7 @@ class Command(BaseCommand):
         junit_report=None,
         idea_bookmarks=None,
         *args,
-        **options
+        **options,
     ):
         def run_tests(args):
             self.print("Running test")

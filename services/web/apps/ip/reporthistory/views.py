@@ -71,7 +71,7 @@ class ReportHistoryApplication(SimpleReport):
         search_prefix,
         search_user,
         include_addresses,
-        **kwargs
+        **kwargs,
     ):
         scope = []
         if include_prefixes:

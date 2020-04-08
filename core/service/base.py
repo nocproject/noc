@@ -664,7 +664,7 @@ class Service(object):
             deflate_level=config.nsqd.compression_level
             if config.nsqd.compression == "deflate"
             else 6,
-            **kwargs
+            **kwargs,
         )
 
     def suspend_subscription(self, handler):
