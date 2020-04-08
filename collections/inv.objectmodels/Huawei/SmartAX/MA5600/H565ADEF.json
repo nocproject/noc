@@ -8,6 +8,15 @@
     "tags": ["lc", "port"],
     "connections": [
         {
+            "composite": "xDSL0",
+            "composite_pins": "1-2",
+            "description": null,
+            "direction": "s",
+            "gender": "s",
+            "name": "0/0/0",
+            "type__name": "Composed"
+        },
+        {
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",

@@ -1,7 +1,7 @@
 {
-    "name": "Huawei | SmartAX | MA5600",
+    "name": "Huawei | SmartAX | MA5603",
     "$collection": "inv.objectmodels",
-    "uuid": "758ff0dc-22a2-4a49-8330-a0122adcfdb2",
+    "uuid": "cd489833-79ea-4d3f-a17c-555631fbf1aa",
     "vendor__code": "HUAWEI",
     "description": null,
     "connection_rule__name": "Huawei | SmartAX",
@@ -14,13 +14,6 @@
             "gender": "f",
             "name": "fan",
             "type__name": "Huawei | SmartAX | FAN"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "0",
-            "type__name": "Huawei | SmartAX | SB"
         },
         {
             "description": "Service board",
@@ -70,71 +63,15 @@
             "gender": "f",
             "name": "7",
             "type__name": "Huawei | SmartAX | SCU"
-        },
-        {
-            "description": "Control board",
-            "direction": "i",
-            "gender": "f",
-            "name": "8",
-            "type__name": "Huawei | SmartAX | SCU"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "9",
-            "type__name": "Huawei | SmartAX | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "10",
-            "type__name": "Huawei | SmartAX | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "11",
-            "type__name": "Huawei | SmartAX | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "12",
-            "type__name": "Huawei | SmartAX | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "13",
-            "type__name": "Huawei | SmartAX | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "14",
-            "type__name": "Huawei | SmartAX | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "15",
-            "type__name": "Huawei | SmartAX | SB"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["MA5600"]
+            "part_no": ["H511UPBA"]
         },
         "dimensions": {
             "depth": 420,
-            "height": 442,
+            "height": 221,
             "width": 436
         },
         "management": {
@@ -144,7 +81,7 @@
             "is_recursive": true
         },
         "rackmount": {
-            "units": 6.0
+            "units": 5.0
         },
         "weight": {
             "is_recursive": true,

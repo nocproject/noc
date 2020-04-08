@@ -24,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["LS5M100PWA00"]
+            "part_no": ["CX7M1PWA", "LS5M100PWA00"]
         },
         "power": {
             "power": 100.0

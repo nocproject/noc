@@ -238,38 +238,54 @@
         {
             "description": "GigabitEthernet 0/0/3 port",
             "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernet0/0/3",
+            "gender": "s",
             "name": "GigabitEthernet0/0/3",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet 0/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/3_rj",
+            "protocols": ["100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet 0/0/3 port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/3",
             "internal_name": "Port_3",
-            "name": "GigabitEthernet0/0/3",
+            "name": "GigabitEthernet0/0/3_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet 0/0/4 port",
             "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernet0/0/4",
+            "gender": "s",
             "name": "GigabitEthernet0/0/4",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet 0/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/4_rj",
+            "protocols": ["100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet 0/0/4 port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/4",
             "internal_name": "Port_4",
-            "name": "GigabitEthernet0/0/4",
+            "name": "GigabitEthernet0/0/4_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }

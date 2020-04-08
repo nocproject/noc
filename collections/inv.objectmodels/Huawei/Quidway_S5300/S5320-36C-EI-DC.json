@@ -73,7 +73,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -81,7 +81,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -89,7 +89,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -97,7 +97,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -105,7 +105,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -113,7 +113,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -121,7 +121,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -129,7 +129,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -137,7 +137,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -145,7 +145,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -153,7 +153,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/11",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -161,7 +161,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/12",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -169,7 +169,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/13",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -177,7 +177,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/14",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -185,7 +185,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/15",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -193,7 +193,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/16",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -201,7 +201,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/17",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -209,7 +209,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/18",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -217,7 +217,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/19",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -225,7 +225,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/20",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -233,7 +233,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/21",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -241,7 +241,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/22",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -249,7 +249,7 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/23",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -257,82 +257,114 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/24",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "GigabitEthernet 0/0/24 port",
             "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernet0/0/25",
+            "gender": "s",
             "name": "GigabitEthernet0/0/25",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/25_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet 0/0/25 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/25",
             "internal_name": "Port_GigabitEthernet0/0/25",
-            "name": "GigabitEthernet0/0/25",
+            "name": "GigabitEthernet0/0/25_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet 0/0/24 port",
             "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernet0/0/26",
+            "gender": "s",
             "name": "GigabitEthernet0/0/26",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/26_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet 0/0/26 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/26",
             "internal_name": "Port_GigabitEthernet0/0/26",
-            "name": "GigabitEthernet0/0/26",
+            "name": "GigabitEthernet0/0/26_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet 0/0/24 port",
             "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernet0/0/27",
+            "gender": "s",
             "name": "GigabitEthernet0/0/27",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/27_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet 0/0/27 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/27",
             "internal_name": "Port_GigabitEthernet0/0/27",
-            "name": "GigabitEthernet0/0/27",
+            "name": "GigabitEthernet0/0/27_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet 0/0/24 port",
             "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernet0/0/28",
+            "gender": "s",
             "name": "GigabitEthernet0/0/28",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet 0/0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/28_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet 0/0/28 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernet0/0/28",
             "internal_name": "Port_GigabitEthernet0/0/28",
-            "name": "GigabitEthernet0/0/28",
+            "name": "GigabitEthernet0/0/28_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
