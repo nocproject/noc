@@ -10,9 +10,10 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.http.client import fetch_sync
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -21,18 +22,11 @@ class Script(BaseScript):
     interface = IGetChassisID
     rx_mac = re.compile(r"MAC(?:\S+:|:)\s(?P<mac>\S+)<", re.MULTILINE)
 
-    def execute(self):
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                base = self.snmp.get("1.3.6.1.2.1.2.2.1.6.1")
-                if base:
-                    return [{"first_chassis_mac": base, "last_chassis_mac": base}]
-            except self.snmp.TimeOutError:
-                pass
-            except self.snmp.SNMPError:
-                pass
+    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 1]}
 
+    always_prefer = "S"
+
+    def execute_cli(self, **kwargs):
         # Fallback to CLI
         get = "http://" + self.credentials.get("address", "") + "/"
         code, header, body = fetch_sync(get, allow_proxy=False, eof_mark="</html>")

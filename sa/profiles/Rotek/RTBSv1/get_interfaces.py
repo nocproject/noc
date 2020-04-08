@@ -17,6 +17,7 @@ import six
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.mac import MAC
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -55,21 +56,21 @@ class Script(BaseScript):
             }
         for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
             ifindex = v[1]
-            name = self.snmp.get("1.3.6.1.2.1.2.2.1.2.%s" % str(ifindex))
+            name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
             iftype = self.profile.get_interface_type(name)
             if "peer" in name:
                 continue
             if not name:
                 self.logger.info("Ignoring unknown interface type: '%s", iftype)
                 continue
-            mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % str(ifindex))
+            mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
             mtu = self.snmp.get("1.3.6.1.2.1.2.2.1.4.%s" % str(ifindex))
-            astatus = self.snmp.get("1.3.6.1.2.1.2.2.1.7.%s" % str(ifindex))
+            astatus = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
             if astatus == 1:
                 admin_status = True
             else:
                 admin_status = False
-            ostatus = self.snmp.get("1.3.6.1.2.1.2.2.1.8.%s" % str(ifindex))
+            ostatus = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
             if ostatus == 1:
                 oper_status = True
             else:
