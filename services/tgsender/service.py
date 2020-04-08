@@ -21,6 +21,7 @@ from noc.core.service.base import Service
 from noc.core.http.client import fetch_sync
 from noc.core.perf import metrics
 from noc.config import config
+from noc.core.comp import smart_text
 
 API = "https://api.telegram.org/bot"
 
@@ -57,7 +58,10 @@ class TgSenderService(Service):
         # proxy_addres = config.proxy.https_proxy  # not used.
         sendMessage = {
             "chat_id": address,
-            "text": "*" + self.escape_markdown(subject) + "*\n" + self.escape_markdown(body),
+            "text": "*"
+            + self.escape_markdown(smart_text(subject, errors="ignore"))
+            + "*\n"
+            + self.escape_markdown(smart_text(body, errors="ignore")),
             "parse_mode": "Markdown",
         }
         time.sleep(config.tgsender.retry_timeout)
