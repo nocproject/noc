@@ -109,7 +109,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["H801MABO","H802MABO", "MA5603T"]
+            "part_no": ["H801MABO", "H802MABO", "MA5603T"]
         },
         "dimensions": {
             "depth": 283,

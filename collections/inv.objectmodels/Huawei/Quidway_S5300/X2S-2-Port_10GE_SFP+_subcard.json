@@ -20,8 +20,8 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "name": "GigabitEthernet0/0/1",
-            "protocols": ["TransEth1G", "TransEth01G"],
+            "name": "XGigabitEthernet0/X/1",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -29,8 +29,8 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_2",
-            "name": "GigabitEthernet0/0/2",
-            "protocols": ["TransEth1G", "TransEth01G"],
+            "name": "XGigabitEthernet0/X/2",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | SFP+"
         }
     ],

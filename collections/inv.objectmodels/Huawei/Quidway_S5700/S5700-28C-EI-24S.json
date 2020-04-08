@@ -4,7 +4,7 @@
     "uuid": "d226e43c-7353-43eb-a51e-b81b912c9038",
     "vendor__code": "HUAWEI",
     "description": "L3 switch with 20 ports 100/1000Base-X (SFP), 4 combo ports 10/100/1000Base-T/SFP, 2 extension slots",
-    "connection_rule__name": "Generic | Switch SFP",
+    "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "tags": ["chassis", "sup", "fabric", "port", "fan"],
     "connections": [
@@ -12,22 +12,22 @@
             "description": "Extension slot",
             "direction": "i",
             "gender": "f",
-            "name": "Extension",
-            "type__name": "Huawei | Quidway S5700 | Extension slot"
+            "name": "1",
+            "type__name": "Huawei | Quidway S5300 | Front slot"
         },
         {
             "description": "Rear slot",
             "direction": "i",
             "gender": "f",
-            "name": "Rear slot",
-            "type__name": "Huawei | Quidway S5700 | Rear slot"
+            "name": "2",
+            "type__name": "Huawei | Quidway S5300 | Front slot"
         },
         {
             "description": "FAN slot",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
-            "type__name": "Huawei | Quidway S5700 | FAN"
+            "name": "3",
+            "type__name": "Huawei | Quidway | FAN"
         },
         {
             "description": "Management Console",
@@ -49,21 +49,22 @@
             "description": "PSU slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "power1",
-            "type__name": "Huawei | Quidway S5700 | POWER"
+            "name": "4",
+            "type__name": "Huawei | Quidway S5300 | PSU"
         },
         {
             "description": "PSU slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "power2",
-            "type__name": "Huawei | Quidway S5700 | POWER"
+            "name": "5",
+            "type__name": "Huawei | Quidway S5300 | PSU"
         },
         {
             "description": "GigabitEthernet X/0/1 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/1",
+            "internal_name": "Port_1",
+            "name": "GigabitEthernet0/0/1",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -71,7 +72,8 @@
             "description": "GigabitEthernet X/0/2 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/2",
+            "internal_name": "Port_2",
+            "name": "GigabitEthernet0/0/2",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -79,7 +81,8 @@
             "description": "GigabitEthernet X/0/3 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/3",
+            "internal_name": "Port_3",
+            "name": "GigabitEthernet0/0/3",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -87,7 +90,8 @@
             "description": "GigabitEthernet X/0/4 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/4",
+            "internal_name": "Port_4",
+            "name": "GigabitEthernet0/0/4",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -95,7 +99,8 @@
             "description": "GigabitEthernet X/0/5 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/5",
+            "internal_name": "Port_5",
+            "name": "GigabitEthernet0/0/5",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -103,7 +108,8 @@
             "description": "GigabitEthernet X/0/6 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/6",
+            "internal_name": "Port_6",
+            "name": "GigabitEthernet0/0/6",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -111,7 +117,8 @@
             "description": "GigabitEthernet X/0/7 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/7",
+            "internal_name": "Port_7",
+            "name": "GigabitEthernet0/0/7",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -119,7 +126,8 @@
             "description": "GigabitEthernet X/0/8 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/8",
+            "internal_name": "Port_8",
+            "name": "GigabitEthernet0/0/8",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -127,7 +135,8 @@
             "description": "GigabitEthernet X/0/9 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/9",
+            "internal_name": "Port_9",
+            "name": "GigabitEthernet0/0/9",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -135,7 +144,8 @@
             "description": "GigabitEthernet X/0/10 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/10",
+            "internal_name": "Port_10",
+            "name": "GigabitEthernet0/0/10",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -143,7 +153,8 @@
             "description": "GigabitEthernet X/0/11 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/11",
+            "internal_name": "Port_11",
+            "name": "GigabitEthernet0/0/11",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -151,7 +162,8 @@
             "description": "GigabitEthernet X/0/12 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/12",
+            "internal_name": "Port_12",
+            "name": "GigabitEthernet0/0/12",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -159,7 +171,8 @@
             "description": "GigabitEthernet X/0/13 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/13",
+            "internal_name": "Port_13",
+            "name": "GigabitEthernet0/0/13",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -167,7 +180,8 @@
             "description": "GigabitEthernet X/0/14 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/14",
+            "internal_name": "Port_14",
+            "name": "GigabitEthernet0/0/14",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -175,7 +189,8 @@
             "description": "GigabitEthernet X/0/15 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/15",
+            "internal_name": "Port_15",
+            "name": "GigabitEthernet0/0/15",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -183,7 +198,8 @@
             "description": "GigabitEthernet X/0/16 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/16",
+            "internal_name": "Port_16",
+            "name": "GigabitEthernet0/0/16",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -191,7 +207,8 @@
             "description": "GigabitEthernet X/0/17 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/17",
+            "internal_name": "Port_17",
+            "name": "GigabitEthernet0/0/17",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -199,7 +216,8 @@
             "description": "GigabitEthernet X/0/18 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/18",
+            "internal_name": "Port_18",
+            "name": "GigabitEthernet0/0/18",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -207,7 +225,8 @@
             "description": "GigabitEthernet X/0/19 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/19",
+            "internal_name": "Port_19",
+            "name": "GigabitEthernet0/0/19",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -215,79 +234,116 @@
             "description": "GigabitEthernet X/0/20 interface",
             "direction": "i",
             "gender": "f",
-            "name": "GigabitEthernetX/0/20",
+            "internal_name": "Port_20",
+            "name": "GigabitEthernet0/0/20",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet X/0/21 interface (TX)",
             "direction": "s",
+            "gender": "s",
+            "name": "GigabitEthernet0/0/21",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet X/0/21 interface (TX)",
+            "direction": "s",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/21",
-            "name": "GigabitEthernetX/0/21",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "GigabitEthernet0/0/21_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet X/0/21 interface (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/21",
-            "name": "GigabitEthernetX/0/21 SFP",
+            "internal_name": "Port_21",
+            "name": "GigabitEthernet0/0/21_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet X/0/22 interface (TX)",
             "direction": "s",
+            "gender": "s",
+            "name": "GigabitEthernet0/0/22",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet X/0/22 interface (TX)",
+            "direction": "s",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/22",
-            "name": "GigabitEthernetX/0/22",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "GigabitEthernet0/0/22_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet X/0/22 interface (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/22",
-            "name": "GigabitEthernetX/0/22 SFP",
+            "internal_name": "Port_22",
+            "name": "GigabitEthernet0/0/22_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet X/0/23 interface (TX)",
             "direction": "s",
+            "gender": "s",
+            "name": "GigabitEthernet0/0/23",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet X/0/23 interface (TX)",
+            "direction": "s",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/23",
-            "name": "GigabitEthernetX/0/23",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "GigabitEthernet0/0/23_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet X/0/23 interface (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/23",
-            "name": "GigabitEthernetX/0/23 SFP",
+            "internal_name": "Port_23",
+            "name": "GigabitEthernet0/0/23_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet X/0/24 interface (TX)",
             "direction": "s",
+            "gender": "s",
+            "name": "GigabitEthernet0/0/24",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "GigabitEthernet X/0/24 interface (TX)",
+            "direction": "s",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/24",
-            "name": "GigabitEthernetX/0/24",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "GigabitEthernet0/0/24_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "GigabitEthernet X/0/24 interface (SFP)",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/24",
-            "name": "GigabitEthernetX/0/24 SFP",
+            "internal_name": "Port_24",
+            "name": "GigabitEthernet0/0/24_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
@@ -296,13 +352,13 @@
         "asset": {
             "part_no": ["ES5Z328CM0"]
         },
-        "management": {
-            "managed": true
-        },
         "dimensions": {
             "depth": 220,
-            "height": 43.6,
+            "height": 43,
             "width": 442
+        },
+        "management": {
+            "managed": true
         },
         "power": {
             "power": 60.0

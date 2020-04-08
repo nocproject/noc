@@ -379,7 +379,7 @@
             "description": "Ethernet X/0/45 interface",
             "direction": "s",
             "gender": "f",
-            "name": "EthernetX/0/21",
+            "name": "EthernetX/0/45",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -387,7 +387,7 @@
             "description": "Ethernet X/0/46 interface",
             "direction": "s",
             "gender": "f",
-            "name": "EthernetX/0/22",
+            "name": "EthernetX/0/46",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -411,7 +411,6 @@
             "description": "GigabitEthernet X/0/1 interface",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/1",
             "name": "GigabitEthernetX/0/1",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -420,7 +419,6 @@
             "description": "GigabitEthernet X/0/2 interface",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/2",
             "name": "GigabitEthernetX/0/2",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -429,7 +427,6 @@
             "description": "GigabitEthernet X/0/3 interface",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/3",
             "name": "GigabitEthernetX/0/3",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -438,7 +435,6 @@
             "description": "GigabitEthernet X/0/4 interface",
             "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/4",
             "name": "GigabitEthernetX/0/4",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -448,13 +444,13 @@
         "asset": {
             "part_no": ["ES3Z252AM0"]
         },
-        "management": {
-            "managed": true
-        },
         "dimensions": {
             "depth": 220,
-            "height": 43.6,
+            "height": 43,
             "width": 442
+        },
+        "management": {
+            "managed": true
         },
         "power": {
             "power": 38.0
