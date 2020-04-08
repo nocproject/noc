@@ -256,7 +256,7 @@ class Script(BaseScript):
                     n = s[1]
                     sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1 :]
                     if int(sifindex) < 3000:
-                        sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
+                        sm = str(self.snmp.get(mib["IF-MIB::ifPhysAddress", int(sifindex)]))
                         smac = MACAddressParameter().clean(sm)
                         if n.startswith("oob"):
                             continue
