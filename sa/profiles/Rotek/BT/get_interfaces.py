@@ -9,6 +9,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -23,10 +24,10 @@ class Script(BaseScript):
             try:
                 for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
                     ifindex = v[1]
-                    name = self.snmp.get("1.3.6.1.2.1.2.2.1.2." + str(ifindex))
-                    mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6." + str(ifindex))
-                    a_status = self.snmp.get("1.3.6.1.2.1.2.2.1.7." + str(ifindex))
-                    o_status = self.snmp.get("1.3.6.1.2.1.2.2.1.8." + str(ifindex))
+                    name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
+                    mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
+                    a_status = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
+                    o_status = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
                     if a_status == 7:
                         admin_status = True
                     else:

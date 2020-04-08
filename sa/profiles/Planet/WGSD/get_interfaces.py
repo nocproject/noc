@@ -14,6 +14,7 @@ from noc.core.text import parse_table
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -82,7 +83,7 @@ class Script(BaseScript):
                     n = s[1]
                     sifindex = s[0][len("1.3.6.1.2.1.31.1.1.1.1") + 1 :]
                     if int(sifindex) < 1000:
-                        sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
+                        sm = str(self.snmp.get(mib["IF-MIB::ifPhysAddress", int(sifindex)]))
                         mtu = self.snmp.get("1.3.6.1.2.1.2.2.1.4.%s" % sifindex)
                         smac = MACAddressParameter().clean(sm)
                     else:
