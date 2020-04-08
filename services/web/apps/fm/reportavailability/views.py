@@ -19,6 +19,7 @@ from mongoengine.queryset.visitor import Q
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.mongo.connection import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.profile import Profile
@@ -41,6 +42,11 @@ class ReportForm(forms.Form):
 
     from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=True)
     to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
+    adm_domain = forms.ModelChoiceField(
+        label=_("Administrative Domain"),
+        required=False,
+        queryset=AdministrativeDomain.objects.order_by("name"),
+    )
     skip_avail = forms.BooleanField(label=_("Skip full available"), required=False)
     skip_zero_avail = forms.BooleanField(label=_("Skip zero available"), required=False)
     filter_zero_access = forms.BooleanField(label=_("Skip zero access port"), required=False)
@@ -112,6 +118,7 @@ class ReportAvailabilityApplication(SimpleReport):
         interval=1,
         from_date=None,
         to_date=None,
+        adm_domain=None,
         skip_avail=False,
         skip_zero_avail=False,
         filter_zero_access=False,
@@ -142,6 +149,8 @@ class ReportAvailabilityApplication(SimpleReport):
 
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
+        if adm_domain:
+            mos = mos.filter(administrative_domain__in=adm_domain.get_nested())
         if skip_avail:
             mos = mos.filter(id__in=list(a))
         mos_id = list(mos.order_by("id").values_list("id", flat=True))
