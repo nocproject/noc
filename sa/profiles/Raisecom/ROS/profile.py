@@ -36,6 +36,7 @@ class Profile(BaseProfile):
         "contexts": [["interface", ANY, ANY]],
         "end_of_context": "!",
     }
+    collators = ["noc.core.confdb.collator.ifname.IfNameCollator"]
 
     matchers = {
         "is_iscom2624g": {"platform": {"$regex": "ISCOM26(?:24|08)G"}},

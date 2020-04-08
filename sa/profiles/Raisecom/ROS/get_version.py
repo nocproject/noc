@@ -112,6 +112,8 @@ class Script(BaseScript):
 
     rx_ver_rotek = re.compile(r"Rotek Operating System Software\nCopyright .+NPK Rotek")
 
+    rx_ver_qtech = re.compile(r"QTECH Universal Software Platform")
+
     def parse_version(self, c):
         r = {}
         if "Support ipv6" in c:
@@ -149,8 +151,11 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.cli("show version", cached=True)
         vendor = "Raisecom"
-        if self.rx_ver_rotek.match(v):
+        if self.rx_ver_rotek.search(v):
             vendor = "Rotek"
+        elif self.rx_ver_qtech.search(v):
+            # Universal Operating System ^_^
+            vendor = "Qtech"
         r = self.parse_version(v)
         if vendor == "Rotek" and "compiled" in r:
             r["version"] = "%s (%s)" % (r["version"], r["compiled"].strip())
