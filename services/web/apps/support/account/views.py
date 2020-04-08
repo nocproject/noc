@@ -74,7 +74,7 @@ class AccountApplication(ExtApplication):
         country=None,
         language=None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         industries = [k[4:] for k in kwargs if k.startswith("ind_") and kwargs[k]]
         c = CPClient()

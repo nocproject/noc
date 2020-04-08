@@ -665,7 +665,7 @@ class DiscoveryCheck(object):
             path=path,
             message=message,
             fatal=fatal,
-            **kwargs
+            **kwargs,
         )
 
     def set_artefact(self, name, value=None):

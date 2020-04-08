@@ -7,7 +7,7 @@ stages:
 
 check labels:
   stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
+  image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA)
     - python ./scripts/check-labels.py --junit-report=build/reports/labels-junit.xml $FLIST
@@ -24,7 +24,7 @@ check labels:
 
 flake8:
   stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
+  image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
     - set -x
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
@@ -53,7 +53,7 @@ flake8:
 
 black:
   stage: Lint
-  image: registry.getnoc.com/infrastructure/black:master
+  image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
     - set -x
     - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
@@ -79,7 +79,7 @@ black:
 
 mypy:
   stage: Lint
-  image: registry.getnoc.com/infrastructure/mypy:master
+  image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
     - set -x
     - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
@@ -133,7 +133,7 @@ prettier:
 
 pylint:
   stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
+  image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
     - set -x
     - FLIST=$(git --no-pager diff --name-only $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)

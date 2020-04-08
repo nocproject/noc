@@ -323,7 +323,7 @@ class Command(BaseCommand):
         access_preference="SC",
         arguments=None,
         *args,
-        **options
+        **options,
     ):
         from noc.core.script.loader import loader
 
@@ -393,7 +393,7 @@ class Command(BaseCommand):
         test_path=None,
         build=False,
         *args,
-        **options
+        **options,
     ):
         beef_storage = self.get_storage(storage)
         # Load beef

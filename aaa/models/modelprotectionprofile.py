@@ -87,7 +87,7 @@ class ModelProtectionProfile(Document):
         _refs=None,
         save_condition=None,
         signal_kwargs=None,
-        **kwargs
+        **kwargs,
     ):
         if "field_access" in getattr(self, "_changed_fields", []):
             # Check unique

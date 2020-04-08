@@ -51,7 +51,7 @@ class Interface(BaseFact):
         mac=None,
         default_name=None,
         aggregated_interface=None,
-        **kwargs
+        **kwargs,
     ):
         super(Interface, self).__init__()
         self.name = name

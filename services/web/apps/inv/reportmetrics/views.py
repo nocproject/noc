@@ -106,7 +106,7 @@ class ReportMetricsDetailApplication(ExtApplication):
         columns=None,
         o_format=None,
         enable_autowidth=False,
-        **kwargs
+        **kwargs,
     ):
         def translate_row(row, cmap):
             return [row[i] for i in cmap]

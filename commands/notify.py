@@ -46,7 +46,7 @@ class Command(BaseCommand):
         debug=False,
         dry_run=False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         groups = []
         for ng in notification_group:

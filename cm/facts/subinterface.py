@@ -81,7 +81,7 @@ class SubInterface(BaseFact):
         traffic_control_unicast=None,
         traffic_control_broadcast=None,
         traffic_control_multicast=None,
-        **kwargs
+        **kwargs,
     ):
         super(SubInterface, self).__init__()
         self.name = name

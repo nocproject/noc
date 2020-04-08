@@ -427,7 +427,7 @@ class Script(BaseScript):
             cli_handler="execute_platform_cli",
             snmp_handler="execute_platform_snmp",
             fallback_handler="execute_platform",
-            **{"caps": caps}
+            **{"caps": caps},
         )
         return caps
 

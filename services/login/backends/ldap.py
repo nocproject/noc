@@ -67,7 +67,7 @@ class LdapBackend(BaseAuthBackend):
                 server_pool,
                 **self.get_connection_kwargs(
                     ldap_domain, ldap_domain.bind_user, ldap_domain.bind_password
-                )
+                ),
             )
             if not connect.bind():
                 self.logger.error("Cannot bind as %s to search groups", ldap_domain.bind_user)
