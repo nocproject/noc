@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # tgsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -57,10 +57,7 @@ class TgSenderService(Service):
         # proxy_addres = config.proxy.https_proxy  # not used.
         sendMessage = {
             "chat_id": address,
-            "text": "*"
-            + self.escape_markdown(subject.encode("utf8"))
-            + "*\n"
-            + self.escape_markdown(body.encode("utf8")),
+            "text": "*" + self.escape_markdown(subject) + "*\n" + self.escape_markdown(body),
             "parse_mode": "Markdown",
         }
         time.sleep(config.tgsender.retry_timeout)
