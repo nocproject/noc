@@ -61,7 +61,10 @@ class ReportObjectIfacesStatusStat(BaseReportColumn):
         value = (
             get_db()["noc.interfaces"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-            .aggregate([{"$match": match}, {"$group": {"_id": group, "count": {"$sum": 1}}}])
+            .aggregate(
+                [{"$match": match}, {"$group": {"_id": group, "count": {"$sum": 1}}}],
+                {"allowDiskUse": True},
+            )
         )
         r = defaultdict(lambda: [""] * len(self.ATTRS))
         # @todo Fix Down
