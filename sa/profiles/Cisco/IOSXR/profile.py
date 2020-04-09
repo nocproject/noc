@@ -3,7 +3,7 @@
 # Vendor: Cisco
 # OS:     IOS XR
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,6 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
-    default_parser = "noc.cm.parsers.Cisco.IOSXR.base.BaseIOSXRParser"
 
     rx_interface_name = re.compile(
         r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(?:/\d+)*(?:\.\d+)?(?:\.ip\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",

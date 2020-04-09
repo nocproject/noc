@@ -3,7 +3,7 @@
 # Vendor: D-Link
 # OS:     DxS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,7 +45,6 @@ class Profile(BaseProfile):
 
     config_tokenizer = "line"
     config_tokenizer_settings = {"line_comment": "#"}
-    default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
 
     matchers = {
         # LLDP neighbor information should replace port_id to remote_port_description

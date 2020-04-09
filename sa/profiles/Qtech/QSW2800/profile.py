@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: Qtech
-# OS:     QSW2800
+# Qtech.QSW2800 Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,8 +50,6 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
         # ("hints", "protocols", "loop-detect", "status", False),
     ]
-
-    default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
     matchers = {
         "is_new_metric": {"caps": {"$in": ["Qtech | OID | Memory Usage 11"]}},

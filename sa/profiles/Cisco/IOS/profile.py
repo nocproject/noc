@@ -52,7 +52,6 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
         # ("hints", "protocols", "loop-detect", "status", False),
     ]
-    default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
     rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
 
     matchers = {
