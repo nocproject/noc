@@ -63,7 +63,7 @@ class ReportObjectIfacesStatusStat(BaseReportColumn):
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .aggregate(
                 [{"$match": match}, {"$group": {"_id": group, "count": {"$sum": 1}}}],
-                {"allowDiskUse": True},
+                allowDiskUse=True,
             )
         )
         r = defaultdict(lambda: [""] * len(self.ATTRS))
