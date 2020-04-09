@@ -54,7 +54,7 @@ class Script(BaseScript):
             raise NotImplementedError
         return {
             "vendor": "Alstec",
-            "platform": platform,
+            "platform": self.profile.normalize_platform(platform),
             "version": version,
             "attributes": {"Serial Number": serial},
         }
@@ -65,7 +65,7 @@ class Script(BaseScript):
         if match:
             r = {
                 "vendor": "Alstec",
-                "platform": match.group("platform"),
+                "platform": self.profile.normalize_platform(match.group("platform")),
                 "version": match.group("version"),
                 "attributes": {
                     "Boot PROM": match.group("bootprom"),
@@ -80,7 +80,9 @@ class Script(BaseScript):
             v = self.cli("show hardware", cached=True)
             r = {
                 "vendor": "Alstec",
-                "platform": self.rx_platform.search(v).group("platform"),
+                "platform": self.profile.normalize_platform(
+                    self.rx_platform.search(v).group("platform")
+                ),
                 "version": self.rx_version.search(v).group("version"),
             }
             match = self.rx_serial.search(v)

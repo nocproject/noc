@@ -7,6 +7,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.core.confdb.syntax.patterns import ANY
@@ -57,3 +60,25 @@ class Profile(BaseProfile):
                 el1, el2 = line.split(".....", 1)
                 r[el1.strip(".").strip()] = el2.strip(".").strip()
         return r
+
+    rx_bad_platform = re.compile(r"^(ALS)(\d+(?:LVT|P))$")
+
+    def normalize_platform(self, name):
+        """
+        Some equal devices but different platform name:
+         ALS-24100LVT, ALS24100LVT, ALS24110LVT, ALS-24110LVT
+        :param name:
+        :type name: str
+        :return:
+        :rtype: str
+
+        >>> Profile().normalize_platform("ALS24100LVT")
+        'ALS-24100LVT'
+        >>> Profile().normalize_platform("ALS-24100LVT")
+        'ALS-24100LVT'
+        >>> Profile().normalize_platform("ALS24110LVT")
+        'ALS-24110LVT'
+        """
+        if self.rx_bad_platform.match(name):
+            name = "%s-%s" % self.rx_bad_platform.match(name).groups()
+        return name
