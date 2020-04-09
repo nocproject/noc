@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # noc.core.crypto test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 import pytest
-import six
 
 # NOC modules
 from noc.core.crypto import gen_salt, md5crypt
@@ -17,7 +16,7 @@ from noc.core.crypto import gen_salt, md5crypt
 @pytest.mark.parametrize("raw, value", [(4, 4), (10, 10)])
 def test_salt_length(raw, value):
     salt = gen_salt(raw)
-    assert isinstance(salt, six.binary_type)
+    assert isinstance(salt, bytes)
     assert len(salt) == value
 
 

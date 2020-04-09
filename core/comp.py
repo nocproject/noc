@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from typing import List
 
 DEFAULT_ENCODING = "utf-8"
@@ -17,22 +16,22 @@ def smart_bytes(s, encoding=DEFAULT_ENCODING):
     """
     Convert strings to bytes when necessary
     """
-    if isinstance(s, six.binary_type):
+    if isinstance(s, bytes):
         return s
-    if isinstance(s, six.text_type):
+    if isinstance(s, str):
         return s.encode(encoding)
-    return six.text_type(s).encode(encoding)
+    return str(s).encode(encoding)
 
 
 def smart_text(s, errors="strict", encoding=DEFAULT_ENCODING):
     """
     Convert bytes to string when necessary
     """
-    if isinstance(s, six.text_type):
+    if isinstance(s, str):
         return s
-    if isinstance(s, six.binary_type):
+    if isinstance(s, bytes):
         return s.decode(encoding, errors=errors)
-    return six.text_type(s)
+    return str(s)
 
 
 def bord(x):

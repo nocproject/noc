@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # DataStream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ import ujson
 import bson
 import bson.errors
 import pymongo
-import six
 import dateutil.parser
 import re
 
@@ -181,7 +180,7 @@ class DataStream(object):
         if isinstance(change_id, bson.ObjectId):
             return change_id
         # String with timestamp or ObjectId
-        if not isinstance(change_id, six.string_types):
+        if not isinstance(change_id, str):
             raise ValueError("Invalid change_id")
         if cls.rx_ts.search(change_id):
             # Timestamp
@@ -288,7 +287,7 @@ class DataStream(object):
         :param expr: filter expression in form name(arg1, .., argN)
         :return: (name, arg1, argN)
         """
-        if not isinstance(expr, six.string_types):
+        if not isinstance(expr, str):
             raise ValueError("Expression must be string")
         i1 = expr.find("(")
         if i1 < 0:

@@ -59,7 +59,7 @@ class MIBAPI(API):
         return {"status": False, "msg": "Not found", "code": ERR_MIB_NOT_FOUND}
 
     def guess_encoding(self, s, encodings=None):
-        # type: (six.binary_type) -> six.text_type
+        # type: (bytes) -> str
         """
         Try to guess encoding
         :param s:
@@ -87,7 +87,7 @@ class MIBAPI(API):
         if not config.path.smilint or not os.path.exists(config.path.smidump):
             return {"status": False, "msg": "smidump is missed", "error": ERR_MIB_TOOL_MISSED}
         # Normalize input
-        if isinstance(data, six.binary_type):
+        if isinstance(data, bytes):
             data = self.guess_encoding(data)
         # Put data to temporary file
         with temporary_file(data) as tmp_path:

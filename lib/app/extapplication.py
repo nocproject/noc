@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ExtApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import os
 # Third-party modules
 from django.http import HttpResponse
 import ujson
-import six
 
 # NOC modules
 from noc.main.models.favorites import Favorites
@@ -100,7 +99,7 @@ class ExtApplication(Application):
         return dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.POST.lists())
 
     def response(self, content="", status=200):
-        if not isinstance(content, six.string_types):
+        if not isinstance(content, str):
             return HttpResponse(
                 ujson.dumps(content), content_type="text/json; charset=utf-8", status=status
             )

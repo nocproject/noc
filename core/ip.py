@@ -80,7 +80,7 @@ class IP(object):
         """
         "other in self"
         """
-        if isinstance(other, six.string_types):
+        if isinstance(other, str):
             other = IP.prefix(other)
         if self.afi != other.afi:
             raise ValueError("Mismatched address families")
@@ -123,7 +123,7 @@ class IP(object):
         :return: Generator of continuing addresses
         :rtype: Generator of IP instances
         """
-        if until and isinstance(until, six.string_types):
+        if until and isinstance(until, str):
             until = self.__class__(until)
         if until:
             until += 1
@@ -166,7 +166,7 @@ class IP(object):
         db = PrefixDB()
         n = 0
         for p in prefixes:
-            if isinstance(p, six.string_types):
+            if isinstance(p, str):
                 p = self.__class__(p)
             db[p] = True
             n += 1
@@ -208,7 +208,7 @@ class IP(object):
         # IP instances
         addresses = set(
             a
-            for a in [IP.prefix(a) if isinstance(a, six.string_types) else a for a in addresses]
+            for a in [IP.prefix(a) if isinstance(a, str) else a for a in addresses]
             if self.contains(a)
         )
         addresses = sorted(addresses)
@@ -519,9 +519,9 @@ class IPv4(IP):
         :return:
         """
         r = []
-        if isinstance(first, six.string_types):
+        if isinstance(first, str):
             first = IPv4(first)
-        if isinstance(last, six.string_types):
+        if isinstance(last, str):
             last = IPv4(last)
         while first <= last:
             d = first.d

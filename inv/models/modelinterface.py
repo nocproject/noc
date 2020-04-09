@@ -82,7 +82,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
         return int(value)
 
     def clean_float(self, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return float(value.replace(",", "."))
         else:
             return float(value)
@@ -171,7 +171,7 @@ class ModelInterface(Document):
                 if a.name in v:
                     vv = v[a.name]
                     if a.type == "strlist":
-                        if isinstance(vv, six.string_types):
+                        if isinstance(vv, str):
                             vv = [vv]
                         r = set()
                         for x in vv:

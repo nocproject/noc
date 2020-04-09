@@ -306,7 +306,7 @@ class ObjectModel(Document):
             )
             if part_no:
                 vendor = self.vendor
-                if isinstance(vendor, six.string_types):
+                if isinstance(vendor, str):
                     vendor = Vendor.get_by_id(vendor)
                 UnknownModel.clear_unknown(vendor.code, part_no)
 

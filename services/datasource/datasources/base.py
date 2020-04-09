@@ -2,12 +2,12 @@
 # ----------------------------------------------------------------------
 # BaseDatasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
 import logging
-import six
 
 # NOC modules
 from noc.main.models.datasourcecache import DataSourceCache
@@ -29,7 +29,7 @@ class BaseDataSource(object):
         if "\n" in s or "\\" in s or s.count("\t") >= len(row):
             metrics["error", ("type", "rogue_chars")] += 1
             self.logger.error("Rogue chars in row %s", row)
-            row = [ch_escape(x) if isinstance(x, six.string_types) else x for x in list(row)]
+            row = [ch_escape(x) if isinstance(x, str) else x for x in list(row)]
         return row
 
     def get(self):

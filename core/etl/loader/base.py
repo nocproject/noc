@@ -498,7 +498,7 @@ class BaseLoader(object):
         if value:
             if isinstance(value, str):
                 return smart_text(value)
-            elif not isinstance(value, six.string_types):
+            elif not isinstance(value, str):
                 return str(value)
             else:
                 return value

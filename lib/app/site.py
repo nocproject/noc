@@ -53,7 +53,7 @@ class URL(object):
         if method is None:
             self.method = HTTP_METHODS
         else:
-            if isinstance(method, six.string_types):
+            if isinstance(method, str):
                 method = [method]
             if not isinstance(method, (list, tuple)):
                 raise TypeError("Invalid type for 'method'")
@@ -118,7 +118,7 @@ class Site(object):
         """
         Generator returning view's URL objects
         """
-        if isinstance(view.url, six.string_types):  # view.url is string type
+        if isinstance(view.url, str):  # view.url is string type
             yield URL(
                 view.url, name=getattr(view, "url_name", None), method=getattr(view, "method", None)
             )
@@ -272,7 +272,7 @@ class Site(object):
         # Split to parts
         root = self.menu_roots[app.module]
         path = [app.module]
-        if isinstance(menu, six.string_types):
+        if isinstance(menu, str):
             parts = menu.split("|")
         else:
             parts = menu
@@ -493,7 +493,7 @@ class Site(object):
 
     @classmethod
     def is_json(cls, content_type):
-        # type: (six.text_type) -> bool
+        # type: (str) -> bool
         """
         Check if content-type is JSON
         :param content_type:

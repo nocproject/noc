@@ -109,7 +109,7 @@ def metrics(
         f.mt_volatile = volatile
         return f
 
-    if isinstance(metrics, six.string_types):
+    if isinstance(metrics, str):
         metrics = [metrics]
     assert isinstance(metrics, list), "metrics must be string or list"
     return wrapper
@@ -413,7 +413,7 @@ class Script(BaseScript):
         # Build list of oids
         oids = set()
         for o in self.snmp_batch:
-            if isinstance(o, six.string_types):
+            if isinstance(o, str):
                 oids.add(o)
             else:
                 oids.update(o)
@@ -427,7 +427,7 @@ class Script(BaseScript):
         for oid in self.snmp_batch:
             ts = self.get_ts()
             for batch in self.snmp_batch[oid]:
-                if isinstance(oid, six.string_types):
+                if isinstance(oid, str):
                     if oid in results:
                         v = results[oid]
                         if v is None:

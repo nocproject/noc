@@ -134,9 +134,9 @@ class BooleanParameter(Parameter):
             return self.default
         if isinstance(value, bool):
             return value
-        if isinstance(value, six.integer_types):
+        if isinstance(value, int):
             return value != 0
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return value.lower() in ("true", "t", "yes", "y")
         self.raise_error(value)
 
@@ -221,7 +221,7 @@ class InstanceOfParameter(Parameter):
     def __init__(self, cls, required=True, default=None):
         super(InstanceOfParameter, self).__init__(required=required, default=default)
         self.cls = cls
-        if isinstance(cls, six.string_types):
+        if isinstance(cls, str):
             self.is_valid = self.is_valid_classname
         else:
             self.is_valid = self.is_valid_instance
@@ -254,7 +254,7 @@ class SubclassOfParameter(Parameter):
     def __init__(self, cls, required=True, default=None):
         super(SubclassOfParameter, self).__init__(required=required, default=default)
         self.cls = cls
-        if isinstance(cls, six.string_types):
+        if isinstance(cls, str):
             self.is_valid = self.is_valid_classname
         else:
             self.is_valid = self.is_valid_class
@@ -463,7 +463,7 @@ class DateTimeParameter(StringParameter):
     def form_clean(self, value):
         if value is None and self.default is not None:
             value = self.default
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             if "." in value:
                 dt, _, us = value.partition(".")
                 dt = datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
@@ -494,7 +494,7 @@ class DateTimeShiftParameter(StringParameter):
     def form_clean(self, value):
         if value is None and self.default is not None:
             value = self.default
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             if "." in value:
                 dt, _, us = value.partition(".")
                 dt = datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
@@ -679,7 +679,7 @@ class VLANIDMapParameter(StringParameter):
     """
 
     def clean(self, value):
-        if isinstance(value, six.string_types) and not value.strip():
+        if isinstance(value, str) and not value.strip():
             return ""
         vp = VLANIDParameter()
         try:
@@ -700,7 +700,7 @@ class MACAddressParameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = super(MACAddressParameter, self).clean(value)
         if not self.accept_bin and len(value) <= 6:
             self.raise_error(value)
@@ -814,7 +814,7 @@ class GeoPointParameter(Parameter):
                 return [float(x) for x in value]
             except ValueError:
                 self.raise_error(value)
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             v = value.replace(" ", "")
             if not v or "," not in v:
                 self.raise_error(value)
@@ -916,7 +916,7 @@ class TagsParameter(Parameter):
         if type(value) in (list, tuple):
             v = [smart_text(v).strip() for v in value]
             return [x for x in v if x]
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             v = [smart_text(x.strip()) for x in value.split(",")]
             return [x for x in v if x]
         else:
@@ -927,9 +927,9 @@ class ColorParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if isinstance(value, six.integer_types):
+        if isinstance(value, int):
             return value
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             if value.startswith("#"):
                 value = value[1:]
             if len(value) == 6:

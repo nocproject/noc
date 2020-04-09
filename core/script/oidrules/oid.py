@@ -2,16 +2,13 @@
 # ----------------------------------------------------------------------
 # OIDRule base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
 import sys
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.mib import mib
@@ -31,7 +28,7 @@ class OIDRule(object):
 
     def __init__(self, oid, type=None, scale=1, path=None):
         self.oid = oid
-        self.is_complex = not isinstance(oid, six.string_types)
+        self.is_complex = not isinstance(oid, str)
         self.type = type or self.default_type
         self.scale = self._convert_scale(scale)
         self.path = path or []
@@ -42,7 +39,7 @@ class OIDRule(object):
         :param scale:
         :return:
         """
-        if isinstance(scale, six.string_types):
+        if isinstance(scale, str):
             return eval(scale, self._scale_locals)
         return scale
 

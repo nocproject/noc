@@ -53,12 +53,12 @@ class SystemTemplate(NOCModel):
         # Fix users
         u_list = []
         for u in users:
-            if isinstance(u, six.integer_types):
+            if isinstance(u, int):
                 try:
                     u_list += [User.objects.get(id=u)]
                 except User.DoesNotExist:
                     continue
-            elif isinstance(u, six.string_types):
+            elif isinstance(u, str):
                 u_list += [User.objects.get(username=u)]
             elif isinstance(u, User):
                 u_list += [u]

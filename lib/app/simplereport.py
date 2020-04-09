@@ -163,7 +163,7 @@ class TextSection(ReportSection):
         """
         if not self.text:
             return []
-        if isinstance(self.text, six.string_types):
+        if isinstance(self.text, str):
             return [self.text]
         else:
             return self.text
@@ -199,7 +199,7 @@ for suffix in ["KB", "MB", "GB", "TB", "PB"]:
     dec *= 1024
 
 
-class SafeString(six.text_type):
+class SafeString(str):
     """
     Do not perform HTML quoting
     """
@@ -235,12 +235,8 @@ class TableColumn(ReportNode):
             if align
             else None
         )
-        self.format = (
-            getattr(self, "f_%s" % format) if isinstance(format, six.string_types) else format
-        )
-        self.total = (
-            getattr(self, "ft_%s" % total) if isinstance(total, six.string_types) else total
-        )
+        self.format = getattr(self, "f_%s" % format) if isinstance(format, str) else format
+        self.total = getattr(self, "ft_%s" % total) if isinstance(total, str) else total
         self.total_label = total_label
         self.total_data = []
         self.subtotal_data = []
@@ -498,7 +494,7 @@ class TableSection(ReportSection):
         super(ReportSection, self).__init__(name=name)
         self.columns = []
         for c in columns:
-            if isinstance(c, six.string_types) or hasattr(c, "__unicode__"):
+            if isinstance(c, str) or hasattr(c, "__unicode__"):
                 self.columns += [TableColumn(smart_text(c))]
             else:
                 self.columns += [c]

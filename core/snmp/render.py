@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from typing import Optional, Callable
 
 # NOC modules
@@ -15,7 +14,7 @@ from noc.core.comp import smart_text, bord
 
 
 def render_bin(oid, value):
-    # type: (six.text_type, six.binary_type) -> six.binary_type
+    # type: (str, bytes) -> bytes
     """
     Render raw binary
     :param oid:
@@ -26,7 +25,7 @@ def render_bin(oid, value):
 
 
 def render_utf8(oid, value):
-    # type: (six.text_type, six.binary_type) -> six.text_type
+    # type: (str, bytes) -> str
     """
     Render as UTF-8 text. Ignore errors
     :param oid:
@@ -37,7 +36,7 @@ def render_utf8(oid, value):
 
 
 def get_text_renderer(encoding="utf-8"):
-    # type: (Optional[six.text_type]) -> Callable[[six.text_type, six.binary_type], six.text_type]
+    # type: (Optional[str]) -> Callable[[str, bytes], str]
     """
     Return text renderer for arbitrary encoding
     :param encoding:
@@ -51,7 +50,7 @@ def get_text_renderer(encoding="utf-8"):
 
 
 def render_empty(oid, value):
-    # type: (six.text_type, six.binary_type) -> six.text_type
+    # type: (str, bytes) -> str
     """
     Always render empty string
     :param oid:
@@ -62,7 +61,7 @@ def render_empty(oid, value):
 
 
 def render_mac(oid, value):
-    # type: (six.text_type, six.binary_type) -> six.text_type
+    # type: (str, bytes) -> str
     """
     Render 6 octets as MAC address. Render empty string on length mismatch
     :param oid:
@@ -75,7 +74,7 @@ def render_mac(oid, value):
 
 
 def get_string_renderer(v):
-    # type: (six.text_type) -> Callable[[six.text_type, six.binary_type], six.text_type]
+    # type: (str) -> Callable[[str, bytes], str]
     """
     Always renders arbitrary string
     :param v:

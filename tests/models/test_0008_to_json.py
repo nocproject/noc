@@ -8,7 +8,6 @@
 
 # Third-party modules
 import pytest
-import six
 
 # NOC modules
 from .util import get_documents
@@ -21,4 +20,4 @@ def test_document_to_json(model):
     for o in model.objects.all():
         j = o.to_json()
         assert j
-        assert isinstance(j, six.string_types)
+        assert isinstance(j, str)

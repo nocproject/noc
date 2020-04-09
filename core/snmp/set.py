@@ -2,15 +2,12 @@
 # ----------------------------------------------------------------------
 # SNMP SET PDU generator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import random
-
-# Third-party modules
-import six
 
 # NOC modules
 from .ber import BEREncoder
@@ -36,9 +33,9 @@ def set_pdu(community, varbinds, request_id=None, version=SNMP_v2c):
     for oid, value in varbinds:
         if value is None:
             v = e.encode_null()
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             v = e.encode_octet_string(value)
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             v = e.encode_int(value)
         else:
             raise ValueError("Unknown varbind type")

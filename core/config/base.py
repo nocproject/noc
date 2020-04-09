@@ -99,7 +99,7 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
     def set_parameter(self, path, value):
         if value is None:
             return
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = self.expand(value)
         self._params[path].set_value(value)
 

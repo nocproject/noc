@@ -15,7 +15,6 @@ import operator
 import re
 
 # Third-party modules
-import six
 import cachetools
 
 # NOC modules
@@ -338,7 +337,7 @@ class AssetCheck(DiscoveryCheck):
                 for t_type, t_object, t_ctx in self.iter_object(
                     i, scope, context.get(scope), r.target_type, fwd=fwd
                 ):
-                    if isinstance(t_object, six.string_types):
+                    if isinstance(t_object, str):
                         continue
                     if not t_n or t_n == t_ctx["N"]:
                         # Check target object has proper connection
@@ -347,7 +346,7 @@ class AssetCheck(DiscoveryCheck):
                             continue
                         # Check source object has proper connection
                         m_c = self.expand_context(r.match_connection, context)
-                        if isinstance(object, six.string_types):
+                        if isinstance(object, str):
                             # Resolving unknown object
                             o = self.resolve_object(object, m_c, t_object, t_c, serial)
                             if not o:

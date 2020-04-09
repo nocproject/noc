@@ -367,8 +367,8 @@ class ExtModelApplication(ExtApplication):
                 v = f._get_val_from_obj(o)
                 if (
                     v is not None
-                    and not isinstance(v, six.string_types)
-                    and not isinstance(v, six.integer_types)
+                    and not isinstance(v, str)
+                    and not isinstance(v, int)
                     and not isinstance(v, (bool, list))
                 ):
                     if isinstance(v, datetime.datetime):
@@ -401,7 +401,7 @@ class ExtModelApplication(ExtApplication):
     def lookup_tags(self, q, name, value):
         if not value:
             return
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = [value]
         tq = ("%%s::text[] <@ %s.tags" % self.db_table, [value])
         if None in q:

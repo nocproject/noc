@@ -2,21 +2,18 @@
 # ----------------------------------------------------------------------
 # IDNA utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.comp import smart_text, smart_bytes
 
-IDNA_PREFIX = six.text_type("xn--")
+IDNA_PREFIX = str("xn--")
 
 
 def to_idna(zone):
-    # type: (six.text_type) -> six.text_type
+    # type: (str) -> str
     """
     Convert literal zone name to IDNA encoding
     :param zone:
@@ -26,7 +23,7 @@ def to_idna(zone):
 
 
 def from_idna(zone):
-    # type: (six.text_type) -> six.text_type
+    # type: (str) -> str
     """
     Convert IDNA zone name representation to literal name
     :param self:
@@ -39,7 +36,7 @@ def from_idna(zone):
 
 
 def is_idna(zone):
-    # type: (six.text_type) -> bool
+    # type: (str) -> bool
     """
     Check if zone name is in IDNA representation
     :param zone:

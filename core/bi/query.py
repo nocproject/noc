@@ -2,12 +2,9 @@
 # ----------------------------------------------------------------------
 # Clickhouse query engine
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # Python modules
 from noc.core.clickhouse.dictionary import Dictionary
@@ -78,7 +75,7 @@ def in_lookup(seq, model=None):
     # check int
     m = []
     for l in seq[1]:
-        if type(l) in six.integer_types or l.isdigit():
+        if isinstance(l, int) or l.isdigit():
             m += [int(l)]
             continue
     if len(seq[1]) == 1:
@@ -268,12 +265,12 @@ def to_sql(expr, model=None):
             if not isinstance(v, list):
                 v = [v]
             return op.to_sql(v, model)
-    elif isinstance(expr, six.string_types):
+    elif isinstance(expr, str):
         if expr.isdigit():
             return int(expr)
         else:
             return "'%s'" % escape_str(expr)
-    elif isinstance(expr, six.integer_types):
+    elif isinstance(expr, int):
         return str(expr)
     elif isinstance(expr, float):
         return str(expr)

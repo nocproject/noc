@@ -9,9 +9,6 @@
 # Python modules
 import logging
 
-# Third-party modules
-import six
-
 # NOC modules
 from .base import GridVCS
 
@@ -93,7 +90,7 @@ class GridVCSObjectProxy(object):
 
     def get_revision(self, r):
         g = self.get_gridvcs()
-        if isinstance(r, six.string_types):
+        if isinstance(r, str):
             r = g.find_revision(self.id, r)
         return g.get(self.id, r)
 
@@ -116,16 +113,16 @@ class GridVCSObjectProxy(object):
 
     def diff(self, r1, r2):
         g = self.get_gridvcs()
-        if isinstance(r1, six.string_types):
+        if isinstance(r1, str):
             r1 = g.find_revision(self.id, r1)
-        if isinstance(r2, six.string_types):
+        if isinstance(r2, str):
             r2 = g.find_revision(self.id, r2)
         return g.diff(self.id, r1, r2)
 
     def mdiff(self, r1, obj2, r2):
         g = self.get_gridvcs()
-        if isinstance(r1, six.string_types):
+        if isinstance(r1, str):
             r1 = g.find_revision(self.id, r1)
-        if isinstance(r2, six.string_types):
+        if isinstance(r2, str):
             r2 = g.find_revision(obj2, r2)
         return g.mdiff(self.id, r1, obj2, r2)

@@ -4,7 +4,7 @@
 # USAGE:
 # python manage.py convert-moin [--encoding=charset] [--language=lang] [--tags=<taglist>] <path to moin data/ >
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,9 +16,6 @@ import stat
 import datetime
 import sys
 import gc
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.aaa.models.user import User
@@ -64,7 +61,7 @@ class Command(BaseCommand):
     #
 
     def out(self, s):
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             sys.stdout.write(s.encode("utf-8"))
         else:
             sys.stdout.write(smart_bytes(smart_text(s, encoding=self.encoding)))

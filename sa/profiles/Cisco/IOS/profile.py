@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: Cisco
-# OS:     IOS
+# Cisco.IOS profile
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
@@ -9,7 +8,6 @@
 
 # Python modules
 import re
-import six
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -95,7 +93,7 @@ class Profile(BaseProfile):
         if ".SI." in interface:
             l, r = interface.split(".SI.", 1)
             return "%s.SI.%d" % (self.convert_interface_name_cisco(l.strip()), int(r.strip()))
-        if isinstance(interface, six.string_types):
+        if isinstance(interface, str):
             il = interface.lower()
         else:
             il = interface.name.lower()

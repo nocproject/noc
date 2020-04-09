@@ -13,7 +13,6 @@ import os
 import csv
 import itertools
 from collections import namedtuple
-import six
 import io
 
 # NOC modules
@@ -88,7 +87,7 @@ class BaseExtractor(object):
         def q(s):
             if s == "" or s is None:
                 return ""
-            elif isinstance(s, six.text_type):
+            elif isinstance(s, str):
                 return smart_text(s)
             else:
                 return str(s)

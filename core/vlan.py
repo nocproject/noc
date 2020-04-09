@@ -2,15 +2,12 @@
 # ----------------------------------------------------------------------
 # Various VLAN manipulation utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.validators import is_vlan
@@ -25,7 +22,7 @@ def has_vlan(vlan_filter, vlan):
     :param vlan:
     :return:
     """
-    if not isinstance(vlan, six.integer_types):
+    if not isinstance(vlan, int):
         vlan = int(vlan)
     if not is_vlan(vlan):
         return False

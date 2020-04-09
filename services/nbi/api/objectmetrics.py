@@ -13,7 +13,6 @@ import operator
 import tornado.gen
 import ujson
 import dateutil.parser
-import six
 from six.moves import zip
 
 # NOC modules
@@ -60,7 +59,7 @@ class ObjectMetricsAPI(NBIAPI):
     def post(self):
         code, result = yield self.executor.submit(self.handler)
         self.set_status(code)
-        if isinstance(result, six.string_types):
+        if isinstance(result, str):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")

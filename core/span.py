@@ -18,7 +18,6 @@ from collections import namedtuple
 
 # Third-party modules
 import tornado.gen
-import six
 from typing import Optional
 
 # NOC modules
@@ -183,7 +182,7 @@ class Span(object):
         return exc_type == tornado.gen.Return
 
     def set_error(self, code=None, text=None):
-        # type: (Optional[int], Optional[six.text_type]) -> None
+        # type: (Optional[int], Optional[str]) -> None
         """
         Set error result and code for current span
         :param code: Optional error code

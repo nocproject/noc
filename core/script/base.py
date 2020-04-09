@@ -460,7 +460,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             else:
                 raise self.NotSupportedError("Invalid access method '%s'" % m)
             # Resolve handler when necessary
-            if isinstance(handler, six.string_types):
+            if isinstance(handler, str):
                 handler = getattr(self, handler, None)
             if handler is None:
                 self.logger.debug("No '%s' handler. Passing to next method" % m)
@@ -689,7 +689,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         Returns match object.
         rx can be string or compiled regular expression
         """
-        if isinstance(rx, six.string_types):
+        if isinstance(rx, str):
             rx = re.compile(rx, flags)
         match = rx.search(s)
         if match is None:
@@ -703,7 +703,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         Returns match object.
         rx can be string or compiled regular expression
         """
-        if isinstance(rx, six.string_types):
+        if isinstance(rx, str):
             rx = re.compile(rx, flags)
         match = rx.match(s)
         if match is None:
@@ -787,7 +787,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         cmd_next=None,
         cmd_stop=None,
     ):
-        # type: (six.text_type, Optional[six.binary_type], Any, Any, bool, Optional[six.text_type], Any, Any, Any, Any, Any, Any) -> six.text_type
+        # type: (str, Optional[bytes], Any, Any, bool, Optional[str], Any, Any, Any, Any, Any, Any) -> str
         """
         Execute CLI command and return result. Initiate cli session
         when necessary.
@@ -845,9 +845,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             ignore_errors=ignore_errors,
             allow_empty_response=allow_empty_response,
         )
-        if isinstance(r, six.binary_type):
+        if isinstance(r, bytes):
             r = smart_text(r, errors="ignore", encoding=self.native_encoding)
-        if isinstance(r, six.text_type):
+        if isinstance(r, str):
             # Check for syntax errors
             if not ignore_errors:
                 # Then check for operation error
@@ -864,7 +864,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         return format_result(r)
 
     def echo_cancelation(self, r, cmd):
-        # type: (six.text_type, six.text_type) -> six.text_type
+        # type: (str, str) -> str
         """
         Adaptive echo cancelation
 
@@ -917,7 +917,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             if self.to_disable_pager:
                 self.logger.debug("Disable paging")
                 self.to_disable_pager = False
-                if isinstance(self.profile.command_disable_pager, six.string_types):
+                if isinstance(self.profile.command_disable_pager, str):
                     self.cli(self.profile.command_disable_pager, ignore_errors=True)
                 elif isinstance(self.profile.command_disable_pager, list):
                     for cmd in self.profile.command_disable_pager:

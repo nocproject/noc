@@ -61,7 +61,7 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None, api=
         # Process access
         if isinstance(access, bool):
             f.access = Permit() if access else Deny()
-        elif isinstance(access, six.string_types):
+        elif isinstance(access, str):
             f.access = HasPerm(access)
         else:
             f.access = access
@@ -265,7 +265,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         """
         Return path to named template
         """
-        if isinstance(template, six.string_types):
+        if isinstance(template, str):
             template = [template]
         r = []
         for t in template:
@@ -507,7 +507,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
             if "access" in c:
                 if isinstance(c["access"], HasPerm):
                     p.add(c["access"].get_permission(self))
-                elif isinstance(c["access"], six.string_types):
+                elif isinstance(c["access"], str):
                     p.add("%s:%s" % (prefix, c["access"]))
         # extra_permissions
         if callable(self.extra_permissions):

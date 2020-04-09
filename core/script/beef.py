@@ -43,7 +43,7 @@ class Beef(object):
 
     @classmethod
     def from_json(cls, data):
-        if isinstance(data, six.string_types):
+        if isinstance(data, str):
             data = ujson.loads(data)
         version = data.get("version", "1")
         decoder = "decode_v%s" % version
@@ -202,7 +202,7 @@ class Beef(object):
         :param path:
         :return:
         """
-        if isinstance(storage, six.string_types):
+        if isinstance(storage, str):
             # Load from URL
             from fs import open_fs
             from fs.errors import FSError
@@ -226,7 +226,7 @@ class Beef(object):
         return Beef.from_json(smart_text(data))
 
     def iter_fsm_state_reply(self, state):
-        # type: (six.text_type) -> six.binary_type
+        # type: (str) -> bytes
         """
         Iterate fsm states
         :param state:
@@ -239,7 +239,7 @@ class Beef(object):
                 break
 
     def iter_cli_reply(self, command):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         """
         Iterate fsm states
         :param command:
@@ -260,7 +260,7 @@ class Beef(object):
 
     @staticmethod
     def mib_decode_base64(value):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         """
         Decode base64
         :param value:
@@ -279,7 +279,7 @@ class Beef(object):
 
     @staticmethod
     def cli_decode_quopri(value):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         """
         Decode quoted-printable
         :param value:
@@ -293,7 +293,7 @@ class Beef(object):
         return self.mib_oid_values
 
     def get_mib_value(self, oid):
-        # type: (six.text_type) -> None | six.binary_type
+        # type: (str) -> None | bytes
         """
         Lookup mib and return oid value
         :param oid:
