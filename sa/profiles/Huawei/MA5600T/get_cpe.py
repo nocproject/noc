@@ -9,6 +9,7 @@
 # Python modules
 import re
 import six
+import codecs
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -143,9 +144,9 @@ class Script(BaseScript):
                 "interface": names[int(ifindex)],
                 "status": "inactive",
                 "id": ont_id,
-                "global_id": ont_serial.encode("hex").upper(),
+                "global_id": codecs.encode(ont_serial, "hex").upper(),
                 "type": "ont",
-                "serial": ont_serial.encode("hex").upper(),
+                "serial": codecs.encode(ont_serial, "hex").upper(),
                 "description": ont_descr,
                 "location": "",
             }
