@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Translation utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,6 @@
 import os
 import logging
 import gettext
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.comp import smart_text
@@ -32,10 +29,7 @@ def set_translation(service, lang):
         if os.path.exists(mo_path):
             logger.info("Setting '%s' translation", mo_path)
             with open(mo_path, mode="rb") as f:
-                if six.PY3:
-                    _ugettext = gettext.GNUTranslations(f).lgettext
-                else:
-                    _ugettext = gettext.GNUTranslations(f).ugettext
+                _ugettext = gettext.GNUTranslations(f).lgettext
         else:
             logger.info("No translation for language '%s'. Using 'en' instead", lang)
 

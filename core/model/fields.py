@@ -146,10 +146,7 @@ class PickledField(models.Field):
         # if not value:
         #    return None
         try:
-            if six.PY3:
-                return loads(value)
-            else:
-                return loads(str(value))
+            return loads(value)
         except Exception:
             return value
 

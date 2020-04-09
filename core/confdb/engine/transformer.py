@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # PredicateVisitor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import ast
 import itertools
 
 # Third-party modules
-import six
 from six.moves import zip_longest
 
 CVAR_NAME = "_ctx"
@@ -23,63 +22,32 @@ class PredicateTransformer(ast.NodeTransformer):
         self.input_counter = itertools.count()
         super(PredicateTransformer, self).__init__()
 
-    if six.PY3:
+    def wrap_callable(self, node):
+        return ast.Lambda(
+            args=ast.arguments(
+                args=[ast.arg(arg=CVAR_NAME, annotation=None)],
+                vararg=None,
+                kwonlyargs=[],
+                kw_defaults=[],
+                kwarg=None,
+                defaults=[],
+            ),
+            body=node,
+        )
 
-        def wrap_callable(self, node):
-            return ast.Lambda(
-                args=ast.arguments(
-                    args=[ast.arg(arg=CVAR_NAME, annotation=None)],
-                    vararg=None,
-                    kwonlyargs=[],
-                    kw_defaults=[],
-                    kwarg=None,
-                    defaults=[],
-                ),
-                body=node,
-            )
-
-        def make_or_call(self, cn):
-            l_name = "_input_%d" % next(self.input_counter)
-            return ast.Lambda(
-                args=ast.arguments(
-                    args=[
-                        ast.arg(arg="self", annotation=None),
-                        ast.arg(arg=l_name, annotation=None),
-                    ],
-                    vararg=None,
-                    kwonlyargs=[],
-                    kw_defaults=[],
-                    kwarg=None,
-                    defaults=[],
-                ),
-                body=self.visit_Call(cn, _input=ast.Name(id=l_name, ctx=ast.Load())),
-            )
-
-    else:
-
-        def wrap_callable(self, node):
-            return ast.Lambda(
-                args=ast.arguments(
-                    args=[ast.Name(id=CVAR_NAME, ctx=ast.Param())],
-                    vararg=None,
-                    kwarg=None,
-                    defaults=[],
-                ),
-                body=node,
-            )
-
-        def make_or_call(self, cn):
-            l_input = ast.Name(id="_input_%d" % next(self.input_counter), ctx=ast.Load())
-
-            return ast.Lambda(
-                args=ast.arguments(
-                    args=[ast.Name(id="self", ctx=ast.Param()), l_input],
-                    vararg=None,
-                    kwarg=None,
-                    defaults=[],
-                ),
-                body=self.visit_Call(cn, _input=l_input),
-            )
+    def make_or_call(self, cn):
+        l_name = "_input_%d" % next(self.input_counter)
+        return ast.Lambda(
+            args=ast.arguments(
+                args=[ast.arg(arg="self", annotation=None), ast.arg(arg=l_name, annotation=None),],
+                vararg=None,
+                kwonlyargs=[],
+                kw_defaults=[],
+                kwarg=None,
+                defaults=[],
+            ),
+            body=self.visit_Call(cn, _input=ast.Name(id=l_name, ctx=ast.Load())),
+        )
 
     def wrap_visitor(self, node):
         return self.visit(node)

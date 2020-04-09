@@ -51,7 +51,7 @@ def render_tc_int(value, format):
 
 def render_tc_octetstring(value, format):
     # type: (Union[six.binary_type, six.text_type]) -> six.text_type
-    if six.PY3 and isinstance(value, six.binary_type):
+    if isinstance(value, six.binary_type):
         value = [bord(c) for c in value]
     else:
         value = [ord(c) for c in value]

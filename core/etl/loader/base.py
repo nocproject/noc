@@ -177,9 +177,7 @@ class BaseLoader(object):
         if os.path.isfile(path):
             logger.info("Loading from %s", path)
             self.new_state_path = path
-            if six.PY3:
-                return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
-            return gzip.GzipFile(path, "r")
+            return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
         # No data to import
         return None
 
@@ -202,9 +200,7 @@ class BaseLoader(object):
         if fn:
             path = os.path.join(self.archive_dir, fn[-1])
             logger.info("Current state from %s", path)
-            if six.PY3:
-                return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
-            return gzip.GzipFile(path, "r")
+            return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
         # No current state
         return six.StringIO("")
 

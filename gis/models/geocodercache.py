@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Geocoding cache
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import logging
 import hashlib
 import datetime
 import codecs
-import six
 
 # Third-party modules
 from mongoengine.document import Document
@@ -76,8 +75,6 @@ class GeocoderCache(Document):
     def clean_query(cls, query):
         query = smart_text(query)
         query = query.upper()
-        if not six.PY3:
-            query = query.encode("utf-8")
         query = cls.rx_slash.sub("/", query)
         query = cls.rx_dots.sub(" ", query)
         query = cls.rx_comma.sub(", ", query)
