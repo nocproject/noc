@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_mpls_vpn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -24,7 +21,7 @@ class Script(BaseScript):
     rx_vrf = re.compile(r"^VRF\s+(?P<name>[^;]+);\s+RD\s+(?P<rd>[^;]+);.+$")
 
     def is_not_set(self, s):
-        if isinstance(s, six.string_types):
+        if isinstance(s, str):
             return s.strip().lower() == "not set"
         return False
 

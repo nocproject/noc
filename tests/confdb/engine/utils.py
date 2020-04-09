@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # Various testing utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from typing import List, Dict, Set, Any
 
 # NOC modules
@@ -16,7 +15,7 @@ from noc.core.confdb.engine.base import Engine
 
 
 def check_query(query, args, expected):
-    # type: (six.text_type, Dict[six.text_type, Any], List[Dict[six.text_type, Any]]) -> bool
+    # type: (str, Dict[str, Any], List[Dict[str, Any]]) -> bool
     """
     ConfDB Query result order is undefined,
     so we need additional helper to check
@@ -28,10 +27,8 @@ def check_query(query, args, expected):
     :return:
     """
     e = Engine()
-    left = {
-        dict_hash_int(ctx): ctx for ctx in expected
-    }  # type: Dict[int, Dict[six.text_type, Any]]
-    not_found = set()  # type: Set[Dict[six.text_type, Any]]
+    left = {dict_hash_int(ctx): ctx for ctx in expected}  # type: Dict[int, Dict[str, Any]]
+    not_found = set()  # type: Set[Dict[str, Any]]
     for ctx in e.query(query, **args):
         ctx_hash = dict_hash_int(ctx)
         if ctx_hash in left:

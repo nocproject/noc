@@ -2,15 +2,12 @@
 # ----------------------------------------------------------------------
 # ECMA-48 control sequences processing
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.comp import smart_bytes
@@ -108,7 +105,7 @@ rx_ecma = re.compile(get_ecma_re())
 
 
 def strip_control_sequences(s):
-    # type: (six.binary_type) -> six.binary_type
+    # type: (bytes) -> bytes
     """
     Normal text leaved untouched
     >>> strip_control_sequences("Lorem Ipsum")

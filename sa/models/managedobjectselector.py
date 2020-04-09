@@ -322,7 +322,7 @@ class ManagedObjectSelector(NOCModel):
         """
 
         def q(s):
-            if isinstance(s, six.integer_types):
+            if isinstance(s, int):
                 return str(s)
             elif isinstance(s, (list, tuple)):
                 s = [q(x) for x in s]
@@ -401,13 +401,13 @@ class ManagedObjectSelector(NOCModel):
         """
         from .managedobject import ManagedObject
 
-        if isinstance(s, six.integer_types) or isinstance(s, six.string_types):
+        if isinstance(s, int) or isinstance(s, str):
             s = [s]
         if not isinstance(s, list):
             raise ValueError("list required")
         objects = set()
         for so in s:
-            if not isinstance(so, six.string_types):
+            if not isinstance(so, str):
                 so = str(so)
             if so.startswith("@"):
                 # Selector expression: @<selector name>

@@ -60,7 +60,7 @@ def snmp_get(
     inside @tornado.gen.coroutine
     """
     oid_map = {}
-    if isinstance(oids, six.string_types):
+    if isinstance(oids, str):
         oids = [oids]
     elif isinstance(oids, dict):
         oid_map = dict((oids[k], k) for k in oids)

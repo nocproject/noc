@@ -140,7 +140,7 @@ class Command(BaseCommand):
                 :param s:
                 :return:
                 """
-                if isinstance(s, six.string_types):
+                if isinstance(s, str):
                     return '"%s"' % s
                 elif isinstance(s, bool):
                     return "true" if s else "false"

@@ -17,7 +17,6 @@ import struct
 import codecs
 
 # Third-party modules
-import six
 from six.moves.urllib.parse import urlparse
 import tornado.gen
 import tornado.ioloop
@@ -276,7 +275,7 @@ def fetch(
         # Process request
         body = body or ""
         content_type = "application/binary"
-        if not isinstance(body, (six.string_types, six.binary_type)):
+        if not isinstance(body, (str, bytes)):
             body = ujson.dumps(body)
             content_type = "text/json"
         body = smart_bytes(body)  # Here and below body is binary
@@ -354,7 +353,7 @@ def fetch(
                 if eof_mark and response_body:
                     # Check if EOF mark is in received data
                     response_body = [b"".join(response_body)]
-                    if isinstance(eof_mark, six.string_types):
+                    if isinstance(eof_mark, str):
                         if eof_mark in response_body[0]:
                             break
                     else:

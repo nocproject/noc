@@ -2,16 +2,13 @@
 # ----------------------------------------------------------------------
 # Expression matcher
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
 from collections import Iterable
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.text import alnum_key
@@ -61,7 +58,7 @@ def match_regex(v, rx):
 
 
 def match_in(v, iter):
-    if isinstance(v, six.string_types):
+    if isinstance(v, str):
         return str(v) in iter
     if isinstance(v, Iterable):
         # if v list - check intersection

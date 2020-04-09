@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Failed Scripts Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django import forms
 from pymongo import ReadPreference
 
@@ -207,7 +206,7 @@ class ReportFilterApplication(SimpleReport):
                     problem = problem.get("", "")
                 if "Remote error code" in problem:
                     problem = code_map.get(problem.split(" ")[-1], problem)
-                if isinstance(problem, six.string_types):
+                if isinstance(problem, str):
                     problem = problem.replace("\n", " ").replace("\r", " ")
                 data += [
                     (

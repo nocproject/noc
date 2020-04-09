@@ -192,7 +192,7 @@ class MapApplication(ExtApplication):
     )
     def api_info_link(self, request, id, link_id):
         def q(s):
-            if isinstance(s, six.text_type):
+            if isinstance(s, str):
                 s = s.encode("utf-8")
             return s
 
@@ -254,7 +254,7 @@ class MapApplication(ExtApplication):
     )
     def api_info_cloud(self, request, id, link_id):
         def q(s):
-            if isinstance(s, six.text_type):
+            if isinstance(s, str):
                 s = s.encode("utf-8")
             return s
 
@@ -378,7 +378,7 @@ class MapApplication(ExtApplication):
     )
     def api_metrics(self, request, metrics):
         def q(s):
-            if isinstance(s, six.text_type):
+            if isinstance(s, str):
                 s = s.encode("utf-8")
             return s
 

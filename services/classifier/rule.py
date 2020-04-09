@@ -217,15 +217,13 @@ class Rule(object):
                 c += ["    return None"]
         # Vars binding
         if self.vars:
-            has_expressions = any(
-                v for v in six.itervalues(self.vars) if not isinstance(v, six.string_types)
-            )
+            has_expressions = any(v for v in six.itervalues(self.vars) if not isinstance(v, str))
             if has_expressions:
                 # Calculate vars context
                 c += ["var_context = {'event': event}"]
                 c += ["var_context.update(e_vars)"]
             for k, v in six.iteritems(self.vars):
-                if isinstance(v, six.string_types):
+                if isinstance(v, str):
                     c += ['e_vars["%s"] = "%s"' % (k, pyq(v))]
                 else:
                     c += ['e_vars["%s"] = eval(self.vars["%s"], {}, var_context)' % (k, k)]

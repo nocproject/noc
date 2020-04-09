@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Various text-processing utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import re
 
 # Third-party modules
-import six
 from six.moves import zip_longest
 from numpy import array
 from typing import List, Union, Iterable
@@ -264,13 +263,13 @@ def ranges_to_list(s, splitter=","):
 
 
 def replace_re_group(expr, group, pattern):
-    if isinstance(expr, six.binary_type):
+    if isinstance(expr, bytes):
         return _replace_re_group_binary(expr, group, pattern)
     return _replace_re_group_text(expr, group, pattern)
 
 
 def _replace_re_group_text(expr, group, pattern):
-    # type: (six.text_type, six.text_type, six.text_type) -> six.text_type
+    # type: (str, str, str) -> str
     """
     Replace regular expression group with pattern
 
@@ -313,7 +312,7 @@ def _replace_re_group_text(expr, group, pattern):
 
 
 def _replace_re_group_binary(expr, group, pattern):
-    # type: (six.binary_type, six.binary_type, six.binary_type) -> six.binary_type
+    # type: (bytes, bytes, bytes) -> bytes
     """
     Replace regular expression group with pattern
 
@@ -377,7 +376,7 @@ rx_split_alnum = re.compile(r"(\d+|[^0-9]+)")
 
 
 def _iter_split_alnum(s):
-    # type: (six.string_types) -> Iterable[six.string_types]
+    # type: (str) -> Iterable[str]
     """
     Iterator yielding alphabetic and numeric sections if string
 
@@ -389,7 +388,7 @@ def _iter_split_alnum(s):
 
 
 def split_alnum(s):
-    # type: (six.string_types) -> List[Union[six.string_types, int]]
+    # type: (str) -> List[Union[str, int]]
     """
     Split line to a sequence of iterating alpha and digit strings
 
@@ -409,7 +408,7 @@ def split_alnum(s):
     """
 
     def maybe_int(v):
-        # type: (six.string_types) -> Union[six.string_types, int]
+        # type: (str) -> Union[str, int]
         try:
             return int(v)
         except ValueError:
@@ -419,7 +418,7 @@ def split_alnum(s):
 
 
 def alnum_key(s):
-    # type: (six.string_types) -> six.string_types
+    # type: (str) -> str
     """
     Comparable alpha-numeric key
     :param s:
@@ -427,7 +426,7 @@ def alnum_key(s):
     """
 
     def maybe_formatted_int(v):
-        #  type: (six.string_types) -> six.string_types
+        #  type: (str) -> str
         try:
             return "%012d" % int(v)
         except ValueError:
@@ -587,7 +586,7 @@ def safe_shadow(text):
      """
     if not text:
         return "None"
-    elif not isinstance(text, six.string_types):
+    elif not isinstance(text, str):
         return "******"
     elif len(text) > 2:
         return "%s******%s" % (text[0], text[-1])

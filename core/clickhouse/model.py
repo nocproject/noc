@@ -333,7 +333,7 @@ class Model(six.with_metaclass(ModelBase)):
         group_by = {}
         order_by = {}
         for i, f in enumerate(fields):
-            if isinstance(f["expr"], six.string_types):
+            if isinstance(f["expr"], str):
                 default_alias = f["expr"]
                 f["expr"] = {"$field": f["expr"]}
             else:

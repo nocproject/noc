@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BeefCLI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import socket
 import tornado.gen
 import tornado.iostream
 from tornado.concurrent import TracebackFuture
-import six
 
 # NOC modules
 from .base import CLI
@@ -32,7 +31,7 @@ class BeefCLI(CLI):
 
     @tornado.gen.coroutine
     def send(self, cmd):
-        # type: (six.binary_type) -> None
+        # type: (bytes) -> None
         # @todo: Apply encoding
         # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)

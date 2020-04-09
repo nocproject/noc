@@ -78,7 +78,7 @@ class CLI(object):
         self.command = None
         self.prompt_stack = []
         self.patterns = self.profile.patterns.copy()
-        self.buffer = b""  # type: six.binary_type
+        self.buffer = b""  # type: bytes
         self.is_started = False
         self.result = None
         self.error = None
@@ -228,7 +228,7 @@ class CLI(object):
         ignore_errors=False,
         allow_empty_response=True,
     ):
-        # type: (six.text_type, Optional[Callable], Optional[six.binary_type], Optional[six.binary_type], bool, bool) -> six.text_type
+        # type: (str, Optional[Callable], Optional[bytes], Optional[bytes], bool, bool) -> str
         self.reset_close_timeout()
         self.buffer = b""
         self.command = cmd
@@ -316,7 +316,7 @@ class CLI(object):
         raise tornado.gen.Return(self.result)
 
     def cleaned_input(self, s):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         """
         Clean up received input and wipe out control sequences
         and rogue chars
@@ -329,7 +329,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def send(self, cmd):
-        # type: (six.binary_type) -> None
+        # type: (bytes) -> None
         # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
         yield self.iostream.write(cmd)
@@ -682,7 +682,7 @@ class CLI(object):
         self.logger.debug("Performing setup sequence: %s", self.profile.setup_sequence)
         lseq = len(self.profile.setup_sequence)
         for i, c in enumerate(self.profile.setup_sequence):
-            if isinstance(c, six.integer_types) or isinstance(c, float):
+            if isinstance(c, int) or isinstance(c, float):
                 yield tornado.gen.sleep(c)
                 continue
             cmd = c % self.script.credentials
@@ -778,7 +778,7 @@ class CLI(object):
         :param error_text:
         :return:
         """
-        if isinstance(seq, six.string_types):
+        if isinstance(seq, str):
             self.logger.debug("Recovering from error. Sending %r", seq)
             yield self.iostream.write(seq)
         elif callable(seq):

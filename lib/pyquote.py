@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Binary data to string encoder/decoder
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import six
 
 # Patterns
 
@@ -37,7 +36,7 @@ def bin_quote(s):
     if s is None:
         return ""
     else:
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             s = s.encode("utf-8")
         return "".join([qc(c) for c in s])
 
@@ -49,6 +48,6 @@ def bin_unquote(s):
     >>> [i for i in range(256) if bin_unquote(bin_quote(chr(i)))!=chr(i)]
     []
     """
-    if isinstance(s, six.text_type):
+    if isinstance(s, str):
         s = s.encode("utf-8")
     return rx_unqoute.sub(lambda x: hex_map[x.group(1)], str(s).replace(r"\\", "\\x5c"))

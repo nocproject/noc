@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django import forms
 
 # NOC modules
@@ -68,7 +67,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             (x["_id"], x.get("managed_object"))
             for x in Interface._get_collection().find({}, {"_id": 1, "managed_object": 1})
         )
-        for mo in mos_set - set(problems) - set(six.itervalues(if_mo)):
+        for mo in mos_set - set(problems) - set(if_mo.values()):
             problems[mo] = _("No interfaces")
         # Get all managed objects without links
         linked_mos = set()

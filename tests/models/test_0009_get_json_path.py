@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # Test .get_json_path() method
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 import pytest
-import six
 
 # NOC modules
 from .util import get_documents
@@ -19,4 +18,4 @@ def test_document_get_json_path(model):
     for o in model.objects.all():
         path = o.get_json_path()
         assert path
-        assert isinstance(path, six.string_types)
+        assert isinstance(path, str)

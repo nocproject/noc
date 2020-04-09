@@ -278,11 +278,7 @@ class DocInline(object):
                         v = str(v.id)
                     else:
                         v = str(v)
-                elif (
-                    not isinstance(v, six.integer_types)
-                    and not isinstance(v, six.string_types)
-                    and not isinstance(v, bool)
-                ):
+                elif not isinstance(v, int) and not isinstance(v, str) and not isinstance(v, bool):
                     if hasattr(v, "id"):
                         v = v.id
                     else:

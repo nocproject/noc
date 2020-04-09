@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # GridVCS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,6 @@ import gridfs
 import gridfs.errors
 import bsdiff4
 from bson import ObjectId
-import six
 from typing import Tuple, Optional, Iterable
 
 # NOC modules
@@ -39,7 +38,7 @@ class GridVCS(object):
         self.files = self.fs._GridFS__files
 
     def get_delta(self, src, dst):
-        # type: (six.text_type, six.text_type) -> Tuple[six.text_type, six.binary_type]
+        # type: (str, str) -> Tuple[str, bytes]
         """
         Calculate strings delta
         :param src: Source string
@@ -53,7 +52,7 @@ class GridVCS(object):
 
     @classmethod
     def apply_delta(cls, type, src, delta):
-        # type: (six.text_type, six.text_type, six.binary_type) -> six.text_type
+        # type: (str, str, bytes) -> str
         """
         Apply delta
         :param type: Delta type
@@ -65,7 +64,7 @@ class GridVCS(object):
 
     @staticmethod
     def apply_delta_F(src, delta):
-        # type: (six.text_type, six.binary_type) -> six.text_type
+        # type: (str, bytes) -> str
         """
         Raw string
         :param src:
@@ -76,7 +75,7 @@ class GridVCS(object):
 
     @staticmethod
     def apply_delta_b(src, delta):
-        # type: (six.text_type, six.binary_type) -> six.text_type
+        # type: (str, bytes) -> str
         """
         Mercurial mdiff. Slow python implementation ported from Mercurial 0.4.
         For legacy installations support only
@@ -100,7 +99,7 @@ class GridVCS(object):
 
     @staticmethod
     def apply_delta_B(src, delta):
-        # type: (six.text_type, six.binary_type) -> six.text_type
+        # type: (str, bytes) -> str
         """
         BSDIFF4 diff
         :param src:
@@ -111,30 +110,30 @@ class GridVCS(object):
 
     @classmethod
     def compress(cls, data, method=None):
-        # type: (six.binary_type, Optional[six.text_type]) -> six.binary_type
+        # type: (bytes, Optional[str]) -> bytes
         if method:
             return getattr(cls, "compress_%s" % method)(data)
         return data
 
     @classmethod
     def decompress(cls, data, method=None):
-        # type: (six.binary_type, Optional[six.text_type]) -> six.binary_type
+        # type: (bytes, Optional[str]) -> bytes
         if method:
             return getattr(cls, "decompress_%s" % method)(data)
         return data
 
     @staticmethod
     def compress_z(data):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         return zlib.compress(smart_bytes(data))
 
     @staticmethod
     def decompress_z(data):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         return zlib.decompress(smart_bytes(data))
 
     def put(self, object, data, ts=None):
-        # type: (int, six.text_type, Optional[datetime.datetime]) -> bool
+        # type: (int, str, Optional[datetime.datetime]) -> bool
         """
         Save data
         :param object: Object id
@@ -180,7 +179,7 @@ class GridVCS(object):
         return True
 
     def get(self, object, revision=None):
-        # type: (int, Optional[Revision]) -> Optional[six.text_type]
+        # type: (int, Optional[Revision]) -> Optional[str]
         """
         Get data
         :param object: Object id
@@ -193,7 +192,7 @@ class GridVCS(object):
                     return smart_text(self.decompress(f.read(), f._file.get("c")))
             except gridfs.errors.NoFile:
                 return None
-        data = six.text_type()
+        data = str()
         for r in self.iter_revisions(object, reverse=True):
             with self.fs.get(r.id) as f:
                 delta = self.decompress(f.read(), f._file.get("c"))
@@ -236,7 +235,7 @@ class GridVCS(object):
         return None
 
     def find_revision(self, object, revision):
-        # type: (int, six.text_type) -> Optional[Revision]
+        # type: (int, str) -> Optional[Revision]
         """
         :param object:
         :param revision: Revision id
@@ -249,7 +248,7 @@ class GridVCS(object):
 
     @staticmethod
     def _unified_diff(src, dst):
-        # type: (six.text_type, six.text_type) -> six.text_type
+        # type: (str, str) -> str
         """
         Returns unified diff between src and dest
 
@@ -260,7 +259,7 @@ class GridVCS(object):
         return "\n".join(difflib.unified_diff(src.splitlines(), dst.splitlines(), lineterm=""))
 
     def diff(self, object, rev1, rev2):
-        # type: (int, six.text_type, six.text_type) -> six.text_type
+        # type: (int, str, str) -> str
         """
         Get unified diff between revisions
         :param object:
@@ -273,7 +272,7 @@ class GridVCS(object):
         return self._unified_diff(src, dst)
 
     def mdiff(self, obj1, rev1, obj2, rev2):
-        # type: (int, six.text_type, int, six.text_type) -> six.text_type
+        # type: (int, str, int, str) -> str
         """
         Get unified diff between multiple object's revisions
 

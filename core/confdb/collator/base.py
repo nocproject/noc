@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from typing import Dict, Optional
 
 # NOC modules
@@ -19,5 +18,5 @@ class BaseCollator(object):
         pass
 
     def collate(self, physical_path, interfaces):
-        # type: (six.string_types, Dict[six.string_types, Interface]) -> Optional[six.string_types]
+        # type: (str, Dict[str, Interface]) -> Optional[str]
         raise NotImplementedError

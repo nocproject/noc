@@ -2,14 +2,13 @@
 # ----------------------------------------------------------------------
 # configrevisions API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 import tornado.gen
 import ujson
-import six
 
 # NOC modules
 from noc.core.service.apiaccess import authenticated
@@ -25,7 +24,7 @@ class ConfigRevisionsAPI(NBIAPI):
     def get(self, object_id):
         code, result = yield self.executor.submit(self.handler, object_id)
         self.set_status(code)
-        if isinstance(result, six.string_types):
+        if isinstance(result, str):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")

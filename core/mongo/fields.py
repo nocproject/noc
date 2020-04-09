@@ -31,8 +31,8 @@ class PlainReferenceField(BaseField):
     """
 
     def __init__(self, document_type, *args, **kwargs):
-        if not isinstance(document_type, six.string_types):
-            if not issubclass(document_type, (Document, six.string_types)):
+        if not isinstance(document_type, str):
+            if not issubclass(document_type, (Document, str)):
                 raise ValidationError(
                     "Argument to PlainReferenceField constructor "
                     "must be a document class or a string"
@@ -55,10 +55,10 @@ class PlainReferenceField(BaseField):
 
     @property
     def document_type(self):
-        if isinstance(self.document_type_obj, six.string_types):
+        if isinstance(self.document_type_obj, str):
             if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
                 self.document_type_obj = self.owner_document
-            elif isinstance(self.document_type_obj, six.string_types):
+            elif isinstance(self.document_type_obj, str):
                 self.document_type_obj = get_model(self.document_type_obj)
             else:
                 self.document_type_obj = get_document(self.document_type_obj)
@@ -74,9 +74,7 @@ class PlainReferenceField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         # Dereference DBRefs
-        if isinstance(value, ObjectId) or (
-            isinstance(value, six.string_types) and len(value) == 24
-        ):
+        if isinstance(value, ObjectId) or (isinstance(value, str) and len(value) == 24):
             if self.dereference is None:
                 self.set_dereference()
             v = self.dereference(value)
@@ -217,7 +215,7 @@ class ForeignKeyField(BaseField):
     def __set__(self, instance, value):
         if not value:
             value = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             value = int(value)
         super(ForeignKeyField, self).__set__(instance, value)
 

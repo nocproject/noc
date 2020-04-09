@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from builtins import zip
 import re
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -91,7 +90,7 @@ class Script(BaseScript):
             if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                 neigh["remote_port"] = MAC(neigh["remote_port"])
             for i in neigh:
-                if isinstance(neigh[i], six.string_types):
+                if isinstance(neigh[i], str):
                     neigh[i] = neigh[i].rstrip(smart_text("\x00"))
             if neigh["remote_capabilities"]:
                 neigh["remote_capabilities"] = int(

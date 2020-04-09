@@ -106,9 +106,9 @@ class VCFilter(NOCModel):
         :return: SQL WHERE part
         """
         s = []
-        if isinstance(name, six.string_types):
+        if isinstance(name, str):
             name = '"%s"' % name.replace('"', '""')
-        elif isinstance(name, six.integer_types):
+        elif isinstance(name, int):
             name = "%d" % name
         else:
             raise ValueError("Invalid type for 'name'")

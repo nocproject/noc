@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Simple HTTP client for NSQ pub/mpub
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import random
 
 # Third-party modules
 import ujson
-import six
 import tornado.gen
 from typing import List, Any
 
@@ -37,7 +36,7 @@ def nsq_pub(topic, message):
     :param message: Raw message (Converted to JSON if is not a string)
     :return:
     """
-    if not isinstance(message, six.string_types):
+    if not isinstance(message, str):
         message = ujson.dumps(message)
     # Resolve NSQd or wait
     si = config.nsqd.http_addresses[0]
@@ -50,7 +49,7 @@ def nsq_pub(topic, message):
 
 
 def mpub_encode(messages):
-    # type: (List[Any]) -> six.binary_type
+    # type: (List[Any]) -> bytes
     """
     Build mpub binary message
     :param messages: List of messages
@@ -61,9 +60,9 @@ def mpub_encode(messages):
         # Amount of messages in pack
         yield struct.pack("!i", len(messages))
         for msg in messages:
-            if not isinstance(msg, six.string_types):
+            if not isinstance(msg, str):
                 msg = ujson.dumps(msg)
-            if isinstance(msg, six.text_type):
+            if isinstance(msg, str):
                 msg = smart_bytes(msg)
             yield struct.pack("!i", len(msg))
             yield msg

@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # Load config from YAML
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import os
-import six
 
 # Third-party modules
 from six.moves import zip_longest
@@ -60,7 +59,7 @@ class YAMLProtocol(BaseProtocol):
                 for pp in prefix[len(current) :]:
                     r += ["%s%s:" % (self.INDENT * len(current), pp)]
                     current += [pp]
-            if isinstance(v, six.string_types) and v.startswith(self.ESCAPE_START):
+            if isinstance(v, str) and v.startswith(self.ESCAPE_START):
                 v = "\\" + v
             r += ["%s%s: %s" % (self.INDENT * len(current), p[-1], v)]
         r = "\n".join(r)

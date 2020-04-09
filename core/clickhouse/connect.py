@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ClickHouse connection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import random
 
 # Third-party modules
-import six
 from six.moves.urllib.parse import quote as urllib_quote
 
 # NOC modules
@@ -39,7 +38,7 @@ class ClickhouseClient(object):
     def execute(self, sql=None, args=None, nodb=False, post=None, extra=None):
         def q(v):
             # @todo: quote dates
-            if isinstance(v, six.string_types):
+            if isinstance(v, str):
                 return "'%s'" % (v.replace("\\", "\\\\").replace("'", "\\'"))
             else:
                 return str(v)

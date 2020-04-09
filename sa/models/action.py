@@ -211,12 +211,12 @@ class Action(Document):
             elif p.type == "vrf":
                 if isinstance(v, VRF):
                     pass
-                elif isinstance(v, six.integer_types):
+                elif isinstance(v, int):
                     try:
                         v = VRF.objects.get(id=v)
                     except VRF.DoesNotExist:
                         raise ValueError("Unknown VRF in parameter '%s': '%s'" % (p.name, v))
-                elif isinstance(v, six.string_types):
+                elif isinstance(v, str):
                     try:
                         v = VRF.objects.get(name=v)
                     except VRF.DoesNotExist:

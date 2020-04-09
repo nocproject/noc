@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Custom field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from psycopg2.extensions import adapt
 from django.db import models
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
-import six
 from bson import ObjectId
 
 # NOC Modules
@@ -93,7 +92,7 @@ class TextArrayField(models.Field):
 
     def from_db_value(self, value, expression, connection, context):
         def to_unicode(s):
-            if isinstance(s, six.text_type):
+            if isinstance(s, str):
                 return s
             else:
                 return smart_text(s)
@@ -169,13 +168,13 @@ class TagsField(models.Field):
 
     def from_db_value(self, value, expression, connection, context):
         def to_unicode(s):
-            if isinstance(s, six.text_type):
+            if isinstance(s, str):
                 return s
             return smart_text(s)
 
         if value is None:
             return None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             # Legacy AutoCompleteTagsField tweak
             if "," in value:
                 value = value.split(",")
@@ -243,7 +242,7 @@ class DocumentReferenceDescriptor(object):
                 'Cannot assign None: "%s.%s" does not allow null values.'
                 % (instance._meta.object_name, self.field.name)
             )
-        elif value is None or isinstance(value, six.string_types):
+        elif value is None or isinstance(value, str):
             self._reset_cache(instance)
         elif isinstance(value, ObjectId):
             self._reset_cache(instance)
@@ -275,7 +274,7 @@ class DocumentReferenceField(models.Field):
     def get_prep_value(self, value):
         if value is None:
             return None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             return value
         elif isinstance(value, ObjectId):
             return str(value)
@@ -318,6 +317,6 @@ class ObjectIDArrayField(models.Field):
     def get_db_prep_value(self, value, connection, prepared=False):
         if value is None:
             return None
-        if isinstance(value, (six.string_types, ObjectId)):
+        if isinstance(value, (str, ObjectId)):
             value = [value]
         return "{ %s }" % ", ".join(str(x) for x in value)

@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # Prometeus metrics endpoint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import string
-import six
 
 # Third-party modules
 import tornado.web
@@ -44,7 +43,7 @@ class MetricsHandler(tornado.web.RequestHandler):
                 continue
             metric_name = key
             local_labels = {}
-            if isinstance(mdata[key], (bool, six.string_types)):
+            if isinstance(mdata[key], (bool, str)):
                 continue
             if isinstance(key, tuple):
                 metric_name = key[0]

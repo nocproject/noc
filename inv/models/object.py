@@ -376,7 +376,7 @@ class Object(Document):
                 c.save()
                 return
         # Normalize layer
-        if layer and isinstance(layer, six.string_types):
+        if layer and isinstance(layer, str):
             layer = Layer.get_by_code(layer)
         # Create connection
         ObjectConnection(
@@ -447,7 +447,7 @@ class Object(Document):
             user = user.username
         if not user:
             user = "NOC"
-        if not isinstance(managed_object, six.string_types):
+        if not isinstance(managed_object, str):
             managed_object = smart_text(managed_object)
         ObjectLog(
             object=self.id,
@@ -655,7 +655,7 @@ class Object(Document):
         return serials
 
     def iter_scope(self, scope):
-        # type: (six.text_type) -> Iterable[Tuple[PathItem, ...]]
+        # type: (str) -> Iterable[Tuple[PathItem, ...]]
         """
         Yields Full physical path for all connections with given scopes
         behind the object

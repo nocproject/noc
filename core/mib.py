@@ -12,7 +12,6 @@ import logging
 from threading import Lock
 
 # Third-party modules
-import six
 from typing import Union, Tuple, Dict, Optional, Any, Callable
 
 # NOC modules
@@ -28,14 +27,14 @@ class MIBRegistry(object):
     load_lock = Lock()
 
     def __init__(self):
-        self.mib = {}  # type: Dict[six.text_type, six.text_type]
+        self.mib = {}  # type: Dict[str, str]
         self.hints = {}
         self.loaded_mibs = set()
 
     def __getitem__(self, item):
-        # type: (Union[six.text_type, Tuple[six.text_type, int]]) -> six.text_type
+        # type: (Union[str, Tuple[str, int]]) -> str
         def maybe_get(k):
-            # type:  (six.text_type) -> six.text_type
+            # type:  (str) -> str
             v = self.mib.get(k)
             if v is not None:
                 return v
@@ -49,7 +48,7 @@ class MIBRegistry(object):
             # Get or raise KeyError
             return self.mib[k]
 
-        if isinstance(item, six.string_types):
+        if isinstance(item, str):
             if ":" not in item:
                 return item  # No conversion needed
             if "." in item:
@@ -63,7 +62,7 @@ class MIBRegistry(object):
 
     @staticmethod
     def mib_to_modname(name):
-        # type: (six.text_type) -> six.text_type
+        # type: (str) -> str
         """
         Convert MIB name to module name (without .py)
         :param name: MIB name, like IF-MIB
@@ -72,7 +71,7 @@ class MIBRegistry(object):
         return name.lower().replace("-", "_")
 
     def load_mib(self, name):
-        # type: (six.text_type) -> None
+        # type: (str) -> None
         """
         Load MIB by name
 
@@ -104,7 +103,7 @@ class MIBRegistry(object):
                 self.loaded_mibs.add(name)
 
     def is_loaded(self, name):
-        # type: (six.text_type) -> bool
+        # type: (str) -> bool
         """
         Check MIB is loaded
         :param name:
@@ -126,7 +125,7 @@ class MIBRegistry(object):
 
     @staticmethod
     def longest_match(d, k):
-        # type: (Dict[six.text_type, Any], six.text_type) -> Optional[Any]
+        # type: (Dict[str, Any], str) -> Optional[Any]
         """
         Returns longest match of key `k` in dict `d`
         :param d:
@@ -139,7 +138,7 @@ class MIBRegistry(object):
         return None
 
     def render(self, oid, value, display_hints=None):
-        # type: (six.text_type, six.binary_type, Dict[six.text_type, Callable[[six.text_type, six.binary_type], Union[six.text_type, six.binary_type]]]) -> six.text_type
+        # type: (str, bytes, Dict[str, Callable[[str, bytes], Union[str, bytes]]]) -> str
         """
         Apply display-hint
         :return:

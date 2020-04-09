@@ -98,7 +98,7 @@ class Vendor(Document):
 
     def clean(self):
         # Convert code to list
-        if isinstance(self.code, six.string_types):
+        if isinstance(self.code, str):
             self.code = [self.code]
         # Uppercase code
         self.code = [c.upper() for c in self.code]

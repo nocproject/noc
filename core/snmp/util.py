@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SNMP utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import re
 
 # Third-party modules
-import six
 from typing import Any, Optional, Union
 
 # NOC modules
@@ -27,7 +26,7 @@ rx_os_format = re.compile(
 
 
 def render_tc_int(value, format):
-    # type: (int, six.text_type) -> six.text_type
+    # type: (int, str) -> str
     if format == "x":
         # Hexadecimal
         return "%x" % value
@@ -50,8 +49,8 @@ def render_tc_int(value, format):
 
 
 def render_tc_octetstring(value, format):
-    # type: (Union[six.binary_type, six.text_type]) -> six.text_type
-    if isinstance(value, six.binary_type):
+    # type: (Union[bytes, str]) -> str
+    if isinstance(value, bytes):
         value = [bord(c) for c in value]
     else:
         value = [ord(c) for c in value]
@@ -100,7 +99,7 @@ def render_tc_octetstring(value, format):
 
 
 def render_tc(value, base_type, format=None):
-    # type: (Any, six.text_type, Optional[six.text_type]) -> six.text_type
+    # type: (Any, str, Optional[str]) -> str
     """
     Render SNMP TC using DISPLAY-HINT according to RFC 2579
 

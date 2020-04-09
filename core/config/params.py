@@ -2,16 +2,13 @@
 # ----------------------------------------------------------------------
 # Config parameters
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import itertools
 import logging
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.validators import is_int, is_ipv4
@@ -95,7 +92,7 @@ class IntParameter(BaseParameter):
 
 class BooleanParameter(BaseParameter):
     def clean(self, v):
-        if isinstance(v, six.string_types):
+        if isinstance(v, str):
             v = v.lower() in ["y", "t", "true", "yes"]
         return bool(v)
 
@@ -155,7 +152,7 @@ class SecondsParameter(BaseParameter):
     }
 
     def clean(self, v):
-        if isinstance(v, six.integer_types):
+        if isinstance(v, int):
             return v
         m = self.SCALE.get(v[-1], None)
         if m is None:
@@ -220,7 +217,7 @@ class ServiceParameter(BaseParameter):
     DEFAULT_RESOLUTION_TIMEOUT = 1
 
     def __init__(self, service, near=False, wait=True, help=None, full_result=True, critical=True):
-        if isinstance(service, six.string_types):
+        if isinstance(service, str):
             self.services = [service]
         else:
             self.services = service
@@ -238,7 +235,7 @@ class ServiceParameter(BaseParameter):
     def set_value(self, value):
         self.value = None
         value = smart_text(value)
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             self.services = [value]
         else:
             self.services = value
@@ -250,7 +247,7 @@ class ServiceParameter(BaseParameter):
         if isinstance(self.services, list) and ":" in self.services[0]:
             self.value = [ServiceItem(*i.rsplit(":", 1)) for i in self.services]
             return
-        elif isinstance(self.services, six.string_types) and ":" in self.services:
+        elif isinstance(self.services, str) and ":" in self.services:
             self.value = self.services
             return
 

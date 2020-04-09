@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 import pytest
 
 # NOC modules
@@ -21,25 +20,25 @@ def bin(s):
 @pytest.mark.parametrize(
     "input,expected",
     [
-        (six.text_type("abc"), six.text_type("abc")),
-        (bin("abc"), six.text_type("abc")),
-        (0, six.text_type("0")),
-        (0.0, six.text_type("0.0")),
-        (True, six.text_type("True")),
-        (False, six.text_type("False")),
-        (None, six.text_type("None")),
+        (str("abc"), str("abc")),
+        (bin("abc"), str("abc")),
+        (0, str("0")),
+        (0.0, str("0.0")),
+        (True, str("True")),
+        (False, str("False")),
+        (None, str("None")),
     ],
 )
 def test_smart_text(input, expected):
     v = smart_text(input)
-    assert isinstance(v, six.text_type)
+    assert isinstance(v, str)
     assert v == expected
 
 
 @pytest.mark.parametrize(
     "input,expected",
     [
-        (six.text_type("abc"), bin("abc")),
+        (str("abc"), bin("abc")),
         (bin("abc"), bin("abc")),
         (0, bin("0")),
         (0.0, bin("0.0")),
@@ -50,7 +49,7 @@ def test_smart_text(input, expected):
 )
 def test_smart_bytes(input, expected):
     v = smart_bytes(input)
-    assert isinstance(v, six.binary_type)
+    assert isinstance(v, bytes)
     assert v == expected
 
 

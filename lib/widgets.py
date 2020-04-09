@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Form widgets
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,6 @@
 from django.forms.widgets import Input
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
-
-# Third-party modules
-import six
 import ujson
 
 
@@ -77,7 +74,7 @@ def lookup(request, func):
 
 
 def tags_list(o):
-    if isinstance(o.tags, six.string_types):
+    if isinstance(o.tags, str):
         tags = [x for x in o.tags.split(",") if x]
     else:
         tags = o.tags or []

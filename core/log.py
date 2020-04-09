@@ -2,16 +2,13 @@
 # ----------------------------------------------------------------------
 #  Various logging utilities
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2014 The NOC Project
+#  Copyright (C) 2007-2020 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 import datetime
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.debug import get_traceback, error_fingerprint
@@ -117,7 +114,7 @@ class ColorFormatter(logging.Formatter):
 
         try:
             message = record.getMessage()
-            assert isinstance(message, six.string_types)
+            assert isinstance(message, str)
             record.message = safe_text(message)
         except Exception as e:
             record.message = "Bad message (%r): %r" % (e, record.__dict__)

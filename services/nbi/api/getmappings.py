@@ -12,7 +12,6 @@ import operator
 # Third-party modules
 import tornado.gen
 import ujson
-import six
 
 # NOC modules
 from noc.core.service.apiaccess import authenticated
@@ -31,8 +30,8 @@ class GetMappingsAPI(NBIAPI):
             if s is None:
                 return None
             if isinstance(s, list):
-                return [six.text_type(x) for x in s]
-            return [six.text_type(s)]
+                return [str(x) for x in s]
+            return [str(s)]
 
         if not scope:
             raise ValueError("scope must be set")
@@ -97,7 +96,7 @@ class GetMappingsAPI(NBIAPI):
 
     def write_result(self, code, result):
         self.set_status(code)
-        if isinstance(result, six.string_types):
+        if isinstance(result, str):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")

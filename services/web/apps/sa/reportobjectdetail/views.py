@@ -163,7 +163,7 @@ class ReportObjectDetailApplication(ExtApplication):
             def qe(v):
                 if v is None:
                     return ""
-                if isinstance(v, six.text_type):
+                if isinstance(v, str):
                     return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")

@@ -49,7 +49,7 @@ class BaseProfileMetaclass(type):
                 "%s: 'command_more' is deprecated and will be removed in NOC 20.2" % n.name,
                 RemovedInNOC2002Warning,
             )
-        if isinstance(n.pattern_more, six.string_types):
+        if isinstance(n.pattern_more, str):
             warnings.warn(
                 "%s: 'command_more' must be a list of (pattern, command). "
                 "Support for textual 'command_more' will be removed in NOC 20.2" % n.name,
@@ -60,7 +60,7 @@ class BaseProfileMetaclass(type):
         # Fix binary attributes
         for attr in mcs.BINARY_ATTRS:
             v = getattr(n, attr, None)
-            if v is not None and isinstance(v, six.text_type):
+            if v is not None and isinstance(v, str):
                 warnings.warn(
                     "%s: '%s' must be of binary type. Support for text values will be removed in NOC 20.2"
                     % (n.name, attr),
@@ -70,13 +70,13 @@ class BaseProfileMetaclass(type):
         # Fix command_more
         pattern_more = []
         for pattern, cmd in n.pattern_more:
-            if not isinstance(pattern, six.binary_type):
+            if not isinstance(pattern, bytes):
                 warnings.warn(
                     "%s: 'pattern_more' %r pattern must be of binary type. "
                     "Support for text values will be removed in NOC 20.2" % (n.name, pattern)
                 )
                 pattern = smart_bytes(pattern)
-            if not isinstance(cmd, six.binary_type):
+            if not isinstance(cmd, bytes):
                 warnings.warn(
                     "%s: 'pattern_more' %r command must be of binary type. "
                     "Support for text values will be removed in NOC 20.2" % (n.name, cmd)
@@ -271,12 +271,10 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # if render_callable is None, translation is disabled and binary data processed by default way
     # Otherwise it must be a callable, accepting (oid, raw_data) parameter
     # where oid is varbind's oid value, while raw_data is raw binary data of varbind value.
-    # Callable should return six.text_type
-    # It is possible to return six.binary_type in very rare specific cases,
+    # Callable should return str
+    # It is possible to return bytes in very rare specific cases,
     # when you have intention to process binary output in script directly
-    snmp_display_hints = (
-        {}
-    )  # type: Dict[six.text_type, Optional[Callable[[six.text_type, six.binary_type], Union[six.text_type, six.binary_type]]]]
+    snmp_display_hints = {}  # type: Dict[str, Optional[Callable[[str, bytes], Union[str, bytes]]]]
     # Aggregate up to *snmp_metrics_get_chunk* oids
     # to one SNMP GET request
     snmp_metrics_get_chunk = 15
@@ -505,7 +503,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     config_volatile = None
 
     def cleaned_input(self, input):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         """
         Preprocessor to clean up and normalize input from device.
         Delete ASCII sequences by default.
@@ -514,7 +512,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         return strip_control_sequences(input)
 
     def clean_rogue_chars(self, s):
-        # type: (six.binary_type) -> six.binary_type
+        # type: (bytes) -> bytes
         if self.rogue_chars:
             for cleaner in self.rogue_char_cleaners:
                 s = cleaner(s)
@@ -586,9 +584,9 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         def compile(pattern):
             if not pattern:
                 return None
-            if isinstance(pattern, six.string_types):
+            if isinstance(pattern, str):
                 return re.compile(pattern)
-            if isinstance(pattern, six.binary_type):
+            if isinstance(pattern, bytes):
                 return re.compile(pattern)
             return pattern
 
@@ -598,7 +596,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
 
     @classmethod
     def get_telnet_naws(cls):
-        # type: () -> six.binary_type
+        # type: () -> bytes
         return cls.telnet_naws
 
     @classmethod
@@ -635,7 +633,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
             return '"%s"' % s
 
         def nqi(s):
-            if isinstance(s, six.string_types):
+            if isinstance(s, str):
                 return '"%s"' % s
             else:
                 return str(s)
@@ -698,7 +696,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         """
 
         def get_applicator(cfg):
-            if isinstance(cfg, six.string_types):
+            if isinstance(cfg, str):
                 a_handler, a_cfg = cfg, {}
             else:
                 a_handler, a_cfg = cfg
@@ -728,7 +726,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     @classmethod
     def iter_collators(cls, obj):
         def get_collator(cfg):
-            if isinstance(cfg, six.string_types):
+            if isinstance(cfg, str):
                 c_handler, c_cfg = cfg, {}
             else:
                 c_handler, c_cfg = cfg
@@ -825,16 +823,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         chain = []
         if cls.rogue_chars:
             for rc in cls.rogue_chars:
-                if isinstance(rc, six.text_type):
+                if isinstance(rc, str):
                     warnings.warn(
                         "%s: 'rogue_char' %r pattern must be of binary type. "
                         "Support for text values will be removed in NOC 20.2" % (cls.name, rc)
                     )
                     chain += [get_bytes_cleaner(smart_bytes(rc))]
-                elif isinstance(rc, six.binary_type):
+                elif isinstance(rc, bytes):
                     chain += [get_bytes_cleaner(rc)]
                 elif hasattr(rc, "sub"):
-                    if not isinstance(rc.pattern, six.binary_type):
+                    if not isinstance(rc.pattern, bytes):
                         # Recompile as binary re
                         warnings.warn(
                             "%s: 'rogue_char' %r pattern must be of binary type. "

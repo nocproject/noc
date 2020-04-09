@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CustomerPortal client
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import logging
 import os
 
 # Third-party modules
-import six
 from six.moves.configparser import RawConfigParser
 import requests
 import ujson
@@ -150,7 +149,7 @@ class CPClient(object):
         if org:
             info["org"] = org.strip()
         if industries:
-            if isinstance(industries, six.string_types):
+            if isinstance(industries, str):
                 industries = [x.strip() for x in industries.split(",") if x.strip()]
             info["industries"] = industries
         if language:
@@ -171,7 +170,7 @@ class CPClient(object):
         if org:
             info["org"] = org.strip()
         if industries:
-            if isinstance(industries, six.string_types):
+            if isinstance(industries, str):
                 industries = [x.strip() for x in industries.split(",") if x.strip()]
             info["industries"] = industries
         if language:

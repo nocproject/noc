@@ -11,7 +11,6 @@ from collections import defaultdict
 import datetime
 
 # Third-party modules
-import six
 from six.moves import zip
 
 # NOC modules
@@ -113,7 +112,7 @@ class MAC(Model):
             # @todo convert mac all
             if isinstance(query[k], list) and len(query[k]) == 1:
                 arg = query[k][0].strip()
-            elif isinstance(query[k], six.string_types):
+            elif isinstance(query[k], str):
                 arg = query[k].strip()
             else:
                 arg = query[k]

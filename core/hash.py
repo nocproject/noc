@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Fast hash function
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import struct
 # Third-party modules
 from csiphash import siphash24
 from typing import Dict, Any
-import six
 
 # NOC modules
 from noc.core.comp import smart_text, smart_bytes
@@ -36,6 +35,6 @@ def hash_int(value):
 
 
 def dict_hash_int(d):
-    # type: (Dict[six.text_type, Any]) -> int
+    # type: (Dict[str, Any]) -> int
     r = ["%s=%s" % (k, d[k]) for k in sorted(d)]
     return hash_int(",".join(r))

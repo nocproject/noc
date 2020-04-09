@@ -318,8 +318,8 @@ class ModelInline(object):
                 v = f._get_val_from_obj(o)
                 if (
                     v is not None
-                    and not isinstance(v, six.string_types)
-                    and not isinstance(v, six.integer_types)
+                    and not isinstance(v, str)
+                    and not isinstance(v, int)
                     and not isinstance(v, (bool, list))
                 ):
                     v = smart_text(v)

@@ -214,12 +214,12 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             pass
 
-    def get_idprom(self, int, descr):
+    def get_idprom(self, iface, descr):
         try:
-            t = self.cli("show idprom int %s | i Vendor" % int)
+            t = self.cli("show idprom int %s | i Vendor" % iface)
             match = self.rx_idprom.search(t)
             if not match and self.is_cat4000 and descr == "10GBASE-LR":
-                t = self.cli("show idprom int %s | i endor" % int)
+                t = self.cli("show idprom int %s | i endor" % iface)
                 match = self.rx_idprom1.search(t)
             if match:
                 v = self.rx_cvend.search(match.group("t_vendor").upper())
@@ -248,7 +248,7 @@ class Script(BaseScript):
                 if self.rx_trans.search(match.group("t_part_no").upper().replace("-", "")):
                     pid = self.get_transceiver_pid(match.group("t_part_no"))
                 else:
-                    if "GBIC" in match.group("t_part_no") and "Gi" in int:
+                    if "GBIC" in match.group("t_part_no") and "Gi" in iface:
                         pid = self.get_transceiver_pid(
                             "1000BASE" + match.group("t_part_no")[5:].strip()
                         )

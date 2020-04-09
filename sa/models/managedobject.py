@@ -759,7 +759,7 @@ class ManagedObject(NOCModel):
             self.segment.update_access()
         elif "segment" in self.changed_fields:
             iseg = self.initial_data["segment"]
-            if iseg and isinstance(iseg, six.string_types):
+            if iseg and isinstance(iseg, str):
                 iseg = NetworkSegment.get_by_id(iseg)
             if iseg:
                 iseg.update_access()

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NSQ Topic Queue
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from threading import Lock
 import datetime
 
 # Third-party modules
-import six
 import ujson
 import tornado.gen
 import tornado.locks
@@ -55,7 +54,7 @@ class TopicQueue(object):
         :return: Yields JSON-encoded chunks
         :raises ValueError: If message cannot be encoded or too big
         """
-        if isinstance(message, six.string_types):
+        if isinstance(message, str):
             if len(message) > limit:
                 raise ValueError("Message too big")
             yield message
@@ -86,7 +85,7 @@ class TopicQueue(object):
             Append message to the end of queue (FIFO) if True.
         :return:
         """
-        if not isinstance(message, six.string_types):
+        if not isinstance(message, str):
             message = ujson.dumps(message)
         with self.lock:
             if self.to_shutdown:

@@ -43,7 +43,7 @@ class Script(BaseScript):
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
         for key, value in sorted(six.iteritems(v["DeviceInfo"])):
-            if key == "_text" or isinstance(value, six.string_types):
+            if key == "_text" or isinstance(value, str):
                 continue
             c += "    %s %s\n" % (key, value[0]["_text"] if value[0] else "")
         v = self.http.get("/ISAPI/Streaming/channels", use_basic=True)
@@ -59,14 +59,14 @@ class Script(BaseScript):
             video = o["Video"][0]
             c += "  Video\n"
             for key, value in sorted(six.iteritems(video)):
-                if key == "_text" or isinstance(value, six.string_types):
+                if key == "_text" or isinstance(value, str):
                     continue
                 c += "    %s %s\n" % (key, value[0]["_text"])
             if "Audio" in o:
                 audio = o["Audio"][0]
                 c += "  Audio\n"
                 for key, value in sorted(six.iteritems(audio)):
-                    if key == "_text" or isinstance(value, six.string_types):
+                    if key == "_text" or isinstance(value, str):
                         continue
                     c += "    %s %s\n" % (key, value[0]["_text"])
         v = self.http.get("/ISAPI/Image/channels/1", use_basic=True)
@@ -78,20 +78,20 @@ class Script(BaseScript):
         color = o["Color"][0]
         c += "Color\n"
         for key, value in sorted(six.iteritems(color)):
-            if key == "_text" or isinstance(value, six.string_types):
+            if key == "_text" or isinstance(value, str):
                 continue
             c += "    %s %s\n" % (key, value[0]["_text"])
         if "WDR" in o:
             wdr = o["WDR"][0]
             c += "WDR\n"
             for key, value in sorted(six.iteritems(wdr)):
-                if key == "_text" or isinstance(value, six.string_types):
+                if key == "_text" or isinstance(value, str):
                     continue
                 c += "    %s %s\n" % (key, value[0]["_text"])
         blc = o["BLC"][0]
         c += "BLC\n"
         for key, value in sorted(six.iteritems(blc)):
-            if key == "_text" or isinstance(value, six.string_types):
+            if key == "_text" or isinstance(value, str):
                 continue
             try:
                 c += "    %s %s\n" % (key, value[0]["_text"])
@@ -133,7 +133,7 @@ class Script(BaseScript):
                 else:
                     c += "  %s\n" % o
                     for key, value in sorted(six.iteritems(v["VideoOverlay"][o][0])):
-                        if key == "_text" or isinstance(value, six.string_types):
+                        if key == "_text" or isinstance(value, str):
                             continue
                         c += "    %s %s\n" % (key, value[0]["_text"])
                 if o == "channelNameOverlay":
@@ -147,7 +147,7 @@ class Script(BaseScript):
             v = self.xml_2_dict(root)
             c += "Time\n"
             for key, value in sorted(six.iteritems(v["Time"])):
-                if key == "_text" or isinstance(value, six.string_types) or key == "localTime":
+                if key == "_text" or isinstance(value, str) or key == "localTime":
                     continue
                 c += "  %s %s\n" % (key, value[0]["_text"])
         except HTTPError:
@@ -175,7 +175,7 @@ class Script(BaseScript):
             for u in v["UserList"]["User"]:
                 c += " user %s\n" % u["userName"][0]["_text"]
                 for key, value in sorted(six.iteritems(u)):
-                    if key == "_text" or isinstance(value, six.string_types):
+                    if key == "_text" or isinstance(value, str):
                         continue
                     c += "    %s %s\n" % (key, value[0]["_text"])
         except ElementTree.ParseError:

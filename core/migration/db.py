@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Migration db property
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import logging
 import datetime
 
 # Third-party modules
-import six
 from django.db.models import AutoField
 from django.db import connection
 from django.db.backends.utils import truncate_name
@@ -210,11 +209,11 @@ class DB(object):
             if default is not None:
                 if callable(default):
                     default = default()
-                if isinstance(default, six.string_types):
+                if isinstance(default, str):
                     default = "'%s'" % default.replace("'", "''")
                 elif isinstance(default, (datetime.date, datetime.time, datetime.datetime)):
                     default = "'%s'" % default
-                if isinstance(default, six.string_types):
+                if isinstance(default, str):
                     default = default.replace("%", "%%")
                 sql += ["DEFAULT %s" % default]
                 params += [default]

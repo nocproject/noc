@@ -18,7 +18,6 @@ from email.header import Header
 
 # Third-party modules
 import pytz
-import six
 
 # NOC modules
 from noc.config import config
@@ -62,7 +61,7 @@ class MailSenderService(Service):
         self.tz = pytz.timezone(config.timezone)
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
-        if isinstance(address, six.string_types):
+        if isinstance(address, str):
             address = [address]
         from_address = config.mailsender.from_address
         message = MIMEMultipart()

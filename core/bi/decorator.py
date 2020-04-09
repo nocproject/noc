@@ -12,7 +12,6 @@ import struct
 # Third-party modules
 from csiphash import siphash24
 import bson
-import six
 
 # NOC modules
 from noc.config import config
@@ -43,7 +42,7 @@ def bi_hash(v):
     :param v:
     :return:
     """
-    if not isinstance(v, six.string_types):
+    if not isinstance(v, str):
         v = str(v)
     bh = siphash24(SIPHASH_SEED, smart_bytes(v))
     return int(struct.unpack("!Q", bh)[0] & 0x7FFFFFFFFFFFFFFF)

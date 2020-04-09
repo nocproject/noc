@@ -7,9 +7,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.core.service.base import Service
 from noc.config import config
@@ -44,7 +41,7 @@ class NBIService(Service):
         r = []
         for api in self.iter_api():
             path = api.get_path()
-            if isinstance(path, six.string_types):
+            if isinstance(path, str):
                 r += [("/api/nbi/%s" % api.get_path(), api, {"service": self})]
             else:
                 r += [("/api/nbi/%s" % p, api, {"service": self}) for p in path]

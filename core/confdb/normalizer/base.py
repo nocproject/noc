@@ -30,7 +30,7 @@ class Node(object):
     __slots__ = ["token", "handler", "children", "matcher"]
 
     def __init__(self, token):
-        if isinstance(token, six.string_types):
+        if isinstance(token, str):
             self.token = Token(token)
         else:
             self.token = token
@@ -152,7 +152,7 @@ class BaseNormalizerMetaclass(type):
         r = []
         for p in path:
             if p.name:
-                if isinstance(p.token, six.string_types):
+                if isinstance(p.token, str):
                     args += [BasePattern.compile_gen_kwarg(p.name, p.default)]
                     r += [p.name]
                 else:

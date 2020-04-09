@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Custom python module importer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,6 @@
 import sys
 import os
 import imp
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.config import config
@@ -95,7 +92,7 @@ class NOCLoader(object):
             # so we can find the sub-modules.
             mod.__path__ = [self.path_entry]
 
-        if isinstance(source, six.text_type):
+        if isinstance(source, str):
             # Convert to UTF-8 to prevent
             # SyntaxError: encoding declaration in Unicode string
             source = source.encode("utf-8")

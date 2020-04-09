@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from bson import ObjectId
 
 
@@ -42,7 +41,7 @@ def get_severity(alarms):
     def f(a):
         if hasattr(a, "id"):
             return a.id
-        elif isinstance(a, six.string_types):
+        elif isinstance(a, str):
             return ObjectId(a)
         else:
             return a

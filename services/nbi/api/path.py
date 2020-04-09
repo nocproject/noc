@@ -10,7 +10,6 @@
 from collections import defaultdict
 
 # Third-party modules
-import six
 import tornado.gen
 import ujson
 from typing import Tuple, Optional, Dict, List, Iterable, DefaultDict, Any
@@ -108,7 +107,7 @@ class PathAPI(NBIAPI):
     def post(self, *args, **kwargs):
         code, result = yield self.executor.submit(self.handler)
         self.set_status(code)
-        if isinstance(result, six.string_types):
+        if isinstance(result, str):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")

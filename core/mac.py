@@ -2,16 +2,14 @@
 # ----------------------------------------------------------------------
 # MAC address manipulation routines
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
 
-# Third-party modules
-import six
-
+# NOC modules
 from noc.core.comp import smart_text
 
 # Regular expressions
@@ -84,7 +82,7 @@ class MAC(str):
 
     @classmethod
     def _clean(cls, mac):
-        if isinstance(mac, six.integer_types):
+        if isinstance(mac, int):
             return "%02X:%02X:%02X:%02X:%02X:%02X" % (
                 (mac >> 40) & 0xFF,
                 (mac >> 32) & 0xFF,
@@ -94,7 +92,7 @@ class MAC(str):
                 mac & 0xFF,
             )
         if len(mac) == 6:
-            if isinstance(mac, six.binary_type):
+            if isinstance(mac, bytes):
                 return ":".join(["%02X" % c for c in mac])
             return ":".join(["%02X" % ord(c) for c in mac])
 
