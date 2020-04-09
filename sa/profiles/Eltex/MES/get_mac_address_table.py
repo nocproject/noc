@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
@@ -22,6 +23,7 @@ class Script(BaseScript):
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)", re.MULTILINE
     )
 
+    """
     def execute_snmp(self, interface=None, vlan=None, mac=None):
         r = []
         # Try SNMP first
@@ -29,7 +31,7 @@ class Script(BaseScript):
         if mac is not None:
             mac = mac.lower()
         iface_name = {}
-        for v in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1"]):
+        for v in self.snmp.get_tables(mib["IF-MIB::ifName"]):
             if v[1][:2] == "fa" or v[1][:2] == "gi" or v[1][:2] == "te" or v[1][:2] == "po":
                 name = v[1]
                 name = name.replace("fa", "Fa ")
@@ -38,11 +40,11 @@ class Script(BaseScript):
                 name = name.replace("po", "Po ")
                 iface_name.update({v[0]: name})
 
-        for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"]):
+        for v in self.snmp.get_tables(mib["Q-BRIDGE-MIB::dot1qTpFdbPort"]):
             vlan_oid.append(v[0])
         # mac iface type
         for v in self.snmp.get_tables(
-            ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3"]
+            [mib["BRIDGE-MIB::dot1dTpFdbAddress"], mib["BRIDGE-MIB::dot1dTpFdbPort"], mib["BRIDGE-MIB::dot1dTpFdbStatus"]]
         ):
             if None in v:
                 continue
@@ -82,6 +84,7 @@ class Script(BaseScript):
                 }
             )
         return r
+    """
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         r = []
