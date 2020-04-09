@@ -18,8 +18,8 @@
   },
   "templating": {
     "list": [
-    {%if extra_template != "dom"%}
-      {%if port_types %}
+    {% if extra_template != "dom" %}
+      {% if port_types %}
         {% set comma = joiner(",") -%}
         {% for port_type in port_types -%}
           {% from 'template_port.j2' import ports -%}
@@ -85,10 +85,11 @@
       "tags": [],
       "targetBlank": false,
       "type": "link",
-      "title": {%if extra_template == "iface" %}"Standart View"{% else %}"PacketsView"{% endif %},
-      "tooltip": {%if extra_template == "iface"%}"Interface by Load"{% else %}"Interface by Packets"{% endif %},
-      "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{%if extra_template == "iface"%}{% else %}&extra_template=iface{% endif %}&id={{device_id}}"
+      "title": {% if extra_template == "iface" %}"Standart View"{% else %}"PacketsView"{% endif %},
+      "tooltip": {% if extra_template == "iface" %}"Interface by Load"{% else %}"Interface by Packets"{% endif %},
+      "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{% if extra_template == "iface" %}{% else %}&extra_template=iface{% endif %}&id={{device_id}}"
     },
+    {% if dom_types %}
     {
       "icon": "doc",
       "includeVars": true,
@@ -97,9 +98,10 @@
       "targetBlank": false,
       "type": "link",
       "title": {%if extra_template == "dom" %}"Standart View" {% else %}"DOM View"{% endif %},
-      "tooltip": {%if extra_template == "dom"%}"Interface by Load"{% else %}"Interface DOM metrics"{% endif %},
-      "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{%if extra_template == "dom" %}{% else %}&extra_template=dom{% endif %}&id={{device_id}}"
+      "tooltip": {%if extra_template == "dom" %}"Interface by Load"{% else %}"Interface DOM metrics"{% endif %},
+      "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{% if extra_template == "dom" %}{% else %}&extra_template=dom{% endif %}&id={{device_id}}"
     },
+    {% endif %}
     {
       "icon": "external link",
       "includeVars": true,
@@ -139,8 +141,8 @@
       ]
 
     }
-    {%if extra_template == "dom"%}
-    {%if dom_types %}
+    {% if extra_template == "dom" %}
+    {% if dom_types %}
     ,
         {% set comma = joiner(",") -%}
         {% for dom in dom_types -%}
@@ -154,22 +156,22 @@
               "title": "DOM: {{dom.name}}",
               "internal_comment": "dom_row",
               "panels": [
-                   {%if "optical_rx_dbm" in dom.metrics or "optical_tx_dbm" in dom.metrics %}
+                   {% if "optical_rx_dbm" in dom.metrics or "optical_tx_dbm" in dom.metrics %}
                       {% from "graph_dom_rxtxpower.j2" import interface -%}
                         {{interface(dom, loop.index)}},
                    {% endif %}
-                   {%if "voltage_v" in dom.metrics or "current_ma" in dom.metrics %}
+                   {% if "voltage_v" in dom.metrics or "current_ma" in dom.metrics %}
                       {% from "graph_dom_voltagebias.j2" import interface -%}
                         {{interface(dom, loop.index)}},
                    {% endif %}
-                   {%if "temp_c" in dom.metrics %}
+                   {% if "temp_c" in dom.metrics %}
                       {% from "graph_dom_temperature.j2" import interface -%}
                         {{interface(dom, loop.index)}},
                    {% endif %}
               ]
             }
         {%- endfor %}
-    {%endif%}
+    {% endif %}
     {% else %}
     {%if port_types %}
     ,
@@ -184,12 +186,16 @@
               "title": "{{port.name}}",
               "internal_comment": "port_row",
               "panels": [
-                {%if extra_template == "iface" %}{% from "graph_interface_multi.j2" import interface -%}{% else %}{% from "graph_interface_load.j2" import interface -%}{% endif %}
+                {% if extra_template == "iface" %}
+                    {% from "graph_interface_multi.j2" import interface -%}
+                {% else %}
+                    {% from "graph_interface_load.j2" import interface -%}
+                {% endif %}
                 {{interface(port, loop.index)}}
               ]
             }
         {%- endfor %}
-    {%endif%}
+    {% endif %}
 
     {%if subifaces %}
     ,
@@ -205,7 +211,7 @@
           {{subinterface()}}
         ]
       }
-    {%endif%}
+    {% endif %}
     {%if lags %}
     ,
         {% set comma = joiner(",") -%}
@@ -224,14 +230,14 @@
               ]
             }
         {%- endfor %}
-    {%endif%}
+    {% endif %}
 
-    {%if port_types %}
+    {% if port_types %}
     ,
         {% include "row_errors.j2" with context -%}
-    {%endif%}
+    {% endif %}
 
-    {%if radio_types %}
+    {% if radio_types %}
     ,
         {% set comma = joiner(",") -%}
         {% for radio in radio_types -%}
@@ -245,24 +251,24 @@
               "title": "Radio: {{radio.name}}",
               "internal_comment": "radio_row",
               "panels": [
-                {%if "tx_power" in radio.ports[0].metrics or "rx_power" in radio.ports[0].metrics %}
+                {% if "tx_power" in radio.ports[0].metrics or "rx_power" in radio.ports[0].metrics %}
                   {% from "graph_radio_rxtxpower.j2" import interface -%}
                   {{interface(radio, loop.index)}},
                 {% endif %}
 
-                {%if "rssi" in radio.ports[0].metrics or "cnri" in radio.ports[0].metrics %}
+                {% if "rssi" in radio.ports[0].metrics or "cnri" in radio.ports[0].metrics %}
                   {% from "graph_radio_cinr_rssi.j2" import interface -%}
                   {{interface(radio, loop.index)}},
                 {% endif %}
 
-                {%if "signal_level" in radio.ports[0].metrics or "noise_level" in radio.ports[0].metrics %}
+                {% if "signal_level" in radio.ports[0].metrics or "noise_level" in radio.ports[0].metrics %}
                   {% from "graph_radio_signal_noise_level.j2" import interface -%}
                   {{interface(radio, loop.index)}},
                 {% endif %}
               ]
             }
         {%- endfor %}
-    {%endif%}
+    {% endif %}
 
     {%if object_check_metrics %}
       ,
@@ -285,9 +291,9 @@
         ]
 
       }
-    {%endif%}
+    {% endif %}
 
-    {%if object_metrics%}
+    {% if object_metrics %}
         ,
         {
           "collapse": false,
@@ -305,7 +311,7 @@
           ]
 
         }
-    {%endif%}
-    {%endif%}
+    {% endif %}
+    {% endif %}
   ]
 }
