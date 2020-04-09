@@ -75,17 +75,25 @@
         {
             "description": "gigaethernet 1/1/9 port",
             "direction": "s",
+            "gender": "s",
+            "name": "1/1/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "gigaethernet 1/1/9 copper port",
+            "direction": "s",
             "gender": "f",
-            "group": "9",
             "name": "1/1/9",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "gigaethernet 1/1/9 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "9",
             "name": "1/1/9_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -93,17 +101,25 @@
         {
             "description": "gigaethernet 1/1/10 port",
             "direction": "s",
+            "gender": "s",
+            "name": "1/1/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "gigaethernet 1/1/10 copper port",
+            "direction": "s",
             "gender": "f",
-            "group": "10",
             "name": "1/1/10",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "gigaethernet 1/1/10 SFP port",
             "direction": "i",
             "gender": "f",
-            "group": "10",
             "name": "1/1/10_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
