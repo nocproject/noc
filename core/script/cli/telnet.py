@@ -107,18 +107,10 @@ ACCEPTED_TELNET_OPTIONS = {0x01, 0x03, 0x18, 0x1F}
 
 OPTS = {B_OPT_TTYPE_IS: "TTYPE IS", B_OPT_WS: "WS"}
 
-if six.PY3:
 
-    def bytes_seq(*args):
-        # type: (*int) -> six.binary_type
-        return bytes(args)
-
-
-else:
-
-    def bytes_seq(*args):
-        # type: (*int) -> six.binary_type
-        return b"".join(chr(x) for x in args)
+def bytes_seq(*args):
+    # type: (*int) -> six.binary_type
+    return bytes(args)
 
 
 class TelnetParser(object):

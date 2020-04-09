@@ -64,9 +64,7 @@ class BaseExtractor(object):
             os.makedirs(self.import_dir)
         path = os.path.join(self.import_dir, "import.csv.gz")
         self.logger.info("Writing to %s", path)
-        if six.PY3:
-            return io.TextIOWrapper(gzip.GzipFile(path, "w"))
-        return gzip.GzipFile(path, "w")
+        return io.TextIOWrapper(gzip.GzipFile(path, "w"))
 
     def get_problem_file(self):
         if not os.path.isdir(self.import_dir):
@@ -74,9 +72,7 @@ class BaseExtractor(object):
             os.makedirs(self.import_dir)
         path = os.path.join(self.import_dir, "import.csv.rej.gz")
         self.logger.info("Writing to %s", path)
-        if six.PY3:
-            return io.TextIOWrapper(gzip.GzipFile(path, "w"))
-        return gzip.GzipFile(path, "w")
+        return io.TextIOWrapper(gzip.GzipFile(path, "w"))
 
     def iter_data(self):
         for row in self.data:

@@ -2,14 +2,12 @@
 # ----------------------------------------------------------------------
 # INI file tokenizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 from six.moves.configparser import RawConfigParser
-from six import StringIO
-import six
 
 # NOC modules
 from .base import BaseTokenizer
@@ -25,11 +23,7 @@ class INITokenizer(BaseTokenizer):
     def __init__(self, data):
         super(INITokenizer, self).__init__(data)
         self.config = RawConfigParser()
-        if six.PY3:
-            self.config.read_string(data)
-        else:
-            f = StringIO(data)
-            self.config.readfp(f)
+        self.config.read_string(data)
 
     def __iter__(self):
         for section in sorted(self.config.sections()):

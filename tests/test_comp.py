@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # noc.core.comp tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,16 +13,9 @@ import pytest
 # NOC modules
 from noc.core.comp import smart_bytes, smart_text, bord
 
-if six.PY3:
 
-    def bin(s):
-        return bytes(s, "utf-8")
-
-
-else:
-
-    def bin(s):
-        return str(s)
+def bin(s):
+    return bytes(s, "utf-8")
 
 
 @pytest.mark.parametrize(

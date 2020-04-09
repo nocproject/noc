@@ -94,7 +94,7 @@ class MAC(str):
                 mac & 0xFF,
             )
         if len(mac) == 6:
-            if six.PY3 and isinstance(mac, six.binary_type):
+            if isinstance(mac, six.binary_type):
                 return ":".join(["%02X" % c for c in mac])
             return ":".join(["%02X" % ord(c) for c in mac])
 

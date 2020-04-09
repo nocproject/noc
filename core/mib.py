@@ -20,14 +20,7 @@ from noc.config import config
 from noc.core.snmp.util import render_tc
 from noc.core.comp import smart_text
 
-
 logger = logging.getLogger(__name__)
-
-if six.PY3:
-    # Py3, not present in Py2
-    MissedModuleError = ModuleNotFoundError  # noqa: F821
-else:
-    MissedModuleError = ImportError
 
 
 class MIBRegistry(object):
@@ -103,7 +96,7 @@ class MIBRegistry(object):
                 mn = "%s.cmibs.%s" % (base_name, mod_name)
                 try:
                     m = __import__(mn, {}, {}, "MIB")
-                except MissedModuleError:
+                except ModuleNotFoundError:
                     raise KeyError(name)
                 self.mib.update(getattr(m, "MIB"))
                 if hasattr(m, "DISPLAY_HINTS"):
