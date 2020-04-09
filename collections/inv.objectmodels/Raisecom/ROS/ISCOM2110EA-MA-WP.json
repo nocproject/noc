@@ -75,36 +75,52 @@
         {
             "description": "port 9",
             "direction": "s",
-            "gender": "f",
-            "group": "9",
+            "gender": "s",
             "name": "9",
+            "protocols": ["10BASET", "100BASETX", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "port 9",
+            "direction": "s",
+            "gender": "f",
+            "name": "9_rj",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "Fiber port 9",
             "direction": "i",
             "gender": "f",
-            "group": "9",
-            "name": "sfp9",
+            "name": "9_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "port 10",
             "direction": "s",
-            "gender": "f",
-            "group": "10",
+            "gender": "s",
             "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "",
+            "description": "port 10",
+            "direction": "s",
+            "gender": "f",
+            "name": "10_rj",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "combo": "",
             "description": "Fiber port 10",
             "direction": "i",
             "gender": "f",
-            "group": "10",
-            "name": "sfp10",
+            "name": "10_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
