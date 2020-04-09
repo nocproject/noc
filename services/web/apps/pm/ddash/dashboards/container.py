@@ -7,9 +7,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # Third-Party modules
 import demjson
 from jinja2 import Environment, FileSystemLoader

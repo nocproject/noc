@@ -2,17 +2,17 @@
 # ----------------------------------------------------------------------
 # Script loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import sys
 import glob
 import threading
 import os
 import re
+import importlib
 
 # NOC modules
 from noc.core.loader.base import BaseLoader
@@ -88,7 +88,7 @@ class ScriptLoader(BaseLoader):
             self.logger.info("Reloading scripts")
             for s in self.scripts:
                 self.logger.debug("Reload script %s", s.name)
-                reload(sys.modules[s.__module__])
+                importlib.reload(sys.modules[s.__module__])
             self.scripts = {}
             self.all_scripts = set()
 

@@ -7,8 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from __future__ import absolute_import
-
 # NOC modules
 from noc.inv.models.platform import Platform
 from .base import BaseCard

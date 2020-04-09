@@ -2,15 +2,12 @@
 # ----------------------------------------------------------------------
 # Decorators
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
-from __future__ import absolute_import
-
 from noc.core.perf import metrics
-
 from .base import cache as x_cache
 
 

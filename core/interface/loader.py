@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # Interface loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -15,6 +14,7 @@ import inspect
 import threading
 import os
 import re
+import importlib
 
 # NOC modules
 from .base import BaseInterface
@@ -83,7 +83,7 @@ class InterfaceLoader(object):
             logger.info("Reloading interfaces")
             for s in self.interfaces:
                 logger.debug("Reload interface %s", s)
-                reload(sys.modules[s.__module__])
+                importlib.reload(sys.modules[s.__module__])
             self.interfaces = {}
             self.all_interfaces = set()
 

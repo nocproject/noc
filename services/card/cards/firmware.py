@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
 from noc.inv.models.firmware import Firmware
 from .base import BaseCard

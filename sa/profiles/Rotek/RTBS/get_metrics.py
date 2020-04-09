@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.platform import PlatformRule

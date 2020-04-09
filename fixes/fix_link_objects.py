@@ -6,8 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from __future__ import print_function
-
 # Third-party modules
 from mongoengine.queryset import Q
 

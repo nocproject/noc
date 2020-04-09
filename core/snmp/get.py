@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import random
 from collections import namedtuple
 

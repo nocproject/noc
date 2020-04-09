@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 from xml.parsers.expat import ParserCreate
 
 # NOC modules

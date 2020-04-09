@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # Third-party modules
 from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals

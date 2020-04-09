@@ -6,8 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from __future__ import absolute_import
-
 # NOC modules
 from .base import BaseLoader
 from noc.inv.models.networksegment import NetworkSegment

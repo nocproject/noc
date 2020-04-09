@@ -7,7 +7,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from __future__ import print_function
 # Python modules
 import os
 import sys

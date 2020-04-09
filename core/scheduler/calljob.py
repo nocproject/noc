@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from __future__ import absolute_import
 from .job import Job
 from noc.core.handler import get_handler
 

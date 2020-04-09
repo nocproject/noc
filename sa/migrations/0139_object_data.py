@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import print_function
-
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import InsertOne

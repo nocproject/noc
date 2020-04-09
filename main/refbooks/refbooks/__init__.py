@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from __future__ import print_function
-
 # NOC modules
 from noc.main.models.refbook import RefBook as RB
 from noc.main.models.refbookfield import RefBookField

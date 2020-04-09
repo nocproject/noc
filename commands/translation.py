@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import print_function
 import subprocess
 import argparse
 import os

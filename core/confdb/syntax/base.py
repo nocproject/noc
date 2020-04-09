@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
 from .meta.base import META_SYNTAX
 from .system.base import SYSTEM_SYNTAX

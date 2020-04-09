@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from __future__ import print_function
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 

@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 from ..box.prefix import PrefixCheck as BasePrefixCheck, DiscoveredPrefix, SRC_WHOIS_ROUTE
 
 

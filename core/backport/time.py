@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import ctypes
 import errno
 from ctypes.util import find_library

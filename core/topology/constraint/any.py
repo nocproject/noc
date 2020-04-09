@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
 from .base import BaseConstraint
 
