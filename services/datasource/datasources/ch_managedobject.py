@@ -21,12 +21,11 @@ class CHManagedObjectDataSource(BaseDataSource):
 
     def extract(self):
         containers = ReportContainerData(
-            sorted(
-                set(
-                    ManagedObject.objects.all()
-                    .order_by("container")
-                    .values_list("container", flat=True)
-                )
+            set(
+                ManagedObject.objects.all()
+                .exclude(container=None)
+                .order_by("id")
+                .values_list("id", flat=True)
             )
         )
         containers = containers.get_dictionary()
@@ -73,5 +72,5 @@ class CHManagedObjectDataSource(BaseDataSource):
                 RemoteSystem.get_by_id(remote_system).name if remote_system else "",
                 adm_id,
                 adm_name,
-                containers.get(container, ("",))[0] if container else "",
+                containers.get(mo_id, "") if container else "",
             )
