@@ -140,7 +140,7 @@
             "description": "Fiber port 17",
             "direction": "i",
             "gender": "f",
-            "name": "sfp17",
+            "name": "17",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -148,7 +148,7 @@
             "description": "Fiber port 18",
             "direction": "i",
             "gender": "f",
-            "name": "sfp18",
+            "name": "18",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
