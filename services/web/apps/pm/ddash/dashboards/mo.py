@@ -59,6 +59,18 @@ class MODashboard(BaseDashboard):
                 return metrics
             return None
 
+        def interface_dom_metrics(profile):
+            """
+            Check interface profile has metrics
+            """
+            metrics = []
+            for m in profile.metrics:
+                if m.metric_type.name.startswith("Interface | DOM"):
+                    metrics.append(m.metric_type.field_name)
+            if metrics:
+                return metrics
+            return None
+
         def check_metrics(metric):
             """
             Object check metrics
@@ -73,6 +85,7 @@ class MODashboard(BaseDashboard):
         lags = []
         subif = []
         radio_types = []
+        dom_types = []
         selected_types = defaultdict(list)
         selected_ifaces = set(self.extra_vars.get("var_ifaces", "").split(","))
         # Get all interface profiles with configurable metrics
@@ -85,6 +98,7 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             radio = []
+            dom = []
             for iface in sorted(ifaces, key=lambda el: alnum_key(el.name)):
                 if iface.type == "SVI" and not iface.profile.allow_subinterface_metrics:
                     continue
@@ -114,6 +128,18 @@ class MODashboard(BaseDashboard):
                             "metrics": interface_radio_metrics(profile),
                         }
                     ]
+                if interface_dom_metrics(profile) and iface.type == "physical":
+                    dom += [
+                        {
+                            "name": iface.name,
+                            "descr": self.str_cleanup(
+                                iface.description, remove_letters=TITLE_BAD_CHARS
+                            ),
+                            "status": iface.status,
+                            "metrics": interface_dom_metrics(profile),
+                            "type": profile.id,
+                        }
+                    ]
                 if iface.type == "physical":
                     ports += [
                         {
@@ -140,6 +166,8 @@ class MODashboard(BaseDashboard):
                 port_types += [{"type": profile.id, "name": profile.name, "ports": ports}]
             if radio:
                 radio_types += [{"type": profile.id, "name": profile.name, "ports": radio}]
+            if dom:
+                dom_types = dom
 
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
@@ -165,6 +193,7 @@ class MODashboard(BaseDashboard):
             "lags": lags,
             "subifaces": subif,
             "radio_types": radio_types,
+            "dom_types": dom_types,
         }
 
     def render(self):
@@ -183,6 +212,7 @@ class MODashboard(BaseDashboard):
             "vendor": self.object.vendor or "Unknown version",
             "subifaces": self.object_data["subifaces"],
             "radio_types": self.object_data["radio_types"],
+            "dom_types": self.object_data["dom_types"],
             "bi_id": self.object.bi_id,
             "pool": self.object.pool.name,
             "extra_template": self.extra_template,
