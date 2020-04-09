@@ -18,7 +18,8 @@
   },
   "templating": {
     "list": [
-      {%if port_types %}
+    {% if extra_template != "dom" %}
+      {% if port_types %}
         {% set comma = joiner(",") -%}
         {% for port_type in port_types -%}
           {% from 'template_port.j2' import ports -%}
@@ -38,7 +39,7 @@
         {% from "template_subiface.j2" import subiface -%}
           {{ subiface(subifaces) }},
       {% endif %}
-
+    {% endif %}
       {% include "template_device.j2" with context -%},
       {% include "template_vendor.j2" with context -%},
       {% include "template_platform.j2" with context -%},
@@ -51,6 +52,7 @@
       {% include "template_ping_interval.j2" with context -%}
     ]
   },
+
   "annotations": {
     "list": [
       {
@@ -81,12 +83,25 @@
       "includeVars": true,
       "keepTime": true,
       "tags": [],
-      "targetBlank": true,
+      "targetBlank": false,
       "type": "link",
-      "title": {%if extra_template == "iface" %}"Standart View"{% else %}"PacketsView"{% endif %},
-      "tooltip": {%if extra_template == "iface"%}"Interface by Load"{% else %}"Interface by Packets"{% endif %},
-      "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{%if extra_template %}{% else %}&extra_template=iface{% endif %}&id={{device_id}}"
+      "title": {% if extra_template == "iface" %}"Standart View"{% else %}"PacketsView"{% endif %},
+      "tooltip": {% if extra_template == "iface" %}"Interface by Load"{% else %}"Interface by Packets"{% endif %},
+      "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{% if extra_template == "iface" %}{% else %}&extra_template=iface{% endif %}&id={{device_id}}"
     },
+    {% if dom_types %}
+        {
+          "icon": "doc",
+          "includeVars": true,
+          "keepTime": true,
+          "tags": [],
+          "targetBlank": false,
+          "type": "link",
+          "title": {%if extra_template == "dom" %}"Standart View" {% else %}"DOM View"{% endif %},
+          "tooltip": {%if extra_template == "dom" %}"Interface by Load"{% else %}"Interface DOM metrics"{% endif %},
+          "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{% if extra_template == "dom" %}{% else %}&extra_template=dom{% endif %}&id={{device_id}}"
+        },
+    {% endif %}
     {
       "icon": "external link",
       "includeVars": true,
@@ -122,144 +137,181 @@
       {%if port_types %}
           ,
           {% include "panel_errors.j2" with context -%}
-      {%endif%}
+      {% endif %}
       ]
 
     }
-    {%if port_types %}
-    ,
-        {% set comma = joiner(",") -%}
-        {% for port in port_types -%}
-            {{ comma() }}
-            {
-              "collapse": {% if port.type in selected_types and selected_types[port.type] %}false{% else %}true{% endif %},
-              "editable": false,
-              "height": "250px",
-              "showTitle": true,
-              "title": "{{port.name}}",
-              "internal_comment": "port_row",
-              "panels": [
-                {%if extra_template == "iface" %}{% from "graph_interface_multi.j2" import interface -%}{% else %}{% from "graph_interface_load.j2" import interface -%}{% endif %}
-                {{interface(port, loop.index)}}
-              ]
-            }
-        {%- endfor %}
-    {%endif%}
-
-    {%if subifaces %}
-    ,
-      {
-        "collapse": true,
-        "editable": false,
-        "height": "250px",
-        "showTitle": true,
-        "title": "SubInterfaces",
-        "internal_comment": "subif_row",
-        "panels": [
-          {% from "graph_subinterface_load.j2" import subinterface -%}
-          {{subinterface()}}
-        ]
-      }
-    {%endif%}
-    {%if lags %}
-    ,
-        {% set comma = joiner(",") -%}
-        {% for lag in lags -%}
-
-            {{ comma() }}{
-              "collapse": true,
-              "editable": false,
-              "height": "250px",
-              "showTitle": true,
-              "title": "{{lag.name}} ({{lag.descr}})",
-              "internal_comment": "lags_row",
-              "panels": [
-                {% from "graph_interface_load_lag.j2" import interface -%}
-                {{interface(lag, loop.index)}}
-              ]
-            }
-        {%- endfor %}
-    {%endif%}
-
-    {%if port_types %}
-    ,
-        {% include "row_errors.j2" with context -%}
-    {%endif%}
-
-    {%if radio_types %}
-    ,
-        {% set comma = joiner(",") -%}
-        {% for radio in radio_types -%}
-            {{ comma() }}
-
-            {
-              "collapse": true,
-              "editable": false,
-              "height": "250px",
-              "showTitle": true,
-              "title": "Radio: {{radio.name}}",
-              "internal_comment": "radio_row",
-              "panels": [
-                {%if "tx_power" in radio.ports[0].metrics or "rx_power" in radio.ports[0].metrics %}
-                  {% from "graph_radio_rxtxpower.j2" import interface -%}
-                  {{interface(radio, loop.index)}},
-                {% endif %}
-
-                {%if "rssi" in radio.ports[0].metrics or "cnri" in radio.ports[0].metrics %}
-                  {% from "graph_radio_cinr_rssi.j2" import interface -%}
-                  {{interface(radio, loop.index)}},
-                {% endif %}
-
-                {%if "signal_level" in radio.ports[0].metrics or "noise_level" in radio.ports[0].metrics %}
-                  {% from "graph_radio_signal_noise_level.j2" import interface -%}
-                  {{interface(radio, loop.index)}},
-                {% endif %}
-              ]
-            }
-        {%- endfor %}
-    {%endif%}
-
-    {%if object_check_metrics %}
-      ,
-      {
-        "collapse": true,
-        "editable": false,
-        "height": "250px",
-        "showTitle": true,
-        "internal_comment": "object_check_metrics",
-        "title": "Check metrics",
-        "panels": [
-            {% for metric in object_check_metrics -%}
-              {% if "result" in metric.metric %}
-                {% include "graph_check_result.j2" with context -%},
-              {% endif %}
-              {% if "rtt" in metric.metric %}
-                {% include "graph_check_ping.j2" with context -%}
-              {% endif %}
-            {%- endfor %}
-        ]
-
-      }
-    {%endif%}
-
-    {%if object_metrics%}
+    {% if extra_template == "dom" %}
+        {% if dom_types %}
         ,
-        {
-          "collapse": false,
-          "editable": false,
-          "height": "250px",
-          "showTitle": true,
-          "internal_comment": "object_metrics",
-          "title": "Objects metrics",
-          "panels": [
             {% set comma = joiner(",") -%}
-            {% for graph in object_metrics -%}
-              {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
-              {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
-            {%- endfor %}
-          ]
+            {% for dom in dom_types -%}
+                {{ comma() }}
 
-        }
-    {%endif%}
+                {
+                  "collapse": true,
+                  "editable": false,
+                  "height": "250px",
+                  "showTitle": true,
+                  "title": "DOM: {{dom.name}}",
+                  "internal_comment": "dom_row",
+                  "panels": [
+                       {% if "optical_rx_dbm" in dom.metrics or "optical_tx_dbm" in dom.metrics %}
+                          {% from "graph_dom_rxtxpower.j2" import interface -%}
+                            {{interface(dom, loop.index)}},
+                       {% endif %}
+                       {% if "voltage_v" in dom.metrics or "current_ma" in dom.metrics %}
+                          {% from "graph_dom_voltagebias.j2" import interface -%}
+                            {{interface(dom, loop.index)}},
+                       {% endif %}
+                       {% if "temp_c" in dom.metrics %}
+                          {% from "graph_dom_temperature.j2" import interface -%}
+                            {{interface(dom, loop.index)}},
+                       {% endif %}
+                  ]
+                }
+            {%- endfor %}
+        {% endif %}
+    {% else %}
+        {%if port_types %}
+        ,
+            {% set comma = joiner(",") -%}
+            {% for port in port_types -%}
+                {{ comma() }}
+                {
+                  "collapse": {% if port.type in selected_types and selected_types[port.type] %}false{% else %}true{% endif %},
+                  "editable": false,
+                  "height": "250px",
+                  "showTitle": true,
+                  "title": "{{port.name}}",
+                  "internal_comment": "port_row",
+                  "panels": [
+                    {% if extra_template == "iface" %}
+                        {% from "graph_interface_multi.j2" import interface -%}
+                    {% else %}
+                        {% from "graph_interface_load.j2" import interface -%}
+                    {% endif %}
+                    {{interface(port, loop.index)}}
+                  ]
+                }
+            {%- endfor %}
+        {% endif %}
+
+        {%if subifaces %}
+        ,
+          {
+            "collapse": true,
+            "editable": false,
+            "height": "250px",
+            "showTitle": true,
+            "title": "SubInterfaces",
+            "internal_comment": "subif_row",
+            "panels": [
+              {% from "graph_subinterface_load.j2" import subinterface -%}
+              {{subinterface()}}
+            ]
+          }
+        {% endif %}
+        {%if lags %}
+        ,
+            {% set comma = joiner(",") -%}
+            {% for lag in lags -%}
+
+                {{ comma() }}{
+                  "collapse": true,
+                  "editable": false,
+                  "height": "250px",
+                  "showTitle": true,
+                  "title": "{{lag.name}} ({{lag.descr}})",
+                  "internal_comment": "lags_row",
+                  "panels": [
+                    {% from "graph_interface_load_lag.j2" import interface -%}
+                    {{interface(lag, loop.index)}}
+                  ]
+                }
+            {%- endfor %}
+        {% endif %}
+
+        {% if port_types %}
+        ,
+            {% include "row_errors.j2" with context -%}
+        {% endif %}
+
+        {% if radio_types %}
+        ,
+            {% set comma = joiner(",") -%}
+            {% for radio in radio_types -%}
+                {{ comma() }}
+
+                {
+                  "collapse": true,
+                  "editable": false,
+                  "height": "250px",
+                  "showTitle": true,
+                  "title": "Radio: {{radio.name}}",
+                  "internal_comment": "radio_row",
+                  "panels": [
+                    {% if "tx_power" in radio.ports[0].metrics or "rx_power" in radio.ports[0].metrics %}
+                      {% from "graph_radio_rxtxpower.j2" import interface -%}
+                      {{interface(radio, loop.index)}},
+                    {% endif %}
+
+                    {% if "rssi" in radio.ports[0].metrics or "cnri" in radio.ports[0].metrics %}
+                      {% from "graph_radio_cinr_rssi.j2" import interface -%}
+                      {{interface(radio, loop.index)}},
+                    {% endif %}
+
+                    {% if "signal_level" in radio.ports[0].metrics or "noise_level" in radio.ports[0].metrics %}
+                      {% from "graph_radio_signal_noise_level.j2" import interface -%}
+                      {{interface(radio, loop.index)}},
+                    {% endif %}
+                  ]
+                }
+            {%- endfor %}
+        {% endif %}
+
+        {%if object_check_metrics %}
+          ,
+          {
+            "collapse": true,
+            "editable": false,
+            "height": "250px",
+            "showTitle": true,
+            "internal_comment": "object_check_metrics",
+            "title": "Check metrics",
+            "panels": [
+                {% for metric in object_check_metrics -%}
+                  {% if "result" in metric.metric %}
+                    {% include "graph_check_result.j2" with context -%},
+                  {% endif %}
+                  {% if "rtt" in metric.metric %}
+                    {% include "graph_check_ping.j2" with context -%}
+                  {% endif %}
+                {%- endfor %}
+            ]
+
+          }
+        {% endif %}
+
+        {% if object_metrics %}
+            ,
+            {
+              "collapse": false,
+              "editable": false,
+              "height": "250px",
+              "showTitle": true,
+              "internal_comment": "object_metrics",
+              "title": "Objects metrics",
+              "panels": [
+                {% set comma = joiner(",") -%}
+                {% for graph in object_metrics -%}
+                  {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
+                  {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
+                {%- endfor %}
+              ]
+
+            }
+        {% endif %}
+    {% endif %}
   ]
 }
