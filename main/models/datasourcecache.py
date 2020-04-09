@@ -15,6 +15,7 @@ import bz2
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BinaryField, DateTimeField, IntField
 import bson
+from noc.core.comp import smart_bytes
 
 logger = logging.getLogger(__name__)
 CURRENT_VERSION = 3
@@ -111,7 +112,7 @@ class DataSourceCache(Document):
         :param data:
         :return:
         """
-        return bz2.compress(data, 9)
+        return bz2.compress(smart_bytes(data), 9)
 
     @classmethod
     def decode(cls, data):
