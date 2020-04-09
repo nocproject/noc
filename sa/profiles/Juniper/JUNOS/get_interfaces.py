@@ -16,6 +16,7 @@ import six
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -204,7 +205,9 @@ class Script(BaseScript):
             # Get description
             match = self.rx_phy_description.search(phy)
             if match and match.group("description") != "-=unused=-":
-                iface["description"] = match.group("description").decode("ascii", "ignore")
+                iface["description"] = smart_text(
+                    match.group("description"), errors="ignore", encoding="ascii"
+                )
             # Get ifindex
             match = self.rx_phy_ifindex.search(phy)
             if match:
@@ -242,7 +245,9 @@ class Script(BaseScript):
                 # Get description
                 match = self.rx_phy_description.search(s)
                 if match:
-                    si["description"] = match.group("description").decode("ascii", "ignore")
+                    si["description"] = smart_text(
+                        match.group("description"), errors="ignore", encoding="ascii"
+                    )
                 # Get vlans
                 vlan_ids = []
                 match = self.rx_flags_vlan.search(s)
