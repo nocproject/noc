@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import print_function
 import argparse
 import sys
 from contextlib import contextmanager

@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import print_function
-
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.models import get_model, iter_model_id, is_document

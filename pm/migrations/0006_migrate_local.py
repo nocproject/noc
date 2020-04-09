@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import print_function
-
 # Third-party modules
 from bson.binary import Binary
 from pymongo.errors import BulkWriteError

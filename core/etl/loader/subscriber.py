@@ -7,9 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
-
-# Python modules
 import operator
 
 # Third-party modules

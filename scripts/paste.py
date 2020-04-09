@@ -8,7 +8,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import print_function
 import logging
 from optparse import OptionParser
 import sys

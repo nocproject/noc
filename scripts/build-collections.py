@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # USAGE: build <spec>
 
-from __future__ import print_function
-
 import tarfile
 import json
 import sys

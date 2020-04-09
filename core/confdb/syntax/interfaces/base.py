@@ -5,9 +5,6 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
 from ..defs import DEF
 from ..patterns import ANY, CHOICES, IF_NAME, INTEGER, BOOL, FLOAT, ETHER_MODE

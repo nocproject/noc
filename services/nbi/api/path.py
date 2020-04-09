@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 from collections import defaultdict
 
 # Third-party modules
@@ -172,7 +171,7 @@ class PathAPI(NBIAPI):
                 error = str(e)
             dt = perf_counter() - t0
         if error:
-            return 404, {"status": False, "error": e, "time": dt}
+            return 404, {"status": False, "error": error, "time": dt}
         return 200, {"status": True, "paths": paths, "time": dt}
 
     def get_object_and_interface(self, object=None, interface=None, service=None):

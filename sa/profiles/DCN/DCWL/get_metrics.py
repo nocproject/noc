@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import division
 import six
 from collections import defaultdict
 import codecs

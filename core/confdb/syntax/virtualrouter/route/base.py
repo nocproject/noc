@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
 from ...defs import DEF
 from .inet.base import VR_ROUTE_INET_SYNTAX

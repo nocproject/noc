@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from __future__ import absolute_import
 import pytest
 
 # NOC modules

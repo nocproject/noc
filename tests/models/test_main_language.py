@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import unicode_literals
-
 # Third-party modules
 import pytest
 

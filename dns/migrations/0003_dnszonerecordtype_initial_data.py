@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import print_function
-
 # NOC modules
 from noc.core.migration.base import BaseMigration
 

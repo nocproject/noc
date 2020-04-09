@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import itertools
 from collections import defaultdict
 from functools import partial

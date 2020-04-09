@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # Third-party modules
 from six.moves.urllib.parse import quote as urllib_quote
 import ujson

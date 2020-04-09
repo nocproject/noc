@@ -7,7 +7,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
 # Third-party modules
 import tornado.ioloop
 import tornado.gen

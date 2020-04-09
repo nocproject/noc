@@ -7,9 +7,6 @@
 # ---------------------------------------------------------------------
 
 
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from .dashboards.base import BaseDashboard
