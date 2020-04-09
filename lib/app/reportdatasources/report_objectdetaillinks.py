@@ -56,7 +56,7 @@ class ReportObjectDetailLinks(BaseReportColumn):
                     {"$group": group},
                     {"$sort": {"_id": 1}},
                 ],
-                {"allowDiskUse": True},
+                allowDiskUse=True,
             )
         )
         for val in value:
