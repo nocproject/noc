@@ -33,8 +33,6 @@ ALLOW_XFAIL = {
     "noc.scripts.migrate-ignored-interfaces",
     "noc.gis.parsers.address.fias",
     "noc.gis.tile",
-    "noc.lib.clipsenv",
-    "noc.cm.engine",
 }
 
 

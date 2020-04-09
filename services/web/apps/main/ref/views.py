@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.ref application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,7 +23,6 @@ from noc.core.interface.loader import loader as interface_loader
 from noc.core.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
-from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
 from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
@@ -160,34 +159,6 @@ class RefAppplication(ExtApplication):
         return list(
             sorted(
                 ({"id": s[0], "label": s[1]} for s in USER_NOTIFICATION_METHOD_CHOICES),
-                key=lambda x: x["label"],
-            )
-        )
-
-    def build_validator(self):
-        def f(k, v):
-            tags = []
-            if v.is_object():
-                tags += ["OBJECT"]
-            if v.is_interface():
-                tags += ["INTERFACE"]
-            if v.is_subinterface():
-                tags += ["SUBINTERFACE"]
-            if v.TAGS:
-                tags += v.TAGS
-            r = {
-                "id": k,
-                "label": v.TITLE if v.TITLE else k,
-                "description": v.DESCRIPTION if v.DESCRIPTION else None,
-                "form": v.CONFIG_FORM if v.CONFIG_FORM else None,
-                "solution": None,
-                "tags": tags,
-            }
-            return r
-
-        return list(
-            sorted(
-                (f(k, v) for k, v in six.iteritems(validator_registry.validators) if v.TITLE),
                 key=lambda x: x["label"],
             )
         )

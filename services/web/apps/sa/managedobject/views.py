@@ -792,20 +792,6 @@ class ManagedObjectApplication(ExtModelApplication):
             key=lambda x: (x["cls"], x["label"]),
         )
 
-    @view(url=r"(?P<id>\d+)/revalidate/$", method=["POST"], access="read", api=True)
-    def api_revalidate(self, request, id):
-        from noc.cm.engine import Engine
-
-        def revalidate(o):
-            engine = Engine(o)
-            engine.check()
-            return self.response({"status": True}, self.OK)
-
-        o = self.get_object_or_404(ManagedObject, id=id)
-        if not o.has_access(request.user):
-            return self.response_forbidden("Access denied")
-        return self.submit_slow_op(request, revalidate, o)
-
     @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)
     def api_action(self, request, id, action):
         def execute(o, a, args):

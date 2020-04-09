@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: Juniper
-# OS:     JUNOS
+# Juniper.JUNOS profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,7 +41,6 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "mode", "server"),
         ("hints", "protocols", "ntp", "version", "3"),
     ]
-    default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
     matchers = {
         "is_has_lldp": {"platform": {"$regex": "ex|mx|qfx|acx|srx"}},

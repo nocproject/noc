@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: Huawei
-# OS:     VRP
+# Huawei,VRP profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import numpy as np
 from itertools import dropwhile
 from collections import defaultdict
 
 # Third-party modules
+import numpy as np
 from six.moves import zip_longest, zip
 
 # NOC modules
@@ -70,7 +69,6 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
     ]
     config_applicators = ["noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator"]
-    default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
     matchers = {
         "is_kernel_3": {"version": {"$gte": "3.0", "$lt": "5.0"}},

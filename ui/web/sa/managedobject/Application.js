@@ -34,7 +34,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobject.AlarmPanel",
         "NOC.sa.managedobject.InteractionsPanel",
         "NOC.sa.managedobject.CapsPanel",
-        "NOC.sa.managedobject.FactsPanel",
         "NOC.sa.managedobject.RepoPreview",
         "NOC.main.pool.LookupField",
         "NOC.main.ref.stencil.LookupField",
@@ -221,13 +220,6 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onCaps
         });
 
-        me.factsButton = Ext.create("Ext.button.Button", {
-            text: __("Facts"),
-            glyph: NOC.glyph.file,
-            scope: me,
-            handler: me.onFacts
-        });
-
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.sa.managedobject.RepoPreview", {
                 app: me,
@@ -261,7 +253,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
 
         me.ITEM_CAPS = me.registerItem("NOC.sa.managedobject.CapsPanel");
-        me.ITEM_FACTS = me.registerItem("NOC.sa.managedobject.FactsPanel");
 
         Ext.apply(me, {
             columns: [
@@ -1485,8 +1476,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.maintainceButton,
                 me.interactionsButton,
                 me.validationSettingsButton,
-                me.capsButton,
-                me.factsButton
+                me.capsButton
             ]
         })
         ;
@@ -1730,11 +1720,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_CAPS, me.currentRecord);
     },
     //
-    onFacts: function() {
-        var me = this;
-        me.previewItem(me.ITEM_FACTS, me.currentRecord);
-    },
-    //
     onInterfaceClick: function(record) {
         var me = this;
         me.previewItem(me.ITEM_INTERFACE, record);
@@ -1793,9 +1778,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                             me.showItem(me.ITEM_CONFIG).historyDiff(record, args[2], args[3]);
                             break;
                     }
-                    break;
-                case "facts":
-                    me.onFacts();
                     break;
                 case "interfaces":
                     me.onInterfaces();

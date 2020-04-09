@@ -2,15 +2,12 @@
 # ----------------------------------------------------------------------
 # pytest configuration
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
-
 # NOC modules
-from .fixtures.database import database  # noqa
+from noc.tests.fixtures.database import database  # noqa
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus):

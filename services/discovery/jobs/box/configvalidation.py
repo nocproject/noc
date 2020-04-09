@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ConfigValidation check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,8 +30,6 @@ class ConfigValidationCheck(DiscoveryCheck):
     def handler(self):
         self.logger.info("Running config validation")
         is_changed = self.get_artefact("config_changed") or False
-        # Legacy CLIPS path, problems are passed via Facts
-        self.object.validate_config(is_changed)
         # New ConfDB path, problems are passed via alarms
         alarms = []
         for problem in self.object.iter_validation_problems(is_changed):

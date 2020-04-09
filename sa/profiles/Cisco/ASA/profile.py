@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: Cisco
-# OS:     ASA
-# Compatible: 7.0
+# Cisco.ASA profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +23,6 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_disable_pager = "terminal pager 0"
-    default_parser = "noc.cm.parsers.Cisco.ASA.base.BaseASAParser"
     config_volatile = [r"\sat\s\d+:\d+:\d+\.\d+\s\S+\s\S+\s\S+\s\d+\s\d+\n"]
 
     def convert_interface_name(self, interface):

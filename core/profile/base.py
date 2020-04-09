@@ -251,10 +251,6 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     requires_netmask_conversion = False
     # Upper concurrent scripts limit, if set
     max_scripts = None
-    # Default config parser name. Full path to BaseParser subclass
-    # i.e noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser
-    # Can be overriden in get_parser method
-    default_parser = None
     # CLI timeouts
     # Timeout between connection established and login prompt
     cli_timeout_start = 60
@@ -572,16 +568,6 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         p2 = [int(x) for x in v2.split(".")]
         # cmp-like semantic
         return (p1 > p2) - (p1 < p2)
-
-    @classmethod
-    def get_parser(cls, vendor, platform, version):
-        """
-        Returns full path to BaseParser instance to be used
-        as config parser. None means no parser for particular platform
-        """
-        if six.PY3:
-            return None
-        return cls.default_parser
 
     @classmethod
     def get_interface_type(cls, name):

@@ -67,7 +67,6 @@ from noc.main.models.textindex import full_text_search, TextIndex
 from noc.core.scheduler.job import Job
 from noc.main.models.handler import Handler
 from noc.core.handler import get_handler
-from noc.core.debug import error_report
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
 from noc.inv.models.object import Object
@@ -1067,9 +1066,6 @@ class ManagedObject(NOCModel):
             self.write_config(data)
         # Apply mirroring settings
         self.mirror_config(data, changed)
-        # Run config validation
-        if validate:
-            self.validate_config(changed)
         # Rebuild datastream if necessary
         if changed:
             register_changes([("managedobject", self.id)])
@@ -1171,26 +1167,6 @@ class ManagedObject(NOCModel):
             logger.debug("[%s] Configuration has not been changed. Skipping", self.name)
             return False
         return True
-
-    def validate_config(self, changed):
-        """
-        Apply config validation rules (Legacy CLIPS path)
-
-        :param changed:
-        :return:
-        """
-        logger.debug("[%s] Validating config (Legacy path)", self.name)
-        if not self.to_validate(changed):
-            return
-        # Validate (Legacy Path)
-        from noc.cm.engine import Engine
-
-        engine = Engine(self)
-        try:
-            engine.check()
-        except:  # noqa
-            logger.error("Failed to validate config for %s", self.name)
-            error_report()
 
     def iter_validation_problems(self, changed):
         """
@@ -1302,19 +1278,6 @@ class ManagedObject(NOCModel):
         if not profile:
             self._profile = self.profile.get_profile()
         return self._profile
-
-    def get_parser(self):
-        """
-        Return parser instance or None.
-        Depends on version_discovery
-        """
-        if self.vendor and self.platform and self.version:
-            cls = self.profile.get_profile().get_parser(
-                self.vendor.code, self.platform.name, self.version.version
-            )
-            if cls:
-                return get_handler(cls)(self)
-        return get_handler("noc.cm.parsers.base.BaseParser")(self)
 
     def get_interface(self, name):
         from noc.inv.models.interface import Interface
