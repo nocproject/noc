@@ -18,68 +18,16 @@ from noc.sa.profiles.DLink.DGS3100.profile import DGS3100
 class Script(BaseScript):
     name = "DLink.DGS3100.get_mac_address_table"
     interface = IGetMACAddressTable
+
+    always_prefer = "S"
+
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+"
         r"(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$",
         re.MULTILINE,
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
-        r = []
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                vlan_oid = []
-                if mac is not None:
-                    mac = mac.lower()
-                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"], bulk=True):
-                    vlan_oid.append(v[0])
-
-                # mac iface type
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.7.1.2.2.1.2", "1.3.6.1.2.1.17.7.1.2.2.1.3"], bulk=True
-                ):
-                    if v[1]:
-                        macar = v[0].split(".")[1:]
-                        chassis = ":".join(["%02x" % int(c) for c in macar])
-                        if mac is not None:
-                            if chassis == mac:
-                                pass
-                            else:
-                                continue
-                    else:
-                        continue
-                    if not v[2] or int(v[2]) > 3 or int(v[2]) < 1:
-                        continue
-                    iface = self.snmp.get(
-                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True
-                    )  # IF-MIB
-                    if interface is not None:
-                        if iface == interface:
-                            pass
-                        else:
-                            continue
-                    for i in vlan_oid:
-                        if v[0] in i:
-                            vlan_id = int(i.split(".")[0])
-                            break
-                    if vlan is not None:
-                        if vlan_id == vlan:
-                            pass
-                        else:
-                            continue
-
-                    r.append(
-                        {
-                            "interfaces": [iface],
-                            "mac": chassis,
-                            "type": {"3": "D", "2": "S", "1": "S"}[str(v[2])],
-                            "vlan_id": vlan_id,
-                        }
-                    )
-                return r
-            except self.snmp.TimeOutError:
-                pass
+    def execute_cli(self, interface=None, vlan=None, mac=None, **kwargs):
 
         # Fallback to CLI
         cmd = "show fdb"

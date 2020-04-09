@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 
@@ -19,13 +18,20 @@ class Script(BaseScript):
     name = "3Com.4500.get_mac_address_table"
     interface = IGetMACAddressTable
 
+    always_prefer = "C"
+
     rx_line = re.compile(
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+)\s+\S+$",
         re.MULTILINE,
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_snmp(self, interface=None, vlan=None, mac=None, **kwargs):
+        # No mac adresses....
+        raise NotImplementedError
+
+    def execute_cli(self, interface=None, vlan=None, mac=None, **kwargs):
         cmd = "display mac-address"
+        r = []
 
         if mac is not None:
             mac = self.profile.convert_mac(mac)
@@ -38,69 +44,6 @@ class Script(BaseScript):
         if vlan is not None:
             cmd += " vlan %s" % vlan
 
-        r = []
-
-        # Try SNMP first
-        # No mac adresses....
-        """
-        if self.has_snmp():
-            try:
-                vlan_oid = []
-                if mac is not None:
-                    mac = mac.lower()
-
-                # Get switchport index and name
-                iface_name = {}
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.31.1.1.1.1"], bulk=True):
-                    iface = v[1].replace('GigabitEthernet', 'Gi ')
-                    iface = iface.replace('Bridge-Aggregation', 'Po ')
-                    iface_name.update({v[0]: iface})
-
-                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"],
-                        bulk=True):
-                        vlan_oid.append(v[0])
-                # mac iface type
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
-                    "1.3.6.1.2.1.17.4.3.1.3"], bulk=True):
-                    if v[1]:
-                        chassis = ":".join(["%02x" % ord(c) for c in v[1]])
-                        if mac is not None:
-                            if chassis == mac:
-                                pass
-                            else:
-                                continue
-                    else:
-                        continue
-                    if int(v[3]) > 3 or int(v[3]) < 1:
-                        continue
-                    iface = iface_name[v[2]]
-                    if interface is not None:
-                        if iface == interface:
-                            pass
-                        else:
-                            continue
-                    for i in vlan_oid:
-                        if v[0] in i:
-                            vlan_id = int(i.split('.')[0])
-                            break
-                    if vlan is not None:
-                        if vlan_id == vlan:
-                            pass
-                        else:
-                            continue
-
-                    r.append({
-                        "interfaces": [iface],
-                        "mac": chassis,
-                        "type": {"3": "D", "2": "S", "1": "S"}[v[3]],
-                        "vlan_id": vlan_id,
-                        })
-                return r
-            except self.snmp.TimeOutError:
-                pass
-        """
         # Fallback to CLI
         for match in self.rx_line.finditer(self.cli(cmd)):
             iface = match.group("interfaces")
