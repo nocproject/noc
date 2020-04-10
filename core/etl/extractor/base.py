@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Data Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -74,8 +74,7 @@ class BaseExtractor(object):
         return io.TextIOWrapper(gzip.GzipFile(path, "w"))
 
     def iter_data(self):
-        for row in self.data:
-            yield row
+        yield from self.data
 
     def filter(self, row):
         return True

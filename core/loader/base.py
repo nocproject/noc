@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BaseLoader class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -118,8 +118,7 @@ class BaseLoader(object):
         with self.lock:
             if not self.all_classes:
                 self.all_classes = self.find_classes()
-        for ds in sorted(self.all_classes):
-            yield ds
+        yield from sorted(self.all_classes)
 
     def find_classes(self):
         names = set()

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # line tokenizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -99,8 +99,7 @@ class LineTokenizer(BaseTokenizer):
             if match:
                 yield match.group(0)
                 line = line[match.end() :]
-        for li in line.split():
-            yield li
+        yield from line.split()
 
     def iter_line_quoted_tokens(self, line):
         """
@@ -132,8 +131,7 @@ class LineTokenizer(BaseTokenizer):
                 start = qi + 1
         else:
             # No quoted strings
-            for li in line.split():
-                yield li
+            yield from line.split()
 
     def __iter__(self):
         g = self.iter_lines()

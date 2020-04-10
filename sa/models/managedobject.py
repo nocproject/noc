@@ -1180,8 +1180,7 @@ class ManagedObject(NOCModel):
         confdb = self.get_confdb()
         # Object-level validation
         if self.object_profile.object_validation_policy:
-            for problem in self.object_profile.object_validation_policy.iter_problems(confdb):
-                yield problem
+            yield from self.object_profile.object_validation_policy.iter_problems(confdb)
         else:
             logger.debug("[%s] Object validation policy is not set. Skipping", self.name)
         # Interface-level validation
@@ -1244,8 +1243,7 @@ class ManagedObject(NOCModel):
         """
         from noc.inv.models.interface import Interface
 
-        for i in Interface.objects.filter(managed_object=self.id):
-            yield i
+        yield from Interface.objects.filter(managed_object=self.id)
 
     def get_caps(self):
         """
@@ -1649,8 +1647,7 @@ class ManagedObject(NOCModel):
         if not t_cls:
             raise ValueError("Invalid tokenizer")
         tokenizer = t_cls(config, **t_config)
-        for tokens in tokenizer:
-            yield tokens
+        yield from tokenizer
 
     def iter_normalized_tokens(self, config=None):
         profile = self.profile.get_profile()
@@ -1663,8 +1660,7 @@ class ManagedObject(NOCModel):
         if not n_cls:
             raise StopIteration
         normalizer = n_cls(self, self.iter_config_tokens(config), **n_config)
-        for tokens in normalizer:
-            yield tokens
+        yield from normalizer
 
     def get_confdb(self, config=None, cleanup=True):
         """
@@ -1716,8 +1712,7 @@ class ManagedObject(NOCModel):
 
     def iter_scope(self, scope):
         for o in Object.get_managed(self):
-            for r in o.iter_scope(scope):
-                yield r
+            yield from o.iter_scope(scope)
 
     def get_effective_fm_pool(self):
         if self.fm_pool:

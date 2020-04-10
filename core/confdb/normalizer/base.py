@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BaseNormalizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -63,8 +63,7 @@ class Node(object):
         elif tokens:
             for c in self.children:
                 if c.match(tokens[0]):
-                    for t in c.iter_matched(tokens[1:]):
-                        yield t
+                    yield from c.iter_matched(tokens[1:])
                     break
 
     def append(self, pattern, handler, matcher=None):
@@ -99,8 +98,7 @@ class RootNode(Node):
         if tokens:
             for c in self.children:
                 if c.match(tokens[0]):
-                    for t in c.iter_matched(tokens[1:]):
-                        yield t
+                    yield from c.iter_matched(tokens[1:])
                     break
 
 
@@ -210,8 +208,7 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
                     if rt is None:
                         continue  # Unresolved defer
                     if callable(rt):  # Resolved defers
-                        for d in rt():
-                            yield d
+                        yield from rt()
                     else:
                         yield rt
 

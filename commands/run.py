@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  ./noc run command
+# ./noc run command
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2019 The NOC Project
-#  See LICENSE for details
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
@@ -43,8 +43,7 @@ class Command(BaseCommand):
         for x in objects:
             for o in ManagedObjectSelector.get_objects_from_expression(x):
                 r.add(o)
-        for o in r:
-            yield o
+        yield from r
 
     def run_script(self, object, script, *args, **kwargs):
         s = getattr(object.scripts, script)

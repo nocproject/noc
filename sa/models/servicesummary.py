@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ServiceSumamry Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -93,8 +93,7 @@ class ServiceSummary(Document):
                 {"parent": sd["_id"], "logical_status": "R"},
                 {"_id": 1, "subscriber": 1, "profile": 1},
             ):
-                for ns in iter_services(cs):
-                    yield ns
+                yield from iter_services(cs)
 
         def add_dict(d1, d2):
             """

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CHAdministrativeDomain datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,4 +16,4 @@ class CHAdministrativeDomainDataSource(BaseDataSource):
 
     def extract(self):
         for ad in AdministrativeDomain.objects.all().order_by("id"):
-            yield (ad.bi_id, ad.id, ad.name, ad.parent.bi_id if ad.parent else "")
+            yield ad.bi_id, ad.id, ad.name, ad.parent.bi_id if ad.parent else ""

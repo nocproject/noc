@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ArchivedAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -229,8 +229,7 @@ class ArchivedAlarm(Document):
         """
         for a in ArchivedAlarm.objects.filter(root=self.id):
             yield a
-            for ca in a.iter_consequences():
-                yield ca
+            yield from a.iter_consequences()
 
     def iter_affected(self):
         """

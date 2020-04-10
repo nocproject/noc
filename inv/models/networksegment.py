@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Network Segment
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -492,14 +492,12 @@ class NetworkSegment(Document):
             for s in NetworkSegment.objects.filter(parent=ps.id):
                 if s.vlan_border:
                     continue
-                for cs in iter_segments(s):
-                    yield cs
+                yield from iter_segments(s)
 
         # Get domain root
         root = cls.get_border_segment(segment)
         # Yield all children segments
-        for rs in iter_segments(root):
-            yield rs
+        yield from iter_segments(root)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_cache"), lock=lambda _: id_lock)
@@ -527,8 +525,7 @@ class NetworkSegment(Document):
         ).values_list("id", flat=True)
 
     def iter_links(self):
-        for link in Link.objects.filter(linked_segments__in=[self.id]):
-            yield link
+        yield from Link.objects.filter(linked_segments__in=[self.id])
 
     def update_links(self):
         # @todo intersect link only

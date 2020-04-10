@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Predicate Engine
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -61,8 +61,7 @@ class Engine(object):
         if not isinstance(expr, types.CodeType):
             expr = self.compile(expr)
         g = eval(expr, {}, {"self": self, "_input": self.iter_initial(**kwargs)})
-        for ctx in g:
-            yield ctx
+        yield from g
 
     def any(self, expr, **kwargs):
         """
@@ -235,8 +234,7 @@ class Engine(object):
         :param _input:
         :return:
         """
-        for ctx in _input:
-            yield ctx
+        yield from _input
 
     def fn_False(self, _input):
         """
@@ -559,5 +557,4 @@ class Engine(object):
             # Replace
             self.trim_and_append(path, [value])
         # Pass contexts unchanged
-        for ctx in _input:
-            yield ctx
+        yield from _input

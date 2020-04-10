@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Configuration class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -63,8 +63,7 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
     _rx_env_sh = re.compile(r"\${([^:}]+)(:-[^}]+)?}")
 
     def __iter__(self):
-        for k in self._params_order:
-            yield k
+        yield from self._params_order
 
     @classmethod
     def expand(cls, value):

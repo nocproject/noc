@@ -145,8 +145,7 @@ class ScriptLoader(BaseLoader):
         """
         if not self.all_scripts:
             self.find_scripts()
-        for s in sorted(self.all_scripts):
-            yield s
+        yield from sorted(self.all_scripts)
 
     def has_script(self, name):
         """

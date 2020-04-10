@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # escalation command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -115,8 +115,7 @@ class Command(BaseCommand):
             for ac in [ArchivedAlarm, ActiveAlarm]:
                 for a in ac.objects.filter(root=alarm.id):
                     yield a
-                    for ca in a.iter_consequences():
-                        yield ca
+                    yield from a.iter_consequences()
 
         def iter_affected(alarm):
             """

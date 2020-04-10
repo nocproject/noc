@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MetricScope model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -142,7 +142,7 @@ class MetricScope(Document):
         if self.enable_timedelta:
             yield "time_delta", "UInt16"
         for t in MetricType.objects.filter(scope=self.id).order_by("id"):
-            yield (t.field_name, t.field_type)
+            yield t.field_name, t.field_type
 
     def get_create_sql(self):
         """

@@ -55,8 +55,7 @@ class MetaApplicator(BaseApplicator):
                 yield "meta", "tags", tag
         # meta matchers
         if self.object.version:
-            for r in self.iter_object_meta_matchers():
-                yield r
+            yield from self.iter_object_meta_matchers()
 
     def iter_object_meta_matchers(self):
         ctx = {

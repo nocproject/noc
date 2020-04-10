@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Loader chain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,8 +31,7 @@ class LoaderChain(object):
         return loader
 
     def __iter__(self):
-        for loader in self.lseq:
-            yield loader
+        yield from self.lseq
 
     def get_mappings(self, name):
         """

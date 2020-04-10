@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # indent tokenizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -67,8 +67,6 @@ class IndentTokenizer(LineTokenizer):
     def __iter__(self):
         g = super(IndentTokenizer, self).__iter__()
         if self.end_of_context:
-            g = self.iter_indent_explicit(g)
+            yield from self.iter_indent_explicit(g)
         else:
-            g = self.iter_indent(g)
-        for tokens in g:
-            yield tokens
+            yield from self.iter_indent(g)
