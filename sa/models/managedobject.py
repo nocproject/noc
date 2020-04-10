@@ -516,8 +516,7 @@ class ManagedObject(NOCModel):
         lock=lambda _: id_lock,
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
-    def get_by_id(cls, id):
-        # type: (int) -> Optional[ManagedObject]
+    def get_by_id(cls, id: int) -> "Optional[ManagedObject]":
         """
         Get ManagedObject by id. Cache returned instance for future use.
 

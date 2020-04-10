@@ -77,7 +77,7 @@ class CLI(object):
         self.command = None
         self.prompt_stack = []
         self.patterns = self.profile.patterns.copy()
-        self.buffer = b""  # type: bytes
+        self.buffer: bytes = b""
         self.is_started = False
         self.result = None
         self.error = None
@@ -174,8 +174,7 @@ class CLI(object):
                 s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
 
-    def set_timeout(self, timeout):
-        # type: (int) -> None
+    def set_timeout(self, timeout: int) -> None:
         if timeout:
             self.logger.debug("Setting timeout: %ss", timeout)
             self.current_timeout = datetime.timedelta(seconds=timeout)
@@ -220,14 +219,13 @@ class CLI(object):
 
     def execute(
         self,
-        cmd,
-        obj_parser=None,
-        cmd_next=None,
-        cmd_stop=None,
-        ignore_errors=False,
-        allow_empty_response=True,
-    ):
-        # type: (str, Optional[Callable], Optional[bytes], Optional[bytes], bool, bool) -> str
+        cmd: str,
+        obj_parser: Optional[Callable] = None,
+        cmd_next: Optional[bytes] = None,
+        cmd_stop: Optional[bytes] = None,
+        ignore_errors: bool = False,
+        allow_empty_response: bool = True,
+    ) -> str:
         self.reset_close_timeout()
         self.buffer = b""
         self.command = cmd
@@ -314,8 +312,7 @@ class CLI(object):
             self.result = None
         raise tornado.gen.Return(self.result)
 
-    def cleaned_input(self, s):
-        # type: (bytes) -> bytes
+    def cleaned_input(self, s: bytes) -> bytes:
         """
         Clean up received input and wipe out control sequences
         and rogue chars
@@ -327,8 +324,7 @@ class CLI(object):
         return self.profile.cleaned_input(s)
 
     @tornado.gen.coroutine
-    def send(self, cmd):
-        # type: (bytes) -> None
+    def send(self, cmd: bytes) -> None:
         # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
         yield self.iostream.write(cmd)

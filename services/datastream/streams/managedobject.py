@@ -158,7 +158,7 @@ class ManagedObjectDataStream(DataStream):
         )
         if not instances:
             return
-        si_map = defaultdict(list)  # type: DefaultDict[ObjectId, List[str]]
+        si_map: DefaultDict[ObjectId, List[str]] = defaultdict(list)
         for doc in SubInterface._get_collection().find(
             {"managed_object": mo.id}, {"_id": 0, "name": 1, "forwarding_instance": 1}
         ):

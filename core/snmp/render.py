@@ -13,8 +13,7 @@ from typing import Optional, Callable
 from noc.core.comp import smart_text, bord
 
 
-def render_bin(oid, value):
-    # type: (str, bytes) -> bytes
+def render_bin(oid: str, value: bytes) -> bytes:
     """
     Render raw binary
     :param oid:
@@ -24,8 +23,7 @@ def render_bin(oid, value):
     return value
 
 
-def render_utf8(oid, value):
-    # type: (str, bytes) -> str
+def render_utf8(oid: str, value: bytes) -> str:
     """
     Render as UTF-8 text. Ignore errors
     :param oid:
@@ -35,8 +33,7 @@ def render_utf8(oid, value):
     return smart_text(value, errors="ignore")
 
 
-def get_text_renderer(encoding="utf-8"):
-    # type: (Optional[str]) -> Callable[[str, bytes], str]
+def get_text_renderer(encoding: Optional[str] = "utf-8") -> Callable[[str, bytes], str]:
     """
     Return text renderer for arbitrary encoding
     :param encoding:
@@ -49,8 +46,7 @@ def get_text_renderer(encoding="utf-8"):
     return renderer
 
 
-def render_empty(oid, value):
-    # type: (str, bytes) -> str
+def render_empty(oid: str, value: bytes) -> str:
     """
     Always render empty string
     :param oid:
@@ -60,8 +56,7 @@ def render_empty(oid, value):
     return ""
 
 
-def render_mac(oid, value):
-    # type: (str, bytes) -> str
+def render_mac(oid: str, value: bytes) -> str:
     """
     Render 6 octets as MAC address. Render empty string on length mismatch
     :param oid:
@@ -73,8 +68,7 @@ def render_mac(oid, value):
     return "%02X:%02X:%02X:%02X:%02X:%02X" % tuple(bord(x) for x in value)
 
 
-def get_string_renderer(v):
-    # type: (str) -> Callable[[str, bytes], str]
+def get_string_renderer(v: str) -> Callable[[str, bytes], str]:
     """
     Always renders arbitrary string
     :param v:

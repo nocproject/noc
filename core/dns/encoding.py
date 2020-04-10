@@ -12,8 +12,7 @@ from noc.core.comp import smart_text, smart_bytes
 IDNA_PREFIX = str("xn--")
 
 
-def to_idna(zone):
-    # type: (str) -> str
+def to_idna(zone: str) -> str:
     """
     Convert literal zone name to IDNA encoding
     :param zone:
@@ -22,8 +21,7 @@ def to_idna(zone):
     return smart_text(smart_text(zone).lower().encode("idna"))
 
 
-def from_idna(zone):
-    # type: (str) -> str
+def from_idna(zone: str) -> str:
     """
     Convert IDNA zone name representation to literal name
     :param self:
@@ -35,8 +33,7 @@ def from_idna(zone):
     return smart_text(smart_bytes(zone).decode("idna"))
 
 
-def is_idna(zone):
-    # type: (str) -> bool
+def is_idna(zone: str) -> bool:
     """
     Check if zone name is in IDNA representation
     :param zone:

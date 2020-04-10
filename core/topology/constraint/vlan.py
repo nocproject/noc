@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # VLANConstraint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,21 +30,25 @@ class VLANConstraint(BaseConstraint):
         False - At least one end of the link must satisfy criteria.
     """
 
-    def __init__(self, vlan=1, allow_tagged=True, allow_untagged=True, strict=True):
-        # type: (int, bool, bool, bool) -> None
+    def __init__(
+        self,
+        vlan: int = 1,
+        allow_tagged: bool = True,
+        allow_untagged: bool = True,
+        strict: bool = True,
+    ) -> None:
         super(VLANConstraint, self).__init__()
         self.vlan = vlan
         self.allow_tagged = allow_tagged
         self.allow_untagged = allow_untagged
-        self._is_valid_link_cache = {}  # type: Dict[Link, bool]
+        self._is_valid_link_cache: Dict[Link, bool] = {}
         self.strict = strict
 
     @cachetools.cachedmethod(operator.attrgetter("_is_valid_link_cache"))
-    def is_valid_link(self, link):
-        # type: (Link) -> bool
-        bridged_mo = set()  # type: Set[int]
-        tagged_mo = set()  # type: Set[int]
-        untagged_mo = set()  # type: Set[int]
+    def is_valid_link(self, link: Link) -> bool:
+        bridged_mo: Set[int] = set()
+        tagged_mo: Set[int] = set()
+        untagged_mo: Set[int] = set()
         l3_mo = set()
         for doc in SubInterface._get_collection().find(
             {"interface": {"$in": link.interface_ids}},

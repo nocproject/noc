@@ -25,8 +25,7 @@ rx_os_format = re.compile(
 )
 
 
-def render_tc_int(value, format):
-    # type: (int, str) -> str
+def render_tc_int(value: int, format: str) -> str:
     if format == "x":
         # Hexadecimal
         return "%x" % value
@@ -48,8 +47,7 @@ def render_tc_int(value, format):
     return smart_text(value, errors="ignore")
 
 
-def render_tc_octetstring(value, format):
-    # type: (Union[bytes, str]) -> str
+def render_tc_octetstring(value, format: Union[bytes, str]) -> str:
     if isinstance(value, bytes):
         value = [bord(c) for c in value]
     else:
@@ -98,8 +96,7 @@ def render_tc_octetstring(value, format):
     return r
 
 
-def render_tc(value, base_type, format=None):
-    # type: (Any, str, Optional[str]) -> str
+def render_tc(value: Any, base_type: str, format: Optional[str] = None) -> str:
     """
     Render SNMP TC using DISPLAY-HINT according to RFC 2579
 

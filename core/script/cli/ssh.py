@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SSH CLI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -161,15 +161,13 @@ class SSHIOStream(IOStream):
                 self.session = None
         super(SSHIOStream, self).close(exc_info=exc_info)
 
-    def get_user(self):
-        # type: () -> str
+    def get_user(self) -> str:
         """
         Get current user
         """
         return self.script.credentials["user"] or ""
 
-    def get_password(self):
-        # type: () -> str
+    def get_password(self) -> str:
         """
         Get current user's password
         """

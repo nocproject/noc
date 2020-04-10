@@ -17,6 +17,5 @@ class BaseCollator(object):
     def __init__(self):
         pass
 
-    def collate(self, physical_path, interfaces):
-        # type: (str, Dict[str, Interface]) -> Optional[str]
+    def collate(self, physical_path: str, interfaces: Dict[str, Interface]) -> Optional[str]:
         raise NotImplementedError

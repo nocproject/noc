@@ -181,8 +181,7 @@ class Span(object):
     def is_ignorable_error(exc_type):
         return exc_type == tornado.gen.Return
 
-    def set_error(self, code=None, text=None):
-        # type: (Optional[int], Optional[str]) -> None
+    def set_error(self, code: Optional[int] = None, text: Optional[str] = None) -> None:
         """
         Set error result and code for current span
         :param code: Optional error code
@@ -194,8 +193,7 @@ class Span(object):
         if text is not None:
             self.error_text = text
 
-    def set_error_from_exc(self, exc, code=ERR_UNKNOWN):
-        #  type: (Exception, Optional[int]) -> None
+    def set_error_from_exc(self, exc: Exception, code: Optional[int] = ERR_UNKNOWN) -> None:
         """
         Set error result and code for current span from exception
         :param exc: Raised exception

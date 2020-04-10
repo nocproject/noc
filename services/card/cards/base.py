@@ -88,8 +88,7 @@ class BaseCard(object):
                 raise self.NotFoundError()
         return None
 
-    def get_data(self):
-        # type: () -> Dict[str, Any]
+    def get_data(self) -> Dict[str, Any]:
         """
         Returns template data
         """

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Crypto-related snippets
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,8 +31,7 @@ def gen_salt(salt_len):
     return make_bytes([random.choice(SALT_SYMBOLS) for _ in range(salt_len)])
 
 
-def md5crypt(password, salt=None, magic=b"$1$"):
-    # type: (bytes, Optional[bytes], bytes) -> bytes
+def md5crypt(password: bytes, salt: Optional[bytes] = None, magic: bytes = b"$1$") -> bytes:
     """
     MD5 password hash
     (Used for RIPE authentication)

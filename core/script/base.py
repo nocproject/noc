@@ -772,20 +772,19 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
 
     def cli(
         self,
-        cmd,
-        command_submit=None,
-        bulk_lines=None,
-        list_re=None,
-        cached=False,
-        file=None,
-        ignore_errors=False,
-        allow_empty_response=True,
-        nowait=False,
-        obj_parser=None,
-        cmd_next=None,
-        cmd_stop=None,
-    ):
-        # type: (str, Optional[bytes], Any, Any, bool, Optional[str], Any, Any, Any, Any, Any, Any) -> str
+        cmd: str,
+        command_submit: Optional[bytes] = None,
+        bulk_lines: Any = None,
+        list_re: Any = None,
+        cached: bool = False,
+        file: Optional[str] = None,
+        ignore_errors: Any = False,
+        allow_empty_response: Any = True,
+        nowait: Any = False,
+        obj_parser: Any = None,
+        cmd_next: Any = None,
+        cmd_stop: Any = None,
+    ) -> str:
         """
         Execute CLI command and return result. Initiate cli session
         when necessary.
@@ -861,8 +860,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 self.root.cli_cache[cmd] = r
         return format_result(r)
 
-    def echo_cancelation(self, r, cmd):
-        # type: (str, str) -> str
+    def echo_cancelation(self, r: str, cmd: str) -> str:
         """
         Adaptive echo cancelation
 

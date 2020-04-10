@@ -490,8 +490,7 @@ class Site(object):
                     yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
 
     @classmethod
-    def is_json(cls, content_type):
-        # type: (str) -> bool
+    def is_json(cls, content_type: str) -> bool:
         """
         Check if content-type is JSON
         :param content_type:

@@ -34,16 +34,13 @@ def smart_text(s, errors="strict", encoding=DEFAULT_ENCODING):
     return str(s)
 
 
-def bord(x):
-    # type: (int) -> int
+def bord(x: int) -> int:
     return x
 
 
-def bchr(x):
-    # type: (int) -> bytes
+def bchr(x: int) -> bytes:
     return bytes([x])
 
 
-def make_bytes(x):
-    # type: (List[int]) -> bytes
+def make_bytes(x: List[int]) -> bytes:
     return bytes(x)

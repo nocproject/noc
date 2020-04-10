@@ -104,8 +104,7 @@ rx_lf_spaces = re.compile(smart_bytes(r"\r\s+\r"))
 rx_ecma = re.compile(get_ecma_re())
 
 
-def strip_control_sequences(s):
-    # type: (bytes) -> bytes
+def strip_control_sequences(s: bytes) -> bytes:
     """
     Normal text leaved untouched
     >>> strip_control_sequences("Lorem Ipsum")

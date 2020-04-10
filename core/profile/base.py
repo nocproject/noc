@@ -273,7 +273,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     # Callable should return str
     # It is possible to return bytes in very rare specific cases,
     # when you have intention to process binary output in script directly
-    snmp_display_hints = {}  # type: Dict[str, Optional[Callable[[str, bytes], Union[str, bytes]]]]
+    snmp_display_hints: Dict[str, Optional[Callable[[str, bytes], Union[str, bytes]]]] = {}
     # Aggregate up to *snmp_metrics_get_chunk* oids
     # to one SNMP GET request
     snmp_metrics_get_chunk = 15
@@ -501,8 +501,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     #
     config_volatile = None
 
-    def cleaned_input(self, input):
-        # type: (bytes) -> bytes
+    def cleaned_input(self, input: bytes) -> bytes:
         """
         Preprocessor to clean up and normalize input from device.
         Delete ASCII sequences by default.
@@ -510,8 +509,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         """
         return strip_control_sequences(input)
 
-    def clean_rogue_chars(self, s):
-        # type: (bytes) -> bytes
+    def clean_rogue_chars(self, s: bytes) -> bytes:
         if self.rogue_chars:
             for cleaner in self.rogue_char_cleaners:
                 s = cleaner(s)
@@ -594,8 +592,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         cls.rx_pattern_operation_error_str = compile(smart_text(cls.pattern_operation_error))
 
     @classmethod
-    def get_telnet_naws(cls):
-        # type: () -> bytes
+    def get_telnet_naws(cls) -> bytes:
         return cls.telnet_naws
 
     @classmethod

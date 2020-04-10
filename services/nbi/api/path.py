@@ -113,8 +113,7 @@ class PathAPI(NBIAPI):
             self.set_header("Content-Type", "text/json")
             self.write(ujson.dumps(result))
 
-    def handler(self):
-        # type: () -> Tuple[int, Dict]
+    def handler(self) -> Tuple[int, Dict]:
         # Decode request
         try:
             req = ujson.loads(self.request.body)
@@ -173,8 +172,12 @@ class PathAPI(NBIAPI):
             return 404, {"status": False, "error": error, "time": dt}
         return 200, {"status": True, "paths": paths, "time": dt}
 
-    def get_object_and_interface(self, object=None, interface=None, service=None):
-        # type: (Optional[Dict[str, Any]], Optional[Dict[str, Any]], Optional[Dict[str, Any]], Optional[Dict[str, Any]]) -> Tuple[ManagedObject, Optional[Interface]]
+    def get_object_and_interface(
+        self: Optional[Dict[str, Any]],
+        object: Optional[Dict[str, Any]] = None,
+        interface: Optional[Dict[str, Any]] = None,
+        service: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[ManagedObject, Optional[Interface]]:
         """
         Process from and to section of request and get object and interface
 
@@ -237,15 +240,14 @@ class PathAPI(NBIAPI):
 
     def iter_paths(
         self,
-        start,
-        start_iface,
-        goal,
-        end_iface,
-        constraints=None,
-        max_depth=MAX_DEPTH_DEFAULT,
-        n_shortest=N_SHORTEST_DEFAULT,
-    ):
-        # type: (ManagedObject, Optional[Interface], BaseGoal, Optional[Interface], Optional[BaseConstraint], int, int) -> Iterable[Dict]
+        start: ManagedObject,
+        start_iface: Optional[Interface],
+        goal: BaseGoal,
+        end_iface: Optional[Interface],
+        constraints: Optional[BaseConstraint] = None,
+        max_depth: int = MAX_DEPTH_DEFAULT,
+        n_shortest: int = N_SHORTEST_DEFAULT,
+    ) -> Iterable[Dict]:
         """
         Iterate possible paths
 
@@ -259,13 +261,12 @@ class PathAPI(NBIAPI):
         :return:
         """
 
-        def encode_link(interfaces):
-            # type: (List[Interface]) -> Dict
-            objects = defaultdict(list)  # type: DefaultDict[ManagedObject, List]
+        def encode_link(interfaces: List[Interface]) -> Dict:
+            objects: DefaultDict[ManagedObject, List] = defaultdict(list)
             for iface in interfaces:
                 objects[iface.managed_object] += [iface.name]
             # Order objects
-            order = list(objects)  # type: List[ManagedObject]
+            order: List[ManagedObject] = list(objects)
             try:
                 idx = order.index(last["obj"])
                 o = order.pop(idx)
@@ -293,8 +294,8 @@ class PathAPI(NBIAPI):
             start, goal, constraint=constraints, max_depth=max_depth, n_shortest=n_shortest
         )
         for path in finder.iter_shortest_paths():  # type: List[PathInfo]
-            last = {"obj": start}  # type: Dict[str, ManagedObject]
-            r = {"path": [], "cost": {"l2": 0}}  # type: Dict[str, Any]
+            last: Dict[str, ManagedObject] = {"obj": start}
+            r: Dict[str, Any] = {"path": [], "cost": {"l2": 0}}
             if start_iface:
                 r["path"] += [{"links": [encode_link([start_iface])]}]
             for pi in path:  # type: PathInfo
@@ -304,8 +305,9 @@ class PathAPI(NBIAPI):
                 r["path"] += [{"links": [encode_link([end_iface])]}]
             yield r
 
-    def get_constraints(self, start, start_iface, constraints):
-        # type: (ManagedObject, Optional[Interface], Dict[str, Any]) -> Optional[BaseConstraint]
+    def get_constraints(
+        self, start: ManagedObject, start_iface: Optional[Interface], constraints: Dict[str, Any]
+    ) -> Optional[BaseConstraint]:
         """
         Calculate path constraints
         :param start: Start of path

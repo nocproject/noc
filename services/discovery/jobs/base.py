@@ -980,8 +980,13 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return None
         return interface
 
-    def confirm_link(self, local_object, local_interface, remote_object, remote_interface):
-        # type: (ManagedObject, str, ManagedObject, str) -> None
+    def confirm_link(
+        self,
+        local_object: ManagedObject,
+        local_interface: str,
+        remote_object: ManagedObject,
+        remote_interface: str,
+    ) -> None:
         self.logger.info(
             "Confirm link: %s:%s -- %s:%s",
             local_object,
@@ -1016,8 +1021,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         self.confirm_interface_link(li, ri)
 
-    def confirm_interface_link(self, li, ri):
-        # type: (Interface, Interface) -> None
+    def confirm_interface_link(self, li: Interface, ri: Interface) -> None:
         """
         Confirm links between interfaces
         """
@@ -1365,8 +1369,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_interface,
             )
 
-    def confirm_cloud(self, root_interface, interfaces):
-        # type: (Interface, List[Interface]) -> None
+    def confirm_cloud(self, root_interface: Interface, interfaces: List[Interface]) -> None:
         """
         Ensure `root_interface` and `interfaces` are connected to same cloud link
 
@@ -1376,7 +1379,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         if not interfaces:
             return
         # get existing links
-        links = {}  # type: Dict[Interface, Link]
+        links: Dict[Interface, Link] = {}
         for link in Link.objects.filter(
             interfaces__in=[root_interface.id] + [i.id for i in interfaces]
         ):

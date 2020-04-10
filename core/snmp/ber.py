@@ -19,8 +19,7 @@ from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int, encode_oi
 from noc.core.mib import mib
 
 
-def did(tag_class, is_constructed, tag_id):
-    # type: (int, int, int) -> int
+def did(tag_class: int, is_constructed: int, tag_id: int) -> int:
     """
     Calculate decoder_id as <tag id > | tag_class | constructed
     :param tag_class:
@@ -36,19 +35,17 @@ def did(tag_class, is_constructed, tag_id):
 
 class BERDecoder(object):
     def __init__(self, display_hints=None):
-        self.last_oid = None  # type: Optional[str]
+        self.last_oid: Optional[str] = None
         self.display_hints = display_hints
 
     @staticmethod
-    def split_tlv(msg):
-        # type: (bytes) -> Tuple[bytes, bytes]
+    def split_tlv(msg: bytes) -> Tuple[bytes, bytes]:
         decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(
             msg
         )
         return msg[offset : offset + length], msg[offset + length :]
 
-    def parse_tlv(self, msg):
-        # type: (bytes) -> Tuple[Any, bytes]
+    def parse_tlv(self, msg: bytes) -> Tuple[Any, bytes]:
         decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(
             msg
         )
@@ -72,8 +69,7 @@ class BERDecoder(object):
     def parse_eoc(self, msg):
         return None
 
-    def parse_boolean(self, msg):
-        # type: (bytes) -> bool
+    def parse_boolean(self, msg: bytes) -> bool:
         if not msg:
             return False
         return bool(bord(msg[0]))
@@ -85,8 +81,7 @@ class BERDecoder(object):
         8: struct.Struct("!q"),
     }
 
-    def parse_int(self, msg):
-        # type: (bytes) -> int
+    def parse_int(self, msg: bytes) -> int:
         """
         >>> BERDecoder().parse_int('')
         0
@@ -124,8 +119,7 @@ class BERDecoder(object):
             v -= m
         return v
 
-    def parse_real(self, msg):
-        # type: (bytes) -> float
+    def parse_real(self, msg: bytes) -> float:
         """
         """
         if not msg:
@@ -155,26 +149,22 @@ class BERDecoder(object):
         else:
             raise ValueError("Unknown REAL encoding: %s" % f)
 
-    def parse_p_bitstring(self, msg):
-        # type: (bytes) -> bytes
+    def parse_p_bitstring(self, msg: bytes) -> bytes:
         unused = bord(msg[0])
         r = b"".join(BITSTING[bord(c)] for c in msg)
         if unused:
             r = r[:-unused]
         return r
 
-    def parse_p_octetstring(self, msg):
-        # type: (bytes) -> str
+    def parse_p_octetstring(self, msg: bytes) -> str:
         if self.last_oid:
             return mib.render(self.last_oid, msg, self.display_hints)
         return msg
 
-    def parse_p_t61_string(self, msg):
-        # type: (bytes) -> str
+    def parse_p_t61_string(self, msg: bytes) -> str:
         return smart_text(msg, errors="ignore")
 
-    def parse_c_octetstring(self, msg):
-        # type: (bytes) -> List[str]
+    def parse_c_octetstring(self, msg: bytes) -> List[str]:
         r = []
         while msg:
             v, msg = self.parse_tlv(msg)
@@ -188,18 +178,15 @@ class BERDecoder(object):
             r += [v]
         return r
 
-    def parse_null(self, msg):
-        # type: (bytes) -> None
+    def parse_null(self, msg: bytes) -> None:
         return None
 
-    def parse_a_ipaddress(self, msg):
-        # type: (bytes) -> str
+    def parse_a_ipaddress(self, msg: bytes) -> str:
         if not msg:
             raise ValueError("Invalid IP Address: '%s'" % msg.encode("hex"))
         return "%d.%d.%d.%d" % (bord(msg[0]), bord(msg[1]), bord(msg[2]), bord(msg[3]))
 
-    def parse_p_oid(self, msg):
-        # type: (bytes) -> str
+    def parse_p_oid(self, msg: bytes) -> str:
         """
         >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
         "1.3.6.1.2.1.1.5.0"
@@ -207,8 +194,7 @@ class BERDecoder(object):
         self.last_oid = smart_text(parse_p_oid(msg))
         return self.last_oid
 
-    def parse_compressed_oid(self, msg):
-        # type: (bytes) -> str
+    def parse_compressed_oid(self, msg: bytes) -> str:
         """
         :param msg:
         :return:
@@ -348,8 +334,7 @@ class BEREncoder(object):
     struct_B = struct.Struct("B")
     struct_BB = struct.Struct("BB")
 
-    def encode_tlv(self, tag, primitive, data):
-        # type: (int, bool, bytes) -> bytes
+    def encode_tlv(self, tag: int, primitive: bool, data: bytes) -> bytes:
         data = smart_bytes(data)
         # Encode tag
         t = tag
@@ -460,16 +445,14 @@ class BEREncoder(object):
             e += 1
         return self.encode_tlv(9, True, "0x03%dE%s%d" % (m, "" if e else "+", e))
 
-    def encode_null(self):
-        # type: () -> bytes
+    def encode_null(self) -> bytes:
         """
         05 00
         :return:
         """
         return b"\x05\x00"
 
-    def encode_oid(self, data):
-        # type: (str) -> bytes
+    def encode_oid(self, data: str) -> bytes:
         """
         >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
         '\\x06\\x08+\\x06\\x01\\x02\\x01\\x01\\x05\\x00'
