@@ -14,8 +14,7 @@ from noc.core.hash import dict_hash_int
 from noc.core.confdb.engine.base import Engine
 
 
-def check_query(query, args, expected):
-    # type: (str, Dict[str, Any], List[Dict[str, Any]]) -> bool
+def check_query(query: str, args: Dict[str, Any], expected: List[Dict[str, Any]]) -> bool:
     """
     ConfDB Query result order is undefined,
     so we need additional helper to check
@@ -27,8 +26,8 @@ def check_query(query, args, expected):
     :return:
     """
     e = Engine()
-    left = {dict_hash_int(ctx): ctx for ctx in expected}  # type: Dict[int, Dict[str, Any]]
-    not_found = set()  # type: Set[Dict[str, Any]]
+    left: Dict[int, Dict[str, Any]] = {dict_hash_int(ctx): ctx for ctx in expected}
+    not_found: Set[Dict[str, Any]] = set()
     for ctx in e.query(query, **args):
         ctx_hash = dict_hash_int(ctx)
         if ctx_hash in left:

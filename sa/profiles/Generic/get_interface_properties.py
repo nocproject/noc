@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Generic.get_interface_properties script
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -82,8 +82,9 @@ class Script(BaseScript):
             result += [item]
         return result
 
-    def merge_tables(self, *args):
-        # type: (Optional[Iterable]) -> Dict[int,Dict[str, Union[int, bool, str]]]
+    def merge_tables(
+        self, *args: Optional[Iterable]
+    ) -> Dict[int, Dict[str, Union[int, bool, str]]]:
         """
         Merge iterables into single table
 
@@ -109,8 +110,9 @@ class Script(BaseScript):
     def clean_ifname(self, v):
         return self.profile.convert_interface_name(v)
 
-    def iter_iftable(self, key, oid, ifindex=None, clean=None):
-        # type: (str, str, Optional[int], Callable) -> Iterable[Tuple[str, Union[str, int]]]
+    def iter_iftable(
+        self, key: str, oid: str, ifindex: Optional[int] = None, clean: Callable = None
+    ) -> Iterable[Tuple[str, Union[str, int]]]:
         """
         Collect part of IF-MIB table.
 
@@ -147,8 +149,7 @@ class Script(BaseScript):
     def get_getnext_retires(self):
         return self.MAX_GETNEXT_RETIRES
 
-    def get_interface_ifindex(self, name):
-        # type: (str) -> int
+    def get_interface_ifindex(self, name: str) -> int:
         """
         Get ifindex for given interface
         :param name:

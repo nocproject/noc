@@ -48,8 +48,7 @@ def nsq_pub(topic, message):
         raise NSQPubError("NSQ Pub error: code=%s message=%s" % (code, body))
 
 
-def mpub_encode(messages):
-    # type: (List[Any]) -> bytes
+def mpub_encode(messages: List[Any]) -> bytes:
     """
     Build mpub binary message
     :param messages: List of messages

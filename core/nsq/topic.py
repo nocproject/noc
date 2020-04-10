@@ -24,13 +24,12 @@ from noc.core.backport.time import perf_counter
 
 
 class TopicQueue(object):
-    def __init__(self, topic, io_loop=None):
-        # type: (str, Optional[tornado.ioloop.IOLoop]) -> None
+    def __init__(self, topic: str, io_loop: Optional[tornado.ioloop.IOLoop] = None) -> None:
         self.topic = topic
         self.lock = Lock()
         self.put_condition = tornado.locks.Condition()
         self.shutdown_complete = tornado.locks.Event()
-        self.queue = deque()  # type: deque
+        self.queue: deque = deque()
         self.queue_size = 0
         self.to_shutdown = False
         self.last_get = None
@@ -44,8 +43,9 @@ class TopicQueue(object):
         self.msg_requeued_size = 0
 
     @staticmethod
-    def iter_encode_chunks(message, limit=config.nsqd.mpub_size - 8):
-        # type: (Union[str, object], int) -> Iterable[str]
+    def iter_encode_chunks(
+        message: Union[str, object], limit: int = config.nsqd.mpub_size - 8
+    ) -> Iterable[str]:
         """
         Encode data to iterable atomic chunks of up to limit size
 
@@ -75,8 +75,7 @@ class TopicQueue(object):
             else:
                 raise ValueError("Message too big")
 
-    def put(self, message, fifo=True):
-        # type: (object, bool) -> None
+    def put(self, message: object, fifo: bool = True) -> None:
         """
         Put message into queue. Block if queue is full
 
@@ -108,8 +107,7 @@ class TopicQueue(object):
     def _notify_all(self):
         self.put_condition.notify_all()
 
-    def return_messages(self, messages):
-        # type: (List[str]) -> None
+    def return_messages(self, messages: List[str]) -> None:
         """
         Return messages to the start of the queue
 
@@ -126,8 +124,9 @@ class TopicQueue(object):
             # Unblock waiters in main thread
             self.put_condition.notify_all()
 
-    def iter_get(self, n=1, size=None, total_overhead=0, message_overhead=0):
-        # type:  (int, int, int, int) -> Iterable[str]
+    def iter_get(
+        self, n: int = 1, size: int = None, total_overhead: int = 0, message_overhead: int = 0
+    ) -> Iterable[str]:
         """
         Get up to `n` items up to `size` size.
 
@@ -223,8 +222,7 @@ class TopicQueue(object):
                 timeout = datetime.timedelta(seconds=timeout)
             yield self.put_condition.wait(timeout)
 
-    def apply_metrics(self, data):
-        # type: (Dict[str, Any]) -> None
+    def apply_metrics(self, data: Dict[str, Any]) -> None:
         data.update(
             {
                 ("nsq_msg_put", ("topic", self.topic)): self.msg_put,

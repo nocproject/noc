@@ -268,8 +268,7 @@ def replace_re_group(expr, group, pattern):
     return _replace_re_group_text(expr, group, pattern)
 
 
-def _replace_re_group_text(expr, group, pattern):
-    # type: (str, str, str) -> str
+def _replace_re_group_text(expr: str, group: str, pattern: str) -> str:
     """
     Replace regular expression group with pattern
 
@@ -311,8 +310,7 @@ def _replace_re_group_text(expr, group, pattern):
     return "".join(r)
 
 
-def _replace_re_group_binary(expr, group, pattern):
-    # type: (bytes, bytes, bytes) -> bytes
+def _replace_re_group_binary(expr: bytes, group: bytes, pattern: bytes) -> bytes:
     """
     Replace regular expression group with pattern
 
@@ -375,8 +373,7 @@ def indent(text, n=4):
 rx_split_alnum = re.compile(r"(\d+|[^0-9]+)")
 
 
-def _iter_split_alnum(s):
-    # type: (str) -> Iterable[str]
+def _iter_split_alnum(s: str) -> Iterable[str]:
     """
     Iterator yielding alphabetic and numeric sections if string
 
@@ -387,8 +384,7 @@ def _iter_split_alnum(s):
         yield match.group(0)
 
 
-def split_alnum(s):
-    # type: (str) -> List[Union[str, int]]
+def split_alnum(s: str) -> List[Union[str, int]]:
     """
     Split line to a sequence of iterating alpha and digit strings
 
@@ -407,8 +403,7 @@ def split_alnum(s):
     ['ge-', 1, '/', 0, '/', 1, '.', 15]
     """
 
-    def maybe_int(v):
-        # type: (str) -> Union[str, int]
+    def maybe_int(v: str) -> Union[str, int]:
         try:
             return int(v)
         except ValueError:
@@ -417,16 +412,14 @@ def split_alnum(s):
     return [maybe_int(x) for x in _iter_split_alnum(s)]
 
 
-def alnum_key(s):
-    # type: (str) -> str
+def alnum_key(s: str) -> str:
     """
     Comparable alpha-numeric key
     :param s:
     :return:
     """
 
-    def maybe_formatted_int(v):
-        #  type: (str) -> str
+    def maybe_formatted_int(v: str) -> str:
         try:
             return "%012d" % int(v)
         except ValueError:

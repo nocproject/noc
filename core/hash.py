@@ -34,7 +34,6 @@ def hash_int(value):
     return hash_fmt.unpack(hash_str(value))
 
 
-def dict_hash_int(d):
-    # type: (Dict[str, Any]) -> int
+def dict_hash_int(d: Dict[str, Any]) -> int:
     r = ["%s=%s" % (k, d[k]) for k in sorted(d)]
     return hash_int(",".join(r))

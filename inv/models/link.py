@@ -104,8 +104,7 @@ class Link(Document):
         return iface in self.interfaces
 
     @property
-    def is_ptp(self):
-        # type: () -> bool
+    def is_ptp(self) -> bool:
         """
         Check link is point-to-point link
         :return:
@@ -113,8 +112,7 @@ class Link(Document):
         return self.type == "p" or self.type == "a"
 
     @property
-    def is_lag(self):
-        # type: () -> bool
+    def is_lag(self) -> bool:
         """
         Check link is unresolved LAG
         :return:
@@ -122,8 +120,7 @@ class Link(Document):
         return self.type == "p" or self.type == "a"
 
     @property
-    def is_broadcast(self):
-        # type: () -> bool
+    def is_broadcast(self) -> bool:
         """
         Check link is broadcast media
         :return:
@@ -131,8 +128,7 @@ class Link(Document):
         return not self.is_ptp and not self.is_lag
 
     @property
-    def is_loop(self):
-        # type: () -> bool
+    def is_loop(self) -> bool:
         """
         Check link is looping to same object
         :return:

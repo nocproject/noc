@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Path tracing utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,8 +29,7 @@ PathInfo = NamedTuple(
 )
 
 
-def get_shortest_path(start, goal):
-    # type: (ManagedObject, ManagedObject) -> List[ManagedObject]
+def get_shortest_path(start: ManagedObject, goal: ManagedObject) -> List[ManagedObject]:
     """
     Returns a list of Managed Objects along shortest path
     using modified A* algorithm
@@ -40,7 +39,7 @@ def get_shortest_path(start, goal):
     """
     finder = KSPFinder(start, goal)
     for path in finder.find_shortest_path():  # type: PathInfo
-        r = []  # type: List[ManagedObject]
+        r: List[ManagedObject] = []
         pi = None
         for pi in path:
             r += [pi.start]
@@ -55,24 +54,29 @@ class KSPFinder(object):
     k-Shortest Path finder
     """
 
-    def __init__(self, start, goal, constraint=None, max_depth=MAX_PATH_LENGTH, n_shortest=1):
-        # type: (ManagedObject, BaseGoal, Optional[BaseConstraint], Optional[int], Optional[int]) -> None
-        self.start = start  # type: ManagedObject
-        self.goal = goal  # type: BaseGoal
-        self.constraint = constraint  # type: Optional[BaseConstraint]
-        self.max_depth = max_depth  # type: Optional[int]
-        self.n_shortest = n_shortest  # type: Optional[int]
+    def __init__(
+        self,
+        start: ManagedObject,
+        goal: BaseGoal,
+        constraint: Optional[BaseConstraint] = None,
+        max_depth: Optional[int] = MAX_PATH_LENGTH,
+        n_shortest: Optional[int] = 1,
+    ) -> None:
+        self.start: ManagedObject = start
+        self.goal: BaseGoal = goal
+        self.constraint: Optional[BaseConstraint] = constraint
+        self.max_depth: Optional[int] = max_depth
+        self.n_shortest: Optional[int] = n_shortest
         # Set of segments on path
-        self.segments = set()  # type: Set[NetworkSegment]
+        self.segments: Set[NetworkSegment] = set()
         # Managed Object cache
-        self.mo_cache = {}  # type: Dict[int, ManagedObject]
+        self.mo_cache: Dict[int, ManagedObject] = {}
         # Links cache
-        self.mo_links = defaultdict(set)  # type: DefaultDict[int, Set[Link]]
+        self.mo_links: DefaultDict[int, Set[Link]] = defaultdict(set)
         # Segments with valid cached links
-        self.cached_seg_links = set()  # type: Set[ObjectId]
+        self.cached_seg_links: Set[ObjectId] = set()
 
-    def find_shortest_path(self):
-        # type: () -> List[PathInfo]
+    def find_shortest_path(self) -> List[PathInfo]:
         """
         Returns a list of Managed Objects along shortest path
         using modified A* algorithm
@@ -235,8 +239,7 @@ class KSPFinder(object):
                 f_score[neighbor] = tentative_g_score + self.goal.cost_estimate(neighbor, current)
         raise ValueError("Path not found")
 
-    def iter_shortest_paths(self):
-        # type: () -> Iterable[List[PathInfo]]
+    def iter_shortest_paths(self) -> Iterable[List[PathInfo]]:
         """
         Returns a list of up to `n_shortest` shortest paths.
         Yen's algorithm applied to A*
@@ -244,30 +247,28 @@ class KSPFinder(object):
         :return:
         """
 
-        def to_path(path):
-            # type: (List[PathInfo]) -> List[ManagedObject]
-            r = []  # type: List[ManagedObject]
+        def to_path(path: List[PathInfo]) -> List[ManagedObject]:
+            r: List[ManagedObject] = []
             for pi in path:
                 r += [pi.start]
             r += [pi.end]
             return r
 
-        def apply_pruned(path):
-            # type: (List[PathInfo]) -> None
+        def apply_pruned(path: List[PathInfo]) -> None:
             for pi in path:
                 for link in pi.links:
                     pruned_links[pi.start].add(link.id)
                     pruned_links[pi.end].add(link.id)
 
         # Shortcut for one path
-        A = self._find_shortest_path(self.start)  # type: List[PathInfo]
+        A: List[PathInfo] = self._find_shortest_path(self.start)
         yield A
         if self.n_shortest == 1:
             raise StopIteration
         # Pruned links for each spur node
-        pruned_links = defaultdict(set)  # type: DefaultDict[ManagedObject, Set[ObjectId]]
+        pruned_links: DefaultDict[ManagedObject, Set[ObjectId]] = defaultdict(set)
         # Alternative paths
-        B = []  # type: List[Tuple[List[PathInfo], int]]
+        B: List[Tuple[List[PathInfo], int]] = []
         #
         for k in range(1, self.n_shortest):
             apply_pruned(A)

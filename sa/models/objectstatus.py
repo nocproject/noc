@@ -59,8 +59,7 @@ class ObjectStatus(Document):
             return None, None
 
     @classmethod
-    def get_statuses(cls, objects):
-        # type: (List[int]) -> Dict[int, bool]
+    def get_statuses(cls, objects: List[int]) -> Dict[int, bool]:
         """
         Returns a map of object id -> status
         for a list od object ids

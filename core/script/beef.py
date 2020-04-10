@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Beef API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ import codecs
 # Third-party modules
 import ujson
 import six
+from typing import Optional
 
 # NOC modules
 from noc.core.comp import smart_text, smart_bytes
@@ -225,8 +226,7 @@ class Beef(object):
             data = cls.decompress_bz2(data)
         return Beef.from_json(smart_text(data))
 
-    def iter_fsm_state_reply(self, state):
-        # type: (str) -> bytes
+    def iter_fsm_state_reply(self, state: str) -> bytes:
         """
         Iterate fsm states
         :param state:
@@ -238,8 +238,7 @@ class Beef(object):
                     yield self._cli_decoder(reply)
                 break
 
-    def iter_cli_reply(self, command):
-        # type: (bytes) -> bytes
+    def iter_cli_reply(self, command: bytes) -> bytes:
         """
         Iterate fsm states
         :param command:
@@ -259,8 +258,7 @@ class Beef(object):
             raise KeyError(b"Command not found")
 
     @staticmethod
-    def mib_decode_base64(value):
-        # type: (bytes) -> bytes
+    def mib_decode_base64(value: bytes) -> bytes:
         """
         Decode base64
         :param value:
@@ -278,8 +276,7 @@ class Beef(object):
         return value.decode("hex")
 
     @staticmethod
-    def cli_decode_quopri(value):
-        # type: (bytes) -> bytes
+    def cli_decode_quopri(value: bytes) -> bytes:
         """
         Decode quoted-printable
         :param value:
@@ -292,8 +289,7 @@ class Beef(object):
             self.mib_oid_values = dict((m.oid, m.value) for m in self.mib)
         return self.mib_oid_values
 
-    def get_mib_value(self, oid):
-        # type: (str) -> None | bytes
+    def get_mib_value(self, oid: str) -> Optional[bytes]:
         """
         Lookup mib and return oid value
         :param oid:

@@ -88,7 +88,7 @@ class Service(object):
     # Connect to MongoDB on activate
     use_mongo = False
     # List of API instances
-    api = []  # type: List[API]
+    api: List[API] = []
     # Request handler class
     api_request_handler = APIRequestHandler
     # Initialize gettext and process *language* configuration
@@ -164,7 +164,7 @@ class Service(object):
             self.die("Invalid ClickHouse cluster topology")
         # NSQ Topics
         # name -> TopicQueue()
-        self.topic_queues = {}  # type: Dict[str, TopicQueue]
+        self.topic_queues: Dict[str, TopicQueue] = {}
         self.topic_queue_lock = threading.Lock()
 
     def create_parser(self):
@@ -699,8 +699,7 @@ class Service(object):
             return q
 
     @tornado.gen.coroutine
-    def nsq_publisher_guard(self, queue):
-        # type: (TopicQueue) -> Generator
+    def nsq_publisher_guard(self, queue: TopicQueue) -> Generator:
         while not queue.to_shutdown:
             try:
                 yield self.nsq_publisher(queue)

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ObjectGoal
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,14 +19,13 @@ class ManagedObjectGoal(BaseGoal):
     SEGMENT_COST_MULTIPLIER = 100
     HORIZONTAL_COST = 10
 
-    def __init__(self, obj):
-        # type: (ManagedObject) -> None
+    def __init__(self, obj: ManagedObject) -> None:
         super(ManagedObjectGoal, self).__init__()
         self.object = obj
         # Use A* acceleration
         self.use_segment_path = True
         # Heuristic weight is the number of segments to be passed to goal
-        self.hw = {}  # type: Dict[NetworkSegment, int]
+        self.hw: Dict[NetworkSegment, int] = {}
 
     def segment_cost_estimate(self, neighbor, current=None):
         if not self.hw:
@@ -46,20 +45,19 @@ class ManagedObjectGoal(BaseGoal):
             return cost
         return self.DROP_COST
 
-    def cost_estimate(self, neighbor, current=None):
-        # type: (ManagedObject, Optional[ManagedObject]) -> int
+    def cost_estimate(
+        self, neighbor: ManagedObject, current: Optional[ManagedObject] = None
+    ) -> int:
         cost = self.DEFAULT_COST
         # Apply segment penalty
         if self.use_segment_path:
             cost += self.segment_cost_estimate(neighbor, current)
         return cost
 
-    def is_goal(self, obj):
-        # type: (ManagedObject) -> bool
+    def is_goal(self, obj: ManagedObject) -> bool:
         return self.object.id == obj.id
 
-    def _init_weights(self, start):
-        # type: (ManagedObject) -> None
+    def _init_weights(self, start: ManagedObject) -> None:
         """
         Initialize segment path from starting node
 
@@ -80,8 +78,7 @@ class ManagedObjectGoal(BaseGoal):
         self.use_segment_path = bool(self.hw)
 
     @staticmethod
-    def get_segment_path(start, goal):
-        # type: (ManagedObject, ManagedObject) -> List[NetworkSegment]
+    def get_segment_path(start: ManagedObject, goal: ManagedObject) -> List[NetworkSegment]:
         """
         Returns a list of segments laying between two management objects
         :param start: Managed Object instance
@@ -89,8 +86,9 @@ class ManagedObjectGoal(BaseGoal):
         :return: List of NetworkSegments
         """
 
-        def merge_path(l1, l2, cross):
-            # type: (List[NetworkSegment], List[NetworkSegment], Set[NetworkSegment]) -> List[NetworkSegment]
+        def merge_path(
+            l1: List[NetworkSegment], l2: List[NetworkSegment], cross: Set[NetworkSegment]
+        ) -> List[NetworkSegment]:
             ci = list(cross)[0]
             i1 = l1.index(ci)
             ri1 = l1[:i1]
@@ -98,11 +96,11 @@ class ManagedObjectGoal(BaseGoal):
             ri2 = list(reversed(l2[:i2]))
             return ri1 + [ci] + ri2
 
-        p1 = [start.segment]  # type: List[NetworkSegment]
-        p2 = [goal.segment]  # type: List[NetworkSegment]
+        p1: List[NetworkSegment] = [start.segment]
+        p2: List[NetworkSegment] = [goal.segment]
         while True:
-            can_up1 = bool(p1[-1].parent)  # type: bool
-            can_up2 = bool(p2[-1].parent)  # type: bool
+            can_up1: bool = bool(p1[-1].parent)
+            can_up2: bool = bool(p2[-1].parent)
             c = set(p1) & set(p2)
             if c:
                 return merge_path(p1, p2, c)

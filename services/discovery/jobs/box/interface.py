@@ -72,7 +72,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         if not result:
             self.logger.error("Failed to get interfaces")
             return
-        if_map = {}  # type: Dict[str, Interface]
+        if_map: Dict[str, Interface] = {}
         # Process forwarding instances
         for fi in result:
             vpn_id = fi.get("vpn_id")
@@ -556,8 +556,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 i["subinterfaces"] = list(i["subinterfaces"].values())
         return IGetInterfaces().clean_result(r)
 
-    def collate(self, if_map):
-        # type: (Dict[str, Interface]) -> None
+    def collate(self, if_map: Dict[str, Interface]) -> None:
         """
         Collation is the process of binding between physical and logical inventory.
         I.e. assigning interface names to inventory slots.

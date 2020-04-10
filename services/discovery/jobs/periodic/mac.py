@@ -73,8 +73,8 @@ class MACCheck(DiscoveryCheck):
         collect_if_objects = self.object.enable_autosegmentation
         if_mac = defaultdict(set)  # interface -> [macs]
         # Collect and process MACs
-        mac_direct_downlink = defaultdict(list)  # type: DefaultDict[str, List[MAC]]
-        mac_downlink_policy = tuple()  # type: Tuple[str, ...]
+        mac_direct_downlink: DefaultDict[str, List[MAC]] = defaultdict(list)
+        mac_downlink_policy: Tuple[str, ...] = tuple()
         if self.object.object_profile.enable_box_discovery_xmac:
             mac_downlink_policy = self.XMAC_POLICIES
         result = self.object.scripts.get_mac_address_table()

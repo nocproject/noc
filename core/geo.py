@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Gis-related utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -79,8 +79,7 @@ def bearing_sym(p1, p2):
     return BEARINGS[int(math.floor(ob / BS))]
 
 
-def get_bbox(x0, x1, y0, y1):
-    # type: (float, float, float, float) -> geojson.Polygon
+def get_bbox(x0: float, x1: float, y0: float, y1: float) -> geojson.Polygon:
     """
     Get normalized bounding box
     :param x0:

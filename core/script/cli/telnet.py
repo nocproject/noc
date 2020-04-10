@@ -105,8 +105,7 @@ ACCEPTED_TELNET_OPTIONS = {0x01, 0x03, 0x18, 0x1F}
 OPTS = {B_OPT_TTYPE_IS: "TTYPE IS", B_OPT_WS: "WS"}
 
 
-def bytes_seq(*args):
-    # type: (*int) -> bytes
+def bytes_seq(*args: int) -> bytes:
     return bytes(args)
 
 
@@ -118,12 +117,11 @@ class TelnetParser(object):
     def __init__(self, logger=None, writer=None, naws=b"\x00\x80\x00\x80"):
         self.logger = logger or _logger
         self.writer = writer
-        self.iac_seq = b""  # type: bytes
-        self.out_iac_seq = []  # type: List[bytes]
+        self.iac_seq: bytes = b""
+        self.out_iac_seq: List[bytes] = []
         self.naws = naws
 
-    def feed(self, chunk):
-        # type: (bytes) -> bytes
+    def feed(self, chunk: bytes) -> bytes:
         """
         Feed chunk of data to parser
 
@@ -134,7 +132,7 @@ class TelnetParser(object):
             # Restore incomplete IAC context
             chunk = self.iac_seq + chunk
             self.iac_seq = b""
-        r = []  # type: List[bytes]
+        r: List[bytes] = []
         while chunk:
             left, seq, right = chunk.partition(B_IAC)
             # Pass clear part
@@ -177,17 +175,15 @@ class TelnetParser(object):
             self.out_iac_seq = []
         return b"".join(r)
 
-    def send_iac(self, cmd, opt):
-        # type: (int, int) -> None
+    def send_iac(self, cmd: int, opt: int) -> None:
         """
         Send IAC response
         """
         self.logger.debug("Send %s", self.iac_repr(cmd, opt))
         self.out_iac_seq += [bytes_seq(IAC, cmd, opt)]
 
-    def send_iac_sb(self, opt, data=None):
-        # type: (bytes, Optional[bytes]) -> None
-        sb = [B_IAC_SB, opt]  # type: List[bytes]
+    def send_iac_sb(self, opt: bytes, data: Optional[bytes] = None) -> None:
+        sb: List[bytes] = [B_IAC_SB, opt]
         if data:
             sb += [data]
         sb += [B_IAC_SE]
@@ -197,8 +193,7 @@ class TelnetParser(object):
         self.logger.debug("Send IAC SB %s %r IAC SE", s_opt, data)
         self.out_iac_seq += sb
 
-    def process_iac(self, cmd, opt):
-        # type: (int, int) -> None
+    def process_iac(self, cmd: int, opt: int) -> None:
         """
         Process IAC command.
         """
@@ -218,8 +213,7 @@ class TelnetParser(object):
         if cmd == DO and opt == NAWS:
             self.send_iac_sb(B_NAWS, self.naws)
 
-    def process_iac_sb(self, sb):
-        # type: (bytes) -> None
+    def process_iac_sb(self, sb: bytes) -> None:
         if sb == b"\x18\x01":
             self.logger.debug("Received IAC SB TTYPE SEND IAC SE")
             self.send_iac_sb(b"\x18\x00", B_TERMINAL_TYPE)
@@ -227,8 +221,7 @@ class TelnetParser(object):
             self.logger.debug("Received IAC SB %s IAC SE", codecs.encode(sb, "hex"))
 
     @staticmethod
-    def iac_repr(cmd, opt):
-        # type: (int, int) -> str
+    def iac_repr(cmd: int, opt: int) -> str:
         """
         Human-readable IAC sequence
         :param cmd:
@@ -238,8 +231,7 @@ class TelnetParser(object):
         return "%s %s" % (IAC_CMD.get(cmd, cmd), TELNET_OPTIONS.get(opt, opt))
 
     @staticmethod
-    def escape(data):
-        # type: (bytes) -> bytes
+    def escape(data: bytes) -> bytes:
         return data.replace(B_IAC, B_IAC2)
 
     def set_writer(self, writer):

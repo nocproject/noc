@@ -28,8 +28,7 @@ class UDPServer(object):
         self._pending_sockets = []
         self._started = False
 
-    def iter_listen(self, cfg):
-        # type: (str) -> Iterable[Tuple[str, int]]
+    def iter_listen(self, cfg: str) -> Iterable[Tuple[str, int]]:
         """
         Parses listen configuration and yield (address, port) tuples.
         Listen configuration is comma-separated string with items:
@@ -47,8 +46,7 @@ class UDPServer(object):
                 addr, port = "", listen
             yield addr, int(port)
 
-    def listen(self, port, address=""):
-        # type: (int, str) -> None
+    def listen(self, port: int, address: str = "") -> None:
         """Starts accepting connections on the given port.
 
         This method may be called more than once to listen on multiple ports.

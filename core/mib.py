@@ -27,14 +27,12 @@ class MIBRegistry(object):
     load_lock = Lock()
 
     def __init__(self):
-        self.mib = {}  # type: Dict[str, str]
+        self.mib: Dict[str, str] = {}
         self.hints = {}
         self.loaded_mibs = set()
 
-    def __getitem__(self, item):
-        # type: (Union[str, Tuple[str, int]]) -> str
-        def maybe_get(k):
-            # type:  (str) -> str
+    def __getitem__(self, item: Union[str, Tuple[str, int]]) -> str:
+        def maybe_get(k: str) -> str:
             v = self.mib.get(k)
             if v is not None:
                 return v
@@ -61,8 +59,7 @@ class MIBRegistry(object):
         return ".".join([maybe_get(item[0])] + [str(x) for x in item[1:]])
 
     @staticmethod
-    def mib_to_modname(name):
-        # type: (str) -> str
+    def mib_to_modname(name: str) -> str:
         """
         Convert MIB name to module name (without .py)
         :param name: MIB name, like IF-MIB
@@ -70,8 +67,7 @@ class MIBRegistry(object):
         """
         return name.lower().replace("-", "_")
 
-    def load_mib(self, name):
-        # type: (str) -> None
+    def load_mib(self, name: str) -> None:
         """
         Load MIB by name
 
@@ -102,8 +98,7 @@ class MIBRegistry(object):
                     self.hints.update(m.DISPLAY_HINTS)
                 self.loaded_mibs.add(name)
 
-    def is_loaded(self, name):
-        # type: (str) -> bool
+    def is_loaded(self, name: str) -> bool:
         """
         Check MIB is loaded
         :param name:
@@ -112,8 +107,7 @@ class MIBRegistry(object):
         with self.load_lock:
             return name in self.loaded_mibs
 
-    def reset(self):
-        # type: () -> None
+    def reset(self) -> None:
         """
         Reset MIB cache
 
@@ -124,8 +118,7 @@ class MIBRegistry(object):
             self.loaded_mibs = set()
 
     @staticmethod
-    def longest_match(d, k):
-        # type: (Dict[str, Any], str) -> Optional[Any]
+    def longest_match(d: Dict[str, Any], k: str) -> Optional[Any]:
         """
         Returns longest match of key `k` in dict `d`
         :param d:
@@ -137,8 +130,12 @@ class MIBRegistry(object):
                 return d.get(prefix)
         return None
 
-    def render(self, oid, value, display_hints=None):
-        # type: (str, bytes, Dict[str, Callable[[str, bytes], Union[str, bytes]]]) -> str
+    def render(
+        self,
+        oid: str,
+        value: bytes,
+        display_hints: Dict[str, Callable[[str, bytes], Union[str, bytes]]] = None,
+    ) -> str:
         """
         Apply display-hint
         :return:

@@ -41,16 +41,15 @@ class InterfacePathCard(BaseCard):
     N_PATHS = 2
     SIG_LEN = 9  # odd padding to broke base64
 
-    def get_data(self):
-        # type: () -> Dict[str, Any]
-        r = {
+    def get_data(self) -> Dict[str, Any]:
+        r: Dict[str, Any] = {
             "object": self.object,
             "paths": [],
             "link_sets": 0,
             "if_hash": {},
             "error": None,
             "ajax_query_key": None,
-        }  # type: Dict[str, Any]
+        }
         mo = self.object.managed_object
         target_level = (mo.object_profile.level // 10 + 1) * 10
         try:
@@ -61,14 +60,14 @@ class InterfacePathCard(BaseCard):
                 n_shortest=self.N_PATHS,
             )
             for path in finder.iter_shortest_paths():
-                items = []  # type: List[Dict[str, Any]]
-                ingress_links = [[self.object]]  # type: List[List[Interface]]
+                items: List[Dict[str, Any]] = []
+                ingress_links: List[List[Interface]] = [[self.object]]
                 for pi in path:
-                    item = {
+                    item: Dict[str, Any] = {
                         "object": pi.start,
                         "ingress": ingress_links,
                         "egress": [],
-                    }  # type: Dict[str, Any]
+                    }
                     ingress_links = []
                     for link in pi.links:
                         egress, ingress = self.split_interfaces(pi.start, link.interfaces)
@@ -84,7 +83,7 @@ class InterfacePathCard(BaseCard):
             r["error"] = str(e)
             return r
         # Build interface hashes
-        to_collect = set()  # type: Set[Tuple[int, int, str]]
+        to_collect: Set[Tuple[int, int, str]] = set()
         for path in r["paths"]:
             for item in path:
                 for direction in ("ingress", "egress"):
@@ -114,24 +113,23 @@ class InterfacePathCard(BaseCard):
         )
 
     @classmethod
-    def encode_query(cls, to_collect):
-        # type: (Set[Tuple[int, int, str]]) -> str
+    def encode_query(cls, to_collect: Set[Tuple[int, int, str]]) -> str:
         data = smart_text(
             codecs.encode(smart_bytes(ujson.dumps(to_collect)), "base64").replace(b"\n", b"")
         )
         return cls.get_signature(data) + data
 
     @classmethod
-    def decode_query(cls, query):
-        # type: (str) -> List[Tuple[int, int, str]]
+    def decode_query(cls, query: str) -> List[Tuple[int, int, str]]:
         sig, data = query[: cls.SIG_LEN], query[cls.SIG_LEN :]
         if sig != cls.get_signature(data):
             raise ValueError
         return ujson.loads(codecs.decode(data, "base64"))
 
     @staticmethod
-    def split_interfaces(obj, interfaces):
-        # type: (ManagedObject, List[Interface]) -> Tuple[List[Interface], List[Interface]]
+    def split_interfaces(
+        obj: ManagedObject, interfaces: List[Interface]
+    ) -> Tuple[List[Interface], List[Interface]]:
         """
         Split list of interfaces of the links to egress (belonging to `obj`)
         and ingress (leading out of object)
@@ -139,8 +137,8 @@ class InterfacePathCard(BaseCard):
         :param interfaces:  List of link interfaces
         :return: List of egress links, List of ingress links
         """
-        ingress = []  # type: List[Interface]
-        egress = []  # type: List[Interface]
+        ingress: List[Interface] = []
+        egress: List[Interface] = []
         for iface in sorted(interfaces, key=lambda x: alnum_key(x.name)):
             if iface.managed_object == obj:
                 egress += [iface]
@@ -149,8 +147,7 @@ class InterfacePathCard(BaseCard):
         return egress, ingress
 
     @staticmethod
-    def humanize_metric(value):
-        # type: (str) -> str
+    def humanize_metric(value: str) -> str:
         if not value:
             return "-"
         cv = float(value)
@@ -164,9 +161,7 @@ class InterfacePathCard(BaseCard):
 
     def get_ajax_data(self, **kwargs):
         # Parse query params
-        query = self.decode_query(
-            self.handler.get_argument("key")
-        )  # type: List[Tuple[int, int, str]]
+        query: List[Tuple[int, int, str]] = self.decode_query(self.handler.get_argument("key"))
         # Get metrics
         from_ts = datetime.datetime.now() - datetime.timedelta(seconds=1800)
         from_ts = from_ts.replace(microsecond=0)
@@ -195,7 +190,7 @@ class InterfacePathCard(BaseCard):
             ),
         )
         # Get data
-        metrics = []  # type: List[Tuple[int, str, str, str, str, str]]
+        metrics: List[Tuple[int, str, str, str, str, str]] = []
         ch = ch_connection()
         try:
             for (
@@ -221,7 +216,7 @@ class InterfacePathCard(BaseCard):
         except ClickhouseError:
             pass
         # Set defaults
-        m_index = set()  # type: Set[Tuple[int, str]]
+        m_index: Set[Tuple[int, str]] = set()
         for mo_bi_id, iface, _, _ in metrics:
             m_index.add((int(mo_bi_id), iface))
         interface_metrics = {
@@ -238,7 +233,7 @@ class InterfacePathCard(BaseCard):
                 for metric in interface_metrics:
                     metrics += [(str(mo_bi_id), str(bi_hash(iface)), metric, "-")]
         # managed object id -> bi id
-        mo_map = {q[0]: q[1] for q in query}  # type: Dict[int, int]
+        mo_map: Dict[int, int] = {q[0]: q[1] for q in query}
         # Get interface statuses
         for doc in Interface._get_collection().find(
             {"$or": [{"managed_object": q[0], "name": q[2]} for q in query]},
@@ -274,8 +269,7 @@ class InterfacePathCard(BaseCard):
         statuses = {str(mo_map[mo_id]): obj_statuses.get(mo_id, True) for mo_id in obj_statuses}
         return {"metrics": metrics, "statuses": list(statuses.items())}
 
-    def get_constraint(self):
-        # type: () -> Optional[BaseConstraint]
+    def get_constraint(self) -> Optional[BaseConstraint]:
         """
         Get optional path constraint
         :return:

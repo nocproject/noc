@@ -649,8 +649,7 @@ class Object(Document):
                 serials += oo.get_object_serials(chassis_only=False)
         return serials
 
-    def iter_scope(self, scope):
-        # type: (str) -> Iterable[Tuple[PathItem, ...]]
+    def iter_scope(self, scope: str) -> Iterable[Tuple[PathItem, ...]]:
         """
         Yields Full physical path for all connections with given scopes
         behind the object

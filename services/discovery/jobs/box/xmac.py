@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Extended MAC discovery
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -234,8 +234,7 @@ class XMACCheck(TopologyDiscoveryCheck):
             self.logger.info("[%s][%s] Empty cloud. Skipping.", name, iface.name)
 
     @staticmethod
-    def find_direct_uplinks(mo):
-        # type: (ManagedObject) -> List[Interface]
+    def find_direct_uplinks(mo: ManagedObject) -> List[Interface]:
         """
         Find all `direct uplinks` interfaces for given object
 
@@ -249,8 +248,9 @@ class XMACCheck(TopologyDiscoveryCheck):
         ]
 
     @staticmethod
-    def find_direct_uplinks_downlinks(objects):
-        # type: (List[ManagedObject]) -> Dict[ManagedObject, Tuple[List[Interface], List[Interface]]]
+    def find_direct_uplinks_downlinks(
+        objects: List[ManagedObject],
+    ) -> Dict[ManagedObject, Tuple[List[Interface], List[Interface]]]:
         """
         For all given objects return all direct uplink/direct downlink ports
 

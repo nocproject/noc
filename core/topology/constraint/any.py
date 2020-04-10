@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # AnyConstraint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,10 +15,8 @@ class AnyConstraint(BaseConstraint):
     Always true
     """
 
-    def __and__(self, other):
-        # type: (BaseConstraint) -> BaseConstraint
+    def __and__(self, other: BaseConstraint) -> BaseConstraint:
         return other
 
-    def __or__(self, other):
-        # type: (BaseConstraint) -> BaseConstraint
+    def __or__(self, other: BaseConstraint) -> BaseConstraint:
         return other

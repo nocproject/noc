@@ -37,8 +37,7 @@ class GridVCS(object):
         self.fs = gridfs.GridFS(get_db(), collection="noc.gridvcs.%s" % repo)
         self.files = self.fs._GridFS__files
 
-    def get_delta(self, src, dst):
-        # type: (str, str) -> Tuple[str, bytes]
+    def get_delta(self, src: str, dst: str) -> Tuple[str, bytes]:
         """
         Calculate strings delta
         :param src: Source string
@@ -51,8 +50,7 @@ class GridVCS(object):
         return self.T_BSDIFF4, delta
 
     @classmethod
-    def apply_delta(cls, type, src, delta):
-        # type: (str, str, bytes) -> str
+    def apply_delta(cls, type: str, src: str, delta: bytes) -> str:
         """
         Apply delta
         :param type: Delta type
@@ -63,8 +61,7 @@ class GridVCS(object):
         return getattr(cls, "apply_delta_%s" % type)(src, delta)
 
     @staticmethod
-    def apply_delta_F(src, delta):
-        # type: (str, bytes) -> str
+    def apply_delta_F(src: str, delta: bytes) -> str:
         """
         Raw string
         :param src:
@@ -74,8 +71,7 @@ class GridVCS(object):
         return smart_text(delta)
 
     @staticmethod
-    def apply_delta_b(src, delta):
-        # type: (str, bytes) -> str
+    def apply_delta_b(src: str, delta: bytes) -> str:
         """
         Mercurial mdiff. Slow python implementation ported from Mercurial 0.4.
         For legacy installations support only
@@ -98,8 +94,7 @@ class GridVCS(object):
         return "".join(r)
 
     @staticmethod
-    def apply_delta_B(src, delta):
-        # type: (str, bytes) -> str
+    def apply_delta_B(src: str, delta: bytes) -> str:
         """
         BSDIFF4 diff
         :param src:
@@ -109,31 +104,26 @@ class GridVCS(object):
         return smart_text(bsdiff4.patch(src, delta))
 
     @classmethod
-    def compress(cls, data, method=None):
-        # type: (bytes, Optional[str]) -> bytes
+    def compress(cls, data: bytes, method: Optional[str] = None) -> bytes:
         if method:
             return getattr(cls, "compress_%s" % method)(data)
         return data
 
     @classmethod
-    def decompress(cls, data, method=None):
-        # type: (bytes, Optional[str]) -> bytes
+    def decompress(cls, data: bytes, method: Optional[str] = None) -> bytes:
         if method:
             return getattr(cls, "decompress_%s" % method)(data)
         return data
 
     @staticmethod
-    def compress_z(data):
-        # type: (bytes) -> bytes
+    def compress_z(data: bytes) -> bytes:
         return zlib.compress(smart_bytes(data))
 
     @staticmethod
-    def decompress_z(data):
-        # type: (bytes) -> bytes
+    def decompress_z(data: bytes) -> bytes:
         return zlib.decompress(smart_bytes(data))
 
-    def put(self, object, data, ts=None):
-        # type: (int, str, Optional[datetime.datetime]) -> bool
+    def put(self, object: int, data: str, ts: Optional[datetime.datetime] = None) -> bool:
         """
         Save data
         :param object: Object id
@@ -178,8 +168,7 @@ class GridVCS(object):
         )
         return True
 
-    def get(self, object, revision=None):
-        # type: (int, Optional[Revision]) -> Optional[str]
+    def get(self, object: int, revision: Optional[Revision] = None) -> Optional[str]:
         """
         Get data
         :param object: Object id
@@ -201,8 +190,7 @@ class GridVCS(object):
                 break
         return data
 
-    def delete(self, object):
-        # type: (int) -> None
+    def delete(self, object: int) -> None:
         """
         Delete object's data and history
         :param object:
@@ -211,8 +199,7 @@ class GridVCS(object):
         for r in self.iter_revisions(object):
             self.fs.delete(r.id)
 
-    def iter_revisions(self, object, reverse=False):
-        # type: (int, Optional[bool]) -> Iterable[Revision]
+    def iter_revisions(self, object: int, reverse: Optional[bool] = False) -> Iterable[Revision]:
         """
         Get object's revision
         :param object:
@@ -222,8 +209,7 @@ class GridVCS(object):
         for r in self.files.find({"object": object}).sort("ts", d):
             yield Revision(r["_id"], r["ts"], r["ft"], r.get("c"), r["length"])
 
-    def find_last_revision(self, object):
-        # type: (int) -> Optional[Revision]
+    def find_last_revision(self, object: int) -> Optional[Revision]:
         """
         Find last revision or return None
         :param object:
@@ -234,8 +220,7 @@ class GridVCS(object):
             return Revision(r["_id"], r["ts"], r["ft"], r.get("c"), r["length"])
         return None
 
-    def find_revision(self, object, revision):
-        # type: (int, str) -> Optional[Revision]
+    def find_revision(self, object: int, revision: str) -> Optional[Revision]:
         """
         :param object:
         :param revision: Revision id
@@ -247,8 +232,7 @@ class GridVCS(object):
         return None
 
     @staticmethod
-    def _unified_diff(src, dst):
-        # type: (str, str) -> str
+    def _unified_diff(src: str, dst: str) -> str:
         """
         Returns unified diff between src and dest
 
@@ -258,8 +242,7 @@ class GridVCS(object):
         """
         return "\n".join(difflib.unified_diff(src.splitlines(), dst.splitlines(), lineterm=""))
 
-    def diff(self, object, rev1, rev2):
-        # type: (int, str, str) -> str
+    def diff(self, object: int, rev1: str, rev2: str) -> str:
         """
         Get unified diff between revisions
         :param object:
@@ -271,8 +254,7 @@ class GridVCS(object):
         dst = self.get(object, rev2) or ""
         return self._unified_diff(src, dst)
 
-    def mdiff(self, obj1, rev1, obj2, rev2):
-        # type: (int, str, int, str) -> str
+    def mdiff(self, obj1: int, rev1: str, obj2: int, rev2: str) -> str:
         """
         Get unified diff between multiple object's revisions
 
@@ -286,6 +268,5 @@ class GridVCS(object):
         dst = self.get(obj2, rev2) or ""
         return self._unified_diff(src, dst)
 
-    def ensure_collection(self):
-        # type: () -> None
+    def ensure_collection(self) -> None:
         self.files.create_index([("object", 1), ("ft", 1)])

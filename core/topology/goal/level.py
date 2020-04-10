@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectLevel goal
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,8 +28,9 @@ class ManagedObjectLevelGoal(BaseGoal):
         super(ManagedObjectLevelGoal, self).__init__()
         self.level = level
 
-    def cost_estimate(self, neighbor, current=None):
-        # type: (ManagedObject, Optional[ManagedObject]) -> int
+    def cost_estimate(
+        self, neighbor: ManagedObject, current: Optional[ManagedObject] = None
+    ) -> int:
         if current:
             current_level = current.object_profile.level
             neighbor_level = neighbor.object_profile.level
@@ -41,6 +42,5 @@ class ManagedObjectLevelGoal(BaseGoal):
                 return self.TOWARDS_COST
         return self.DEFAULT_COST
 
-    def is_goal(self, obj):
-        # type: (ManagedObject) -> bool
+    def is_goal(self, obj: ManagedObject) -> bool:
         return obj.object_profile.level >= self.level
