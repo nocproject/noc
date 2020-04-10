@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -140,6 +140,9 @@ class Script(BaseScript):
         return r
 
     def execute_cli(self):
+        # Model 3124/3124F high CPU utilization if use CLI
+        if self.is_3124 and self.has_snmp():
+            return self.execute_snmp()
         # Get portchannels
         portchannels = self.scripts.get_portchannel()
         portchannel_members = []
