@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Generic.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import functools
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -372,10 +369,10 @@ class Script(BaseScript):
                     caps["SNMP | IF-MIB"] = True
                     if self.has_snmp_ifmib_hc(version=snmp_version):
                         caps["SNMP | IF-MIB | HC"] = True
-                for cap, oid in six.iteritems(self.CHECK_SNMP_GET):
+                for cap, oid in self.CHECK_SNMP_GET.items():
                     if self.check_snmp_get(oid, version=snmp_version):
                         caps[cap] = True
-                for cap, oid in six.iteritems(self.CHECK_SNMP_GETNEXT):
+                for cap, oid in self.CHECK_SNMP_GETNEXT.items():
                     if self.check_snmp_getnext(oid, version=snmp_version):
                         caps[cap] = True
                 x = self.get_enterprise_id(version=snmp_version)

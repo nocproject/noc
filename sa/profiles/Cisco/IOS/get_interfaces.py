@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,6 @@
 import re
 import time
 from collections import defaultdict
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
@@ -288,7 +285,7 @@ class Script(BaseScript):
                             si for si in subs if imap.get(si["name"], "default") == vrf
                         ]
                         vrfs[vrf]["interfaces"] += [c]
-            return list(six.itervalues(vrfs))
+            return list(vrfs.values())
         return r
 
     def execute_cli(self):
@@ -539,4 +536,4 @@ class Script(BaseScript):
                 c = i.copy()
                 c["subinterfaces"] = [si for si in subs if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]
-        return list(six.itervalues(vrfs))
+        return list(vrfs.values())

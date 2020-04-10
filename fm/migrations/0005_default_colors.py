@@ -2,12 +2,9 @@
 # ----------------------------------------------------------------------
 # default colors
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -26,7 +23,7 @@ COLORS = {
 
 class Migration(BaseMigration):
     def migrate(self):
-        for p, colors in six.iteritems(COLORS):
+        for p, colors in COLORS.items():
             font, bg = colors
             r = self.db.execute(
                 "SELECT id,font_color,background_color FROM fm_eventpriority WHERE name=%s", [p]

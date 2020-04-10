@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import six
-
 # NOC modules
 from .base import BaseCollator
 
@@ -27,7 +24,7 @@ class IfNameCollator(BaseCollator):
             # Interface name
             self.names = {self.name_hash(if_name): if_name for if_name in interfaces}
             # Default name, if any
-            for if_name, iface in six.iteritems(interfaces):
+            for if_name, iface in interfaces.items():
                 if iface.default_name:
                     self.names[self.name_hash(iface.default_name)] = if_name
         cn = self.name_hash(physical_path[-1].connection.name)

@@ -13,9 +13,6 @@ import re
 import imp
 import datetime
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.config import config
 from noc.core.service.api import API, api
@@ -183,7 +180,7 @@ class MIBAPI(API):
                             if "syntax" in v
                             else None,
                         }
-                        for node, v in six.iteritems(m.MIB[i])
+                        for node, v in m.MIB[i].items()
                     ]
             mib.load_data(cdata)
             # Move file to permanent place

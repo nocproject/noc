@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -59,7 +56,7 @@ class Script(BaseScript):
             for i in interfaces:
                 r[i["ifindex"]] = {"interface": i["interface"]}
         else:
-            for ifindex, name in six.iteritems(self.get_iftable("IF-MIB::ifName")):
+            for ifindex, name in self.get_iftable("IF-MIB::ifName").items():
                 try:
                     v = self.profile.convert_interface_name(name)
                 except InterfaceTypeError as why:
@@ -105,7 +102,7 @@ class Script(BaseScript):
                         r[ifindex]["out_speed"] = s * 1000
         if unknown_interfaces:
             self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def execute_snmp(self, interfaces=None, **kwargs):
         r = self.get_data(interfaces=interfaces)

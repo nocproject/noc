@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Distutils setup.py
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,9 +12,6 @@ import distutils.command.sdist
 from distutils.command.install import INSTALL_SCHEMES
 import subprocess
 import os
-
-# Third-party modules
-import six
 
 #
 # Prefix to where noc to be installed
@@ -94,7 +91,7 @@ def get_data():
             data[d] = [df]
         else:
             data[d].append(df)
-    return list(six.iteritems(data))
+    return list(data.items())
 
 
 class noc_sdist(distutils.command.sdist.sdist):
@@ -111,7 +108,7 @@ class noc_sdist(distutils.command.sdist.sdist):
 #
 
 
-for scheme in six.itervalues(INSTALL_SCHEMES):
+for scheme in INSTALL_SCHEMES.values():
     scheme["purelib"] = PREFIX
     scheme["data"] = PREFIX
 #

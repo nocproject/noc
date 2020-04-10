@@ -10,7 +10,6 @@
 from collections import defaultdict
 
 # Third-party modules
-import six
 from typing import Dict
 
 # NOC modules
@@ -456,7 +455,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 updates[n] = r[n]
         if not updates:
             return
-        for n, i in six.iteritems(updates):
+        for n, i in updates.items():
             iface = self.get_interface_by_name(n)
             if iface:
                 self.logger.info("Set ifindex for %s: %s", n, i)
@@ -548,13 +547,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             if "tagged" in d:
                 unit["tagged_vlans"] = ranges_to_list(d["tagged"])
         # Flatten units
-        r = list(six.itervalues(instances))
+        r = list(instances.values())
         for fi in r:
             # Flatten interfaces
-            fi["interfaces"] = list(six.itervalues(fi["interfaces"]))
+            fi["interfaces"] = list(fi["interfaces"].values())
             # Flatten units
             for i in fi["interfaces"]:
-                i["subinterfaces"] = list(six.itervalues(i["subinterfaces"]))
+                i["subinterfaces"] = list(i["subinterfaces"].values())
         return IGetInterfaces().clean_result(r)
 
     def collate(self, if_map):

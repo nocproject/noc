@@ -10,9 +10,6 @@
 import re
 from itertools import compress
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -67,7 +64,7 @@ class Script(BaseScript):
                     yield int(is_v)
 
     def execute_snmp(self, **kwargs):
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         r = {}
         for port_num, ifindex, port_type, pvid in self.snmp.get_tables(
             [
@@ -108,7 +105,7 @@ class Script(BaseScript):
         # hybrid_vlans = list(self.snmp.get_tables([mib["HUAWEI-L2IF-MIB::hwL2IfHybridPortTable"]]))
 
         # x2 = list(compress(range(1, 4096), self.convert_vlan(r2)))
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def execute_cli(self, **kwargs):
         # Get descriptions

@@ -13,7 +13,6 @@ import os
 import re
 
 # Third-party modules
-import six
 from django.http import HttpResponse
 from mongoengine.fields import (
     StringField,
@@ -81,7 +80,7 @@ class ExtDocApplication(ExtApplication):
         self.has_uuid = False
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
-        for name, f in six.iteritems(self.model._fields):
+        for name, f in self.model._fields.items():
             if isinstance(f, BooleanField):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, GeoPointField):
@@ -108,10 +107,10 @@ class ExtDocApplication(ExtApplication):
         if not self.query_fields:
             self.query_fields = [
                 "%s__%s" % (n, self.query_condition)
-                for n, f in six.iteritems(self.model._fields)
+                for n, f in self.model._fields.items()
                 if f.unique and isinstance(f, StringField)
             ]
-        self.unique_fields = [n for n, f in six.iteritems(self.model._fields) if f.unique]
+        self.unique_fields = [n for n, f in self.model._fields.items() if f.unique]
         # Install JSON API call when necessary
         self.json_collection = self.model._meta.get("json_collection")
         if (
@@ -286,7 +285,7 @@ class ExtDocApplication(ExtApplication):
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
-        for n, f in six.iteritems(o._fields):
+        for n, f in o._fields.items():
             if fields and n not in fields:
                 continue
             v = getattr(o, n)
@@ -398,7 +397,7 @@ class ExtDocApplication(ExtApplication):
                 if self.queryset(request).filter(**q).first():
                     return self.response(status=self.CONFLICT)
         o = self.model()
-        for k, v in six.iteritems(attrs):
+        for k, v in attrs.items():
             if k != self.pk and "__" not in k:
                 setattr(o, k, v)
         try:

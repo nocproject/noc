@@ -2,15 +2,12 @@
 # ----------------------------------------------------------------------
 # Service command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import argparse
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -29,7 +26,7 @@ class Command(BaseCommand):
         for sn in services:
             service.dcs.resolve_sync(sn)
             if sn in service.dcs.resolvers:
-                for svc_id, address in six.iteritems(service.dcs.resolvers[sn].services):
+                for svc_id, address in service.dcs.resolvers[sn].services.items():
                     out += [[sn, svc_id, address]]
         self.stdout.write(format_table([0, 0, 0, 0, 0], out) + "\n")
 

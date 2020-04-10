@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CSV import/export utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ def update_if_changed(obj, values):
     :rtype: list
     """
     changes = []
-    for k, v in six.iteritems(values):
+    for k, v in values.items():
         vv = getattr(obj, k)
         if v != vv:
             if not isinstance(v, int) or not hasattr(vv, "id") or v != vv.id:
@@ -69,7 +69,7 @@ def get_model_fields(model):
                 fields += [(f.name, required, f.remote_field.model, k)]
         elif hasattr(f, "document"):
             k = f.document._meta["id_field"]
-            for ff, fi in six.iteritems(f.document._fields):
+            for ff, fi in f.document._fields.items():
                 if fi.name != k and fi.unique and fi.name not in IGNORED_FIELDS:
                     k = fi.name
                     break
@@ -267,7 +267,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Create object
             o = model()
         # Set attributes
-        for k, v in six.iteritems(variables):
+        for k, v in variables.items():
             setattr(o, k, v)
         # Save
         try:

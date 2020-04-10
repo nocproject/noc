@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Load and syncronize built-in refbooks
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -59,7 +56,7 @@ class Command(BaseCommand):
             if name in loaded_refbooks:
                 del loaded_refbooks[name]
         # Delete stale refbooks
-        for rb in six.itervalues(loaded_refbooks):
+        for rb in loaded_refbooks.values():
             self.print("DELETE REFBOOK: %s" % rb.name)
             rb.delete()
 

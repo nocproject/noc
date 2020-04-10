@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Profile checker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ from collections import defaultdict
 from builtins import str, object
 
 # Third-party modules
-import six
 import cachetools
 
 # NOC modules
@@ -72,7 +71,7 @@ class ProfileChecker(object):
         """
         r = defaultdict(list)
         d = self.get_rules()
-        for k, value in sorted(six.iteritems(d), key=lambda x: x[0]):
+        for k, value in sorted(d.items(), key=lambda x: x[0]):
             for v in value:
                 r[v] += value[v]
         if (method, param) not in r:
@@ -163,7 +162,7 @@ class ProfileChecker(object):
     def iter_rules(self):
         d = self.get_rules()
         for p in sorted(d):
-            yield list(six.iteritems(d[p]))
+            yield list(d[p].items())
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_re_cache"))

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  Data Loader
+# Data Loader
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2020 The NOC Project
-#  See LICENSE for details
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
@@ -106,7 +106,7 @@ class BaseLoader(object):
 
             unique_fields = [
                 f.name
-                for f in six.itervalues(self.model._fields)
+                for f in self.model._fields.values()
                 if f.unique and f.name not in self.ignore_unique
             ]
             self.integrity_exception = mongoengine.errors.NotUniqueError
@@ -335,7 +335,7 @@ class BaseLoader(object):
         data structures
         """
         self.logger.debug("Create object")
-        for k, nv in six.iteritems(v):
+        for k, nv in v.items():
             if k == "tags":
                 # Merge tags
                 nv = sorted("%s:%s" % (self.system.name, x) for x in nv)
@@ -352,7 +352,7 @@ class BaseLoader(object):
                 connection._rollback()
             # Fallback to change object
             o = self.model.objects.get(**{self.unique_field: v[self.unique_field]})
-            for k, nv in six.iteritems(v):
+            for k, nv in v.items():
                 setattr(o, k, nv)
             o.save()
         return o
@@ -368,7 +368,7 @@ class BaseLoader(object):
         except self.model.DoesNotExist:
             self.logger.error("Cannot change %s:%s: Does not exists", self.name, object_id)
             return None
-        for k, nv in six.iteritems(v):
+        for k, nv in v.items():
             if k == "tags":
                 # Merge tags
                 ov = o.tags or []
@@ -402,7 +402,7 @@ class BaseLoader(object):
             # Lost&found object with same remote_id
             self.logger.debug("Lost and Found object")
             vv = {"remote_system": v["remote_system"], "remote_id": v["remote_id"]}
-            for fn, nv in six.iteritems(v):
+            for fn, nv in v.items():
                 if fn in vv:
                     continue
                 if getattr(o, fn) != nv:
@@ -563,7 +563,7 @@ class BaseLoader(object):
         from mongoengine.fields import BooleanField, ReferenceField
         from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
-        for fn, ft in six.iteritems(self.model._fields):
+        for fn, ft in self.model._fields.items():
             if fn not in self.clean_map:
                 continue
             if isinstance(ft, BooleanField):
@@ -621,9 +621,9 @@ class BaseLoader(object):
         if self.is_document:
             # Document
             required_fields = [
-                f.name for f in six.itervalues(self.model._fields) if f.required or f.unique
+                f.name for f in self.model._fields.values() if f.required or f.unique
             ]
-            unique_fields = [f.name for f in six.itervalues(self.model._fields) if f.unique]
+            unique_fields = [f.name for f in self.model._fields.values() if f.unique]
         else:
             # Model
             required_fields = [f.name for f in self.model._meta.fields if not f.blank]

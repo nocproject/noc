@@ -10,7 +10,6 @@
 import ldap3
 from ldap3.utils.conv import escape_filter_chars
 from ldap3.core.exceptions import LDAPCommunicationError, LDAPServerPoolExhaustedError
-import six
 
 # NOC modules
 from noc.main.models.authldapdomain import AuthLDAPDomain
@@ -188,7 +187,7 @@ class LdapBackend(BaseAuthBackend):
         attrs = entry.entry_attributes_as_dict
         self.logger.debug("User attributes: %s", attrs if attrs else "No attributes response")
         user_info["user_dn"] = entry.entry_dn
-        for k, v in six.iteritems(ldap_domain.get_attr_mappings()):
+        for k, v in ldap_domain.get_attr_mappings().items():
             if k in attrs:
                 value = attrs[k]
                 if isinstance(value, (list, tuple)):

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Custom MongoEngine fields
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.base import get_document
 from mongoengine.fields import BaseField, DateTimeField, DictField
@@ -317,8 +316,8 @@ class RawDictField(DictField):
     def to_python(self, value):
         return dict(
             (k.replace(ESC1, ".").replace(ESC2, "$").replace("\uff0e", "."), v)
-            for k, v in six.iteritems(value)
+            for k, v in value.items()
         )
 
     def to_mongo(self, value):
-        return dict((k.replace(".", ESC1).replace("$", ESC2), v) for k, v in six.iteritems(value))
+        return dict((k.replace(".", ESC1).replace("$", ESC2), v) for k, v in value.items())

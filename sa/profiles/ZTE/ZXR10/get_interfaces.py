@@ -2,16 +2,13 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXR10.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 import copy
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -134,7 +131,7 @@ class Script(BaseScript):
             if match:
                 ifaces[match.group("lag_member")]["enabled_protocols"] += ["LACP"]
                 ifaces[match.group("lag_member")]["aggregated_interface"] = "smartgroup" + last_lag
-        return [{"interfaces": list(six.itervalues(ifaces))}]
+        return [{"interfaces": list(ifaces.values())}]
 
     def type_by_name(self, name):
         if name.startswith("gei"):

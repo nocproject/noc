@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Base card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import datetime
 import operator
 
 # Third-party modules
-import six
 from jinja2 import Template, Environment
 from typing import Dict, Any
 
@@ -197,7 +196,7 @@ class BaseCard(object):
                 def show_in_summary(p):
                     return True
 
-            for p, c in sorted(six.iteritems(d), key=lambda x: -x[1]):
+            for p, c in sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if collapse and c < 2:

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportObjectDiscoveryResult datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -126,7 +126,7 @@ class ReportDiscoveryResult(BaseReportColumn):
                 break
         for i in self.sync_ids:
             yield next(r[pid[i]], (i, ("",) * len(self.ATTRS)))
-        # return list(six.itervalues(r))
+        # return list(r.values())
 
     def convert(self, val):
         dresult = namedtuple("DResult", self.ATTRS)

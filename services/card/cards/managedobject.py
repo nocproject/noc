@@ -12,7 +12,6 @@ import datetime
 import operator
 
 # Third-party modules
-import six
 from django.db.models import Q
 from mongoengine.errors import DoesNotExist
 
@@ -60,7 +59,7 @@ class ManagedObjectCard(BaseCard):
         def sortdict(dct):
             res = OrderedDict()
             for x in sorted(dct):
-                for k, v in six.iteritems(dct):
+                for k, v in dct.items():
                     if k == x:
                         res[k] = v
             return res
@@ -195,7 +194,7 @@ class ManagedObjectCard(BaseCard):
         metric_type_name = dict(MetricType.objects.filter().scalar("name", "measure"))
         metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
         if objects_metrics:
-            for path, mres in six.iteritems(objects_metrics):
+            for path, mres in objects_metrics.items():
                 for key in mres:
                     metric_name = "%s | %s" % (key, path) if any(path.split("|")) else key
                     meta[metric_name] = {"type": metric_type_name[key], "value": mres[key]}
@@ -207,7 +206,7 @@ class ManagedObjectCard(BaseCard):
             errors_out = "-"
             iface_metrics = ifaces_metrics.get(str(i.name))
             if iface_metrics:
-                for key, value in six.iteritems(iface_metrics):
+                for key, value in iface_metrics.items():
                     if key not in metrics_map:
                         continue
                     metric_type = metric_type_name.get(key) or metric_type_field.get(key)

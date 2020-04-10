@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020, The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,9 +13,6 @@ import datetime
 import re
 from collections import defaultdict
 from threading import Lock
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.config import config
@@ -629,7 +626,7 @@ class CorrelatorService(Service):
             :return:
             """
             mo = a1.managed_object.id
-            for na in six.itervalues(neighbor_alarms):
+            for na in neighbor_alarms.values():
                 if na.uplinks and mo in na.uplinks:
                     yield na
 

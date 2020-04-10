@@ -12,7 +12,6 @@ import re
 import operator
 
 # Third-party modules
-import six
 from django.apps import apps
 from mongoengine.base.common import _document_registry
 
@@ -121,7 +120,7 @@ class RefAppplication(ExtApplication):
                 "label": "%s.%s" % (c.__module__.split(".")[1], n),
                 "collection": c._get_collection_name(),
             }
-            for n, c in six.iteritems(_document_registry)
+            for n, c in _document_registry.items()
             if c._get_collection_name()
         ]
         return list(sorted(r, key=lambda x: x["label"]))

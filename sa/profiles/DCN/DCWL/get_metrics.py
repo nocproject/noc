@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # DCN.DCWL.get_metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import six
 from collections import defaultdict
 import codecs
 
@@ -129,7 +128,7 @@ class Script(GetMetricsScript):
                 iface = "%s.%s" % (data["name"], ssid)
             else:
                 iface = data["name"]
-            for field, metric in six.iteritems(iface_metric_map):
+            for field, metric in iface_metric_map.items():
                 if data.get(field) is not None:
                     self.set_metric(
                         id=(metric, ["", "", "", iface]),

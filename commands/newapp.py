@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Create application skeleton
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import datetime
 import re
 
 # Third-party modules
-import six
 from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
 from jinja2 import Template
@@ -241,7 +240,7 @@ class Command(BaseCommand):
                 else:
                     # Document
                     fields = [{"type": "string", "name": "id"}]
-                    for n, f in six.iteritems(model._fields):
+                    for n, f in model._fields.items():
                         if n == "id":
                             continue
                         fc = f.__class__.__name__

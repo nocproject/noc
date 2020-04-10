@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CSV Export/Import application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import csv
 
 # Third-party modules
-import six
 from six import StringIO
 from django import forms
 from django.contrib import admin
@@ -108,7 +107,7 @@ class CSVApplication(Application):
                     keys = None
                     for row in csv_reader:
                         if not keys:
-                            keys = list(six.iterkeys(row))
+                            keys = list(row)
                         for prefix in accepted_prefixes:
                             if (
                                 self.address_in_network(row["address"], prefix[0])

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Script(GetMetricsScript):
     # def get_vrp_interface_metrics(self, metrics):
     #     v = self.cli("display interface")
     #     ifdata = self.profile.parse_ifaces(v)
-    #     for iface, data in six.iteritems(ifdata):
+    #     for iface, data in ifdata.items():
     #         iface = self.profile.convert_interface_name(iface)
     #         ipath = ["", "", "", iface]
     #         if "CRC" in data:

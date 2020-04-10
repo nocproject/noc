@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Hikvision.DSKV8.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import xml.etree.ElementTree as ElementTree
 from copy import copy
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -42,7 +41,7 @@ class Script(BaseScript):
         v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
-        for key, value in sorted(six.iteritems(v["DeviceInfo"])):
+        for key, value in sorted(v["DeviceInfo"]).items():
             if key == "_text" or isinstance(value, str):
                 continue
             c += "    %s %s\n" % (key, value[0]["_text"] if value[0] else "")
@@ -58,14 +57,14 @@ class Script(BaseScript):
             c += "  enabled %s\n" % o["enabled"][0]["_text"]
             video = o["Video"][0]
             c += "  Video\n"
-            for key, value in sorted(six.iteritems(video)):
+            for key, value in sorted(video.items()):
                 if key == "_text" or isinstance(value, str):
                     continue
                 c += "    %s %s\n" % (key, value[0]["_text"])
             if "Audio" in o:
                 audio = o["Audio"][0]
                 c += "  Audio\n"
-                for key, value in sorted(six.iteritems(audio)):
+                for key, value in sorted(audio.items()):
                     if key == "_text" or isinstance(value, str):
                         continue
                     c += "    %s %s\n" % (key, value[0]["_text"])
@@ -77,20 +76,20 @@ class Script(BaseScript):
 
         color = o["Color"][0]
         c += "Color\n"
-        for key, value in sorted(six.iteritems(color)):
+        for key, value in sorted(color.items()):
             if key == "_text" or isinstance(value, str):
                 continue
             c += "    %s %s\n" % (key, value[0]["_text"])
         if "WDR" in o:
             wdr = o["WDR"][0]
             c += "WDR\n"
-            for key, value in sorted(six.iteritems(wdr)):
+            for key, value in sorted(wdr.items()):
                 if key == "_text" or isinstance(value, str):
                     continue
                 c += "    %s %s\n" % (key, value[0]["_text"])
         blc = o["BLC"][0]
         c += "BLC\n"
-        for key, value in sorted(six.iteritems(blc)):
+        for key, value in sorted(blc.items()):
             if key == "_text" or isinstance(value, str):
                 continue
             try:
@@ -132,7 +131,7 @@ class Script(BaseScript):
                             i = i + 1
                 else:
                     c += "  %s\n" % o
-                    for key, value in sorted(six.iteritems(v["VideoOverlay"][o][0])):
+                    for key, value in sorted(v["VideoOverlay"][o][0].items()):
                         if key == "_text" or isinstance(value, str):
                             continue
                         c += "    %s %s\n" % (key, value[0]["_text"])
@@ -146,7 +145,7 @@ class Script(BaseScript):
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
             c += "Time\n"
-            for key, value in sorted(six.iteritems(v["Time"])):
+            for key, value in sorted(v["Time"].items()):
                 if key == "_text" or isinstance(value, str) or key == "localTime":
                     continue
                 c += "  %s %s\n" % (key, value[0]["_text"])
@@ -174,7 +173,7 @@ class Script(BaseScript):
             c += "Users\n"
             for u in v["UserList"]["User"]:
                 c += " user %s\n" % u["userName"][0]["_text"]
-                for key, value in sorted(six.iteritems(u)):
+                for key, value in sorted(u.items()):
                     if key == "_text" or isinstance(value, str):
                         continue
                     c += "    %s %s\n" % (key, value[0]["_text"])

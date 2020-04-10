@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Total Outage card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,13 +10,12 @@
 import datetime
 
 # Third-party modules
-import six
+import cachetools
 
 # NOC modules
-from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
-import cachetools
+from .base import BaseCard
 
 
 class OutageCard(BaseCard):
@@ -38,21 +37,17 @@ class OutageCard(BaseCard):
             services = {}
             subscribers = {}
             # Calculate direct segments' coverage
-            for o in six.itervalues(segment["objects"]):
+            for o in segment["objects"].values():
                 update_dict(services, o["services"])
                 update_dict(subscribers, o["subscribers"])
             # Flatten objects
-            segment["objects"] = sorted(
-                six.itervalues(segment["objects"]), key=lambda x: -x["weight"]
-            )
+            segment["objects"] = sorted(segment["objects"].values(), key=lambda x: -x["weight"])
             # Calculate children's coverage
-            for s in six.itervalues(segment["segments"]):
+            for s in segment["segments"].values():
                 update_summary(s)
                 update_dict(services, s["services"])
                 update_dict(subscribers, s["subscribers"])
-            segment["segments"] = sorted(
-                six.itervalues(segment["segments"]), key=lambda x: -x["weight"]
-            )
+            segment["segments"] = sorted(segment["segments"].values(), key=lambda x: -x["weight"])
             segment["services"] = services
             segment["subscribers"] = subscribers
             segment["summary"] = {"service": services, "subscriber": subscribers}

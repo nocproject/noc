@@ -9,9 +9,6 @@
 # Python modules
 import re
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -148,7 +145,7 @@ class Script(BaseScript):
                     )
                 else:
                     interfaces[ifname]["mac"] = iface.group("mac")
-        return [{"interfaces": list(six.itervalues(interfaces))}]
+        return [{"interfaces": list(interfaces.values())}]
 
     def execute_cli(self, **kwargs):
         if self.is_escom_l:

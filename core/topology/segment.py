@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  SegmentTopology class
+# SegmentTopology class
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2019 The NOC Project
-#  See LICENSE for details
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
@@ -14,7 +14,6 @@ from collections import defaultdict
 
 # Third-party modules
 import cachetools
-import six
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
@@ -187,14 +186,13 @@ class SegmentTopology(BaseTopology):
         # Bulk fetch all managed objects
         segment_mos = set(self.segment.managed_objects.values_list("id", flat=True))
         all_mos = list(
-            set(i["managed_object"] for i in six.itervalues(ifs) if "managed_object" in i)
-            | segment_mos
+            set(i["managed_object"] for i in ifs.values() if "managed_object" in i) | segment_mos
         )
         mos = dict((mo.id, mo) for mo in ManagedObject.objects.filter(id__in=all_mos))
         self.segment_objects = set(
             mo_id for mo_id in all_mos if mos[mo_id].segment.id == self.segment.id
         )
-        for mo in six.itervalues(mos):
+        for mo in mos.values():
             self.add_object(mo)
         # Process all segment's links
         pn = 0

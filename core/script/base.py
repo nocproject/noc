@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SA Script base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -55,8 +55,7 @@ class BaseScriptMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         n._execute_chain = sorted(
-            (v for v in six.itervalues(attrs) if hasattr(v, "_seq")),
-            key=operator.attrgetter("_seq"),
+            (v for v in attrs.values() if hasattr(v, "_seq")), key=operator.attrgetter("_seq"),
         )
         return n
 
@@ -317,7 +316,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         Returns callable accepting self and version hash arguments
         """
         c = [lambda self, x, g=f: g(x) for f in args]
-        for k, v in six.iteritems(kwargs):
+        for k, v in kwargs.items():
             # Split to field name and lookup operator
             if "__" in k:
                 f, o = k.split("__")

@@ -13,7 +13,6 @@ from collections import defaultdict
 # Third-party modules
 from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q
-import six
 
 # NOC modules
 from .base import BaseExtractor
@@ -146,7 +145,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "n_neighbors": len(neighbors[mo]) - 1,
                 "n_links": links_left,
             }
-            for lm, field in six.iteritems(self.LD_MAP):
+            for lm, field in self.LD_MAP.items():
                 n = r.get((mo, lm), 0)
                 ld[field] = n
                 links_left -= n

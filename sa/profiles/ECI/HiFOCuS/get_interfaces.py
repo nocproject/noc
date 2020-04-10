@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # ECI.HiFOCuS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # -------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -127,7 +124,7 @@ class Script(BaseScript):
                     ],
                 }
         interfaces.update(self.get_l3_interfaces())
-        return [{"interfaces": sorted(six.itervalues(interfaces), key=lambda x: x["name"])}]
+        return [{"interfaces": sorted(interfaces.values(), key=lambda x: x["name"])}]
 
     def execute_cli(self, **kwargs):
         # "EXISTSH ALL"
@@ -168,4 +165,4 @@ class Script(BaseScript):
                 }
             ]
         interfaces.update(self.get_l3_interfaces())
-        return [{"interfaces": sorted(six.itervalues(interfaces), key=lambda x: x["name"])}]
+        return [{"interfaces": sorted(interfaces.values(), key=lambda x: x["name"])}]

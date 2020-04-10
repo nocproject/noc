@@ -16,7 +16,6 @@ import operator
 import re
 
 # Third-party modules
-import six
 import cachetools
 import tornado.gen
 import tornado.ioloop
@@ -194,7 +193,7 @@ class ClassifierService(Service):
                     "'event_class__in: [%s]"
                     % ", ".join(["ObjectId('%s')" % c for c in s["event_class"]])
                 ]
-            for k, v in six.iteritems(s["match_condition"]):
+            for k, v in s["match_condition"].items():
                 x += ["'%s': %s" % (k, v)]
             return compile("{%s}" % ", ".join(x), "<string>", "eval")
 

@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Python modules
-import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
@@ -162,9 +159,7 @@ class Script(GetMetricsScript):
         self.collect_cpe_metrics_snmp(metrics)
 
     def collect_cpe_metrics_snmp(self, metrics):
-        names = {
-            x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))
-        }
+        names = {x: y for y, x in self.scripts.get_ifindexes(name_oid="IF-MIB::ifName").items()}
         global_id_map = {}
         for ont_index, ont_serial in self.snmp.get_tables(
             [mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"]]

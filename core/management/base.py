@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CLI Command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,6 @@
 import sys
 import os
 import argparse
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.config import config
@@ -186,7 +183,7 @@ class BaseCommand(object):
         fmt = logging.Formatter(self.LOG_FORMAT, None)
         for h in logger.handlers:
             h.setFormatter(fmt)
-        for l in six.itervalues(logger.manager.loggerDict):
+        for l in logger.manager.loggerDict.values():
             if hasattr(l, "setLevel"):
                 l.setLevel(level)
         self.is_debug = level <= logging.DEBUG

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Coverage
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -82,4 +82,4 @@ class Coverage(Document):
         if entrance:
             for cb in CoveredBuilding.objects.filter(building=building, entrance=entrance):
                 c[cb.coverage] = cb.preference
-        return [x[0] for x in sorted(six.iteritems(c), key=lambda y: -y[1]) if x[1]]
+        return [x[0] for x in sorted(c.items(), key=lambda y: -y[1]) if x[1]]

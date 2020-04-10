@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Basic MO discovery job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,6 @@ import operator
 # Third-party modules
 import bson
 import cachetools
-import six
 from six import StringIO
 from pymongo import UpdateOne
 from typing import List, Dict
@@ -524,7 +523,7 @@ class DiscoveryCheck(object):
         """
         changes = []
         ignore_empty = ignore_empty or []
-        for k, v in six.iteritems(values):
+        for k, v in values.items():
             vv = getattr(obj, k)
             if v != vv:
                 if not isinstance(v, int) or not hasattr(vv, "id") or v != vv.id:

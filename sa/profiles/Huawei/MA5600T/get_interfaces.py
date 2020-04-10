@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -319,7 +318,7 @@ class Script(BaseScript):
             #   Online state      : -
             #   Board has ports   : 0
             #   --------------------------------------------------------
-            b_type = {p["type"] for p in six.itervalues(ports)}
+            b_type = {p["type"] for p in ports.values()}
             b_type = b_type.pop() if b_type else b["type"]
             if b_type in {"10GE", "GE", "FE", "GE-Optic", "GE-Elec", "FE-Elec"}:
                 for match in self.rx_ether.finditer(v):
@@ -355,7 +354,7 @@ class Script(BaseScript):
                         interfaces[ifname]["enabled_protocols"] += ["LACP"]
 
             if b_type in {"ADSL", "VDSL"}:
-                for p_name, p in six.iteritems(ports):
+                for p_name, p in ports.items():
                     if p["type"] == "VDSL":
                         ifindex = self.snmp_index("VDSL2", 0, slot, int(p["num"]))
                     else:
@@ -373,7 +372,7 @@ class Script(BaseScript):
                 self.get_pvc(interfaces, slot)
 
             if b_type in {"GPON"}:  # For feature use
-                for p_name, p in six.iteritems(ports):
+                for p_name, p in ports.items():
                     if self.is_gpon_uplink:
                         ifindex = self.snmp_index("XG-PON", 0, slot, int(p["num"]))
                     else:

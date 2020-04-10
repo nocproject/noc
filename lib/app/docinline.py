@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DocInline
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 from functools import reduce
 
 # Third-party modules
-import six
 from mongoengine.fields import StringField, IntField, BooleanField, GeoPointField
 from mongoengine.queryset import Q
 from mongoengine.errors import NotUniqueError
@@ -64,7 +63,7 @@ class DocInline(object):
         self.pk_field_name = "id"
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
-        for name, f in six.iteritems(self.model._fields):
+        for name, f in self.model._fields.items():
             if isinstance(f, BooleanField):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, IntField):
@@ -75,7 +74,7 @@ class DocInline(object):
         if not self.query_fields:
             self.query_fields = [
                 "%s__%s" % (n, self.query_condition)
-                for n, f in six.iteritems(self.model._fields)
+                for n, f in self.model._fields.items()
                 if f.unique and isinstance(f, StringField)
             ]
         # Find field_* and populate custom fields
@@ -260,7 +259,7 @@ class DocInline(object):
 
     def instance_to_dict(self, o, fields=None):
         r = {}
-        for n, f in six.iteritems(o._fields):
+        for n, f in o._fields.items():
             if fields and n not in fields:
                 continue
             v = getattr(o, n)
@@ -406,7 +405,7 @@ class DocInline(object):
         except self.model.DoesNotExist:
             return self.app.response("", status=self.NOT_FOUND)
         attrs[self.parent_rel] = parent
-        for k, v in six.iteritems(attrs):
+        for k, v in attrs.items():
             setattr(o, k, v)
         try:
             o.save()

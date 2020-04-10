@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Refbook
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ class RefBook(NOCModel):
         for f in self.refbookfield_set.all():
             fields[f.name] = f.order - 1
         r = [None] * len(fields)
-        for k, v in six.iteritems(data):
+        for k, v in data.items():
             r[fields[k]] = v
         RefBookData(ref_book=self, value=r).save()
 
@@ -85,7 +85,7 @@ class RefBook(NOCModel):
         # Insert data
         for r in data:
             row = row_template[:]  # Clone template row
-            for k, v in six.iteritems(r):
+            for k, v in r.items():
                 if k in fields:
                     row[fields[k]] = v
             RefBookData(ref_book=self, value=row).save()

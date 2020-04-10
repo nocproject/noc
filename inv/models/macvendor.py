@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MAC Vendor
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ class MACVendor(Document):
         # Compare
         collection = MACVendor._get_collection()
         bulk = []
-        for oui, vendor in six.iteritems(new):
+        for oui, vendor in new.items():
             if oui in old:
                 if vendor != old[oui]:
                     logger.info("[%s] %s -> %s", oui, old[oui], vendor)

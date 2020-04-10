@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PeeringPoint model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ class PeeringPoint(NOCModel):
                 pls[pr.import_filter_name] = pr.import_filter
             if pr.export_filter_name:
                 pls[pr.export_filter_name] = pr.export_filter
-        return list(six.iteritems(pls))
+        return list(pls.items())
 
     @property
     def rpsl(self):

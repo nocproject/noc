@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # Task Collector
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
-import six
 from collections import OrderedDict
 
 # NOC modules
@@ -44,7 +43,7 @@ class TaskObjectCollector(BaseCollector):
         now = datetime.datetime.now() - datetime.timedelta(seconds=5)
         late_q = {Job.ATTR_STATUS: Job.S_WAIT, Job.ATTR_TS: {"$lt": now}}
         exp_q = {Job.ATTR_LAST_STATUS: Job.E_EXCEPTION}
-        for scheduler_name, data in six.iteritems(self.schedulers_list):
+        for scheduler_name, data in self.schedulers_list.items():
             sc = self.db[scheduler_name]
             # Calculate late tasks
             t0 = sc.find_one(late_q, limit=1, sort=[("ts", 1)])

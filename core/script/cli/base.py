@@ -20,7 +20,6 @@ import tornado.gen
 import tornado.ioloop
 import tornado.iostream
 import tornado.concurrent
-import six
 from typing import Optional, Callable
 
 # NOC modules
@@ -393,7 +392,7 @@ class CLI(object):
                 self.buffer += self.cleaned_input(r)
             # Try to find matched pattern
             offset = max(0, len(self.buffer) - self.MATCH_TAIL)
-            for rx, handler in six.iteritems(self.pattern_table):
+            for rx, handler in self.pattern_table.items():
                 match = rx.search(self.buffer, offset)
                 if match:
                     self.logger.debug("Match: %s", rx.pattern)
@@ -484,7 +483,7 @@ class CLI(object):
                         self.logger.debug("Next screen. Sending %r" % cmd_next)
                         self.send(cmd_next)
             # Check for prompt
-            for rx, handler in six.iteritems(self.pattern_table):
+            for rx, handler in self.pattern_table.items():
                 offset = max(0, len(buffer) - self.MATCH_TAIL)
                 match = rx.search(buffer, offset)
                 if match:
@@ -708,7 +707,7 @@ class CLI(object):
         old_pattern_prompt = self.patterns["prompt"].pattern
         pattern_prompt = old_pattern_prompt
         sl = self.profile.can_strip_hostname_to
-        for k, v in six.iteritems(match.groupdict()):
+        for k, v in match.groupdict().items():
             if v:
                 k = smart_bytes(k)
                 if k == b"hostname" and sl and len(v) > sl:

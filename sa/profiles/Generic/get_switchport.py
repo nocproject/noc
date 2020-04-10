@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import six
 from itertools import compress
 
 # NOC Modules
@@ -43,7 +42,7 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         result = {}
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         # Get PID -> ifindex mapping
         pid_ifindex_mappings = self.get_iface_portid_mapping()
         iface_list = sorted(pid_ifindex_mappings, key=int)
@@ -81,4 +80,4 @@ class Script(BaseScript):
                     # Perhaps port is switchport @todo getting port type
                     continue
                 result[p]["tagged"] += [vlan_num]
-        return list(six.itervalues(result))
+        return list(result.values())

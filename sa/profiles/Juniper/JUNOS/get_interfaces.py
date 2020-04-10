@@ -2,16 +2,13 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 import time
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
@@ -405,7 +402,7 @@ class Script(BaseScript):
                     ]
                 else:
                     interfaces[i]["subinterfaces"] += [s]
-        return list(six.itervalues(vrfs))
+        return list(vrfs.values())
 
     rx_vlan_sep = re.compile(r"^VLAN:", re.MULTILINE)
     rx_802_1Q_tag = re.compile(r"802.1Q\s+Tag:\s+(?P<tag>\d+)", re.IGNORECASE | re.MULTILINE)

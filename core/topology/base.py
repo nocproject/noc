@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  BaseTopology class
+# BaseTopology class
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2020 The NOC Project
-#  See LICENSE for details
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import operator
 
 # Third-Party modules
-import six
 from networkx import nx
 import numpy as np
 import cachetools
@@ -206,7 +205,7 @@ class BaseTopology(object):
         """
         maxv = np.array([0, 0])
         minv = np.array([0, 0])
-        for p in six.itervalues(pos):
+        for p in pos.values():
             maxv = np.maximum(maxv, p)
             minv = np.minimum(minv, p)
         # Dimensions
@@ -233,7 +232,7 @@ class BaseTopology(object):
     def layout(self):
         # Use node hints
         dpos = {}
-        for p, nh in six.iteritems(self.node_hints):
+        for p, nh in self.node_hints.items():
             if "x" in nh and "y" in nh:
                 dpos[p] = np.array([nh["x"], nh["y"]])
         if len(dpos) != len(self.G) and len(self.G):
