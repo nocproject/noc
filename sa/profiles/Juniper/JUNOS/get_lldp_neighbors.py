@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
@@ -51,7 +50,7 @@ class Script(BaseScript):
 
     def get_local_iface(self):
         r = {}
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         # Get LocalPort Table
         for v in self.snmp.get_tables(
             [

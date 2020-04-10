@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import datetime
 import csv
 
 # Third-party modules
-import six
 from six import BytesIO
 import xlsxwriter
 from django.http import HttpResponse
@@ -258,7 +257,7 @@ class ReportObjectDetailApplication(ExtApplication):
         mos_filter = None
         if detail_stat:
             ref = ReportModelFilter()
-            ids = list(six.itervalues(ref.proccessed(detail_stat)))
+            ids = list(ref.proccessed(detail_stat).values())
             mos_filter = set(mos_id).intersection(ids[0])
             mos_id = sorted(mos_filter)
         avail = {}
@@ -292,7 +291,7 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend(type_columns)
         if "object_caps" in columns_filter:
             object_caps = ReportObjectCaps(mos_id)
-            caps_columns = list(six.itervalues(object_caps.ATTRS))
+            caps_columns = list(object_caps.ATTRS.values())
             ccc = iter(object_caps)
             r[-1].extend(caps_columns)
         if "object_tags" in columns_filter:

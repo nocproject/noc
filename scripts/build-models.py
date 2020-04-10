@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # build noc.models._MODELS manifest
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 from collections import defaultdict
 
 # Third-party modules
-import six
 from mongoengine.base.common import _document_registry
 from mongoengine.document import Document
 from django.db.models import get_models
@@ -35,7 +34,7 @@ def build():
     site.autodiscover()
     models = defaultdict(list)  # Module -> [(alias, path)]
     # Enumerate documents
-    for c in six.itervalues(_document_registry):
+    for c in _document_registry.values():
         if issubclass(c, Document):
             add(c)
     # Enumerate models

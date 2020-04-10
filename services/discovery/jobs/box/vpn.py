@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # VPN discovery
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from collections import namedtuple
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -142,7 +139,7 @@ class VPNCheck(DiscoveryCheck):
                 source=SRC_INTERFACE,
                 description=None,
             )
-            for p in six.itervalues(vpns)
+            for p in vpns.values()
         ]
 
     def get_mpls_vpns(self):

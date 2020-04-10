@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Metric collector
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ import time
 from collections import defaultdict
 
 # Third-party modules
-import six
 import cachetools
 from pymongo import ReadPreference
 
@@ -481,7 +480,7 @@ class MetricsCheck(DiscoveryCheck):
         if n_metrics:
             self.logger.info("Spooling %d metrics", n_metrics)
             for table in data:
-                self.service.register_metrics(table, list(six.itervalues(data[table])))
+                self.service.register_metrics(table, list(data[table].values()))
         # Set up threshold alarms
         self.logger.info("%d alarms detected", len(alarms))
         if events:

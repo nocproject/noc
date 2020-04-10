@@ -25,7 +25,6 @@ from django.db.models.fields import (
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
-import six
 
 # NOC modules
 from noc.sa.interfaces.base import (
@@ -647,7 +646,7 @@ class ExtModelApplication(ExtApplication):
                 self.logger.info("Register Tag: %s" % t)
                 Tag.register_tag(t, repr(self.model))
         # Update attributes
-        for k, v in six.iteritems(attrs):
+        for k, v in attrs.items():
             if (
                 self.secret_fields
                 and k in self.secret_fields

@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # DCN.DCWL.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 import codecs
 
 # NOC modules
@@ -108,4 +107,4 @@ class Script(BaseScript):
                     "in_speed": 100000,
                     "out_speed": 100000,
                 }
-        return list(six.itervalues(r))
+        return list(r.values())

@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -63,9 +62,7 @@ class Script(BaseScript):
 
     def execute_snmp(self, interface=None, **kwargs):
         r = []
-        names = {
-            v: k for k, v in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))
-        }
+        names = {v: k for k, v in self.scripts.get_ifindexes(name_oid="IF-MIB::ifName").items()}
         for (
             olt_index,
             olt_temp_c,

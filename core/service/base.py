@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,7 +27,6 @@ import tornado.locks
 import setproctitle
 import ujson
 from typing import Dict, List, Generator
-import six
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
@@ -774,7 +773,7 @@ class Service(object):
         # Wait for shutdown
         while has_topics:
             with self.topic_queue_lock:
-                topic = next(six.iterkeys(self.topic_queues))
+                topic = next(iter(self.topic_queues.keys()))
                 queue = self.topic_queues[topic]
                 del self.topic_queues[topic]
                 has_topics = bool(self.topic_queues)

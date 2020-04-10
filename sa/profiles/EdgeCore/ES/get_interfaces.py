@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.ip import IPv4
@@ -327,7 +324,7 @@ class Script(BaseScript):
                 rr["rd"] = rd
             # create ifaces
 
-            rr["interfaces"] = list(six.itervalues(ifaces))
+            rr["interfaces"] = list(ifaces.values())
         r += [rr]
         # Return result
         return r

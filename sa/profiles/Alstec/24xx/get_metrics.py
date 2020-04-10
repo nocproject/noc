@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Alstec.24xx.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Python modules
-import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
@@ -79,13 +76,13 @@ class Script(GetMetricsScript):
             "battery_pack": "show box-shso bp",
             "main_power_supply": "show box-shso pum",
         }
-        for module, command in six.iteritems(modules):
+        for module, command in modules.items():
             try:
                 v = self.cli(command)
             except self.CLISyntaxError:
                 continue
             v = self.profile.parse_kv_out(v)
-            for m, v in six.iteritems(v):
+            for m, v in v.items():
                 m = m.lower()
                 if m.startswith("temperature"):
                     self.set_metric(

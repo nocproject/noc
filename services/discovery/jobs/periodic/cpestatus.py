@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # CPE Status check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Python modules
-import six
 
 # Third-party modules
 from pymongo import InsertOne, UpdateOne, UpdateMany
@@ -36,7 +33,7 @@ class CPEStatusCheck(DiscoveryCheck):
         else:
             current = self.get_current_cpe()
         self.logger.debug("Current CPE count: %d" % len(current))
-        for c in six.itervalues(current):
+        for c in current.values():
             if "id" in c:
                 c["local_id"] = c.pop("id")
         # Collect last statuses

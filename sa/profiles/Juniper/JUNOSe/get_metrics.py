@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
@@ -38,7 +35,7 @@ class Script(GetMetricsScript):
         v = "\n".join(v)
         r_v = parse_table(v)
         if len(r_v) >= 3:
-            for slot, rtt in six.iteritems(r_v):
+            for slot, rtt in r_v.items():
                 self.set_metric(
                     id=("Subscribers | Summary", None),
                     path=("0", str(slot), ""),

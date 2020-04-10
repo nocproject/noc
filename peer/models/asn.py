@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AS model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -238,9 +238,9 @@ class AS(NOCModel):
                 peers[p.remote_asn] = p
         asn = "AS%d" % self.asn
         for subgraph, peers in [
-            ("uplinks", list(six.itervalues(uplinks))),
-            ("peers", list(six.itervalues(peers))),
-            ("downlinks", list(six.itervalues(downlinks))),
+            ("uplinks", list(uplinks.values())),
+            ("peers", list(peers.values())),
+            ("downlinks", list(downlinks.values())),
         ]:
             s += ["subgraph %s {" % subgraph]
             for p in peers:

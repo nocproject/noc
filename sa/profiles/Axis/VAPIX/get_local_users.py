@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Axis.VAPIX.get_local_users
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Python modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -35,7 +32,7 @@ class Script(BaseScript):
             self, command="/pwdgrp.cgi?action=get", eof_mark="logout"
         )
 
-        for section, userclass in six.iteritems(self.axpairs):
+        for section, userclass in self.axpairs.items():
             self.adduser(section, userclass)
 
         return self.r

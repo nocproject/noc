@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from collections import defaultdict
 import xml.etree.ElementTree as ElementTree
 
 # Third-party modules
-import six
 from six import StringIO
 
 # NOC modules
@@ -487,4 +486,4 @@ class Script(BaseScript):
                 c["subinterfaces"] = [si for si in subs if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]
 
-        return list(six.itervalues(vrfs))
+        return list(vrfs.values())

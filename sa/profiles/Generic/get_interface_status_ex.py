@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Generic.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Python modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -67,7 +64,7 @@ class Script(BaseScript):
                 chunk_size=self.get_snmp_ifstatus_get_chunk(),
                 timeout_limits=self.get_snmp_ifstatus_get_timeout(),
             )
-            for k, v in six.iteritems(results):
+            for k, v in results.items():
                 yield int(k.split(".")[-1]), v
         else:
             for oid, v in self.snmp.getnext(
@@ -138,7 +135,7 @@ class Script(BaseScript):
         # Log unknown interfaces
         if unknown_interfaces:
             self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def is_high_speed(self, data, speed):
         """

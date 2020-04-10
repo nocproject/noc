@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import six
 import codecs
 
 # NOC modules
@@ -124,13 +123,11 @@ class Script(BaseScript):
             address = parse_result.get("ont_address", "")
             if address:
                 r[ont_id]["ip"] = parse_result.get("ont_address", "").split("/")[0]
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def execute_snmp(self, **kwargs):
         r = {}
-        names = {
-            x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))
-        }
+        names = {x: y for y, x in self.scripts.get_ifindexes(name_oid="IF-MIB::ifName").items()}
         for ont_index, ont_serial, ont_descr in self.snmp.get_tables(
             [
                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"],
@@ -174,4 +171,4 @@ class Script(BaseScript):
             if ont_distance != -1:
                 r[ont_index]["distance"] = ont_distance
 
-        return six.itervalues(r)
+        return list(r.values())

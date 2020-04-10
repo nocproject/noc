@@ -11,9 +11,6 @@ import datetime
 from collections import namedtuple
 import operator
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
@@ -106,7 +103,7 @@ class Command(BaseCommand):
                     else "Disabled"
                 )
             )
-            amap = dict((a.id, a) for a in six.itervalues(alarms))
+            amap = {a.id: a for a in alarms.values()}
             for x in sorted(r, key=operator.attrgetter("timestamp")):
                 if not x.alarm_id:
                     continue
@@ -164,13 +161,13 @@ class Command(BaseCommand):
             :return:
             """
             imo = a1.managed_object.id
-            for ina in six.itervalues(alarms):
+            for ina in alarms.values():
                 if ina.uplinks and imo in ina.uplinks:
                     yield ina
 
         def correlate(a1):
             """
-            Correlate with uplink alarms if all aplinks are faulty.
+            Correlate with uplink alarms if all uplinks are faulty.
             :param a1:
             :return:
             """

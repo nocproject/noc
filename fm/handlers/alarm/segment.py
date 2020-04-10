@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Segment handlers
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.sa.models.objectdata import ObjectData
@@ -59,6 +56,6 @@ def check_segment_redundancy(alarm):
         if d["managed_object"] != mo.id
     ]
     uplinks = ObjectData.uplinks_for_objects(alarms)
-    if not any(x for x in six.itervalues(uplinks) if len(x) > 1):
+    if not any(x for x in uplinks.values() if len(x) > 1):
         logger.info("[%s] Redundancy recovered for %s", alarm.id, seg.name)
         seg.set_lost_redundancy(False)

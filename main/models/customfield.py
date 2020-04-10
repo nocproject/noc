@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CustomField model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -265,7 +265,7 @@ class CustomField(NOCModel):
         """
         Return appropriate document class
         """
-        for dc in six.itervalues(_document_registry):
+        for dc in _document_registry.values():
             if dc._get_collection_name() == self.table:
                 return dc
         return None

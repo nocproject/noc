@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  RuleSet
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,6 @@
 from collections import defaultdict
 import logging
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from .rule import Rule
@@ -118,7 +115,7 @@ class RuleSet(object):
         self.enumerations = {}
         for e in Enumeration.objects.all():
             r = {}
-            for k, v in six.iteritems(e.values):
+            for k, v in e.values.items():
                 for vv in v:
                     r[vv.lower()] = k
             self.enumerations[e.name] = r

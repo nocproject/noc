@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Cisco.SCOS.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -87,7 +84,7 @@ class Script(BaseScript):
             max_index=max_index,
             cached=cached,
         )
-        for k1, v1 in six.iteritems(t1):
+        for k1, v1 in t1.items():
             try:
                 yield k1, v1, t2[k1], t3[k1], t4[k1]
             except KeyError:

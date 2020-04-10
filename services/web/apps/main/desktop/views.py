@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from django.http import HttpResponse
 
 # NOC modules
@@ -262,7 +261,7 @@ class DesktopApplication(ExtApplication):
         """
         Change user's credentials if allowed by current backend
         """
-        credentials = dict((str(k), v) for k, v in six.iteritems(request.POST))
+        credentials = dict((str(k), v) for k, v in request.POST.items())
         credentials["user"] = request.user.username
         client = open_sync_rpc("login", calling_service="web")
         try:

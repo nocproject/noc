@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Dahua.DH.get_local_users
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -30,4 +27,4 @@ class Script(BaseScript):
                     r[line_id]["username"] = value
                 elif line[2] == "Group":
                     r[line_id]["class"] = value
-        return list(six.itervalues(r))
+        return list(r.values())

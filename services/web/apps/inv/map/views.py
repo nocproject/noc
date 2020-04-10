@@ -13,7 +13,6 @@ import threading
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import six
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -112,7 +111,7 @@ class MapApplication(ExtApplication):
             "max_links": int(segment.max_shown_downlinks),
             "name": segment.name,
             "caps": list(topology.caps),
-            "nodes": [q_mo(x) for x in six.itervalues(topology.G.node)],
+            "nodes": [q_mo(x) for x in topology.G.node.values()],
             "links": [topology.G[u][v] for u, v in topology.G.edges()],
         }
         # Parent info
@@ -223,7 +222,7 @@ class MapApplication(ExtApplication):
         mo_in = defaultdict(float)
         mo_out = defaultdict(float)
         mos = [ManagedObject.get_by_id(mo["id"]) for mo in r["objects"]]
-        metric_map, last_ts = get_interface_metrics(list(six.iterkeys(o)))
+        metric_map, last_ts = get_interface_metrics(list(o))
         for mo in o:
             if mo not in metric_map:
                 continue
@@ -239,7 +238,7 @@ class MapApplication(ExtApplication):
                 int(max(mo_in[mo2], mo_out[mo1])),
             ]
         else:
-            mv = list(six.itervalues(mo_in)) + list(six.itervalues(mo_out))
+            mv = list(mo_in.values()) + list(mo_out.values())
             if mv:
                 r["utilisation"] = [int(max(mv))]
             else:

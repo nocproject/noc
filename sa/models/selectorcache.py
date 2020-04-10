@@ -3,7 +3,7 @@
 # SelectorCache
 # Updated by sa.refresh_selector_cache job
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -185,7 +185,7 @@ class SelectorCache(Document):
                 logging.debug("[%s] Add to selector %s", object.name, s)
                 bulk += [InsertOne({"object": object.id, "selector": s, "vc_domain": vcdomain})]
         # Delete stale records
-        for sdata in six.itervalues(old):
+        for sdata in old.values():
             logging.debug("[%s] Remove from selector %s", object.name, sdata["_id"])
             bulk += [DeleteOne({"_id": sdata["_id"]})]
         # Apply changes

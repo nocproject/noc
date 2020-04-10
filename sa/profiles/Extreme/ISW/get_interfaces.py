@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Extreme.ISW.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Python modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -111,4 +108,4 @@ class Script(BaseScript):
             }
         interfaces.update(self.get_ip_interfaces())
 
-        return [{"interfaces": list(six.itervalues(interfaces))}]
+        return [{"interfaces": list(interfaces.values())}]

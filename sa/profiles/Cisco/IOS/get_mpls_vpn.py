@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_mpls_vpn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import six
 from collections import defaultdict
 
 # NOC modules
@@ -254,7 +253,7 @@ class Script(BaseScript):
         return vpns
 
     def execute_snmp_vrf_mib(self):
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         r = {}
         for vrfindex, vrf_name, vrf_tag, vrf_status in self.snmp.get_tables(
             [
@@ -280,10 +279,10 @@ class Script(BaseScript):
         ):
             vrf_index, ifindex = vrfifindex.split(".")
             r[int(vrf_index)]["interfaces"] += [names[int(ifindex)]]
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def execute_snmp_mpls_mib(self):
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         r = {}
         for conf_id, vrf_descr, vrf_rd, vrf_oper in self.snmp.get_tables(
             [
@@ -321,7 +320,7 @@ class Script(BaseScript):
                 r[conf_id]["rt_export"] += [vrf_rt]
             if rt_type in {"1", "3"}:
                 r[conf_id]["rt_import"] += [vrf_rt]
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def execute_snmp(self, **kwargs):
         r = self.execute_snmp_mpls_mib()

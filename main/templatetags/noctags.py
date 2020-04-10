@@ -10,7 +10,6 @@
 import re
 
 # Third-party modules
-import six
 from django import template
 from django.utils.safestring import SafeString
 
@@ -137,7 +136,7 @@ class NOCTableNode(template.Node):
                     attrs["class"] = " ".join(classes)
             # Reconstruct table
             a = []
-            for k, v in six.iteritems(attrs):
+            for k, v in attrs.items():
                 if v is None:
                     a += [k]
                 else:

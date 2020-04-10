@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_lacp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -87,7 +84,7 @@ class Script(BaseScript):
                     else:
                         memb += [iface]
             d[ifname] = memb
-        for pc in six.iteritems(d):
+        for pc in d.items():
             sys_id = ""
             # Get lacp port-channel
             chan_num = str(pc[0]).replace("Po", "")

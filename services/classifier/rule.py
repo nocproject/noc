@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ class Rule(object):
                 "lambda vars: datasource_registry['%s'](%s)"
                 % (
                     ds.datasource,
-                    ", ".join(["%s=vars['%s']" % (k, v) for k, v in six.iteritems(ds.search)]),
+                    ", ".join(["%s=vars['%s']" % (k, v) for k, v in ds.search.items()]),
                 ),
                 {"datasource_registry": datasource_registry},
                 {},
@@ -217,12 +217,12 @@ class Rule(object):
                 c += ["    return None"]
         # Vars binding
         if self.vars:
-            has_expressions = any(v for v in six.itervalues(self.vars) if not isinstance(v, str))
+            has_expressions = any(v for v in self.vars.values() if not isinstance(v, str))
             if has_expressions:
                 # Calculate vars context
                 c += ["var_context = {'event': event}"]
                 c += ["var_context.update(e_vars)"]
-            for k, v in six.iteritems(self.vars):
+            for k, v in self.vars.items():
                 if isinstance(v, str):
                     c += ['e_vars["%s"] = "%s"' % (k, pyq(v))]
                 else:

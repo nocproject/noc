@@ -16,7 +16,6 @@ import dateutil.parser
 import operator
 
 # Third-party modules
-import six
 from six.moves import zip
 import bson
 from pymongo import ReadPreference
@@ -627,7 +626,7 @@ class AlarmApplication(ExtApplication):
                 show_in_summary = be_show
             else:
                 show_in_summary = be_true
-            for p, c in six.iteritems(d):
+            for p, c in d.items():
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if collapse and c < 2:
@@ -714,7 +713,7 @@ class AlarmApplication(ExtApplication):
                 show_in_summary = be_show
             else:
                 show_in_summary = be_true
-            for p, c in sorted(six.iteritems(d), key=lambda x: -x[1]):
+            for p, c in sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     v += [

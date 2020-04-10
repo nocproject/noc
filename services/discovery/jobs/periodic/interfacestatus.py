@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface Status check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import threading
 import operator
 
 # Third-party modules
-import six
 import cachetools
 from pymongo import ReadPreference
 from pymongo.errors import BulkWriteError
@@ -66,7 +65,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             return
         hints = [
             {"interface": key, "ifindex": v.ifindex}
-            for key, v in six.iteritems(interfaces)
+            for key, v in interfaces.items()
             if getattr(v, "ifindex", None) is not None
         ] or None
         result = self.object.scripts.get_interface_status_ex(interfaces=hints)
@@ -83,9 +82,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "out_speed": i.get("out_speed"),
                 "bandwidth": i.get("bandwidth"),
             }
-            changes = self.update_if_changed(
-                iface, kwargs, ignore_empty=list(six.iterkeys(kwargs)), bulk=bulk
-            )
+            changes = self.update_if_changed(iface, kwargs, ignore_empty=list(kwargs), bulk=bulk)
             self.log_changes("Interface %s status has been changed" % i["interface"], changes)
             ostatus = i.get("oper_status")
             if iface.oper_status != ostatus and ostatus is not None:

@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -43,7 +40,7 @@ class Script(BaseScript):
             mac = mac.lower()
         iface_name = self.scripts.get_ifindexes()
         # Invert dictionary
-        iface_name = {v: k for k, v in six.iteritems(iface_name)}
+        iface_name = {v: k for k, v in iface_name.items()}
         # http://www.dlink.ru/ru/faq/59/print_262.html
         # vlan mac iface type
         r = []

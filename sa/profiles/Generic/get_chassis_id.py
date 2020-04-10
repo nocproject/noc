@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Generic.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import six
 from six.moves import zip
 
 # NOC modules
@@ -39,7 +38,7 @@ class Script(BaseScript):
 
     def snmp_safe(self, oids):
         r = {}
-        for k, v in six.iteritems(oids):
+        for k, v in oids.items():
             try:
                 r.update(self.snmp.get({k: v}))
             except SNMPError:

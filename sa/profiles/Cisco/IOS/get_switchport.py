@@ -8,7 +8,6 @@
 
 # Python modules
 import re
-import six
 from itertools import compress
 
 # NOC modules
@@ -69,7 +68,7 @@ class Script(BaseScript):
                     yield int(is_v)
 
     def execute_snmp(self, **kwargs):
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         r = {}
         for ifindex, port_type, pvid, port_status in self.snmp.get_tables(
             [
@@ -138,7 +137,7 @@ class Script(BaseScript):
                     "members": [],
                 }
             # r[port_num]["802.1Q Enabled"] = True
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def parse_config(self):
         r = []

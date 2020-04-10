@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ModelInline
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 from functools import reduce
 
 # Third-party modules
-import six
 from django.db.models.fields import CharField, BooleanField, IntegerField, FloatField, related
 from django.db.models import Q
 from django.db.utils import IntegrityError
@@ -451,7 +450,7 @@ class ModelInline(object):
         except self.model.DoesNotExist:
             return self.app.response("", status=self.NOT_FOUND)
         attrs[self.parent_rel] = parent
-        for k, v in six.iteritems(attrs):
+        for k, v in attrs.items():
             setattr(o, k, v)
         try:
             o.save()

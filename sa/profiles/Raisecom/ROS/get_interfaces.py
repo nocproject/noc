@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -336,7 +333,7 @@ class Script(BaseScript):
         try:
             v = self.cli("show ip interface brief")
         except self.CLISyntaxError:
-            return [{"interfaces": list(six.itervalues(interfaces))}]
+            return [{"interfaces": list(interfaces.values())}]
         for match in self.rx_iface2.finditer(v):
             ifname = match.group("iface")
             i = {
@@ -362,4 +359,4 @@ class Script(BaseScript):
                     if iname == ifname:
                         interfaces[ifname]["subinterfaces"][0]["vlan_ids"] = vlan_id
                         break
-        return [{"interfaces": list(six.itervalues(interfaces))}]
+        return [{"interfaces": list(interfaces.values())}]

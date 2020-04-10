@@ -229,7 +229,7 @@ class Site(object):
                             sc[stmt] += 1
                             tsc += 1
                             app_logger.debug("SQL %(sql)s %(time)ss" % q)
-                    x = ", ".join("%s: %d" % (k, cv) for k, cv in six.iteritems(sc))
+                    x = ", ".join("%s: %d" % (k, cv) for k, cv in sc.items())
                     if x:
                         x = " (%s)" % x
                     app_logger.debug("SQL statements: %d%s" % (tsc, x))

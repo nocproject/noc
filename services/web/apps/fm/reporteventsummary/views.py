@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Event Summary Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django import forms
 
 # NOC modules
@@ -41,7 +40,7 @@ class EventSummaryReport(SimpleReport):
         """ Summary by event class """
         c = ActiveEvent.objects.item_frequencies("event_class")
         r = []
-        for k, v in six.iteritems(c):
+        for k, v in c.items():
             if not k:
                 continue
             r += [[EventClass.objects.filter(id=k).first(), int(v)]]
@@ -52,7 +51,7 @@ class EventSummaryReport(SimpleReport):
         """Summary by managed object"""
         c = ActiveEvent.objects.item_frequencies("managed_object")
         r = []
-        for k, v in six.iteritems(c):
+        for k, v in c.items():
             if not k:
                 continue
             r += [[ManagedObject.objects.get(id=k), int(v)]]
@@ -64,7 +63,7 @@ class EventSummaryReport(SimpleReport):
         c = ActiveEvent.objects.item_frequencies("managed_object")
         pc = {}
         mo_map = {}  # managed object id -> profile name
-        for k, v in six.iteritems(c):
+        for k, v in c.items():
             if not k:
                 continue
             try:
@@ -76,7 +75,7 @@ class EventSummaryReport(SimpleReport):
                 pc[p] += v
             except KeyError:
                 pc[p] = v
-        return sorted(six.iteritems(pc), key=lambda x: -x[1])
+        return sorted(pc.items(), key=lambda x: -x[1])
 
     @staticmethod
     def get_by_status():

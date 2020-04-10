@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Generic.get_mpls_vpn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import six
 import string
 
 # NOC modules
@@ -26,7 +25,7 @@ class Script(BaseScript):
     VRF_TYPE_MAP = {"rt_export": {"2", "3"}, "rt_import": {"1", "3"}}
 
     def execute_snmp(self):
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         r = {}
         for conf_id, vrf_vpn_id, vrf_rd, vrf_descr, vrf_oper in self.snmp.get_tables(
             [
@@ -66,4 +65,4 @@ class Script(BaseScript):
                 r[conf_id]["rt_export"] += [vrf_rt]
             if rt_type in self.VRF_TYPE_MAP["rt_import"]:
                 r[conf_id]["rt_import"] += [vrf_rt]
-        return list(six.itervalues(r))
+        return list(r.values())

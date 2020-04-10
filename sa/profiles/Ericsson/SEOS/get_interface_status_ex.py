@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Ericsson.SEOS.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
@@ -83,9 +80,9 @@ class Script(BaseScript):
         # Log unknown interfaces
         if unknown_interfaces:
             self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
-        for ifindex, rr in six.iteritems(radio):
+        for ifindex, rr in radio.items():
             rr["in_speed"] = self.snmp.get("1.3.6.1.4.1.193.81.3.4.1.1.14.1.7.1")
             rr["out_speed"] = self.snmp.get("1.3.6.1.4.1.193.81.3.4.1.1.14.1.7.1")
             res[ifindex] = rr
         r.update(res)
-        return list(six.itervalues(r))
+        return list(r.values())

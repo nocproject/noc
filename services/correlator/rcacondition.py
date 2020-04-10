@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # RCACondition
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019, The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class RCACondition(object):
         ]
         if self.root.id == alarm_class.id:
             x += ["'id__ne': alarm.id"]
-        for k, v in six.iteritems(condition.match_condition):
+        for k, v in condition.match_condition.items():
             if k == "managed_object" and v == "alarm.managed_object.id":
                 self.same_object = True
             x += ["'%s': %s" % (k, v)]

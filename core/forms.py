@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Forms wrapper
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django import forms
 from django.utils.html import escape
 
@@ -56,6 +55,6 @@ class NOCForm(forms.Form):
         self.disabled_fields.add(name)
 
     def __iter__(self):
-        for name, field in six.iteritems(self.fields):
+        for name, field in self.fields.items():
             if name not in self.disabled_fields:
                 yield NOCBoundField(self, field, name)

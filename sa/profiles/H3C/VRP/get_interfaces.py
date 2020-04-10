@@ -2,16 +2,13 @@
 # ---------------------------------------------------------------------
 # H3C.VRP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 from collections import defaultdict
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -220,4 +217,4 @@ class Script(BaseScript):
                     vrfs[vrf]["interfaces"] += [c]
             elif i.get("aggregated_interface"):
                 vrfs["default"]["interfaces"] += [i]
-        return list(six.itervalues(vrfs))
+        return list(vrfs.values())

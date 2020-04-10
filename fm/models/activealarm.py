@@ -657,7 +657,7 @@ class ActiveAlarm(Document):
                 doc["root"] = self.root
             alarms[doc["_id"]] = doc
 
-        for doc in six.itervalues(alarms):
+        for doc in alarms.values():
             children[doc.get("root")] += [doc]
 
         # Get path to from current root upwards to global root

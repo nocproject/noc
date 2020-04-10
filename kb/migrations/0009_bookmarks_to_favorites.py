@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # Migrate KB Bookmarks to Favorites
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
-import six
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -26,7 +25,7 @@ class Migration(BaseMigration):
         for user, kb_entry in user_bookmarks:
             favs[user] += [kb_entry]
         if favs:
-            for u, fav in six.iteritems(favs):
+            for u, fav in favs.items():
                 fav_coll.insert_one(
                     {
                         "user": u,

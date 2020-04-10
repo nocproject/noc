@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # Generic.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-import six
+# Python modules
 from collections import defaultdict
 
 # NOC modules
@@ -25,7 +25,7 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         r = defaultdict(list)
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
         for ifindex, sel_pc, att_pc in self.snmp.get_tables(
             [
                 mib["IEEE8023-LAG-MIB::dot3adAggPortSelectedAggID"],

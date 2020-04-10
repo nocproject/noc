@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -361,6 +361,6 @@ class ModelConnectionsCache(Document):
                 )
             ]
         if cache:
-            bulk += [DeleteOne({"_id": x}) for x in six.itervalues(cache)]
+            bulk += [DeleteOne({"_id": x}) for x in cache.values()]
         if bulk:
             collection.bulk_write(bulk)

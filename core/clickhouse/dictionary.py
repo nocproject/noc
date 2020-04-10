@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ClickHouse Dictionaries
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ class DictionaryMeta(object):
         :return:
         """
         self.ordered_fields = list(
-            sorted(six.itervalues(self.fields), key=operator.attrgetter("field_number"))
+            sorted(self.fields.values(), key=operator.attrgetter("field_number"))
         )
 
 

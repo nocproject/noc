@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # telemetry API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from collections import defaultdict
 # Third-party modules
 import tornado.gen
 import ujson
-import six
 
 # NOC modules
 from noc.core.service.apiaccess import authenticated
@@ -85,7 +84,7 @@ class TelemetryAPI(NBIAPI):
                 data[table, path, ts][field] = value
         # Prepare to send
         chains = defaultdict(list)  # table -> metrics
-        for (scope, path, ts), values in six.iteritems(data):
+        for (scope, path, ts), values in data.items():
             # Convert timestamp to CH format
             ts = ts.replace("T", " ")
             date = ts.split()[0]

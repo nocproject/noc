@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -212,13 +209,11 @@ class Script(BaseScript):
         # Install interfaces
         for instance_id in instances:
             instances[instance_id]["interfaces"] = list(
-                sorted(
-                    six.itervalues(instance_ports[instance_id]), key=operator.itemgetter("port_id")
-                )
+                sorted(instance_ports[instance_id].values(), key=operator.itemgetter("port_id"))
             )
 
         # Install instances
-        r["instances"] = list(sorted(six.itervalues(instances), key=operator.itemgetter["id"]))
+        r["instances"] = list(sorted(instances.values(), key=operator.itemgetter["id"]))
         return r
 
     def process_rstp(self):

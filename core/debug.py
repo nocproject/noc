@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Various debugging and error logging utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,6 @@ import traceback
 import uuid
 
 # Third-party modules
-import six
 import ujson
 
 # NOC modules
@@ -116,7 +115,7 @@ def get_traceback_frames(tb):
                     "filename": filename,
                     "function": function,
                     "lineno": lineno + 1,
-                    "vars": six.iteritems(tb.tb_frame.f_locals),
+                    "vars": tb.tb_frame.f_locals.items(),
                     "id": id(tb),
                     "pre_context": pre_context,
                     "context_line": context_line,
@@ -152,7 +151,7 @@ def get_execution_frames(frame):
                     "filename": filename,
                     "function": function,
                     "lineno": lineno + 1,
-                    "vars": six.iteritems(frame.f_locals),
+                    "vars": frame.f_locals.items(),
                     "pre_context": pre_context,
                     "context_line": context_line,
                     "post_context": post_context,
@@ -362,7 +361,7 @@ def dump_stacks(thread_id=None):
     """
     Dump all or selected active threads' stacks
     """
-    for tid, stack in six.iteritems(sys._current_frames()):
+    for tid, stack in sys._current_frames().items():
         if thread_id and tid != thread_id:
             continue
         print("[THREAD #%s]" % tid)

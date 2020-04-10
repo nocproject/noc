@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # gis.overlay application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
@@ -37,7 +34,7 @@ class OverlayApplication(ExtDocApplication):
         if not overlay.is_active:
             return self.response_not_found("Overlay is disabled")
         # Parse bbox
-        kwargs = dict(six.iteritems(request.GET))
+        kwargs = dict(request.GET.items())
         if "bbox" in kwargs:
             bbox = kwargs["bbox"]
             bbox = [float(x) for x in bbox.split(",")]

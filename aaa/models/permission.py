@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Permission database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -192,7 +192,7 @@ class Permission(NOCModel):
         new_perms = set()
         implied_permissions = {}
         diverged_permissions = {}  # new -> old
-        for app in six.itervalues(site.apps):
+        for app in site.apps.values():
             new_perms = new_perms.union(app.get_permissions())
             for p in app.implied_permissions:
                 ips = sorted([normalize(app, pp) for pp in app.implied_permissions[p]])

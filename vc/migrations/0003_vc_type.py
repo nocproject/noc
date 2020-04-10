@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # vc type
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -68,7 +67,7 @@ class Migration(BaseMigration):
 
         # Fill in VC types
         vc_map = {}  # letter -> id
-        for vt, d in six.iteritems(vc_checks):
+        for vt, d in vc_checks.items():
             name, min_labels, l1, l2 = d
             if l2 is None:
                 l2 = (0, 0)

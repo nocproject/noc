@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Calculator application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.lib.app.application import Application, HasPerm, view
@@ -26,7 +23,7 @@ class CalculatorApplication(Application):
 
     @view(url=r"^$", url_name="index", menu="Calculators", access=HasPerm("view"))
     def view_index(self, request):
-        r = [(cn, c.title) for cn, c in six.iteritems(calculator_registry.classes)]
+        r = [(cn, c.title) for cn, c in calculator_registry.classes.items()]
         r = list(sorted(r, key=operator.itemgetter(1)))
         return self.render(request, "index.html", {"calculators": r})
 

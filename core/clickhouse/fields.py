@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ClickHouse field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ import struct
 from collections import defaultdict
 
 # Third-party modules
-import six
 from six.moves import zip
 
 # NOC modules
@@ -355,7 +354,7 @@ class NestedField(ArrayField):
         return [
             {
                 f.name: f.to_python(v.strip("'"))
-                for f, v in six.iteritems(dict(zip(self.field_type._meta.ordered_fields, v)))
+                for f, v in (dict(zip(self.field_type._meta.ordered_fields, v)).items())
             }
             for v in value
         ]

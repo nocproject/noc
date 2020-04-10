@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Raisecom.RCIOS.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -80,7 +77,7 @@ class Script(BaseScript):
         if unknown_interfaces:
             self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
 
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def get_data2(self):
         # ifIndex -> ifName mapping
@@ -103,7 +100,7 @@ class Script(BaseScript):
                 "admin_status": admin_status,
                 "oper_status": oper_status,
             }
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def execute_snmp(self, interfaces=None, **kwargs):
         r = self.get_data()

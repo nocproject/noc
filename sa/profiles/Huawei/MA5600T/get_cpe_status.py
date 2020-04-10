@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import six
 import codecs
 
 # NOC modules
@@ -101,13 +100,11 @@ class Script(BaseScript):
                         "description": "",
                         "location": "",
                     }
-        return list(six.itervalues(r))
+        return list(r.values())
 
     def execute_snmp(self, **kwargs):
         r = {}
-        names = {
-            x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))
-        }
+        names = {x: y for y, x in self.scripts.get_ifindexes(name_oid="IF-MIB::ifName").items()}
         for ont_index, ont_serial, ont_descr in self.snmp.get_tables(
             [
                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"],
@@ -130,4 +127,4 @@ class Script(BaseScript):
             [mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus"]]
         ):
             r[ont_index]["status"] = "active" if ont_status == 1 else "inactive"
-        return six.itervalues(r)
+        return list(r.values())

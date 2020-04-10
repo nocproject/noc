@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MAC Check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from functools import reduce
 from collections import defaultdict
 
 # Third-party modules
-import six
 from typing import Tuple, List, DefaultDict
 
 # NOC modules
@@ -145,7 +144,7 @@ class MACCheck(DiscoveryCheck):
         :return: interface -> [managed objects]
         """
         # Resolve MACs
-        all_macs = reduce(lambda x, y: x | y, six.itervalues(if_mac))
+        all_macs = reduce(lambda x, y: x | y, if_mac.values())
         mmap = DiscoveryID.find_objects(all_macs)
         if not mmap:
             self.logger.info("Cannot build seen_objects artefact: Cannot resolve any MACs")

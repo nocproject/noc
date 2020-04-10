@@ -2,12 +2,9 @@
 # ----------------------------------------------------------------------
 # compact backup peers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -58,7 +55,7 @@ class Migration(BaseMigration):
                 backup_id, local_backup_ip, remote_backup_ip = r[0]
                 backup[backup_id] = (peer_id, local_backup_ip, remote_backup_ip)
         # Compact backup sessions
-        for backup_id, args in six.iteritems(backup):
+        for backup_id, args in backup.items():
             peer_id, local_backup_ip, remote_backup_ip = args
             self.db.execute(
                 "UPDATE peer_peer SET local_backup_ip=%s,remote_backup_ip=%s WHERE id=%s",

@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Eltex.WOP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 import codecs
 
 # NOC modules
@@ -139,4 +138,4 @@ class Script(BaseScript):
                             }
                         ],
                     }
-        return [{"interfaces": list(six.itervalues(interfaces))}]
+        return [{"interfaces": list(interfaces.values())}]

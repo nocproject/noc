@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SNMP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import errno
 
 # Third-party modules
 from tornado.gen import coroutine, Return
-import six
 
 # NOC modules
 from noc.core.snmp.version import SNMP_v2c
@@ -64,7 +63,7 @@ def snmp_get(
         oids = [oids]
     elif isinstance(oids, dict):
         oid_map = dict((oids[k], k) for k in oids)
-        oids = list(six.itervalues(oids))
+        oids = list(oids.values())
     else:
         raise ValueError("oids must be either string or dict")
     logger.debug("[%s] SNMP GET %s", address, oids)
