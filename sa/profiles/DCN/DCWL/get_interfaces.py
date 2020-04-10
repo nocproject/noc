@@ -102,7 +102,7 @@ class Script(BaseScript):
                 interfaces[ifname]["subinterfaces"] += [
                     {"name": ifname, "enabled_afi": ["IPv4"], "ipv4_addresses": [ip_address]}
                 ]
-                if value["mac"] != "00:00:00:00:00:00":
+                if value["mac"] and value["mac"] != "00:00:00:00:00:00":
                     interfaces[ifname]["subinterfaces"][-1]["mac"] = value["mac"]
             if value.get("bss") and value.get("ssid"):
                 # For some reason creating SSID as interfaces otherwise sub.
