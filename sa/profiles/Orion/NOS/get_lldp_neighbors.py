@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -86,6 +86,7 @@ class Script(BaseScript):
                     "Other": 1,
                     "Repeater/Hub": 2,
                     "Bridge/Switch": 4,
+                    "Wireless LAN": 8,
                     "Router": 16,
                     "Telephone": 32,
                     "Station": 128,
