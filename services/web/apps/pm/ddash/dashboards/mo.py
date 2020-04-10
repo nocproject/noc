@@ -14,6 +14,7 @@ import demjson
 from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
 from collections import defaultdict
+import operator
 
 # NOC modules
 from .base import BaseDashboard
@@ -183,7 +184,7 @@ class MODashboard(BaseDashboard):
                 continue
             om += [mt.name]
         object_metrics.extend(sorted(om))
-        object_check_metrics.extend(sorted(ocm))
+        object_check_metrics.extend(sorted(ocm, key=operator.itemgetter("name")))
 
         return {
             "port_types": port_types,
