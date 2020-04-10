@@ -285,7 +285,7 @@
                     {% include "graph_check_result.j2" with context -%},
                   {% endif %}
                   {% if "rtt" in metric.metric %}
-                    {% include "graph_check_ping.j2" with context -%}
+                    {% include "graph_check_ping.j2" with context -%},
                   {% endif %}
                 {%- endfor %}
             ]
