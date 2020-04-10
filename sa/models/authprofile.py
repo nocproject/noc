@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # AuthProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from django.db import models
 import cachetools
 
@@ -37,7 +36,6 @@ id_lock = Lock()
         ("sa.ManagedObjectProfile", "cpe_auth_profile"),
     ]
 )
-@six.python_2_unicode_compatible
 class AuthProfile(NOCModel):
     class Meta(object):
         verbose_name = "Auth Profile"
@@ -119,7 +117,6 @@ class AuthProfile(NOCModel):
                 yield s.user, s.password, s.super_password
 
 
-@six.python_2_unicode_compatible
 class AuthProfileSuggestSNMP(NOCModel):
     class Meta(object):
         verbose_name = "Auth Profile Suggest SNMP"
@@ -137,7 +134,6 @@ class AuthProfileSuggestSNMP(NOCModel):
         return self.auth_profile.name
 
 
-@six.python_2_unicode_compatible
 class AuthProfileSuggestCLI(NOCModel):
     class Meta(object):
         verbose_name = "Auth Profile Suggest CLI"

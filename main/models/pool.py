@@ -12,7 +12,6 @@ import time
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, LongField
 import cachetools
@@ -32,7 +31,6 @@ id_lock = threading.Lock()
         # ("fm.EscalationItem", "administrative_domain")
     ]
 )
-@six.python_2_unicode_compatible
 class Pool(Document):
     meta = {"collection": "noc.pools", "strict": False, "auto_create_index": False}
 

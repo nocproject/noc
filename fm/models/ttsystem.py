@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # TTSystem
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import datetime
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -39,7 +38,6 @@ DEFAULT_TTSYSTEM_SHARD = "default"
 @on_delete_check(
     check=[("sa.ManagedObject", "tt_system"), ("sa.ManagedObjectSelector", "filter_tt_system")]
 )
-@six.python_2_unicode_compatible
 class TTSystem(Document):
     meta = {"collection": "noc.ttsystem", "strict": False, "auto_create_index": False}
 

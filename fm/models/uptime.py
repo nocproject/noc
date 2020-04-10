@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Uptime report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import datetime
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
 
@@ -21,7 +20,6 @@ from .reboot import Reboot
 logger = logging.getLogger(__name__)
 
 
-@six.python_2_unicode_compatible
 class Uptime(Document):
     meta = {
         "collection": "noc.fm.uptimes",

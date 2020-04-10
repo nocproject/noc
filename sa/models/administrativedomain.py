@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # AdministrativeDomain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 import cachetools
@@ -46,7 +45,6 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
         ("phone.PhoneRange", "administrative_domain"),
     ]
 )
-@six.python_2_unicode_compatible
 class AdministrativeDomain(NOCModel):
     """
     Administrative Domain

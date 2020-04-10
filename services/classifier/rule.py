@@ -24,7 +24,6 @@ from noc.core.escape import fm_unescape
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
 
-@six.python_2_unicode_compatible
 class Rule(object):
     """
     In-memory rule representation

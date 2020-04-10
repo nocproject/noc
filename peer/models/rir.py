@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # RIR model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import time
 
 # Third-party modules
-import six
 from six.moves.urllib.parse import urlencode
 from six.moves.urllib.request import urlopen
 from six.moves.urllib.error import URLError
@@ -29,7 +28,6 @@ RIPE_SYNCUPDATES_URL = "https://syncupdates.db.ripe.net"
 
 
 @on_delete_check(check=[("peer.Person", "rir"), ("peer.AS", "rir"), ("peer.Maintainer", "rir")])
-@six.python_2_unicode_compatible
 class RIR(NOCModel):
     """
     Regional internet registries

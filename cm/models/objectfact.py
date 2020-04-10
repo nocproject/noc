@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Object Facts
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, DateTimeField, UUIDField
 
@@ -19,7 +18,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.fields import ForeignKeyField
 
 
-@six.python_2_unicode_compatible
 class ObjectFact(Document):
     meta = {
         "collection": "noc.objectfacts",

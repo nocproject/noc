@@ -3,7 +3,7 @@
 # ObjectStatus
 # Updated by SAE according to ping check changes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
 from typing import List, Dict
@@ -20,7 +19,6 @@ from typing import List, Dict
 from noc.fm.models.outage import Outage
 
 
-@six.python_2_unicode_compatible
 class ObjectStatus(Document):
     meta = {
         "collection": "noc.cache.object_status",

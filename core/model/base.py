@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Django tuck-up panting for models
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 from django.apps import apps
 from django.apps.config import AppConfig
 from django.db.models.base import Model, ModelBase
-import six
 
 
 class NOCModelBase(ModelBase):
@@ -64,5 +63,5 @@ class NOCModelBase(ModelBase):
         return kls
 
 
-class NOCModel(six.with_metaclass(NOCModelBase, Model)):
+class NOCModel(object, metaclass=NOCModelBase):
     pass

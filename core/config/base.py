@@ -11,9 +11,6 @@ import inspect
 import re
 import os
 
-# Third-party modules
-import six
-
 # NOC modules
 from .params import BaseParameter
 
@@ -32,7 +29,7 @@ class ConfigSectionBase(type):
         return cls
 
 
-class ConfigSection(six.with_metaclass(ConfigSectionBase)):
+class ConfigSection(object, metaclass=ConfigSectionBase):
     pass
 
 
@@ -52,7 +49,7 @@ class ConfigBase(type):
         return cls
 
 
-class BaseConfig(six.with_metaclass(ConfigBase)):
+class BaseConfig(object, metaclass=ConfigBase):
     PROTOCOLS = {
         "consul": "noc.core.config.proto.consul.ConsulProtocol",
         "env": "noc.core.config.proto.env.EnvProtocol",

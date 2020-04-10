@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Template model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from django.db import models
-import six
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -16,7 +15,6 @@ from noc.aaa.models.user import User
 from .template import Template
 
 
-@six.python_2_unicode_compatible
 class SystemTemplate(NOCModel):
     class Meta(object):
         app_label = "main"

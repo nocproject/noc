@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # APIKey model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -24,7 +23,6 @@ from mongoengine.fields import (
 from noc.core.acl import match
 
 
-@six.python_2_unicode_compatible
 class APIAccess(EmbeddedDocument):
     # Api name
     api = StringField()
@@ -35,7 +33,6 @@ class APIAccess(EmbeddedDocument):
         return "%s:%s" % (self.api, self.role)
 
 
-@six.python_2_unicode_compatible
 class APIAccessACL(EmbeddedDocument):
     prefix = StringField()
     is_active = BooleanField(default=True)
@@ -47,7 +44,6 @@ class APIAccessACL(EmbeddedDocument):
         return "%s (inactive)" % self.prefix
 
 
-@six.python_2_unicode_compatible
 class APIKey(Document):
     meta = {"collection": "apikeys", "strict": False, "auto_create_index": False}
 

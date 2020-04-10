@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Validation Policy
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     EmbeddedDocumentField,
@@ -21,7 +20,6 @@ from mongoengine.fields import (
 from .validationrule import ValidationRule
 
 
-@six.python_2_unicode_compatible
 class RuleItem(EmbeddedDocument):
     rule = ReferenceField(ValidationRule)
     is_active = BooleanField(default=True)
@@ -30,7 +28,6 @@ class RuleItem(EmbeddedDocument):
         return self.rule.name
 
 
-@six.python_2_unicode_compatible
 class ValidationPolicy(Document):
     meta = {"collection": "noc.validationpolicy", "strict": False, "auto_create_index": False}
 

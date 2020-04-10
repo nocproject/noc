@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ConfDBQuery model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,6 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
 )
-import six
 import cachetools
 
 # NOC modules
@@ -33,7 +32,6 @@ id_lock = threading.Lock()
 TYPE_MAP = {"str": StringParameter(), "int": IntParameter(), "bool": BooleanParameter()}
 
 
-@six.python_2_unicode_compatible
 class ConfDBQueryParam(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField()
@@ -66,7 +64,6 @@ class ConfDBQueryParam(EmbeddedDocument):
         # ("cm.ObjectValidationPolicy", "rules.filer_query"),
     ]
 )
-@six.python_2_unicode_compatible
 class ConfDBQuery(Document):
     meta = {
         "collection": "confdbqueries",

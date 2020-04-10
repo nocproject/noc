@@ -11,9 +11,6 @@ import itertools
 from collections import defaultdict
 from functools import partial
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.core.ip import IPv4
 from ..syntax.patterns import ANY, REST, BOOL, Token, BasePattern
@@ -168,7 +165,7 @@ class BaseNormalizerMetaclass(type):
         setattr(ncls, sdef.gen, ctx[sdef.gen])
 
 
-class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
+class BaseNormalizer(object, metaclass=BaseNormalizerMetaclass):
     # Custom syntax to enrich ConfDB
     SYNTAX = []
 

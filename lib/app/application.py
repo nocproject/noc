@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Application class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,7 +30,6 @@ from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
 from django.http import Http404
 import ujson
-import six
 import jinja2
 
 # NOC modules
@@ -113,7 +112,7 @@ class ApplicationBase(type):
         return m
 
 
-class Application(six.with_metaclass(ApplicationBase, object)):
+class Application(object, metaclass=ApplicationBase):
     """
     Basic application class.
 

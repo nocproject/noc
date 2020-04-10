@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ConnectionRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import os
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, UUIDField, ListField, EmbeddedDocumentField
 
@@ -20,7 +19,6 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 
 
-@six.python_2_unicode_compatible
 class Context(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     type = StringField()
@@ -43,7 +41,6 @@ class Context(EmbeddedDocument):
         return r
 
 
-@six.python_2_unicode_compatible
 class Rule(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     match_type = StringField()
@@ -86,7 +83,6 @@ class Rule(EmbeddedDocument):
 
 
 @on_delete_check(check=[("inv.ObjectModel", "connection_rule")])
-@six.python_2_unicode_compatible
 class ConnectionRule(Document):
     """
     Equipment vendor

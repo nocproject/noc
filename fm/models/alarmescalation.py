@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmEscalation model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ from threading import Lock
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -72,7 +71,6 @@ class EscalationItem(EmbeddedDocument):
     stop_processing = BooleanField(default=False)
 
 
-@six.python_2_unicode_compatible
 class AlarmEscalation(Document):
     """
     Alarm escalations

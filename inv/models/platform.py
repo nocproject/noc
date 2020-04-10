@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Platform
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,6 @@ import uuid
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField, ListField
 from mongoengine.queryset import Q
@@ -41,7 +40,6 @@ id_lock = threading.Lock()
         ("inv.FirmwarePolicy", "platform"),
     ]
 )
-@six.python_2_unicode_compatible
 class Platform(Document):
     meta = {
         "collection": "noc.platforms",

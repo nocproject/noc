@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AuditTrail model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import logging
 import datetime
 
 # Third-party modules
-import six
 from django.db.models import signals as django_signals
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, DateTimeField, ListField, EmbeddedDocumentField
@@ -25,7 +24,6 @@ from noc.core.comp import smart_text
 logger = logging.getLogger(__name__)
 
 
-@six.python_2_unicode_compatible
 class FieldChange(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     field = StringField()

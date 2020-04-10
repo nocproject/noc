@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Object Capabilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     ListField,
@@ -31,7 +30,6 @@ from noc.core.datastream.decorator import datastream
 logger = logging.getLogger(__name__)
 
 
-@six.python_2_unicode_compatible
 class CapsItem(EmbeddedDocument):
     capability = ReferenceField(Capability)
     value = DynamicField()
@@ -44,7 +42,6 @@ class CapsItem(EmbeddedDocument):
 
 @on_save
 @datastream
-@six.python_2_unicode_compatible
 class ObjectCapabilities(Document):
     meta = {"collection": "noc.sa.objectcapabilities", "strict": False, "auto_create_index": False}
     object = ForeignKeyField(ManagedObject, primary_key=True)

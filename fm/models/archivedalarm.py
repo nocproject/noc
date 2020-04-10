@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from django.template import Template, Context
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -37,7 +36,6 @@ from .alarmseverity import AlarmSeverity
 
 
 @datastream
-@six.python_2_unicode_compatible
 class ArchivedAlarm(Document):
     meta = {
         "collection": "noc.alarms.archived",

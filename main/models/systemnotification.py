@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # SystemNotification
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -15,7 +14,6 @@ from noc.core.model.base import NOCModel
 from .notificationgroup import NotificationGroup
 
 
-@six.python_2_unicode_compatible
 class SystemNotification(NOCModel):
     """
     System Notifications

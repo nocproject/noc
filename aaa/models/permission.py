@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from django.db.models import CharField, ManyToManyField
 import cachetools
 
@@ -24,7 +23,6 @@ perm_lock = Lock()
 id_lock = Lock()
 
 
-@six.python_2_unicode_compatible
 class Permission(NOCModel):
     """
     Permissions.

@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # VCDomain model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from builtins import range, object
 from django.db import models
 
@@ -33,7 +32,6 @@ from .vcfilter import VCFilter
     ],
     ignore=[("inv.MACDB", "vc_domain")],
 )
-@six.python_2_unicode_compatible
 class VCDomain(NOCModel):
     """
     Virtual circuit domain, allows to separate unique VC spaces

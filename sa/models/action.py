@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Action
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,7 +21,6 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
 )
-import six
 import jinja2
 import cachetools
 
@@ -33,7 +32,6 @@ from noc.core.ip import IP
 id_lock = threading.Lock()
 
 
-@six.python_2_unicode_compatible
 class ActionParameter(EmbeddedDocument):
     name = StringField()
     type = StringField(
@@ -66,7 +64,6 @@ class ActionParameter(EmbeddedDocument):
         return r
 
 
-@six.python_2_unicode_compatible
 class Action(Document):
     meta = {
         "collection": "noc.actions",

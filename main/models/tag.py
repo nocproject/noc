@@ -2,17 +2,15 @@
 # ---------------------------------------------------------------------
 # Favorites model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, ListField
 
 
-@six.python_2_unicode_compatible
 class Tag(Document):
     meta = {
         "collection": "noc.tags",

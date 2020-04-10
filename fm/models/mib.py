@@ -12,7 +12,6 @@ import threading
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, IntField, ListField, DictField
 import cachetools
@@ -36,7 +35,6 @@ rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
 
 @on_delete_check(check=[("fm.MIBData", "mib")])
-@six.python_2_unicode_compatible
 class MIB(Document):
     meta = {"collection": "noc.mibs", "strict": False, "auto_create_index": False}
     name = StringField(required=True, unique=True)

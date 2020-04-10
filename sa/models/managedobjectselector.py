@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObjectSelector
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 from django.db.models import Q
@@ -62,7 +61,6 @@ id_lock = Lock()
         ("vc.VCDomainProvisioningConfig", "selector"),
     ]
 )
-@six.python_2_unicode_compatible
 class ManagedObjectSelector(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Selector")
@@ -426,7 +424,6 @@ class ManagedObjectSelector(NOCModel):
         return list(objects)
 
 
-@six.python_2_unicode_compatible
 class ManagedObjectSelectorByAttribute(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Selector by Attribute")

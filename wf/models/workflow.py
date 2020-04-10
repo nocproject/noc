@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Workflow model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import operator
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, LongField
 import cachetools
@@ -42,7 +41,6 @@ _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("vc.VLANProfile", "workflow"),
     ]
 )
-@six.python_2_unicode_compatible
 class Workflow(Document):
     meta = {"collection": "workflows", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)

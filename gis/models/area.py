@@ -2,17 +2,15 @@
 # ----------------------------------------------------------------------
 # <describe module here>
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-part modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, IntField, GeoPointField
 
 
-@six.python_2_unicode_compatible
 class Area(Document):
     meta = {"strict": False, "auto_create_index": False, "collection": "noc.gis.areas"}
 

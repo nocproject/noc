@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Address model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 
@@ -35,7 +34,6 @@ from .addressprofile import AddressProfile
 @full_text_search
 @workflow
 @on_delete_check(check=[("ip.Address", "ipv6_transition")])
-@six.python_2_unicode_compatible
 class Address(NOCModel):
     class Meta(object):
         verbose_name = _("Address")

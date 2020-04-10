@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # TimePattern database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 import cachetools
 from django.db import models
 
@@ -36,7 +35,6 @@ id_lock = Lock()
         ("sa.ManagedObject", "time_pattern"),
     ]
 )
-@six.python_2_unicode_compatible
 class TimePattern(NOCModel):
     """
     Time Patterns

@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # UserContact model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -17,7 +16,6 @@ from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from .user import User
 
 
-@six.python_2_unicode_compatible
 class UserContact(NOCModel):
     class Meta(object):
         verbose_name = "User Profile Contact"

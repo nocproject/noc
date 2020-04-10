@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # State model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import operator
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -57,7 +56,6 @@ STATE_JOB = "noc.core.wf.transition.state_job"
     ]
 )
 @on_save
-@six.python_2_unicode_compatible
 class State(Document):
     meta = {
         "collection": "states",

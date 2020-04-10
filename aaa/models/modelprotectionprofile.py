@@ -2,17 +2,16 @@
 # ----------------------------------------------------------------------
 # ModelProtection Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from threading import Lock
 import operator
+from collections import defaultdict
 
 # Third-party modules
-import six
-from collections import defaultdict
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
@@ -47,7 +46,6 @@ def check_model(model_name):
         raise ValidationError
 
 
-@six.python_2_unicode_compatible
 class FieldAccess(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
@@ -57,7 +55,6 @@ class FieldAccess(EmbeddedDocument):
         return "%s:%s" % (self.name, self.permission)
 
 
-@six.python_2_unicode_compatible
 class ModelProtectionProfile(Document):
     meta = {
         "collection": "noc.modelprotectionprofile",

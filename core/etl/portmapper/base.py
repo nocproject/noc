@@ -2,12 +2,9 @@
 # ----------------------------------------------------------------------
 # NRI Port mapper
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 
 class PortMapperBase(type):
@@ -32,7 +29,7 @@ class PortMapperBase(type):
         return n
 
 
-class BasePortMapper(six.with_metaclass(PortMapperBase, object)):
+class BasePortMapper(object, metaclass=PortMapperBase):
     """
     Basic class to convert port notation from external NRI and back.
     External NRI system is defined in managed object's

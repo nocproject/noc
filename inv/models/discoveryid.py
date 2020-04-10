@@ -12,7 +12,6 @@ from threading import Lock
 import bisect
 
 # Third-party modules
-import six
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, ListField, LongField, EmbeddedDocumentField
@@ -32,7 +31,6 @@ from noc.core.model.decorator import on_delete
 mac_lock = Lock()
 
 
-@six.python_2_unicode_compatible
 class MACRange(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     first_mac = StringField()
@@ -43,7 +41,6 @@ class MACRange(EmbeddedDocument):
 
 
 @on_delete
-@six.python_2_unicode_compatible
 class DiscoveryID(Document):
     """
     Managed Object's discovery identity

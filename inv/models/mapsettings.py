@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Map Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import datetime
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -28,7 +27,6 @@ LC_SMOOTH = "smooth"
 LC_ROUNDED = "rounded"
 
 
-@six.python_2_unicode_compatible
 class NodeSettings(EmbeddedDocument):
     type = StringField()
     id = StringField()
@@ -39,7 +37,6 @@ class NodeSettings(EmbeddedDocument):
         return "%s:%s" % (self.type, self.id)
 
 
-@six.python_2_unicode_compatible
 class VertexPosition(EmbeddedDocument):
     x = FloatField()
     y = FloatField()
@@ -48,7 +45,6 @@ class VertexPosition(EmbeddedDocument):
         return "(%s, %s)" % (self.x, self.y)
 
 
-@six.python_2_unicode_compatible
 class LinkSettings(EmbeddedDocument):
     type = StringField()
     id = StringField()
@@ -62,7 +58,6 @@ class LinkSettings(EmbeddedDocument):
         return "%s:%s" % (self.type, self.id)
 
 
-@six.python_2_unicode_compatible
 class MapSettings(Document):
     meta = {"collection": "noc.mapsettings", "strict": False, "auto_create_index": False}
 

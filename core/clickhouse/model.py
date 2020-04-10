@@ -9,9 +9,6 @@
 # Python modules
 import operator
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
@@ -76,7 +73,7 @@ class ModelMeta(object):
         )
 
 
-class Model(six.with_metaclass(ModelBase)):
+class Model(object, metaclass=ModelBase):
     class Meta(object):
         engine = None
         db_table = None

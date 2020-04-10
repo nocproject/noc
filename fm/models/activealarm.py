@@ -11,7 +11,6 @@ import datetime
 from collections import defaultdict
 
 # Third-party modules
-import six
 from django.template import Template as DjangoTemplate
 from django.template import Context
 from pymongo import UpdateOne
@@ -48,7 +47,6 @@ from .alarmlog import AlarmLog
 
 
 @datastream
-@six.python_2_unicode_compatible
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",

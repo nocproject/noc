@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -23,7 +22,6 @@ downloader_registry.register_all()
 
 
 @on_delete_check(check=[("main.RefBookField", "ref_book"), ("main.RefBookData", "ref_book")])
-@six.python_2_unicode_compatible
 class RefBook(NOCModel):
     """
     Reference Books

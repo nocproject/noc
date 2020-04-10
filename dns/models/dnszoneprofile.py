@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DNSZoneProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,8 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
-from noc.core.translation import ugettext as _
 from django.db import models
 import cachetools
 
@@ -23,6 +21,7 @@ from noc.core.model.decorator import on_init
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
+from noc.core.translation import ugettext as _
 from .dnsserver import DNSServer
 
 id_lock = Lock()
@@ -31,7 +30,6 @@ id_lock = Lock()
 @on_init
 @datastream
 @on_delete_check(check=[("dns.DNSZone", "profile")])
-@six.python_2_unicode_compatible
 class DNSZoneProfile(NOCModel):
     """
     DNS Zone profile is a set of common parameters, shared between zones.

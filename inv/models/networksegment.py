@@ -12,7 +12,6 @@ import cachetools
 from threading import Lock
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -69,7 +68,6 @@ class VLANTranslation(EmbeddedDocument):
     ]
 )
 @on_save
-@six.python_2_unicode_compatible
 class NetworkSegment(Document):
     meta = {
         "collection": "noc.networksegments",

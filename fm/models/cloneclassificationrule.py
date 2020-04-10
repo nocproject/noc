@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CloneClassificationRule management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import os
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine import fields
 
@@ -19,7 +18,6 @@ from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 
 
-@six.python_2_unicode_compatible
 class CloneClassificationRule(Document):
     """
     Classification rules cloning

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Spec model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -53,7 +52,6 @@ class SpecAnswer(EmbeddedDocument):
         return {"name": self.name, "type": self.type, "value": self.value}
 
 
-@six.python_2_unicode_compatible
 class Spec(Document):
     meta = {
         "collection": "specs",

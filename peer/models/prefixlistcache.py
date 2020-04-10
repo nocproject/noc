@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Peer module models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -22,7 +21,6 @@ from noc.core.mongo.fields import ForeignKeyField
 from .peeringpoint import PeeringPoint
 
 
-@six.python_2_unicode_compatible
 class PrefixListCachePrefix(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
@@ -34,7 +32,6 @@ class PrefixListCachePrefix(EmbeddedDocument):
         return self.prefix
 
 
-@six.python_2_unicode_compatible
 class PrefixListCache(Document):
     """
     Prepared prefix-list cache. Can hold IPv4/IPv6 prefixes at same time.

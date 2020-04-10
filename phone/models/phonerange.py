@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PhoneRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import operator
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ListField, ObjectIdField
 from mongoengine.queryset import Q
@@ -45,7 +44,6 @@ _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 @workflow
 @on_delete
 @on_delete_check(check=[("phone.PhoneNumber", "phone_range"), ("phone.PhoneRange", "parent")])
-@six.python_2_unicode_compatible
 class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",

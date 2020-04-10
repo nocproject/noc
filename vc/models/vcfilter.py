@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # VCFilter model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,6 @@ import operator
 # Third-party modules
 from django.db import models
 import cachetools
-import six
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -27,7 +26,6 @@ id_lock = Lock()
 @on_delete_check(
     check=[("vc.VCBindFilter", "vc_filter"), ("vc.VCDomainProvisioningConfig", "vc_filter")]
 )
-@six.python_2_unicode_compatible
 class VCFilter(NOCModel):
     """
     VC Filter

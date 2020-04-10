@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Crashinfo
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import logging
 import uuid
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import UUIDField, DateTimeField, StringField
 import mongoengine.signals
@@ -26,7 +25,6 @@ from noc.core.comp import smart_text
 logger = logging.getLogger(__name__)
 
 
-@six.python_2_unicode_compatible
 class Crashinfo(Document):
     meta = {
         "collection": "noc.crashinfo",
