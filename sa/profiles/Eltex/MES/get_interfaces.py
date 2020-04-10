@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -154,8 +154,9 @@ class Script(BaseScript):
 
     def execute_snmp(self, interface=None):
         swports = {}
-        index = self.scripts.get_ifindexes()
+        # index = self.scripts.get_ifindexes()
         aggregated, portchannel_members = self.get_aggregated_ifaces()
+        """
         ifaces = dict((index[i], {"interface": i}) for i in index)
         # Apply ifAdminStatus
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
@@ -163,6 +164,24 @@ class Script(BaseScript):
         self.apply_table(ifaces, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
         # Apply PhysAddress
         self.apply_table(ifaces, "IF-MIB::ifPhysAddress", "mac_address")
+        """
+        ifaces = dict(
+            (
+                i["ifindex"],
+                {
+                    "interface": i["interface"],
+                    "admin_status": i["admin_status"],
+                    "oper_status": i["oper_status"],
+                    "mac_address": i["mac"],
+                },
+            )
+            for i in self.scripts.get_interface_properties(
+                enable_ifindex=True,
+                enable_interface_mac=True,
+                enable_admin_status=True,
+                enable_oper_status=True,
+            )
+        )
         self.apply_table(ifaces, "IF-MIB::ifType", "type")
         self.apply_table(ifaces, "IF-MIB::ifSpeed", "speed")
         self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")
@@ -249,6 +268,9 @@ class Script(BaseScript):
         return [{"interfaces": r}]
 
     def execute_cli(self):
+        # Model 3124/3124F high CPU utilization if use CLI
+        if self.is_3124 and self.has_snmp():
+            return self.execute_snmp()
         d = {}
         if self.has_snmp():
             try:
