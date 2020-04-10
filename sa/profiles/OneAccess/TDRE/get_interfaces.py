@@ -78,7 +78,7 @@ class Script(BaseScript):
                 ],
             }
             interfaces += [iface]
-            c = self.cli("GET ethernet%s/" % etherswitch, command_submit="\x09")
+            c = self.cli("GET ethernet%s/" % etherswitch, command_submit=b"\x09")
             self.cli("")
             for i in self.rx_hw_port.finditer(c):
                 v = self.cli("GET ethernet%s/%s/" % (etherswitch, i.group("port")))
