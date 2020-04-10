@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Dashboard storage
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -38,7 +37,6 @@ class DashboardAccess(EmbeddedDocument):
     level = IntField(choices=[(DAL_RO, "Read-only"), (DAL_MODIFY, "Modify"), (DAL_ADMIN, "Admin")])
 
 
-@six.python_2_unicode_compatible
 class Dashboard(Document):
     meta = {
         "collection": "noc.dashboards",

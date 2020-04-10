@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Person models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -19,7 +18,6 @@ from .rir import RIR
 
 
 @on_save
-@six.python_2_unicode_compatible
 class Person(NOCModel):
     class Meta(object):
         verbose_name = "Person"

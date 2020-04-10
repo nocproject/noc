@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import datetime
 import difflib
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -32,7 +31,6 @@ from noc.core.model.decorator import on_delete_check
         ("kb.KBEntryAttachment", "kb_entry"),
     ]
 )
-@six.python_2_unicode_compatible
 class KBEntry(NOCModel):
     """
     KB Entry

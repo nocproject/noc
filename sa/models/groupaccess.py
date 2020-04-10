@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # GroupAccess model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 
@@ -18,7 +17,6 @@ from .managedobjectselector import ManagedObjectSelector
 from .administrativedomain import AdministrativeDomain
 
 
-@six.python_2_unicode_compatible
 class GroupAccess(NOCModel):
     class Meta(object):
         verbose_name = _("Group Access")

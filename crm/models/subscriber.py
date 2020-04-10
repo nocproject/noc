@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Subscriber
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, LongField
 import cachetools
@@ -30,7 +29,6 @@ id_lock = Lock()
 
 @bi_sync
 @workflow
-@six.python_2_unicode_compatible
 class Subscriber(Document):
     meta = {
         "collection": "noc.subscribers",

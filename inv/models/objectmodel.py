@@ -13,7 +13,6 @@ import operator
 import re
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -43,7 +42,6 @@ id_lock = Lock()
 rx_composite_pins_validate = re.compile(r"\d+\-\d+")
 
 
-@six.python_2_unicode_compatible
 class ObjectModelConnection(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
@@ -118,7 +116,6 @@ class ObjectModelConnection(EmbeddedDocument):
 @category
 @on_delete_check(check=[("inv.ModelMapping", "model"), ("inv.Object", "model")])
 @on_save
-@six.python_2_unicode_compatible
 class ObjectModel(Document):
     """
     Equipment vendor

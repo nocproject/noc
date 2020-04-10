@@ -13,7 +13,6 @@ from collections import defaultdict
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
 import cachetools
@@ -38,7 +37,6 @@ logger = logging.getLogger(__name__)
 PERIODIC_JOB_MAX_RUNS = 5
 
 
-@six.python_2_unicode_compatible
 class AlarmDiagnosticConfig(Document):
     meta = {
         "collection": "noc.alarmdiagnosticconfig",

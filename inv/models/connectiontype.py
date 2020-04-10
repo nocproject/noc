@@ -10,7 +10,6 @@
 import os
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -30,7 +29,6 @@ from noc.main.models.doccategory import category
 from noc.core.model.decorator import on_delete_check
 
 
-@six.python_2_unicode_compatible
 class ConnectionMatcher(EmbeddedDocument):
     # Matched scope
     scope = StringField()
@@ -50,7 +48,6 @@ class ConnectionMatcher(EmbeddedDocument):
 
 @category
 @on_delete_check(check=[("inv.ConnectionType", "extend")])
-@six.python_2_unicode_compatible
 class ConnectionType(Document):
     """
     Equipment vendor

@@ -15,7 +15,6 @@ from threading import Lock
 from functools import reduce
 
 # Third-party modules
-import six
 from six.moves import zip
 from typing import Any, Optional
 
@@ -60,7 +59,7 @@ class BaseScriptMetaclass(type):
         return n
 
 
-class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
+class BaseScript(object, metaclass=BaseScriptMetaclass):
     """
     Service Activation script base class
     """

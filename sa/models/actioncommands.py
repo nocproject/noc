@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ActionCommands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import os
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -30,7 +29,6 @@ from noc.core.prettyjson import to_json
 from .action import Action
 
 
-@six.python_2_unicode_compatible
 class PlatformMatch(EmbeddedDocument):
     platform_re = StringField()
     version_re = StringField()
@@ -43,7 +41,6 @@ class PlatformMatch(EmbeddedDocument):
         return {"platform_re": self.platform_re, "version_re": self.version_re}
 
 
-@six.python_2_unicode_compatible
 class ActionCommands(Document):
     meta = {
         "collection": "noc.actioncommands",

@@ -12,7 +12,6 @@ from functools import reduce
 import threading
 
 # Third-party modules
-import six
 from django.db import models, connection
 from django.db.models import signals as django_signals
 from django.apps import apps
@@ -30,7 +29,6 @@ logger = logging.getLogger(__name__)
 id_lock = threading.Lock()
 
 
-@six.python_2_unicode_compatible
 class CustomField(NOCModel):
     """
     Custom field description

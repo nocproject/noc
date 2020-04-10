@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # RemoteSystem model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import operator
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -31,7 +30,6 @@ from noc.core.debug import error_report
 id_lock = Lock()
 
 
-@six.python_2_unicode_compatible
 class EnvItem(EmbeddedDocument):
     """
     Environment item
@@ -74,7 +72,6 @@ class EnvItem(EmbeddedDocument):
         ("wf.Workflow", "remote_system"),
     ]
 )
-@six.python_2_unicode_compatible
 class RemoteSystem(Document):
     meta = {"collection": "noc.remotesystem", "strict": False, "auto_create_index": False}
 

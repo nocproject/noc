@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # UserAccess model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 from functools import reduce
 
 # Third-party modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 from django.db.models import Q
@@ -23,7 +22,6 @@ from .groupaccess import GroupAccess
 from .administrativedomain import AdministrativeDomain
 
 
-@six.python_2_unicode_compatible
 class UserAccess(NOCModel):
     class Meta(object):
         verbose_name = _("User Access")

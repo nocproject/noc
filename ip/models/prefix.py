@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Prefix model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from threading import Lock
 from collections import defaultdict
 
 # Third-party modules
-import six
 from django.db import models, connection
 import cachetools
 
@@ -51,7 +50,6 @@ id_lock = Lock()
         ("ip.Address", "prefix"),
     ]
 )
-@six.python_2_unicode_compatible
 class Prefix(NOCModel):
     """
     Allocated prefix

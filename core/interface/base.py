@@ -2,12 +2,9 @@
 # ----------------------------------------------------------------------
 # Interface base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from .error import InterfaceTypeError
@@ -37,7 +34,7 @@ class BaseInterfaceMetaclass(type):
         return n
 
 
-class BaseInterface(six.with_metaclass(BaseInterfaceMetaclass, object)):
+class BaseInterface(object, metaclass=BaseInterfaceMetaclass):
     template = None  # Relative template path in sa/templates/
     form = None
     preview = None

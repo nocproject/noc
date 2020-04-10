@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SLA Probe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ListField
 import cachetools
@@ -29,7 +28,6 @@ id_lock = Lock()
 _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
-@six.python_2_unicode_compatible
 class SLAProbe(Document):
     meta = {
         "collection": "noc.sla_probes",

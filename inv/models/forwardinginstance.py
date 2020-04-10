@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Forwarding Instance model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 
@@ -21,7 +20,6 @@ from noc.config import config
 
 @datastream
 @on_delete_check(ignore=[("inv.SubInterface", "forwarding_instance")])
-@six.python_2_unicode_compatible
 class ForwardingInstance(Document):
     """
     Non-default forwarding instances

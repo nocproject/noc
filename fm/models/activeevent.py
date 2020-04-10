@@ -12,7 +12,6 @@ import time
 from threading import Lock
 
 # Third-party modules
-import six
 from django.template import Template, Context
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -35,7 +34,6 @@ from .eventclass import EventClass
 id_lock = Lock()
 
 
-@six.python_2_unicode_compatible
 class ActiveEvent(Document):
     """
     Event in the Active state

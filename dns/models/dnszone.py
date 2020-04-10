@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DNSZone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,10 +14,8 @@ from threading import Lock
 import operator
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.db import models
 import cachetools
-import six
 
 # NOC modules
 from noc.core.model.decorator import on_init
@@ -33,6 +31,7 @@ from noc.core.rpsl import rpsl_format
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
+from noc.core.translation import ugettext as _
 from .dnszoneprofile import DNSZoneProfile
 
 logger = logging.getLogger(__name__)
@@ -47,7 +46,6 @@ ZONE_REVERSE_IPV6 = "6"
 @on_init
 @datastream
 @on_delete_check(check=[("dns.DNSZoneRecord", "zone")])
-@six.python_2_unicode_compatible
 class DNSZone(NOCModel):
     """
     DNS Zone

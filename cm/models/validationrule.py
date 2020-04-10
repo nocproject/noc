@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Validation Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -36,7 +35,6 @@ A_EXCLUDE = "X"
 ACTIONS = [(A_DISABLE, "Disable"), (A_INCLUDE, "Include"), (A_EXCLUDE, "Exclude")]
 
 
-@six.python_2_unicode_compatible
 class SelectorItem(EmbeddedDocument):
     selector = ForeignKeyField(ManagedObjectSelector)
     action = StringField(choices=ACTIONS)
@@ -45,7 +43,6 @@ class SelectorItem(EmbeddedDocument):
         return "%s: %s" % (self.action, self.selector.name)
 
 
-@six.python_2_unicode_compatible
 class ObjectItem(EmbeddedDocument):
     object = ForeignKeyField(ManagedObject)
     action = StringField(choices=ACTIONS)
@@ -54,7 +51,6 @@ class ObjectItem(EmbeddedDocument):
         return "%s: %s" % (self.action, self.object.name)
 
 
-@six.python_2_unicode_compatible
 class ValidationRule(Document):
     meta = {"collection": "noc.validationrules", "strict": False, "auto_create_index": False}
 

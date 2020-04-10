@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # ip.reportoverview
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from django.db import connection
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.lib.app.reportapplication import ReportApplication
@@ -174,7 +171,6 @@ class VRFNode(Node):
         return "<b>VRF %s</b><br/>RD: %s" % (self.vrf.name, self.vrf.rd)
 
 
-@six.python_2_unicode_compatible
 class PrefixNode(Node):
 
     show_vrf = False

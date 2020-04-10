@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # DNSServer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 
@@ -21,7 +20,6 @@ from noc.core.datastream.decorator import datastream
 
 @on_init
 @datastream
-@six.python_2_unicode_compatible
 class DNSServer(NOCModel):
     """
     DNS Server is an database object representing real DNS server.

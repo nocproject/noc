@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -21,7 +20,6 @@ from .asn import AS
 
 
 @on_delete_check(check=[("peer.Peer", "peering_point"), ("peer.PrefixListCache", "peering_point")])
-@six.python_2_unicode_compatible
 class PeeringPoint(NOCModel):
     class Meta(object):
         verbose_name = "Peering Point"

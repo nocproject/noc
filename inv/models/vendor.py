@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vendor model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,6 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, URLField, UUIDField, ListField
 from mongoengine.errors import NotUniqueError
 import cachetools
-import six
 
 # NOC modules
 from noc.core.prettyjson import to_json
@@ -37,7 +36,6 @@ id_lock = threading.Lock()
         ("sa.ManagedObjectSelector", "filter_vendor"),
     ]
 )
-@six.python_2_unicode_compatible
 class Vendor(Document):
     """
     Equipment vendor

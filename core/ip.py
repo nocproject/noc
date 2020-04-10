@@ -10,9 +10,6 @@
 import socket
 import struct
 
-# Third-party modules
-import six
-
 # NOC Modules
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
 
@@ -21,7 +18,6 @@ B16 = 0xFFFF
 B32 = 0xFFFFFFFF
 
 
-@six.python_2_unicode_compatible
 class IP(object):
     """Base class for IP prefix"""
 

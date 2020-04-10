@@ -10,7 +10,6 @@
 import logging
 
 # Third-party modules
-import six
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne, InsertOne, DeleteOne
 from mongoengine.document import Document
@@ -19,7 +18,6 @@ from mongoengine.fields import StringField
 logger = logging.getLogger(__name__)
 
 
-@six.python_2_unicode_compatible
 class MACVendor(Document):
     """
     IEEE OUI database

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SLA Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -46,7 +45,6 @@ class SLAProfileMetrics(EmbeddedDocument):
 
 
 @on_delete_check(check=[("sla.SLAProbe", "profile")])
-@six.python_2_unicode_compatible
 class SLAProfile(Document):
     """
     SLA profile and settings

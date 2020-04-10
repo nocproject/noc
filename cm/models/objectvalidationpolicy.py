@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ObjectValidationPolicy
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,6 @@ from mongoengine.fields import (
     DictField,
 )
 from jinja2 import Template
-import six
 import cachetools
 
 # NOC modules
@@ -32,7 +31,6 @@ from .confdbquery import ConfDBQuery
 id_lock = threading.Lock()
 
 
-@six.python_2_unicode_compatible
 class ObjectValidationRule(EmbeddedDocument):
     query = PlainReferenceField(ConfDBQuery)
     query_params = DictField()
@@ -48,7 +46,6 @@ class ObjectValidationRule(EmbeddedDocument):
 
 
 @on_delete_check(check=[("sa.ManagedObjectProfile", "object_validation_policy")])
-@six.python_2_unicode_compatible
 class ObjectValidationPolicy(Document):
     meta = {"collection": "objectvalidationpolicies", "strict": False, "auto_create_index": False}
 

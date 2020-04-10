@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # AlarmTrigger
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -18,7 +17,6 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 
 
-@six.python_2_unicode_compatible
 class AlarmTrigger(NOCModel):
     class Meta(object):
         db_table = "fm_alarmtrigger"

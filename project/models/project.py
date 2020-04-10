@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Project models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from django.db import models
 import cachetools
 
@@ -42,7 +41,6 @@ id_lock = Lock()
         ("vc.VLAN", "project"),
     ]
 )
-@six.python_2_unicode_compatible
 class Project(NOCModel):
     """
     Projects are used to track investment projects expenses and profits

@@ -17,7 +17,6 @@ from collections import defaultdict
 import operator
 
 # Third-party modules
-import six
 from six.moves.urllib.parse import urlencode
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, Http404
 from django.urls import RegexURLResolver, RegexURLPattern, reverse
@@ -41,7 +40,6 @@ class ProxyNode(object):
 HTTP_METHODS = {"GET", "POST", "PUT", "DELETE"}
 
 
-@six.python_2_unicode_compatible
 class URL(object):
     """
     URL Data wrapper

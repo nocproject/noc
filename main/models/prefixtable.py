@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Prefix Table models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 
@@ -24,7 +23,6 @@ from noc.core.model.decorator import on_delete_check
         ("sa.ManagedObjectSelector", "filter_prefix")
     ]
 )
-@six.python_2_unicode_compatible
 class PrefixTable(NOCModel):
     class Meta(object):
         verbose_name = _("Prefix Table")
@@ -62,7 +60,6 @@ class PrefixTable(NOCModel):
         return self.match(other)
 
 
-@six.python_2_unicode_compatible
 class PrefixTablePrefix(NOCModel):
     class Meta(object):
         verbose_name = _("Prefix")

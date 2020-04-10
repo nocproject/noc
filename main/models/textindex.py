@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Full-text search index
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import datetime
 import re
 
 # Third-party modules
-import six
 from django.db.models import signals as django_signals
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, DateTimeField
@@ -21,7 +20,6 @@ from models import get_object, get_model_id
 logger = logging.getLogger(__name__)
 
 
-@six.python_2_unicode_compatible
 class TextIndex(Document):
     meta = {
         "collection": "noc.textindex",

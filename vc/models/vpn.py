@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # VPN
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
@@ -46,7 +45,6 @@ class RouteTargetItem(EmbeddedDocument):
 @bi_sync
 @on_delete_check(check=[("vc.VPN", "parent"), ("vc.VLAN", "vpn")])
 @workflow
-@six.python_2_unicode_compatible
 class VPN(Document):
     meta = {"collection": "vpns", "strict": False, "auto_create_index": False}
 

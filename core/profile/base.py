@@ -13,7 +13,6 @@ import warnings
 
 # Third-party modules
 import tornado.gen
-import six
 from typing import Dict, Callable, Union, Optional
 
 # NOC modules
@@ -99,7 +98,7 @@ class BaseProfileMetaclass(type):
         return n
 
 
-class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
+class BaseProfile(object, metaclass=BaseProfileMetaclass):
     """
     Equipment profile. Contains all equipment personality and specific
     """

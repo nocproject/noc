@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # Dashboard Layout
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, UUIDField, IntField, ListField, EmbeddedDocumentField
 
@@ -15,7 +14,6 @@ from mongoengine.fields import StringField, UUIDField, IntField, ListField, Embe
 from noc.core.prettyjson import to_json
 
 
-@six.python_2_unicode_compatible
 class DashboardCell(EmbeddedDocument):
     name = StringField()
     # Row number
@@ -46,7 +44,6 @@ class DashboardCell(EmbeddedDocument):
         }
 
 
-@six.python_2_unicode_compatible
 class DashboardLayout(Document):
     meta = {
         "collection": "noc.dashboardlayouts",

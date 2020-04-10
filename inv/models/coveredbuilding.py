@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Covered Buildings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
 
@@ -17,7 +16,6 @@ from noc.gis.models.building import Building
 from noc.core.mongo.fields import PlainReferenceField
 
 
-@six.python_2_unicode_compatible
 class CoveredBuilding(Document):
     meta = {
         "collection": "noc.coveredbuildings",

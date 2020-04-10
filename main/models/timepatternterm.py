@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -20,7 +19,6 @@ from .timepattern import TimePattern
 
 @on_init
 @datastream
-@six.python_2_unicode_compatible
 class TimePatternTerm(NOCModel):
     """
     Time pattern terms

@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField
 
@@ -22,7 +21,6 @@ from noc.core.model.decorator import on_delete_check
         ("inv.CoveredObject", "coverage"),
     ]
 )
-@six.python_2_unicode_compatible
 class Coverage(Document):
     meta = {"collection": "noc.coverage", "strict": False, "auto_create_index": False}
     # Subscriber name

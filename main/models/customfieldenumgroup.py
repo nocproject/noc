@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # CustomFieldEnumGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -18,7 +17,6 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(
     check=[("main.CustomField", "enum_group"), ("main.CustomFieldEnumValue", "enum_group")]
 )
-@six.python_2_unicode_compatible
 class CustomFieldEnumGroup(NOCModel):
     """
     Enumeration groups for custom fields

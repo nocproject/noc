@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # gis.Overlay model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,12 +10,10 @@
 import inspect
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, DictField
 
 
-@six.python_2_unicode_compatible
 class Overlay(Document):
     meta = {"collection": "noc.gis.overlays", "strict": False, "auto_create_index": False}
 

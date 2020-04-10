@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Datasource interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.settings import INSTALLED_APPS
@@ -26,7 +23,7 @@ class DataSourceBase(type):
         return m
 
 
-class DataSource(six.with_metaclass(DataSourceBase, object)):
+class DataSource(object, metaclass=DataSourceBase):
     _name = None
 
     def __init__(self, **kwargs):

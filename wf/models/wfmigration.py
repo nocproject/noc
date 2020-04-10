@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # Workflow Migration model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -28,7 +27,6 @@ class MigrationItem(EmbeddedDocument):
     description = StringField()
 
 
-@six.python_2_unicode_compatible
 class WFMigration(Document):
     meta = {"collection": "wfmigrations", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)

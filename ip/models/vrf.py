@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # VRF model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from noc.core.translation import ugettext as _
 from django.db import models
 import cachetools
@@ -52,7 +51,6 @@ id_lock = Lock()
         ("vc.VCBindFilter", "vrf"),
     ]
 )
-@six.python_2_unicode_compatible
 class VRF(NOCModel):
     """
     VRF

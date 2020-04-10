@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # ASSet model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC module
@@ -20,7 +19,6 @@ from noc.core.model.decorator import on_save
 
 
 @on_save
-@six.python_2_unicode_compatible
 class ASSet(NOCModel):
     class Meta(object):
         verbose_name = "ASSet"

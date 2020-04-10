@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # User model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import operator
 
 # Third-party modules
 import cachetools
-import six
 from django.db import models
 from django.core import validators
 from django.contrib.auth.hashers import check_password, make_password
@@ -44,7 +43,6 @@ id_lock = Lock()
         ("main.Favorites", "user"),
     ]
 )
-@six.python_2_unicode_compatible
 class User(NOCModel):
     class Meta(object):
         verbose_name = "User"

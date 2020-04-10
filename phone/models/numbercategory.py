@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NumberCategory model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
 import cachetools
@@ -33,7 +32,6 @@ class NumberCategoryRule(EmbeddedDocument):
 
 
 @on_delete_check(check=[("phone.PhoneNumber", "category")])
-@six.python_2_unicode_compatible
 class NumberCategory(Document):
     meta = {"collection": "noc.numbercategories", "strict": False, "auto_create_index": False}
 

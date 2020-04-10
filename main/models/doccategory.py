@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Common document category
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import logging
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ObjectIdField
 from mongoengine import signals
@@ -18,7 +17,6 @@ from mongoengine import signals
 logger = logging.getLogger(__name__)
 
 
-@six.python_2_unicode_compatible
 class DocCategory(Document):
     meta = {
         "collection": "noc.doccategories",

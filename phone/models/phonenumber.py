@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PhoneRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, ListField, ObjectIdField
 from mongoengine.errors import ValidationError
@@ -36,7 +35,6 @@ id_lock = Lock()
 
 @resourcegroup
 @workflow
-@six.python_2_unicode_compatible
 class PhoneNumber(Document):
     meta = {
         "collection": "noc.phonenumbers",

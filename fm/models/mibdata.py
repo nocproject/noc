@@ -2,21 +2,19 @@
 # ---------------------------------------------------------------------
 # MIBData model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, ListField
-import six
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from .mib import MIB
 
 
-@six.python_2_unicode_compatible
 class MIBData(Document):
     meta = {
         "collection": "noc.mibdata",

@@ -10,9 +10,6 @@
 import os
 import operator
 
-# Third-party modules
-import six
-
 # NOC modules
 from .fields import BaseField
 
@@ -65,7 +62,7 @@ class DictionaryMeta(object):
         )
 
 
-class Dictionary(six.with_metaclass(DictionaryBase)):
+class Dictionary(object, metaclass=DictionaryBase):
     class Meta:
         name = None
         layout = None

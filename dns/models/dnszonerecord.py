@@ -2,13 +2,11 @@
 # ---------------------------------------------------------------------
 # DNSZoneRecord model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
-from noc.core.translation import ugettext as _
 from django.db import models
 
 # NOC modules
@@ -16,12 +14,12 @@ from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
 from noc.core.model.fields import TagsField
 from noc.core.datastream.decorator import datastream
+from noc.core.translation import ugettext as _
 from .dnszone import DNSZone
 
 
 @on_init
 @datastream
-@six.python_2_unicode_compatible
 class DNSZoneRecord(NOCModel):
     """
     Zone RRs

@@ -2,16 +2,14 @@
 # ---------------------------------------------------------------------
 # Interaction Log
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine import document, fields
 
 
-@six.python_2_unicode_compatible
 class InteractionLog(document.Document):
     meta = {
         "collection": "noc.log.sa.interaction",

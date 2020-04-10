@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # EventClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -39,7 +38,6 @@ id_lock = Lock()
 handlers_lock = Lock()
 
 
-@six.python_2_unicode_compatible
 class EventClassVar(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField(required=True)
@@ -78,7 +76,6 @@ class EventClassVar(EmbeddedDocument):
         )
 
 
-@six.python_2_unicode_compatible
 class EventDispositionRule(EmbeddedDocument):
     meta = {"strict": False}
     # Name, unique within event class
@@ -167,7 +164,6 @@ class EventDispositionRule(EmbeddedDocument):
         return True
 
 
-@six.python_2_unicode_compatible
 class EventSuppressionRule(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField()
@@ -191,7 +187,6 @@ class EventSuppressionRule(EmbeddedDocument):
         )
 
 
-@six.python_2_unicode_compatible
 class EventPlugin(EmbeddedDocument):
     meta = {"strict": False}
 
@@ -202,7 +197,6 @@ class EventPlugin(EmbeddedDocument):
         return self.name
 
 
-@six.python_2_unicode_compatible
 class EventClassCategory(Document):
     meta = {"collection": "noc.eventclasscategories", "strict": False, "auto_create_index": False}
     name = StringField()
@@ -231,7 +225,6 @@ class EventClassCategory(Document):
         ("fm.ActiveEvent", "event_class"),
     ]
 )
-@six.python_2_unicode_compatible
 class EventClass(Document):
     """
     Event class

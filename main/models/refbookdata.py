@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # RefBookData
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from six.moves import zip
 from django.db import models
 
@@ -27,7 +26,6 @@ class RBDManader(models.Manager):
         return super(RBDManader, self).get_queryset().extra(order_by=["main_refbookdata.value[1]"])
 
 
-@six.python_2_unicode_compatible
 class RefBookData(NOCModel):
     """
     Ref. Book Data

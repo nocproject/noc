@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cron schedules
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 from mongoengine.errors import ValidationError
@@ -24,7 +23,6 @@ from noc.core.scheduler.scheduler import Scheduler
 
 @on_save
 @on_delete
-@six.python_2_unicode_compatible
 class CronTab(Document):
     meta = {"collections": "crontabs", "strict": False, "auto_create_index": False}
 

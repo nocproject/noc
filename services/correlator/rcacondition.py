@@ -10,11 +10,9 @@
 import datetime
 
 # Third-party modules
-import six
 from bson import ObjectId
 
 
-@six.python_2_unicode_compatible
 class RCACondition(object):
     def __init__(self, alarm_class, condition):
         self.name = "%s::%s" % (alarm_class.name, condition.name)

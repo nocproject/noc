@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -23,7 +22,6 @@ from .peeringpoint import PeeringPoint
 
 
 @on_save
-@six.python_2_unicode_compatible
 class Peer(NOCModel):
     """
     BGP Peering session

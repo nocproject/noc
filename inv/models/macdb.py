@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MAC Database
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import datetime
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, DateTimeField
 
@@ -23,7 +22,6 @@ from .maclog import MACLog
 from noc.core.mac import MAC
 
 
-@six.python_2_unicode_compatible
 class MACDB(Document):
     """
     Customer MAC address database

@@ -24,7 +24,6 @@ from mongoengine.fields import (
 )
 from mongoengine import signals
 import cachetools
-import six
 from typing import Iterable, Tuple
 
 # NOC modules
@@ -51,7 +50,6 @@ id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 
-@six.python_2_unicode_compatible
 class ObjectConnectionData(EmbeddedDocument):
     # Connection name (from model)
     name = StringField()
@@ -72,7 +70,6 @@ class ObjectConnectionData(EmbeddedDocument):
         ("inv.Object", "container"),
     ]
 )
-@six.python_2_unicode_compatible
 class Object(Document):
     """
     Inventory object

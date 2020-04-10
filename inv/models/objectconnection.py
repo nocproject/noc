@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # ObjectConnection model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -28,7 +27,6 @@ from noc.core.datastream.decorator import datastream
 from noc.config import config
 
 
-@six.python_2_unicode_compatible
 class ObjectConnectionItem(EmbeddedDocument):
     _meta = {"strict": False, "auto_create_index": False}
     # Object reference
@@ -41,7 +39,6 @@ class ObjectConnectionItem(EmbeddedDocument):
 
 
 @datastream
-@six.python_2_unicode_compatible
 class ObjectConnection(Document):
     """
     Inventory object connections

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # InterfaceValidationPolicy
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,6 @@ from mongoengine.fields import (
     DictField,
 )
 from jinja2 import Template
-import six
 import cachetools
 
 # NOC modules
@@ -32,7 +31,6 @@ from .confdbquery import ConfDBQuery
 id_lock = threading.Lock()
 
 
-@six.python_2_unicode_compatible
 class InterfaceValidationRule(EmbeddedDocument):
     query = PlainReferenceField(ConfDBQuery)
     query_params = DictField()
@@ -48,7 +46,6 @@ class InterfaceValidationRule(EmbeddedDocument):
 
 
 @on_delete_check(check=[("inv.InterfaceProfile", "interface_validation_policy")])
-@six.python_2_unicode_compatible
 class InterfaceValidationPolicy(Document):
     meta = {
         "collection": "interfacevalidationpolicies",

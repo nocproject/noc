@@ -30,7 +30,6 @@ from django.db.models import (
     CASCADE,
 )
 import cachetools
-import six
 from typing import Optional
 
 # NOC modules
@@ -135,7 +134,6 @@ logger = logging.getLogger(__name__)
     ],
     clean=[("ip.Address", "managed_object"), ("sa.Service", "managed_object")],
 )
-@six.python_2_unicode_compatible
 class ManagedObject(NOCModel):
     """
     Managed Object
@@ -1721,7 +1719,6 @@ class ManagedObject(NOCModel):
 
 
 @on_save
-@six.python_2_unicode_compatible
 class ManagedObjectAttribute(NOCModel):
     class Meta(object):
         verbose_name = "Managed Object Attribute"

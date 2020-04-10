@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # KBEntryAttachment model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from django.db import models
 
 # NOC modules
@@ -16,7 +15,6 @@ from noc.main.models.databasestorage import database_storage
 from noc.kb.models.kbentry import KBEntry
 
 
-@six.python_2_unicode_compatible
 class KBEntryAttachment(NOCModel):
     """
     Attachments

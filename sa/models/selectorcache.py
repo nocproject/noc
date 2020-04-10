@@ -14,7 +14,6 @@ from threading import Lock
 import re
 
 # Third-party modules
-import six
 from pymongo import ReadPreference, UpdateOne, InsertOne, DeleteOne, WriteConcern
 from pymongo.errors import BulkWriteError
 from mongoengine.document import Document
@@ -29,7 +28,6 @@ logger = logging.getLogger(__name__)
 q_lock = Lock()
 
 
-@six.python_2_unicode_compatible
 class SelectorCache(Document):
     meta = {
         "collection": "noc.cache.selector",

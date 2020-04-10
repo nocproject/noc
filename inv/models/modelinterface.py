@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ModelInterface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -49,7 +48,6 @@ T_MAP = {
 A_TYPE = ["str", "int", "float", "bool", "objectid", "ref", "strlist"]
 
 
-@six.python_2_unicode_compatible
 class ModelInterfaceAttr(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
@@ -98,7 +96,6 @@ class ModelInterfaceAttr(EmbeddedDocument):
             return False
 
 
-@six.python_2_unicode_compatible
 class ModelInterface(Document):
     """
     Equipment vendor

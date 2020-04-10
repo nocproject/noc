@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from django.db import models
 import cachetools
 
@@ -37,7 +36,6 @@ id_lock = Lock()
     check=[("peer.Peer", "local_asn"), ("peer.PeeringPoint", "local_as"), ("ip.Prefix", "asn")]
 )
 @on_save
-@six.python_2_unicode_compatible
 class AS(NOCModel):
     class Meta(object):
         verbose_name = "AS"

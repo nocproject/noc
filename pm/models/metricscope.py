@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -30,7 +29,6 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@six.python_2_unicode_compatible
 class KeyField(EmbeddedDocument):
     # Table field name
     field_name = StringField()
@@ -48,7 +46,6 @@ class KeyField(EmbeddedDocument):
         return "UInt64"
 
 
-@six.python_2_unicode_compatible
 class PathItem(EmbeddedDocument):
     name = StringField()
     is_required = BooleanField()
@@ -66,7 +63,6 @@ class PathItem(EmbeddedDocument):
 
 
 @on_delete_check(check=[("pm.MetricType", "scope")])
-@six.python_2_unicode_compatible
 class MetricScope(Document):
     meta = {
         "collection": "noc.metricscopes",

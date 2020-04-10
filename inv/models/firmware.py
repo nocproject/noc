@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Firmware
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import operator
 import uuid
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
 from mongoengine.errors import NotUniqueError
@@ -39,7 +38,6 @@ id_lock = threading.Lock()
         ("inv.FirmwarePolicy", "firmware"),
     ]
 )
-@six.python_2_unicode_compatible
 class Firmware(Document):
     meta = {
         "collection": "noc.firmwares",

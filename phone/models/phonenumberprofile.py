@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PhoneNumberProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField
 import cachetools
@@ -28,7 +27,6 @@ id_lock = Lock()
 @on_delete_check(
     check=[("phone.PhoneNumber", "profile"), ("phone.PhoneRangeProfile", "default_number_profile")]
 )
-@six.python_2_unicode_compatible
 class PhoneNumberProfile(Document):
     meta = {"collection": "noc.phonenumberprofiles", "strict": False, "auto_create_index": False}
 

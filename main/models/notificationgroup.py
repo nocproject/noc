@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import operator
 from threading import Lock
 
 # Third-party modules
-import six
 from django.db import models
 import cachetools
 
@@ -54,7 +53,6 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
         ("peer.PeeringPoint", "prefix_list_notification_group"),
     ]
 )
-@six.python_2_unicode_compatible
 class NotificationGroup(NOCModel):
     """
     Notification Groups
@@ -212,7 +210,6 @@ class NotificationGroup(NOCModel):
             )
 
 
-@six.python_2_unicode_compatible
 class NotificationGroupUser(NOCModel):
     class Meta(object):
         verbose_name = "Notification Group User"
@@ -237,7 +234,6 @@ class NotificationGroupUser(NOCModel):
         )
 
 
-@six.python_2_unicode_compatible
 class NotificationGroupOther(NOCModel):
     class Meta(object):
         verbose_name = "Notification Group Other"

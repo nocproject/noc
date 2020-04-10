@@ -4,7 +4,7 @@
 # Downloader is a class performing download and parsing of refbook
 # And returning a list of hashes (for RefBook.bulk_upload)
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@
 from noc.lib.registry import Registry
 
 # Third-party modules
-import six
 
 
 class DownloaderRegistry(Registry):
@@ -37,7 +36,7 @@ class DownloaderBase(type):
         return m
 
 
-class Downloader(six.with_metaclass(DownloaderBase, object)):
+class Downloader(object, metaclass=DownloaderBase):
     """
     Downloader base class
     """

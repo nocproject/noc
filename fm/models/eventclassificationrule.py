@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # EventClassificationRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import os
 
 # Third-party modules
-import six
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
 
@@ -22,7 +21,6 @@ from noc.core.escape import json_escape as jq
 from noc.core.text import quote_safe_path
 
 
-@six.python_2_unicode_compatible
 class EventClassificationRuleVar(EmbeddedDocument):
     meta = {"strict": False}
     name = fields.StringField(required=True)
@@ -35,7 +33,6 @@ class EventClassificationRuleVar(EmbeddedDocument):
         return self.name == other.name and self.value == other.value
 
 
-@six.python_2_unicode_compatible
 class EventClassificationRuleCategory(Document):
     meta = {
         "collection": "noc.eventclassificationrulecategories",
@@ -61,7 +58,6 @@ class EventClassificationRuleCategory(Document):
         super(EventClassificationRuleCategory, self).save(*args, **kwargs)
 
 
-@six.python_2_unicode_compatible
 class EventClassificationPattern(EmbeddedDocument):
     meta = {"strict": False}
     key_re = fields.StringField(required=True)
@@ -74,7 +70,6 @@ class EventClassificationPattern(EmbeddedDocument):
         return self.key_re == other.key_re and self.value_re == other.value_re
 
 
-@six.python_2_unicode_compatible
 class EventClassificationRule(Document):
     """
     Classification rules

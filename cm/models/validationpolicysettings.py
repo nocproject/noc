@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Policy Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -21,7 +20,6 @@ from mongoengine.fields import (
 from .validationpolicy import ValidationPolicy
 
 
-@six.python_2_unicode_compatible
 class ValidationPolicyItem(EmbeddedDocument):
     policy = ReferenceField(ValidationPolicy)
     is_active = BooleanField(default=True)
@@ -30,7 +28,6 @@ class ValidationPolicyItem(EmbeddedDocument):
         return self.policy.name
 
 
-@six.python_2_unicode_compatible
 class ValidationPolicySettings(Document):
     meta = {
         "collection": "noc.validationpolicysettings",

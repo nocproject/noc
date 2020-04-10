@@ -2,12 +2,9 @@
 # ---------------------------------------------------------------------
 # Calculators framework
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Third-party modules
-import six
 
 # NOC modules
 from noc.lib.registry import Registry
@@ -30,7 +27,7 @@ class CalculatorBase(type):
         return m
 
 
-class Calculator(six.with_metaclass(CalculatorBase, object)):
+class Calculator(object, metaclass=CalculatorBase):
     name = None
     title = None
     description = None

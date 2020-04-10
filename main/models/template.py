@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Template model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-import six
 from django.db import models
 from django.core.exceptions import ValidationError
 import jinja2
@@ -48,7 +47,6 @@ def template_validator(value):
         ("vc.VPNProfile", "name_template"),
     ]
 )
-@six.python_2_unicode_compatible
 class Template(NOCModel):
     class Meta(object):
         app_label = "main"

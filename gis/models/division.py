@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Division object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -27,7 +26,6 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(
     check=[("gis.Street", "parent"), ("gis.Division", "parent"), ("gis.Building", "adm_division")]
 )
-@six.python_2_unicode_compatible
 class Division(Document):
     meta = {
         "collection": "noc.divisions",

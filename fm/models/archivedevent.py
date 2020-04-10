@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ArchivedEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,6 @@ from mongoengine.fields import (
     ObjectIdField,
 )
 from django.template import Template, Context
-import six
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
@@ -26,7 +25,6 @@ from .eventlog import EventLog
 from .eventclass import EventClass
 
 
-@six.python_2_unicode_compatible
 class ArchivedEvent(Document):
     meta = {
         "collection": "noc.events.archive",

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CapsProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import threading
 import operator
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 import cachetools
@@ -23,7 +22,6 @@ id_lock = threading.Lock()
 
 
 @on_delete_check(check=[("sa.ManagedObjectProfile", "caps_profile")])
-@six.python_2_unicode_compatible
 class CapsProfile(Document):
     meta = {"collection": "capsprofiles", "strict": False, "auto_create_index": False}
 

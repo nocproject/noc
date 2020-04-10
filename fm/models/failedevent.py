@@ -11,7 +11,6 @@ import datetime
 import time
 
 # Third-party modules
-import six
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, StringField, EmbeddedDocumentField, ListField
 
@@ -21,7 +20,6 @@ from noc.core.mongo.fields import ForeignKeyField, RawDictField
 from .eventlog import EventLog
 
 
-@six.python_2_unicode_compatible
 class FailedEvent(Document):
     """
     Events that caused noc-classifier traceback

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Network Segment Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import cachetools
 from threading import Lock
 
 # Third-party modules
-import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -81,7 +80,6 @@ class UplinkPolicySettings(EmbeddedDocument):
     check=[("inv.NetworkSegment", "profile"), ("inv.NetworkSegmentProfile", "autocreated_profile")]
 )
 @on_save
-@six.python_2_unicode_compatible
 class NetworkSegmentProfile(Document):
     meta = {"collection": "noc.networksegmentprofiles", "strict": False, "auto_create_index": False}
 
