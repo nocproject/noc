@@ -319,7 +319,7 @@ class ConsulDCS(DCSBase):
                         touched = True
                         break
                     except consul.base.NotFound as e:
-                        self.logger.warning("Session lost by: '%s'. Forcing quit", e.message)
+                        self.logger.warning("Session lost by: '%s'. Forcing quit", e)
                         break
                     except ConsulRepeatableErrors as e:
                         self.logger.warning("Cannot refresh session due to ignorable error: %s", e)
