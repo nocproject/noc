@@ -4,7 +4,7 @@
 # with low memory and CPU footprints
 # See https://www.cs.rutgers.edu/~muthu/bquant.pdf for details
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -112,8 +112,7 @@ class Stream(object):
                 if not current_sampled:
                     # Only merged data left, yield rest of merged
                     yield current_merged
-                    for current_merged in merged_gen:
-                        yield current_merged
+                    yield from merged_gen
                     break
                 if not current_merged:
                     # Only sampled data left, yield rest of sampled

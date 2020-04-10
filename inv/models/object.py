@@ -510,16 +510,14 @@ class Object(Document):
         Yields inner connections as tuples of
         (name, remote_object, remote_name)
         """
-        for r in self.iter_connections("i"):
-            yield r
+        yield from self.iter_connections("i")
 
     def iter_outer_connections(self):
         """
         Yields outer connections as tuples of
         (name, remote_object, remote_name)
         """
-        for r in self.iter_connections("o"):
-            yield r
+        yield from self.iter_connections("o")
 
     def has_inner_connections(self):
         """

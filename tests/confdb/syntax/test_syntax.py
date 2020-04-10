@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Test ConfDB syntax
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,8 +25,7 @@ def get_nodes():
 
     def iter_nodes():
         for node in SYNTAX:
-            for path in iter_children((node,)):
-                yield path
+            yield from iter_children((node,))
 
     return list(iter_nodes())
 

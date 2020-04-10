@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BaseReportDatasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -90,14 +90,12 @@ class BaseReportColumn(object):
         prev_id = 0
         if self.multiple_series and self.builtin_sorted:
             # return {STREAM_NAME1: iterator1, ....}
-            for v in merge(self.extract()):
-                yield v
+            yield from merge(self.extract())
         elif self.multiple_series and not self.builtin_sorted:
             raise NotImplementedError("Multiple series supported onl with builtin sorted")
         elif not self.builtin_sorted:
             # Unsupported builtin sorted.
-            for v in sorted(self.extract()):
-                yield v
+            yield from sorted(self.extract())
         else:
             # Supported builtin sorted.
             for v in self.extract():

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -207,8 +207,7 @@ def iter_open(path):
         tf.close()
     elif path.endswith("tar.bz2") or path.endswith("tbz"):
         tf = tarfile.open(path, "r:bz")
-        for f in tf:
-            yield f
+        yield from tf
         tf.close()
     elif path.endswith(".gz"):
         f = gzip.open(path, "r")

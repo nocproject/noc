@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.monitor application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -167,5 +167,4 @@ class JobF(object):
         mos_ids = list(self.mos_filter.values_list("id", flat=True))
         self.pipeline = [{"$match": {Job.ATTR_KEY: {"$in": mos_ids}}}] + self.pipeline
         scheduler = Scheduler(self.scheduler, pool=self.pool).get_collection()
-        for r in scheduler.aggregate(self.pipeline):
-            yield r
+        yield from scheduler.aggregate(self.pipeline)

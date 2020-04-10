@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # IP address manipulation routines
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -174,8 +174,7 @@ class IP(object):
             yield self
             raise StopIteration
         #
-        for p in db.iter_free(self):
-            yield p
+        yield from db.iter_free(self)
 
     def area_spot(self, addresses, dist, sep=False, exclude_special=True):
         """

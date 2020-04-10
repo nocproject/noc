@@ -196,10 +196,8 @@ class BaseCommand(object):
         :return:
         """
         if self.no_progressbar:
-            for i in iter:
-                yield i
+            yield from iter
         else:
             import progressbar
 
-            for i in progressbar.progressbar(iter, max_value=max_value):
-                yield i
+            yield from progressbar.progressbar(iter, max_value=max_value)

@@ -772,8 +772,7 @@ class ActiveAlarm(Document):
         """
         for a in ActiveAlarm.objects.filter(root=self.id):
             yield a
-            for ca in a.iter_consequences():
-                yield ca
+            yield from a.iter_consequences()
 
     def iter_affected(self):
         """

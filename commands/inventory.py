@@ -54,14 +54,12 @@ class Command(BaseCommand):
                 _, ro, rn = outer_conns[0]
                 yield obj_str(o, rn)
                 # Follow up
-                for rr in iter_obj(ro):
-                    yield rr
+                yield from iter_obj(ro)
             else:
                 # Try up to container
                 yield obj_str(o)
                 if o.container:
-                    for rr in iter_obj(o.container):
-                        yield rr
+                    yield from iter_obj(o.container)
 
         for n, sr in enumerate(reversed(list(iter_obj(obj)))):
             self.print("%s * %s" % ("  " * n, sr))

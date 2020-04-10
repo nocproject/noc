@@ -73,8 +73,7 @@ def iter_model_id():
     """
     Iterate all model ids
     """
-    for m in _MODELS:
-        yield m
+    yield from _MODELS
 
 
 # Model cache: model_id -> class

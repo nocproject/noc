@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # TimePatternTerm database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -59,5 +59,4 @@ class TimePatternTerm(NOCModel):
         from noc.sa.models.managedobject import ManagedObject
 
         for mo in ManagedObject.objects.filter(time_pattern=self.time_pattern):
-            for c in mo.iter_changed_datastream(changed_fields=changed_fields):
-                yield c
+            yield from mo.iter_changed_datastream(changed_fields=changed_fields)

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Mysql Data Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -63,5 +63,4 @@ class MySQLExtractor(SQLExtractor):
         self.logger.info("Fetching data")
         for query, params in self.get_sql():
             cursor.execute(query, params)
-            for row in cursor:
-                yield row
+            yield from cursor

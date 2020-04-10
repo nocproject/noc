@@ -68,8 +68,7 @@ class GeocoderCache(Document):
                 h = loader[gc]
                 if h:
                     cls.geocoders += [h]
-        for h in cls.geocoders:
-            yield h
+        yield from cls.geocoders
 
     @classmethod
     def clean_query(cls, query):

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ORACLE Data Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -86,13 +86,11 @@ class ORACLEExtractor(SQLExtractor):
             self.logger.info("Fetching data")
             for query, params in self.get_sql():
                 cursor.execute(query, params)
-                for row in cursor:
-                    yield row
+                yield from cursor
         else:
             with ThreadPoolExecutor(max_workers=concurrency) as pool:
                 futures = [
                     pool.submit(fetch_sql, query, params) for query, params in self.get_sql()
                 ]
                 for f in as_completed(futures):
-                    for row in f.result():
-                        yield row
+                    yield from f.result()

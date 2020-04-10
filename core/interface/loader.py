@@ -115,8 +115,7 @@ class InterfaceLoader(object):
         """
         if not self.all_interfaces:
             self.find_interfaces()
-        for s in sorted(self.all_interfaces):
-            yield s
+        yield from sorted(self.all_interfaces)
 
     def has_interface(self, name):
         """

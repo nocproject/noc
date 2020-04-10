@@ -96,8 +96,7 @@ class ProfileLoader(BaseLoader):
         """
         if not self.all_profiles:
             self.find_profiles()
-        for s in sorted(self.all_profiles):
-            yield s
+        yield from sorted(self.all_profiles)
 
     def has_profile(self, name):
         """
