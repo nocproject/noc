@@ -14,7 +14,7 @@ import struct
 from typing import Tuple, Any, List, Optional
 
 # NOC modules
-from noc.core.comp import bord, smart_bytes, smart_text
+from noc.core.comp import smart_bytes, smart_text
 from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int, encode_oid
 from noc.core.mib import mib
 
@@ -72,7 +72,7 @@ class BERDecoder(object):
     def parse_boolean(self, msg: bytes) -> bool:
         if not msg:
             return False
-        return bool(bord(msg[0]))
+        return bool(msg[0])
 
     INT_MASK = {
         1: struct.Struct("!b"),
@@ -112,8 +112,8 @@ class BERDecoder(object):
         # Decode as is
         v = 0
         for c in msg:
-            v = (v << 8) + bord(c)
-        if bord(msg[0]) & 0x80:
+            v = (v << 8) + c
+        if msg[0] & 0x80:
             # Negative number
             m = 1 << (8 * len(msg))
             v -= m
@@ -124,7 +124,7 @@ class BERDecoder(object):
         """
         if not msg:
             return 0.0
-        f = bord(msg[0])
+        f = msg[0]
         if f & 0x80:  # Binary encoding, 8.5.6
             # @todo: Снести в конец
             base = {0x00: 2, 0x10: 4, 0x20: 16}[f & 0x30]  # 8.5.6.2
@@ -150,8 +150,8 @@ class BERDecoder(object):
             raise ValueError("Unknown REAL encoding: %s" % f)
 
     def parse_p_bitstring(self, msg: bytes) -> bytes:
-        unused = bord(msg[0])
-        r = b"".join(BITSTING[bord(c)] for c in msg)
+        unused = msg[0]
+        r = b"".join(BITSTING[c] for c in msg)
         if unused:
             r = r[:-unused]
         return r
@@ -184,7 +184,7 @@ class BERDecoder(object):
     def parse_a_ipaddress(self, msg: bytes) -> str:
         if not msg:
             raise ValueError("Invalid IP Address: '%s'" % msg.encode("hex"))
-        return "%d.%d.%d.%d" % (bord(msg[0]), bord(msg[1]), bord(msg[2]), bord(msg[3]))
+        return "%d.%d.%d.%d" % (msg[0], msg[1], msg[2], msg[3])
 
     def parse_p_oid(self, msg: bytes) -> str:
         """
@@ -199,8 +199,8 @@ class BERDecoder(object):
         :param msg:
         :return:
         """
-        pos = bord(msg[0]) - 1
-        parts = self.last_oid.split(".")[:pos] + [str(bord(d)) for d in msg[1:]]
+        pos = msg[0] - 1
+        parts = self.last_oid.split(".")[:pos] + [str(d) for d in msg[1:]]
         self.last_oid = ".".join(parts)
         return smart_text(self.last_oid)
 
@@ -402,7 +402,7 @@ class BEREncoder(object):
             comp <<= 8
         r = self.struct_Q.pack(comp - data).lstrip(b"\x00")
         if r:
-            r = self.struct_B.pack(bord(r[0]) | 0x80) + r[1:]
+            r = self.struct_B.pack(r[0] | 0x80) + r[1:]
         else:
             r = b"\x80" + b"\x00" * (ln - 1)
         return self.encode_tlv(2, True, r)

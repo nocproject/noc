@@ -14,9 +14,6 @@ from itertools import zip_longest
 from numpy import array
 from typing import List, Union, Iterable
 
-# NOC modules
-from noc.core.comp import bord
-
 rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
@@ -331,7 +328,7 @@ def _replace_re_group_binary(expr: bytes, group: bytes, pattern: bytes) -> bytes
         expr = expr[idx + lg :]
         level = 1  # Level of parenthesis nesting
         while expr:
-            c = bord(expr[0])
+            c = expr[0]
             expr = expr[1:]
             if c == 0x5C:  # "\\"
                 # Skip quoted character

@@ -10,7 +10,7 @@
 from typing import Optional, Callable
 
 # NOC modules
-from noc.core.comp import smart_text, bord
+from noc.core.comp import smart_text
 
 
 def render_bin(oid: str, value: bytes) -> bytes:
@@ -65,7 +65,7 @@ def render_mac(oid: str, value: bytes) -> str:
     """
     if len(value) != 6:
         return ""
-    return "%02X:%02X:%02X:%02X:%02X:%02X" % tuple(bord(x) for x in value)
+    return "%02X:%02X:%02X:%02X:%02X:%02X" % tuple(value)
 
 
 def get_string_renderer(v: str) -> Callable[[str, bytes], str]:

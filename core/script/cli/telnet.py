@@ -17,7 +17,6 @@ from typing import List, Optional
 
 # NOC modules
 from noc.core.perf import metrics
-from noc.core.comp import bord
 from .base import CLI
 
 _logger = logging.getLogger(__name__)
@@ -145,7 +144,7 @@ class TelnetParser(object):
                     # Collect for next round
                     self.iac_seq = B_IAC + right
                     break
-                ctl = bord(right[0])
+                ctl = right[0]
                 if ctl == IAC:
                     # <IAC> <IAC> leads to single <IAC>
                     r += [B_IAC]
@@ -155,7 +154,7 @@ class TelnetParser(object):
                     chunk = right[1:]
                 elif ctl != SB:
                     # Process IAC <cmd> <opt>
-                    self.process_iac(ctl, bord(right[1]))
+                    self.process_iac(ctl, right[1])
                     chunk = right[2:]
                 else:
                     # Process IAC SB ... SE sequence
