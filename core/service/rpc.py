@@ -17,16 +17,16 @@ import sys
 import tornado.concurrent
 import tornado.gen
 import ujson
-import six
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.backport.time import perf_counter
-from .error import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.span import Span, get_current_span
+from noc.core.comp import reraise
+from .error import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
 
 logger = logging.getLogger(__name__)
 
@@ -175,7 +175,7 @@ class RPCProxy(object):
             self._service.ioloop.add_callback(_sync_call)
             ev.wait()
             if error:
-                six.reraise(*error[0])
+                reraise(*error[0])
             else:
                 return result[0]
 

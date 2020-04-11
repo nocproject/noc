@@ -10,9 +10,6 @@
 from collections import defaultdict
 import codecs
 
-# Third-party modules
-# import six
-
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.core.validators import is_ipv4

@@ -2,16 +2,16 @@
 # ----------------------------------------------------------------------
 # noc.core.debug tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
+from io import StringIO
 
 # Third-party modules
 import pytest
-from six.moves import StringIO
 
 # NOC modules
 from noc.core.debug import ErrorReport

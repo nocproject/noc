@@ -14,9 +14,6 @@ import socket
 import struct
 from collections import defaultdict
 
-# Third-party modules
-from six.moves import zip
-
 # NOC modules
 from noc.config import config
 

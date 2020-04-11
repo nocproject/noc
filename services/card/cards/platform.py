@@ -2,11 +2,10 @@
 # ----------------------------------------------------------------------
 # Platform card
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
 # NOC modules
 from noc.inv.models.platform import Platform
 from .base import BaseCard

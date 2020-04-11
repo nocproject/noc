@@ -2,19 +2,19 @@
 # ----------------------------------------------------------------------
 # Migrate InterfaceProfile threshold profiles
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import itertools
 import operator
+from pickle import loads, dumps, HIGHEST_PROTOCOL
 
 # Third-party modules
 import bson
 import psycopg2
 import cachetools
-from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

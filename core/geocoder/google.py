@@ -2,12 +2,14 @@
 # ----------------------------------------------------------------------
 # Google geocoder
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from urllib.parse import quote as urllib_quote
+
 # Third-party modules
-from six.moves.urllib.parse import quote as urllib_quote
 import ujson
 
 # NOC modules

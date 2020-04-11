@@ -2,13 +2,15 @@
 # ----------------------------------------------------------------------
 # HTTP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from http.cookies import SimpleCookie
+
 # Third-party modules
 import ujson
-from six.moves.http_cookies import SimpleCookie
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter

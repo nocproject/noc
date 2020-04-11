@@ -10,9 +10,9 @@
 import logging
 import datetime
 import csv
+from io import BytesIO
 
 # Third-party modules
-from six import BytesIO
 import xlsxwriter
 from django.http import HttpResponse
 

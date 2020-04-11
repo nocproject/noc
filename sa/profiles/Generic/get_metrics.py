@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ import operator
 from collections import defaultdict
 
 # Third-party modules
-import six
 import ujson
 
 # NOC modules
@@ -226,7 +225,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         f.mt_matcher = None
         f.mt_access = "S"
         f.mt_volatile = False
-        setattr(script, fn, six.create_unbound_method(f, script))
+        setattr(script, fn, f)
         ff = getattr(script, fn)
         ff.__name__ = fn
         ff.__qualname__ = "%s.%s" % (script.__name__, fn)
@@ -244,8 +243,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         return "get_snmp_json_%s" % mcs.rx_mt_name.sub("_", str(metric.lower()))
 
 
-@six.add_metaclass(MetricScriptBase)
-class Script(BaseScript):
+class Script(BaseScript, metaclass=MetricScriptBase):
     """
     Retrieve data for topology discovery
     """

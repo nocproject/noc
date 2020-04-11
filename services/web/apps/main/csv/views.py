@@ -8,9 +8,9 @@
 
 # Python modules
 import csv
+from io import StringIO
 
 # Third-party modules
-from six import StringIO
 from django import forms
 from django.contrib import admin
 from django.apps import apps as d_apps

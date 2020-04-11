@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # Base classes for geocoding parsers
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import itertools
-
-# Thirs-party modules
-from six.moves import zip
 
 
 class GeocodingParser(object):

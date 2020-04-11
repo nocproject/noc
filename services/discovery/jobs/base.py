@@ -14,11 +14,11 @@ import zlib
 import datetime
 import types
 import operator
+from io import StringIO
 
 # Third-party modules
 import bson
 import cachetools
-from six import StringIO
 from pymongo import UpdateOne
 from typing import List, Dict
 from builtins import str, object

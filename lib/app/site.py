@@ -15,9 +15,9 @@ import logging
 import json
 from collections import defaultdict
 import operator
+from urllib.parse import urlencode
 
 # Third-party modules
-from six.moves.urllib.parse import urlencode
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, Http404
 from django.urls import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings

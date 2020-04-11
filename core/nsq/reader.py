@@ -2,15 +2,15 @@
 # ----------------------------------------------------------------------
 # Customized NSQ reader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
+from urllib.parse import urlencode, urlsplit, parse_qs, urlunsplit
 
 # Third-party modules
-from six.moves.urllib.parse import urlencode, urlsplit, parse_qs, urlunsplit
 import tornado.gen
 from nsq.reader import Reader as BaseReader, _utf8_params
 import ujson

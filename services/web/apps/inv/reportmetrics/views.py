@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # inv.reportmetrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,10 +12,10 @@ import datetime
 import time
 from collections import namedtuple
 import csv
+from io import BytesIO
 
 # Third-party modules
 import xlsxwriter
-from six import BytesIO
 from django.http import HttpResponse
 
 # NOC modules

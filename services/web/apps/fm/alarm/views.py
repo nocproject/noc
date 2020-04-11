@@ -16,7 +16,6 @@ import dateutil.parser
 import operator
 
 # Third-party modules
-from six.moves import zip
 import bson
 from pymongo import ReadPreference
 from mongoengine.errors import DoesNotExist

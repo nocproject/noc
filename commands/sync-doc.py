@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Rebuild online documentation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,9 +13,7 @@ import glob
 import subprocess
 import csv
 import sys
-
-# Third-party modules
-import six
+from io import StringIO
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
@@ -35,7 +33,7 @@ class Command(BaseCommand):
     # Returns true if database was updated
     #
     def update_se_db(self):
-        out = six.StringIO()
+        out = StringIO()
         writer = csv.writer(out)
         for dirpath, dirname, files in os.walk("sa/profiles/"):
             if "supported.csv" in files:

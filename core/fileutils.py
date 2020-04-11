@@ -11,9 +11,7 @@ import hashlib
 import tarfile
 import gzip
 import shutil
-
-# Third-party modules
-import six
+from io import StringIO
 
 # NOC modules
 from noc.core.version import version
@@ -141,7 +139,7 @@ def urlopen(url, auto_deflate=False):
     """
     urlopen wrapper
     """
-    from six.moves.urllib.request import urlopen, Request
+    from urllib.request import urlopen, Request
     from noc.core.http.proxy import setup_urllib_proxies
 
     setup_urllib_proxies()
@@ -152,7 +150,7 @@ def urlopen(url, auto_deflate=False):
         r = url
     if auto_deflate and url.endswith(".gz"):
         u = urlopen(r)
-        f = six.StringIO(u.read())
+        f = StringIO(u.read())
         return gzip.GzipFile(fileobj=f)
     return urlopen(r)
 

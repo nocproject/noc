@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python Modules
 import csv
 import subprocess
+from io import StringIO
 
 # Third-party modules
-import six
 from django import forms
 
 # NOC Modules
@@ -84,7 +84,7 @@ class ToolsAppplication(Application):
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denied"))
-        out = six.StringIO()
+        out = StringIO()
         writer = csv.writer(out)
         writer.writerow(["address", "fqdn", "mac", "description", "tt", "tags"])
         for a in prefix.nested_address_set.order_by("address"):

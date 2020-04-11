@@ -11,9 +11,9 @@ import re
 import datetime
 import time
 import hashlib
+from html.entities import name2codepoint
 
 # Third-party modules
-from six.moves.html_entities import name2codepoint
 from bson import ObjectId
 from pymongo import DeleteMany
 from pymongo.errors import DocumentTooLarge

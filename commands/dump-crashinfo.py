@@ -2,16 +2,14 @@
 # ---------------------------------------------------------------------
 # ./noc dump-crashinfo
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import argparse
 import time
-
-# Third-party modules
-from six.moves.cPickle import load
+from pickle import load
 
 # NOC modules
 from noc.core.management.base import BaseCommand

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.reportinterfacestatus
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,9 @@
 import logging
 import datetime
 import csv
+from io import BytesIO
 
 # Third-party modules
-from six import BytesIO, text_type
 from django.http import HttpResponse
 from pymongo import ReadPreference
 from bson import ObjectId
@@ -141,7 +141,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
             def qe(v):
                 if v is None:
                     return ""
-                if isinstance(v, text_type):
+                if isinstance(v, str):
                     return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")

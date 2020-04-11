@@ -7,8 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from six.moves import zip
-
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.core.snmp.error import SNMPError

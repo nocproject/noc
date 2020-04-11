@@ -6,12 +6,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from pickle import loads, dumps, HIGHEST_PROTOCOL
+
 # Third-party modules
 import psycopg2
 from psycopg2.extensions import adapt
 from django.db import models
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
-from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 from bson import ObjectId
 
 # NOC Modules

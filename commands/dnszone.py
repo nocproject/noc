@@ -2,16 +2,14 @@
 # ---------------------------------------------------------------------
 # Import DNS Zone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import argparse
 import re
-
-# Third-party modules
-from six.moves import zip_longest
+from itertools import zip_longest
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError

@@ -3,16 +3,14 @@
 # CSV-file downloader
 # First line is a field names
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import csv
 import gzip
-
-# Third-party modules
-import six
+from io import StringIO
 
 # NOC modules
 from noc.main.refbooks.downloaders import Downloader as DownloaderBase
@@ -38,7 +36,7 @@ class Downloader(DownloaderBase):
         if code != 200:
             raise IOError("Invalid HTTP response: %s" % code)
 
-        data = six.StringIO(body)
+        data = StringIO(body)
         # Wrap GzipFile for gzipped content
         if ref_book.download_url.endswith(".gz"):
             data = gzip.GzipFile(fileobj=data)

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Memcached backend
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import logging
 
 # Third-party modules
-from six.moves import zip
 import pylibmc
 import pylibmc.pools
 

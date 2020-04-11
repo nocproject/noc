@@ -2,13 +2,15 @@
 # ----------------------------------------------------------------------
 # Redis backend
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from pickle import loads, dumps, HIGHEST_PROTOCOL
+
 # Third-party modules
 import redis
-from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 
 # NOC modules
 from noc.config import config

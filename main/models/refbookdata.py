@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from six.moves import zip
 from django.db import models
 
 # NOC modules

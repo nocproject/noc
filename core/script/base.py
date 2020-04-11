@@ -15,7 +15,6 @@ from threading import Lock
 from functools import reduce
 
 # Third-party modules
-from six.moves import zip
 from typing import Any, Optional
 
 # NOC modules

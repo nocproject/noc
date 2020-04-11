@@ -2,16 +2,13 @@
 # ----------------------------------------------------------------------
 # MAC Model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
 import datetime
-
-# Third-party modules
-from six.moves import zip
 
 # NOC modules
 from noc.config import config

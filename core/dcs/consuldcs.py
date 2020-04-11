@@ -11,13 +11,13 @@ import random
 import time
 import ujson
 import uuid
+from urllib.parse import unquote
 
 # Third-party modules
 import consul.base
 import consul.tornado
 import tornado.gen
 import tornado.ioloop
-from six.moves.urllib.parse import unquote
 
 # NOC modules
 from noc.config import config

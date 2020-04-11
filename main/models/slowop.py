@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Slow operations registry
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,9 +11,9 @@ import datetime
 import logging
 import concurrent.futures
 import time
+from pickle import loads, dumps, HIGHEST_PROTOCOL
 
 # Third-party modules
-from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, FloatField, StringField
 

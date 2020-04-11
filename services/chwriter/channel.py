@@ -3,12 +3,12 @@
 # ----------------------------------------------------------------------
 # Write channel service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from six.moves.urllib.parse import quote as urllib_quote
+# Python modules
+from urllib.parse import quote as urllib_quote
 
 # NOC modules
 from noc.config import config

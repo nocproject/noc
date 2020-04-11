@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # icqsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,9 +12,7 @@ import re
 import datetime
 import json
 import time
-
-# Third-party modules
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
 # NOC modules
 from noc.core.service.base import Service

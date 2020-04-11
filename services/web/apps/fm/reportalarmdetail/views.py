@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportalarmdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,9 +11,9 @@ import datetime
 import csv
 import xlsxwriter
 import bson
+from io import BytesIO
 
 # Third-party modules
-from six import BytesIO, text_type
 from django.http import HttpResponse
 from django.db import connection
 from pymongo import ReadPreference
@@ -165,7 +165,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             def qe(v):
                 if v is None:
                     return ""
-                if isinstance(v, text_type):
+                if isinstance(v, str):
                     return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")

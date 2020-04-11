@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # whois utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,7 @@
 import logging
 import socket
 from collections import defaultdict
-
-# Third-party modules
-from six.moves.urllib.error import URLError
+from urllib.error import URLError
 
 # NOC modules
 from noc.config import config

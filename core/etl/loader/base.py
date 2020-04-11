@@ -16,10 +16,8 @@ import time
 import shutil
 import functools
 import io
-
-# Third party modules
-import six
-from six.moves import zip_longest
+from itertools import zip_longest
+from io import StringIO
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -202,7 +200,7 @@ class BaseLoader(object):
             logger.info("Current state from %s", path)
             return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
         # No current state
-        return six.StringIO("")
+        return StringIO("")
 
     def diff(self, old, new):
         """

@@ -13,9 +13,9 @@ import itertools
 import time
 import datetime
 from collections import deque
+import _thread
 
 # Third-party modules
-from six.moves import _thread
 from concurrent.futures import Future
 from tornado.gen import with_timeout
 
