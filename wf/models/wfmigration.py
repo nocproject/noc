@@ -42,8 +42,8 @@ class WFMigration(Document):
         :param target_wf: Target workflow
         :return:
         """
-        return dict(
-            (m.from_state, m.to_state)
+        return {
+            m.from_state: m.to_state
             for m in self.migrations
             if m.is_active and m.to_state.workflow == target_wf
-        )
+        }

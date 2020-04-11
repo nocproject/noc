@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -185,8 +185,8 @@ class Script(BaseScript):
     def get_ip_ifaces(self):
         ipAdEntIfIndex = self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False)
         ipAdEntNetMask = self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False)
-        ip_iface = dict((l, ".".join(o.rsplit(".")[-4:])) for o, l in ipAdEntIfIndex)
-        ip_mask = dict((".".join(o.rsplit(".")[-4:]), l) for o, l in ipAdEntNetMask)
+        ip_iface = {l: ".".join(o.rsplit(".")[-4:]) for o, l in ipAdEntIfIndex}
+        ip_mask = {".".join(o.rsplit(".")[-4:]): l for o, l in ipAdEntNetMask}
 
         r = {}
         for ip in ip_iface:
@@ -199,7 +199,7 @@ class Script(BaseScript):
         # http://xcme.blogspot.com/2014/10/vlan-snmp.html
         #
         index = self.scripts.get_ifindexes()
-        ifaces = dict((index[i], {"interface": i}) for i in index)
+        ifaces = {index[i]: {"interface": i} for i in index}
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         self.apply_table(ifaces, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
         if self.is_bad_ifmib_snmp:

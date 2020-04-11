@@ -201,7 +201,7 @@ class DocInline(object):
                 else:
                     data[f] = self.clean_fields[f].clean(data[f])
         # Clone data
-        return dict((str(k), data[k]) for k in data)
+        return {str(k): data[k] for k in data}
 
     def cleaned_query(self, q):
         nq = {}
@@ -293,7 +293,7 @@ class DocInline(object):
         Returns a list of requested object objects
         """
         # Todo: Fix
-        q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -347,7 +347,7 @@ class DocInline(object):
             # Exclude callable values from query
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
-            qattrs = dict((k, attrs[k]) for k in attrs if not callable(attrs[k]))
+            qattrs = {k: attrs[k] for k in attrs if not callable(attrs[k])}
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.app.render_json(

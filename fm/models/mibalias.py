@@ -43,7 +43,7 @@ class MIBAlias(Document):
         """
         if cls.cache is None:
             # Initialize cache
-            cls.cache = dict((a.rewrite_mib, a.to_mib) for a in cls.objects.all())
+            cls.cache = {a.rewrite_mib: a.to_mib for a in cls.objects.all()}
         # Lookup
         if "::" in name:
             mib, rest = name.split("::", 1)

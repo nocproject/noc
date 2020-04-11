@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.RG.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ class Script(BaseScript):
         # v = self.scripts.get_interface_status_ex()
         index = self.scripts.get_ifindexes()
         # index = self.get_ifindexes()
-        ifaces = dict((index[i], {"interface": i}) for i in index)
+        ifaces = {index[i]: {"interface": i} for i in index}
         # Apply ifAdminStatus
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus

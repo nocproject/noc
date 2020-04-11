@@ -104,7 +104,7 @@ class RuleSet(object):
             EventClassificationRule.objects.filter(name=config.classifier.default_rule).first(),
         )
         # Apply lookup solution
-        self.rules = dict((k, self.lookup_cls(rules[k])) for k in rules)
+        self.rules = {k: self.lookup_cls(rules[k]) for k in rules}
         logger.info("%d rules are loaded in the %d chains", n, len(self.rules))
         #
         self.load_enumerations()

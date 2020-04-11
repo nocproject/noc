@@ -67,7 +67,7 @@ class VPNCheck(DiscoveryCheck):
         """
         # Get existing VRFs
         self.logger.debug("Getting VRFs to synchronize")
-        vrfs = dict((vrf.vpn_id, vrf) for vrf in VRF.objects.filter(vpn_id__in=list(vpns)))
+        vrfs = {vrf.vpn_id: vrf for vrf in VRF.objects.filter(vpn_id__in=list(vpns))}
         #
         seen = set()
         # Apply changes

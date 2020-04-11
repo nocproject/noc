@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Parse and load FIAS data
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -281,7 +281,7 @@ class FIASParser(AddressParser):
                     if self.oktmo_codes:
                         if not self.check_oktmo(r.oktmo):
                             continue
-                    bd = dict((k, str(r[k]).strip()) for k in t._meta.fields)
+                    bd = {k: str(r[k]).strip() for k in t._meta.fields}
                     houses.insert(bd)
                     # Get house from base
                     b = Building.objects.filter(data__FIAS_HOUSEGUID=r.houseguid).first()

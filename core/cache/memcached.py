@@ -97,15 +97,14 @@ class MemcachedCache(BaseCache):
                 r = None
         if r:
             m = dict(zip(k, keys))
-            return dict((m[k], r[k]) for k in r)
-        else:
-            return None
+            return {m[k]: r[k] for k in r}
+        return None
 
     def set_many(self, data, ttl=None, version=None):
         ttl = ttl or config.memcached.default_ttl
         with self.pool.reserve(block=True) as cache:
             try:
-                cache.set_multi(dict((self.make_key(k, version), data[k]) for k in data), ttl)
+                cache.set_multi({self.make_key(k, version): data[k] for k in data}, ttl)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "memcache_set_many_failed")] += 1
 

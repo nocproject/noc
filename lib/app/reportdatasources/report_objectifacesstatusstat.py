@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportObjectIfacesTypeStat datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -81,5 +81,3 @@ class ReportObjectIfacesStatusStat(BaseReportColumn):
                 r[v["_id"]["managed_object"]][self.ATTRS.index(c)] = v["count"]
         for val in r:
             yield val, r[val]
-        # return r
-        # return dict((v["_id"]["managed_object"], v["count"]) for v in value["result"])

@@ -647,12 +647,12 @@ class CorrelatorService(Service):
 
         self.logger.debug("[%s] Topology RCA", alarm.id)
         # Get neighboring alarms
-        neighbor_alarms = dict(
-            (a.managed_object.id, a)
+        neighbor_alarms = {
+            a.managed_object.id: a
             for a in ActiveAlarm.objects.filter(
                 alarm_class=alarm.alarm_class.id, rca_neighbors__in=[alarm.managed_object.id]
             )
-        )
+        }
         # Add current alarm to corellate downlink alarms properly
         neighbor_alarms[alarm.managed_object.id] = alarm
         # Correlate current alarm

@@ -35,7 +35,7 @@ class SummaryItem(EmbeddedDocument):
         """
         Convert a list of summary items to dict profile -> summary
         """
-        return dict((r.profile, r.summary) for r in items)
+        return {r.profile: r.summary for r in items}
 
     @classmethod
     def dict_to_items(cls, d):
@@ -54,7 +54,7 @@ class ObjectSummaryItem(EmbeddedDocument):
         """
         Convert a list of summary items to dict profile -> summary
         """
-        return dict((r.profile, r.summary) for r in items)
+        return {r.profile: r.summary for r in items}
 
     @classmethod
     def dict_to_items(cls, d):
@@ -106,14 +106,14 @@ class ServiceSummary(Document):
                 d1[k] = d1.get(k, 0) + d2[k]
 
         # service -> interface bindings
-        svc_interface = dict(
-            (x["service"], x["_id"])
+        svc_interface = {
+            x["service"]: x["_id"]
             for x in Interface._get_collection().find(
                 {"managed_object": managed_object, "service": {"$exists": True}},
                 {"_id": 1, "service": 1},
                 comment="[servicesummary.build_summary_for_object] Getting services for interfaces",
             )
-        )
+        }
         # Iterate over object's services
         # And walk underlying tree
         ri = {}
@@ -136,7 +136,7 @@ class ServiceSummary(Document):
                     {"$group": {"_id": "$profile", "total": {"$sum": 1}}},
                 ]
             )
-            subscriber_profiles = dict((x["_id"], x["total"]) for x in ra)
+            subscriber_profiles = {x["_id"]: x["total"] for x in ra}
             # Bind to interface
             # None for unbound services
             iface = svc_interface.get(svc["_id"])
@@ -164,7 +164,7 @@ class ServiceSummary(Document):
         from noc.inv.models.networksegment import NetworkSegment
 
         def to_dict(v):
-            return dict((r["profile"], r["summary"]) for r in v)
+            return {r["profile"]: r["summary"] for r in v}
 
         def to_list(v):
             return [{"profile": k, "summary": v[k]} for k in sorted(v)]
@@ -174,14 +174,14 @@ class ServiceSummary(Document):
         coll = ServiceSummary._get_collection()
         bulk = []
         # Get existing summary
-        old_summary = dict(
-            (x["interface"], x)
+        old_summary = {
+            x["interface"]: x
             for x in coll.find(
                 {"managed_object": managed_object},
                 {"_id": 1, "interface": 1, "service": 1, "subscriber": 1},
                 comment="[servicesummary._refresh_object] Refresh summary of services for managed object",
             )
-        )
+        }
         # Get actual summary
         new_summary = ServiceSummary.build_summary_for_object(managed_object)
         # Merge summaries
@@ -236,7 +236,7 @@ class ServiceSummary(Document):
     @classmethod
     def get_object_summary(cls, managed_object):
         def to_dict(v):
-            return dict((r["profile"], r["summary"]) for r in v)
+            return {r["profile"]: r["summary"] for r in v}
 
         if hasattr(managed_object, "id"):
             managed_object = managed_object.id
@@ -267,7 +267,7 @@ class ServiceSummary(Document):
     @classmethod
     def get_objects_summary(cls, managed_objects):
         def to_dict(v):
-            return dict((r["profile"], r["summary"]) for r in v)
+            return {r["profile"]: r["summary"] for r in v}
 
         kk = {}
         for ss in ServiceSummary._get_collection().find(

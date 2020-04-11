@@ -54,12 +54,12 @@ class InterfaceStatusCheck(DiscoveryCheck):
             self.logger.info("No interfaces discovered. " "Skipping interface status check")
             return
         self.logger.info("Checking interface statuses")
-        interfaces = dict(
-            (i.name, i)
+        interfaces = {
+            i.name: i
             for i in Interface.objects.filter(
                 managed_object=self.object.id, type="physical", profile__in=self.get_profiles(None),
             ).read_preference(ReadPreference.SECONDARY_PREFERRED)
-        )
+        }
         if not interfaces:
             self.logger.info("No interfaces with status discovery enabled. Skipping")
             return

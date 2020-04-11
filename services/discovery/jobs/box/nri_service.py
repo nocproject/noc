@@ -47,9 +47,9 @@ class NRIServiceCheck(DiscoveryCheck):
             )
         ]
         # nri_port -> service_id
-        smap = dict((s["nri_port"], s["_id"]) for s in slist)
+        smap = {s["nri_port"]: s["_id"] for s in slist}
         # service id -> service profile
-        prof_map = dict((s["_id"], ServiceProfile.get_by_id(s["profile"])) for s in slist)
+        prof_map = {s["_id"]: ServiceProfile.get_by_id(s["profile"]) for s in slist}
         icol = Interface._get_collection()
         nmap = {}
         bulk = []

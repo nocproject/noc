@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportObjectHostname datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -68,9 +68,9 @@ class ReportObjectCaps(BaseReportColumn):
                 )
             )
             for v in value:
-                r = dict(
-                    ("c_%s" % l["item"], l["val"])
+                r = {
+                    "c_%s" % l["item"]: l["val"]
                     for l in v["cap"]
                     if "c_%s" % l["item"] in self.ATTRS
-                )
+                }
                 yield v["_id"], Caps(**r)

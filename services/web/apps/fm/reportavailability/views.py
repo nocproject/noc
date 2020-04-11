@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportavailability
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ class ReportAvailabilityApplication(SimpleReport):
             stop = o.stop if o.stop else now
             outages[o.object] += (stop - start).total_seconds()
         td = d.total_seconds()  # Normalize to percents
-        return dict((o, (td - outages[o]) * 100.0 / td) for o in outages)
+        return {o: (td - outages[o]) * 100.0 / td for o in outages}
 
     @staticmethod
     def get_availability(start_date, stop_date, skip_zero_avail=False):
@@ -91,10 +91,10 @@ class ReportAvailabilityApplication(SimpleReport):
                 continue
             outages[o.object] += [(stop - start).total_seconds()]
         # Normalize to percents
-        return dict(
-            (o, ((td - sum(outages[o])) * 100.0 / td, int(sum(outages[o])), len(outages[o])))
+        return {
+            o: ((td - sum(outages[o])) * 100.0 / td, int(sum(outages[o])), len(outages[o]))
             for o in outages
-        )
+        }
 
     @staticmethod
     def get_reboots(start_date=None, stop_date=None):
@@ -110,7 +110,7 @@ class ReportAvailabilityApplication(SimpleReport):
             .aggregate(pipeline)
         )
         # data = data["result"]
-        return dict((rb["_id"], rb["count"]) for rb in data)
+        return {rb["_id"]: rb["count"] for rb in data}
 
     def get_data(
         self,

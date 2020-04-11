@@ -314,10 +314,10 @@ class RawDictField(DictField):
             raise ValidationError("Only dictionaries may be used in a RawDictField")
 
     def to_python(self, value):
-        return dict(
-            (k.replace(ESC1, ".").replace(ESC2, "$").replace("\uff0e", "."), v)
+        return {
+            k.replace(ESC1, ".").replace(ESC2, "$").replace("\uff0e", "."): v
             for k, v in value.items()
-        )
+        }
 
     def to_mongo(self, value):
-        return dict((k.replace(".", ESC1).replace("$", ESC2), v) for k, v in value.items())
+        return {k.replace(".", ESC1).replace("$", ESC2): v for k, v in value.items()}

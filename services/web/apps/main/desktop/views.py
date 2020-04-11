@@ -261,7 +261,7 @@ class DesktopApplication(ExtApplication):
         """
         Change user's credentials if allowed by current backend
         """
-        credentials = dict((str(k), v) for k, v in request.POST.items())
+        credentials = {str(k): v for k, v in request.POST.items()}
         credentials["user"] = request.user.username
         client = open_sync_rpc("login", calling_service="web")
         try:
@@ -293,7 +293,7 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        r = dict((r.key, r.value) for r in UserState.objects.filter(user_id=uid))
+        r = {r.key: r.value for r in UserState.objects.filter(user_id=uid)}
         return r
 
     @view(method=["DELETE"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)

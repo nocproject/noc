@@ -166,7 +166,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if obj_profile:
             mos = mos.filter(object_profile=obj_profile)
-        mos_id = dict((mo.id, mo) for mo in mos)
+        mos_id = {mo.id: mo for mo in mos}
         report = ReportPendingLinks(
             list(mos_id),
             ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")),

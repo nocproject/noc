@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.SwOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,13 +44,9 @@ class Script(BaseScript):
         if sfpo + sfp != prt:
             raise self.UnexpectedResultError("prt=%d sfp=%d sfpo=%d" % (prt, sfp, sfpo))
 
-        BITS = dict((i, 2 ** i) for i in range(self.PORT_RANGE))
-        oper_statuses = dict(
-            (i, bool(int(links["lnk"], 16) & BITS[i])) for i in range(self.PORT_RANGE)
-        )
-        admin_statuses = dict(
-            (i, bool(int(links["an"], 16) & BITS[i])) for i in range(self.PORT_RANGE)
-        )
+        BITS = {i: 2 ** i for i in range(self.PORT_RANGE)}
+        oper_statuses = {i: bool(int(links["lnk"], 16) & BITS[i]) for i in range(self.PORT_RANGE)}
+        admin_statuses = {i: bool(int(links["an"], 16) & BITS[i]) for i in range(self.PORT_RANGE)}
 
         for port in range(1, prt + 1):
             if port <= sfpo:
@@ -89,10 +85,9 @@ class Script(BaseScript):
                         (i, bool(int(vlan["mbr"], 16) & BITS[i])) for i in range(self.PORT_RANGE)
                     )
                 else:
-                    ports = dict(
-                        (i, bool(int(vlan["prt"][i], 16) & BITS[i]))
-                        for i in range(len(vlan["prt"]))
-                    )
+                    ports = {
+                        i: bool(int(vlan["prt"][i], 16) & BITS[i]) for i in range(len(vlan["prt"]))
+                    }
                 if ports[port - 1]:
                     tagged_vlans += [vid]
             untagged = int(fwds["dvid"][port - 1], 16)

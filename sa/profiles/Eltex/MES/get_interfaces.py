@@ -128,14 +128,14 @@ class Script(BaseScript):
                 s[name] = f(v)
 
     def get_ip_ifaces(self):
-        ip_iface = dict(
-            (l, ".".join(o.rsplit(".")[-4:]))
+        ip_iface = {
+            l: ".".join(o.rsplit(".")[-4:])
             for o, l in self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False)
-        )
-        ip_mask = dict(
-            (".".join(o.rsplit(".")[-4:]), l)
+        }
+        ip_mask = {
+            ".".join(o.rsplit(".")[-4:]): l
             for o, l in self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False)
-        )
+        }
         r = {}
         for ip in ip_iface:
             r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
@@ -165,23 +165,20 @@ class Script(BaseScript):
         # Apply PhysAddress
         self.apply_table(ifaces, "IF-MIB::ifPhysAddress", "mac_address")
         """
-        ifaces = dict(
-            (
-                i["ifindex"],
-                {
-                    "interface": i["interface"],
-                    "admin_status": i["admin_status"],
-                    "oper_status": i["oper_status"],
-                    "mac_address": i["mac"],
-                },
-            )
+        ifaces = {
+            i["ifindex"]: {
+                "interface": i["interface"],
+                "admin_status": i["admin_status"],
+                "oper_status": i["oper_status"],
+                "mac_address": i["mac"],
+            }
             for i in self.scripts.get_interface_properties(
                 enable_ifindex=True,
                 enable_interface_mac=True,
                 enable_admin_status=True,
                 enable_oper_status=True,
             )
-        )
+        }
         self.apply_table(ifaces, "IF-MIB::ifType", "type")
         self.apply_table(ifaces, "IF-MIB::ifSpeed", "speed")
         self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")

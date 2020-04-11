@@ -449,7 +449,7 @@ class ClassifierService(Service):
                 return
             # Find matched event class
             c_vars = event.raw_vars.copy()
-            c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
+            c_vars.update({k: fm_unescape(resolved_vars[k]) for k in resolved_vars})
             rule, vars = self.ruleset.find_rule(event, c_vars)
             if rule is None:
                 # Something goes wrong.

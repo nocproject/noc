@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Migrate ManagedObject Termination Groups to Resource Groups
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,12 +29,12 @@ class Migration(BaseMigration):
             )
         ]
         mdb = self.mongo_db
-        rg_map = dict(
-            (x["_legacy_id"], str(x["_id"]))
+        rg_map = {
+            x["_legacy_id"]: str(x["_id"])
             for x in mdb.resourcegroups.find(
                 {"_legacy_id": {"$exists": True}}, {"_id": 1, "_legacy_id": 1}
             )
-        )
+        }
         # Append to resource groups AS clients
         for tg_id in tg_ids:
             self.db.execute(

@@ -217,12 +217,12 @@ class ExtDocApplication(ExtApplication):
         :rtype: dict
         """
         # Strip ignored fields and convert empty strings to None
-        data = dict(
-            (str(k), data[k] if data[k] != "" else None)
+        data = {
+            str(k): data[k] if data[k] != "" else None
             for k in data
             if k not in self.ignored_fields
             and self.has_field_editable(k)  # Protect individually fields
-        )
+        }
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
             for f in self.secret_fields:
@@ -362,7 +362,7 @@ class ExtDocApplication(ExtApplication):
 
         if not self.parent_field:
             return None
-        q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         model = self.parent_model or self.model
         parent = q.get("parent")
         if not parent:
@@ -392,7 +392,7 @@ class ExtDocApplication(ExtApplication):
             attrs["uuid"] = uuid.uuid4()
         # Check for duplicates
         if self.unique_fields:
-            q = dict((k, attrs[k]) for k in self.unique_fields if k in attrs)
+            q = {k: attrs[k] for k in self.unique_fields if k in attrs}
             if q:
                 if self.queryset(request).filter(**q).first():
                     return self.response(status=self.CONFLICT)

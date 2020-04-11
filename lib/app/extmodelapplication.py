@@ -221,12 +221,12 @@ class ExtModelApplication(ExtApplication):
         :rtype: dict
         """
         # Strip ignored fields and convert empty strings to None
-        data = dict(
-            (str(k), data[k] if data[k] != "" else None)
+        data = {
+            str(k): data[k] if data[k] != "" else None
             for k in data
             if k not in self.ignored_fields
             and self.has_field_editable(k)  # Protect individually fields
-        )
+        }
         # Protect sensitive fields
         if self.secret_fields and not self.has_secret():
             for f in self.secret_fields:
@@ -552,7 +552,7 @@ class ExtModelApplication(ExtApplication):
             # Exclude callable values from query
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
-            qattrs = dict((k, attrs[k]) for k in attrs if not callable(attrs[k]))
+            qattrs = {k: attrs[k] for k in attrs if not callable(attrs[k])}
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.render_json(

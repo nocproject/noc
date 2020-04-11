@@ -324,7 +324,7 @@ class MapApplication(ExtApplication):
             return r
 
         # Mark all as unknown
-        r = dict((o, self.ST_UNKNOWN) for o in objects)
+        r = {o: self.ST_UNKNOWN for o in objects}
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
         mo = get_maintenance(objects)

@@ -105,7 +105,7 @@ class AlarmEscalation(Document):
 
     def get_pre_reason(self, tt_system):
         if not hasattr(self, "_prc"):
-            self._prc = dict((r.tt_system.id, r.pre_reason) for r in self.pre_reasons)
+            self._prc = {r.tt_system.id: r.pre_reason for r in self.pre_reasons}
         return self._prc.get(tt_system.id)
 
     @classmethod

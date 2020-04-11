@@ -94,9 +94,7 @@ class BaseLoader(object):
         self.c_change = 0
         self.c_delete = 0
         # Build clean map
-        self.clean_map = dict(
-            (n, self.clean_str) for n in self.fields
-        )  # field name -> clean function
+        self.clean_map = {n: self.clean_str for n in self.fields}  # field name -> clean function
         self.pending_deletes = []  # (id, string)
         self.reffered_errors = []  # (id, string)
         if self.is_document:
@@ -486,7 +484,7 @@ class BaseLoader(object):
         """
         Cleanup row and return a dict of field name -> value
         """
-        r = dict((k, self.clean_map[k](v)) for k, v in zip(self.fields, row))
+        r = {k: self.clean_map[k](v) for k, v in zip(self.fields, row)}
         # Fill integration fields
         r["remote_system"] = self.system.remote_system
         r["remote_id"] = self.clean_str(row[0])

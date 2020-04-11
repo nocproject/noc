@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Collection utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -370,7 +370,7 @@ class Collection(object):
             changed = True
         # Save state
         if changed:
-            state = dict((u, cdata[u].hash) for u in sorted(cdata))
+            state = {u: cdata[u].hash for u in sorted(cdata)}
             self.save_state(state)
 
     def fix_uuids(self):

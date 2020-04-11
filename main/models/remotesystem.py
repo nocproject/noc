@@ -121,7 +121,7 @@ class RemoteSystem(Document):
     @property
     def config(self):
         if not hasattr(self, "_config"):
-            self._config = dict((e.key, e.value) for e in self.environment)
+            self._config = {e.key: e.value for e in self.environment}
         return self._config
 
     def get_handler(self):

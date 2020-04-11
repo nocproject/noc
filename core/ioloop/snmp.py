@@ -62,7 +62,7 @@ def snmp_get(
     if isinstance(oids, str):
         oids = [oids]
     elif isinstance(oids, dict):
-        oid_map = dict((oids[k], k) for k in oids)
+        oid_map = {oids[k]: k for k in oids}
         oids = list(oids.values())
     else:
         raise ValueError("oids must be either string or dict")
@@ -131,7 +131,7 @@ def snmp_get(
             try:
                 new_result = yield snmp_get(
                     address=address,
-                    oids=dict((k, k) for k in new_oids),
+                    oids={k: k for k in new_oids},
                     port=port,
                     community=community,
                     version=version,

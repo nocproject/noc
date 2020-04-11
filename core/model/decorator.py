@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Various model decorators
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ def _get_field_snapshot(sender, instance):
             return getattr(instance, n)
         return nv
 
-    return dict((f.name, g(f)) for f in sender._meta.local_fields)
+    return {f.name: g(f) for f in sender._meta.local_fields}
 
 
 def _on_model_save_handler(sender, instance, *args, **kwargs):

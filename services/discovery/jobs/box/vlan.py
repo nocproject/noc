@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vlan check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -167,10 +167,10 @@ class VLANCheck(PolicyDiscoveryCheck):
         self.logger.info(
             "Bulk fetching vlans from segments: %s", ",".join(s.name for s in segments)
         )
-        return dict(
-            ((v.segment, v.vlan), v)
+        return {
+            (v.segment, v.vlan): v
             for v in VLAN.objects.filter(segment__in=[s.id for s in segments])
-        )
+        }
 
     def ensure_vlans(self, vlans):
         """

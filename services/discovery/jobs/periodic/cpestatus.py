@@ -63,14 +63,14 @@ class CPEStatusCheck(DiscoveryCheck):
         Get full CPE attributes from equipment
         :return: dict of global_id -> status
         """
-        return dict((x["global_id"], x) for x in self.object.scripts.get_cpe())
+        return {x["global_id"]: x for x in self.object.scripts.get_cpe()}
 
     def get_current_statuses(self):
         """
         Get current statuses from equipment
         :return: dict of global_id -> status
         """
-        return dict((x["global_id"], x) for x in self.object.scripts.get_cpe_status())
+        return {x["global_id"]: x for x in self.object.scripts.get_cpe_status()}
 
     def get_last_statuses(self, data):
         """
@@ -87,7 +87,7 @@ class CPEStatusCheck(DiscoveryCheck):
             q = {"$or": [q, {"global_id": gids[0]}]}
         elif len(gids) > 1:
             q = {"$or": [q, {"global_id": {"$in": gids}}]}
-        return dict((x["global_id"], x) for x in CPEStatus._get_collection().find(q))
+        return {x["global_id"]: x for x in CPEStatus._get_collection().find(q)}
 
     def apply_changes(self, current, last):
         """

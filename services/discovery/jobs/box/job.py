@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Box Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -59,8 +59,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
     # Store context
     context_version = 1
 
-    TOPOLOGY_METHODS = dict(
-        (m.name, m)
+    TOPOLOGY_METHODS = {
+        m.name: m
         for m in [
             OAMCheck,
             LACPCheck,
@@ -74,7 +74,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             STPCheck,
             XMACCheck,
         ]
-    )
+    }
 
     is_box = True
 

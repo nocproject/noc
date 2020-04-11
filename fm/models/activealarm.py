@@ -497,12 +497,12 @@ class ActiveAlarm(Document):
         def list_to_dict(summary):
             if not summary:
                 return {}
-            return dict((d["profile"], d["summary"]) for d in summary)
+            return {d["profile"]: d["summary"] for d in summary}
 
         def e_list_to_dict(summary):
             if not summary:
                 return {}
-            return dict((d.profile, d.summary) for d in summary)
+            return {d.profile: d.summary for d in summary}
 
         def dict_to_list(d):
             return [{"profile": k, "summary": d[k]} for k in sorted(d)]
