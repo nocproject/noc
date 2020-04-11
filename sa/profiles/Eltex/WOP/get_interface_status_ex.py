@@ -12,6 +12,7 @@ import codecs
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -76,7 +77,7 @@ class Script(BaseScript):
                 ssid = value["ssid"].replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
-                    ssid = codecs.decode(ssid, "hex")
+                    ssid = smart_text(codecs.decode(ssid, "hex"))
                 bss = self.get_bss_status(value["bss"])
                 if not bss:
                     continue
