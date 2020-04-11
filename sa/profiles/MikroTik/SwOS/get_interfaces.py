@@ -14,6 +14,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.core.script.http.base import HTTPError
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -60,9 +61,9 @@ class Script(BaseScript):
                 else:
                     ifname = "SFP"
             if links.get("nm"):
-                descr = codecs.decode(links["nm"][port - 1], "hex")
+                descr = smart_text(codecs.decode(links["nm"][port - 1], "hex"))
             elif links.get("nm%d" % (port - 1)):
-                descr = codecs.decode(links["nm%d" % (port - 1)], "hex")
+                descr = smart_text(codecs.decode(links["nm%d" % (port - 1)], "hex"))
             else:
                 descr = None
             iface = {
@@ -90,7 +91,7 @@ class Script(BaseScript):
                 else:
                     ports = dict(
                         (i, bool(int(vlan["prt"][i], 16) & BITS[i]))
-                        for i in xrange(len(vlan["prt"]))
+                        for i in range(len(vlan["prt"]))
                     )
                 if ports[port - 1]:
                     tagged_vlans += [vid]

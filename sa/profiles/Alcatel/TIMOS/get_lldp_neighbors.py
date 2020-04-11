@@ -13,6 +13,7 @@ import codecs
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -71,14 +72,14 @@ class Script(BaseScript):
         if port_type == "5" and "\n " in port:
             remote_port = port.replace("\n                        ", "")
             remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = codecs.decode(remote_port, "hex")
+            remote_port = smart_text(codecs.decode(remote_port, "hex"))
         elif port_type == "5" and "\n" in port:
             remote_port = port.replace("\n", "")
             remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = codecs.decode(remote_port, "hex")
+            remote_port = smart_text(codecs.decode(remote_port, "hex"))
         elif port_type == "5" and "\n " not in port:
             remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = codecs.decode(remote_port, "hex")
+            remote_port = smart_text(codecs.decode(remote_port, "hex"))
         elif port_type == "7":
             return port.replace("\n", "")
         return remote_port
