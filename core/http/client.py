@@ -15,9 +15,9 @@ import zlib
 import time
 import struct
 import codecs
+from urllib.parse import urlparse
 
 # Third-party modules
-from six.moves.urllib.parse import urlparse
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream

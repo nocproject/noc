@@ -11,9 +11,6 @@ import re
 import logging
 import types
 
-# Third-party modules
-import six
-
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -260,9 +257,7 @@ class Rule(object):
         cc += ["rule.match = types.MethodType(match, rule)"]
         self.code = "\n".join(cc)
         code = compile(self.code, "<string>", "exec")
-        six.exec_(
-            code, {"rule": self, "types": types, "logging": logging, "fm_unescape": fm_unescape}
-        )
+        exec(code, {"rule": self, "types": types, "logging": logging, "fm_unescape": fm_unescape})
 
     def clone(self, rules):
         """

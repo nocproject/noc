@@ -8,11 +8,11 @@
 
 # Python modules
 import time
+from urllib.parse import urlencode
+from urllib.error import URLError
+from urllib.request import urlopen
 
 # Third-party modules
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib.request import urlopen
-from six.moves.urllib.error import URLError
 from django.db import models
 
 # NOC modules

@@ -2,11 +2,10 @@
 # ----------------------------------------------------------------------
 # dnszonerecord set type
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
 # NOC modules
 from noc.core.migration.base import BaseMigration
 

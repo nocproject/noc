@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,9 @@
 import logging
 import datetime
 import csv
+from io import StringIO
 
 # Third-party modules
-from six import StringIO, text_type
 from django.http import HttpResponse
 from pymongo import ReadPreference
 import xlsxwriter
@@ -147,7 +147,7 @@ class ReportLinkDetailApplication(ExtApplication):
             def qe(v):
                 if v is None:
                     return ""
-                if isinstance(v, text_type):
+                if isinstance(v, str):
                     return v.encode("utf-8")
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")

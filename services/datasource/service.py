@@ -3,11 +3,10 @@
 # ----------------------------------------------------------------------
 # datasource service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
 # NOC modules
 from noc.core.service.base import Service
 from noc.services.datasource.handler import DataSourceRequestHandler

@@ -10,7 +10,6 @@
 import math
 
 # Third-party modules
-from six.moves import zip
 import networkx as nx
 import numpy as np
 

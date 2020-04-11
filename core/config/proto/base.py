@@ -2,12 +2,12 @@
 # ----------------------------------------------------------------------
 # Base config protocol class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from six.moves.urllib.parse import unquote, urlparse
+# Python modules
+from urllib.parse import unquote, urlparse
 
 
 class BaseProtocol(object):

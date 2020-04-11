@@ -6,8 +6,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from six.moves.configparser import RawConfigParser
+# Python modules
+from configparser import RawConfigParser
 
 # NOC modules
 from .base import BaseTokenizer

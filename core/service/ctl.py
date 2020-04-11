@@ -2,15 +2,13 @@
 # ----------------------------------------------------------------------
 # Service control api
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
-
-# Third-party modules
-import six
+from io import StringIO
 
 # NOC modules
 from noc.config import config
@@ -54,7 +52,7 @@ class CtlAPI(API):
         import yappi
 
         i = yappi.get_thread_stats()
-        out = six.StringIO()
+        out = StringIO()
         i.print_all(out=out)
         return out.getvalue()
 
@@ -66,7 +64,7 @@ class CtlAPI(API):
         import yappi
 
         i = yappi.get_func_stats()
-        out = six.StringIO()
+        out = StringIO()
         i.print_all(
             out=out,
             columns={

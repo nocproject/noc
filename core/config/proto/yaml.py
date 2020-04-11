@@ -8,9 +8,9 @@
 
 # Python modules
 import os
+from itertools import zip_longest
 
 # Third-party modules
-from six.moves import zip_longest
 import yaml
 
 # NOC modules

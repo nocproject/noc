@@ -8,10 +8,7 @@
 
 # Python modules
 import csv
-
-# Third-party modules
-import six
-from six.moves import zip
+from io import StringIO
 
 # Third-party modules
 from django.db import models
@@ -83,7 +80,7 @@ def csv_export(model, queryset=None, first_row_only=False):
     """
     Export to CSV
     """
-    io = six.StringIO()
+    io = StringIO()
     writer = csv.writer(io)
     fields = get_model_fields(model)
     # Write header

@@ -12,21 +12,19 @@ import random
 import signal
 import sys
 from threading import Lock, Event
-
 import datetime
 import os
-import six
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
 import tornado.locks
 
+# NOC modules
 from noc.config import config
 from noc.core.perf import metrics
-
-# Python modules
+from noc.core.comp import reraise
 from .error import ResolutionError
 
 
@@ -180,7 +178,7 @@ class DCSBase(object):
         self.ioloop.add_callback(_resolve)
         event.wait()
         if error:
-            six.reraise(*error[0])
+            reraise(*error[0])
         else:
             return result[0]
 

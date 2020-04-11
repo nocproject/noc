@@ -2,14 +2,13 @@
 # ----------------------------------------------------------------------
 # Service command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import argparse
 
-# Third-party modules
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect

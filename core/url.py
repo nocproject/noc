@@ -2,15 +2,13 @@
 # ---------------------------------------------------------------------
 # URL Processing functions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-from six.moves.urllib.parse import unquote as urllib_unquote
+from urllib.parse import unquote as urllib_unquote
 
 rx_url = re.compile(
     r"^(?P<scheme>[^:]+)://(?:(?P<user>[^:]+):(?P<password>[^@]+)@)(?P<host>[^/:]+)(?::(?P<port>\d+))?(?P<path>.*)$"

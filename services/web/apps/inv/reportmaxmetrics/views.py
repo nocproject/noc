@@ -11,10 +11,10 @@ import datetime
 from collections import defaultdict, Iterable
 from collections import namedtuple
 import csv
+from io import BytesIO
 
 # Third-party modules
 import xlsxwriter
-from six import BytesIO
 from django.http import HttpResponse
 
 # NOC modules

@@ -2,14 +2,14 @@
 # ----------------------------------------------------------------------
 # Test telnet module
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 
 # Third-party modules
 import pytest
-from six import BytesIO
+from io import BytesIO
 
 # NOC modules
 from noc.core.script.cli.telnet import TelnetParser

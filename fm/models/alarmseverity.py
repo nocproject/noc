@@ -11,7 +11,6 @@ from threading import Lock
 import operator
 
 # Third-party modules
-from six.moves import zip
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, UUIDField
 import cachetools

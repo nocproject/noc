@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Proxy settings
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ def setup_urllib_proxies():
     proxies = dict(
         (k, "%s://%s:%s" % (k, SYSTEM_PROXIES[k][0], SYSTEM_PROXIES[k][1])) for k in SYSTEM_PROXIES
     )
-    from six.moves.urllib.request import ProxyHandler, build_opener, install_opener
+    from urllib.request import ProxyHandler, build_opener, install_opener
 
     proxy_handler = ProxyHandler(proxies)
     opener = build_opener(proxy_handler)

@@ -9,9 +9,6 @@
 # Python modules
 import re
 
-# Third-party modules
-from six.moves import zip
-
 # NOC modiles
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors

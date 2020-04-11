@@ -10,10 +10,10 @@
 import re
 from itertools import dropwhile
 from collections import defaultdict
+from itertools import zip_longest
 
 # Third-party modules
 import numpy as np
-from six.moves import zip_longest, zip
 
 # NOC modules
 from noc.core.profile.base import BaseProfile

@@ -3,15 +3,13 @@
 # Vendor: Extreme
 # OS:     XOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import numpy as np
-
-# Third-party modules
-from six.moves import zip_longest
+from itertools import zip_longest
 
 # NOC modules
 from noc.core.profile.base import BaseProfile

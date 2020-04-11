@@ -8,9 +8,9 @@
 
 # Python modules
 import re
+from itertools import zip_longest
 
 # Third-party modules
-from six.moves import zip_longest
 from numpy import array
 from typing import List, Union, Iterable
 

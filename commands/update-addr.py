@@ -2,16 +2,14 @@
 # ---------------------------------------------------------------------
 # Update address database
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 import inspect
-
-# Third-party modules
-from six.moves.configparser import SafeConfigParser
+from configparser import SafeConfigParser
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError

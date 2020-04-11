@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # RTSP class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,9 @@
 import socket
 import datetime
 import os
+from urllib.request import parse_http_list, parse_keqv_list
 
 # Third-party modules
-from six.moves.urllib.request import parse_http_list, parse_keqv_list
 import tornado.ioloop
 import tornado.iostream
 import tornado.gen

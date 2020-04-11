@@ -11,7 +11,6 @@ from collections import defaultdict
 import operator
 
 # Third-party modules
-import six
 from typing import Optional, Iterable, List, Dict, Set, Tuple, DefaultDict, NamedTuple
 from bson import ObjectId
 
@@ -161,7 +160,7 @@ class KSPFinder(object):
                     break
                 obj_path.insert(0, goal_mo)
             full_path = []  # type: List[PathInfo]
-            for mo1, mo2 in six.moves.zip(obj_path, obj_path[1:]):
+            for mo1, mo2 in zip(obj_path, obj_path[1:]):
                 links = [link for link in self.mo_links[mo1.id] if mo2.id in link.linked_objects]
                 cost = min(link.l2_cost or 1 for link in links)
                 full_path += [PathInfo(mo1, mo2, links, cost)]

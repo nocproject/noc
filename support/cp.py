@@ -9,9 +9,9 @@
 # Python modules
 import logging
 import os
+from configparser import RawConfigParser
 
 # Third-party modules
-from six.moves.configparser import RawConfigParser
 import requests
 import ujson
 

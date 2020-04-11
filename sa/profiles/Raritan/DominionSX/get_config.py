@@ -2,15 +2,13 @@
 # ---------------------------------------------------------------------
 # Raritan.DominionSX.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
-
-# Third-party modules
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 # NOC modules
 from noc.core.script.base import BaseScript

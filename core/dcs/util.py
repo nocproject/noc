@@ -12,9 +12,9 @@ import sys
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import six
 
 # NOC modules
+from noc.core.comp import reraise
 from .loader import get_dcs_url, get_dcs_class
 
 
@@ -72,6 +72,6 @@ def resolve(
     finally:
         io_loop.close(all_fds=True)
     if error:
-        six.reraise(*error[0])
+        reraise(*error[0])
     else:
         return result[0]

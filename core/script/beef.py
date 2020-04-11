@@ -12,10 +12,10 @@ from collections import namedtuple
 import bisect
 import itertools
 import codecs
+from io import StringIO
 
 # Third-party modules
 import ujson
-import six
 from typing import Optional
 
 # NOC modules
@@ -141,7 +141,7 @@ class Beef(object):
     def compress_gzip(data):
         import gzip
 
-        f = six.StringIO()
+        f = StringIO()
         with gzip.GzipFile(mode="wb", compresslevel=9, fileobj=f) as z:
             z.write(data)
         return f.getvalue()
@@ -156,7 +156,7 @@ class Beef(object):
     def decompress_gzip(data):
         import gzip
 
-        f = six.StringIO(data)
+        f = StringIO(data)
         with gzip.GzipFile(mode="rb", compresslevel=9, fileobj=f) as z:
             return z.read()
 

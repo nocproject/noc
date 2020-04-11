@@ -11,9 +11,9 @@ import csv
 import decimal
 import pprint
 from functools import reduce
+from io import StringIO
 
 # Third-party modules
-import six
 from django.utils.dateformat import DateFormat
 
 # NOC modules
@@ -635,7 +635,7 @@ class TableSection(ReportSection):
         Return CSV representation of table
         :return:
         """
-        f = six.StringIO()
+        f = StringIO()
         writer = csv.writer(f, delimiter=delimiter)
         if self.enumerate:
             writer.writerow(["#"] + [c.title for c in self.columns])
@@ -663,7 +663,7 @@ class TableSection(ReportSection):
         Return CSV representation of table
         :return:
         """
-        f = six.StringIO()
+        f = StringIO()
         writer = csv.writer(f, delimiter=delimiter)
         section = "default"
         prefix = [mrf, section]

@@ -9,9 +9,7 @@
 # Python modules
 import ast
 import itertools
-
-# Third-party modules
-from six.moves import zip_longest
+from itertools import zip_longest
 
 CVAR_NAME = "_ctx"
 

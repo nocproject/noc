@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # datastream service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,9 +11,9 @@
 import threading
 import time
 import random
+from queue import Queue, Empty
 
 # Third-party modules
-from six.moves.queue import Queue, Empty as QueueEmpty
 import tornado.gen
 import tornado.locks
 import tornado.ioloop
@@ -121,7 +121,7 @@ class DataStreamService(Service):
         while True:
             try:
                 cb = queue.get(block=False)
-            except QueueEmpty:
+            except Empty:
                 break
             cb()
 

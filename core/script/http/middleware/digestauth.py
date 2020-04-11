@@ -2,17 +2,15 @@
 # ----------------------------------------------------------------------
 # HTTP Digest Auth Middleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import hashlib
 import os
-
-# Third-party modules
-from six.moves.urllib.parse import urlparse
-from six.moves.urllib.request import parse_http_list, parse_keqv_list
+from urllib.parse import urlparse
+from urllib.request import parse_http_list, parse_keqv_list
 
 # NOC modules
 from .base import BaseMiddleware

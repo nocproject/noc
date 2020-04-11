@@ -2,15 +2,12 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_ndp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-
-# Third-party modules
-from six.moves import zip
 
 # NOC modules
 from noc.core.script.base import BaseScript

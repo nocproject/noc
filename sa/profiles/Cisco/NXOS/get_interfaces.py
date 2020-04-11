@@ -10,9 +10,7 @@
 import re
 from collections import defaultdict
 import xml.etree.ElementTree as ElementTree
-
-# Third-party modules
-from six import StringIO
+from io import StringIO
 
 # NOC modules
 from noc.core.script.base import BaseScript

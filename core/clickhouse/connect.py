@@ -8,9 +8,7 @@
 
 # Python modules
 import random
-
-# Third-party modules
-from six.moves.urllib.parse import quote as urllib_quote
+from urllib.parse import quote as urllib_quote
 
 # NOC modules
 from noc.core.http.client import fetch_sync
