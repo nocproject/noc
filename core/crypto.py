@@ -14,7 +14,7 @@ import hashlib
 from typing import Optional
 
 # NOC modules
-from noc.core.comp import smart_bytes, bord, bchr, make_bytes
+from noc.core.comp import smart_bytes
 
 # Symbols used in salt
 ITOA64 = b"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -28,7 +28,7 @@ def gen_salt(salt_len):
     >>> len(gen_salt(10)) == 10
     True
     """
-    return make_bytes([random.choice(SALT_SYMBOLS) for _ in range(salt_len)])
+    return bytes([random.choice(SALT_SYMBOLS) for _ in range(salt_len)])
 
 
 def md5crypt(password: bytes, salt: Optional[bytes] = None, magic: bytes = b"$1$") -> bytes:
@@ -50,7 +50,7 @@ def md5crypt(password: bytes, salt: Optional[bytes] = None, magic: bytes = b"$1$
     # /* Then just as many characters of the MD5(pw,salt,pw) */
     mixin = hashlib.md5(smart_bytes(password + salt + password)).digest()
     for i in range(len(password)):
-        m.update(bchr(mixin[i % 16]))
+        m.update(bytes([mixin[i % 16]]))
     # /* Then something really weird... */
     # Also really broken, as far as I can tell.  -m
     i = len(password)
@@ -58,7 +58,7 @@ def md5crypt(password: bytes, salt: Optional[bytes] = None, magic: bytes = b"$1$
         if i & 1:
             m.update(b"\x00")
         else:
-            m.update(bchr(password[0]))
+            m.update(bytes([password[0]]))
         i >>= 1
     final = m.digest()
     # /* and now, just to make sure things don't run too fast */
@@ -80,12 +80,12 @@ def md5crypt(password: bytes, salt: Optional[bytes] = None, magic: bytes = b"$1$
     # This is the bit that uses to64() in the original code.
     rearranged = []
     for a, b, c in REARRANGED_BITS:
-        v = bord(final[a]) << 16 | bord(final[b]) << 8 | bord(final[c])
+        v = final[a] << 16 | final[b] << 8 | final[c]
         for i in range(4):
             rearranged += [ITOA64[v & 0x3F]]
             v >>= 6
-    v = bord(final[11])
+    v = final[11]
     for i in range(2):
         rearranged += [ITOA64[v & 0x3F]]
         v >>= 6
-    return magic + salt + b"$" + make_bytes(rearranged)
+    return magic + salt + b"$" + bytes(rearranged)

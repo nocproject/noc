@@ -13,7 +13,7 @@ import re
 from typing import Any, Optional, Union
 
 # NOC modules
-from noc.core.comp import smart_text, bord
+from noc.core.comp import smart_text
 
 
 rx_os_format = re.compile(
@@ -49,7 +49,7 @@ def render_tc_int(value: int, format: str) -> str:
 
 def render_tc_octetstring(value, format: Union[bytes, str]) -> str:
     if isinstance(value, bytes):
-        value = [bord(c) for c in value]
+        value = list(value)
     else:
         value = [ord(c) for c in value]
     r = ""
