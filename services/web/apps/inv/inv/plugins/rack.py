@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ class RackPlugin(InvPlugin):
     def get_data(self, request, o):
         r = {
             "id": str(o.id),
-            "rack": dict((k, o.get_data("rack", k)) for k in ("units", "width", "depth")),
+            "rack": {k: o.get_data("rack", k) for k in ("units", "width", "depth")},
             "content": [],
             "load": [],
         }

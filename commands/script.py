@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ./noc script
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -441,10 +441,10 @@ class JSONObject(object):
         from noc.sa.models.managedobject import Credentials
 
         return Credentials(
-            **dict(
-                (k, self.creds.get(k))
+            **{
+                k: self.creds.get(k)
                 for k in ("user", "password", "super_password", "snmp_ro", "snmp_rw")
-            )
+            }
         )
 
     def get_caps(self):

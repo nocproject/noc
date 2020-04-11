@@ -99,7 +99,7 @@ class ReportLinksDetail(object):
             )
         )
 
-        return dict((v["_id"], v["links"]) for v in value if v["_id"])
+        return {v["_id"]: v["links"] for v in value if v["_id"]}
 
     def __getitem__(self, item):
         return self.out.get(item, [])
@@ -251,8 +251,8 @@ class ReportLinkDetailApplication(ExtApplication):
         mos_id = list(mos.values_list("id", flat=True))
 
         rld = ReportLinksDetail(mos_id)
-        mo_resolv = dict(
-            (mo[0], mo[1:])
+        mo_resolv = {
+            mo[0]: mo[1:]
             for mo in ManagedObject.objects.filter().values_list(
                 "id",
                 "administrative_domain__name",
@@ -262,7 +262,7 @@ class ReportLinkDetailApplication(ExtApplication):
                 "platform",
                 "tags",
             )
-        )
+        }
 
         for link in rld.out:
             if len(rld.out[link]) != 2:

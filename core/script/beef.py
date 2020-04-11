@@ -286,7 +286,7 @@ class Beef(object):
 
     def get_mib_oid_values(self):
         if self.mib_oid_values is None:
-            self.mib_oid_values = dict((m.oid, m.value) for m in self.mib)
+            self.mib_oid_values = {m.oid: m.value for m in self.mib}
         return self.mib_oid_values
 
     def get_mib_value(self, oid: str) -> Optional[bytes]:

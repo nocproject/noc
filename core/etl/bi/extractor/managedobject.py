@@ -177,26 +177,26 @@ class ManagedObjectsExtractor(BaseExtractor):
                 {"$group": {"_id": "$managed_object", "total": {"$sum": 1}}},
             ]
         )
-        return dict((d["_id"], {"n_interfaces": d["total"]}) for d in r)
+        return {d["_id"]: {"n_interfaces": d["total"]} for d in r}
 
     def get_caps(self):
         # name -> id map
-        caps = dict(
-            (self.CAPS_MAP[d["name"]], d["_id"])
+        caps = {
+            self.CAPS_MAP[d["name"]]: d["_id"]
             for d in Capability._get_collection().find(
                 {"name": {"$in": list(self.CAPS_MAP)}}, {"_id": 1, "name": 1}
             )
-        )
+        }
         # object -> caps
-        add_expr = dict((c, {"$in": [caps[c], "$caps.capability"]}) for c in caps)
-        project_expr = dict((c, 1) for c in caps)
+        add_expr = {c: {"$in": [caps[c], "$caps.capability"]} for c in caps}
+        project_expr = {c: 1 for c in caps}
         project_expr["_id"] = 1
-        return dict(
-            (d["_id"], dict((x, d[x]) for x in d if x != "_id"))
+        return {
+            d["_id"]: {x: d[x] for x in d if x != "_id"}
             for d in ObjectCapabilities._get_collection().aggregate(
                 [{"$addFields": add_expr}, {"$project": project_expr}]
             )
-        )
+        }
 
     @staticmethod
     def get_mo_sn():

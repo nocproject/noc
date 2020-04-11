@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObjectData
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ class ObjectData(Document):
             if hasattr(obj, "id"):
                 obj = obj.id
             o += [obj]
-        uplinks = dict((obj, []) for obj in o)
+        uplinks = {obj: [] for obj in o}
         for d in ObjectData._get_collection().find({"_id": {"$in": o}}, {"_id": 1, "uplinks": 1}):
             uplinks[d["_id"]] = d.get("uplinks", [])
         return uplinks

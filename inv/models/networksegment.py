@@ -302,12 +302,12 @@ class NetworkSegment(Document):
         )
 
     def get_direct_summary(self):
-        objects = dict(
-            (d["object_profile"], d["count"])
+        objects = {
+            d["object_profile"]: d["count"]
             for d in self.managed_objects.values("object_profile")
             .annotate(count=Count("id"))
             .order_by("count")
-        )
+        }
         # Direct services
         mo_ids = self.managed_objects.values_list("id", flat=True)
         services, subscribers = ServiceSummary.get_direct_summary(mo_ids)

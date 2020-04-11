@@ -41,7 +41,7 @@ class OIDAlias(Document):
         """
         if cls.cache is None:
             # Initialize cache
-            cls.cache = dict((a.rewrite_oid, a.to_oid.split(".")) for a in cls.objects.all())
+            cls.cache = {a.rewrite_oid: a.to_oid.split(".") for a in cls.objects.all()}
         # Lookup
         l_oid = oid.split(".")
         rest = []

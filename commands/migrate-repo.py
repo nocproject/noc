@@ -4,7 +4,7 @@
 # migrate-repo
 # Migrate HG repo to GridVCS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ def import_file(repo, id, path):
 
 
 def migrate_dns():
-    files = dict((f.split(os.sep)[-1], f) for f in get_hg_files())
+    files = {f.split(os.sep)[-1]: f for f in get_hg_files()}
     c = connection.cursor()
     c.execute("SELECT id, name FROM dns_dnszone")
     for id, name in c:

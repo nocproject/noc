@@ -1814,7 +1814,7 @@ class MatchersProxy(object):
             version["image"] = self._object.software_image
         # Compile matchers
         matchers = self._object.get_profile().matchers
-        self._data = dict((m, match(version, matchers[m])) for m in matchers)
+        self._data = {m: match(version, matchers[m]) for m in matchers}
 
     def __getattr__(self, name):
         if self._data is None:

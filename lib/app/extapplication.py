@@ -96,7 +96,7 @@ class ExtApplication(Application):
         return ujson.loads(data)
 
     def deserialize_form(self, request):
-        return dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.POST.lists())
+        return {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
 
     def response(self, content="", status=200):
         if not isinstance(content, str):
@@ -144,9 +144,9 @@ class ExtApplication(Application):
             if self.site.is_json(request.META.get("CONTENT_TYPE")):
                 q = ujson.loads(request.body)
             else:
-                q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.POST.lists())
+                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
         else:
-            q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
+            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         limit = q.get(self.limit_param)
         if limit:
             try:

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Span handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -72,7 +72,7 @@ class SpanCard(BaseCard):
             )
         ]
         # Build hierarchy
-        smap = dict((s.id, s) for s in data)
+        smap = {s.id: s for s in data}
         root = None
         for s in data:
             if s.parent:

@@ -97,7 +97,7 @@ class RedisCache(BaseCache):
         except ignorable_redis_errors:
             metrics["error", ("type", "redis_get_many_failed")] += 1
             return None
-        return dict((k, self.deserialize(v)) for k, v in zip(keys, r))
+        return {k: self.deserialize(v) for k, v in zip(keys, r)}
 
     def set_many(self, data, ttl=None, version=None):
         ttl = ttl or config.redis.default_ttl

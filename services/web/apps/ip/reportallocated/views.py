@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Allocated Blocks Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ class ReportAllocated(SimpleReport):
             return r
 
         cf = CustomField.table_fields("ip_prefix")
-        cfn = dict((f.name, f) for f in cf)
+        cfn = {f.name: f for f in cf}
         # Prepare columns
         columns = ["Prefix", "State", "VC"]
         for f in cf:

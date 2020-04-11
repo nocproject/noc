@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.reportobjectsummary
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,10 +29,10 @@ class ReportObjectSummaryApplication(SimpleReport):
         while oms:
             chunk, oms = oms[:500], oms[500:]
             om_names.update(
-                dict(
-                    (x["_id"], x["name"])
+                {
+                    x["_id"]: x["name"]
                     for x in c.find({"_id": {"$in": chunk}}, {"_id": 1, "name": 1})
-                )
+                }
             )
         data = sorted(
             ([om_names[x["_id"]], x["total"]] for x in data if x["_id"] in om_names),

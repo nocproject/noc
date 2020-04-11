@@ -62,7 +62,7 @@ class MACVendor(Document):
                 vendor = vendor.strip()
                 new[oui] = vendor
         # Get old values
-        old = dict((d["_id"], d["vendor"]) for d in MACVendor._get_collection().find())
+        old = {d["_id"]: d["vendor"] for d in MACVendor._get_collection().find()}
         # Compare
         collection = MACVendor._get_collection()
         bulk = []

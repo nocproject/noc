@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -124,7 +124,7 @@ class Script(BaseScript):
             if rd:
                 rr["rd"] = rd
             # Get interface -> subinterfaces mapping
-            p_ifaces = dict((x, []) for x in set(i.split(".", 1)[0] for i in fi["interfaces"]))
+            p_ifaces = {x: [] for x in set(i.split(".", 1)[0] for i in fi["interfaces"])}
             for i in fi["interfaces"]:
                 p = i.split(".", 1)[0]
                 p_ifaces[p] += [i]

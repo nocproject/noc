@@ -388,7 +388,7 @@ class SNMP(object):
         self.set_timeout_limits(timeout_limits)
         while oids:
             chunk, oids = oids[:chunk_size], oids[chunk_size:]
-            chunk = dict((x, x) for x in chunk)
+            chunk = {x: x for x in chunk}
             try:
                 results.update(self.get(chunk))
             except self.TimeOutError as e:

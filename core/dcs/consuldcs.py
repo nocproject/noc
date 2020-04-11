@@ -108,17 +108,14 @@ class ConsulResolver(ResolverBase):
                 self.logger.debug(
                     "[%s] Index changed %d -> %d. Applying changes", self.name, old_index, index
                 )
-                r = dict(
-                    (
-                        str(svc["Service"]["ID"]),
-                        "%s:%s"
-                        % (
-                            str(svc["Service"]["Address"] or svc["Node"]["Address"]),
-                            str(svc["Service"]["Port"]),
-                        ),
+                r = {
+                    str(svc["Service"]["ID"]): "%s:%s"
+                    % (
+                        str(svc["Service"]["Address"] or svc["Node"]["Address"]),
+                        str(svc["Service"]["Port"]),
                     )
                     for svc in services
-                )
+                }
                 self.set_services(r)
             if not self.track:
                 break

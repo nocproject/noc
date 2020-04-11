@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Video Codecs Parameters
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,8 +28,8 @@ H264_PROFILES = [
     H264Profile("CAVLC 4:4:4 Intra", 44, None),
 ]
 
-_H264_PROFILE_BY_NAME = dict((p.name.lower(), p) for p in H264_PROFILES)
-_H264_PROFILE_BY_ID = dict(((p.id, p.constraint), p) for p in H264_PROFILES)
+_H264_PROFILE_BY_NAME = {p.name.lower(): p for p in H264_PROFILES}
+_H264_PROFILE_BY_ID = {(p.id, p.constraint): p for p in H264_PROFILES}
 
 
 def get_h264_profile_by_name(name):

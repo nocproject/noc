@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Macros Framework
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class BaseMacro(object):
         """
         if isinstance(args, dict):
             return args
-        return dict((m[0], m[2]) for m in rx_args.findall(args))
+        return {m[0]: m[2] for m in rx_args.findall(args)}
 
     @classmethod
     def expand(cls, args, text):

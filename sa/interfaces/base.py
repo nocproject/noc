@@ -357,9 +357,9 @@ class DictParameter(Parameter):
         super(DictParameter, self).__init__(required=required, default=default)
         self.attrs = attrs or {}
         self.truncate = truncate
-        self._defaults = dict(
-            (k, attrs[k].default) for k in self.attrs if self.attrs[k].default is not None
-        )
+        self._defaults = {
+            k: attrs[k].default for k in self.attrs if self.attrs[k].default is not None
+        }
         self._required_input = set(k for k in self.attrs if self.attrs[k].required)
 
     def clean(self, value):

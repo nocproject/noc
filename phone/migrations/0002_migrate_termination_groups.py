@@ -19,12 +19,12 @@ class Migration(BaseMigration):
     def migrate(self):
         # Get migrated termination groups, created by 0184 migration
         db = self.mongo_db
-        rg_map = dict(
-            (x["_legacy_id"], x["_id"])
+        rg_map = {
+            x["_legacy_id"]: x["_id"]
             for x in db.resourcegroups.find(
                 {"_legacy_id": {"$exists": True}}, {"_id": 1, "_legacy_id": 1}
             )
-        )
+        }
         # Apply Resource Groups
         for cname in ["noc.phoneranges", "noc.phonenumbers"]:
             coll = db[cname]

@@ -77,9 +77,9 @@ class MetaApplicator(BaseApplicator):
 
     def iter_interfaces_meta(self):
         # Get all interfaces
-        ifaces = dict(
-            (iface.name, iface) for iface in Interface.objects.filter(managed_object=self.object.id)
-        )
+        ifaces = {
+            iface.name: iface for iface in Interface.objects.filter(managed_object=self.object.id)
+        }
         own_ifaces = set(ifaces[iface].id for iface in ifaces)
         # Get all links
         links = {}  # interface -> object -> [remote_interface, ...]

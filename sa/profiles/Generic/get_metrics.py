@@ -139,7 +139,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         else:
             m._oid_rules = {}
         # Append own rules from OID_RULES
-        m._oid_rules.update(dict((r.name, r) for r in m.OID_RULES))
+        m._oid_rules.update({r.name: r for r in m.OID_RULES})
         # Load snmp_metrics/*.json
         with with_resolver(m.get_oid_rule):
             mcs.apply_snmp_rules(m)
@@ -317,7 +317,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         # Generate list of MetricConfig from input parameters
         metrics = [MetricConfig(**m) for m in metrics]
         # Split by metric types
-        self.paths = dict((self.get_path_hash(m.metric, m.path), m) for m in metrics)
+        self.paths = {self.get_path_hash(m.metric, m.path): m for m in metrics}
         for m in metrics:
             self.metric_configs[m.metric] += [m]
         # Process metrics collection

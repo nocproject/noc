@@ -94,14 +94,14 @@ class Script(BaseScript):
                 s[name] = f(v)
 
     def get_ip_ifaces(self):
-        ip_iface = dict(
-            (l, ".".join(o.rsplit(".")[-4:]))
+        ip_iface = {
+            l: ".".join(o.rsplit(".")[-4:])
             for o, l in self.get_iftable("1.3.6.1.2.1.4.20.1.2", False)
-        )
-        ip_mask = dict(
-            (".".join(o.rsplit(".")[-4:]), l)
+        }
+        ip_mask = {
+            ".".join(o.rsplit(".")[-4:]): l
             for o, l in self.get_iftable("1.3.6.1.2.1.4.20.1.3", False)
-        )
+        }
         r = {}
         for ip in ip_iface:
             r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
@@ -112,7 +112,7 @@ class Script(BaseScript):
         # v = self.scripts.get_interface_status_ex()
         index = self.scripts.get_ifindexes()
         # index = self.get_ifindexes()
-        ifaces = dict((index[i], {"interface": i}) for i in index)
+        ifaces = {index[i]: {"interface": i} for i in index}
         # Apply ifAdminStatus
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus

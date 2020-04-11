@@ -237,7 +237,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         """
 
         def get_matchers(c, matchers):
-            return dict((m, match(c, matchers[m])) for m in matchers)
+            return {m: match(c, matchers[m]) for m in matchers}
 
         # Match context
         # @todo: Add capabilities

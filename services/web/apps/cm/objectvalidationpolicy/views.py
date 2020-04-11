@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # cm.objectvalidationpolicy application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ class ObjectValidationPolicyApplication(ExtDocApplication):
 
     @staticmethod
     def list_to_params(params):
-        return dict((p["name"], p["value"]) for p in params if p["value"] != "")
+        return {p["name"]: p["value"] for p in params if p["value"] != ""}
 
     def clean(self, data):
         for rule in data.get("rules", []):

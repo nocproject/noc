@@ -155,7 +155,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 {"$group": {"_id": "$managed_object", "total": {"$sum": 1}}},
             ]
         )
-        ifcount = dict((x["_id"], x["total"]) for x in r)
+        ifcount = {x["_id"]: x["total"] for x in r}
         # Apply interface counts
         for x in data:
             x["interface_count"] = ifcount.get(x["id"]) or 0
@@ -178,7 +178,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 {"$group": {"_id": "$linked_objects", "total": {"$sum": 1}}},
             ]
         )
-        links_count = dict((x["_id"], x["total"]) for x in r)
+        links_count = {x["_id"]: x["total"] for x in r}
         # Apply interface counts
         for x in data:
             x["link_count"] = links_count.get(x["id"]) or 0

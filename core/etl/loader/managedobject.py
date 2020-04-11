@@ -63,7 +63,7 @@ class ManagedObjectLoader(BaseLoader):
 
     def __init__(self, *args, **kwargs):
         super(ManagedObjectLoader, self).__init__(*args, **kwargs)
-        self.pools = dict((p.name, p) for p in Pool.objects.all())
+        self.pools = {p.name: p for p in Pool.objects.all()}
 
     def clean(self, row):
         """

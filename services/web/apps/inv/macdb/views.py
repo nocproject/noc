@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.macdb application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ class MACApplication(ExtApplication):
 
     @view(method=["GET", "POST"], url="^$", access="read", api=True)
     def api_list(self, request):
-        q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         # find mac request select max(ts), managed_object, interface, vlan from mac
         # where like(MACNumToString(mac), 'A0:AB:1B%') group by managed_object, interface, vlan;
         query = q.get("__query")

@@ -335,7 +335,7 @@ class AlarmApplication(ExtApplication):
             ),
         }
         if fields:
-            d = dict((k, d[k]) for k in fields)
+            d = {k: d[k] for k in fields}
         return d
 
     def queryset(self, request, query=None):

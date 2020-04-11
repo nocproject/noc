@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.reportdiscovery
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -63,10 +63,10 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             if mos[mo][2] == GENERIC_PROFILE:
                 problems[mo] = _("Profile check failed")
         # Get all managed objects without interfaces
-        if_mo = dict(
-            (x["_id"], x.get("managed_object"))
+        if_mo = {
+            x["_id"]: x.get("managed_object")
             for x in Interface._get_collection().find({}, {"_id": 1, "managed_object": 1})
-        )
+        }
         for mo in mos_set - set(problems) - set(if_mo.values()):
             problems[mo] = _("No interfaces")
         # Get all managed objects without links

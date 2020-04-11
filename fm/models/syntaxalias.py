@@ -34,7 +34,7 @@ class SyntaxAlias(Document):
     @classmethod
     def rewrite(cls, name, syntax):
         if cls.cache is None:
-            cls.cache = dict((o.name, o.syntax) for o in cls.objects.all())
+            cls.cache = {o.name: o.syntax for o in cls.objects.all()}
         return cls.cache.get(name, syntax)
 
     def get_json_path(self):

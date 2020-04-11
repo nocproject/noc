@@ -21,7 +21,7 @@ class Reportreportrulesbyprofile(SimpleReport):
 
     def get_data(self, **kwargs):
         # profile -> (syslog, snmp, other)
-        r = dict((p, [0, 0, 0]) for p in profile_loader.iter_profiles())
+        r = {p: [0, 0, 0] for p in profile_loader.iter_profiles()}
         for rule in EventClassificationRule.objects.all():
             profile = None
             source = None

@@ -167,11 +167,11 @@ class Site(object):
                     if isinstance(v.validate, DictParameter):
                         # Validate via NOC interfaces
                         if request.method == "GET":
-                            g = dict(
-                                (nq(k), v[0] if len(v) == 1 else v)
+                            g = {
+                                nq(k): v[0] if len(v) == 1 else v
                                 for k, v in request.GET.lists()
                                 if k != "_dc"
-                            )
+                            }
                         else:
                             if self.is_json(request.META.get("CONTENT_TYPE")):
                                 try:
@@ -180,9 +180,7 @@ class Site(object):
                                     logger.error("Unable to decode JSON: %s", e)
                                     errors = "Unable to decode JSON: %s" % e
                             else:
-                                g = dict(
-                                    (k, v[0] if len(v) == 1 else v) for k, v in request.POST.lists()
-                                )
+                                g = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
                         if not errors:
                             try:
                                 kwargs.update(v.validate.clean(g))
@@ -207,11 +205,9 @@ class Site(object):
                         if ct and ("text/json" in ct or "application/json" in ct):
                             a = json.loads(request.body)
                         else:
-                            a = dict(
-                                (k, v[0] if len(v) == 1 else v) for k, v in request.POST.lists()
-                            )
+                            a = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
                     elif request.method == "GET":
-                        a = dict((k, v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
+                        a = {k: v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
                     app_logger.debug("API %s %s %s", request.method, request.path, a)
                 # Call handler
                 r = v(request, *args, **kwargs)

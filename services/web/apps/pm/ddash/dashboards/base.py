@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Base dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ class BaseDashboard(object):
     def str_cleanup(self, data, remove_letters=None, translate_to=None):
         if data:
             remove_letters = remove_letters or BAD_CHARS
-            translate_table = dict((ord(char), translate_to) for char in remove_letters)
+            translate_table = {ord(char): translate_to for char in remove_letters}
             return data.translate(translate_table)
         else:
             return data

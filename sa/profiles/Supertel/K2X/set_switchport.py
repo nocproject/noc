@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Supertel.K2X.set_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class Script(BaseScript):
             return "untagged" in c and ("tagged" not in c or not c["tagged"])
 
         # Get existing switchports. interface -> config
-        ports = dict((p["interface"], p) for p in self.scripts.get_switchport())
+        ports = {p["interface"]: p for p in self.scripts.get_switchport()}
 
         # Validate restrictions
         errors = []

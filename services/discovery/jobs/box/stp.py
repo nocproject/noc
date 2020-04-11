@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # STP check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ class STPCheck(TopologyDiscoveryCheck):
                     roots[iface["designated_bridge_id"]].add(
                         (iface["interface"], self.convert_port_id(iface["designated_port_id"]))
                     )
-        roots = dict((ro, list(roots[ro])) for ro in roots)
+        roots = {ro: list(roots[ro]) for ro in roots}
         self.logger.debug("Roots ports: %s" % roots)
         return roots
 

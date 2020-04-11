@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -132,7 +132,7 @@ class EventApplication(ExtApplication):
             "row_class": row_class,
         }
         if fields:
-            d = dict((k, d[k]) for k in fields)
+            d = {k: d[k] for k in fields}
         return d
 
     def queryset(self, request, query=None):
@@ -155,8 +155,8 @@ class EventApplication(ExtApplication):
         if not event:
             return self.response_not_found()
         d = self.instance_to_dict(event)
-        dd = dict(
-            (v, None)
+        dd = {
+            v: None
             for v in (
                 "body",
                 "symptoms",
@@ -167,7 +167,7 @@ class EventApplication(ExtApplication):
                 "resolved_vars",
                 "raw_vars",
             )
-        )
+        }
         if event.status in ("A", "S"):
             dd["body"] = event.body
             dd["symptoms"] = event.event_class.symptoms

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alarms Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ class AlarmsExtractor(ArchivingExtractor):
             ]
         )
         # object -> [ts1, .., tsN]
-        reboots = dict((d["_id"], d["reboots"]) for d in r)
+        reboots = {d["_id"]: d["reboots"] for d in r}
         #
         for d in self.iter_data():
             mo = ManagedObject.get_by_id(d["managed_object"])
