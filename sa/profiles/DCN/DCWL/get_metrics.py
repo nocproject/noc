@@ -15,6 +15,7 @@ import codecs
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.core.validators import is_ipv4
+from noc.core.comp import smart_text
 
 
 class Script(GetMetricsScript):
@@ -126,7 +127,7 @@ class Script(GetMetricsScript):
                 ssid = data["ssid"].strip().replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
-                    ssid = codecs.decode(ssid, "hex")
+                    ssid = smart_text(codecs.decode(ssid, "hex"))
                 iface = "%s.%s" % (data["name"], ssid)
             else:
                 iface = data["name"]

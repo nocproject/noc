@@ -14,6 +14,7 @@ import codecs
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -114,7 +115,7 @@ class Script(BaseScript):
                 ssid = value["ssid"].replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
-                    ssid = codecs.decode(ssid, "hex")
+                    ssid = smart_text(codecs.decode(ssid, "hex"))
                 r = self.get_bss_detail(value["bss"])
                 bss_ifname = "%s.%s" % (ifname, ssid)
                 if r:
