@@ -69,7 +69,7 @@
         },
         {
             "description": "GigabitEthernet 0/3 SFP port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Gi3_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],

@@ -34,7 +34,7 @@
         },
         {
             "description": "2",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "1",
             "name": "uplink1",
@@ -52,7 +52,7 @@
         },
         {
             "description": "3",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "2",
             "name": "3",
