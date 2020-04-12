@@ -236,9 +236,9 @@ build:Master Docs:
   script:
     - set -x
     - cd docs/
-    - python ./scripts/build-auto-include.py
+    - python3 ./scripts/build-auto-include.py
     - NOC_SRC_PATH=../../.. sphinx-build -a -E -b html src/en ../build/docs/en
-    - python ./scripts/build-go.py ../build/docs/en/objects.inv
+    - python3 ./scripts/build-go.py ../build/docs/en/objects.inv
   tags:
     - docker
   artifacts:
