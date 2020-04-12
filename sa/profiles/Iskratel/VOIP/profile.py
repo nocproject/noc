@@ -26,4 +26,4 @@ class Profile(BaseProfile):
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     command_submit = "\r\n"
-    rogue_chars = ["\r\x00"]
+    rogue_chars = [b"\r\x00"]

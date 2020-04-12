@@ -32,7 +32,7 @@ class Profile(BaseProfile):
     config_volatile = ["^%.*?$"]
     enable_cli_session = False
     command_submit = "\r\n"
-    rogue_chars = ["\r\x00"]
+    rogue_chars = [b"\r\x00"]
 
     rx_iface_match = re.compile(r"^(\w+?)(\d+)$")
 

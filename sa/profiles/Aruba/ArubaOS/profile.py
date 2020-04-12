@@ -21,4 +21,4 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% Parse error"
     command_super = "enable"
     pattern_more = [(r"--More-- \(q\) quit \(u\) pageup \(/\) search \(n\) repeat", " ")]
-    rogue_chars = [re.compile(r"\r\s+\r"), "\r"]
+    rogue_chars = [re.compile(rb"\r\s+\r"), b"\r"]

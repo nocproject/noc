@@ -22,7 +22,7 @@ class Profile(BaseProfile):
     # Are you sure to quit? yes[Y] or no[N]
     command_more = " "
     command_super = "enable"
-    rogue_chars = [re.compile(r"^\s{10,}\r"), "\r"]
+    rogue_chars = [re.compile(rb"^\s{10,}\r"), b"\r"]
     config_volatile = ["<entry1 sessionID=.+?/>"]
     username_submit = "\r"
     password_submit = "\r"

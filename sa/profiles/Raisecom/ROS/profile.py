@@ -25,7 +25,7 @@ class Profile(BaseProfile):
     command_exit = "exit"
     pattern_syntax_error = r"(% \".+\"  (?:Unknown command.)|Error input in the position marke[dt] by|%\s+Incomplete command\.)"
     pattern_operation_error = r"% You Need higher priority!"
-    rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
+    rogue_chars = [re.compile(rb"\x08+\s+\x08+"), b"\r"]
     config_volatile = [
         r"radius(-server | accounting-server |-)encrypt-key \S+\n",
         r"tacacs(-server | accounting-server |-)encrypt-key \S+\n",

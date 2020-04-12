@@ -22,7 +22,7 @@ class Profile(BaseProfile):
     command_exit = "logout"
     config_volatile = [r"^# Finished.*$", r"^# Generated.*$"]
     command_more = " "
-    rogue_chars = [re.compile(r"\r\s+\r"), "\r"]
+    rogue_chars = [re.compile(rb"\r\s+\r"), b"\r"]
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "#", "end_of_context": "exit", "string_quote": '"'}
 

@@ -25,4 +25,4 @@ class Profile(BaseProfile):
         r"^\.+\s*$",
         r"^(?:(?:begin)|(?:end))\s*$",
     ]
-    rogue_chars = ["\r", " \x08", "\x08"]
+    rogue_chars = [b"\r", b" \x08", b"\x08"]

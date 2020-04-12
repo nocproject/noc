@@ -34,7 +34,7 @@ class Profile(BaseProfile):
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
-    rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
+    rogue_chars = [re.compile(rb"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), b"\r"]
     config_volatile = [r"^%.*?$", r"^config time \d\d.*?\n"]
     telnet_naws = b"\x00\x7f\x00\x7f"
     # to one SNMP GET request

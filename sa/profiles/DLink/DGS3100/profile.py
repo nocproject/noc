@@ -25,7 +25,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+):(3|6|user|operator)#"
     pattern_syntax_error = r"(Command: .+|Invalid input detected at)"
     pattern_prompt = r"^(?P<hostname>\S+)#"
-    rogue_chars = [re.compile(r"^\s{45,}"), "\r"]
+    rogue_chars = [re.compile(rb"^\s{45,}"), b"\r"]
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"

@@ -28,7 +28,7 @@ class Profile(BaseProfile):
         (r"Startup configuration file name", "\n\n\n"),
     ]
     config_volatile = ["\x08+"]
-    rogue_chars = ["\r"]
+    rogue_chars = [b"\r"]
     command_submit = "\r"
     command_enter_config = "configure"
     command_leave_config = "end"

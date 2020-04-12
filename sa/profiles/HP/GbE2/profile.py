@@ -19,4 +19,4 @@ class Profile(BaseProfile):
     command_leave_config = "apply"
     command_save_config = "save\ny\n"
     config_volatile = [r"^/\* Configuration dump taken.*?$"]
-    rogue_chars = ["\x08"]
+    rogue_chars = [b"\x08"]

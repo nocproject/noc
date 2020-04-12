@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     command_submit = "\r\n"
     pattern_password = "User Password>"
     pattern_prompt = r"^TFortis .+#"
-    rogue_chars = ["\r", "\x08*"]
+    rogue_chars = [b"\r", b"\x08*"]
     command_exit = "exit"
 
     def convert_interface_name(self, s):
