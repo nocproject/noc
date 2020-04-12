@@ -205,7 +205,7 @@ py:test:
 build:Docs:
   stage: Build
   environment: docs
-  image: registry.getnoc.com/infrastructure/docs:master
+  image: registry.getnoc.com/infrastructure/docs3:master
   script:
     - set -x
     - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep "^docs/" || true)
@@ -232,7 +232,7 @@ build:Docs:
 build:Master Docs:
   stage: Build
   environment: docs
-  image: registry.getnoc.com/infrastructure/docs:master
+  image: registry.getnoc.com/infrastructure/docs3:master
   script:
     - set -x
     - cd docs/
