@@ -47,7 +47,7 @@ class Profile(BaseProfile):
         prompt = prompt.replace("^", "")
         prompt = prompt.replace("\\", "")
         r = cmd[0] + "(\x08)+" + prompt
-        self.rogue_chars = [re.compile(r"%s" % r), "\r"]
+        self.rogue_chars = [re.compile(rb"%s" % r), b"\r"]
         if cached:
             return script.cli(cmd, cached=True)
         else:

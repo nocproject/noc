@@ -22,4 +22,4 @@ class Profile(BaseProfile):
     username_submit = "\r\n"
     password_submit = "\r\n"
     command_exit = "0"
-    rogue_chars = ["\r", re.compile(r"(\x1b\[\S\S)+(;1H)?")]
+    rogue_chars = [b"\r", re.compile(br"(\x1b\[\S\S)+(;1H)?")]

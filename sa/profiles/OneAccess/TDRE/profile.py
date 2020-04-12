@@ -24,6 +24,6 @@ class Profile(BaseProfile):
     username_submit = "\r"
     password_submit = "\r"
     rogue_chars = [
-        re.compile(r"Login successful -- CLI active -- connecting with device\r\n>"),
-        "\r",
+        re.compile(b"Login successful -- CLI active -- connecting with device\r\n>"),
+        b"\r",
     ]

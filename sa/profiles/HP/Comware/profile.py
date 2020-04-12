@@ -20,7 +20,11 @@ class Profile(BaseProfile):
     pattern_syntax_error = (
         r"% (?:Unrecognized command|Too many parameters|Incomplete command)" r" found at"
     )
-    rogue_chars = [re.compile(r"\x1b\[16D\s+\x1b\[16D"), re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
+    rogue_chars = [
+        re.compile(br"\x1b\[16D\s+\x1b\[16D"),
+        re.compile(br"\x1b\[42D\s+\x1b\[42D"),
+        b"\r",
+    ]
 
     spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 

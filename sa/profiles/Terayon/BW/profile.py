@@ -23,7 +23,7 @@ class Profile(BaseProfile):
     command_submit = "\r"
     command_disable_pager = "terminal length 0"
     pattern_more = [(r"--More--", " ")]
-    rogue_chars = [re.compile(r"\x1b\[19D\r\x00Terayon CMTS#"), "\r"]
+    rogue_chars = [re.compile(rb"\x1b\[19D\r\x00Terayon CMTS#"), b"\r"]
 
     def setup_session(self, script):
         script.cli("\r")

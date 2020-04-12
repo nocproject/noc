@@ -28,7 +28,7 @@ class Profile(BaseProfile):
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
-    rogue_chars = [re.compile(r"\x08{4,}\S+"), "\r"]
+    rogue_chars = [re.compile(rb"\x08{4,}\S+"), b"\r"]
 
     rx_ifname = re.compile(r"\S+\s+\d+\/\d+\/\d+")
 

@@ -32,7 +32,7 @@ class Profile(BaseProfile):
         r"^(Please wait\.\.\.)\n",
         r"^(\.+)\n",
     ]
-    rogue_chars = ["\r", "\x00", "\x0d"]
+    rogue_chars = [b"\r", b"\x00", b"\x0d"]
 
     @classmethod
     def cmp_version(cls, v1, v2):

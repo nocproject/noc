@@ -18,5 +18,5 @@ class Profile(BaseProfile):
     pattern_more = r"^Press CTRL\+C to break, other key to continue\.\.\."
     pattern_prompt = r"mml>"
     command_more = " "
-    rogue_chars = ["\r"]
+    rogue_chars = [b"\r"]
     config_volatile = [r"^\+\+\+.*?$"]

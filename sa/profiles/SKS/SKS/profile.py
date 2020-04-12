@@ -25,7 +25,7 @@ class Profile(BaseProfile):
     )
     command_super = "enable"
     command_disable_pager = "terminal datadump"
-    rogue_chars = [re.compile(r"\r\n##+#\r\n"), "\r"]
+    rogue_chars = [re.compile(rb"\r\n##+#\r\n"), "\r"]
     pattern_more = [
         ("More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
         ("^ --More-- ", " "),

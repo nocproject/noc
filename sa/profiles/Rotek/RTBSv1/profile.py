@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"(ERROR|show: not found)"
     command_submit = "\r"
     enable_cli_session = False
-    rogue_chars = [re.compile(r"\x1b7\x1b\[r\x1b\[999;999H\x1b\[6n")]
+    rogue_chars = [re.compile(rb"\x1b7\x1b\[r\x1b\[999;999H\x1b\[6n")]
     command_exit = "exit\rlogout"
     INTERFACE_TYPES = {
         "et": "physical",

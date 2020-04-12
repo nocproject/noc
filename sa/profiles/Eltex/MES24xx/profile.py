@@ -29,10 +29,10 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "end"
     rogue_chars = [
-        re.compile(r"\s*\x1b\[27m"),
-        re.compile(r"\x1b\r\s+\r\x1b\[K"),
-        re.compile(r"\x1b\[K"),
-        re.compile(r"\r"),
+        re.compile(br"\s*\x1b\[27m"),
+        re.compile(br"\x1b\r\s+\r\x1b\[K"),
+        re.compile(br"\x1b\[K"),
+        re.compile(br"\r"),
     ]
 
     INTERFACE_TYPES = {
