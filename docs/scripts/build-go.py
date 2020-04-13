@@ -34,7 +34,7 @@ def process(path):
         JS,
         "redirect({",
     ]
-    with open(path) as f:
+    with open(path, "rb") as f:
         data = InventoryFile.load(f, "", os.path.join) or {}
     rr = []
     for entry, einfo in sorted(data["std:label"].items()):
