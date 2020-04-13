@@ -20,7 +20,7 @@ class Script(BaseScript):
         v = self.profile.get_version(self)
         return {
             "vendor": "Orion",
-            "platform": v["platform"],
+            "platform": v["platform"].strip(),
             "version": v["version"],
             "attributes": {
                 "Serial Number": v["serial"],
