@@ -86,7 +86,7 @@ mypy:
     - >
       if [ ! -z "$FLIST" ];
       then
-        mypy --py2 --follow-imports=skip --ignore-missing-imports $FLIST;
+        mypy --follow-imports=skip --ignore-missing-imports $FLIST;
       else
         echo "No files to lint"
         true;
