@@ -76,7 +76,7 @@ class RackPlugin(InvPlugin):
     def api_set_rack_load(self, request, id, cid, position_front, position_rear, shift):
         o = self.app.get_object_or_404(Object, id=id)
         co = self.app.get_object_or_404(Object, id=cid)
-        if co.container != o.id:
+        if co.container.id != o.id:
             return self.app.response_not_found()
         if position_front:
             co.set_data("rackmount", "position", position_front)
