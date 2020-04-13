@@ -213,9 +213,9 @@ build:Docs:
       if [ ! -z "$FLIST" ];
       then
         cd docs/
-        python ./scripts/build-auto-include.py
+        python3 ./scripts/build-auto-include.py
         sphinx-build -a -E -b html src/en ../build/docs/en
-        python ./scripts/build-go.py ../build/docs/en/objects.inv
+        python3 ./scripts/build-go.py ../build/docs/en/objects.inv
       else
         echo "No doc changes to build"
         true;
