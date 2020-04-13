@@ -14,6 +14,7 @@ from threading import Lock
 from noc.core.translation import ugettext as _
 from django.db import models
 import cachetools
+from typing import Optional
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -562,27 +563,33 @@ class ManagedObjectProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
         mop = ManagedObjectProfile.objects.filter(id=id)[:1]
         if mop:
             return mop[0]
-        else:
-            return None
+        return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
         mop = ManagedObjectProfile.objects.filter(bi_id=id)[:1]
         if mop:
             return mop[0]
-        else:
-            return None
+        return None
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
 
         if config.datastream.enable_managedobject and changed_fields.intersection(
-            {"name", "remote_system", "remote_id"}
+            {
+                "name",
+                "remote_system",
+                "remote_id",
+                "enable_box_discovery",
+                "enable_periodic_discovery",
+                "enable_ping",
+                "tags",
+            }
         ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
                 "id", flat=True
