@@ -55,3 +55,4 @@ docs/src/en/include/auto
 docs/src/en/platforms/
 scripts/build/web/node_modules
 README.creole
+monkeytype.sqlite3

@@ -35,6 +35,9 @@ class Command(BaseCommand):
         run_parser.add_argument("--junit-report", help="Write JUnit XML report to specified file")
         run_parser.add_argument("--idea-bookmarks", help="Dump warnings as IDEA bookmarks XML")
         run_parser.add_argument("--statistics", action="store_true", help="Dump statistics")
+        run_parser.add_argument(
+            "--monkeytype", action="store_true", help="Collect MonkeyType annotations"
+        )
         run_parser.add_argument("tests", nargs=argparse.REMAINDER, help="Paths to tests")
 
     def handle(self, cmd, *args, **options):
@@ -52,6 +55,7 @@ class Command(BaseCommand):
         coverage_report=None,
         junit_report=None,
         idea_bookmarks=None,
+        monkeytype=False,
         *args,
         **options,
     ):
@@ -68,7 +72,13 @@ class Command(BaseCommand):
             config.pg.db = db_name
             config.mongo.db = db_name
             config.clickhouse.db = db_name
-            exit_code = pytest_main(args)
+            if monkeytype:
+                import monkeytype as mt
+
+                with mt.trace():
+                    exit_code = pytest_main(args)
+            else:
+                exit_code = pytest_main(args)
             if idea_bookmarks:
                 self.dump_idea_bookmarks(idea_bookmarks)
             return exit_code
