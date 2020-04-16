@@ -79,6 +79,7 @@ class Profile(BaseProfile):
         "74": "MES-5324",
         "75": "MES-2124F",
         "76": "MES-2324",
+        "77": "MES-2324F",
         "78": "MES-2324FB",
         "80": "MES-3324",
         "81": "MES-3324F",
@@ -89,7 +90,9 @@ class Profile(BaseProfile):
         "92": "MES-2324P",
         "98": "MES-3508P",
         "112": "MES-2308R",
+        "116": "MES-3308F",
         "120": "MES-3348F",
+        "136": "MES-5316A",
     }
 
     def get_platform(self, s):
