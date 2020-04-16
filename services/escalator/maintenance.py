@@ -64,7 +64,7 @@ def start_maintenance(maintenance_id):
             )
             if d:
                 objects = [x["object"] for x in d["affected_objects"]]
-                for d in ManagedObject.objects.filter(id__in=list(objects)):
+                for d in ManagedObject.objects.filter(id__in=list(objects), is_managed=True):
                     logger.info("[%s] Appending object %s to group TT %s", maintenance_id, d, gtt)
                     tts.add_to_group_tt(gtt, d.tt_system_id)
         if tt_id and not m.escalation_tt:
