@@ -277,7 +277,12 @@ class ReportObjectDetailApplication(ExtApplication):
             iss = iter(ReportObjectIfacesStatusStat(mos_id))
         else:
             iss = None
-        if "object_attr_patch" in columns_filter or "object_serial" in columns_filter:
+        if (
+            "object_attr_patch" in columns_filter
+            or "object_serial" in columns_filter
+            or "object_attr_hwversion" in columns_filter
+            or "object_attr_bootprom" in columns_filter
+        ):
             roa = iter(ReportObjectAttributes(mos_id))
         else:
             roa = None
