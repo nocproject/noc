@@ -10,7 +10,7 @@
 import os
 import subprocess
 import re
-import imp
+from importlib.machinery import SourceFileLoader
 import datetime
 
 # NOC modules
@@ -112,7 +112,7 @@ class MIBAPI(API):
                     p_data = smart_bytes(smart_text(f.read(), encoding="ascii", errors="ignore"))
                 with open(py_path, "wb") as f:
                     f.write(p_data)
-                m = imp.load_source("mib", py_path)
+                m = SourceFileLoader("mib", py_path).load_module()
             # NOW we can deduce module name
             mib_name = m.MIB["moduleName"]
             # Check module dependencies
@@ -167,6 +167,7 @@ class MIBAPI(API):
                     typedefs=typedefs,
                 )
                 mib.save()
+            self.logger.debug("Upload MIB data %s", m.MIB)
             # Upload MIB data
             cdata = []
             for i in ["nodes", "notifications"]:
