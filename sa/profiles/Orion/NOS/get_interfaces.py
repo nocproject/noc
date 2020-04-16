@@ -5,12 +5,14 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -53,11 +55,11 @@ class Script(BaseScript):
     def get_stp(self):
         # Need more examples
         return []
-        try:
-            v = self.cli("show spanning-tree")
-            return self.rx_enabled.findall(v)
-        except self.CLISyntaxError:
-            return []
+        # try:
+        #     v = self.cli("show spanning-tree")
+        #     return self.rx_enabled.findall(v)
+        # except self.CLISyntaxError:
+        #     return []
 
     def get_ctp(self):
         try:
@@ -85,7 +87,6 @@ class Script(BaseScript):
             return self.rx_enabled.findall(v)
         except self.CLISyntaxError:
             return []
-        return []
 
     def execute_cli(self):
         interfaces = []
