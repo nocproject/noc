@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # RR helper class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ class RR(object):
         elif self.ttl > other.ttl:
             return False
         # Compare by priority
-        return self.priority < other.priority
+        return (self.priority or 0) < (other.priority or 0)
 
     def to_json(self):
         r = {"name": self.name, "type": self.type, "rdata": self.rdata}
