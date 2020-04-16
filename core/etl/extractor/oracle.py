@@ -89,8 +89,6 @@ class ORACLEExtractor(SQLExtractor):
                 yield from cursor
         else:
             pool = ThreadPoolExecutor(max_workers=concurrency)
-            futures = [
-                pool.submit(fetch_sql, query, params) for query, params in self.get_sql()
-            ]
+            futures = [pool.submit(fetch_sql, query, params) for query, params in self.get_sql()]
             for f in as_completed(futures):
                 yield from f.result()
