@@ -29,6 +29,8 @@ class Profile(BaseProfile):
         r"tacacs(-server | accounting-server )encrypt-key \S+\n",
     ]
 
+    rx_interface_name = re.compile(r"port\s*(?P<re_port>\d+)")
+
     rx_ver = re.compile(
         r"^Product name\s*:\s*(?P<platform>.+)\s*\n"
         r"^NOS\s+Version:? NOS_(?P<version>\d+\.\d+\.\d+).+\n"
@@ -63,3 +65,8 @@ class Profile(BaseProfile):
         if not match:
             match = self.rx_ver2.search(c)
         return match.groupdict()
+
+    def convert_interface_name(self, s):
+        if self.rx_interface_name.match(s):
+            return self.rx_interface_name.match(s).group("re_port")
+        return s
