@@ -118,7 +118,11 @@ class MESNormalizer(BaseNormalizer):
     @match("interface", ANY, "switchport", ANY, "allowed", "vlan", "add", ANY, "untagged")
     def normalize_switchport_untagged(self, tokens):
         if_name = self.interface_name(tokens[1])
-        yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=tokens[7])
+        untagged = tokens[7]
+        if "," in tokens[7]:
+            # QinQ
+            untagged = tokens[7].split(",")[0]
+        yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=untagged)
 
     @match("interface", ANY, "switchport", ANY, "native", "vlan", ANY)
     def normalize_switchport_native(self, tokens):
