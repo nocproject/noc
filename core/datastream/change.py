@@ -51,7 +51,7 @@ def bulk_datastream_changes():
     # Perform decorated computations
     yield
     # Apply changes
-    apply_changes(list(tls._datastream_changes))
+    apply_changes(list(set(tls._datastream_changes)))
     # Restore previous context
     if last_changes is not None:
         tls._datastream_changes = last_changes
@@ -91,5 +91,5 @@ def do_changes(changes):
     :param changes: List of datastream name, object id
     :return:
     """
-    for ds_name, object_id in sorted(changes):
+    for ds_name, object_id in sorted(set(tuple(x) for x in changes)):
         update_object(ds_name, object_id)
