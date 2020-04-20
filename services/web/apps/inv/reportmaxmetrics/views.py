@@ -11,20 +11,18 @@ import datetime
 from collections import defaultdict, Iterable
 from collections import namedtuple
 import csv
+from io import BytesIO
 
 # Third-party modules
 import xlsxwriter
-from six import StringIO
 from django.http import HttpResponse
-from pymongo import ReadPreference
-from bson import ObjectId
 
 # NOC modules
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
 from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
-from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.app.reportdatasources.report_container import ReportContainerData
@@ -107,7 +105,10 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
 
             from_date = from_date.replace(microsecond=0)
             to_date = to_date.replace(microsecond=0)
-            SQL = """SELECT managed_object, path[4] as iface, argMax(ts, ts), divide(max(load_in),1048576) as load_in_max,
+            SQL = """SELECT managed_object, path[4] as iface,
+                             dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path))) AS iface_description,
+                             dictGetString('interfaceattributes', 'profile', (managed_object, arrayStringConcat(path))) as profile,
+                             dictGetUInt64('interfaceattributes','in_speed' , (managed_object, arrayStringConcat(path))) AS iface_speed, divide(max(load_in),1048576) as load_in_max,
                              divide(max(load_out),1048576) as load_out_max, argMax(ts,load_in) as max_load_in_time,
                              argMax(ts,load_out) as max_load_out_time, divide(avg(load_in),1048576) as avg_load_in,
                              divide(avg(load_out),1048576) as avg_load_out
@@ -116,7 +117,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                       ts >= toDateTime('%s')
                       AND ts <= toDateTime('%s')
                       AND managed_object IN (%s)
-                    GROUP BY managed_object, iface
+                    GROUP BY managed_object, path
                     """ % (
                 # from_date.date().isoformat(),
                 # to_date.date().isoformat(),
@@ -130,7 +131,9 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                 for (
                     mo_bi_id,
                     iface,
-                    ts,
+                    iface_description,
+                    profile,
+                    iface_speed,
                     load_in_max,
                     load_out_max,
                     max_load_in_time,
@@ -147,40 +150,13 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                             "max_load_out_time": max_load_out_time,
                             "avg_load_in": float(avg_load_in),
                             "avg_load_out": float(avg_load_out),
+                            "description": iface_description,
+                            "profile": profile,
+                            "bandwidth": iface_speed,
                         }
             except ClickhouseError:
                 pass
             return metric_map
-
-        # get interfaces
-        def load(mo_ids, description, interface_profile):
-            # mo_ids list(mo.id)
-            iface = defaultdict(dict)
-            match = {
-                "managed_object": {"$in": mo_ids},
-                "type": {"$in": ["physical"]},
-                "admin_status": True,
-            }
-            if description:
-                match["description"] = {
-                    "$regex": description
-                }  # ({ "description": {$regex:/401/ }})
-
-            if interface_profile:
-                match["profile"] = {"$in": [ObjectId(str(interface_profile))]}
-
-            result = (
-                Interface._get_collection()
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .aggregate([{"$match": match}])  # , {"$lookup": lookup}])
-            )
-
-            for i in result:
-                iface[i["managed_object"]][i["name"]] = {
-                    "bandwidth": i["in_speed"] if i.get("in_speed") else "",
-                    "description": i["description"] if i.get("description") else "",
-                }
-            return iface
 
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
@@ -283,6 +259,8 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             )
         if object_profile:
             mos = mos.filter(object_profile=object_profile)
+        if interface_profile:
+            interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
 
         mo_attrs = namedtuple("MOATTRs", [c for c in cols if c.startswith("object")])
         containers_address = {}
@@ -306,9 +284,6 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             )
         # get maximum metrics
         ifaces_metrics = get_interface_metrics(mos, from_date, to_date)
-        # get interfaces
-        mos_id = list(mos.values_list("id", flat=True))
-        rld = load(mos_id, description, interface_profile)
 
         for mm in ifaces_metrics:
             mo_id = moss[int(mm.id)]
@@ -320,12 +295,12 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                 local_interfaces = []
                 remote_interfaces = []
                 remote_objects = set()
-                for i in l.interfaces:
-                    if i.managed_object.id == mm.id:
-                        local_interfaces += [i]
+                for ifs in l.interfaces:
+                    if ifs.managed_object.id == mm.id:
+                        local_interfaces += [ifs]
                     else:
-                        remote_interfaces += [i]
-                        remote_objects.add(i.managed_object)
+                        remote_interfaces += [ifs]
+                        remote_objects.add(ifs.managed_object)
                 if len(remote_objects) == 1:
                     ro = remote_objects.pop()
                     if ro.id in uplinks:
@@ -343,57 +318,63 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                         }
                     ]
 
-            for i in rld[mm.id]:
-                iface_metrics = ifaces_metrics[mm].get(i)
-                if iface_metrics:
-                    if not exclude_zero:
-                        if iface_metrics["max_load_in"] == 0 and iface_metrics["max_load_out"] == 0:
-                            continue
-                    row2 = [
-                        str(mm.id),
-                        mm.name,
-                        mm.address,
-                        getattr(mo_id, "object_platform"),
-                        getattr(mo_id, "object_adm_domain"),
-                        getattr(mo_id, "object_segment"),
-                        getattr(mo_id, "object_container"),
-                        i,
-                        rld[mm.id][i]["description"],
-                        rld[mm.id][i]["bandwidth"],
-                        iface_metrics["max_load_in"],
-                        iface_metrics["max_load_in_time"],
-                        iface_metrics["max_load_out"],
-                        iface_metrics["max_load_out_time"],
-                        iface_metrics["avg_load_in"],
-                        iface_metrics["avg_load_out"],
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                    ]
-
-                    if links:
-                        for link in links:
-                            if link["role"] == "uplink":
-                                ifname_uplink = link["local_interface"][0].name
-                                # uplink_data = get_uplink_metrics([mm], [ifname_uplink], from_date, to_date)
-                                row2[16] = ifname_uplink
-                                row2[17] = link["local_interface"][0].description
-                                row2[22] = ifaces_metrics[mm][ifname_uplink]["avg_load_in"]
-                                row2[23] = ifaces_metrics[mm][ifname_uplink]["avg_load_out"]
-                                row2[18] = ifaces_metrics[mm][ifname_uplink]["max_load_in"]
-                                row2[20] = ifaces_metrics[mm][ifname_uplink]["max_load_out"]
-                                row2[19] = ifaces_metrics[mm][ifname_uplink]["max_load_in_time"]
-                                row2[21] = ifaces_metrics[mm][ifname_uplink]["max_load_out_time"]
-                                r += [translate_row(row2, cmap)]
-                    else:
-                        r += [translate_row(row2, cmap)]
-
+            for i in ifaces_metrics[mm]:
+                if not exclude_zero:
+                    if (
+                        ifaces_metrics[mm][i]["max_load_in"] == 0
+                        and ifaces_metrics[mm][i]["max_load_out"] == 0
+                    ):
+                        continue
+                if description:
+                    if description not in ifaces_metrics[mm][i]["description"]:
+                        continue
+                if interface_profile:
+                    if interface_profile.name not in ifaces_metrics[mm][i]["profile"]:
+                        continue
+                row2 = [
+                    str(mm.id),
+                    mm.name,
+                    mm.address,
+                    getattr(mo_id, "object_platform"),
+                    getattr(mo_id, "object_adm_domain"),
+                    getattr(mo_id, "object_segment"),
+                    getattr(mo_id, "object_container"),
+                    i,
+                    ifaces_metrics[mm][i]["description"],
+                    ifaces_metrics[mm][i]["bandwidth"],
+                    ifaces_metrics[mm][i]["max_load_in"],
+                    ifaces_metrics[mm][i]["max_load_in_time"],
+                    ifaces_metrics[mm][i]["max_load_out"],
+                    ifaces_metrics[mm][i]["max_load_out_time"],
+                    ifaces_metrics[mm][i]["avg_load_in"],
+                    ifaces_metrics[mm][i]["avg_load_out"],
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                ]
+                ss = True
+                for link in links:
+                    if link["role"] == "uplink":
+                        ifname_uplink = link["local_interface"][0].name
+                        if ifname_uplink in ifaces_metrics[mm]:
+                            row2[16] = ifname_uplink
+                            row2[17] = link["local_interface"][0].description
+                            row2[22] = ifaces_metrics[mm][ifname_uplink]["avg_load_in"]
+                            row2[23] = ifaces_metrics[mm][ifname_uplink]["avg_load_out"]
+                            row2[18] = ifaces_metrics[mm][ifname_uplink]["max_load_in"]
+                            row2[20] = ifaces_metrics[mm][ifname_uplink]["max_load_out"]
+                            row2[19] = ifaces_metrics[mm][ifname_uplink]["max_load_in_time"]
+                            row2[21] = ifaces_metrics[mm][ifname_uplink]["max_load_out_time"]
+                            r += [translate_row(row2, cmap)]
+                            ss = False
+                if ss:
+                    r += [translate_row(row2, cmap)]
         filename = "metrics_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
@@ -402,7 +383,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Metrics")
