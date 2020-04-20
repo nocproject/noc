@@ -23,11 +23,13 @@ from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
 @bi_sync
+@on_delete_check(check=[("sa.Service", "subscriber")])
 @workflow
 class Subscriber(Document):
     meta = {
