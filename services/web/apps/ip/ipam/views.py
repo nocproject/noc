@@ -113,7 +113,7 @@ class IPAMApplication(ExtApplication):
         """
         # Validate
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if (afi == "4" and (not is_ipv4_prefix(prefix)) or not vrf.afi_ipv4) or (
+        if (afi == "4" and (not is_ipv4_prefix(prefix) or not vrf.afi_ipv4)) or (
             afi == "6" and (not is_ipv6_prefix(prefix) or not vrf.afi_ipv6)
         ):
             return self.response_forbidden("Invalid prefix")
