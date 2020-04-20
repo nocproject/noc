@@ -30,6 +30,7 @@ class BaseRemoteSystem(object):
         "ttsystem",
         "managedobject",
         "link",
+        "subscriberprofile",
         "subscriber",
         "serviceprofile",
         "service",

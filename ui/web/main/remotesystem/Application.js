@@ -119,6 +119,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             boxLabel: __("Subscriber")
                         },
                         {
+                            name: "enable_subscriberprofile",
+                            xtype: "checkbox",
+                            boxLabel: __("Subscriber Profile")
+                        },
+                        {
                             name: "enable_resourcegroup",
                             xtype: "checkbox",
                             boxLabel: __("Resource Group")
