@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Link management CLI interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -49,6 +49,7 @@ class Command(BaseCommand):
             "Transceiver | XFP | Cisco": self.check_ct_xfp,
             "Transceiver | GBIC": self.check_ct_gbic,
             "Transceiver | XENPAK | Cisco": self.check_ct_xenpak,
+            "Transceiver | X2 | Cisco": self.check_ct_xenpak,  # Same as 'XENPAK | Cisco'
             "Transceiver | CFP": self.check_ct_cfp,
         }
         for m in ObjectModel.objects.all():
@@ -90,7 +91,9 @@ class Command(BaseCommand):
     def check_direction(self, c, directions):
         if (c.direction) and (c.direction in directions):
             return
-        self.e(c, "'%s' must have direction %s (has '%s')" % (c.type.name, directions, c.direction))
+        self.e(
+            c, "'%s' must have direction %s (has '%s')" % (c.type.name, directions, c.direction),
+        )
 
     def check_ct_db9(self, c):
         self.check_direction(c, ["s"])
@@ -103,12 +106,15 @@ class Command(BaseCommand):
             [
                 "10BASET",
                 "100BASETX",
-                "1000BASET",
+                "1000BASET",  # Cat 5, 5e, 6, 7
+                "1000BASETX",  # Cat 6, 7
                 "2.5GBASET",
                 "5GBASET",
                 "10GBASET",
+                "G.703",
                 ">RS232",
-                "DryContact",
+                ">RS485",
+                ">DryContact",
             ],
         )
 
@@ -136,7 +142,7 @@ class Command(BaseCommand):
             )
         elif any("100BASELX" in s for s in c.protocols):
             self.check_protocols(
-                c, [">100BASELX-1310", "<100BASELX-1310", ">100BASELX-1550", "<100BASELX-1550"]
+                c, [">100BASELX-1310", "<100BASELX-1310", ">100BASELX-1550", "<100BASELX-1550"],
             )
         elif any("1000BASEZX" in s for s in c.protocols):
             self.check_protocols(
@@ -179,6 +185,10 @@ class Command(BaseCommand):
                 [
                     ">10GBASELR-1310",
                     "<10GBASELR-1310",
+                    ">10GBASESR-1550",
+                    "<10GBASESR-1550",
+                    ">10GBASELR-1550",
+                    "<10GBASELR-1550",
                     ">10GBASEER-1550",
                     "<10GBASEER-1550",
                     ">10GBASEZR-1550",
@@ -207,6 +217,8 @@ class Command(BaseCommand):
                     "<1000BASEX",
                     ">1000BASESX",
                     "<1000BASESX",
+                    ">1000BASELX-850",
+                    "<1000BASELX-850",
                     ">1000BASELX-1310",
                     "<1000BASELX-1310",
                     ">1000BASELX-1490",
@@ -244,22 +256,28 @@ class Command(BaseCommand):
                     "<1000BASEZX-1590",
                     ">1000BASEZX-1610",
                     "<1000BASEZX-1610",
+                    ">10GBASESR-850",
+                    "<10GBASESR-850",
+                    ">10GBASESR-1550",
+                    "<10GBASESR-1550",
                     ">10GBASELR-1310",
                     "<10GBASELR-1310",
+                    ">10GBASELR-1550",
+                    "<10GBASELR-1550",
                     ">10GBASEER-1550",
                     "<10GBASEER-1550",
                     ">10GBASEZR-1550",
                     "<10GBASEZR-1550",
                     ">10GBASEUSR",
                     "<10GBASEUSR",
-                    ">10GBASESR-850",
-                    "<10GBASESR-850",
                 ],
             )
 
     def check_ct_sfp(self, c):
         self.check_direction(c, ["i", "o"])
-        self.check_protocols(c, ["TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G"])
+        self.check_protocols(
+            c, ["TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G", "GPON"]
+        )
 
     def check_ct_sfp_plus(self, c):
         self.check_direction(c, ["i", "o"])
