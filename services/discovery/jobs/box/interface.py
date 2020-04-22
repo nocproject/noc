@@ -545,7 +545,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             if "untagged" in d:
                 unit["untagged_vlan"] = int(d["untagged"])
             if "tagged" in d:
-                unit["tagged_vlans"] = ranges_to_list(d["tagged"])
+                unit["tagged_vlans"] = ranges_to_list(str(d["tagged"]))
         # Flatten units
         r = list(instances.values())
         for fi in r:
