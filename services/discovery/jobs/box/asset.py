@@ -26,7 +26,7 @@ from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
 from noc.core.text import str_dict
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 
 
 class AssetCheck(DiscoveryCheck):
@@ -665,7 +665,7 @@ class AssetCheck(DiscoveryCheck):
         for k in sorted(x for x in self.ctx if not x.startswith("N")):
             seed += [k, str(self.ctx[k])]
         h = hashlib.sha256(smart_bytes(":".join(seed)))
-        return "NOC%s" % base64.b32encode(h.digest())[:7]
+        return "NOC%s" % smart_text(base64.b32encode(h.digest())[:7])
 
     @staticmethod
     def get_name(obj, managed_object=None):
