@@ -129,7 +129,12 @@ class ManagedObjectDataStream(DataStream):
             "id": str(mo.object_profile.id),
             "name": qs(mo.object_profile.name),
             "level": mo.object_profile.level,
+            "enable_ping": mo.object_profile.enable_ping,
+            "enable_box": mo.object_profile.enable_box_discovery,
+            "enable_periodic": mo.object_profile.enable_periodic_discovery,
         }
+        if mo.object_profile.tags:
+            r["object_profile"]["tags"] = [str(x) for x in mo.object_profile.tags]
         if mo.object_profile.remote_system and mo.object_profile.remote_id:
             r["object_profile"]["remote_system"] = {
                 "id": str(mo.object_profile.remote_system.id),
