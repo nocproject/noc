@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Activator API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -119,7 +119,7 @@ class ActivatorAPI(API):
             metrics["error", ("type", "snmp_v1_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
-        raise tornado.gen.Return(result)
+        return result
 
     @staticmethod
     def snmp_v1_get_get_label(address, community, oid):
@@ -151,7 +151,7 @@ class ActivatorAPI(API):
             metrics["error", ("type", "snmp_v2_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
-        raise tornado.gen.Return(result)
+        return result
 
     @staticmethod
     def snmp_v2_get_get_label(address, community, oid):
@@ -175,17 +175,15 @@ class ActivatorAPI(API):
             eof_mark="</html>",
         )
         if 200 <= code <= 299:
-            raise tornado.gen.Return(smart_text(body, errors="replace"))
+            return smart_text(body, errors="replace")
         elif ignore_errors:
             metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
-            raise tornado.gen.Return(
-                smart_text(header, errors="replace") + smart_text(body, errors="replace")
-            )
+            return smart_text(header, errors="replace") + smart_text(body, errors="replace")
         else:
             metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
-            raise tornado.gen.Return(None)
+            return None
 
     @staticmethod
     def http_get_get_label(url):

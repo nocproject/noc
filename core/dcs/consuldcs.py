@@ -50,9 +50,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
         )
         if code in ConsulRepearableCodes:
             raise consul.base.Timeout
-        raise tornado.gen.Return(
-            callback(consul.base.Response(code=code, headers=headers, body=body))
-        )
+        return callback(consul.base.Response(code=code, headers=headers, body=body))
 
     def get(self, callback, path, params=None):
         url = self.uri(path, params)
@@ -274,9 +272,9 @@ class ConsulDCS(DCSBase):
                 if r:
                     self.svc_id = svc_id
                 break
-            raise tornado.gen.Return(r)
+            return r
         else:
-            raise tornado.gen.Return(True)
+            return True
 
     @tornado.gen.coroutine
     def deregister(self):
@@ -303,7 +301,7 @@ class ConsulDCS(DCSBase):
         metrics["dcs_consul_keepalives"] += 1
         if self.in_keep_alive:
             metrics["error", ("type", "dcs_consul_overlapped_keepalives")] += 1
-            raise tornado.gen.Return()
+            return
         self.in_keep_alive = True
         try:
             if self.session:
@@ -384,7 +382,7 @@ class ConsulDCS(DCSBase):
         if not self.session:
             yield self.create_session()
         if self.total_slots is not None:
-            raise tornado.gen.Return((self.slot_number, self.total_slots))
+            return self.slot_number, self.total_slots
         prefix = "%s/slots/%s" % (self.consul_prefix, name)
         contender_path = "%s/%s" % (prefix, self.session)
         contender_info = self.session
@@ -468,7 +466,7 @@ class ConsulDCS(DCSBase):
                 self.logger.info("Acquired slot %s/%s", slot_number, total_slots)
                 self.slot_number = slot_number
                 self.total_slots = total_slots
-                raise tornado.gen.Return((slot_number, total_slots))
+                return slot_number, total_slots
             self.logger.info("Cannot acquire slot: CAS changed, retry")
 
     @tornado.gen.coroutine
@@ -525,4 +523,4 @@ class ConsulDCS(DCSBase):
             self.logger.info("Resolved near service %s to %s", name, r)
             if critical:
                 self.clear_faulty_status()
-            raise tornado.gen.Return(r)
+            return r

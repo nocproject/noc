@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # DataSteam client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -102,6 +102,6 @@ class DataStreamClient(object):
         try:
             svc = yield self.service.dcs.resolve(host)
         except ResolutionError:
-            raise tornado.gen.Return(None)
+            return None
         host, port = svc.split(":")
-        raise tornado.gen.Return((host, int(port)))
+        return host, int(port)

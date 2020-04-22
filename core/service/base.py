@@ -462,7 +462,7 @@ class Service(object):
     @tornado.gen.coroutine
     def deactivate(self):
         if not self.is_active:
-            raise tornado.gen.Return()
+            return
         self.is_active = False
         self.logger.info("Deactivating")
         # Shutdown API
@@ -538,7 +538,7 @@ class Service(object):
         """
         Called when service activated
         """
-        raise tornado.gen.Return()
+        return
 
     @tornado.gen.coroutine
     def acquire_lock(self):
@@ -553,11 +553,11 @@ class Service(object):
         slot_number, total_slots = yield self.dcs.acquire_slot(name, config.global_n_instances)
         if total_slots <= 0:
             self.die("Service misconfiguration detected: Invalid total_slots")
-        raise tornado.gen.Return((slot_number, total_slots))
+        return slot_number, total_slots
 
     @tornado.gen.coroutine
     def on_deactivate(self):
-        raise tornado.gen.Return()
+        return
 
     def open_rpc(self, name, pool=None, sync=False, hints=None):
         """

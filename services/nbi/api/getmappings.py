@@ -79,7 +79,7 @@ class GetMappingsAPI(NBIAPI):
             )
         except ValueError as e:
             self.write_result(400, "Bad request: %s" % e)
-            raise tornado.gen.Return()
+            return
         yield self.to_executor(self.do_mapping, **req)
 
     @tornado.gen.coroutine

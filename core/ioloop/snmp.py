@@ -12,7 +12,7 @@ import socket
 import errno
 
 # Third-party modules
-from tornado.gen import coroutine, Return
+from tornado.gen import coroutine
 
 # NOC modules
 from noc.core.snmp.version import SNMP_v2c
@@ -112,7 +112,7 @@ def snmp_get(
         else:
             result = resp.varbinds[0][1]
         logger.debug("[%s] GET result: %r", address, result)
-        raise Return(result)
+        return result
     elif resp.error_status == NO_SUCH_NAME and len(oids) > 1:
         # One or more invalid oids
         b_idx = resp.error_index - 1
@@ -153,7 +153,7 @@ def snmp_get(
                     logger.info("[%s] Invalid oid %s returned in reply", address, k)
         if result:
             logger.debug("[%s] GET result: %r", address, result)
-            raise Return(result)
+            return result
         else:
             # All oids excluded as broken
             logger.debug("[%s] All oids are broken", address)
@@ -249,7 +249,7 @@ def snmp_count(
                 else:
                     logger.debug("[%s] COUNT result: %s", address, result)
                     sock.close()
-                    raise Return(result)
+                    return result
 
 
 @coroutine
@@ -339,7 +339,7 @@ def snmp_getnext(
             break
         elif resp.error_status == END_OID_TREE:
             # End OID Tree
-            raise Return(result)
+            return result
         elif resp.error_status != NO_ERROR:
             # Error
             close_socket()
@@ -355,7 +355,7 @@ def snmp_getnext(
                 else:
                     logger.debug("[%s] GETNEXT result: %s", address, result)
                     close_socket()
-                    raise Return(result)
+                    return result
     close_socket()
 
 
@@ -413,4 +413,4 @@ def snmp_set(
         raise SNMPError(code=resp.error_status, oid=oid)
     else:
         logger.debug("[%s] SET result: OK", address)
-        raise Return(True)
+        return True

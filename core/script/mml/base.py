@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # MML class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -154,7 +154,7 @@ class MMLBase(object):
             except tornado.iostream.StreamClosedError:
                 self.logger.debug("Connection refused")
                 self.error = MMLConnectionRefused("Connection refused")
-                raise tornado.gen.Return(None)
+                return None
             self.logger.debug("Connected")
             yield self.iostream.startup()
         # Perform all necessary login procedures
@@ -164,11 +164,11 @@ class MMLBase(object):
             yield self.get_mml_response()
             if self.error:
                 self.error = MMLAuthFailed(str(self.error))
-                raise tornado.gen.Return(None)
+                return None
         # Send command
         yield self.send(self.command)
         r = yield self.get_mml_response()
-        raise tornado.gen.Return(r)
+        return r
 
     @tornado.gen.coroutine
     def get_mml_response(self):
@@ -181,14 +181,14 @@ class MMLBase(object):
             if header_sep not in r:
                 self.result = ""
                 self.error = MMLBadResponse("Missed header separator")
-                raise tornado.gen.Return(None)
+                return None
             header, r = r.split(header_sep, 1)
             code, msg = self.profile.parse_mml_header(header)
             if code:
                 # MML Error
                 self.result = ""
                 self.error = MMLError("%s (code=%s)" % (msg, code))
-                raise tornado.gen.Return(None)
+                return None
             # Process continuation
             if self.rx_mml_continue:
                 # Process continued block
@@ -201,7 +201,7 @@ class MMLBase(object):
             result += [r]
             break
         self.result = "".join(result)
-        raise tornado.gen.Return(self.result)
+        return self.result
 
     def execute(self, cmd, **kwargs):
         """
@@ -279,7 +279,7 @@ class MMLBase(object):
                 self.logger.debug("End of the block")
                 r = self.buffer[: match.start()]
                 self.buffer = self.buffer[match.end()]
-                raise tornado.gen.Return(r)
+                return r
 
     def shutdown_session(self):
         if self.profile.shutdown_session:

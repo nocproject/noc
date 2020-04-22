@@ -214,7 +214,7 @@ class TopicQueue(object):
                     timeout -= delta
                     if timeout <= 0:
                         # Timeout expired
-                        raise tornado.gen.Return()
+                        return
         # Check if queue already contains messages
         if not self.queue_size and not self.to_shutdown:
             # No messages, wait

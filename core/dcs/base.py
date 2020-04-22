@@ -121,7 +121,7 @@ class DCSBase(object):
             # One-time resolver
             resolver = self.resolver_cls(self, name, critical=critical, near=near, track=False)
             self.ioloop.add_callback(resolver.start)
-        raise tornado.gen.Return(resolver)
+        return resolver
 
     @tornado.gen.coroutine
     def resolve(
@@ -137,7 +137,7 @@ class DCSBase(object):
     ):
         resolver = yield self.get_resolver(name, critical=critical, near=near, track=track)
         r = yield resolver.resolve(hint=hint, wait=wait, timeout=timeout, full_result=full_result)
-        raise tornado.gen.Return(r)
+        return r
 
     @tornado.gen.coroutine
     def expire_resolvers(self):
@@ -298,7 +298,7 @@ class ResolverBase(object):
         metrics["dcs_resolver_success"] += 1
         if self.critical:
             self.dcs.clear_faulty_status()
-        raise tornado.gen.Return(location)
+        return location
 
     def policy_random(self):
         """

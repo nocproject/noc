@@ -269,7 +269,7 @@ class CLI(object):
                 self.logger.debug("Connection refused")
                 metrics["cli_connection_refused", ("proto", self.name)] += 1
                 self.error = CLIConnectionRefused("Connection refused")
-                raise tornado.gen.Return(None)
+                return None
             self.logger.debug("Connected")
             yield self.iostream.startup()
         # Perform all necessary login procedures
@@ -310,7 +310,7 @@ class CLI(object):
                 )
             self.error = self.script.CLISyntaxError(error_text)
             self.result = None
-        raise tornado.gen.Return(self.result)
+        return self.result
 
     def cleaned_input(self, s: bytes) -> bytes:
         """
@@ -342,7 +342,7 @@ class CLI(object):
                     r = yield f
                 if r == self.SYNTAX_ERROR_CODE:
                     metrics["cli_syntax_errors", ("proto", self.name)] += 1
-                    raise tornado.gen.Return(self.SYNTAX_ERROR_CODE)
+                    return self.SYNTAX_ERROR_CODE
                 metrics["cli_read_bytes", ("proto", self.name)] += len(r)
                 if self.script.to_track:
                     self.script.push_cli_tracking(r, self.state)
@@ -401,7 +401,7 @@ class CLI(object):
                         metrics["cli_state", ("state", handler.__name__)] += 1
                         r = yield handler(matched, match)
                     if r is not None:
-                        raise tornado.gen.Return(r)
+                        return r
                     break  # This state is processed
 
     @tornado.gen.coroutine
@@ -491,7 +491,7 @@ class CLI(object):
                         self.logger.debug("Prompt matched")
                         done = True
                         break
-        raise tornado.gen.Return(objects)
+        return objects
 
     def send_pager_reply(self, data, match):
         """

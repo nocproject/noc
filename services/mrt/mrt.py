@@ -54,21 +54,21 @@ class MRTRequestHandler(AuthRequestHandler):
                 metrics["mrt_success"] += 1
             except RPCRemoteError as e:
                 span.set_error_from_exc(e, getattr(e, "remote_code", 1))
-                raise tornado.gen.Return({"id": str(oid), "error": str(e)})
+                return {"id": str(oid), "error": str(e)}
             except RPCError as e:
                 logger.error("RPC Error: %s" % str(e))
                 span.set_error_from_exc(e, getattr(e, "code", 1))
-                raise tornado.gen.Return({"id": str(oid), "error": str(e)})
+                return {"id": str(oid), "error": str(e)}
             except Exception as e:
                 error_report()
                 metrics["mrt_failed"] += 1
                 span.set_error_from_exc(e)
-                raise tornado.gen.Return({"id": str(oid), "error": str(e)})
+                return {"id": str(oid), "error": str(e)}
             if r["errors"]:
                 span.set_error(ERR_UNKNOWN, r["output"])
-                raise tornado.gen.Return({"id": str(oid), "error": r["output"]})
+                return {"id": str(oid), "error": r["output"]}
             span.out_label = r["output"]
-            raise tornado.gen.Return({"id": str(oid), "result": r["output"]})
+            return {"id": str(oid), "result": r["output"]}
 
     @tornado.gen.coroutine
     def post(self, *args, **kwargs):

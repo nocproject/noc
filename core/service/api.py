@@ -46,19 +46,19 @@ class APIRequestHandler(tornado.web.RequestHandler):
             req = ujson.loads(self.request.body)
         except ValueError as e:
             self.api_error(e)
-            raise tornado.gen.Return()
+            return
         # Parse request
         id = req.get("id")
         params = req.get("params", [])
         method = req.get("method")
         if not method or not hasattr(self.api_class, method):
             self.api_error("Invalid method: '%s'" % method, id=id)
-            raise tornado.gen.Return()
+            return
         api = self.api_class(self.service, self.request, self)
         h = getattr(api, method)
         if not getattr(h, "api", False):
             self.api_error("Method is not callable: '%s'" % method, id=id)
-            raise tornado.gen.Return()
+            return
         calling_service = self.request.headers.get(self.CALLING_SERVICE_HEADER, "unknown")
         self.service.logger.debug(
             "[RPC call from %s] %s.%s(%s)", calling_service, api.name, method, params
@@ -143,7 +143,7 @@ class API(object):
         return [m for m in dir(cls) if getattr(getattr(cls, m), "api", False)]
 
     def redirect(self, location, method, params):
-        raise tornado.gen.Return(Redirect(location=location, method=method, params=params))
+        return Redirect(location=location, method=method, params=params)
 
 
 def api(method):

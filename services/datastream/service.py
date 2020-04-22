@@ -162,7 +162,7 @@ class DataStreamService(Service):
             ioloop.add_callback(event.set)
 
         if ds_name not in self.ds_queue:
-            raise tornado.gen.Return()
+            return
         event = tornado.locks.Event()
         ioloop = tornado.ioloop.IOLoop.current()
         self.ds_queue[ds_name].put(notify)

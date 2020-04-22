@@ -73,12 +73,12 @@ def resolve(host):
     with ns_lock:
         addr = ns_cache.get(host)
     if addr:
-        raise tornado.gen.Return(addr)
+        return addr
     try:
         addr = socket.gethostbyname(host)
         with ns_lock:
             ns_cache[host] = addr
-        raise tornado.gen.Return(addr)
+        return addr
     except socket.gaierror:
         return None
 
@@ -150,15 +150,13 @@ def fetch(
         host = u.netloc
         port = DEFAULT_PORTS.get(u.scheme)
         if not port:
-            raise tornado.gen.Return(
-                (ERR_TIMEOUT, {}, "Cannot resolve port for scheme: %s" % u.scheme)
-            )
+            return ERR_TIMEOUT, {}, "Cannot resolve port for scheme: %s" % u.scheme
     if is_ipv4(host):
         addr = host
     else:
         addr = yield resolver(host)
     if not addr:
-        raise tornado.gen.Return((ERR_TIMEOUT, {}, "Cannot resolve host: %s" % host))
+        return ERR_TIMEOUT, {}, "Cannot resolve host: %s" % host
     # Detect proxy server
     if allow_proxy:
         proxy = (proxies or SYSTEM_PROXIES).get(u.scheme)
@@ -189,10 +187,10 @@ def fetch(
             )
         except tornado.iostream.StreamClosedError:
             metrics["httpclient_timeouts"] += 1
-            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection refused"))
+            return ERR_TIMEOUT, {}, "Connection refused"
         except tornado.gen.TimeoutError:
             metrics["httpclient_timeouts"] += 1
-            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection timed out"))
+            return ERR_TIMEOUT, {}, "Connection timed out"
         deadline = io_loop.time() + request_timeout
         # Proxy CONNECT
         if proxy:
@@ -212,14 +210,10 @@ def fetch(
                 )
             except tornado.iostream.StreamClosedError:
                 metrics["httpclient_proxy_timeouts"] += 1
-                raise tornado.gen.Return(
-                    (ERR_TIMEOUT, {}, "Connection reset while connecting to proxy")
-                )
+                return ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"
             except tornado.gen.TimeoutError:
                 metrics["httpclient_proxy_timeouts"] += 1
-                raise tornado.gen.Return(
-                    (ERR_TIMEOUT, {}, "Timed out while sending request to proxy")
-                )
+                return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
             # Wait for proxy response
             parser = HttpParser()
             while not parser.is_headers_complete():
@@ -232,22 +226,18 @@ def fetch(
                     )
                 except tornado.iostream.StreamClosedError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return(
-                        (ERR_TIMEOUT, {}, "Connection reset while connecting to proxy")
-                    )
+                    return ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"
                 except tornado.gen.TimeoutError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return(
-                        (ERR_TIMEOUT, {}, "Timed out while sending request to proxy")
-                    )
+                    return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
                 received = len(data)
                 parsed = parser.execute(data, received)
                 if parsed != received:
-                    raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "Parse error"))
+                    return ERR_PARSE_ERROR, {}, "Parse error"
             code = parser.get_status_code()
             logger.debug("Proxy response: %s", code)
             if not 200 <= code <= 299:
-                raise tornado.gen.Return((code, parser.get_headers(), "Proxy error: %s" % code))
+                return code, parser.get_headers(), "Proxy error: %s" % code
             # Switch to TLS when necessary
             if use_tls:
                 logger.debug("Starting TLS negotiation")
@@ -264,14 +254,10 @@ def fetch(
                     )
                 except tornado.iostream.StreamClosedError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return(
-                        (ERR_TIMEOUT, {}, "Connection reset while connecting to proxy")
-                    )
+                    return ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"
                 except tornado.gen.TimeoutError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    raise tornado.gen.Return(
-                        (ERR_TIMEOUT, {}, "Timed out while sending request to proxy")
-                    )
+                    return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
         # Process request
         body = body or ""
         content_type = "application/binary"
@@ -333,10 +319,10 @@ def fetch(
             )
         except tornado.iostream.StreamClosedError:
             metrics["httpclient_timeouts"] += 1
-            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while sending request"))
+            return ERR_TIMEOUT, {}, "Connection reset while sending request"
         except tornado.gen.TimeoutError:
             metrics["httpclient_timeouts"] += 1
-            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request"))
+            return ERR_TIMEOUT, {}, "Timed out while sending request"
         parser = HttpParser()
         response_body = []
         while not parser.is_message_complete():
@@ -365,14 +351,14 @@ def fetch(
                         if found:
                             break
                 metrics["httpclient_timeouts"] += 1
-                raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Connection reset"))
+                return ERR_READ_TIMEOUT, {}, "Connection reset"
             except tornado.gen.TimeoutError:
                 metrics["httpclient_timeouts"] += 1
-                raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Request timed out"))
+                return ERR_READ_TIMEOUT, {}, "Request timed out"
             received = len(data)
             parsed = parser.execute(data, received)
             if parsed != received:
-                raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "Parse error"))
+                return ERR_PARSE_ERROR, {}, "Parse error"
             if parser.is_partial_body():
                 response_body += [parser.recv_body()]
         code = parser.get_status_code()
@@ -383,7 +369,7 @@ def fetch(
             if max_redirects > 0:
                 new_url = parsed_headers.get("Location")
                 if not new_url:
-                    raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "No Location header"))
+                    return ERR_PARSE_ERROR, {}, "No Location header"
                 logger.debug("HTTP redirect %s %s", code, new_url)
                 code, parsed_headers, response_body = yield fetch(
                     new_url,
@@ -399,11 +385,11 @@ def fetch(
                     allow_proxy=allow_proxy,
                     proxies=proxies,
                 )
-                raise tornado.gen.Return((code, parsed_headers, response_body))
+                return code, parsed_headers, response_body
             else:
-                raise tornado.gen.Return((404, {}, "Redirect limit exceeded"))
+                return 404, {}, "Redirect limit exceeded"
         # @todo: Process gzip and deflate Content-Encoding
-        raise tornado.gen.Return((code, parsed_headers, b"".join(response_body)))
+        return code, parsed_headers, b"".join(response_body)
     finally:
         if stream:
             stream.close()

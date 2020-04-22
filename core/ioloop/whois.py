@@ -72,7 +72,7 @@ def whois_async(query, fields=None):
         stream = yield client.connect(server, DEFAULT_WHOIS_PORT)
     except IOError as e:
         logger.error("Cannot resolve host '%s': %s", server, e)
-        raise tornado.gen.Return()
+        return
     try:
         yield stream.write(smart_bytes(query) + b"\r\n")
         data = yield stream.read_until_close()
@@ -82,7 +82,7 @@ def whois_async(query, fields=None):
     data = parse_response(data)
     if fields:
         data = [(k, v) for k, v in data if k in fields]
-    raise tornado.gen.Return(data)
+    return data
 
 
 def whois(query, fields=None):
