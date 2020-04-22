@@ -82,6 +82,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
+            name: "enable_subscriberprofile",
+            type: "boolean"
+        },
+        {
             name: "enable_resourcegroup",
             type: "boolean"
         },
