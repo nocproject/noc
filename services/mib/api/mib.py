@@ -13,6 +13,9 @@ import re
 from importlib.machinery import SourceFileLoader
 import datetime
 
+# Third-party modules
+from typing import Optional, List
+
 # NOC modules
 from noc.config import config
 from noc.core.service.api import API, api
@@ -55,8 +58,7 @@ class MIBAPI(API):
                 return {"status": True, "data": f.read()}
         return {"status": False, "msg": "Not found", "code": ERR_MIB_NOT_FOUND}
 
-    def guess_encoding(self, s, encodings=None):
-        # type: (bytes) -> str
+    def guess_encoding(self, s: bytes, encodings: Optional[List[str]] = None) -> str:
         """
         Try to guess encoding
         :param s:

@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from typing import List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple
 
 # NOC modules
 from noc.core.mac import MAC
@@ -38,8 +38,9 @@ class XMACCheck(TopologyDiscoveryCheck):
             elif policy == "C":
                 self.process_cloud(iface, macs[if_name])
 
-    def process_direct_downlink(self, iface, macs, name=None):
-        # type: (Interface,  List[MAC]) -> None
+    def process_direct_downlink(
+        self, iface: Interface, macs: List[MAC], name: Optional[str] = None
+    ) -> None:
         """
         Direct downlink method. When:
 
@@ -80,8 +81,9 @@ class XMACCheck(TopologyDiscoveryCheck):
         ri = ris[0]
         self.confirm_interface_link(iface, ri)
 
-    def process_chained_downlink(self, iface, macs, name=None):
-        # type: (Interface,  List[MAC]) -> None
+    def process_chained_downlink(
+        self, iface: Interface, macs: List[MAC], name: Optional[str] = None
+    ) -> None:
         """
         Chained downlink method. When:
 
@@ -171,8 +173,7 @@ class XMACCheck(TopologyDiscoveryCheck):
         for link in links:
             self.confirm_interface_link(*link)
 
-    def process_cloud(self, iface, macs, name=None):
-        # type: (Interface,  List[MAC]) -> None
+    def process_cloud(self, iface: Interface, macs: List[MAC], name: Optional[str] = None) -> None:
         """
         Cloud downlink methods. When:
 
@@ -257,7 +258,7 @@ class XMACCheck(TopologyDiscoveryCheck):
         :param objects: List of Managed Objects
         :returns: Dict of ManagedObject -> (List of direct uplinks, List of direct downlinks)
         """
-        r = {}
+        r: Dict[ManagedObject, Tuple[List[Interface], List[Interface]]] = {}
         for iface in Interface.objects.filter(
             managed_object__in=[mo.id for mo in objects], type="physical"
         ):
