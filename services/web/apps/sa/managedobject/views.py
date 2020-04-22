@@ -44,7 +44,6 @@ from noc.sa.interfaces.base import (
     StringParameter,
     BooleanParameter,
 )
-from noc.cm.models.objectfact import ObjectFact
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
@@ -772,25 +771,6 @@ class ManagedObjectApplication(ExtModelApplication):
                     }
                 ]
         return sorted(r, key=lambda x: x["capability"])
-
-    @view(url=r"(?P<id>\d+)/facts/$", method=["GET"], access="read", api=True)
-    def api_get_facts(self, request, id):
-        o = self.get_object_or_404(ManagedObject, id=id)
-        if not o.has_access(request.user):
-            return self.response_forbidden("Access denied")
-        return sorted(
-            (
-                {
-                    "cls": f.cls,
-                    "label": f.label,
-                    "attrs": [{"name": a, "value": f.attrs[a]} for a in f.attrs],
-                    "introduced": f.introduced.isoformat(),
-                    "changed": f.changed.isoformat(),
-                }
-                for f in ObjectFact.objects.filter(object=o.id)
-            ),
-            key=lambda x: (x["cls"], x["label"]),
-        )
 
     @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)
     def api_action(self, request, id, action):

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Wipe managed object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,8 +28,6 @@ from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.fm.models.uptime import Uptime
 from noc.sa.models.objectstatus import ObjectStatus
-from noc.cm.models.objectfact import ObjectFact
-from noc.cm.models.validationrule import ValidationRule
 from noc.ip.models.address import Address
 from noc.core.scheduler.job import Job
 
@@ -103,19 +101,9 @@ def wipe(o):
     # Delete Managed Object's capabilities
     log.debug("Wiping capabilitites")
     ObjectCapabilities.objects.filter(object=o.id).delete()
-    # Delete Managed Object's facts
-    log.debug("Wiping facts")
-    ObjectFact.objects.filter(object=o.id).delete()
     # Delete Managed Object's attributes
     log.debug("Wiping attributes")
     ManagedObjectAttribute.objects.filter(managed_object=o).delete()
-    # Detach from validation rule
-    log.debug("Detaching from validation rules")
-    for vr in ValidationRule.objects.filter(objects_list__object=o.id):
-        vr.objects_list = [x for x in vr.objects_list if x.object.id != o.id]
-        if not vr.objects_list and not vr.selectors_list:
-            vr.is_active = False
-        vr.save()
     # Finally delete object and config
     log.debug("Finally wiping object")
     o.delete()

@@ -237,14 +237,9 @@ _MODELS = {
     "pm.ThresholdProfile": "noc.pm.models.thresholdprofile.ThresholdProfile",
     # cm models
     "cm.ConfDBQuery": "noc.cm.models.confdbquery.ConfDBQuery",
-    "cm.ErrorType": "noc.cm.models.errortype.ErrorType",
     "cm.InterfaceValidationPolicy": "noc.cm.models.interfacevalidationpolicy.InterfaceValidationPolicy",
-    "cm.ObjectFact": "noc.cm.models.objectfact.ObjectFact",
     "cm.ObjectNotify": "noc.cm.models.objectnotify.ObjectNotify",
     "cm.ObjectValidationPolicy": "noc.cm.models.objectvalidationpolicy.ObjectValidationPolicy",
-    "cm.ValidationPolicy": "noc.cm.models.validationpolicy.ValidationPolicy",
-    "cm.ValidationPolicySettings": "noc.cm.models.validationpolicysettings.ValidationPolicySettings",
-    "cm.ValidationRule": "noc.cm.models.validationrule.ValidationRule",
     # ip models
     "ip.Address": "noc.ip.models.address.Address",
     "ip.AddressProfile": "noc.ip.models.addressprofile.AddressProfile",
@@ -342,7 +337,6 @@ COLLECTIONS = [
     "inv.Firmware",
     "fm.MIBAlias",
     "gis.Layer",
-    "cm.ErrorType",
     "fm.OIDAlias",
     "inv.Technology",
     "fm.MIBPreference",
