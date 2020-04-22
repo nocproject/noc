@@ -11,6 +11,7 @@ import logging
 import socket
 from collections import defaultdict
 from urllib.error import URLError
+from io import TextIOWrapper
 
 # NOC modules
 from noc.config import config
@@ -107,11 +108,11 @@ class WhoisCacheLoader(object):
     def urlopen(self, url):
         if url in self.to_cache:
             if url not in self._url_cache:
-                f = urlopen(url, auto_deflate=True)
+                f = TextIOWrapper(urlopen(url, auto_deflate=True), errors="ignore")
                 self._url_cache[url] = f.read().splitlines()
                 f.close()
             return self._url_cache[url]
-        return urlopen(url, auto_deflate=True)
+        return TextIOWrapper(urlopen(url, auto_deflate=True), errors="ignore")
 
     def update_from_rpsl(self, url, r, key_field, values_field, forward, parser):
         """
