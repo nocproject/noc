@@ -84,8 +84,12 @@ class KSPFinder(object):
         """
         return self._find_shortest_path(self.start)
 
-    def _find_shortest_path(self, start, pruned_links=None, max_depth=MAX_PATH_LENGTH):
-        # type: (ManagedObject, Optional[Set[ObjectId]]) -> List[PathInfo]
+    def _find_shortest_path(
+        self,
+        start: ManagedObject,
+        pruned_links: Optional[List[ObjectId]] = None,
+        max_depth: int = MAX_PATH_LENGTH,
+    ) -> List[PathInfo]:
         """
         Returns a list of Managed Objects along shortest path
         using modified A* algorithm
@@ -95,12 +99,10 @@ class KSPFinder(object):
         :return:
         """
 
-        def max_path_length():
-            # type: () -> int
+        def max_path_length() -> int:
             return MAX_PATH_LENGTH
 
-        def iter_neighbors(n_ids):
-            # type: (Iterable[int]) -> Iterable[ManagedObject]
+        def iter_neighbors(n_ids: Iterable[int]) -> Iterable[ManagedObject]:
             for m_id in n_ids:
                 n_mo = self.mo_cache.get(m_id)
                 if n_mo:
@@ -111,8 +113,7 @@ class KSPFinder(object):
                         self.mo_cache[n_mo.id] = n_mo
                         yield n_mo
 
-        def is_allowed_link(current_mo, link):
-            # type: (ManagedObject, Link) -> bool
+        def is_allowed_link(current_mo: ManagedObject, link: Link) -> bool:
             if not self.constraint.is_valid_link(link):
                 return False
             allow_egress = False
@@ -130,8 +131,7 @@ class KSPFinder(object):
                     return True
             return False
 
-        def iter_links(current_mo):
-            # type:(ManagedObject) -> Iterable[Link]
+        def iter_links(current_mo: ManagedObject) -> Iterable[Link]:
             if (
                 current_mo.id in self.mo_links
                 and current_mo.segment.id not in self.cached_seg_links
@@ -151,8 +151,7 @@ class KSPFinder(object):
                 if not self.constraint or is_allowed_link(current_mo, link):
                     yield link
 
-        def reconstruct_path(goal_mo):
-            # type: (ManagedObject) -> List[PathInfo]
+        def reconstruct_path(goal_mo: ManagedObject) -> List[PathInfo]:
             obj_path = [goal_mo]  # type: List[ManagedObject]
             while True:
                 goal_mo = came_from.get(goal_mo)
@@ -166,8 +165,7 @@ class KSPFinder(object):
                 full_path += [PathInfo(mo1, mo2, links, cost)]
             return full_path
 
-        def current_path_len(current_mo):
-            # type: (ManagedObject) -> int
+        def current_path_len(current_mo: ManagedObject) -> int:
             n = 0
             while current_mo != start:
                 current_mo = came_from.get(current_mo)

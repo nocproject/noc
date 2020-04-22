@@ -332,8 +332,9 @@ class PathAPI(NBIAPI):
                 )
         return None
 
-    def get_interface_untagged_constraint(self, iface, strict=False):
-        # type: (Interface) -> BaseConstraint
+    def get_interface_untagged_constraint(
+        self, iface: Interface, strict: bool = False
+    ) -> BaseConstraint:
         for doc in SubInterface._get_collection().find(
             {"interface": iface.id},
             {"_id": 0, "enabled_afi": 1, "untagged_vlan": 1, "tagged_vlans": 1},
