@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # whois utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from collections import defaultdict
 
 # Third-party modules
 from six.moves.urllib.error import URLError
+from io import TextIOWrapper
 
 # NOC modules
 from noc.config import config
@@ -109,11 +110,11 @@ class WhoisCacheLoader(object):
     def urlopen(self, url):
         if url in self.to_cache:
             if url not in self._url_cache:
-                f = urlopen(url, auto_deflate=True)
+                f = TextIOWrapper(urlopen(url, auto_deflate=True), errors="ignore")
                 self._url_cache[url] = f.read().splitlines()
                 f.close()
             return self._url_cache[url]
-        return urlopen(url, auto_deflate=True)
+        return TextIOWrapper(urlopen(url, auto_deflate=True), errors="ignore")
 
     def update_from_rpsl(self, url, r, key_field, values_field, forward, parser):
         """
