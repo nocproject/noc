@@ -18,6 +18,7 @@ import _thread
 # Third-party modules
 from concurrent.futures import Future
 from tornado.gen import with_timeout
+from typing import Optional, Dict, Any, Set, List
 
 # NOC modules
 from noc.config import config
@@ -34,15 +35,15 @@ DEFAULT_SHUTDOWN_TIMEOUT = config.threadpool.shutdown_timeout
 class ThreadPoolExecutor(object):
     def __init__(
         self,
-        max_workers,
-        idle_timeout=DEFAULT_IDLE_TIMEOUT,
-        shutdown_timeout=DEFAULT_SHUTDOWN_TIMEOUT,
-        name=None,
-    ):
+        max_workers: int,
+        idle_timeout: int = DEFAULT_IDLE_TIMEOUT,
+        shutdown_timeout: int = DEFAULT_SHUTDOWN_TIMEOUT,
+        name: Optional[str] = None,
+    ) -> None:
         self.max_workers = max_workers
-        self.threads = set()
+        self.threads: Set[threading.Thread] = set()
         self.mutex = threading.Lock()
-        self.queue = deque()
+        self.queue: deque = deque()
         self.to_shutdown = False
         self.idle_timeout = idle_timeout or None
         self.shutdown_timeout = shutdown_timeout or None
@@ -52,9 +53,21 @@ class ThreadPoolExecutor(object):
         self.done_event = None
         self.done_future = None
         self.started = perf_counter()
-        self.waiters = []
+        self.waiters: List[_thread.LockType] = []
         if config.thread_stack_size:
             threading.stack_size(config.thread_stack_size)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if not self.to_shutdown:
+            if exc_type:
+                # Stop workers and raise error
+                self._stop_all_workers()
+            else:
+                # Graceful shutdown
+                self.shutdown(sync=True)
 
     def _put(self, item):
         with self.mutex:
@@ -104,10 +117,10 @@ class ThreadPoolExecutor(object):
                 time.sleep(delay)
                 t = perf_counter()
 
-    def _qsize(self):
+    def _qsize(self) -> int:
         return len(self.queue)
 
-    def set_max_workers(self, max_workers):
+    def set_max_workers(self, max_workers: int) -> None:
         with self.mutex:
             if max_workers < self.max_workers:
                 # Reduce pool
@@ -134,15 +147,18 @@ class ThreadPoolExecutor(object):
         self._put((future, fn, args, kwargs, span_ctx, span, in_label))
         return future
 
+    def _stop_all_workers(self):
+        for _ in range(len(self.threads)):
+            self.stop_one_worker()
+
     def shutdown(self, sync=False):
         logger.info("Shutdown")
         with self.mutex:
             self.done_future = Future()
-            if not sync:
+            if sync:
                 self.done_event = threading.Event()
             self.to_shutdown = True
-        for _ in range(len(self.threads)):
-            self.stop_one_worker()
+        self._stop_all_workers()
         logger.info("Waiting for workers")
         if sync:
             self.done_event.wait(timeout=self.shutdown_timeout)
@@ -227,7 +243,7 @@ class ThreadPoolExecutor(object):
                 (self.max_workers - len(self.threads) - self._qsize() + len(self.waiters)), 0
             )
 
-    def apply_metrics(self, d):
+    def apply_metrics(self, d: Dict[str, Any]) -> None:
         """
         Append threadpool metrics to dictionary d
         :param d:
