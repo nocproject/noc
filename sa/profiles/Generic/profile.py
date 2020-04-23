@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Generic.Host
 # Dummb profile to allow managed object creating

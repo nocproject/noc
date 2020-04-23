@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Alcatel.OS62xx.ping
 # ---------------------------------------------------------------------
@@ -6,8 +5,8 @@
 # coded by azhur
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
 import re

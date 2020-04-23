@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Dell.Powerconnect62xx.get_vlans
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 from noc.core.script.base import BaseScript

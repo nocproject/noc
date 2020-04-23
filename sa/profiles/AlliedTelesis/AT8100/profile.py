@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: Allied Telesis
 # OS:     AT8100
@@ -7,8 +6,8 @@
 # coded by azhur
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 import re
 from noc.core.profile.base import BaseProfile
 

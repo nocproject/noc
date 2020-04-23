@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 __author__ = "FeNikS"
 # ---------------------------------------------------------------------
 # Sencore.Probe.get_version
@@ -6,8 +5,8 @@ __author__ = "FeNikS"
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 

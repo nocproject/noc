@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ObjectStatus
 # Updated by SAE according to ping check changes

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: D-Link
 # OS:     DxS_Smart
@@ -7,8 +6,8 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 import re
 from noc.core.profile.base import BaseProfile
 from noc.core.script.error import NotSupportedError

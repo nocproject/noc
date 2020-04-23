@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: DLink
 # OS:     DxS_Cisco_CLI
@@ -6,8 +5,8 @@
 # Copyright (C) 2007-2015 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.profile.base import BaseProfile
 
 

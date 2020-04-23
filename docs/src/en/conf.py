@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # NOC Documentation documentation build configuration file, created by
 # sphinx-quickstart on Tue Sep 19 10:20:02 2017.

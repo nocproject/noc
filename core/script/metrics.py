@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Various metric converting functions
 # to use in get_metrics scripts

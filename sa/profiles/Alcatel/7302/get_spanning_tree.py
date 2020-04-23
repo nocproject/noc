@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_spanning_tree
 # Author: scanbox@gmail.com

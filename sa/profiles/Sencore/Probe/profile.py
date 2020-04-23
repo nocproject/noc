@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: Sencore
 # OS:     Probe
@@ -7,8 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 __author__ = "FeNikS"
-"""
-"""
+
+
 from noc.core.profile.base import BaseProfile
 
 

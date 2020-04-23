@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Initialize bi_id field
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
+
 # Third-party modules
 from pymongo import UpdateOne
 import bson

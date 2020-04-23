@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # IInterfaceClassification --
 #     Interface classification pyRule

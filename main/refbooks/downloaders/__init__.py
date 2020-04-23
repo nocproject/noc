@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # RefBook Downloaders
 # Downloader is a class performing download and parsing of refbook

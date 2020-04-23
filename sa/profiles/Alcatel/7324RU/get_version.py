@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_config
 # Author: scanbox@gmail.com

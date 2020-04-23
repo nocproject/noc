@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 __author__ = "FeNikS"
 
 # NOC modules

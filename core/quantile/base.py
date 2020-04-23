@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Approximate quantiles computation over an unbounded data set
 # with low memory and CPU footprints
