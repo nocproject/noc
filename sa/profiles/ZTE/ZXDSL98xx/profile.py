@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: ZTE
 # OS:     ZXDSL98xx
@@ -6,8 +5,8 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 import re
 from noc.core.profile.base import BaseProfile
 

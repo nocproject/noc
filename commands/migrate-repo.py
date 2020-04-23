@@ -1,5 +1,4 @@
 #!./bin/python
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # migrate-repo
 # Migrate HG repo to GridVCS

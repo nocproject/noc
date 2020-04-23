@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # OS.ESXi.get_fqdn
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 import re

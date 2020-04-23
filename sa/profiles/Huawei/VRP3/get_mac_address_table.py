@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Huawei.VRP3.get_mac_address_table
 # sergey.sadovnikov@gmail.com

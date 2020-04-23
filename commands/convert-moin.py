@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Import MoinMoin wiki data to NOC KB
 # USAGE:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: NSN
 # OS:     hiX56xx
@@ -7,8 +6,8 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.profile.base import BaseProfile
 
 

@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Orion.NOS.get_vlans
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans

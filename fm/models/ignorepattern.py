@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # IgnorePattern model
 # Propagated to collectors

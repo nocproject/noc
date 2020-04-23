@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Huawei.MA5300.get_arp
 # sergey.sadovnikov@gmail.com
@@ -7,8 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-"""
-"""
 
 # Python modules
 import re

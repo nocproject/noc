@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: Angtel (Angstrem telecom - http://www.angtel.ru/)
 # OS:     Topaz

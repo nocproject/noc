@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # NSN.hiX56xx.get_vlans
 # sergey.sadovnikov@gmail.com
@@ -6,8 +5,8 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 import re

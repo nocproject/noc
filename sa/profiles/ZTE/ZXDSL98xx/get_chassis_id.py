@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ZTE.ZXDSL98xx.get_chassis_id
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 import re

@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_arp
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 import re

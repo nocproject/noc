@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vitesse.VSC.ping
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
 from noc.core.validators import is_ipv4, is_ipv6

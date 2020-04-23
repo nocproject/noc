@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: Vitesse (Vitesse Semiconductor)
 # OS:     VSC

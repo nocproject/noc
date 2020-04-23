@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # OS.FreeBSD.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re

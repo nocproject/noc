@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - https://www.nposkss.ru)
 # OS:     SKS

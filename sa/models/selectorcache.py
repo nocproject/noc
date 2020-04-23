@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # SelectorCache
 # Updated by sa.refresh_selector_cache job

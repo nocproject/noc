@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Huawei.VRP3.add_vlan
 # sergey.sadovnikov@gmail.com

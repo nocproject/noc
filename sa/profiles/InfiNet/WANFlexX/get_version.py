@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # InfiNet.WANFlexX.get_version
 # Izya12@gmail.com

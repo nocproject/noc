@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Remove DNSZoneProfile.zone_ns_list, create necessary DNSServerObjects and links between zones and profiles
 # ---------------------------------------------------------------------

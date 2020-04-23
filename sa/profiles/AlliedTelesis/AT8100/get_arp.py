@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8100.get_arp
 # ---------------------------------------------------------------------
@@ -6,8 +5,8 @@
 # coded by azhur
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP

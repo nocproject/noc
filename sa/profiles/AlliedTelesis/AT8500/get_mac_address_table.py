@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8500.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -6,8 +5,8 @@
 # coded by azhur
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: GWD (GW Delight Technology Co., Ltd) http://www.gwdelight.com
 # OS:     GFA
