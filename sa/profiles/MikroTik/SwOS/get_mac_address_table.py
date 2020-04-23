@@ -42,7 +42,7 @@ class Script(BaseScript):
         for record in macs:
             iface_num = int(record["prt"], 16)
             if self.is_platform_6port1sfp:
-                for i in xrange(8):
+                for i in range(8):
                     if (iface_num >> i) & 1:
                         iface_num = i
                         break
