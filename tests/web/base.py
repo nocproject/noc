@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BaseAPITest
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ class APIHandler(object):
         code, headers, body = yield fetch(
             url=url, method=method, headers=headers, body=body, io_loop=self.io_loop
         )
-        raise tornado.gen.Return((code, headers, body))
+        return code, headers, body
 
 
 def gen_test(f):
@@ -93,7 +93,7 @@ class BaseAPITest(object):
         code, headers, body = yield self.api.fetch(url, method=method, headers=headers, body=body)
         if "Content-Type" in headers and headers["Content-Type"].startswith("text/json"):
             body = ujson.loads(body)
-        raise tornado.gen.Return((code, headers, body))
+        return code, headers, body
 
     def get_handlers(self):
         raise NotImplementedError()

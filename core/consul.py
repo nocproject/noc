@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Consul client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             # Resolve CurlHTTPClient circular dependencies
             client._force_timeout_callback = None
             client._multi = None
-        raise tornado.gen.Return(callback(self.response(response)))
+        return callback(self.response(response))
 
     def get(self, callback, path, params=None):
         uri = self.uri(path, params)

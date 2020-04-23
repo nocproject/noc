@@ -73,20 +73,20 @@ class SAEAPI(API):
                 svc = yield self.service.dcs.resolve(
                     sn, timeout=config.sae.activator_resolution_timeout
                 )
-                raise tornado.gen.Return(svc)
+                return svc
             except ResolutionError as e:
                 self.logger.info("Cannot resolve %s: %s", sn, e)
                 metrics["error", ("type", "resolve_activator")] += 1
-        raise tornado.gen.Return(None)
+        return None
 
     @tornado.gen.coroutine
     def get_activator_url(self, pool):
         svc = yield self.resolve_activator(pool)
         if svc:
-            raise tornado.gen.Return("http://%s/api/activator/" % svc)
+            return "http://%s/api/activator/" % svc
         else:
             metrics["error", ("type", "empty_activator_list_response")] += 1
-            raise tornado.gen.Return(None)
+            return None
 
     @api
     @tornado.gen.coroutine
@@ -138,7 +138,7 @@ class SAEAPI(API):
             metrics["error", ("type", "pool_not_found")] += 1
             raise APIError("Pool not found")
         data["pool"] = pool
-        raise tornado.gen.Return(data)
+        return data
 
     @cachedmethod(key="cred-%s", version=CREDENTIAL_CACHE_VERSION)
     def get_object_data(self, object_id):

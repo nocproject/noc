@@ -35,7 +35,7 @@ class BeefCLI(CLI):
         # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
         if self.state != "prompt":
-            raise tornado.gen.Return()  # Will be replied via reply_state
+            return  # Will be replied via reply_state
         beef = self.script.request_beef()
         gen = beef.iter_cli_reply(cmd[: -len(self.profile.command_submit)])
         self.ioloop.add_callback(self.streamer, gen)

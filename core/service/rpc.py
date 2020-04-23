@@ -83,7 +83,7 @@ class RPCProxy(object):
                     )
                     # Process response
                     if code == 200:
-                        raise tornado.gen.Return(data)
+                        return data
                     elif code == 307:
                         # Process redirect
                         if not limit:
@@ -91,11 +91,11 @@ class RPCProxy(object):
                         url = headers.get("location")
                         self._logger.debug("Redirecting to %s", url)
                         r = yield make_call(url, data, limit - 1)
-                        raise tornado.gen.Return(r)
+                        return r
                     elif code in (598, 599):
                         span.set_error(code)
                         self._logger.debug("Timed out")
-                        raise tornado.gen.Return(None)
+                        return None
                     else:
                         span.set_error(code)
                         raise RPCHTTPError("HTTP Error %s: %s" % (code, body))
@@ -144,17 +144,17 @@ class RPCProxy(object):
                             remote_code=result.get("code", None),
                         )
                     else:
-                        raise tornado.gen.Return(result["result"])
+                        return result["result"]
                 else:
                     # Notifications return None
-                    raise tornado.gen.Return()
+                    return
             else:
                 raise RPCNoService("No active service %s found" % self._service_name)
 
         @tornado.gen.coroutine
         def async_wrapper(*args, **kwargs):
             result = yield _call(item, *args, **kwargs)
-            raise tornado.gen.Return(result)
+            return result
 
         def sync_wrapper(*args, **kwargs):
             @tornado.gen.coroutine

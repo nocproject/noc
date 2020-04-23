@@ -85,7 +85,7 @@ def mpub(topic, messages, dcs=None, io_loop=None, retries=None):
     :raises NSQPubError: On publish error
     """
     if not messages:
-        raise tornado.gen.Return()
+        return
     if not dcs:
         # No global DCS, instantiate one
         dcs = get_dcs(ioloop=io_loop)

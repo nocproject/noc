@@ -187,7 +187,7 @@ class RTSPBase(object):
             except tornado.iostream.StreamClosedError:
                 self.logger.debug("Connection refused")
                 self.error = RTSPConnectionRefused("Connection refused")
-                raise tornado.gen.Return(None)
+                return None
             self.logger.debug("Connected")
             yield self.iostream.startup()
         # Perform all necessary login procedures
@@ -204,7 +204,7 @@ class RTSPBase(object):
                 # Send command
         yield self.send()
         r = yield self.get_rtsp_response()
-        raise tornado.gen.Return(r)
+        return r
 
     @tornado.gen.coroutine
     def get_rtsp_response(self):
@@ -217,7 +217,7 @@ class RTSPBase(object):
             if header_sep not in r:
                 self.result = ""
                 self.error = RTSPBadResponse("Missed header separator")
-                raise tornado.gen.Return(None)
+                return None
             header, r = r.split(header_sep, 1)
             code, msg, headers = self.parse_rtsp_header(header)
             self.headers = headers
@@ -227,16 +227,16 @@ class RTSPBase(object):
             if code == 401:
                 self.result = ""
                 self.error = RTSPAuthFailed("%s (code=%s)" % (msg, code), code=int(code))
-                raise tornado.gen.Return(None)
+                return None
             if not 200 <= code <= 299:
                 # RTSP Error
                 self.result = ""
                 self.error = RTSPError("%s (code=%s)" % (msg, code), code=int(code))
-                raise tornado.gen.Return(None)
+                return None
             result += [r]
             break
         self.result = "".join(result)
-        raise tornado.gen.Return(self.result)
+        return self.result
 
     @staticmethod
     def parse_rtsp_header(data):
@@ -335,7 +335,7 @@ class RTSPBase(object):
             #     self.logger.debug("End of the block")
             #     r = self.buffer[:match.start()]
             #     self.buffer = self.buffer[match.end()]
-            raise tornado.gen.Return(r)
+            return r
 
     def shutdown_session(self):
         if self.profile.shutdown_session:

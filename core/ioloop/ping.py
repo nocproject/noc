@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  PingSocket implementation
+# PingSocket implementation
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2018 The NOC Project
-#  See LICENSE for details
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
@@ -337,7 +337,7 @@ class Ping(object):
         """
         socket = self.get_socket(address)
         if not socket:
-            raise tornado.gen.Return(None)
+            return None
         req_id = next(self.iter_request) & 0xFFFF
         result = policy == self.CHECK_ALL and count > 0
         for seq in range(count):
@@ -349,7 +349,7 @@ class Ping(object):
                 result = False
                 break
         logger.debug("[%s] Result: %s", address, result)
-        raise tornado.gen.Return(result)
+        return result
 
     @tornado.gen.coroutine
     def ping_check_rtt(self, address, size=64, count=1, timeout=1000, policy=CHECK_FIRST):
@@ -365,7 +365,7 @@ class Ping(object):
         """
         socket = self.get_socket(address)
         if not socket:
-            raise tornado.gen.Return(None)
+            return None
         req_id = next(self.iter_request) & 0xFFFF
         result = policy == self.CHECK_ALL and count > 0
         rtts = []
@@ -388,7 +388,7 @@ class Ping(object):
             elif attempt > 0:
                 metrics["ping_check_recover"] += 1
             logger.debug("[%s] Result: success, rtt=%s, attempt=%d", address, rtt, attempt)
-            raise tornado.gen.Return((rtt, attempt))
+            return rtt, attempt
         else:
             logger.debug("[%s] Result: failed", address)
-            raise tornado.gen.Return((None, attempt))
+            return None, attempt

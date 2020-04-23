@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SNMP Beef
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -213,4 +213,4 @@ class BeefClientIOStream(tornado.iostream.IOStream):
     @tornado.gen.coroutine
     def recvfrom(self, buffsize):
         data = yield self.read_bytes(buffsize, partial=True)
-        raise tornado.gen.Return((data, self._address))
+        return data, self._address

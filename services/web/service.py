@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Web service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -131,7 +131,7 @@ class NOCWSGIHandler(tornado.web.RequestHandler):
         data["status_code"] = status_code
         data["start_line"] = httputil.ResponseStartLine("HTTP/1.1", status_code, reason)
         data["body"] = body
-        raise tornado.gen.Return(data)
+        return data
 
     def log_request(self, status_code, request):
         method = request.method
