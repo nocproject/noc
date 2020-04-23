@@ -531,5 +531,5 @@ class Scheduler(object):
         else:
             f = Future()
             f.set_result(True)
-        f.add_done_callback(self.apply_bulk_ops)
+        f.add_done_callback(lambda _: self.apply_bulk_ops())
         return f
