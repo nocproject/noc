@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ArchivingExtractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ class ArchivingExtractor(BaseExtractor):
         Generator yielding documents to be archived
         :return:
         """
-        raise StopIteration()
+        return iter(())
 
     def iter_archived_collections(self):
         """

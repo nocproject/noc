@@ -1635,10 +1635,10 @@ class ManagedObject(NOCModel):
         if config is None:
             config = self.config.read()
         if not config:
-            raise StopIteration  # no config
+            return  # no config
         t_name, t_config = self.profile.get_profile().get_config_tokenizer(self)
         if not t_name:
-            raise StopIteration  # no tokenizer
+            return  # no tokenizer
         t_cls = tokenizer_loader.get_class(t_name)
         if not t_cls:
             raise ValueError("Invalid tokenizer")
@@ -1649,12 +1649,12 @@ class ManagedObject(NOCModel):
         profile = self.profile.get_profile()
         n_handler, n_config = profile.get_config_normalizer(self)
         if not n_handler:
-            raise StopIteration
+            return
         if not n_handler.startswith("noc."):
             n_handler = "noc.sa.profiles.%s.confdb.normalizer.%s" % (profile.name, n_handler)
         n_cls = get_handler(n_handler)
         if not n_cls:
-            raise StopIteration
+            return
         normalizer = n_cls(self, self.iter_config_tokens(config), **n_config)
         yield from normalizer
 

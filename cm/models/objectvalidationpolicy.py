@@ -73,7 +73,7 @@ class ObjectValidationPolicy(Document):
         # Check filter query, if any
         if self.filter_query:
             if not self.filter_query.any(engine):
-                raise StopIteration
+                return
         # Process rules
         for rule in self.rules:
             if not rule.is_active:
@@ -95,4 +95,4 @@ class ObjectValidationPolicy(Document):
                     }
                     yield problem
                     if rule.is_fatal:
-                        raise StopIteration
+                        return

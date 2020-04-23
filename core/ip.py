@@ -130,17 +130,17 @@ class IP(object):
             a += 1
             n += 1
             if (count and n >= count) or (until and a == until):
-                raise StopIteration
+                return
 
     def iter_cover(self, mask):
         """
         Generate prefixes of size _mask_ covering basic prefix
         """
         if mask < self.mask:
-            raise StopIteration
+            return
         if mask == self.mask:
             yield self
-            raise StopIteration
+            return
         s = IP.prefix(self.prefix.split("/")[0] + "/%d" % mask)
         maxmask = 32 if self.afi == "4" else 128
         dist = 2 ** (maxmask - mask)
@@ -167,7 +167,7 @@ class IP(object):
             n += 1
         if n == 0:
             yield self
-            raise StopIteration
+            return
         #
         yield from db.iter_free(self)
 

@@ -260,7 +260,7 @@ class KSPFinder(object):
         A: List[PathInfo] = self._find_shortest_path(self.start)
         yield A
         if self.n_shortest == 1:
-            raise StopIteration
+            return
         # Pruned links for each spur node
         pruned_links: DefaultDict[ManagedObject, Set[ObjectId]] = defaultdict(set)
         # Alternative paths
