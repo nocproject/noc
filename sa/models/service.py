@@ -38,7 +38,7 @@ class Service(Document):
         "collection": "noc.services",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["subscriber", "managed_object", "parent"],
+        "indexes": ["subscriber", "managed_object", "parent", "order_id"],
     }
     profile = ReferenceField(ServiceProfile, required=True)
     # Creation timestamp
