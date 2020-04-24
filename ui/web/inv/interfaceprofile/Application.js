@@ -17,7 +17,6 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.remotesystem.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
-        "NOC.cm.validationpolicysettings.ValidationSettingsPanel",
         "NOC.cm.interfacevalidationpolicy.LookupField",
         "Ext.ux.form.GridField"
     ],
@@ -28,13 +27,6 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
 
     initComponent: function () {
         var me = this;
-
-        me.ITEM_VALIDATION_SETTINGS = me.registerItem(
-            Ext.create("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
-                app: me,
-                validationModelId: me.validationModelId
-            })
-        );
 
         me.validationSettingsButton = Ext.create("Ext.button.Button", {
             text: __("Validation"),
