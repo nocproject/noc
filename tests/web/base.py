@@ -39,9 +39,7 @@ class APIHandler(object):
     @tornado.gen.coroutine
     def fetch(self, url, method="GET", headers=None, body=None):
         url = "%s%s" % (self.base_url, url)
-        code, headers, body = yield fetch(
-            url=url, method=method, headers=headers, body=body, io_loop=self.io_loop
-        )
+        code, headers, body = yield fetch(url=url, method=method, headers=headers, body=body)
         return code, headers, body
 
 

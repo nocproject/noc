@@ -40,7 +40,7 @@ class DataStreamClient(object):
         """
 
     @tornado.gen.coroutine
-    def query(self, change_id=None, filters=None, block=False, limit=None, io_loop=None):
+    def query(self, change_id=None, filters=None, block=False, limit=None):
         """
         Query datastream
         :param filters:
@@ -69,9 +69,7 @@ class DataStreamClient(object):
                 url = base_url
             # Get data
             logger.debug("Request: %s", url)
-            code, headers, data = yield fetch(
-                url, io_loop=io_loop, resolver=self.resolve, headers=req_headers
-            )
+            code, headers, data = yield fetch(url, resolver=self.resolve, headers=req_headers)
             logger.debug("Response: %s %s", code, headers)
             if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
                 continue  # Retry on timeout

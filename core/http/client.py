@@ -19,6 +19,7 @@ from urllib.parse import urlparse
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
+from tornado.ioloop import IOLoop
 import tornado.iostream
 import cachetools
 import ujson
@@ -29,7 +30,6 @@ from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
-
 from http_parser.parser import HttpParser
 
 logger = logging.getLogger(__name__)
@@ -87,7 +87,6 @@ def fetch(
     body=None,
     connect_timeout=DEFAULT_CONNECT_TIMEOUT,
     request_timeout=DEFAULT_REQUEST_TIMEOUT,
-    io_loop=None,
     resolver=resolve,
     max_buffer_size=DEFAULT_BUFFER_SIZE,
     follow_redirects=False,
@@ -108,7 +107,6 @@ def fetch(
     :param body: Request body for POST and PUT request
     :param connect_timeout:
     :param request_timeout:
-    :param io_loop:
     :param resolver:
     :param follow_redirects:
     :param max_redirects:
@@ -136,7 +134,6 @@ def fetch(
     if eof_mark:
         eof_mark = smart_bytes(eof_mark)
     # Detect proxy when necessary
-    io_loop = io_loop or tornado.ioloop.IOLoop.current()
     u = urlparse(str(url))
     use_tls = u.scheme == "https"
     if ":" in u.netloc:
@@ -163,9 +160,9 @@ def fetch(
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         if use_tls and not proxy:
-            stream = tornado.iostream.SSLIOStream(s, io_loop=io_loop, ssl_options=get_ssl_options())
+            stream = tornado.iostream.SSLIOStream(s, ssl_options=get_ssl_options())
         else:
-            stream = tornado.iostream.IOStream(s, io_loop=io_loop)
+            stream = tornado.iostream.IOStream(s)
         try:
             if proxy:
                 connect_address = proxy
@@ -177,9 +174,8 @@ def fetch(
             if proxy:
                 logger.debug("Connecting to proxy %s:%s", connect_address[0], connect_address[1])
             yield tornado.gen.with_timeout(
-                io_loop.time() + connect_timeout,
+                IOLoop.current().time() + connect_timeout,
                 future=stream.connect(connect_address, server_hostname=u.netloc),
-                io_loop=io_loop,
             )
         except tornado.iostream.StreamClosedError:
             metrics["httpclient_timeouts"] += 1
@@ -187,7 +183,7 @@ def fetch(
         except tornado.gen.TimeoutError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, "Connection timed out"
-        deadline = io_loop.time() + request_timeout
+        deadline = IOLoop.current().time() + request_timeout
         # Proxy CONNECT
         if proxy:
             logger.debug("Sending CONNECT %s:%s", addr, port)
@@ -201,7 +197,6 @@ def fetch(
                 yield tornado.gen.with_timeout(
                     deadline,
                     future=stream.write(smart_bytes(req)),
-                    io_loop=io_loop,
                     quiet_exceptions=(tornado.iostream.StreamClosedError,),
                 )
             except tornado.iostream.StreamClosedError:
@@ -217,7 +212,6 @@ def fetch(
                     data = yield tornado.gen.with_timeout(
                         deadline,
                         future=stream.read_bytes(max_buffer_size, partial=True),
-                        io_loop=io_loop,
                         quiet_exceptions=(tornado.iostream.StreamClosedError,),
                     )
                 except tornado.iostream.StreamClosedError:
@@ -245,7 +239,6 @@ def fetch(
                             ssl_options=get_ssl_options(),
                             server_hostname=u.netloc,
                         ),
-                        io_loop=io_loop,
                         quiet_exceptions=(tornado.iostream.StreamClosedError,),
                     )
                 except tornado.iostream.StreamClosedError:
@@ -310,7 +303,6 @@ def fetch(
             yield tornado.gen.with_timeout(
                 deadline,
                 future=stream.write(req),
-                io_loop=io_loop,
                 quiet_exceptions=(tornado.iostream.StreamClosedError,),
             )
         except tornado.iostream.StreamClosedError:
@@ -326,7 +318,6 @@ def fetch(
                 data = yield tornado.gen.with_timeout(
                     deadline,
                     future=stream.read_bytes(max_buffer_size, partial=True),
-                    io_loop=io_loop,
                     quiet_exceptions=(tornado.iostream.StreamClosedError,),
                 )
             except tornado.iostream.StreamClosedError:
@@ -434,8 +425,8 @@ def fetch_sync(
         r.append(result)
 
     r = []
-    ioloop = tornado.ioloop.IOLoop()
-    ioloop.run_sync(_fetch)
+    # Should be another IOLoop instance instance
+    IOLoop().run_sync(_fetch)
     return r[0]
 
 
