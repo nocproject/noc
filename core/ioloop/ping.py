@@ -14,6 +14,7 @@ import itertools
 import functools
 import errno
 import logging
+from time import perf_counter
 
 # Third-party modules
 from tornado.ioloop import IOLoop
@@ -25,7 +26,6 @@ from tornado.util import errno_from_exception
 from noc.speedup.ip import build_icmp_echo_request
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.backport.time import perf_counter
 
 logger = logging.getLogger(__name__)
 

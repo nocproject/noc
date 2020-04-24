@@ -7,6 +7,7 @@
 
 # Python modules
 from collections import defaultdict
+from time import perf_counter
 
 # Third-party modules
 import tornado.gen
@@ -29,7 +30,6 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.sa.models.service import Service
 from noc.core.span import Span
-from noc.core.backport.time import perf_counter
 from noc.core.topology.path import KSPFinder, PathInfo
 from noc.core.topology.constraint.base import BaseConstraint
 from noc.core.topology.constraint.vlan import VLANConstraint

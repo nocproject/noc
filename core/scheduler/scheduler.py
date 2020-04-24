@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Scheduler Job Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import datetime
 import random
 import threading
 import time
+from time import perf_counter
 
 # Third-party modules
 import pymongo.errors
@@ -26,7 +27,6 @@ from noc.core.handler import get_handler
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.backport.time import perf_counter
 
 
 class Scheduler(object):

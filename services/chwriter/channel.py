@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from time import perf_counter
 from urllib.parse import quote as urllib_quote
 
 # NOC modules
 from noc.config import config
-from noc.core.backport.time import perf_counter
 
 
 class Channel(object):

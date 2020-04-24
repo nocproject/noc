@@ -8,6 +8,7 @@
 # Python modules
 import threading
 import time
+from time import perf_counter
 import random
 import os
 import struct
@@ -23,7 +24,6 @@ from typing import Optional
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.backport.time import perf_counter
 
 forensic_logger = logging.getLogger("noc.core.forensic")
 

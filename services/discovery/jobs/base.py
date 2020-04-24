@@ -14,6 +14,7 @@ import datetime
 import types
 import operator
 from io import StringIO
+from time import perf_counter
 
 # Third-party modules
 import bson
@@ -44,7 +45,6 @@ from noc.core.error import (
 from noc.core.span import Span
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
-from noc.core.backport.time import perf_counter
 from noc.core.comp import smart_bytes
 
 

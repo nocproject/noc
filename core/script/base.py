@@ -12,6 +12,7 @@ import itertools
 import operator
 from threading import Lock
 from functools import reduce
+from time import perf_counter
 
 # Third-party modules
 from typing import Any, Optional
@@ -25,7 +26,6 @@ from noc.core.mac import MAC
 from noc.config import config
 from noc.core.span import Span
 from noc.core.matcher import match
-from noc.core.backport.time import perf_counter
 from noc.core.comp import smart_bytes, smart_text
 from .context import (
     ConfigurationContextManager,

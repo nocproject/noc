@@ -13,6 +13,7 @@ import os
 from collections import defaultdict
 import operator
 import re
+from time import perf_counter
 
 # Third-party modules
 import cachetools
@@ -41,7 +42,6 @@ from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.services.classifier.exception import EventProcessingFailed
-from noc.core.backport.time import perf_counter
 from noc.core.handler import get_handler
 
 # Patterns
