@@ -66,7 +66,10 @@ InterfacePointer = DictParameter(
     attrs={"interface": DictParameter(attrs={"id": ObjectIdParameter()})}
 )
 LevelPointer = DictParameter(attrs={"level": IntParameter()})
-ServicePointer = DictParameter(attrs={"service": Pointer})
+ServiceOrderPointer = DictParameter(
+    attrs={"order_id": StringParameter(), "remote_system": StringParameter(required=False)}
+)
+ServicePointer = DictParameter(attrs={"service": Pointer | ServiceOrderPointer})
 RequestFrom = ObjectPointer | InterfacePointer | ServicePointer
 # to: section
 RequestTo = ObjectPointer | LevelPointer | InterfacePointer | ServicePointer
@@ -219,9 +222,15 @@ class PathAPI(NBIAPI):
             return iface.managed_object, iface
         if service:
             if "id" in service:
-                svc = Service.objects.filter("id").first()
+                svc = Service.objects.filter(id=service["id"]).first()
+            elif "order_id" in service and "remote_system" in service:
+                svc = Service.objects.filter(
+                    order_id=service["order_id"], remote_system=service["remote_system"]
+                ).first()
+            elif "order_id" in service:
+                svc = Service.objects.filter(order_id=service["order_id"]).first()
             elif "remote_system" in service:
-                rs = RemoteSystem.get_by_id(object["remote_system"])
+                rs = RemoteSystem.get_by_id(service["remote_system"])
                 if not rs:
                     raise ValueError("Remote System not found")
                 svc = Service.objects.filter(
