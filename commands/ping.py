@@ -51,13 +51,12 @@ class Command(BaseCommand):
 
             self.stderr.write("Using libuv\n")
             tornado.ioloop.IOLoop.configure(UVLoop)
-        self.ioloop = IOLoop.current()
-        self.ping = Ping(io_loop=self.ioloop)
+        self.ping = Ping()
         self.jobs = jobs
         self.queue = tornado.queues.Queue(self.jobs)
         for i in range(self.jobs):
-            self.ioloop.spawn_callback(self.ping_worker)
-        self.ioloop.run_sync(self.ping_task)
+            IOLoop.current().spawn_callback(self.ping_worker)
+        IOLoop.current().run_sync(self.ping_task)
 
     @tornado.gen.coroutine
     def ping_task(self):

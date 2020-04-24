@@ -64,7 +64,7 @@ class PingService(Service):
         #
         metrics["down_objects"] = 0
         # Open ping sockets
-        self.ping = Ping(self.ioloop, tos=config.ping.tos)
+        self.ping = Ping(tos=config.ping.tos)
         # Start tracking changes
         self.ioloop.add_callback(self.get_object_mappings)
 
