@@ -112,7 +112,6 @@ def mpub(topic, messages, dcs=None, io_loop=None, retries=None):
             "http://%s/mpub?topic=%s&binary=true" % (si, topic),
             method="POST",
             body=msg,
-            io_loop=io_loop,
             connect_timeout=config.nsqd.connect_timeout,
             request_timeout=config.nsqd.request_timeout,
         )
