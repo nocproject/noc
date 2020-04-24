@@ -2,9 +2,12 @@
 # ----------------------------------------------------------------------
 # chwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from time import perf_counter
 
 # Third-party modules
 import tornado.ioloop
@@ -16,7 +19,6 @@ from noc.core.http.client import fetch
 from noc.config import config
 from noc.core.perf import metrics
 from noc.services.chwriter.channel import Channel
-from noc.core.backport.time import perf_counter
 from noc.core.comp import smart_text
 
 

@@ -1,12 +1,13 @@
 # ----------------------------------------------------------------------
 # Pretty command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import argparse
+from time import perf_counter
 
 # Third-party modules
 from tornado.ioloop import IOLoop
@@ -18,7 +19,6 @@ from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.backport.time import perf_counter
 
 
 class Command(BaseCommand):

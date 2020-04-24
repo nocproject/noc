@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Scheduler Job Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import logging
 import time
 import datetime
+from time import perf_counter
 
 # Third-party modules
 import tornado.gen
@@ -18,7 +19,6 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
 from .error import RetryAfter
 from noc.core.span import Span
-from noc.core.backport.time import perf_counter
 from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)

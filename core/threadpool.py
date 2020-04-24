@@ -13,6 +13,7 @@ import time
 import datetime
 from collections import deque
 import _thread
+from time import perf_counter
 
 # Third-party modules
 from concurrent.futures import Future
@@ -23,7 +24,6 @@ from typing import Optional, Dict, Any, Set, List
 from noc.config import config
 from noc.core.span import Span, get_current_span
 from noc.core.error import NOCError
-from noc.core.backport.time import perf_counter
 
 logger = logging.getLogger(__name__)
 

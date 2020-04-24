@@ -13,11 +13,11 @@ import csv
 import itertools
 from collections import namedtuple
 import io
+from time import perf_counter
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
-from noc.core.backport.time import perf_counter
 from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)

@@ -9,6 +9,7 @@
 from collections import deque
 from threading import Lock
 import datetime
+from time import perf_counter
 
 # Third-party modules
 import ujson
@@ -19,7 +20,6 @@ from typing import Union, Iterable, List, Dict, Any, Optional
 
 # NOC modules
 from noc.config import config
-from noc.core.backport.time import perf_counter
 
 
 class TopicQueue(object):

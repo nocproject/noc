@@ -15,6 +15,7 @@ import argparse
 from collections import defaultdict
 import time
 import threading
+from time import perf_counter
 
 # Third-party modules
 import tornado.ioloop
@@ -39,7 +40,6 @@ from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, span_to_dict
 from noc.core.tz import setup_timezone
-from noc.core.backport.time import perf_counter
 from noc.core.nsq.topic import TopicQueue
 from noc.core.nsq.pub import mpub
 from noc.core.nsq.error import NSQPubError

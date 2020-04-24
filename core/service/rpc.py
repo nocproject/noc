@@ -11,6 +11,7 @@ import logging
 import random
 import threading
 import sys
+from time import perf_counter
 
 # Third-party modules
 import tornado.concurrent
@@ -19,7 +20,6 @@ import ujson
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.backport.time import perf_counter
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config

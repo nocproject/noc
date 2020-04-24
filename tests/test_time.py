@@ -1,15 +1,13 @@
 # ----------------------------------------------------------------------
 # noc.core.time tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import time
-
-# NOC modules
-from noc.core.backport.time import perf_counter
+from time import perf_counter
 
 
 def test_perf_counter():

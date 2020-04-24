@@ -13,9 +13,7 @@ import math
 from collections import namedtuple, deque
 import sys
 import threading
-
-# NOC modules
-from noc.core.backport.time import perf_counter
+from time import perf_counter
 
 # Each sample contains
 # * value - sampled item from data stream
