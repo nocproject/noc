@@ -57,14 +57,13 @@ class PingSocket(object):
     SNDBUF = config.ping.send_buffer
     RCVBUF = config.ping.receive_buffer
 
-    def __init__(self, io_loop=None, tos=None):
-        self.io_loop = io_loop or IOLoop.current()
+    def __init__(self, tos=None):
         self.socket = None
         self._ready = False
         self.tos = tos
         self.create_socket()
         self._ready = True
-        self.io_loop.add_handler(self.socket.fileno(), self.on_read, IOLoop.READ)
+        IOLoop.current().add_handler(self.socket.fileno(), self.on_read, IOLoop.READ)
         self.sessions = {}  # (address, request_id, seq) -> future
         self.out_buffer = []  # [(address, msg)]
         self.writing = False
@@ -109,7 +108,7 @@ class PingSocket(object):
         f.sid = sid
         self.sessions[sid] = f
         self.send(address, msg)
-        self.io_loop.call_later(timeout / 1000.0, functools.partial(self.on_timeout, f))
+        IOLoop.current().call_later(timeout / 1000.0, functools.partial(self.on_timeout, f))
         return f
 
     def parse_reply(self, msg, ip):
@@ -207,10 +206,12 @@ class PingSocket(object):
         self.out_buffer = new_buffer
         if new_buffer:
             if not self.writing:
-                self.io_loop.add_handler(self.socket.fileno(), self.on_send, self.io_loop.WRITE)
+                IOLoop.current().add_handler(
+                    self.socket.fileno(), self.on_send, IOLoop.current().WRITE
+                )
                 self.writing = True
         elif self.writing:
-            self.io_loop.remove_handler(self.socket.fileno())
+            IOLoop.current().remove_handler(self.socket.fileno())
             self.writing = False
 
 
@@ -299,8 +300,7 @@ class Ping(object):
 
     iter_request = itertools.count(os.getpid())
 
-    def __init__(self, io_loop=None, tos=None):
-        self.io_loop = io_loop or IOLoop.current()
+    def __init__(self, tos=None):
         self.ping4 = None
         self.ping6 = None
         self.tos = tos
@@ -312,11 +312,11 @@ class Ping(object):
         try:
             if ":" in address:
                 if not self.ping6:
-                    self.ping6 = Ping6Socket(self.io_loop, tos=self.tos)
+                    self.ping6 = Ping6Socket(tos=self.tos)
                 return self.ping6
             else:
                 if not self.ping4:
-                    self.ping4 = Ping4Socket(self.io_loop, tos=self.tos)
+                    self.ping4 = Ping4Socket(tos=self.tos)
                 return self.ping4
         except socket.error as e:
             logger.error("Failed to create ping socket: %s", e)
