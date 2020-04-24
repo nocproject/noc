@@ -51,7 +51,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.ip.vrf.LookupField",
         "NOC.fm.ttsystem.LookupField",
         "NOC.maintenance.maintenancetype.LookupField",
-        "NOC.cm.validationpolicysettings.ValidationSettingsPanel",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.managedobject.Model",
@@ -244,13 +243,6 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.ITEM_ALARM = me.registerItem("NOC.sa.managedobject.AlarmPanel");
         me.ITEM_INTERACTIONS = me.registerItem("NOC.sa.managedobject.InteractionsPanel");
-
-        me.ITEM_VALIDATION_SETTINGS = me.registerItem(
-            Ext.create("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
-                app: me,
-                validationModelId: me.validationModelId
-            })
-        );
 
         me.ITEM_CAPS = me.registerItem("NOC.sa.managedobject.CapsPanel");
 

@@ -25,7 +25,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.template.LookupField",
         "NOC.main.extstorage.LookupField",
         "NOC.main.handler.LookupField",
-        "NOC.cm.validationpolicysettings.ValidationSettingsPanel",
         "NOC.cm.objectvalidationpolicy.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "Ext.ux.form.GridField"
@@ -92,20 +91,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
 
     initComponent: function() {
         var me = this;
-
-        me.ITEM_VALIDATION_SETTINGS = me.registerItem(
-            Ext.create("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
-                app: me,
-                validationModelId: me.validationModelId
-            })
-        );
-
-        me.validationSettingsButton = Ext.create("Ext.button.Button", {
-            text: __("Validation"),
-            glyph: NOC.glyph.file,
-            scope: me,
-            handler: me.onValidationSettings
-        });
 
         Ext.apply(me, {
             columns: [
@@ -2325,9 +2310,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     ]
                 }
             ],
-            formToolbar: [
-                me.validationSettingsButton
-            ]
+            formToolbar: []
         });
         me.callParent();
     },
@@ -2412,11 +2395,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             }
         }
     ],
-    //
-    onValidationSettings: function() {
-        var me = this;
-        me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
-    },
     //
     cleanData: function(v) {
         Ext.each(v.metrics, function(m) {
