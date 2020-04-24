@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 import re
 from collections import defaultdict
-from builtins import str, object
 
 # Third-party modules
 import cachetools
