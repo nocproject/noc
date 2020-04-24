@@ -62,7 +62,7 @@ class DataSourceCache(Document):
             name = d.get("next_name", None)
         # Finally, decode result
         # avoid string catenation whenever possible
-        return cls.decode("".join(data) if len(data) > 1 else data[0])
+        return cls.decode(b"".join(data) if len(data) > 1 else data[0])
 
     @classmethod
     def set_data(cls, name, data, ttl):
