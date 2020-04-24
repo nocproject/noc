@@ -53,7 +53,7 @@ class SegmentTopology(BaseTopology):
     def get_uplinks(self):
         self.logger.info("Searching for uplinks")
         if not self.G:
-            raise StopIteration
+            return []
         for policy in self.segment.profile.iter_uplink_policy():
             uplinks = getattr(self, "get_uplinks_%s" % policy)()
             if uplinks:

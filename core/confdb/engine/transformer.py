@@ -22,6 +22,7 @@ class PredicateTransformer(ast.NodeTransformer):
     def wrap_callable(self, node):
         return ast.Lambda(
             args=ast.arguments(
+                posonlyargs=[],
                 args=[ast.arg(arg=CVAR_NAME, annotation=None)],
                 vararg=None,
                 kwonlyargs=[],
@@ -36,7 +37,8 @@ class PredicateTransformer(ast.NodeTransformer):
         l_name = "_input_%d" % next(self.input_counter)
         return ast.Lambda(
             args=ast.arguments(
-                args=[ast.arg(arg="self", annotation=None), ast.arg(arg=l_name, annotation=None),],
+                posonlyargs=[],
+                args=[ast.arg(arg="self", annotation=None), ast.arg(arg=l_name, annotation=None)],
                 vararg=None,
                 kwonlyargs=[],
                 kw_defaults=[],

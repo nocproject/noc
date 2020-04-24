@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BaseTokenizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,4 +13,4 @@ class BaseTokenizer(object):
         self.data = data
 
     def __iter__(self):
-        raise StopIteration
+        return iter(())

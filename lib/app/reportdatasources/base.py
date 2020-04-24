@@ -99,8 +99,7 @@ class BaseReportColumn(object):
             # Supported builtin sorted.
             for v in self.extract():
                 if v[0] < prev_id:  # Todo
-                    print("Detect unordered stream")
-                    raise StopIteration("Detect unordered stream")
+                    return  # Detect unordered stream
                 yield v
                 prev_id = v[0]
 
@@ -147,9 +146,7 @@ class BaseReportColumn(object):
         if self._current_id:
             # If _extract end before sync_ids to one element
             yield self.unknown_value
-        # print("Current ID", self._current_id)
         for _ in self.sync_ids_i:
-            # raise StopIteration ?
             yield self.unknown_value
 
     def get_dictionary(self, filter_unknown=False):

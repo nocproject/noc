@@ -901,7 +901,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :param mo: Managed object reference
         :returns: yield (local interface, remote id, remote interface)
         """
-        raise StopIteration()
+        return iter(())
 
     def get_neighbor_by_hostname(self, hostname):
         """

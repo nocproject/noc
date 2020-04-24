@@ -303,7 +303,7 @@ class AssetCheck(DiscoveryCheck):
                     if target_type == type:
                         yield type, object, ctx
                 else:
-                    raise StopIteration
+                    return
 
     def expand_context(self, s, ctx):
         """
