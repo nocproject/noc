@@ -233,7 +233,6 @@ class Config(BaseConfig):
         service_registration = BooleanParameter(
             default=True, help="Permit consul self registration"
         )
-        pypy = BooleanParameter(default=False)
         forensic = BooleanParameter(default=False)
 
     class fm(ConfigSection):

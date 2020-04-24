@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SAE service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,10 +17,7 @@ from noc.services.sae.api.sae import SAEAPI
 from noc.config import config
 
 # Third-party modules
-if config.features.pypy:
-    from psycopg2cffi.pool import ThreadedConnectionPool
-else:
-    from psycopg2.pool import ThreadedConnectionPool
+from psycopg2.pool import ThreadedConnectionPool
 
 
 class SAEService(Service):
