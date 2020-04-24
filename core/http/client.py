@@ -30,10 +30,7 @@ from .proxy import SYSTEM_PROXIES
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
 
-if config.features.pypy:
-    from http_parser.pyparser import HttpParser
-else:
-    from http_parser.parser import HttpParser
+from http_parser.parser import HttpParser
 
 logger = logging.getLogger(__name__)
 
@@ -333,8 +330,6 @@ def fetch(
                     quiet_exceptions=(tornado.iostream.StreamClosedError,),
                 )
             except tornado.iostream.StreamClosedError:
-                if not response_body and config.features.pypy:
-                    break
                 if eof_mark and response_body:
                     # Check if EOF mark is in received data
                     response_body = [b"".join(response_body)]

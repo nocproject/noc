@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Django settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,10 +12,6 @@ import re
 # NOC modules
 from noc.config import config
 
-if config.features.pypy:
-    from psycopg2cffi import compat
-
-    compat.register()
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 ADMINS = []
