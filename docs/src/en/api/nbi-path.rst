@@ -215,6 +215,31 @@ Service by Remote Id
 Where `6789` is the :ref:`reference-service` Id and
 `1011` is the :ref:`reference-service` Id in Remote System.
 
+Service by Order Id
+^^^^^^^^^^^^^^^^^^^
+
+.. sourcecode:: json
+
+    {
+        "service": {
+            "order_id": "1234"
+        }
+    }
+
+Where `1234` is Order Fulfilment order id.
+Or:
+
+.. sourcecode:: json
+
+    {
+        "service": {
+            "order_id": "1234",
+            "remote_system": "5678"
+        }
+    }
+
+The same, but restricted to remote system id `5678`
+
 .. _api-nbi-path-to:
 
 Path End Specification
