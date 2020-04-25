@@ -192,7 +192,6 @@ class Command(BaseCommand):
         # Build cmib
         year = datetime.date.today().year
         r = [
-            "# -*- coding: utf-8 -*-",
             "# ----------------------------------------------------------------------",
             "# %s" % mib,
             "# Compiled MIB",
