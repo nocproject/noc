@@ -16,7 +16,7 @@ from urllib.parse import unquote
 import consul.base
 import consul.tornado
 import tornado.gen
-import tornado.ioloop
+from tornado.ioloop import PeriodicCallback
 
 # NOC modules
 from noc.config import config
@@ -140,7 +140,7 @@ class ConsulDCS(DCSBase):
 
     resolver_cls = ConsulResolver
 
-    def __init__(self, url, ioloop=None):
+    def __init__(self, url):
         self.name = None
         self.consul_host = self.DEFAULT_CONSUL_HOST
         self.consul_port = self.DEFAULT_CONSUL_PORT
@@ -158,7 +158,7 @@ class ConsulDCS(DCSBase):
         self.session = None
         self.slot_number = None
         self.total_slots = None
-        super(ConsulDCS, self).__init__(url, ioloop)
+        super(ConsulDCS, self).__init__(url)
         self.consul = ConsulClient(
             host=self.consul_host, port=self.consul_port, token=self.consul_token
         )
@@ -212,8 +212,8 @@ class ConsulDCS(DCSBase):
                 yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
         self.logger.info("Session id: %s", self.session)
-        self.keep_alive_task = tornado.ioloop.PeriodicCallback(
-            self.keep_alive, self.DEFAULT_CONSUL_SESSION_TTL * 1000 / 2, self.ioloop
+        self.keep_alive_task = PeriodicCallback(
+            self.keep_alive, self.DEFAULT_CONSUL_SESSION_TTL * 1000 / 2
         )
         self.keep_alive_task.start()
 

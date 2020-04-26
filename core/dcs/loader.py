@@ -35,7 +35,7 @@ def get_dcs_class(url=None):
     return handler
 
 
-def get_dcs(url=None, ioloop=None):
+def get_dcs(url=None):
     """
     Return initialized DCS instance
     :param url:
@@ -44,5 +44,5 @@ def get_dcs(url=None, ioloop=None):
     url = get_dcs_url(url)
     with _lock:
         if url not in _instances:
-            _instances[url] = get_dcs_class(url)(url, ioloop=ioloop)
+            _instances[url] = get_dcs_class(url)(url)
         return _instances[url]

@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 
 # Third-party modules
 import tornado.gen
-import tornado.ioloop
+from tornado.ioloop import IOLoop, PeriodicCallback
 import tornado.locks
 
 # NOC modules
@@ -37,17 +37,14 @@ class DCSBase(object):
     # and must be temporary removed from resolver
     HEALTH_FAILED_HTTP_CODE = 429
 
-    def __init__(self, url, ioloop=None):
+    def __init__(self, url):
         self.logger = logging.getLogger(__name__)
         self.url = url
-        self.ioloop = ioloop or tornado.ioloop.IOLoop.current()
         self.parse_url(urlparse(url))
         # service -> resolver instances
         self.resolvers = {}
         self.resolvers_lock = Lock()
-        self.resolver_expiration_task = tornado.ioloop.PeriodicCallback(
-            self.expire_resolvers, 10000
-        )
+        self.resolver_expiration_task = PeriodicCallback(self.expire_resolvers, 10000)
         self.health_check_service_id = None
         self.status = True
         self.status_message = ""
@@ -61,7 +58,7 @@ class DCSBase(object):
         :return:
         """
         self.resolver_expiration_task.start()
-        self.ioloop.start()
+        # self.ioloop.start()
 
     def stop(self):
         """
@@ -76,7 +73,7 @@ class DCSBase(object):
                 self.logger.info("Stopping resolver for service %s", svc)
                 r.stop()
             self.resolvers = {}
-        self.ioloop.stop()
+        # self.ioloop.stop()
 
     @tornado.gen.coroutine
     def register(self, name, address, port, pool=None, lock=None, tags=None):
@@ -115,11 +112,11 @@ class DCSBase(object):
                     self.logger.info("Running resolver for service %s", name)
                     resolver = self.resolver_cls(self, name, critical=critical, near=near)
                     self.resolvers[name, critical, near] = resolver
-                    self.ioloop.add_callback(resolver.start)
+                    IOLoop.current().add_callback(resolver.start)
         else:
             # One-time resolver
             resolver = self.resolver_cls(self, name, critical=critical, near=near, track=False)
-            self.ioloop.add_callback(resolver.start)
+            IOLoop.current().add_callback(resolver.start)
         return resolver
 
     @tornado.gen.coroutine
@@ -174,7 +171,7 @@ class DCSBase(object):
         event = Event()
         result = []
         error = []
-        self.ioloop.add_callback(_resolve)
+        IOLoop.current().add_callback(_resolve)
         event.wait()
         if error:
             reraise(*error[0])

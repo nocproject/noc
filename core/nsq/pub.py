@@ -71,14 +71,13 @@ def mpub_encode(messages: List[Any]) -> bytes:
 
 
 @tornado.gen.coroutine
-def mpub(topic, messages, dcs=None, io_loop=None, retries=None):
+def mpub(topic, messages, dcs=None, retries=None):
     """
     Asynchronously publish message to NSQ topic
 
     :param topic: NSQ topic
     :param messages: List of strings containing messages
     :param dcs: DSC instance
-    :param io_loop: IOLoop instance
     :param retries: Error retries. config.nsqd.pub_retries by default
     :return: None
     :raises NSQPubError: On publish error
@@ -87,7 +86,7 @@ def mpub(topic, messages, dcs=None, io_loop=None, retries=None):
         return
     if not dcs:
         # No global DCS, instantiate one
-        dcs = get_dcs(ioloop=io_loop)
+        dcs = get_dcs()
     # Build body
     msg = mpub_encode(messages)
     # Setup resolver

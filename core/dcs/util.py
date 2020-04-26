@@ -5,15 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import sys
-
 # Third-party modules
-import tornado.ioloop
 import tornado.gen
 
 # NOC modules
-from noc.core.comp import reraise
+from noc.core.ioloop.util import run_sync
 from .loader import get_dcs_url, get_dcs_class
 
 
@@ -34,6 +30,8 @@ def resolve(
 
     @tornado.gen.coroutine
     def _resolve():
+        url = get_dcs_url()
+        dcs = get_dcs_class()(url)
         try:
             if near:
                 r = yield dcs.resolve_near(
@@ -54,23 +52,8 @@ def resolve(
                     critical=critical,
                     track=False,
                 )
-            result.append(r)
-        except tornado.gen.Return as e:
-            result.append(e.value)
-        except Exception:
-            error.append(sys.exc_info())
+        finally:
+            dcs.stop()
+        return r
 
-    url = get_dcs_url()
-    io_loop = tornado.ioloop.IOLoop()
-    result = []
-    error = []
-    try:
-        dcs = get_dcs_class()(url, ioloop=io_loop)
-        io_loop.run_sync(_resolve)
-        dcs.stop()
-    finally:
-        io_loop.close(all_fds=True)
-    if error:
-        reraise(*error[0])
-    else:
-        return result[0]
+    return run_sync(_resolve)
