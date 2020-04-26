@@ -16,9 +16,9 @@ from threading import Lock
 
 # Third-party modules
 import tornado.gen
-import tornado.ioloop
 import tornado.iostream
 import tornado.concurrent
+from tornado.ioloop import IOLoop
 from typing import Optional, Callable
 
 # NOC modules
@@ -73,6 +73,7 @@ class CLI(object):
         self.iostream = None
         self.motd = ""
         self.ioloop = None
+        self.prev_ioloop = None
         self.command = None
         self.prompt_stack = []
         self.patterns = self.profile.patterns.copy()
@@ -103,6 +104,12 @@ class CLI(object):
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
             self.ioloop = None
+            # Restore previous ioloop
+            if self.prev_ioloop:
+                self.prev_ioloop.make_current()
+                self.prev_ioloop = None
+            else:
+                IOLoop.clear_current()
         self.is_closed = True
 
     def close_iostream(self):
@@ -138,7 +145,7 @@ class CLI(object):
         # Cannot call call_later directly due to
         # thread-safety problems
         # See tornado issue #1773
-        tornado.ioloop.IOLoop.instance().add_callback(self._set_close_timeout, session_timeout)
+        IOLoop.instance().add_callback(self._set_close_timeout, session_timeout)
 
     def _set_close_timeout(self, session_timeout):
         """
@@ -147,9 +154,7 @@ class CLI(object):
         :return:
         """
         with self.close_timeout_lock:
-            self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
-                session_timeout, self.maybe_close
-            )
+            self.close_timeout = IOLoop.instance().call_later(session_timeout, self.maybe_close)
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -233,7 +238,9 @@ class CLI(object):
         self.allow_empty_response = allow_empty_response
         if not self.ioloop:
             self.logger.debug("Creating IOLoop")
-            self.ioloop = tornado.ioloop.IOLoop()
+            self.prev_ioloop = IOLoop.current(instance=False)
+            self.ioloop = IOLoop()
+            self.ioloop.make_current()
         if obj_parser:
             parser = functools.partial(
                 self.parse_object_stream, obj_parser, smart_bytes(cmd_next), smart_bytes(cmd_stop)
@@ -684,9 +691,7 @@ class CLI(object):
             # Waiting for response and drop it
             if i < lseq - 1:
                 resp = yield tornado.gen.with_timeout(
-                    self.ioloop.time() + 30,
-                    future=self.iostream.read_bytes(4096, partial=True),
-                    io_loop=self.ioloop,
+                    self.ioloop.time() + 30, future=self.iostream.read_bytes(4096, partial=True)
                 )
                 if self.script.to_track:
                     self.script.push_cli_tracking(resp, self.state)
