@@ -21,8 +21,7 @@ from typing import Iterable, Tuple
 
 
 class UDPServer(object):
-    def __init__(self, io_loop=None):
-        self.io_loop = io_loop
+    def __init__(self):
         self._sockets = {}  # fd -> socket object
         self._pending_sockets = []
         self._started = False
@@ -65,12 +64,9 @@ class UDPServer(object):
         method and `tornado.process.fork_processes` to provide greater
         control over the initialization of a multi-process server.
         """
-        if self.io_loop is None:
-            self.io_loop = IOLoop.current()
-
         for sock in sockets:
             self._sockets[sock.fileno()] = sock
-            self.io_loop.add_handler(sock.fileno(), self.accept_handler, IOLoop.READ)
+            IOLoop.current().add_handler(sock.fileno(), self.accept_handler, IOLoop.READ)
 
     def add_socket(self, socket):
         """Singular version of `add_sockets`.  Takes a single socket object."""
@@ -137,7 +133,7 @@ class UDPServer(object):
         server is stopped.
         """
         for fd, sock in self._sockets.items():
-            self.io_loop.remove_handler(fd)
+            IOLoop.current().remove_handler(fd)
             sock.close()
 
     def accept_handler(self, fd, events):
