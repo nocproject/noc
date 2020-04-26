@@ -13,7 +13,6 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.lib.app.site import site
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers.loader import loader
@@ -49,9 +48,6 @@ class KBEntryTemplate(NOCModel):
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return site.reverse("kb:kbentrytemplate:change", self.id)
 
     @property
     def _var_list(self):

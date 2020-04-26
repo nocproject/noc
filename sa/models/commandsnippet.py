@@ -18,7 +18,6 @@ from django.template import Template, Context
 from noc.core.model.base import NOCModel
 from noc.aaa.models.permission import Permission
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
 from .managedobjectselector import ManagedObjectSelector
 
 
@@ -54,9 +53,6 @@ class CommandSnippet(NOCModel):
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return site.reverse("sa:commandsnippet:change", self.id)
 
     rx_var = re.compile(r"{{\s*([^|}]+?)\s*(?:\|.+?)?}}", re.MULTILINE)
     rx_vartag = re.compile(

@@ -20,7 +20,6 @@ from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.core.validators import check_rd
 from noc.core.model.fields import TagsField, DocumentReferenceField
-from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
@@ -140,9 +139,6 @@ class VRF(NOCModel):
         if vrf:
             return vrf[0]
         return None
-
-    def get_absolute_url(self):
-        return site.reverse("ip:vrf:change", self.id)
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_vrf:

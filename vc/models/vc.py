@@ -21,7 +21,6 @@ from noc.main.models.style import Style
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.cache.decorator import cachedmethod
 from noc.core.model.decorator import on_delete_check
@@ -91,9 +90,6 @@ class VC(NOCModel):
             return mo[0]
         else:
             return None
-
-    def get_absolute_url(self):
-        return site.reverse("vc:vc:change", self.id)
 
     @classmethod
     def convert_name(cls, name):
