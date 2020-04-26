@@ -735,7 +735,7 @@ all:
               name: web
               pool: null
           noc_user: noc
-          noc_version: microservices
+          noc_version: release-20.1
           noc_web_host: noc-node-debian9
           node_id: 1
           nsqd_max_messages_in_memory: 10000
