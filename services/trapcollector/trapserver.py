@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class TrapServer(UDPServer):
-    def __init__(self, service, io_loop=None):
-        super(TrapServer, self).__init__(io_loop)
+    def __init__(self, service):
+        super(TrapServer, self).__init__()
         self.service = service
 
     def enable_reuseport(self):

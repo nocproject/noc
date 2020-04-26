@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class SyslogServer(UDPServer):
-    def __init__(self, service, io_loop=None):
-        super(SyslogServer, self).__init__(io_loop)
+    def __init__(self, service):
+        super(SyslogServer, self).__init__()
         self.service = service
 
     def enable_reuseport(self):
