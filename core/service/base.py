@@ -16,9 +16,10 @@ from collections import defaultdict
 import time
 import threading
 from time import perf_counter
+import datetime
 
 # Third-party modules
-import tornado.ioloop
+from tornado.ioloop import IOLoop, PeriodicCallback
 import tornado.gen
 import tornado.web
 import tornado.netutil
@@ -324,10 +325,10 @@ class Service(object):
                 from tornaduv import UVLoop
 
                 self.logger.warning("Using libuv")
-                tornado.ioloop.IOLoop.configure(UVLoop)
-            self.ioloop = tornado.ioloop.IOLoop.instance()
+                IOLoop.configure(UVLoop)
+            self.ioloop = IOLoop.current()
             # Initialize DCS
-            self.dcs = get_dcs(cmd_options["dcs"], self.ioloop)
+            self.dcs = get_dcs(cmd_options["dcs"])
             # Activate service
             self.ioloop.add_callback(self.activate)
             self.logger.warning("Starting IOLoop")
@@ -731,7 +732,7 @@ class Service(object):
                 continue
             try:
                 self.logger.debug("[nsq|%s] Publishing %d messages", topic, len(messages))
-                yield mpub(topic, messages, dcs=self.dcs, io_loop=self.ioloop)
+                yield mpub(topic, messages, dcs=self.dcs)
             except NSQPubError:
                 if queue.to_shutdown:
                     self.logger.debug(
@@ -777,7 +778,7 @@ class Service(object):
                 has_topics = bool(self.topic_queues)
             try:
                 self.logger.info("Waiting shutdown of topic queue %s", topic)
-                yield queue.shutdown_complete.wait(5)
+                yield queue.shutdown_complete.wait(datetime.timedelta(seconds=5))
             except tornado.gen.TimeoutError:
                 self.logger.info("Failed to shutdown topic queue %s: Timed out", topic)
 
@@ -903,9 +904,7 @@ class Service(object):
         Run telemetry callback
         :return:
         """
-        self.telemetry_callback = tornado.ioloop.PeriodicCallback(
-            self.send_telemetry, 250, self.ioloop
-        )
+        self.telemetry_callback = PeriodicCallback(self.send_telemetry, 250)
         self.telemetry_callback.start()
 
     def send_telemetry(self):
