@@ -12,8 +12,7 @@ import datetime
 # Third-party modules
 from django.db.models import AutoField
 from django.db import connection
-from django.db.backends.utils import truncate_name
-from django.db.backends.base.schema import BaseDatabaseSchemaEditor
+from django.db.backends.utils import names_digest, truncate_name
 
 logger = logging.getLogger("migration")
 
@@ -278,10 +277,7 @@ class DB(object):
         max_name_length = 63
 
         if field.db_index and not field.unique:
-            i_name = "%s_%s" % (
-                model._meta.db_table,
-                BaseDatabaseSchemaEditor._digest(field.column),
-            )
+            i_name = names_digest(model._meta.db_table, field.column, length=8)
             return [
                 "CREATE INDEX %s ON %s(%s)"
                 % (

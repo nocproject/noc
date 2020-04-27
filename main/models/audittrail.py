@@ -93,10 +93,9 @@ class AuditTrail(Document):
 
     @classmethod
     def get_field(cls, instance, field):
-        if field._get_val_from_obj(instance) is None:
+        if field.value_from_object(instance) is None:
             return None
-        else:
-            return field.value_to_string(instance)
+        return field.value_to_string(instance)
 
     @classmethod
     def on_update_model(cls, sender, instance, **kwargs):

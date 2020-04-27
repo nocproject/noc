@@ -29,7 +29,7 @@ from noc.config import config
 from noc.core.perf import metrics
 
 # Increase whenever new field added or removed
-CREDENTIALS_CACHE_VERSION = 1
+CREDENTIALS_CACHE_VERSION = 2
 
 
 class SAEAPI(API):

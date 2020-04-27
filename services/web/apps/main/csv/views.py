@@ -11,7 +11,6 @@ from io import StringIO
 
 # Third-party modules
 from django import forms
-from django.contrib import admin
 from django.apps import apps as d_apps
 from django.http import HttpResponse
 from noc.core.translation import ugettext as _
@@ -166,16 +165,3 @@ class CSVApplication(Application):
         return self.render(
             request, "import.html", form=form, model=m._meta.verbose_name, fields=fields
         )
-
-
-#
-# Admin actions to export selected objects as CSV
-#
-def admin_csv_export(modeladmin, request, queryset):
-    return HttpResponse(
-        csv_export(modeladmin.model, queryset), content_type="text/csv; encoding=utf-8"
-    )
-
-
-admin_csv_export.short_description = "Export selected %(verbose_name_plural)s to CSV"
-admin.site.add_action(admin_csv_export, "export_selected_csv")
