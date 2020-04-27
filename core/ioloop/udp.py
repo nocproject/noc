@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Tornado IOLoop UDP socket
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import socket
 
 # Third-party modules
 from tornado.ioloop import IOLoop
-from tornado.concurrent import TracebackFuture
+from tornado.concurrent import Future
 from tornado.util import errno_from_exception
 
 
@@ -56,7 +56,7 @@ class UDPSocket(object):
         Get future and start timeout task when needed
         """
         if not self.future or self.future.done():
-            self.future = TracebackFuture()
+            self.future = Future()
             self.start_timeout()
         return self.future
 

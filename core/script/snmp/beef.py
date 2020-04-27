@@ -11,7 +11,7 @@ import socket
 # Third-party modules
 import tornado.gen
 import tornado.iostream
-from tornado.concurrent import TracebackFuture
+from tornado.concurrent import Future
 
 # NOC modules
 from noc.core.snmp.ber import BERDecoder, BEREncoder
@@ -178,7 +178,7 @@ class BeefServerIOStream(tornado.iostream.IOStream):
         :param kwargs:
         :return:
         """
-        future = self._connect_future = TracebackFuture()
+        future = self._connect_future = Future()
         # Force beef downloading
         beef = self.script.request_beef()
         if not beef:
