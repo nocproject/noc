@@ -17,6 +17,7 @@ from time import perf_counter
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
+from tornado.ioloop import IOLoop
 from concurrent.futures import Future
 from pymongo import DeleteOne, UpdateOne
 
@@ -44,7 +45,6 @@ class Scheduler(object):
         pool=None,
         reset_running=False,
         max_threads=5,
-        ioloop=None,
         check_time=1000,
         submit_threshold=None,
         max_chunk=None,
@@ -59,7 +59,6 @@ class Scheduler(object):
         :param reset_running: Reset all running jobs to
             wait state on start
         :param max_threads: Thread executor threads
-        :param ioloop: IOLoop instance
         :param check_time: time in milliseconds to check for new jobs
         :param max_chunk: Maximum amount of jobs which can be submitted
             at one step
@@ -77,7 +76,6 @@ class Scheduler(object):
         self.pool = pool
         if pool:
             self.collection_name += ".%s" % pool
-        self.ioloop = ioloop or tornado.ioloop.IOLoop.current()
         self.to_reset_running = reset_running
         self.running_groups = set()
         self.collection = None
@@ -126,14 +124,14 @@ class Scheduler(object):
         """
         Run scheduler. Common usage
 
-        scheduler.run(ioloop=ioloop)
+        scheduler.run()
         ioloop.run()
         """
         if self.to_reset_running:
             self.reset_running()
         self.ensure_indexes()
         self.logger.info("Running scheduler")
-        self.ioloop.spawn_callback(self.scheduler_loop)
+        IOLoop.current().spawn_callback(self.scheduler_loop)
 
     def get_collection(self):
         """
