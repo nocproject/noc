@@ -1,20 +1,70 @@
 {
-    "name": "Eltex | MES | 3116F",
+    "name": "Eltex | MES | 3316F",
     "$collection": "inv.objectmodels",
-    "uuid": "386fce44-507e-4571-bc4c-951a2509641d",
+    "uuid": "d39603cb-e0eb-4034-8c39-780e4d126918",
     "vendor__code": "ELTEX",
-    "description": "12x 100/1000Base-X (SFP)4xCombo (10/100/1000Base-T/1000Base-X/100Base-FX) ,  2x (10GBase-R(SFP+)/1000Base-X (SFP))",
+    "description": "12x10/100/1000BASE-X (SFP), 4x10GBASE-R (SFP+)/1000BASE-X (SFP), 4x10/100/1000BASE-T/1000BASE-X/100BASE-FXCombo",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "tags": ["chassis", "sup", "fabric", "port", "fan", "psu"],
     "connections": [
+        {
+            "description": "tengigabitethernet 1/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te1_sfp+",
+            "name": "tengigabitethernet 1/0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te2_sfp+",
+            "name": "tengigabitethernet 1/0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te3_sfp+",
+            "name": "tengigabitethernet 1/0/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te4_sfp+",
+            "name": "tengigabitethernet 1/0/4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
         {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "name": "Console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power slot main",
+            "direction": "i",
+            "gender": "f",
+            "name": "Main_psu",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "description": "Power slot redundant",
+            "direction": "i",
+            "gender": "f",
+            "name": "Redundant_psu",
+            "type__name": "Eltex | MES | PSU"
         },
         {
             "description": "gigabitethernet 1/0/1 port",
@@ -231,46 +281,14 @@
             "name": "gigabitethernet 1/0/16_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "tengigabitethernet 1/0/1 SFP port",
-            "direction": "i",
-            "gender": "f",
-            "internal_name": "te1_sfp+",
-            "name": "tengigabitethernet 1/0/1",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "tengigabitethernet 1/0/2 SFP port",
-            "direction": "i",
-            "gender": "f",
-            "internal_name": "te2_sfp+",
-            "name": "tengigabitethernet 1/0/2",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "Power slot main",
-            "direction": "i",
-            "gender": "f",
-            "name": "Main_psu",
-            "type__name": "Eltex | MES | PSU"
-        },
-        {
-            "description": "Power slot redundant",
-            "direction": "i",
-            "gender": "f",
-            "name": "Redundant_psu",
-            "type__name": "Eltex | MES | PSU"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["MES-3116F"]
+            "part_no": ["MES-3316F"]
         },
         "dimensions": {
-            "depth": 265,
+            "depth": 275,
             "height": 44,
             "width": 430
         },
@@ -288,7 +306,7 @@
         },
         "weight": {
             "is_recursive": true,
-            "weight": 3.1
+            "weight": 3.9
         }
     }
 }
