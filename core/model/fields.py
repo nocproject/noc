@@ -63,7 +63,7 @@ class MACField(models.Field):
     def db_type(self, connection):
         return "MACADDR"
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if value is None:
             return None
         return value.upper()
@@ -91,7 +91,7 @@ class TextArrayField(models.Field):
     def db_type(self, connection):
         return "TEXT[]"
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         def to_unicode(s):
             if isinstance(s, str):
                 return s
@@ -119,7 +119,7 @@ class InetArrayField(models.Field):
     def db_type(self, connection):
         return "INET[]"
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if isinstance(value, list):
             return value
         elif value == "{}":
@@ -142,7 +142,7 @@ class PickledField(models.Field):
     def db_type(self, connection):
         return "BYTEA"
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         # if not value:
         #    return None
         try:
@@ -167,7 +167,7 @@ class TagsField(models.Field):
     def db_type(self, connection):
         return "TEXT[]"
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         def to_unicode(s):
             if isinstance(s, str):
                 return s
@@ -284,6 +284,9 @@ class DocumentReferenceField(models.Field):
             # @todo: Maybe .pk is better way
             return str(value.id)
 
+    def get_cache_name(self):
+        return "_%s_cache" % self.name
+
 
 class CachedForeignKeyDescriptor(ForwardManyToOneDescriptor):
     def get_object(self, instance):
@@ -306,7 +309,7 @@ class ObjectIDArrayField(models.Field):
     def db_type(self, connection):
         return "CHAR(24)[]"
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if isinstance(value, list):
             return value
         elif value == "{}":

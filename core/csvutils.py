@@ -13,6 +13,9 @@ from io import StringIO
 from django.db import models
 from noc.core.comp import smart_text
 
+# NOC modules
+from noc.core.model.util import is_related_field
+
 
 # CSV import conflict resolution constants
 IR_FAIL = 0  # Fail on first conflict
@@ -53,8 +56,8 @@ def get_model_fields(model):
             continue
         required = not f.null and f.default == models.fields.NOT_PROVIDED
         # Process references
-        if f.rel:
-            if isinstance(f.rel, models.fields.related.ManyToOneRel):
+        if is_related_field(f):
+            if isinstance(f, models.ForeignKey):
                 # Foreign Key
                 # Try to find unique key
                 k = "id"

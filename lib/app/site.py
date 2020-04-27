@@ -18,7 +18,7 @@ from urllib.parse import urlencode
 
 # Third-party modules
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, Http404
-from django.urls import RegexURLResolver, RegexURLPattern, reverse
+from django.urls import path, re_path, include, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
 import ujson
@@ -81,7 +81,6 @@ class Site(object):
     def __init__(self):
         self.apps = {}  # app_id -> app instance
         self.urlpatterns = []
-        self.urlresolvers = {}  # (module, app) -> RegexURLResolver
         self.menu = []
         self.menu_roots = {}  # app -> menu
         self.reports = []  # app_id -> title
@@ -110,19 +109,6 @@ class Site(object):
             setattr(n, app_ns, ProxyNode())
         n = getattr(n, app_ns)
         setattr(n, name, view)
-
-    def iter_view_urls(self, view):
-        """
-        Generator returning view's URL objects
-        """
-        if isinstance(view.url, str):  # view.url is string type
-            yield URL(
-                view.url, name=getattr(view, "url_name", None), method=getattr(view, "method", None)
-            )
-        elif isinstance(view.url, URL):  # Explicit URL object
-            yield view.url
-        else:
-            raise ValueError("Invalid URL object: %s" % str(view.url))
 
     def site_access(self, app, view):
         """
@@ -298,52 +284,62 @@ class Site(object):
             r["access"] = lambda user: app.launch_access.check(app, user)
         root["children"] += [r]
 
-    def register_url_resolver(self, app):
-        # Install module URL resolver
-        # @todo: Legacy django part?
-        try:
-            mod_resolver = self.urlresolvers[app.module, None]
-        except KeyError:
-            mod_resolver = []
-            self.urlpatterns += [
-                RegexURLResolver("^%s/" % app.module, mod_resolver, namespace=app.module)
-            ]
-            self.urlresolvers[app.module, None] = mod_resolver
-        # Install application URL resolver
-        try:
-            app_resolver = self.urlresolvers[app.module, app.app]
-        except KeyError:
-            app_resolver = []
-            mod_resolver += [RegexURLResolver("^%s/" % app.app, app_resolver, namespace=app.app)]
-            self.urlresolvers[app.module, app.app] = app_resolver
-        return app_resolver
-
-    def register_views(self, app, app_resolver):
+    def setup_router(self):
         """
-        Register application views
-        :param app:
-        :param app_resolver:
+        Set up all applications urls
         :return:
         """
-        url_map = defaultdict(list)  # url -> [(URL, view)]
-        for view in app.iter_views():
-            if hasattr(view, "url"):
-                for url in self.iter_view_urls(view):
-                    url_map[url.url] += [(url, view)]
-        for url in url_map:
-            methods = {}
-            names = set()
-            for url, view in url_map[url]:
-                for method in url.method:
-                    methods[method] = view
-                if getattr(view, "menu", None):
-                    self.register_app_menu(app, view)
-                if url.name:
-                    names.add(url.name)
-            sv = self.site_view(app, methods)
-            app_resolver += [RegexURLPattern(url.url, sv, name=url.name)]
-            for n in names:
-                self.register_named_view(app.module, app.app, n, sv)
+        # Collect patterns
+        patterns = {}  # module -> app -> pattern
+        for app in self.apps.values():
+            mod_chain = patterns.get(app.module)
+            if not mod_chain:
+                mod_chain = {}
+                patterns[app.module] = mod_chain
+            app_chain = mod_chain.get(app.app)
+            if not app_chain:
+                app_chain = []
+                mod_chain[app.app] = app_chain
+            # Group URLs
+            app_url_map = defaultdict(list)  # url -> (URL, view)
+            for view in app.iter_views():
+                if not hasattr(view, "url"):
+                    continue
+                if isinstance(view.url, str):
+                    view_url = URL(
+                        view.url,
+                        name=getattr(view, "url_name", None),
+                        method=getattr(view, "method", None),
+                    )
+                elif isinstance(view.url, URL):
+                    view_url = view.url
+                else:
+                    raise ValueError("Invalid URL object: %s" % view.url)
+                app_url_map[view_url.url] += [(view_url, view)]
+            # Install URLs
+            for url in app_url_map:
+                method_map = {}
+                names = set()
+                for view_url, view in app_url_map[url]:
+                    for method in view_url.method:
+                        method_map[method] = view
+                    if view_url.name:
+                        names.add(view_url.name)
+                    if getattr(view, "menu", None):
+                        self.register_app_menu(app, view)
+                site_view = self.site_view(app, method_map)
+                app_chain += [re_path(url, site_view, name=view_url.name)]
+                for name in names:
+                    self.register_named_view(app.module, app.app, name, site_view)
+        # Generate router info
+        self.urlpatterns = []
+        for module in sorted(patterns):
+            # Collect nested application routes
+            mod_includes = []
+            for app in sorted(patterns[module]):
+                mod_includes += [path("%s/" % app, include((patterns[module][app], app)))]
+            # Install module routes
+            self.urlpatterns += [path("%s/" % module, include((mod_includes, module)))]
 
     def register(self, app_class):
         """
@@ -372,10 +368,6 @@ class Site(object):
         # Initialize application
         app = app_class(self)
         self.apps[app_id] = app
-        # Install module URL resolver
-        ar = self.register_url_resolver(app)
-        # Register application views
-        self.register_views(app, ar)
         # Register contributors
         for c in self.app_contributors[app.__class__]:
             c.set_app(app)
@@ -433,6 +425,8 @@ class Site(object):
         for app_class in self.pending_applications:
             self.do_register(app_class)
         self.pending_applications = []
+        # Setup router URLs
+        self.setup_router()
         # Install applications
         logger.info("%d applications are installed", self.app_count)
         # Finally, order the menu

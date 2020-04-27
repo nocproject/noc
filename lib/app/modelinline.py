@@ -313,7 +313,7 @@ class ModelInline(object):
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
             elif f.remote_field is None:
-                v = f._get_val_from_obj(o)
+                v = f.value_from_object(o)
                 if (
                     v is not None
                     and not isinstance(v, str)
