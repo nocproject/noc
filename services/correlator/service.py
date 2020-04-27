@@ -62,7 +62,6 @@ class CorrelatorService(Service):
             pool=config.pool,
             reset_running=True,
             max_threads=config.correlator.max_threads,
-            ioloop=self.ioloop,
             # @fixme have to be configured ?
             submit_threshold=100,
             max_chunk=100,

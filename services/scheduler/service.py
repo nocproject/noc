@@ -25,10 +25,7 @@ class SchedulerService(Service):
     @tornado.gen.coroutine
     def on_activate(self):
         self.scheduler = Scheduler(
-            "scheduler",
-            reset_running=True,
-            max_threads=config.scheduler.max_threads,
-            ioloop=self.ioloop,
+            "scheduler", reset_running=True, max_threads=config.scheduler.max_threads,
         )
         self.scheduler.run()
 

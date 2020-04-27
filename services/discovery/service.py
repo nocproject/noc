@@ -45,7 +45,6 @@ class DiscoveryService(Service):
             pool=config.pool,
             reset_running=True,
             max_threads=config.discovery.max_threads,
-            ioloop=self.ioloop,
             filter=ifilter,
             service=self,
             sample=config.discovery.sample,
