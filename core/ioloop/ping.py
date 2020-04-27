@@ -19,7 +19,7 @@ from time import perf_counter
 # Third-party modules
 from tornado.ioloop import IOLoop
 import tornado.gen
-import tornado.concurrent
+from tornado.concurrent import Future
 from tornado.util import errno_from_exception
 
 # NOC modules
@@ -104,7 +104,7 @@ class PingSocket(object):
         logger.debug("[%s] Ping (req=%s, seq=%s, timeout=%sms)", address, request_id, seq, timeout)
         msg = self.build_echo_request(size, request_id, seq)
         sid = (address, request_id, seq)
-        f = tornado.concurrent.TracebackFuture()
+        f = Future()
         f.sid = sid
         self.sessions[sid] = f
         self.send(address, msg)

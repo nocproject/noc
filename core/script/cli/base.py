@@ -17,7 +17,7 @@ from threading import Lock
 # Third-party modules
 import tornado.gen
 import tornado.iostream
-import tornado.concurrent
+from tornado.concurrent import Future
 from tornado.ioloop import IOLoop
 from typing import Optional, Callable
 
@@ -205,7 +205,7 @@ class CLI(object):
                     result = tornado.gen.convert_yielded(result)
                 future_cell[0] = result
             except Exception:
-                future_cell[0] = tornado.concurrent.TracebackFuture()
+                future_cell[0] = Future()
                 future_cell[0].set_exc_info(sys.exc_info())
             self.ioloop.add_future(future_cell[0], lambda future: self.ioloop.stop())
 
