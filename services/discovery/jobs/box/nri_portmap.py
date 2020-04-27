@@ -8,11 +8,14 @@
 
 # Third-party modules
 from pymongo import UpdateOne
+from collections import namedtuple
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.etl.portmapper.loader import loader as portmapper_loader
 from noc.inv.models.interface import Interface
+
+IFHint = namedtuple("IFHint", ("name", "ifindex"))
 
 
 class NRIPortmapperCheck(DiscoveryCheck):
@@ -42,11 +45,18 @@ class NRIPortmapperCheck(DiscoveryCheck):
         # Process interfaces
         bulk = []
         icol = Interface._get_collection()
+        ifaces_hints = tuple(
+            IFHint(name=iface["name"], ifindex=iface.get("ifindex"))
+            for iface in icol.find(
+                {"managed_object": self.object.id, "type": "physical"},
+                {"_id": 1, "name": 1, "ifindex": 1},
+            )
+        )
         for d in icol.find(
             {"managed_object": self.object.id, "type": "physical"},
             {"_id": 1, "name": 1, "nri_name": 1},
         ):
-            nri_name = portmapper.to_remote(d["name"])
+            nri_name = portmapper.to_remote(d["name"], iface_hints=ifaces_hints)
             self.logger.debug("[%s] Port mapping %s <-> %s", nri, d["name"], nri_name)
             if not nri_name:
                 self.logger.info("[%s] Cannot map port name '%s'", nri, d["name"])
