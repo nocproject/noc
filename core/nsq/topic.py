@@ -15,15 +15,15 @@ from time import perf_counter
 import ujson
 import tornado.gen
 import tornado.locks
-import tornado.ioloop
-from typing import Union, Iterable, List, Dict, Any, Optional
+from tornado.ioloop import IOLoop
+from typing import Union, Iterable, List, Dict, Any
 
 # NOC modules
 from noc.config import config
 
 
 class TopicQueue(object):
-    def __init__(self, topic: str, io_loop: Optional[tornado.ioloop.IOLoop] = None) -> None:
+    def __init__(self, topic: str) -> None:
         self.topic = topic
         self.lock = Lock()
         self.put_condition = tornado.locks.Condition()
@@ -32,7 +32,7 @@ class TopicQueue(object):
         self.queue_size = 0
         self.to_shutdown = False
         self.last_get = None
-        self.io_loop = io_loop
+        self.io_loop = IOLoop.current()
         # Metrics
         self.msg_put = 0
         self.msg_get = 0
