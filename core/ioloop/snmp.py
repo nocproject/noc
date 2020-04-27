@@ -48,7 +48,6 @@ def snmp_get(
     version=SNMP_v2c,
     timeout=10,
     tos=None,
-    ioloop=None,
     udp_socket=None,
     raw_varbinds=False,
     display_hints=None,
@@ -72,7 +71,7 @@ def snmp_get(
         sock = udp_socket
         prev_timeout = sock.get_timeout()
     else:
-        sock = UDPSocket(ioloop=ioloop, tos=tos)
+        sock = UDPSocket(tos=tos)
     sock.settimeout(timeout)
     # Wait for result
     try:
@@ -136,7 +135,6 @@ def snmp_get(
                     version=version,
                     timeout=timeout,
                     tos=tos,
-                    ioloop=ioloop,
                     udp_socket=sock,
                 )
             except SNMPError as e:
@@ -182,7 +180,6 @@ def snmp_count(
     filter=None,
     max_repetitions=BULK_MAX_REPETITIONS,
     tos=None,
-    ioloop=None,
     udp_socket=None,
 ):
     """
@@ -202,7 +199,7 @@ def snmp_count(
         sock = udp_socket
         prev_timeout = sock.get_timeout()
     else:
-        sock = UDPSocket(ioloop=ioloop, tos=tos)
+        sock = UDPSocket(tos=tos)
     sock.settimeout(timeout)
     while True:
         # Get PDU
@@ -264,7 +261,6 @@ def snmp_getnext(
     max_repetitions=BULK_MAX_REPETITIONS,
     only_first=False,
     tos=None,
-    ioloop=None,
     udp_socket=None,
     max_retries=0,
     raw_varbinds=False,
@@ -293,7 +289,7 @@ def snmp_getnext(
         sock = udp_socket
         prev_timeout = sock.get_timeout()
     else:
-        sock = UDPSocket(ioloop=ioloop, tos=tos)
+        sock = UDPSocket(tos=tos)
     sock.settimeout(timeout)
     last_oid = None
     while True:
@@ -367,7 +363,6 @@ def snmp_set(
     version=SNMP_v2c,
     timeout=10,
     tos=None,
-    ioloop=None,
     udp_socket=None,
 ):
     """
@@ -379,7 +374,7 @@ def snmp_set(
         sock = udp_socket
         prev_timeout = sock.get_timeout()  # noqa
     else:
-        sock = UDPSocket(ioloop=ioloop, tos=tos)
+        sock = UDPSocket(tos=tos)
     sock.settimeout(timeout)
     # Send GET PDU
     pdu = set_pdu(community=community, varbinds=varbinds, version=version)

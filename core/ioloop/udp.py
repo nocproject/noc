@@ -33,8 +33,7 @@ class UDPSocket(object):
         sock.close()
     """
 
-    def __init__(self, ioloop=None, tos=None):
-        self.ioloop = ioloop or IOLoop.current()
+    def __init__(self, tos=None):
         self.send_buffer = None  # (data, address)
         self.bufsize = None
         self.timeout_task = None
@@ -73,21 +72,21 @@ class UDPSocket(object):
     def start_timeout(self):
         self.stop_timeout()
         if self.timeout:
-            self.timeout_task = self.ioloop.call_later(self.timeout, self.on_timeout)
+            self.timeout_task = IOLoop.current().call_later(self.timeout, self.on_timeout)
 
     def stop_timeout(self):
         if self.timeout_task:
-            self.ioloop.remove_timeout(self.timeout_task)
+            IOLoop.current().remove_timeout(self.timeout_task)
             self.timeout_task = None
 
     def add_handler(self, callback, events):
         self.remove_handler()
-        self.ioloop.add_handler(self.fd, callback, events)
+        IOLoop.current().add_handler(self.fd, callback, events)
         self.events = events
 
     def remove_handler(self):
         if self.events:
-            self.ioloop.remove_handler(self.fd)
+            IOLoop.current().remove_handler(self.fd)
             self.events = 0
 
     def recvfrom(self, bufsize):
@@ -125,7 +124,7 @@ class UDPSocket(object):
         self.recvfrom(self.bufsize)
 
     def on_write(self, fd, events):
-        self.ioloop.remove_handler(self.fd)
+        IOLoop.current().remove_handler(self.fd)
         data, address = self.send_buffer
         self.send_buffer = None
         self.sendto(data, address)
@@ -140,7 +139,7 @@ class UDPSocket(object):
 
     def close(self):
         if self.timeout_task:
-            self.ioloop.remove_timeout(self.timeout_task)
+            IOLoop.current().remove_timeout(self.timeout_task)
             self.timeout_task = None
         if self.socket:
             self.remove_handler()

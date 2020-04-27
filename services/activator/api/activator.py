@@ -110,7 +110,6 @@ class ActivatorAPI(API):
                 community=community,
                 version=SNMP_v1,
                 tos=config.activator.tos,
-                ioloop=self.service.ioloop,
             )
             result = smart_text(result, errors="replace") if result else result
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
@@ -142,7 +141,6 @@ class ActivatorAPI(API):
                 community=community,
                 version=SNMP_v2c,
                 tos=config.activator.tos,
-                ioloop=self.service.ioloop,
             )
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
             result = smart_text(result, errors="replace") if result else result
