@@ -19,12 +19,13 @@ from noc.core.comp import reraise
 T = TypeVar("T")
 
 
-def run_sync(cb: Callable[..., T]) -> T:
+def run_sync(cb: Callable[..., T], close_all: bool = True) -> T:
     """
     Run callable on dedicated IOLoop in safe manner
     and return result or raise error
 
     :param cb: Callable to be runned on IOLoop
+    :param close_all: Close all file descriptors
     :return: Callable result
     """
 
@@ -47,7 +48,7 @@ def run_sync(cb: Callable[..., T]) -> T:
     try:
         ioloop.run_sync(wrapper)
     finally:
-        ioloop.close(all_fds=True)
+        ioloop.close(all_fds=close_all)
         if prev_io_loop:
             prev_io_loop.make_current()
         else:

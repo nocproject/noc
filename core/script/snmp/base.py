@@ -9,7 +9,6 @@
 import weakref
 
 # Third-party modules
-import tornado.ioloop
 import tornado.gen
 
 # NOC modules
@@ -24,6 +23,7 @@ from noc.core.error import (
     ERR_SNMP_FATAL_TIMEOUT,
     ERR_SNMP_BAD_COMMUNITY,
 )
+from noc.core.ioloop.util import run_sync
 
 
 class SNMP(object):
@@ -41,8 +41,6 @@ class SNMP(object):
 
     def __init__(self, script):
         self._script = weakref.ref(script)
-        self.ioloop = None
-        self.result = None
         self.logger = PrefixLoggerAdapter(script.logger, self.name)
         self.timeouts_limit = 0
         self.timeouts = 0
@@ -68,21 +66,11 @@ class SNMP(object):
             self.logger.debug("Closing UDP socket")
             self.socket.close()
             self.socket = None
-        if self.ioloop:
-            self.logger.debug("Closing IOLoop")
-            self.ioloop.close(all_fds=True)
-            self.ioloop = None
-
-    def get_ioloop(self):
-        if not self.ioloop:
-            self.logger.debug("Creating IOLoop")
-            self.ioloop = tornado.ioloop.IOLoop()
-        return self.ioloop
 
     def get_socket(self):
         if not self.socket:
             self.logger.debug("Create UDP socket")
-            self.socket = UDPSocket(ioloop=self.get_ioloop(), tos=self.script.tos)
+            self.socket = UDPSocket(tos=self.script.tos)
         return self.socket
 
     def _get_snmp_version(self, version=None):
@@ -117,18 +105,18 @@ class SNMP(object):
         @tornado.gen.coroutine
         def run():
             try:
-                self.result = yield snmp_get(
+                r = yield snmp_get(
                     address=self.script.credentials["address"],
                     oids=oids,
                     community=str(self.script.credentials["snmp_ro"]),
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
                     version=version,
                     raw_varbinds=raw_varbinds,
                     display_hints=display_hints,
                 )
                 self.timeouts = self.timeouts_limit
+                return r
             except SNMPError as e:
                 if e.code == TIMED_OUT:
                     if self.timeouts_limit:
@@ -144,9 +132,7 @@ class SNMP(object):
         if display_hints is None:
             display_hints = self._get_display_hints()
         version = self._get_snmp_version(version)
-        self.get_ioloop().run_sync(run)
-        r, self.result = self.result, None
-        return r
+        return run_sync(run, close_all=False)
 
     def set(self, *args):
         """
@@ -158,14 +144,14 @@ class SNMP(object):
         @tornado.gen.coroutine
         def run():
             try:
-                self.result = yield snmp_set(
+                r = yield snmp_set(
                     address=self.script.credentials["address"],
                     varbinds=varbinds,
                     community=str(self.script.credentials["snmp_rw"]),
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
                 )
+                return r
             except SNMPError as e:
                 if e.code == TIMED_OUT:
                     raise self.TimeOutError()
@@ -180,9 +166,7 @@ class SNMP(object):
             raise ValueError("Invalid varbinds")
         if "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
-        self.get_ioloop().run_sync(run)
-        r, self.result = self.result, None
-        return r
+        return run_sync(run, close_all=False)
 
     def count(self, oid, filter=None, version=None):
         """
@@ -194,17 +178,17 @@ class SNMP(object):
         @tornado.gen.coroutine
         def run():
             try:
-                self.result = yield snmp_count(
+                r = yield snmp_count(
                     address=self.script.credentials["address"],
                     oid=oid,
                     community=str(self.script.credentials["snmp_ro"]),
                     bulk=self.script.has_snmp_bulk(),
                     filter=filter,
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
                     version=version,
                 )
+                return r
             except SNMPError as e:
                 if e.code == TIMED_OUT:
                     raise self.TimeOutError()
@@ -214,9 +198,7 @@ class SNMP(object):
         if "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         version = self._get_snmp_version(version)
-        self.get_ioloop().run_sync(run)
-        r, self.result = self.result, None
-        return r
+        return run_sync(run, close_all=False)
 
     def getnext(
         self,
@@ -236,7 +218,7 @@ class SNMP(object):
         @tornado.gen.coroutine
         def run():
             try:
-                self.result = yield snmp_getnext(
+                r = yield snmp_getnext(
                     address=self.script.credentials["address"],
                     oid=oid,
                     community=str(self.script.credentials["snmp_ro"]),
@@ -245,7 +227,6 @@ class SNMP(object):
                     filter=filter,
                     only_first=only_first,
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
                     version=version,
                     max_retries=max_retries,
@@ -253,6 +234,7 @@ class SNMP(object):
                     raw_varbinds=raw_varbinds,
                     display_hints=display_hints,
                 )
+                return r
             except SNMPError as e:
                 if e.code == TIMED_OUT:
                     raise self.TimeOutError()
@@ -264,9 +246,7 @@ class SNMP(object):
         if display_hints is None:
             display_hints = self._get_display_hints()
         version = self._get_snmp_version(version)
-        self.get_ioloop().run_sync(run)
-        r, self.result = self.result, None
-        return r
+        return run_sync(run, close_all=False)
 
     def get_table(self, oid, community_suffix=None, cached=False, display_hints=None):
         """
