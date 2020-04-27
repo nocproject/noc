@@ -21,12 +21,11 @@ if config.features.use_uvlib:
         with random offset.
         """
 
-        def __init__(self, callback, callback_time, io_loop=None):
+        def __init__(self, callback, callback_time):
             self.callback = callback
             if callback_time <= 0:
                 raise ValueError("Periodic callback must have a positive callback_time")
             self.callback_time = callback_time
-            self.io_loop = io_loop or IOLoop.current()
             self._timer = None
 
         def __del__(self):
@@ -38,13 +37,13 @@ if config.features.use_uvlib:
             try:
                 return self.callback()
             except Exception:
-                self.io_loop.handle_callback_exception(self.callback)
+                IOLoop.current().handle_callback_exception(self.callback)
             finally:
-                self.io_loop._loop.update_time()
+                IOLoop.current()._loop.update_time()
 
         def start(self):
             if not self._timer:
-                self._timer = pyuv.Timer(self.io_loop._loop)
+                self._timer = pyuv.Timer(IOLoop.current()._loop)
                 self._timer.start(
                     self._run,
                     random.random() * self.callback_time / 1000.0,
@@ -72,8 +71,9 @@ else:
         def start(self):
             """Starts the timer."""
             self._running = True
-            self._next_timeout = self.io_loop.time() + random.random() * self.callback_time / 1000.0
-            self._timeout = self.io_loop.add_timeout(self._next_timeout, self._run)
+            io_loop = IOLoop.current()
+            self._next_timeout = io_loop.time() + random.random() * self.callback_time / 1000.0
+            self._timeout = io_loop.add_timeout(self._next_timeout, self._run)
 
         def set_callback_time(self, callback_time):
             self.callback_time = callback_time
