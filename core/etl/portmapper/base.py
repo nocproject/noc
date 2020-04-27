@@ -55,7 +55,7 @@ class BasePortMapper(six.with_metaclass(PortMapperBase, object)):
         self.profile = self.managed_object.profile.name
         self.platform = self.managed_object.platform.name
 
-    def to_local(self, name):
+    def to_local(self, name, iface_hints=None):
         """
         Convert interface name from NRI to NOC's conventions
         """
@@ -68,7 +68,7 @@ class BasePortMapper(six.with_metaclass(PortMapperBase, object)):
             return mm(self, name)
         return None
 
-    def to_remote(self, name):
+    def to_remote(self, name, iface_hints=None):
         """
         Convert interface name
         """
