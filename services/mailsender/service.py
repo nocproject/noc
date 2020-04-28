@@ -17,6 +17,7 @@ from email.header import Header
 
 # Third-party modules
 import pytz
+import tornado.gen
 
 # NOC modules
 from noc.config import config
@@ -31,9 +32,10 @@ class MailSenderService(Service):
         super(MailSenderService, self).__init__(*args, **kwargs)
         self.tz = None
 
+    @tornado.gen.coroutine
     def on_activate(self):
         self.tz = pytz.timezone(config.timezone)
-        self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
+        yield self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(

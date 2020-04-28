@@ -604,6 +604,7 @@ class Service(object):
         for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
+    @tornado.gen.coroutine
     def subscribe(self, topic, channel, handler, raw=False, **kwargs):
         """
         Subscribe message to channel
