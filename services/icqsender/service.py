@@ -6,12 +6,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 import re
 import datetime
 import json
 import time
 from urllib.parse import urlencode
+
+# Third-party modules
+import tornado.gen
 
 # NOC modules
 from noc.core.service.base import Service
@@ -25,13 +28,14 @@ API = "https://api.icq.net/bot/v1/messages/sendText?token="
 class IcqSenderService(Service):
     name = "icqsender"
 
+    @tornado.gen.coroutine
     def on_activate(self):
         if not config.icqsender.token:
             self.logger.info("No ICQ token defined")
             self.url = None
         else:
             self.url = API + config.icqsender.token + "&"
-            self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
+            yield self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(

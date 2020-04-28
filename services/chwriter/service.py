@@ -52,7 +52,7 @@ class CHWriterService(Service):
             self.check_channels, config.chwriter.batch_delay_ms, self.ioloop
         )
         check_callback.start()
-        self.subscribe(
+        yield self.subscribe(
             config.chwriter.topic,
             "chwriter",
             self.on_data,
