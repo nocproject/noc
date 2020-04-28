@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 @bi_sync
 @on_save
 @on_delete
-@on_delete_check(clean=[("phone.PhoneNumber", "service")])
+@on_delete_check(clean=[("phone.PhoneNumber", "service"), ("inv.Interface", "service")])
 class Service(Document):
     meta = {
         "collection": "noc.services",
