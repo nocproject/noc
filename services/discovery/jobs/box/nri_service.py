@@ -13,6 +13,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.service import Service
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.inv.models.interface import Interface
 from noc.core.datastream.change import register_changes
 
@@ -96,4 +97,5 @@ class NRIServiceCheck(DiscoveryCheck):
         if bulk:
             self.logger.info("Sending %d updates", len(bulk))
             icol.bulk_write(bulk)
+            ServiceSummary.refresh_object(self.object.id)
             register_changes([("managedobject", self.object.id)])
