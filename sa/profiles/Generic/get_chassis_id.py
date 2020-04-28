@@ -34,6 +34,7 @@ class Script(BaseScript):
     IGNORED_MACS = {
         "00:00:00:00:00:00",  # Empty MAC
         "00:01:02:03:04:00",  # Very Smart programmer
+        "00:01:02:03:04:05",  # Very Smart+ programmer
         "FF:FF:FF:FF:FF:FF",  # Broadcast
     }
 
