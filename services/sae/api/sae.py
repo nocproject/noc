@@ -113,7 +113,7 @@ class SAEAPI(API):
         url = yield self.get_activator_url(pool)
         if not url:
             raise APIError("No active activators for pool '%s'" % pool)
-        self.redirect(
+        return self.redirect(
             url,
             "script",
             [
