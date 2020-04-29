@@ -69,7 +69,7 @@ class Script(BaseScript):
                     "interfaces": [mac_port[r_oid]],
                     "mac": mac,
                     "type": self.mac_status_map[status],
-                    "vlan_id": vlan_id,
+                    "vlan_id": max(int(vlan_id), 1),
                 }
             ]
         return r
