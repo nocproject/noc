@@ -73,4 +73,8 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
+        if name == "fastethernet1/0/1":
+            # for ISCOM26(?:24|08)G
+            # @todo use matchers
+            return "management"
         return cls.INTERFACE_TYPES.get(name[:2].lower())
