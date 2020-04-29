@@ -9,13 +9,14 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
     name = "Zyxel.MSAN.get_mac_address_table"
     interface = IGetMACAddressTable
+    always_prefer = "S"
 
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+" r"(?P<interface>.+)\s*$", re.MULTILINE
@@ -30,7 +31,7 @@ class Script(BaseScript):
     rx_port2 = re.compile(r"^(?P<interface>(?:up|slot)\d+)\s+(?P<mac>\S+)", re.MULTILINE)
     rx_mac = re.compile(r"^\s*\d+\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s*", re.MULTILINE)
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None, **kwargs):
         r = []
         cmd = "show mac"
         if mac is not None:
