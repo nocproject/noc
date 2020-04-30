@@ -9,9 +9,9 @@
 - name: Check if we have NOC/bin/ folder with py3
   register: noc_bin_py3
   stat:
-    path: "{{ noc_root }}/bin/python3"
+    path: "{{ noc_root }}/bin/python{{ noc_py3_ver }}"
 
-- name: Archive old py2 noc folder and delete files in /var/lib
+- name: Archive old py2 noc folder and delete pkg files
   block:
     - name: archive current noc dir
       archive:
@@ -89,12 +89,26 @@
     - noc_bin_py3 is defined
     - not noc_bin_py3.stat.exists
 
+- name: Check if we have system Python of {{ noc_py3_ver }} version
+  register: noc_system_py3
+  stat:
+    path: "/usr/bin/python{{ noc_py3_ver }}"
+
+- name: Decide to use system python3
+  set_fact:
+    noc_init_python_path: "/usr/bin/python{{ noc_py3_ver }}"
+  when: noc_system_py3.stat.exists
+
+- name: Compile Python of {{ noc_py3_ver }} version
+  include_tasks: "compile_python.yml"
+  when: not noc_system_py3.stat.exists
+
 - name: Initialize virtualenv3
   pip:
     chdir: "{{ noc_root }}"
     name: "pip"
     virtualenv: "{{ noc_root }}"
-    virtualenv_command: /usr/bin/python3 -m venv
+    virtualenv_command: "{{ noc_init_python_path }} -m venv"
     state: "latest"
   environment:
     https_proxy: "{{ http_proxy }}"
@@ -149,4 +163,4 @@
 - name: Install noc.pth
   template:
     src: "lib/python/site-packages/noc.pth.j2"
-    dest: "{{ noc_root }}/lib/python{{ ansible_python.version.major }}.{{ ansible_python.version.minor }}/site-packages/noc.pth"
+    dest: "{{ noc_root }}/lib/python{{ noc_py3_ver }}/site-packages/noc.pth"

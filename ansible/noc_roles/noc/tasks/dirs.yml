@@ -5,17 +5,17 @@
     state: "directory"
     owner: "{{ noc_user }}"
     mode: 0755
-  when: "'python' in python_interpreter"
+  when:
+    - noc_python_interpreter == "python"
 
 - name: Create required directories on py3  #hack. have to be fixed
   file:
-    path: "{{ noc_root }}/lib/python{{ ansible_python.version.major }}.{{ ansible_python.version.minor }}/site-packages/__pycache__"
+    path: "{{ noc_root }}/lib/python{{ noc_py3_ver }}/site-packages/__pycache__"
     state: "directory"
     owner: "{{ noc_user }}"
     mode: 0755
   when:
-    - "'python' in python_interpreter"
-    - ansible_python.version.major == 3
+    - noc_python_interpreter == "python3"
 
 - name: Create required directories
   file:

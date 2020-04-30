@@ -1,0 +1,47 @@
+---
+- name: "Python{{ noc_py3_ver }} | Check that {{ noc_py3_ver }} is still not installed"
+  stat:
+    path: "/opt/python{{ noc_py3_ver }}/bin/python{{ noc_py3_ver }}"
+  register: already_installed
+  ignore_errors: true
+
+- name: Create dir for compiling
+  file:
+    path: "/opt/python{{ noc_py3_ver }}"
+    state: directory
+  when: not already_installed.stat.exists
+
+- name: "Python{{ noc_py3_ver }} | Download"
+  get_url:
+    url: "https://www.python.org/ftp/python/{{ py_version['py' ~ noc_py3_ver] }}/Python-{{ py_version['py' ~ noc_py3_ver] }}.tar.xz"
+    dest: "/opt/python{{ noc_py3_ver }}"
+    checksum: "md5:{{ py_hashes['py' ~ noc_py3_ver] }}"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  when: not already_installed.stat.exists
+
+- name: "Python{{ noc_py3_ver }} | Uncompress"
+  unarchive:
+    src: "/opt/python{{ noc_py3_ver }}/Python-{{ py_version['py' ~ noc_py3_ver] }}.tar.xz"
+    dest: "/opt/python{{ noc_py3_ver }}/"
+    creates: "/opt/python{{ noc_py3_ver }}/Python-{{ py_version['py' ~ noc_py3_ver] }}"
+    remote_src: true
+  when: not already_installed.stat.exists
+
+- name: "Include OS-specific tasks for compiling"
+  include_tasks: "os/{{ ansible_distribution }}/for_compile.yml"
+
+- name: "Python{{ noc_py3_ver }} | Compile and install"
+  command: "{{ item }}"
+  args:
+    chdir: "/opt/python{{ noc_py3_ver }}/Python-{{ py_version['py' ~ noc_py3_ver] }}"
+  with_items:
+    - "./configure --prefix /opt/python{{ noc_py3_ver }}"
+    - make
+    - make altinstall
+  when: not already_installed.stat.exists
+
+- name: Take path for new python3
+  set_fact:
+    noc_init_python_path: "/opt/python{{ noc_py3_ver }}/bin/python{{ noc_py3_ver }}"

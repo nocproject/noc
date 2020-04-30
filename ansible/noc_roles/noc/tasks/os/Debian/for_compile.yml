@@ -1,0 +1,20 @@
+---
+- name: Install Debian packages for compiling
+  apt:
+    name: "{{ packages }}"
+    update_cache: "True"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  vars:
+    packages:
+      - zlib1g-dev
+      - libncurses5-dev
+      - libssl-dev
+      - libbz2-dev
+      - libffi-dev
+      - libreadline-dev
+      - libgdbm-dev
+      - liblzma-dev
+      - uuid-dev
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
