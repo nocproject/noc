@@ -871,8 +871,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return neighbors
         # Cached version
         neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
-        self.logger.debug("Use neighbors cache")
         if neighbors is None:
+            self.logger.info("Neighbors cache is empty, getting from device...")
             neighbors = iter_neighbors(mo)
             if isinstance(neighbors, types.GeneratorType):
                 neighbors = list(iter_neighbors(mo))
@@ -888,6 +888,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
             metrics["neighbor_cache_misses"] += 1
         else:
+            self.logger.info("Use neighbors cache")
             alias_cache = cache.get("%s-aliases" % key, version=self.NEIGHBOR_CACHE_VERSION)
             self.logger.debug("Alias cache is %s", alias_cache)
             if alias_cache:
