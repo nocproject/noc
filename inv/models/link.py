@@ -91,8 +91,10 @@ class Link(Document):
                 yield "managedobject", mo_id
 
     def clean(self):
-        self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
-        self.linked_segments = sorted(set(i.managed_object.segment.id for i in self.interfaces))
+        self.linked_objects = list(sorted(set(i.managed_object.id for i in self.interfaces)))
+        self.linked_segments = list(
+            sorted(set(i.managed_object.segment.id for i in self.interfaces))
+        )
         self.type = self.get_type()
 
     def contains(self, iface):
@@ -200,7 +202,7 @@ class Link(Document):
         """
         from noc.sa.models.managedobject import ManagedObject
 
-        return list(ManagedObject.objects.filter(id__in=self.linked_objects))
+        return list(ManagedObject.objects.filter(id__in=list(self.linked_objects)))
 
     @property
     def segments(self):
