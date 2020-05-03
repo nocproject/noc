@@ -74,9 +74,9 @@ class BaseTopology(object):
         """
         attrs = attrs or {}
         mo_id = str(mo.id)
-        if mo_id in self.G.node:
+        if mo_id in self.G.nodes:
             # Only update attributes
-            self.G.node[mo_id].update(attrs)
+            self.G.nodes[mo_id].update(attrs)
             return
         stencil = self.get_object_stencil(mo)
         # Get capabilities
@@ -112,9 +112,9 @@ class BaseTopology(object):
         """
         attrs = attrs or {}
         link_id = str(link.id)
-        if link_id in self.G.node:
+        if link_id in self.G.nodes:
             # Only update attributes
-            self.G.node[link_id].update(attrs)
+            self.G.nodes[link_id].update(attrs)
             return
         stencil = self.get_cloud_stencil(link)
         # Apply node hints
@@ -170,7 +170,7 @@ class BaseTopology(object):
         """
         id_to_name = {}
         dl_map = {}  # downlink -> uplink port
-        for p in self.G.node[uplink]["ports"]:
+        for p in self.G.nodes[uplink]["ports"]:
             id_to_name[p["id"]] = sorted(p["ports"], key=alnum_key)[0]
         for dl in downlinks:
             for p in self.G.edges[uplink, dl]["ports"]:
@@ -195,7 +195,7 @@ class BaseTopology(object):
 
     def non_isolated_graph(self):
         isolated = set(self.get_isolated())
-        return self.G.subgraph([o for o in self.G.node if o not in isolated])
+        return self.G.subgraph([o for o in self.G.nodes if o not in isolated])
 
     def normalize_pos(self, pos):
         """
@@ -212,7 +212,7 @@ class BaseTopology(object):
         # Shift positions according to offset and node size
         for p in pos:
             so = np.array(
-                [self.G.node[p]["shape_width"] / 2.0, self.G.node[p]["shape_height"] / 2.0]
+                [self.G.nodes[p]["shape_width"] / 2.0, self.G.nodes[p]["shape_height"] / 2.0]
             )
             pos[p] -= minv + so - self.MAP_OFFSET
         return s[0], s[1], pos
@@ -240,10 +240,12 @@ class BaseTopology(object):
             pos.update(dpos)
         else:
             pos = dpos
-        pos = {o: pos[o] for o in pos if o in self.G.node}
+        pos = {o: pos[o] for o in pos if o in self.G.nodes}
         width, height, pos = self.normalize_pos(pos)
         # Place isolated nodes
-        isolated = sorted((o for o in self.G if o not in pos), key=lambda x: self.G.node[x]["name"])
+        isolated = sorted(
+            (o for o in self.G if o not in pos), key=lambda x: self.G.nodes[x]["name"]
+        )
         y = height + self.ISOLATED_PADDING
         x = 0
         w = max(width, self.ISOLATED_WIDTH)
@@ -256,8 +258,8 @@ class BaseTopology(object):
         # Write positions to object's properties
         for o in pos:
             x, y = pos[o]
-            self.G.node[o]["x"] = x
-            self.G.node[o]["y"] = y
+            self.G.nodes[o]["x"] = x
+            self.G.nodes[o]["y"] = y
         # Calculate link positions
         for u, v in self.G.edges():
             ed = self.G[u][v]

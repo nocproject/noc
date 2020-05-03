@@ -74,7 +74,7 @@ class SegmentTopology(BaseTopology):
         is uplink
         :return:
         """
-        return [i for i in self.G.node if self.G.node[i].get("role") == "uplink"]
+        return [i for i in self.G.nodes if self.G.nodes[i].get("role") == "uplink"]
 
     def get_uplinks_molevel(self):
         """
@@ -82,15 +82,15 @@ class SegmentTopology(BaseTopology):
         :return:
         """
         max_level = max(
-            self.G.node[i].get("level")
-            for i in self.G.node
-            if self.G.node[i].get("type") == "managedobject"
+            self.G.nodes[i].get("level")
+            for i in self.G.nodes
+            if self.G.nodes[i].get("type") == "managedobject"
         )
         return [
             i
-            for i in self.G.node
-            if self.G.node[i].get("type") == "managedobject"
-            and self.G.node[i].get("level") == max_level
+            for i in self.G.nodes
+            if self.G.nodes[i].get("type") == "managedobject"
+            and self.G.nodes[i].get("level") == max_level
         ]
 
     def get_uplinks_seg(self):
@@ -98,7 +98,7 @@ class SegmentTopology(BaseTopology):
         All segment objects are uplinks
         :return:
         """
-        return [i for i in self.G.node if self.G.node[i].get("role") == "segment"]
+        return [i for i in self.G.nodes if self.G.nodes[i].get("role") == "segment"]
 
     def get_uplinks_minaddr(self):
         """
@@ -108,9 +108,9 @@ class SegmentTopology(BaseTopology):
         s = next(
             iter(
                 sorted(
-                    (IP.prefix(self.G.node[i].get("address")), i)
-                    for i in self.G.node
-                    if self.G.node[i].get("role") == "segment"
+                    (IP.prefix(self.G.nodes[i].get("address")), i)
+                    for i in self.G.nodes
+                    if self.G.nodes[i].get("role") == "segment"
                 )
             )
         )
@@ -124,9 +124,9 @@ class SegmentTopology(BaseTopology):
         s = next(
             reversed(
                 sorted(
-                    (IP.prefix(self.G.node[i].get("address")), i)
-                    for i in self.G.node
-                    if self.G.node[i].get("role") == "segment"
+                    (IP.prefix(self.G.nodes[i].get("address")), i)
+                    for i in self.G.nodes
+                    if self.G.nodes[i].get("role") == "segment"
                 )
             )
         )
@@ -223,11 +223,11 @@ class SegmentTopology(BaseTopology):
                 mo0_id = str(mo0.id)
                 mo1_id = str(mo1.id)
                 # Create virtual ports for mo0
-                self.G.node[mo0_id]["ports"] += [
+                self.G.nodes[mo0_id]["ports"] += [
                     {"id": pn, "ports": [i["name"] for i in mo_ifaces[mo0]]}
                 ]
                 # Create virtual ports for mo1
-                self.G.node[mo1_id]["ports"] += [
+                self.G.nodes[mo1_id]["ports"] += [
                     {"id": pn + 1, "ports": [i["name"] for i in mo_ifaces[mo1]]}
                 ]
                 # Calculate bandwidth
@@ -266,7 +266,7 @@ class SegmentTopology(BaseTopology):
         """
 
         def get_node_uplinks(node):
-            role = self.G.node[node].get("role", "cloud")
+            role = self.G.nodes[node].get("role", "cloud")
             if role == "uplink":
                 # Only downlinks matter
                 return []
@@ -293,11 +293,11 @@ class SegmentTopology(BaseTopology):
         # Get uplinks for cloud nodes
         cloud_uplinks = {
             o: [int(u) for u in get_node_uplinks(o)]
-            for o in self.G.node
-            if self.G.node[o]["type"] == "cloud"
+            for o in self.G.nodes
+            if self.G.nodes[o]["type"] == "cloud"
         }
         # All objects including neighbors
-        all_objects = set(o for o in self.G.node if self.G.node[o]["type"] == "managedobject")
+        all_objects = set(o for o in self.G.nodes if self.G.nodes[o]["type"] == "managedobject")
         # Get objects uplinks
         obj_uplinks = {}
         obj_downlinks = defaultdict(set)
