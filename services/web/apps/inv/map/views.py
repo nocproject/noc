@@ -110,7 +110,7 @@ class MapApplication(ExtApplication):
             "max_links": int(segment.max_shown_downlinks),
             "name": segment.name,
             "caps": list(topology.caps),
-            "nodes": [q_mo(x) for x in topology.G.node.values()],
+            "nodes": [q_mo(x) for x in topology.G.nodes.values()],
             "links": [topology.G[u][v] for u, v in topology.G.edges()],
         }
         # Parent info

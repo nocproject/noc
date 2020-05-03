@@ -1,8 +1,8 @@
 # ----------------------------------------------------------------------
-#  Tree layout class
+# Tree layout class
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2018 The NOC Project
-#  See LICENSE for details
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
@@ -37,7 +37,7 @@ class TreeLayout(LayoutBase):
                 # Detect fattest node
                 top += [
                     sorted(
-                        cc, key=lambda x: G.node[x].get("level", self.DEFAULT_LEVEL), reverse=True
+                        cc, key=lambda x: G.nodes[x].get("level", self.DEFAULT_LEVEL), reverse=True
                     )[0]
                 ]
         # Calculate tree width
@@ -47,7 +47,7 @@ class TreeLayout(LayoutBase):
         pos = {}
         for u in top:
             pos.update(self.get_tree_pos(G, u, x0, w))
-            x0 += G.node[u]["tree_width"]
+            x0 += G.nodes[u]["tree_width"]
         return pos
 
     @staticmethod
@@ -64,8 +64,8 @@ class TreeLayout(LayoutBase):
         for d in downlinks:
             w += TreeLayout.get_tree_width(G, d, node)
         w = max(w, 1)
-        G.node[node]["tree_width"] = w
-        G.node[node]["tree_downlinks"] = downlinks
+        G.nodes[node]["tree_width"] = w
+        G.nodes[node]["tree_downlinks"] = downlinks
         return w
 
     @classmethod
@@ -80,7 +80,7 @@ class TreeLayout(LayoutBase):
         :param level: current level
         :return: dict of node -> np.array
         """
-        root = G.node[node]
+        root = G.nodes[node]
         downlinks = root["tree_downlinks"]
         total_w = total_w or root["tree_width"]
         x = x0 + root["tree_width"] // 2
@@ -90,5 +90,5 @@ class TreeLayout(LayoutBase):
         dl = min(math.ceil(root["tree_width"] / cls.CHILDREN_PER_LEVEL), cls.MAX_LEVELS)
         for d in downlinks:
             pos.update(cls.get_tree_pos(G, d, x0, total_w, level + dl, offset))
-            x0 += G.node[d]["tree_width"]
+            x0 += G.nodes[d]["tree_width"]
         return pos
