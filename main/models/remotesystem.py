@@ -144,12 +144,14 @@ class RemoteSystem(Document):
                 extractors += [k[7:]]
         return extractors
 
-    def extract(self, extractors=None):
+    def extract(self, extractors=None, quiet=False):
         extractors = extractors or self.get_extractors()
         error = None
         try:
             self.get_handler().extract(extractors)
         except Exception as e:
+            if not quiet:
+                raise e
             error_report()
             error = str(e)
         self.last_extract = datetime.datetime.now()
@@ -159,12 +161,14 @@ class RemoteSystem(Document):
             self.last_successful_extract = self.last_extract
         self.save()
 
-    def load(self, extractors=None):
+    def load(self, extractors=None, quiet=False):
         extractors = extractors or self.get_extractors()
         error = None
         try:
             self.get_handler().load(extractors)
         except Exception as e:
+            if not quiet:
+                raise e
             error_report()
             error = str(e)
         self.last_load = datetime.datetime.now()
