@@ -779,7 +779,7 @@ class CLI(object):
         :param error_text:
         :return:
         """
-        if isinstance(seq, six.string_types):
+        if isinstance(seq, six.binary_type) or isinstance(seq, six.string_types):
             self.logger.debug("Recovering from error. Sending %r", seq)
             yield self.iostream.write(seq)
         elif callable(seq):
