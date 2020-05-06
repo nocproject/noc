@@ -57,6 +57,9 @@ class Command(BaseCommand):
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument("system", help="Remote system name")
         extract_parser.add_argument(
+            "quiet", action="store_true", default=False, help="Remote system name"
+        )
+        extract_parser.add_argument(
             "extractors", nargs=argparse.REMAINDER, help="List of extractor names"
         )
 
@@ -72,13 +75,13 @@ class Command(BaseCommand):
         remote_system = RemoteSystem.get_by_name(options["system"])
         if not remote_system:
             self.die("Invalid remote system: %s" % options["system"])
-        remote_system.load(options.get("loaders", []))
+        remote_system.load(options.get("loaders", []), quiet=options.get("quiet", False))
 
     def handle_extract(self, *args, **options):
         remote_system = RemoteSystem.get_by_name(options["system"])
         if not remote_system:
             self.die("Invalid remote system: %s" % options["system"])
-        remote_system.extract(options.get("extractors", []))
+        remote_system.extract(options.get("extractors", []), quiet=options.get("quiet", False))
 
     def handle_check(self, *args, **options):
         remote_system = RemoteSystem.get_by_name(options["system"])
