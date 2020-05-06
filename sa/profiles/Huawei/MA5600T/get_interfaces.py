@@ -335,6 +335,7 @@ class Script(BaseScript):
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
                         "enabled_protocols": [],
+                        "hints": ["uplink"],
                         "subinterfaces": [
                             {
                                 "name": ifname,
@@ -376,8 +377,10 @@ class Script(BaseScript):
                 for p_name, p in six.iteritems(ports):
                     if self.is_gpon_uplink:
                         ifindex = self.snmp_index("XG-PON", 0, slot, int(p["num"]))
+                        hints = ["uplink"]
                     else:
                         ifindex = self.snmp_index("GPON", 0, slot, int(p["num"]))
+                        hints = []
                     # ifname = "0/%d/%d" % (i, int(p["num"]))
                     interfaces[p_name] = {
                         "name": p_name,
@@ -385,6 +388,7 @@ class Script(BaseScript):
                         "snmp_ifindex": ifindex,
                         "admin_status": True,
                         "oper_status": p["state"],
+                        "hints": hints,
                         "subinterfaces": [
                             {
                                 "name": p_name,
