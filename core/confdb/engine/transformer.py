@@ -72,6 +72,8 @@ class PredicateTransformer(ast.NodeTransformer):
     def visit_Call(self, node, _input=None):
         if isinstance(node, ast.BoolOp):
             return self.visit_BoolOp(node, _input=_input)
+        if isinstance(node, ast.UnaryOp):
+            return self.visit_UnaryOp(node)
         if not _input:
             _input = ast.Name(id="_input", ctx=ast.Load())
         attr_name = "fn_%s" % self._get_node_id(node.func)
