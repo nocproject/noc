@@ -385,6 +385,7 @@ class Script(BaseScript):
         """
         Profile extension for very custom logic
         """
+        # pylint: disable=unnecessary-pass
         pass
 
     def schedule_snmp_oids(self, rule, metric, metrics):
@@ -556,30 +557,30 @@ class Script(BaseScript):
         """
         return cls._oid_rules.get(name)
 
-    @metrics(
-        [
-            "Interface | DOM | RxPower",
-            "Interface | DOM | Temperature",
-            "Interface | DOM | TxPower",
-            "Interface | DOM | Voltage",
-        ],
-        has_capability="DB | Interfaces",
-        has_script="get_dom_status",
-        access="C",  # CLI version
-        volatile=False,
-    )
-    def collect_dom_metrics(self, metrics):
-        r = {}
-        for m in self.scripts.get_dom_status():
-            ipath = ["", "", "", m["interface"]]
-            if m.get("temp_c") is not None:
-                self.set_metric(id=("Interface | DOM | Temperature", ipath), value=m["temp_c"])
-            if m.get("voltage_v") is not None:
-                self.set_metric(id=("Interface | DOM | Voltage", ipath), value=m["voltage_v"])
-            if m.get("optical_rx_dbm") is not None:
-                self.set_metric(id=("Interface | DOM | RxPower", ipath), value=m["optical_rx_dbm"])
-            if m.get("current_ma") is not None:
-                self.set_metric(id=("Interface | DOM | Bias Current", ipath), value=m["current_ma"])
-            if m.get("optical_tx_dbm") is not None:
-                self.set_metric(id=("Interface | DOM | TxPower", ipath), value=m["optical_tx_dbm"])
-        return r
+    # @metrics(
+    #     [
+    #         "Interface | DOM | RxPower",
+    #         "Interface | DOM | Temperature",
+    #         "Interface | DOM | TxPower",
+    #         "Interface | DOM | Voltage",
+    #     ],
+    #     has_capability="DB | Interfaces",
+    #     has_script="get_dom_status",
+    #     access="C",  # CLI version
+    #     volatile=False,
+    # )
+    # def collect_dom_metrics(self, metrics):
+    #     r = {}
+    #     for m in self.scripts.get_dom_status():
+    #         ipath = ["", "", "", m["interface"]]
+    #         if m.get("temp_c") is not None:
+    #             self.set_metric(id=("Interface | DOM | Temperature", ipath), value=m["temp_c"])
+    #         if m.get("voltage_v") is not None:
+    #             self.set_metric(id=("Interface | DOM | Voltage", ipath), value=m["voltage_v"])
+    #         if m.get("optical_rx_dbm") is not None:
+    #             self.set_metric(id=("Interface | DOM | RxPower", ipath), value=m["optical_rx_dbm"])
+    #         if m.get("current_ma") is not None:
+    #             self.set_metric(id=("Interface | DOM | Bias Current", ipath), value=m["current_ma"])
+    #         if m.get("optical_tx_dbm") is not None:
+    #             self.set_metric(id=("Interface | DOM | TxPower", ipath), value=m["optical_tx_dbm"])
+    #     return r
