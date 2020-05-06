@@ -6,213 +6,391 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from typing import (
+    Dict,
+    Optional,
+    Union,
+    Iterable,
+    Tuple,
+    Callable,
+    List,
+    Any,
+    Iterator,
+    DefaultDict,
+)
 from collections import defaultdict
-import time
+from itertools import compress, chain
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.ip import IPv4
-from noc.core.validators import is_mac
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.snmp.render import render_bin
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
     name = "Generic.get_interfaces"
-    cache = True
     interface = IGetInterfaces
+    MAX_REPETITIONS = 30
+    MAX_GETNEXT_RETIRES = 1
+    MAX_TIMEOUT = 20
 
-    MAX_REPETITIONS = 20
+    # Replace on get_interface_properties
+    # SNMP_NAME_TABLE = "IF-MIB::ifDescr"
+    # SNMP_MAC_TABLE = "IF-MIB::ifPhysAddress"
+    SNMP_ADMIN_STATUS_TABLE = "IF-MIB::ifAdminStatus"
+    SNMP_OPER_STATUS_TABLE = "IF-MIB::ifOperStatus"
+    SNMP_IF_DESCR_TABLE = "IF-MIB::ifAlias"
 
-    MAX_GETNEXT_RETIRES = 0
+    def get_bridge_ifindex_mappings(self) -> Dict[int, int]:
+        """
+        Getting mappings for bridge port number -> ifindex
+        :return:
+        """
+        pid_ifindex_mappings = {}
+        for oid, v in self.snmp.getnext(
+            mib["BRIDGE-MIB::dot1dBasePortIfIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            timeout=self.get_snmp_timeout(),
+        ):
+            pid_ifindex_mappings[oid.split(".")[-1]] = v
+        return pid_ifindex_mappings
 
-    BULK = None
+    def get_switchport(self) -> DefaultDict[int, Dict[str, Union[int, list, None]]]:
+        result = defaultdict(lambda: {"tagged_vlans": [], "untagged_vlan": None})
+        pid_ifindex_mappings = self.get_bridge_ifindex_mappings()
+        iface_list = sorted(pid_ifindex_mappings, key=int)
+        for oid, pvid in self.snmp.getnext(
+            mib["Q-BRIDGE-MIB::dot1qPvid"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            timeout=self.get_snmp_timeout(),
+        ):
+            if not pvid:
+                # if pvid is 0
+                continue
+            o = oid.split(".")[-1]
+            result[pid_ifindex_mappings[o]]["untagged_vlan"] = pvid
+        for oid, ports_mask in self.snmp.getnext(
+            mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            display_hints={mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"]: render_bin},
+            timeout=self.get_snmp_timeout(),
+        ):
+            vlan_num = int(oid.split(".")[-1])
+            # Getting port as mask,  convert to vlan: Iface list
+            for o in compress(
+                iface_list,
+                [
+                    int(x)
+                    for x in chain.from_iterable("{0:08b}".format(mask) for mask in ports_mask)
+                ],
+            ):
+                if vlan_num == result[pid_ifindex_mappings[o]]["untagged_vlan"]:
+                    # Perhaps port is switchport @todo getting port type
+                    continue
+                result[pid_ifindex_mappings[o]]["tagged_vlans"] += [vlan_num]
+        return result
 
-    INTERFACE_TYPES = {
-        1: "other",
-        6: "physical",  # ethernetCsmacd
-        23: "tunnel",  # ppp
-        24: "loopback",  # softwareLoopback
-        117: "physical",  # gigabitEthernet
-        131: "tunnel",  # tunnel
-        135: "SVI",  # l2vlan
-        161: "aggregated",  # ieee8023adLag
-        53: "SVI",  # propVirtual
-    }
+    def get_portchannels(self) -> Dict[int, int]:
+        r = {}
+        for ifindex, sel_pc, att_pc in self.snmp.get_tables(
+            [
+                mib["IEEE8023-LAG-MIB::dot3adAggPortSelectedAggID"],
+                mib["IEEE8023-LAG-MIB::dot3adAggPortAttachedAggID"],
+            ]
+        ):
+            if att_pc:
+                if sel_pc > 0:
+                    r[int(ifindex)] = int(att_pc)
+        return r
 
-    INTERFACE_NAMES = set()
+    def get_enabled_proto(self):
+        return {}
 
-    def get_interface_type(self, snmp_type):
-        return self.INTERFACE_TYPES.get(snmp_type, "unknown")
+    def get_ip_ifaces(self) -> Dict[int, List[Tuple[str, str]]]:
+        r = {}
+        ip_mask = {}
+        for oid, mask in self.snmp.getnext(
+            mib["RFC1213-MIB::ipAdEntNetMask"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+        ):
+            address = oid.split(mib["RFC1213-MIB::ipAdEntNetMask"])[-1].strip(".")
+            ip_mask[address] = [(address, mask)]
+        for oid, ifindex in self.snmp.getnext(
+            mib["RFC1213-MIB::ipAdEntIfIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+        ):
+            address = oid.split(mib["RFC1213-MIB::ipAdEntIfIndex"])[-1].strip(".")
+            r[ifindex] = ip_mask[address]
+        return r
+
+    def get_mpls_vpn_mappings(self) -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]:
+        # Process VRFs
+        vrfs = {"default": {"forwarding_instance": "default", "type": "table", "interfaces": []}}
+        imap = {}  # interface -> VRF
+        try:
+            r = self.scripts.get_mpls_vpn()
+        except self.CLISyntaxError:
+            r = []
+        for v in r:
+            vrfs[v["name"]] = {
+                "forwarding_instance": v["name"],
+                "type": v["type"],
+                "vpn_id": v.get("vpn_id"),
+                "interfaces": [],
+            }
+            rd = v.get("rd")
+            if rd:
+                vrfs[v["name"]]["rd"] = rd
+            for i in v["interfaces"]:
+                imap[i] = v["name"]
+        return vrfs, imap
+
+    def filter_interface(self, ifindex: int, name: str) -> bool:
+        """
+        Filter interface
+        :param ifindex:
+        :param name:
+        :return:
+        """
+        return True
+
+    def execute_snmp(self, **kwargs):
+        ifaces = {}  # For interfaces
+        subifaces = {}  # For subinterfaces like Fa 0/1.XXX
+        switchports = self.get_switchport()
+        portchannels = self.get_portchannels()  # portchannel map
+        ips = self.get_ip_ifaces()
+
+        # Getting initial iface info, filter result if needed
+        for iface in self.scripts.get_interface_properties(
+            enable_ifindex=True, enable_interface_mac=True,
+        ):
+            if not self.filter_interface(iface["ifindex"], iface["interface"]):
+                continue
+            if "." in iface["interface"]:
+                subifaces[iface["ifindex"]] = {
+                    "name": iface["interface"],
+                    "snmp_ifindex": iface["ifindex"],
+                    "type": "SVI",
+                }
+                if "mac" in iface:
+                    subifaces[iface["ifindex"]]["mac"] = iface["mac"]
+            else:
+                ifaces[iface["ifindex"]] = {
+                    "name": iface["interface"],
+                    "snmp_ifindex": iface["ifindex"],
+                    "enabled_protocols": [],
+                    "subinterfaces": [],
+                }
+                if "mac" in iface:
+                    ifaces[iface["ifindex"]]["mac"] = iface["mac"]
+        # Fill interface info
+        iter_tables = []
+        iter_tables += [
+            self.iter_iftable(
+                "admin_status",
+                self.SNMP_ADMIN_STATUS_TABLE,
+                ifindexes=ifaces,
+                clean=self.clean_status,
+            )
+        ]
+        iter_tables += [
+            self.iter_iftable(
+                "oper_status",
+                self.SNMP_OPER_STATUS_TABLE,
+                ifindexes=ifaces,
+                clean=self.clean_status,
+            )
+        ]
+        iter_tables += [
+            self.iter_iftable(
+                "description",
+                self.SNMP_IF_DESCR_TABLE,
+                ifindexes=chain(ifaces, subifaces),
+                clean=self.clean_ifdescription,
+            )
+        ]
+        iter_tables += [
+            self.iter_iftable("mtu", "IF-MIB::ifMtu", ifindexes=chain(ifaces, subifaces))
+        ]
+        # Collect and merge results
+        data = self.merge_tables(*tuple(iter_tables))
+        if not ifaces:
+            # If empty result - raise error
+            raise NotImplementedError
+        # Format result to ifname -> iface
+        interfaces = {}
+        for ifindex, iface in ifaces.items():
+            if ifindex in data:
+                iface.update(data[ifindex])
+            iface["type"] = self.clean_iftype(iface["name"], ifindex)
+            if not iface["type"]:
+                self.logger.error("Unknown type for interface %s", iface["name"])
+                continue
+            if ifindex in ips:
+                iface["subinterfaces"] += [
+                    {
+                        "name": iface["name"],
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [IPv4(*i) for i in ips[ifindex]],
+                    }
+                ]
+            if ifindex in switchports:
+                sub = {
+                    "name": iface["name"],
+                    "enabled_afi": ["BRIDGE"],
+                }
+                sub.update(switchports[ifindex])
+                iface["subinterfaces"] += [sub]
+            if ifindex in portchannels:
+                iface["aggregated_interface"] = ifaces[portchannels[ifindex]]["name"]
+                iface["enabled_protocols"] = ["LACP"]
+            interfaces[iface["name"]] = iface
+        # Proccessed subinterfaces
+        for ifindex, sub in subifaces.items():
+            ifname, num = sub["name"].split(".", 1)
+            if ifname not in interfaces:
+                self.logger.info("Sub %s for ignored iface %s", sub["name"], ifname)
+                continue
+            if ifindex in data:
+                sub.update(data[ifindex])
+            if ifindex in ips:
+                sub["enabled_afi"] = ["IPv4"]
+                sub["ipv4_addresses"] = [IPv4(*i) for i in ips[ifindex]]
+            if num.isdigit():
+                vlan_ids = int(sub["name"].rsplit(".", 1)[-1])
+                if 1 <= vlan_ids < 4095:
+                    sub["vlan_ids"] = vlan_ids
+            interfaces[ifname]["subinterfaces"] += [sub]
+        # VRF and forwarding_instance proccessed
+        vrfs, vrf_if_map = self.get_mpls_vpn_mappings()
+        for i in interfaces.keys():
+            iface_vrf = "default"
+            subs = interfaces[i]["subinterfaces"]
+            interfaces[i]["subinterfaces"] = []
+            if i in vrf_if_map:
+                iface_vrf = vrf_if_map[i]
+                vrfs[vrf_if_map[i]]["interfaces"] += [interfaces[i]]
+            else:
+                vrfs["default"]["interfaces"] += [interfaces[i]]
+            for s in subs:
+                if s["name"] in vrf_if_map and vrf_if_map[s["name"]] != iface_vrf:
+                    vrfs[vrf_if_map[s["name"]]]["interfaces"] += [
+                        {
+                            "name": s["name"],
+                            "type": "other",
+                            "enabled_protocols": [],
+                            "subinterfaces": [s],
+                        }
+                    ]
+                else:
+                    interfaces[i]["subinterfaces"] += [s]
+        return list(vrfs.values())
+
+    def merge_tables(
+        self, *args: Optional[Iterable]
+    ) -> Dict[int, Dict[str, Union[int, bool, str]]]:
+        """
+        Merge iterables into single table
+
+        :param args:
+        :return:
+        """
+        r = {}
+        for iter_table in args:
+            for key, ifindex, value in iter_table:
+                if ifindex not in r:
+                    r[ifindex] = {"snmp_ifindex": ifindex}
+                r[ifindex][key] = value
+        return r
+
+    @staticmethod
+    def clean_default(v):
+        return v
+
+    @staticmethod
+    def clean_status(v):
+        return v == 1
+
+    def clean_ifname(self, v):
+        return self.profile.convert_interface_name(v)
+
+    # if ascii or rus text in description
+    def clean_ifdescription(self, desc):
+        if desc:
+            return smart_text(desc, errors="replace")
+        return desc
+
+    def clean_iftype(self, ifname: str, ifindex: Optional[int] = None) -> str:
+        return self.profile.get_interface_type(ifname)
+
+    def iter_iftable(
+        self, key: str, oid: str, ifindexes: Optional[Iterator[int]] = None, clean: Callable = None,
+    ) -> Iterable[Tuple[str, Union[str, int]]]:
+        """
+        Collect part of IF-MIB table.
+
+        :param key:
+        :param oid: Base oid, either in numeric or symbolic form
+        :param ifindexes: Collect information for single interface only, if set
+        :param clean: Cleaning function
+        :return:
+        """
+        clean = clean or self.clean_default
+        # Partial
+        if ifindexes:
+            for r_oid, v in self.snmp.get_chunked(
+                [mib[oid, i] for i in ifindexes], timeout_limits=self.get_snmp_timeout()
+            ).items():
+                try:
+                    yield key, int(r_oid.rsplit(".", 1)[1]), clean(v)
+                except ValueError:
+                    pass
+        else:
+            # All interfaces
+            if "::" in oid:
+                oid = mib[oid]
+            for r_oid, v in self.snmp.getnext(
+                oid,
+                max_repetitions=self.get_max_repetitions(),
+                max_retries=self.get_getnext_retires(),
+            ):
+                try:
+                    yield key, int(r_oid.rsplit(".", 1)[1]), clean(v)
+                except ValueError:
+                    pass
 
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
 
-    def collect_ifnames(self):
-        return self.INTERFACE_NAMES
-
     def get_getnext_retires(self):
         return self.MAX_GETNEXT_RETIRES
 
-    # if ascii or rus text in description
-    def convert_description(self, desc):
-        if desc:
-            return smart_bytes(smart_text(desc, errors="replace"))
-        return desc
+    def get_snmp_timeout(self):
+        return self.MAX_GETNEXT_RETIRES
 
-    def get_bulk(self):
-        return self.BULK
-
-    def get_iftable(self, oid, transform=True):
-        if "::" in oid:
-            oid = mib[oid]
-        for oid, v in self.snmp.getnext(
-            oid,
+    def get_interface_ifindex(self, name: str) -> int:
+        """
+        Get ifindex for given interface
+        :param name:
+        :return:
+        """
+        for r_oid, v in self.snmp.getnext(
+            mib[self.SNMP_NAME_TABLE],
             max_repetitions=self.get_max_repetitions(),
             max_retries=self.get_getnext_retires(),
-            bulk=self.get_bulk(),
         ):
-            yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
+            if self.profile.convert_interface_name(v) == name:
+                return int(r_oid.rsplit(".", 1)[1])
+        raise KeyError
 
-    def apply_table(self, r, mib, name, f=None):
-        if not f:
-
-            def f(x):
-                return x
-
-        for ifindex, v in self.get_iftable(mib):
-            s = r.get(ifindex)
-            if s:
-                s[name] = f(v)
-
-    def get_ip_ifaces(self):
-        ip_iface = {
-            l: ".".join(o.rsplit(".")[-4:])
-            for o, l in self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False)
-        }
-        ip_mask = {
-            ".".join(o.rsplit(".")[-4:]): l
-            for o, l in self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False)
-        }
-        r = {}
-        for ip in ip_iface:
-            r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
-        return r
-
-    def get_aggregated_ifaces(self):
-        portchannel_members = {}
-        aggregated = []
-        for pc in self.scripts.get_portchannel():
-            i = pc["interface"]
-            aggregated += [i]
-            t = pc["type"] in ["L", "LACP"]
-            for m in pc["members"]:
-                portchannel_members[m] = (i, t)
-        return aggregated, portchannel_members
-
-    def execute_snmp(self, interface=None, last_ifname=None):
-        last_ifname = self.collect_ifnames()
-        # v = self.scripts.get_interface_status_ex()
-        index = self.scripts.get_ifindexes()
-        # index = self.get_ifindexes()
-        aggregated, portchannel_members = self.get_aggregated_ifaces()
-        ifaces = {index[i]: {"interface": i} for i in index}
-        # Apply ifAdminStatus
-        self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
-        # Apply ifOperStatus
-        self.apply_table(ifaces, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
-        # Apply PhysAddress
-        self.apply_table(ifaces, "IF-MIB::ifPhysAddress", "mac_address")
-        self.apply_table(ifaces, "IF-MIB::ifType", "type")
-        self.apply_table(ifaces, "IF-MIB::ifSpeed", "speed")
-        self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")
-        time.sleep(10)
-        self.apply_table(ifaces, "IF-MIB::ifAlias", "description")
-        ip_ifaces = self.get_ip_ifaces()
-        r = []
-        subs = defaultdict(list)
-        """
-        IF-MIB::ifPhysAddress.1 = STRING:
-        IF-MIB::ifPhysAddress.2 = STRING: 0:21:5e:40:c2:50
-        IF-MIB::ifPhysAddress.3 = STRING: 0:21:5e:40:c2:52
-        """
-        for l in ifaces:
-            iface = ifaces[l]
-            # If the bug in the firmware and the number of interfaces in cli is
-            # different from the number of interfaces given through snmp,
-            # we pass the list of interfaces for reconciliation.
-            # def execute_snmp(self, interface=None, last_ifname= None):
-            #     IFNAME = set(["Gi 1/0/1", "Gi 1/0/2", "Gi 1/0/3", "Gi 1/0/4", "Gi 1/0/5", "Gi 1/0/6", "Gi 1/0/7",
-            #                   "Gi 1/0/8", "Gi 1/0/9", "Gi 1/0/10", "Gi 1/0/11", "Gi 1/0/12", "Po 1", "Po 2", "Po 3",
-            #                   "Po 4", "Po 5", "Po 6","Po 7", "Po 8", "Po 9", "Po 10", "Po 11", "Po 12", "Po 13",
-            #                   "Po 14", "Po 15", "Po 16"])
-            #     if self.match_version(version__regex=r"4\.0\.8\.1$")
-            #         and self.match_version(platform__regex=r"MES-2308P"):
-            #         return super(Script, self).execute_snmp(last_ifname=IFNAME)
-            if last_ifname and iface["interface"] not in last_ifname:
-                continue
-            i_type = self.get_interface_type(iface["type"])
-            if "." in iface["interface"]:
-                s = {
-                    "name": iface["interface"],
-                    "description": self.convert_description(iface.get("description", "")),
-                    "type": i_type,
-                    "enabled_afi": ["BRIDGE"],
-                    "admin_status": iface["admin_status"],
-                    "oper_status": iface["oper_status"],
-                    "snmp_ifindex": l,
-                }
-                iface_name, num = iface["interface"].rsplit(".", 1)
-                if num.isdigit():
-                    vlan_ids = int(iface["interface"].rsplit(".", 1)[-1])
-                    if 1 <= vlan_ids < 4095:
-                        s["vlan_ids"] = vlan_ids
-                if l in ip_ifaces:
-                    s["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]
-                    s["enabled_afi"] = ["IPv4"]
-                if iface["mac_address"] and is_mac(iface["mac_address"]):
-                    s["mac"] = MAC(iface["mac_address"])
-                subs[iface_name] += [s.copy()]
-                # r[-1]["subinterfaces"] += [s]
-                continue
-            i = {
-                "name": iface["interface"],
-                "description": self.convert_description(iface.get("description", "")),
-                "type": i_type,
-                "admin_status": iface["admin_status"],
-                "oper_status": iface["oper_status"],
-                "snmp_ifindex": l,
-            }
-            if i["name"] in portchannel_members:
-                i["aggregated_interface"], lacp = portchannel_members[i["name"]]
-                if lacp:
-                    i["enabled_protocols"] = ["LACP"]
-            if i["name"] in aggregated:
-                i["type"] = "aggregated"
-            if iface["mac_address"] and is_mac(iface["mac_address"]):
-                i["mac"] = MAC(iface["mac_address"])
-            # sub = {"subinterfaces": [i.copy()]}
-            r += [i]
-        for l in r:
-            if l["name"] in subs:
-                l["subinterfaces"] = subs[l["name"]]
-            else:
-                l["subinterfaces"] = [
-                    {
-                        "name": l["name"],
-                        "description": self.convert_description(l.get("description", "")),
-                        "type": "SVI",
-                        "enabled_afi": ["BRIDGE"]
-                        if l["type"] in ["physical", "aggregated"]
-                        else [],
-                        "admin_status": l["admin_status"],
-                        "oper_status": l["oper_status"],
-                        "snmp_ifindex": l["snmp_ifindex"],
-                    }
-                ]
-                if l["snmp_ifindex"] in ip_ifaces:
-                    l["subinterfaces"][-1]["ipv4_addresses"] = [IPv4(*ip_ifaces[l["snmp_ifindex"]])]
-                    l["subinterfaces"][-1]["enabled_afi"] = ["IPv4"]
-        return [{"interfaces": r}]
+    def iter_interface_ifindex(self, name, ifindex):
+        yield "name", ifindex, self.profile.convert_interface_name(name)
