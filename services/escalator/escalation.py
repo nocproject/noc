@@ -125,6 +125,11 @@ def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *arg
                     "Escalation limit exceeded (%s/%s). Skipping"
                     % (ae, config.escalator.tt_escalation_limit)
                 )
+                Job.retry_after(
+                    get_next_retry(),
+                    "Escalation limit exceeded (%s/%s). Skipping"
+                    % (ae, config.escalator.tt_escalation_limit),
+                )
                 return
             # Check whether consequences has escalations
             cons_escalated = sorted(alarm.iter_escalated(), key=operator.attrgetter("timestamp"))
