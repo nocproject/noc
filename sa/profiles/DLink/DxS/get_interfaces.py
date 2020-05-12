@@ -16,6 +16,7 @@ from noc.core.validators import is_int
 from noc.sa.profiles.DLink.DxS.profile import DxS_L2, DGS3120, DGS3420, DGS3620
 from noc.core.mib import mib
 from noc.core.mac import MAC
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -167,7 +168,9 @@ class Script(BaseScript):
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid, max_repetitions=40):
+        for oid, v in self.snmp.getnext(
+            oid, max_repetitions=40, display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_bin,}
+        ):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
