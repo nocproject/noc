@@ -9,15 +9,13 @@
 import socket
 import re
 import functools
-import datetime
 from functools import reduce
-import sys
 from threading import Lock
+import asyncio
 
 # Third-party modules
 import tornado.gen
 import tornado.iostream
-from tornado.concurrent import Future
 from tornado.ioloop import IOLoop
 from typing import Optional, Callable
 
@@ -28,6 +26,7 @@ from noc.config import config
 from noc.core.span import Span
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.ioloop.util import IOLoopContext
 from .error import (
     CLIError,
     CLIAuthFailed,
@@ -73,7 +72,7 @@ class CLI(object):
         self.iostream = None
         self.motd = ""
         self.ioloop = None
-        self.prev_ioloop = None
+        self.loop_context: Optional[IOLoopContext] = None
         self.command = None
         self.prompt_stack = []
         self.patterns = self.profile.patterns.copy()
@@ -102,12 +101,15 @@ class CLI(object):
         self.close_iostream()
         if self.ioloop:
             self.logger.debug("Closing IOLoop")
-            self.ioloop.close(all_fds=True)
+            try:
+                self.ioloop.close(all_fds=True)
+            except KeyError:
+                self.logger.info("IOLoop is already closed")
             self.ioloop = None
             # Restore previous ioloop
-            if self.prev_ioloop:
-                self.prev_ioloop.make_current()
-                self.prev_ioloop = None
+            if self.loop_context:
+                self.loop_context.drop_context()
+                self.loop_context = None
             else:
                 IOLoop.clear_current()
         self.is_closed = True
@@ -145,7 +147,7 @@ class CLI(object):
         # Cannot call call_later directly due to
         # thread-safety problems
         # See tornado issue #1773
-        IOLoop.instance().add_callback(self._set_close_timeout, session_timeout)
+        IOLoop.current().add_callback(self._set_close_timeout, session_timeout)
 
     def _set_close_timeout(self, session_timeout):
         """
@@ -154,7 +156,7 @@ class CLI(object):
         :return:
         """
         with self.close_timeout_lock:
-            self.close_timeout = IOLoop.instance().call_later(session_timeout, self.maybe_close)
+            self.close_timeout = IOLoop.current().call_later(session_timeout, self.maybe_close)
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -181,45 +183,11 @@ class CLI(object):
     def set_timeout(self, timeout: int) -> None:
         if timeout:
             self.logger.debug("Setting timeout: %ss", timeout)
-            self.current_timeout = datetime.timedelta(seconds=timeout)
+            self.current_timeout = timeout
         else:
             if self.current_timeout:
                 self.logger.debug("Resetting timeouts")
             self.current_timeout = None
-
-    def run_sync(self, func, *args, **kwargs):
-        """
-        Simplified implementation of IOLoop.run_sync
-        to distinguish real TimeoutErrors from incomplete futures
-        :param func:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        future_cell = [None]
-
-        def run():
-            try:
-                result = func(*args, **kwargs)
-                if result is not None:
-                    result = tornado.gen.convert_yielded(result)
-                future_cell[0] = result
-            except Exception:
-                future_cell[0] = Future()
-                future_cell[0].set_exc_info(sys.exc_info())
-            self.ioloop.add_future(future_cell[0], lambda future: self.ioloop.stop())
-
-        self.ioloop.add_callback(run)
-        self.ioloop.start()
-        if not future_cell[0].done():
-            self.logger.info("Incomplete feature left. Restarting IOStream")
-            self.close_iostream()
-            # Retain cryptic message as is,
-            # Mark feature as done
-            future_cell[0].set_exception(
-                tornado.gen.TimeoutError("Operation timed out after %s seconds" % None)
-            )
-        return future_cell[0].result()
 
     def execute(
         self,
@@ -238,9 +206,9 @@ class CLI(object):
         self.allow_empty_response = allow_empty_response
         if not self.ioloop:
             self.logger.debug("Creating IOLoop")
-            self.prev_ioloop = IOLoop.current(instance=False)
-            self.ioloop = IOLoop()
-            self.ioloop.make_current()
+            self.loop_context = IOLoopContext()
+            self.loop_context.get_context()
+            self.ioloop = IOLoop.current()
         if obj_parser:
             parser = functools.partial(
                 self.parse_object_stream, obj_parser, smart_bytes(cmd_next), smart_bytes(cmd_stop)
@@ -250,15 +218,14 @@ class CLI(object):
         with Span(
             server=self.script.credentials.get("address"), service=self.name, in_label=cmd
         ) as s:
-            self.run_sync(self.submit, parser)
+            self.loop_context.get_loop().run_until_complete(self.submit(parser))
             if self.error:
                 if s:
                     s.error_text = str(self.error)
                 raise self.error
             return self.result
 
-    @tornado.gen.coroutine
-    def submit(self, parser=None):
+    async def submit(self, parser=None):
         # Create iostream and connect, when necessary
         if not self.iostream:
             self.iostream = self.create_iostream()
@@ -269,7 +236,7 @@ class CLI(object):
             self.logger.debug("Connecting %s", address)
             try:
                 metrics["cli_connection", ("proto", self.name)] += 1
-                yield self.iostream.connect(address)
+                await self.iostream.connect(address)
                 metrics["cli_connection_success", ("proto", self.name)] += 1
             except tornado.iostream.StreamClosedError:
                 self.logger.debug("Connection refused")
@@ -277,27 +244,27 @@ class CLI(object):
                 self.error = CLIConnectionRefused("Connection refused")
                 return None
             self.logger.debug("Connected")
-            yield self.iostream.startup()
+            await self.iostream.startup()
         # Perform all necessary login procedures
         metrics["cli_commands", ("proto", self.name)] += 1
         if not self.is_started:
-            yield self.on_start()
-            motd = yield self.read_until_prompt()
+            await self.on_start()
+            motd = await self.read_until_prompt()
             self.motd = smart_text(motd, errors="ignore", encoding=self.native_encoding)
             self.script.set_motd(self.motd)
             self.is_started = True
         # Send command
         # @todo: encode to object's encoding
         if self.profile.batch_send_multiline or self.profile.command_submit not in self.command:
-            yield self.send(self.command)
+            await self.send(self.command)
         else:
             # Send multiline commands line-by-line
             for cmd in self.command.split(self.profile.command_submit):
                 # Send line
-                yield self.send(cmd + self.profile.command_submit)
+                await self.send(cmd + self.profile.command_submit)
                 # @todo: Await response
         parser = parser or self.read_until_prompt
-        self.result = yield parser()
+        self.result = await parser()
         self.logger.debug("Command: %s\n%s", self.command.strip(), self.result)
         if (
             self.profile.rx_pattern_syntax_error
@@ -311,7 +278,7 @@ class CLI(object):
             error_text = self.result
             if self.profile.send_on_syntax_error and self.name != "beef_cli":
                 self.allow_empty_response = True
-                yield self.on_error_sequence(
+                await self.on_error_sequence(
                     self.profile.send_on_syntax_error, self.command, error_text
                 )
             self.error = self.script.CLISyntaxError(error_text)
@@ -329,23 +296,21 @@ class CLI(object):
         # Clean control sequences
         return self.profile.cleaned_input(s)
 
-    @tornado.gen.coroutine
-    def send(self, cmd: bytes) -> None:
+    async def send(self, cmd: bytes) -> None:
         # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
-        yield self.iostream.write(cmd)
+        await self.iostream.write(cmd)
 
-    @tornado.gen.coroutine
-    def read_until_prompt(self):
+    async def read_until_prompt(self):
         connect_retries = self.CONNECT_RETRIES
         while True:
             try:
                 metrics["cli_reads", ("proto", self.name)] += 1
                 f = self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
                 if self.current_timeout:
-                    r = yield tornado.gen.with_timeout(self.current_timeout, f)
+                    r = await asyncio.wait_for(f, self.current_timeout)
                 else:
-                    r = yield f
+                    r = await f
                 if r == self.SYNTAX_ERROR_CODE:
                     metrics["cli_syntax_errors", ("proto", self.name)] += 1
                     return self.SYNTAX_ERROR_CODE
@@ -362,7 +327,7 @@ class CLI(object):
                         self.CONNECT_TIMEOUT,
                     )
                     while connect_retries:
-                        yield tornado.gen.sleep(self.CONNECT_TIMEOUT)
+                        await asyncio.sleep(self.CONNECT_TIMEOUT)
                         connect_retries -= 1
                         self.iostream = self.create_iostream()
                         address = (
@@ -371,8 +336,8 @@ class CLI(object):
                         )
                         self.logger.debug("Connecting %s", address)
                         try:
-                            yield self.iostream.connect(address)
-                            yield self.iostream.startup()
+                            await self.iostream.connect(address)
+                            await self.iostream.startup()
                             break
                         except tornado.iostream.StreamClosedError:
                             if not connect_retries:
@@ -380,12 +345,12 @@ class CLI(object):
                     continue
                 else:
                     raise tornado.iostream.StreamClosedError()
-            except tornado.gen.TimeoutError:
+            except asyncio.TimeoutError:
                 self.logger.info("Timeout error")
                 metrics["cli_timeouts", ("proto", self.name)] += 1
                 # IOStream must be closed to prevent hanging read callbacks
                 self.close_iostream()
-                raise tornado.gen.TimeoutError("Timeout")
+                raise asyncio.TimeoutError("Timeout")
             self.logger.debug("Received: %r", r)
             # Clean input
             if self.buffer.find(b"\x1b", -self.MATCH_MISSED_CONTROL_TAIL) != -1:
@@ -402,16 +367,15 @@ class CLI(object):
                     self.buffer = self.buffer[match.end() :]
                     if isinstance(handler, tuple):
                         metrics["cli_state", ("state", handler[0].__name__)] += 1
-                        r = yield handler[0](matched, match, *handler[1:])
+                        r = await handler[0](matched, match, *handler[1:])
                     else:
                         metrics["cli_state", ("state", handler.__name__)] += 1
-                        r = yield handler(matched, match)
+                        r = await handler(matched, match)
                     if r is not None:
                         return r
                     break  # This state is processed
 
-    @tornado.gen.coroutine
-    def parse_object_stream(self, parser=None, cmd_next=None, cmd_stop=None):
+    async def parse_object_stream(self, parser=None, cmd_next=None, cmd_stop=None):
         """
         :param cmd:
         :param command_submit:
@@ -433,7 +397,7 @@ class CLI(object):
         stop_sent = False
         done = False
         while not done:
-            r = yield self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
+            r = await self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
             if self.script.to_track:
                 self.script.push_cli_tracking(r, self.state)
             self.logger.debug("Received: %r", r)
@@ -446,7 +410,7 @@ class CLI(object):
             ):
                 error_text = self.buffer
                 if self.profile.send_on_syntax_error:
-                    yield self.on_error_sequence(
+                    await self.on_error_sequence(
                         self.profile.send_on_syntax_error, self.command, error_text
                     )
                 self.error = self.script.CLISyntaxError(error_text)
@@ -477,13 +441,13 @@ class CLI(object):
                             # Stop loop at final page
                             # After 3 repeats
                             self.logger.debug("Stopping stream. Sending %r" % cmd_stop)
-                            self.send(cmd_stop)
+                            await self.send(cmd_stop)
                             stop_sent = True
                 else:
                     r_key = key
                     if cmd_next:
                         self.logger.debug("Next screen. Sending %r" % cmd_next)
-                        self.send(cmd_next)
+                        await self.send(cmd_next)
             # Check for prompt
             for rx, handler in self.pattern_table.items():
                 offset = max(0, len(buffer) - self.MATCH_TAIL)
@@ -499,7 +463,7 @@ class CLI(object):
                         break
         return objects
 
-    def send_pager_reply(self, data, match):
+    async def send_pager_reply(self, data, match):
         """
         Send proper pager reply
         """
@@ -507,7 +471,7 @@ class CLI(object):
         for p, c in self.patterns["more_patterns_commands"]:
             if p.search(pg):
                 self.collected_data += [data]
-                self.send(c)
+                await self.send(c)
                 return
         raise self.InvalidPagerPattern(pg)
 
@@ -523,8 +487,7 @@ class CLI(object):
             self.pattern_table[rx] = patterns[pattern_name]
         self.set_timeout(timeout)
 
-    @tornado.gen.coroutine
-    def on_start(self, data=None, match=None):
+    async def on_start(self, data=None, match=None):
         self.set_state("start")
         if self.profile.setup_sequence and not self.setup_complete:
             self.expect({"setup": self.on_setup_sequence}, self.profile.cli_timeout_setup)
@@ -540,10 +503,9 @@ class CLI(object):
                 self.profile.cli_timeout_start,
             )
 
-    @tornado.gen.coroutine
-    def on_username(self, data, match):
+    async def on_username(self, data, match):
         self.set_state("username")
-        self.send(
+        await self.send(
             smart_bytes(
                 self.script.credentials.get("user", "") or "", encoding=self.native_encoding
             )
@@ -559,10 +521,9 @@ class CLI(object):
             self.profile.cli_timeout_user,
         )
 
-    @tornado.gen.coroutine
-    def on_password(self, data, match):
+    async def on_password(self, data, match):
         self.set_state("password")
-        self.send(
+        await self.send(
             smart_bytes(
                 self.script.credentials.get("password", "") or "", encoding=self.native_encoding
             )
@@ -580,14 +541,13 @@ class CLI(object):
             self.profile.cli_timeout_password,
         )
 
-    @tornado.gen.coroutine
-    def on_unprivileged_prompt(self, data, match):
+    async def on_unprivileged_prompt(self, data, match):
         self.set_state("unprivileged_prompt")
         if self.to_raise_privileges:
             # Start privilege raising sequence
             if not self.profile.command_super:
-                self.on_failure(data, match, CLINoSuperCommand)
-            self.send(
+                await self.on_failure(data, match, CLINoSuperCommand)
+            await self.send(
                 smart_bytes(self.profile.command_super, encoding=self.native_encoding)
                 + (self.profile.command_submit or b"\n")
             )
@@ -611,14 +571,12 @@ class CLI(object):
             self.patterns["prompt"] = self.patterns["unprivileged_prompt"]
             return self.on_prompt(data, match)
 
-    @tornado.gen.coroutine
-    def on_failure(self, data, match, error_cls=None):
+    async def on_failure(self, data, match, error_cls=None):
         self.set_state("failure")
         error_cls = error_cls or CLIError
         raise error_cls(self.buffer or data or None)
 
-    @tornado.gen.coroutine
-    def on_prompt(self, data, match):
+    async def on_prompt(self, data, match):
         self.set_state("prompt")
         if not self.allow_empty_response:
             s_data = data.strip()
@@ -631,10 +589,9 @@ class CLI(object):
         self.expect({"prompt": self.on_prompt, "pager": self.send_pager_reply})
         return d
 
-    @tornado.gen.coroutine
-    def on_super_username(self, data, match):
+    async def on_super_username(self, data, match):
         self.set_state("super_username")
-        self.send(
+        await self.send(
             smart_bytes(
                 self.script.credentials.get("user", "") or "", encoding=self.native_encoding
             )
@@ -651,10 +608,9 @@ class CLI(object):
             self.profile.cli_timeout_user,
         )
 
-    @tornado.gen.coroutine
-    def on_super_password(self, data, match):
+    async def on_super_password(self, data, match):
         self.set_state("super_password")
-        self.send(
+        await self.send(
             smart_bytes(
                 self.script.credentials.get("super_password", "") or "",
                 encoding=self.native_encoding,
@@ -677,28 +633,25 @@ class CLI(object):
             self.profile.cli_timeout_password,
         )
 
-    @tornado.gen.coroutine
-    def on_setup_sequence(self, data, match):
+    async def on_setup_sequence(self, data, match):
         self.set_state("setup")
         self.logger.debug("Performing setup sequence: %s", self.profile.setup_sequence)
         lseq = len(self.profile.setup_sequence)
         for i, c in enumerate(self.profile.setup_sequence):
             if isinstance(c, int) or isinstance(c, float):
-                yield tornado.gen.sleep(c)
+                await asyncio.sleep(c)
                 continue
             cmd = c % self.script.credentials
-            yield self.send(cmd)
+            await self.send(cmd)
             # Waiting for response and drop it
             if i < lseq - 1:
-                resp = yield tornado.gen.with_timeout(
-                    self.ioloop.time() + 30, future=self.iostream.read_bytes(4096, partial=True)
-                )
+                resp = await asyncio.wait_for(self.iostream.read_bytes(4096, partial=True), 30)
                 if self.script.to_track:
                     self.script.push_cli_tracking(resp, self.state)
                 self.logger.debug("Receiving: %r", resp)
         self.logger.debug("Setup sequence complete")
         self.setup_complete = True
-        yield self.on_start(data, match)
+        await self.on_start(data, match)
 
     def resolve_pattern_prompt(self, match):
         """
@@ -768,8 +721,7 @@ class CLI(object):
             self.logger.debug("Shutdown session")
             self.profile.shutdown_session(self.script)
 
-    @tornado.gen.coroutine
-    def on_error_sequence(self, seq, command, error_text):
+    async def on_error_sequence(self, seq, command, error_text):
         """
         Process error sequence
         :param seq:
@@ -779,11 +731,11 @@ class CLI(object):
         """
         if isinstance(seq, str):
             self.logger.debug("Recovering from error. Sending %r", seq)
-            yield self.iostream.write(seq)
+            await self.iostream.write(seq)
         elif callable(seq):
             if tornado.gen.is_coroutine_function(seq):
                 # Yield coroutine
-                yield seq(self, command, error_text)
+                await seq(self, command, error_text)
             else:
                 seq = seq(self, command, error_text)
-                yield self.iostream.write(seq)
+                await self.iostream.write(seq)

@@ -12,22 +12,21 @@ import random
 import threading
 import time
 from time import perf_counter
+import asyncio
 
 # Third-party modules
 import pymongo.errors
-import tornado.gen
-import tornado.ioloop
 from tornado.ioloop import IOLoop
-from concurrent.futures import Future
 from pymongo import DeleteOne, UpdateOne
+from typing import Optional
 
 # NOC modules
-from .job import Job
 from noc.core.mongo.connection import get_db
 from noc.core.handler import get_handler
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.perf import metrics
 from noc.config import config
+from .job import Job
 
 
 class Scheduler(object):
@@ -82,7 +81,7 @@ class Scheduler(object):
         self.bulk = []
         self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
-        self.executor = None
+        self.executor: Optional[ThreadPoolExecutor] = None
         self.run_callback = None
         self.check_time = check_time
         self.read_ahead_interval = datetime.timedelta(milliseconds=check_time)
@@ -143,7 +142,7 @@ class Scheduler(object):
             self.bulk = []
         return self.collection
 
-    def get_executor(self):
+    def get_executor(self) -> ThreadPoolExecutor:
         """
         Returns threadpool executor
         """
@@ -185,8 +184,7 @@ class Scheduler(object):
             qq = self.filter.copy()
             qq.update(q)
             return qq
-        else:
-            return q
+        return q
 
     def scheduler_tick(self):
         """
@@ -205,24 +203,24 @@ class Scheduler(object):
         self.apply_bulk_ops()
         self.apply_cache_ops()
 
-    @tornado.gen.coroutine
-    def scheduler_loop(self):
+    async def scheduler_loop(self):
         """
         Primary scheduler loop
         """
         while not self.to_shutdown:
             t0 = perf_counter()
             n = 0
-            if self.get_executor().may_submit():
+            executor = self.get_executor()
+            if executor.may_submit():
                 try:
-                    n = yield self.executor.submit(self.scheduler_tick)
+                    n = await executor.submit(self.scheduler_tick)
                 except Exception as e:
                     self.logger.error("Failed to execute scheduler tick: %s", e)
             dt = self.check_time - (perf_counter() - t0) * 1000
             if dt > 0:
                 if n:
                     dt = min(dt, self.check_time / n)
-                yield tornado.gen.sleep(dt / 1000.0)
+                await asyncio.sleep(dt / 1000.0)
         self.apply_ops()
 
     def iter_pending_jobs(self, limit):
@@ -525,7 +523,7 @@ class Scheduler(object):
         if self.executor:
             f = self.executor.shutdown(sync)
         else:
-            f = Future()
+            f = asyncio.Future()
             f.set_result(True)
-        f.add_done_callback(lambda _: self.apply_bulk_ops())
+        f.add_done_callback(lambda _: self.apply_ops())
         return f

@@ -5,12 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import tornado.gen
-
 # NOC modules
 from noc.core.ioloop.util import run_sync
-from .loader import get_dcs_url, get_dcs_class
+from .loader import get_dcs
 
 
 def resolve(
@@ -28,13 +25,11 @@ def resolve(
     :return:
     """
 
-    @tornado.gen.coroutine
-    def _resolve():
-        url = get_dcs_url()
-        dcs = get_dcs_class()(url)
+    async def _resolve():
+        dcs = get_dcs()
         try:
             if near:
-                r = yield dcs.resolve_near(
+                r = await dcs.resolve_near(
                     name,
                     hint=hint,
                     wait=wait,
@@ -43,7 +38,7 @@ def resolve(
                     critical=critical,
                 )
             else:
-                r = yield dcs.resolve(
+                r = await dcs.resolve(
                     name,
                     hint=hint,
                     wait=wait,

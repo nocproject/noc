@@ -13,9 +13,6 @@ import re
 from collections import defaultdict
 from threading import Lock
 
-# Third-party modules
-import tornado.gen
-
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -59,8 +56,7 @@ class CorrelatorService(Service):
         self.rca_lock = Lock()
         self.topology_rca_lock = Lock()
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         self.scheduler = Scheduler(
             self.name,
             pool=config.pool,
@@ -71,7 +67,7 @@ class CorrelatorService(Service):
             max_chunk=100,
         )
         self.scheduler.correlator = self
-        yield self.subscribe(
+        await self.subscribe(
             "correlator.dispose.%s" % config.pool,
             "dispose",
             self.on_dispose_event,
@@ -485,7 +481,7 @@ class CorrelatorService(Service):
         """
         self.logger.info("[%s] Receiving message", event_id)
         message.enable_async()
-        self.get_executor("max").submit(self.dispose_worker, message, event_id, event)
+        self.run_in_executor("max", self.dispose_worker, message, event_id, event)
 
     def dispose_worker(self, message, event_id, event_hint=None):
         metrics["alarm_dispose"] += 1

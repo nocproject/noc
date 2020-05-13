@@ -10,9 +10,6 @@ import logging
 import socket
 import errno
 
-# Third-party modules
-from tornado.gen import coroutine
-
 # NOC modules
 from noc.core.snmp.version import SNMP_v2c
 from noc.core.snmp.get import (
@@ -39,8 +36,7 @@ logger = logging.getLogger(__name__)
 BULK_MAX_REPETITIONS = 20
 
 
-@coroutine
-def snmp_get(
+async def snmp_get(
     address,
     oids,
     port=161,
@@ -75,8 +71,8 @@ def snmp_get(
     sock.settimeout(timeout)
     # Wait for result
     try:
-        yield sock.sendto(pdu, (address, port))
-        data, addr = yield sock.recvfrom(4096)
+        await sock.sendto(pdu, (address, port))
+        data, addr = await sock.recvfrom(4096)
     except socket.timeout:
         raise SNMPError(code=TIMED_OUT, oid=oids[0])
     except socket.gaierror as e:
@@ -127,7 +123,7 @@ def snmp_get(
             oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1 :]]]
         for new_oids in oid_parts:
             try:
-                new_result = yield snmp_get(
+                new_result = await snmp_get(
                     address=address,
                     oids={k: k for k in new_oids},
                     port=port,
@@ -168,8 +164,7 @@ def snmp_get(
         raise SNMPError(code=resp.error_status, oid=oid)
 
 
-@coroutine
-def snmp_count(
+async def snmp_count(
     address,
     oid,
     port=161,
@@ -209,8 +204,8 @@ def snmp_count(
             pdu = getnext_pdu(community, oid, version=version)
         # Send request and wait for response
         try:
-            yield sock.sendto(pdu, (address, port))
-            data, addr = yield sock.recvfrom(4096)
+            await sock.sendto(pdu, (address, port))
+            data, addr = await sock.recvfrom(4096)
         except socket.timeout:
             raise SNMPError(code=TIMED_OUT, oid=oid)
         except socket.gaierror as e:
@@ -248,8 +243,7 @@ def snmp_count(
                     return result
 
 
-@coroutine
-def snmp_getnext(
+async def snmp_getnext(
     address,
     oid,
     port=161,
@@ -305,8 +299,8 @@ def snmp_getnext(
             pdu = getnext_pdu(community, oid, version=version)
         # Send request and wait for response
         try:
-            yield sock.sendto(pdu, (address, port))
-            data, addr = yield sock.recvfrom(4096)
+            await sock.sendto(pdu, (address, port))
+            data, addr = await sock.recvfrom(4096)
         except socket.timeout:
             if not max_retries:
                 close_socket()
@@ -354,8 +348,7 @@ def snmp_getnext(
     close_socket()
 
 
-@coroutine
-def snmp_set(
+async def snmp_set(
     address,
     varbinds,
     port=161,
@@ -380,8 +373,8 @@ def snmp_set(
     pdu = set_pdu(community=community, varbinds=varbinds, version=version)
     # Wait for result
     try:
-        yield sock.sendto(pdu, (address, port))
-        data, addr = yield sock.recvfrom(4096)
+        await sock.sendto(pdu, (address, port))
+        data, addr = await sock.recvfrom(4096)
     except socket.timeout:
         raise SNMPError(code=TIMED_OUT, oid=varbinds[0][0])
     except socket.gaierror as e:

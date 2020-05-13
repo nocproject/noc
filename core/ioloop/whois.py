@@ -10,12 +10,11 @@ import logging
 
 # Third-party modules
 from tornado.tcpclient import TCPClient
-import tornado.gen
-from tornado.ioloop import IOLoop
 
 # NOC modules
 from noc.core.validators import is_fqdn
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.ioloop.util import run_sync
 
 DEFAULT_WHOIS_SERVER = "whois.ripe.net"
 DEFAULT_WHOIS_PORT = 43
@@ -49,8 +48,7 @@ def parse_response(data):
     return r
 
 
-@tornado.gen.coroutine
-def whois_async(query, fields=None):
+async def whois_async(query, fields=None):
     """
     Perform whois request
     :param query:
@@ -68,15 +66,15 @@ def whois_async(query, fields=None):
     # Perform query
     try:
         client = TCPClient()
-        stream = yield client.connect(server, DEFAULT_WHOIS_PORT)
+        stream = await client.connect(server, DEFAULT_WHOIS_PORT)
     except IOError as e:
         logger.error("Cannot resolve host '%s': %s", server, e)
         return
     try:
-        yield stream.write(smart_bytes(query) + b"\r\n")
-        data = yield stream.read_until_close()
+        await stream.write(smart_bytes(query) + b"\r\n")
+        data = await stream.read_until_close()
     finally:
-        yield stream.close()
+        stream.close()
     data = smart_text(data)
     data = parse_response(data)
     if fields:
@@ -85,11 +83,7 @@ def whois_async(query, fields=None):
 
 
 def whois(query, fields=None):
-    @tornado.gen.coroutine
-    def _whois():
-        result = yield whois_async(query, fields)
-        r.append(result)
+    async def _whois():
+        return await whois_async(query, fields)
 
-    r = []
-    IOLoop().run_sync(_whois)
-    return r[0]
+    return run_sync(_whois)

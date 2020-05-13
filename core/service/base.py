@@ -17,6 +17,7 @@ import time
 import threading
 from time import perf_counter
 import datetime
+import asyncio
 
 # Third-party modules
 from tornado.ioloop import IOLoop, PeriodicCallback
@@ -27,7 +28,7 @@ import tornado.httpserver
 import tornado.locks
 import setproctitle
 import ujson
-from typing import Dict, List, Generator
+from typing import Dict, List, Tuple, Callable, Any, TypeVar
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
@@ -45,6 +46,7 @@ from noc.core.nsq.topic import TopicQueue
 from noc.core.nsq.pub import mpub
 from noc.core.nsq.error import NSQPubError
 from noc.core.clickhouse.shard import ShardingFunction
+from noc.core.ioloop.util import setup_asyncio
 from .api import API, APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -54,6 +56,8 @@ from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
 from .loader import set_service
+
+T = TypeVar("T")
 
 
 class Service(object):
@@ -167,13 +171,13 @@ class Service(object):
         self.topic_queues: Dict[str, TopicQueue] = {}
         self.topic_queue_lock = threading.Lock()
 
-    def create_parser(self):
+    def create_parser(self) -> argparse.ArgumentParser:
         """
         Return argument parser
         """
         return argparse.ArgumentParser()
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         """
         Apply additional parser arguments
         """
@@ -321,11 +325,7 @@ class Service(object):
         else:
             self.logger.warning("Running service %s", self.name)
         try:
-            if config.features.use_uvlib:
-                from tornaduv import UVLoop
-
-                self.logger.warning("Using libuv")
-                IOLoop.configure(UVLoop)
+            setup_asyncio()
             self.ioloop = IOLoop.current()
             # Initialize DCS
             self.dcs = get_dcs(cmd_options["dcs"])
@@ -341,7 +341,7 @@ class Service(object):
             error_report()
         finally:
             if self.ioloop:
-                self.ioloop.add_callback(self.deactivate())
+                self.ioloop.add_callback(self.deactivate)
         for cb, args, kwargs in self.close_callbacks:
             cb(*args, **kwargs)
         self.logger.warning("Service %s has been terminated", self.name)
@@ -366,7 +366,7 @@ class Service(object):
         self.logger.warning("SIGTERM caught, Stopping")
         self.stop()
 
-    def get_service_address(self):
+    def get_service_address(self) -> Tuple[str, int]:
         """
         Returns an (address, port) for HTTP service listener
         """
@@ -459,8 +459,7 @@ class Service(object):
             self.start_telemetry_callback()
         self.ioloop.add_callback(self.on_register)
 
-    @tornado.gen.coroutine
-    def deactivate(self):
+    async def deactivate(self):
         if not self.is_active:
             return
         self.is_active = False
@@ -471,20 +470,20 @@ class Service(object):
         # Release registration
         if self.dcs:
             self.logger.info("Deregistration")
-            yield self.dcs.deregister()
+            await self.dcs.deregister()
         # Shutdown schedulers
         if self.scheduler:
             try:
                 self.logger.info("Shutting down scheduler")
-                yield self.scheduler.shutdown()
-            except tornado.gen.TimeoutError:
+                await self.scheduler.shutdown()
+            except asyncio.TimeoutError:
                 self.logger.info("Timed out when shutting down scheduler")
         # Shutdown executors
-        yield self.shutdown_executors()
+        await self.shutdown_executors()
         # Custom deactivation
-        yield self.on_deactivate()
+        await self.on_deactivate()
         # Shutdown NSQ topics
-        yield self.shutdown_topic_queues()
+        await self.shutdown_topic_queues()
         # Continue deactivation
         # Finally stop ioloop
         self.dcs = None
@@ -515,10 +514,9 @@ class Service(object):
                     tags += ["traefik.backend.maxconn.amount=%s" % limit]
         return tags
 
-    @tornado.gen.coroutine
-    def on_register(self):
+    async def on_register(self):
         addr, port = self.get_service_address()
-        r = yield self.dcs.register(
+        r = await self.dcs.register(
             self.name,
             addr,
             port,
@@ -528,35 +526,31 @@ class Service(object):
         )
         if r:
             # Finally call on_activate
-            yield self.on_activate()
+            await self.on_activate()
             self.logger.info("Service is active (in %.2fms)", self.uptime() * 1000)
         else:
             raise self.RegistrationError()
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         """
         Called when service activated
         """
         return
 
-    @tornado.gen.coroutine
-    def acquire_lock(self):
-        yield self.dcs.acquire_lock("lock-%s" % self.name)
+    async def acquire_lock(self):
+        await self.dcs.acquire_lock("lock-%s" % self.name)
 
-    @tornado.gen.coroutine
-    def acquire_slot(self):
+    async def acquire_slot(self):
         if self.pooled:
             name = "%s-%s" % (self.name, config.pool)
         else:
             name = self.name
-        slot_number, total_slots = yield self.dcs.acquire_slot(name, config.global_n_instances)
+        slot_number, total_slots = await self.dcs.acquire_slot(name, config.global_n_instances)
         if total_slots <= 0:
             self.die("Service misconfiguration detected: Invalid total_slots")
         return slot_number, total_slots
 
-    @tornado.gen.coroutine
-    def on_deactivate(self):
+    async def on_deactivate(self):
         return
 
     def open_rpc(self, name, pool=None, sync=False, hints=None):
@@ -604,8 +598,7 @@ class Service(object):
         for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
-    @tornado.gen.coroutine
-    def subscribe(self, topic, channel, handler, raw=False, **kwargs):
+    async def subscribe(self, topic, channel, handler, raw=False, **kwargs):
         """
         Subscribe message to channel
         """
@@ -685,7 +678,7 @@ class Service(object):
         self.logger.info("Resuming subscription for handler %s", handler)
         self.nsq_readers[handler].set_max_in_flight(config.nsqd.max_in_flight)
 
-    def get_topic_queue(self, topic):
+    def get_topic_queue(self, topic: str) -> TopicQueue:
         q = self.topic_queues.get(topic)
         if q:
             return q
@@ -699,17 +692,15 @@ class Service(object):
             self.ioloop.add_callback(self.nsq_publisher_guard, q)
             return q
 
-    @tornado.gen.coroutine
-    def nsq_publisher_guard(self, queue: TopicQueue) -> Generator:
+    async def nsq_publisher_guard(self, queue: TopicQueue):
         while not queue.to_shutdown:
             try:
-                yield self.nsq_publisher(queue)
+                await self.nsq_publisher(queue)
             except Exception as e:
                 self.logger.error("Unhandled exception in NSQ publisher, restarting: %s", e)
         queue.shutdown_complete.set()
 
-    @tornado.gen.coroutine
-    def nsq_publisher(self, queue):
+    async def nsq_publisher(self, queue: TopicQueue):
         """
         Publisher for NSQ topic
 
@@ -719,7 +710,7 @@ class Service(object):
         self.logger.info("[nsq|%s] Starting NSQ publisher", topic)
         while not queue.to_shutdown:
             # Message throttling. Wait and allow to collect more messages
-            yield queue.wait(timeout=10, rate=config.nsqd.topic_mpub_rate)
+            await queue.wait(timeout=10, rate=config.nsqd.topic_mpub_rate)
             # Get next batch up to `mpub_messages` messages or up to `mpub_size` size
             messages = list(
                 queue.iter_get(
@@ -733,7 +724,7 @@ class Service(object):
                 continue
             try:
                 self.logger.debug("[nsq|%s] Publishing %d messages", topic, len(messages))
-                yield mpub(topic, messages, dcs=self.dcs)
+                await mpub(topic, messages, dcs=self.dcs)
             except NSQPubError:
                 if queue.to_shutdown:
                     self.logger.debug(
@@ -750,19 +741,17 @@ class Service(object):
             del messages  # Release memory
         self.logger.info("[nsq|%s] Stopping NSQ publisher", topic)
 
-    @tornado.gen.coroutine
-    def shutdown_executors(self):
+    async def shutdown_executors(self):
         if self.executors:
             self.logger.info("Shutting down executors")
             for x in self.executors:
                 try:
                     self.logger.info("Shutting down %s", x)
-                    yield self.executors[x].shutdown()
-                except tornado.gen.TimeoutError:
+                    await self.executors[x].shutdown()
+                except asyncio.TimeoutError:
                     self.logger.info("Timed out when shutting down %s", x)
 
-    @tornado.gen.coroutine
-    def shutdown_topic_queues(self):
+    async def shutdown_topic_queues(self):
         # Issue shutdown
         with self.topic_queue_lock:
             has_topics = bool(self.topic_queues)
@@ -779,8 +768,8 @@ class Service(object):
                 has_topics = bool(self.topic_queues)
             try:
                 self.logger.info("Waiting shutdown of topic queue %s", topic)
-                yield queue.shutdown_complete.wait(datetime.timedelta(seconds=5))
-            except tornado.gen.TimeoutError:
+                await queue.shutdown_complete.wait(datetime.timedelta(seconds=5))
+            except asyncio.TimeoutError:
                 self.logger.info("Failed to shutdown topic queue %s: Timed out", topic)
 
     def pub(self, topic, data, raw=False):
@@ -808,7 +797,7 @@ class Service(object):
             for chunk in q.iter_encode_chunks(m):
                 q.put(chunk)
 
-    def get_executor(self, name):
+    def get_executor(self, name: str) -> ThreadPoolExecutor:
         """
         Return or start named executor
         """
@@ -822,6 +811,12 @@ class Service(object):
             executor = ThreadPoolExecutor(max_threads, name=name)
             self.executors[name] = executor
         return executor
+
+    def run_in_executor(
+        self, name: str, fn: Callable[[Any], T], *args: Any, **kwargs: Any
+    ) -> asyncio.Future:
+        executor = self.get_executor(name)
+        return executor.submit(fn, *args, **kwargs)
 
     def register_metrics(self, table, metrics):
         """
@@ -900,7 +895,7 @@ class Service(object):
             for chunk in self._iter_metrics_raw_chunks(table, data[ch]):
                 self.pub(ch, chunk, raw=True)
 
-    def start_telemetry_callback(self):
+    def start_telemetry_callback(self) -> None:
         """
         Run telemetry callback
         :return:

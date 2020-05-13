@@ -59,8 +59,7 @@ class DataStreamService(Service):
             for ds in self.get_datastreams()
         ]
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         # Detect we have working .watch() implementation
         if self.has_watch():
             has_watch = True

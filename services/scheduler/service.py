@@ -2,13 +2,9 @@
 # ----------------------------------------------------------------------
 # Scheduler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-import tornado.ioloop
-import tornado.gen
 
 # NOC modules
 from noc.config import config
@@ -22,8 +18,7 @@ class SchedulerService(Service):
     leader_lock_name = "scheduler"
     use_mongo = True
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         self.scheduler = Scheduler(
             "scheduler", reset_running=True, max_threads=config.scheduler.max_threads,
         )

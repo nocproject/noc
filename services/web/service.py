@@ -40,7 +40,7 @@ class WebService(Service):
             (r"^.*$", NOCWSGIHandler, {"service": self})
         ]
 
-    def on_activate(self):
+    async def on_activate(self):
         # Initialize audit trail
         from noc.main.models.audittrail import AuditTrail
 
@@ -64,16 +64,14 @@ class WebService(Service):
 class NOCWSGIHandler(tornado.web.RequestHandler):
     def initialize(self, service):
         self.service = service
-        self.executor = self.service.get_executor("max")
         self.backend_id = "%s (%s:%s)" % (
             self.service.service_id,
             self.service.address,
             self.service.port,
         )
 
-    @tornado.gen.coroutine
-    def prepare(self):
-        data = yield self.process_request(self.request)
+    async def prepare(self):
+        data = await self.process_request(self.request)
         header_obj = httputil.HTTPHeaders()
         for key, value in data["headers"]:
             header_obj.add(key, value)
@@ -82,8 +80,7 @@ class NOCWSGIHandler(tornado.web.RequestHandler):
         self.log_request(data["status_code"], self.request)
         self._finished = True
 
-    @tornado.gen.coroutine
-    def process_request(self, request):
+    async def process_request(self, request):
         data = {}
         response = []
 
@@ -102,8 +99,12 @@ class NOCWSGIHandler(tornado.web.RequestHandler):
         else:
             in_label = None
         wsgi = django.core.handlers.wsgi.WSGIHandler()
-        app_response = yield self.executor.submit(
-            wsgi, tornado.wsgi.WSGIContainer.environ(request), start_response, _in_label=in_label
+        app_response = await self.service.run_in_executor(
+            "max",
+            wsgi,
+            tornado.wsgi.WSGIContainer.environ(request),
+            start_response,
+            _in_label=in_label,
         )
         try:
             response.extend(app_response)

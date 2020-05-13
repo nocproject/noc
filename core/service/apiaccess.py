@@ -10,7 +10,6 @@ import functools
 
 # Third-party modules
 import tornado.web
-import tornado.gen
 
 
 def authenticated(method):

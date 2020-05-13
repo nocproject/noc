@@ -6,12 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import tornado.gen
-import tornado.ioloop
 import tornado.httpclient
 import consul.base
 import consul.tornado
 
+# NOC modules
 from noc.config import config
 
 
@@ -27,11 +26,10 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
     Gentler version of tornado http client
     """
 
-    @tornado.gen.coroutine
-    def _request(self, callback, request):
+    async def _request(self, callback, request):
         client = tornado.httpclient.AsyncHTTPClient(force_instance=True, max_clients=1)
         try:
-            response = yield client.fetch(request)
+            response = await client.fetch(request)
         except tornado.httpclient.HTTPError as e:
             if e.code == 599:
                 raise consul.base.Timeout

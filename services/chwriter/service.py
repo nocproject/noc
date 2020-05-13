@@ -11,7 +11,7 @@ from time import perf_counter
 
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
+from typing import Dict
 
 # NOC modules
 from noc.core.service.base import Service
@@ -29,7 +29,7 @@ class CHWriterService(Service):
 
     def __init__(self):
         super(CHWriterService, self).__init__()
-        self.channels = {}
+        self.channels: Dict[str, Channel] = {}
         self.last_ts = None
         self.last_metrics = 0
         self.table_fields = {}  # table name -> fields
@@ -44,15 +44,14 @@ class CHWriterService(Service):
             self.ch_address = config.clickhouse.rw_addresses[0]
         self.restore_timeout = None
 
-    @tornado.gen.coroutine
-    def on_activate(self):
-        report_callback = tornado.ioloop.PeriodicCallback(self.report, 10000, self.ioloop)
+    async def on_activate(self):
+        report_callback = tornado.ioloop.PeriodicCallback(self.report, 10000)
         report_callback.start()
         check_callback = tornado.ioloop.PeriodicCallback(
-            self.check_channels, config.chwriter.batch_delay_ms, self.ioloop
+            self.check_channels, config.chwriter.batch_delay_ms
         )
         check_callback.start()
-        yield self.subscribe(
+        await self.subscribe(
             config.chwriter.topic,
             "chwriter",
             self.on_data,
@@ -64,7 +63,7 @@ class CHWriterService(Service):
 
     def get_channel(self, table):
         if table not in self.channels:
-            self.channels[table] = Channel(self, table, self.ch_address, config.clickhouse.db)
+            self.channels[table] = Channel(table, self.ch_address, config.clickhouse.db)
             metrics["channels_active"] += 1
         return self.channels[table]
 
@@ -91,7 +90,12 @@ class CHWriterService(Service):
             )
             metrics["deferred_messages"] += 1
             return False
-        table, data = smart_text(records).split("\n", 1)
+        if b"\n" not in records:
+            self.logger.error("Malformed message dropped: %s", records)
+            metrics["dropped_malformed_messages"] += 1
+            return True  # Trash
+        b_table, data = records.split(b"\n", 1)
+        table = smart_text(b_table)
         self.logger.debug("Receiving %s", table)
         if "." in table or "|" in table:
             self.logger.error("Message in legacy format dropped: %s" % table)
@@ -103,8 +107,7 @@ class CHWriterService(Service):
         metrics["records_buffered"] += n
         return True
 
-    @tornado.gen.coroutine
-    def report(self):
+    async def report(self):
         nm = metrics["records_written"].value
         t = perf_counter()
         if self.last_ts:
@@ -118,8 +121,7 @@ class CHWriterService(Service):
         self.last_metrics = nm
         self.last_ts = t
 
-    @tornado.gen.coroutine
-    def check_channels(self):
+    async def check_channels(self):
         expired = [c for c in self.channels if self.channels[c].is_expired()]
         for x in expired:
             self.logger.info("Closing expired channel %s", x)
@@ -140,10 +142,11 @@ class CHWriterService(Service):
                     channel.flushing,
                 )
             if channel and channel.is_ready():
-                yield self.flush_channel(channel)
+                await self.flush_channel(channel)
 
-    @tornado.gen.coroutine
-    def flush_channel(self, channel):
+    async def flush_channel(self, channel: Channel):
+        if not channel.n:
+            return
         channel.start_flushing()
         n = channel.n
         data = channel.get_data()
@@ -152,7 +155,7 @@ class CHWriterService(Service):
         written = False
         suspended = False
         try:
-            code, headers, body = yield fetch(
+            code, headers, body = await fetch(
                 channel.url,
                 method="POST",
                 body=data,
@@ -187,7 +190,7 @@ class CHWriterService(Service):
             else:
                 self.requeue_channel(channel)
 
-    def requeue_channel(self, channel):
+    def requeue_channel(self, channel: Channel):
         channel.start_flushing()
         data = channel.get_data().splitlines()
         if not data:
@@ -197,7 +200,11 @@ class CHWriterService(Service):
         while data:
             chunk, data = data[: config.nsqd.ch_chunk_size], data[config.nsqd.ch_chunk_size :]
             cl = len(chunk)
-            self.pub(config.chwriter.topic, "%s\n%s\n" % (channel.name, "\n".join(chunk)), raw=True)
+            self.pub(
+                config.chwriter.topic,
+                "%s\n%s\n" % (channel.name, "\n".join(smart_text(x) for x in chunk)),
+                raw=True,
+            )
             metrics["records_requeued"] += cl
             metrics["records_buffered"] -= cl
         channel.stop_flushing()
@@ -234,12 +241,11 @@ class CHWriterService(Service):
         metrics["resumes"] += 1
         self.resume_subscription(self.on_data)
 
-    @tornado.gen.coroutine
-    def check_restore(self):
+    async def check_restore(self):
         if self.stopping:
             self.logger.info("Checking restore during stopping. Ignoring")
         else:
-            code, headers, body = yield fetch(
+            code, headers, body = await fetch(
                 "http://%s/?user=%s&password=%s&database=%s&query=%s"
                 % (
                     self.ch_address,

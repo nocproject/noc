@@ -10,10 +10,10 @@ from collections import deque
 from threading import Lock
 import datetime
 from time import perf_counter
+import asyncio
 
 # Third-party modules
 import ujson
-import tornado.gen
 import tornado.locks
 from tornado.ioloop import IOLoop
 from typing import Union, Iterable, List, Dict, Any
@@ -192,8 +192,7 @@ class TopicQueue(object):
         with self.lock:
             self.put_condition.notify_all()
 
-    @tornado.gen.coroutine
-    def wait(self, timeout=None, rate=None):
+    async def wait(self, timeout=None, rate=None):
         # (Optional[float], Optional[int]) -> None
         """
         Block and wait up to `timeout`
@@ -206,7 +205,7 @@ class TopicQueue(object):
             now = perf_counter()
             delta = max(self.last_get + 1.0 / rate - now, 0)
             if delta > 0:
-                yield tornado.gen.sleep(delta)
+                await asyncio.sleep(delta)
                 # Adjust remaining timeout
                 if timeout:
                     # Adjust timeout
@@ -219,7 +218,7 @@ class TopicQueue(object):
             # No messages, wait
             if timeout is not None:
                 timeout = datetime.timedelta(seconds=timeout)
-            yield self.put_condition.wait(timeout)
+            await self.put_condition.wait(timeout)
 
     def apply_metrics(self, data: Dict[str, Any]) -> None:
         data.update(

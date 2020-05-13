@@ -8,9 +8,6 @@
 # Python modules
 import weakref
 
-# Third-party modules
-import tornado.gen
-
 # NOC modules
 from noc.core.ioloop.snmp import snmp_get, snmp_count, snmp_getnext, snmp_set
 from noc.core.snmp.error import SNMPError, TIMED_OUT
@@ -102,10 +99,9 @@ class SNMP(object):
         :returns: eigther result scalar or dict of name -> value
         """
 
-        @tornado.gen.coroutine
-        def run():
+        async def run():
             try:
-                r = yield snmp_get(
+                r = await snmp_get(
                     address=self.script.credentials["address"],
                     oids=oids,
                     community=str(self.script.credentials["snmp_ro"]),
@@ -141,10 +137,9 @@ class SNMP(object):
         :returns: eigther result scalar or dict of name -> value
         """
 
-        @tornado.gen.coroutine
-        def run():
+        async def run():
             try:
-                r = yield snmp_set(
+                r = await snmp_set(
                     address=self.script.credentials["address"],
                     varbinds=varbinds,
                     community=str(self.script.credentials["snmp_rw"]),
@@ -175,10 +170,9 @@ class SNMP(object):
         :param filter: Callable accepting oid and value and returning boolean
         """
 
-        @tornado.gen.coroutine
-        def run():
+        async def run():
             try:
-                r = yield snmp_count(
+                r = await snmp_count(
                     address=self.script.credentials["address"],
                     oid=oid,
                     community=str(self.script.credentials["snmp_ro"]),
@@ -215,10 +209,9 @@ class SNMP(object):
         raw_varbinds=False,
         display_hints=None,
     ):
-        @tornado.gen.coroutine
-        def run():
+        async def run():
             try:
-                r = yield snmp_getnext(
+                r = await snmp_getnext(
                     address=self.script.credentials["address"],
                     oid=oid,
                     community=str(self.script.credentials["snmp_ro"]),

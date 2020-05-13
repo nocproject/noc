@@ -10,9 +10,7 @@ import logging
 import time
 import datetime
 from time import perf_counter
-
-# Third-party modules
-import tornado.gen
+import asyncio
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -121,7 +119,6 @@ class Job(object):
             if ctx not in self.context:
                 self.context[ctx] = {}
 
-    @tornado.gen.coroutine
     def run(self):
         with Span(
             server=self.scheduler.name,
@@ -160,9 +157,10 @@ class Job(object):
                         try:
                             data = self.attrs.get(self.ATTR_DATA) or {}
                             result = self.handler(**data)
-                            if tornado.gen.is_future(result):
+                            if asyncio.isfuture(result):
                                 # Wait for future
-                                result = yield result
+                                for _ in asyncio.as_completed([result]):
+                                    pass
                             status = self.E_SUCCESS
                         except RetryAfter as e:
                             self.logger.info("Retry after %ss: %s", e.delay, e)

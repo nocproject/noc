@@ -42,8 +42,7 @@ class SyslogCollectorService(Service):
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         # Listen sockets
         server = SyslogServer(service=self)
         for addr, port in server.iter_listen(config.syslogcollector.listen):
@@ -57,7 +56,7 @@ class SyslogCollectorService(Service):
         # Report invalid sources every 60 seconds
         self.logger.info("Stating invalid sources reporting task")
         self.report_invalid_callback = tornado.ioloop.PeriodicCallback(
-            self.report_invalid_sources, 60000, self.ioloop
+            self.report_invalid_sources, 60000
         )
         self.report_invalid_callback.start()
         # Start tracking changes

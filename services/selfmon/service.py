@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # metrics service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,9 +10,6 @@
 from threading import Thread
 import operator
 import time
-
-# Third-party modules
-import tornado.gen
 
 # NOC modules
 from noc.core.service.base import Service
@@ -30,12 +27,11 @@ class SelfMonService(Service):
         self.collectors = []
         self.runner_thread = None
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         self.collectors = [c(self) for c in iter_collectors() if c.is_enabled()]
         if not self.collectors:
             self.die("No collectors enabled")
-        yield self.acquire_lock()
+        await self.acquire_lock()
         self.reorder()
         self.runner_thread = Thread(target=self.runner)
         self.runner_thread.setDaemon(True)

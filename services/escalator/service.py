@@ -30,16 +30,14 @@ class EscalatorService(Service):
         super(EscalatorService, self).__init__(*args, **kwargs)
         self.shards = {}
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         self.apply_shards()
 
-    @tornado.gen.coroutine
-    def on_deactivate(self):
+    async def on_deactivate(self):
         for s in self.shards:
             self.logger.info("Shutting down shard %s", s)
             try:
-                yield self.shards[s].shutdown()
+                await self.shards[s].shutdown()
                 self.logger.info("Shard %s is down", s)
             except tornado.gen.TimeoutError:
                 self.logger.info("Cannot shutdown shard %s cleanly: Timeout", s)

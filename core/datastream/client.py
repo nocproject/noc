@@ -9,7 +9,6 @@
 import logging
 
 # Third-party modules
-import tornado.gen
 import ujson
 
 # NOC modules
@@ -39,8 +38,7 @@ class DataStreamClient(object):
         :return:
         """
 
-    @tornado.gen.coroutine
-    def query(self, change_id=None, filters=None, block=False, limit=None):
+    async def query(self, change_id=None, filters=None, block=False, limit=None):
         """
         Query datastream
         :param filters:
@@ -69,7 +67,7 @@ class DataStreamClient(object):
                 url = base_url
             # Get data
             logger.debug("Request: %s", url)
-            code, headers, data = yield fetch(url, resolver=self.resolve, headers=req_headers)
+            code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
             logger.debug("Response: %s %s", code, headers)
             if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
                 continue  # Retry on timeout
@@ -94,10 +92,9 @@ class DataStreamClient(object):
             elif not block:
                 break  # Empty batch, stop if non-blocking mode
 
-    @tornado.gen.coroutine
-    def resolve(self, host):
+    async def resolve(self, host):
         try:
-            svc = yield self.service.dcs.resolve(host)
+            svc = await self.service.dcs.resolve(host)
         except ResolutionError:
             return None
         host, port = svc.split(":")

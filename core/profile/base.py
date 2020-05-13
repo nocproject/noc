@@ -11,7 +11,6 @@ import functools
 import warnings
 
 # Third-party modules
-import tornado.gen
 from typing import Dict, Callable, Union, Optional
 
 # NOC modules
@@ -599,14 +598,13 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         return cls.enable_cli_session
 
     @classmethod
-    @tornado.gen.coroutine
-    def send_backspaces(cls, cli, command, error_text):
+    async def send_backspaces(cls, cli, command, error_text):
         # Send backspaces to clean up previous command
-        yield cli.iostream.write(b"\x08" * len(command))
+        await cli.iostream.write(b"\x08" * len(command))
         # Send command_submit to force prompt
-        yield cli.iostream.write(cls.command_submit)
+        await cli.iostream.write(cls.command_submit)
         # Wait until prompt
-        yield cli.read_until_prompt()
+        await cli.read_until_prompt()
 
     def get_mml_login(self, script):
         """

@@ -10,12 +10,15 @@
 from time import perf_counter
 from urllib.parse import quote as urllib_quote
 
+# Third-party modules
+from typing import List
+
 # NOC modules
 from noc.config import config
 
 
 class Channel(object):
-    def __init__(self, service, table, address, db):
+    def __init__(self, table: str, address: str, db: str):
         """
         :param table: ClickHouse table name
         :param address: ClickHouse address
@@ -24,13 +27,12 @@ class Channel(object):
         :return:
         """
         self.name = table
-        self.service = service
         self.address = address
         self.db = db
         self.sql = "INSERT INTO %s FORMAT JSONEachRow" % table
         self.encoded_sql = urllib_quote(self.sql.encode("utf8"))
         self.n = 0
-        self.data = []
+        self.data: List[bytes] = []
         self.last_updated = perf_counter()
         self.last_flushed = perf_counter()
         self.flushing = False
@@ -42,8 +44,8 @@ class Channel(object):
             self.encoded_sql,
         )
 
-    def feed(self, data):
-        n = data.count("\n")
+    def feed(self, data: bytes):
+        n = data.count(b"\n")
         self.n += n
         self.data += [data]
         return n
@@ -64,9 +66,9 @@ class Channel(object):
         t = perf_counter()
         return (t - self.last_flushed) * 1000 >= config.chwriter.batch_delay_ms
 
-    def get_data(self):
+    def get_data(self) -> bytes:
         self.n = 0
-        data = "\n".join(self.data)
+        data = b"\n".join(self.data)
         self.data = []
         return data
 

@@ -10,7 +10,6 @@ import logging
 from urllib.parse import urlencode, urlsplit, parse_qs, urlunsplit
 
 # Third-party modules
-import tornado.gen
 from nsq.reader import Reader as BaseReader, _utf8_params
 import ujson
 
@@ -22,8 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class Reader(BaseReader):
-    @tornado.gen.coroutine
-    def query_lookupd(self):
+    async def query_lookupd(self):
         logger.info("query_lookupd")
         endpoint = self.lookupd_http_addresses[self.lookupd_query_index]
         self.lookupd_query_index = (self.lookupd_query_index + 1) % len(self.lookupd_http_addresses)
@@ -39,10 +37,10 @@ class Reader(BaseReader):
 
         params = parse_qs(query)
         params["topic"] = self.topic
-        query = urlencode(_utf8_params(params), doseq=1)
+        query = urlencode(_utf8_params(params), doseq=True)
         lookupd_url = urlunsplit((scheme, netloc, path, query, fragment))
 
-        code, headers, body = yield fetch(
+        code, headers, body = await fetch(
             lookupd_url,
             headers={"Accept": "application/vnd.nsq; version=1.0"},
             connect_timeout=self.lookupd_connect_timeout,

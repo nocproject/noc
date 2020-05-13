@@ -11,7 +11,6 @@ from time import perf_counter
 
 # Third-party modules
 from tornado.ioloop import IOLoop
-import tornado.gen
 import tornado.queues
 
 # NOC modules
@@ -69,23 +68,21 @@ class Command(BaseCommand):
             self.ioloop.spawn_callback(self.poll_worker, community, oid, timeout, version)
         self.ioloop.run_sync(self.poll_task)
 
-    @tornado.gen.coroutine
-    def poll_task(self):
+    async def poll_task(self):
         for a in self.addresses:
-            yield self.queue.put(a)
+            await self.queue.put(a)
         for i in range(self.jobs):
-            yield self.queue.put(None)
-        yield self.queue.join()
+            await self.queue.put(None)
+        await self.queue.join()
 
-    @tornado.gen.coroutine
-    def poll_worker(self, community, oid, timeout, version):
+    async def poll_worker(self, community, oid, timeout, version):
         while True:
-            a = yield self.queue.get()
+            a = await self.queue.get()
             if a:
                 for c in community:
                     t0 = perf_counter()
                     try:
-                        r = yield snmp_get(
+                        r = await snmp_get(
                             address=a, oids=oid, community=c, version=version, timeout=timeout
                         )
                         s = "OK"

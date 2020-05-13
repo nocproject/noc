@@ -13,9 +13,6 @@ import json
 import time
 from urllib.parse import urlencode
 
-# Third-party modules
-import tornado.gen
-
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.http.client import fetch_sync
@@ -29,14 +26,13 @@ API = "https://api.telegram.org/bot"
 class TgSenderService(Service):
     name = "tgsender"
 
-    @tornado.gen.coroutine
-    def on_activate(self):
+    async def on_activate(self):
         if not config.tgsender.token:
             self.logger.info("No token defined")
             self.url = None
         else:
             self.url = API + config.tgsender.token
-            yield self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
+            await self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(
