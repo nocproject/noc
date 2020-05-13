@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # URLSession middleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class URLSessionMiddleware(BaseMiddleware):
     name = "urlsession"
 
     def __init__(self, http, session_param="session_id"):
-        super(URLSessionMiddleware, self).__init__(http)
+        super().__init__(http)
         self.session_param = session_param
 
     def process_request(self, url, body, headers):

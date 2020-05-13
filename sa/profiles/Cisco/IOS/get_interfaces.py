@@ -258,7 +258,7 @@ class Script(BaseScript):
     def execute_snmp(self):
         vlans = self.scripts.get_switchport()
         time.sleep(2)
-        r = super(Script, self).execute_snmp()
+        r = super().execute_snmp()
         if vlans:
             vlans = {
                 v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])}

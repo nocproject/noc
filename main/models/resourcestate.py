@@ -54,7 +54,7 @@ class ResourceState(NOCModel):
                     r.save()
             except ResourceState.DoesNotExist:
                 pass
-        super(ResourceState, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @classmethod
     def get_default(cls):

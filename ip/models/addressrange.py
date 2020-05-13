@@ -100,7 +100,7 @@ class AddressRange(NOCModel):
         """
         Field validation
         """
-        super(AddressRange, self).clean()
+        super().clean()
         # Check prefix is of AFI type
         if self.afi == "4":
             check_ipv4(self.from_address)
@@ -146,7 +146,7 @@ class AddressRange(NOCModel):
         if not created:
             # Get old values
             old = AddressRange.objects.get(id=self.id)
-        super(AddressRange, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if created:
             # New
             if self.action == "G":

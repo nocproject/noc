@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Syntax hilighting utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,4 +19,4 @@ class NOCHtmlFormatter(HtmlFormatter):
 
     def __init__(self, **kwargs):
         kwargs["linenos"] = "table"
-        super(NOCHtmlFormatter, self).__init__(**kwargs)
+        super().__init__(**kwargs)

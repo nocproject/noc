@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # IGetMPLSVPN interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ class IGetMPLSVPN(BaseInterface):
         :param result:
         :return:
         """
-        result = super(IGetMPLSVPN, self).clean_result(result)
+        result = super().clean_result(result)
         for vpn in result:
             vpn["vpn_id"] = get_vpn_id(vpn)
         return result
@@ -67,7 +67,7 @@ class IGetMPLSVPN(BaseInterface):
         :param result:
         :return:
         """
-        result = super(IGetMPLSVPN, self).script_clean_result(__profile, result)
+        result = super().script_clean_result(__profile, result)
         for vpn in result:
             vpn["vpn_id"] = get_vpn_id(vpn)
         return result

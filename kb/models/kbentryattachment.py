@@ -39,7 +39,7 @@ class KBEntryAttachment(NOCModel):
         """
         Delete object on database storage too
         """
-        super(KBEntryAttachment, self).delete()
+        super().delete()
         self.file.storage.delete(self.file.name)
 
     @property

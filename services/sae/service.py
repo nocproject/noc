@@ -29,7 +29,7 @@ class SAEService(Service):
     use_mongo = True
 
     def __init__(self):
-        super(SAEService, self).__init__()
+        super().__init__()
         self.pool_cache = {}
         self.activators = {}
         self.pg_pool = None

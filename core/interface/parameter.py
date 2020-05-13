@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Interface parameters
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -130,7 +130,7 @@ class ORParameter(BaseParameter):
     """
 
     def __init__(self, left, right):
-        super(ORParameter, self).__init__()
+        super().__init__()
         self.left = left
         self.right = right
         self.required = self.left.required or self.right.required

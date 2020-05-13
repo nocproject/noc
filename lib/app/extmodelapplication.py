@@ -73,7 +73,7 @@ class ExtModelApplication(ExtApplication):
     file_fields_mask = None
 
     def __init__(self, *args, **kwargs):
-        super(ExtModelApplication, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.db_table = self.model._meta.db_table
         self.pk_field_name = self.model._meta.pk.name
         self.pk = self.pk_field_name
@@ -119,7 +119,7 @@ class ExtModelApplication(ExtApplication):
         ]
 
     def get_permissions(self):
-        p = super(ExtModelApplication, self).get_permissions()
+        p = super().get_permissions()
         if self.secret_fields:
             p.add("%s:secret" % self.get_app_id().replace(".", ":"))
         return p
@@ -165,7 +165,7 @@ class ExtModelApplication(ExtApplication):
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_launch_info(self, request):
-        li = super(ExtModelApplication, self).get_launch_info(request)
+        li = super().get_launch_info(request)
         cf = self.get_custom_fields()
         if cf:
             li["params"].update(

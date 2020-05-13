@@ -96,7 +96,7 @@ class Maintenance(Document):
                     elem.segment = elem.segment
                 except Exception:
                     raise ValidationError("Segment line is Empty")
-        super(Maintenance, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def on_save(self):
         self.update_affected_objects()

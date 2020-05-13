@@ -55,7 +55,7 @@ class ForwardingInstance(Document):
         for si in self.subinterface_set.all():
             si.delete()
         # Delete forwarding instance
-        super(ForwardingInstance, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     @property
     def subinterface_set(self):

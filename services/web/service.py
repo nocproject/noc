@@ -32,7 +32,7 @@ class WebService(Service):
         traefik_frontend_rule = "PathPrefix:/"
 
     def __init__(self):
-        super(WebService, self).__init__()
+        super().__init__()
 
     def get_handlers(self):
         return [

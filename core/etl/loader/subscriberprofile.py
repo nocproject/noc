@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SubscriberProfile loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class SubscriberProfileLoader(BaseLoader):
     fields = ["id", "name", "description", "workflow"]
 
     def clean(self, row):
-        d = super(SubscriberProfileLoader, self).clean(row)
+        d = super().clean(row)
         if "workflow" in d:
             d["workflow"] = Workflow.objects.get(name=d["workflow"])
         else:

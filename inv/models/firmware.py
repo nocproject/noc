@@ -69,7 +69,7 @@ class Firmware(Document):
 
     def clean(self):
         self.full_name = "%s %s" % (self.profile.name, self.version)
-        super(Firmware, self).clean()
+        super().clean()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

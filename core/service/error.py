@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service Errors
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -36,5 +36,5 @@ class RPCRemoteError(RPCError):
     default_code = ERR_RPC_REMOTE_ERROR
 
     def __init__(self, msg, remote_code=None):
-        super(RPCRemoteError, self).__init__(msg)
+        super().__init__(msg)
         self.remote_code = remote_code

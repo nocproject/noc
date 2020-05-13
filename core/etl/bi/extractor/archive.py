@@ -38,7 +38,7 @@ class ArchivingExtractor(BaseExtractor):
     def clean(self, force=False):
         if self.enable_archive:
             self.archive()
-        super(ArchivingExtractor, self).clean()
+        super().clean()
 
     def get_archived_template(self):
         # "alarms.{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}"

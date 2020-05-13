@@ -141,7 +141,7 @@ class VRFGroupNode(Node):
     def __init__(self, app, vrf_group):
         self.vrf_group = vrf_group
         self.vrfs = list(vrf_group.vrf_set.all())
-        super(VRFGroupNode, self).__init__(app)
+        super().__init__(app)
 
     def populate(self):
         if self.vrfs:
@@ -159,7 +159,7 @@ class VRFGroupNode(Node):
 class VRFNode(Node):
     def __init__(self, app, vrf):
         self.vrf = vrf
-        super(VRFNode, self).__init__(app)
+        super().__init__(app)
 
     def populate(self):
         root = Prefix.objects.get(vrf=self.vrf, prefix="0.0.0.0/0")
@@ -181,7 +181,7 @@ class PrefixNode(Node):
         else:
             self.size = 0
         self.used = None
-        super(PrefixNode, self).__init__(app)
+        super().__init__(app)
         self.update_usage()
 
     def __str__(self):
@@ -244,7 +244,7 @@ class GPrefixNode(PrefixNode):
 
     def __init__(self, app, prefix, vrfs):
         self.vrfs = vrfs
-        super(GPrefixNode, self).__init__(app, prefix)
+        super().__init__(app, prefix)
 
     def populate(self):
         self.children = [

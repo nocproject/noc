@@ -2,7 +2,7 @@
 # Vendor: Siklu
 # OS:     EH
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Profile(BaseProfile):
         match = self.rx_strip_cmd_repeat.search(input)
         if match:
             input = match.group(1)
-        input = super(Profile, self).cleaned_input(input)
+        input = super().cleaned_input(input)
         return input
 
     def convert_interface_name(self, s):

@@ -42,7 +42,7 @@ class Script(GetMetricsScript):
         volatile=False,
     )
     def collect_dom_metrics_cli(self, metrics):
-        super(Script, self).collect_dom_metrics(metrics)
+        super().collect_dom_metrics(metrics)
         self.collect_cpe_metrics_cli(metrics)
 
     def collect_cpe_metrics_cli(self, metrics):
@@ -154,7 +154,7 @@ class Script(GetMetricsScript):
         volatile=False,
     )
     def collect_dom_metrics_snmp(self, metrics):
-        super(Script, self).collect_dom_metrics(metrics)
+        super().collect_dom_metrics(metrics)
         self.collect_cpe_metrics_snmp(metrics)
 
     def collect_cpe_metrics_snmp(self, metrics):

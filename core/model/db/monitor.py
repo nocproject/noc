@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # PostgreSQL connection monitoring
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,4 +23,4 @@ class SpanCursor(psycopg2.extensions.cursor):
             quantile=get_quantile("postgres", ("command", label)),
             in_label=label,
         ):
-            super(SpanCursor, self).execute(query, vars)
+            super().execute(query, vars)

@@ -39,7 +39,7 @@ class SegmentTopology(BaseTopology):
         else:
             self.parent_segment = None
             self.ancestor_segments = set()
-        super(SegmentTopology, self).__init__(node_hints, link_hints, force_spring)
+        super().__init__(node_hints, link_hints, force_spring)
 
     def get_role(self, mo):
         if mo.segment in self.segment_siblings:

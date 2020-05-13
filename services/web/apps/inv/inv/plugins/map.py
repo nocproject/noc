@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv map plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class MapPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.map.MapPanel"
 
     def init_plugin(self):
-        super(MapPlugin, self).init_plugin()
+        super().init_plugin()
         self.add_view(
             "api_plugin_%s_get_layer" % self.name,
             self.api_get_layer,

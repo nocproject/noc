@@ -52,7 +52,7 @@ class MonitorApplication(ObjectListApplication):
 
     def queryset(self, request, query=None):
         r = JobF(pool="default")
-        r.mos_filter = super(MonitorApplication, self).queryset(request, query)
+        r.mos_filter = super().queryset(request, query)
         return r
 
     def bulk_field_managed_object(self, data):

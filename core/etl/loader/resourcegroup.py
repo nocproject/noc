@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ResourceGroup Group loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,6 +26,6 @@ class ResourceGroupLoader(BaseLoader):
         """
         Fix Technology
         """
-        v = super(ResourceGroupLoader, self).clean(row)
+        v = super().clean(row)
         v["technology"] = Technology.get_by_name(v["technology"])
         return v

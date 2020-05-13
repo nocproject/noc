@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # REST helper interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,4 +30,4 @@ class DateTimeParameter(StringParameter):
 
 class DateParameter(DateTimeParameter):
     def clean(self, value):
-        return super(DateParameter, self).clean(value).date()
+        return super().clean(value).date()

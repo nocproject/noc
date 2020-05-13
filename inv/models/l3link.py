@@ -50,4 +50,4 @@ class L3Link(Document):
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.subinterfaces))
-        super(L3Link, self).clean()
+        super().clean()

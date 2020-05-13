@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Load config from consul
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class ConsulProtocol(BaseProtocol):
     CONNECT_TIMEOUT = 30
 
     def __init__(self, config, url):
-        super(ConsulProtocol, self).__init__(config, url)
+        super().__init__(config, url)
         if ":" in self.parsed_url.netloc:
             h, p = self.parsed_url.netloc.rsplit(":", 1)
             self.host, self.port = h, int(p)

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv conduits plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ class ConduitsPlugin(InvPlugin):
     CONDUITS_MODEL = "Ducts | Conduits"
 
     def init_plugin(self):
-        super(ConduitsPlugin, self).init_plugin()
+        super().init_plugin()
         self.add_view(
             "api_plugin_%s_get_neighbors" % self.name,
             self.api_get_neighbors,

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.networksegment application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class NetworkSegmentApplication(ExtDocApplication):
         return o.profile.style.css_class_name if o.profile.style else ""
 
     def queryset(self, request, query=None):
-        qs = super(NetworkSegmentApplication, self).queryset(request, query)
+        qs = super().queryset(request, query)
         if not request.user.is_superuser:
             qs = qs.filter(adm_domains__in=UserAccess.get_domains(request.user))
         return qs

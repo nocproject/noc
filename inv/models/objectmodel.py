@@ -109,7 +109,7 @@ class ObjectModelConnection(EmbeddedDocument):
             )
         if self.composite_pins and not rx_composite_pins_validate.match(self.composite_pins):
             raise ValidationError("Composite pins not match format: N-N")
-        super(ObjectModelConnection, self).clean()
+        super().clean()
 
 
 @category

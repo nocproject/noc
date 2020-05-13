@@ -32,7 +32,7 @@ class BeefSNMP(SNMP):
     MAX_REQUEST_SIZE = 65535
 
     def __init__(self, script):
-        super(BeefSNMP, self).__init__(script)
+        super().__init__(script)
         self.server_iostream = None
 
     def get_socket(self):
@@ -47,7 +47,7 @@ class BeefSNMP(SNMP):
         if self.server_iostream:
             self.server_iostream.close()
             self.server_iostream = None
-        super(BeefSNMP, self).close()
+        super().close()
 
     @tornado.gen.coroutine
     def snmp_server(self):
@@ -168,7 +168,7 @@ class BeefSNMP(SNMP):
 
 class BeefServerIOStream(tornado.iostream.IOStream):
     def __init__(self, socket, script, *args, **kwargs):
-        super(BeefServerIOStream, self).__init__(socket, *args, **kwargs)
+        super().__init__(socket, *args, **kwargs)
         self.script = script
 
     def connect(self, *args, **kwargs):

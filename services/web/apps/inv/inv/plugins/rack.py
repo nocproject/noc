@@ -16,7 +16,7 @@ class RackPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.rack.RackPanel"
 
     def init_plugin(self):
-        super(RackPlugin, self).init_plugin()
+        super().init_plugin()
         self.add_view(
             "api_plugin_%s_set_rackload" % self.name,
             self.api_set_rack_load,

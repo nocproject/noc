@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # QueryApplicator class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class QueryApplicator(BaseApplicator):
     CONFIG = {}
 
     def __init__(self, object, confdb, **kwargs):
-        super(QueryApplicator, self).__init__(object, confdb)
+        super().__init__(object, confdb)
         for k in self.CONFIG:
             self.config[k] = kwargs.get(k, self.CONFIG[k])
 
@@ -33,7 +33,7 @@ class QueryApplicator(BaseApplicator):
             list(self.confdb.query(q, **cfg))
 
     def can_apply(self):
-        if not super(QueryApplicator, self).can_apply():
+        if not super().can_apply():
             return False
         if not self.CHECK_QUERY:
             return True

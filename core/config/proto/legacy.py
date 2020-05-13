@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Load legacy noc.yml
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ class LegacyProtocol(BaseProtocol):
     ]
 
     def __init__(self, config, url):
-        super(LegacyProtocol, self).__init__(config, url)
+        super().__init__(config, url)
         if self.parsed_url.path == "/":
             self.path = config.path.legacy_config
         else:

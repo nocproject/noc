@@ -21,7 +21,7 @@ class YandexGeocoder(BaseGeocoder):
     name = "yandex"
 
     def __init__(self, key=None, apikey=None, *args, **kwargs):
-        super(BaseGeocoder, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.key = key or config.geocoding.yandex_key
         self.apikey = apikey or config.geocoding.yandex_apikey
 

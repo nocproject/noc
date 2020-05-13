@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base Error class and error codes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -77,6 +77,6 @@ class NOCError(Exception):
     default_code = ERR_UNKNOWN
 
     def __init__(self, msg=None, code=None):
-        super(NOCError, self).__init__(msg or self.default_msg)
+        super().__init__(msg or self.default_msg)
         self.code = code or self.default_code
         metrics["err_%s" % self.code] += 1

@@ -212,7 +212,7 @@ class Prefix(NOCModel):
         """
         Field validation
         """
-        super(Prefix, self).clean()
+        super().clean()
         # Set defaults
         self.afi = "6" if ":" in self.prefix else "4"
         # Check prefix is of AFI type
@@ -239,7 +239,7 @@ class Prefix(NOCModel):
         Save prefix
         """
         self.clean()
-        super(Prefix, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         # Rebuild tree if necessary
         # Reconnect children children prefixes
         c = connection.cursor()
@@ -284,7 +284,7 @@ class Prefix(NOCModel):
         # Remove bookmarks
         self.prefixbookmark_set.all().delete()
         # Finally delete
-        super(Prefix, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def delete_recursive(self):
         """

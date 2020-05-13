@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Group Group Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ class GroupsApplication(ExtModelApplication):
         return self.response(self.instance_to_dict_get(o, fields=only), status=self.OK)
 
     def instance_to_dict_get(self, o, fields=None):
-        r = super(GroupsApplication, self).instance_to_dict(o, fields)
+        r = super().instance_to_dict(o, fields)
         r["permissions"] = self.apps_permissions_list()
         current_perms = Permission.get_group_permissions(o)
         if current_perms:
@@ -90,7 +90,7 @@ class GroupsApplication(ExtModelApplication):
         if name == "permissions":
             Permission.set_group_permissions(group=o, perms=values)
         else:
-            super(GroupsApplication, self).update_m2m(o, name, values)
+            super().update_m2m(o, name, values)
 
     @view(method=["GET"], url=r"^new_permissions/$", access="read", api=True)
     def api_read_permission(self, request):

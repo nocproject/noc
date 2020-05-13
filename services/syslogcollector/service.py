@@ -35,7 +35,7 @@ class SyslogCollectorService(Service):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
-        super(SyslogCollectorService, self).__init__()
+        super().__init__()
         self.mappings_callback = None
         self.report_invalid_callback = None
         self.source_configs = {}  # id -> SourceConfig

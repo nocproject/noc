@@ -231,7 +231,7 @@ class BooleanField(UInt8Field):
 
 class ArrayField(BaseField):
     def __init__(self, field_type, description=None):
-        super(ArrayField, self).__init__(description=description)
+        super().__init__(description=description)
         self.field_type = field_type
 
     def to_json(self, value):
@@ -255,9 +255,7 @@ class ReferenceField(BaseField):
     SELF_REFERENCE = "self"
 
     def __init__(self, dict_type, description=None, model=None, low_cardinality=False):
-        super(ReferenceField, self).__init__(
-            description=description, low_cardinality=low_cardinality
-        )
+        super().__init__(description=description, low_cardinality=low_cardinality)
         self.is_self_reference = dict_type == self.SELF_REFERENCE
         self.dict_type = dict_type
         self.model = model
@@ -297,7 +295,7 @@ class IPv4Field(BaseField):
 
 class AggregatedField(BaseField):
     def __init__(self, field_type, agg_functions, description=None, f_expr=""):
-        super(AggregatedField, self).__init__(description=description)
+        super().__init__(description=description)
         self.field_type = field_type
         self.is_agg = True
         self.agg_functions = agg_functions

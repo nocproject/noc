@@ -32,4 +32,4 @@ class AlarmClassCategory(Document):
             self.parent = p.id
         else:
             self.parent = None
-        super(AlarmClassCategory, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

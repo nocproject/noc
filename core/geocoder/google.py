@@ -21,7 +21,7 @@ class GoogleGeocoder(BaseGeocoder):
     name = "google"
 
     def __init__(self, key=None, language=None, *args, **kwargs):
-        super(GoogleGeocoder, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.key = key or config.geocoding.google_key
         self.language = language or config.geocoding.google_language
 

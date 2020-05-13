@@ -26,7 +26,7 @@ class NoneParameter(Parameter):
     """
 
     def __init__(self, required=True):
-        super(NoneParameter, self).__init__(required=required)
+        super().__init__(required=required)
 
     def clean(self, value):
         if value is not None:
@@ -42,7 +42,7 @@ class StringParameter(Parameter):
     def __init__(self, required=True, default=None, choices=None, aliases=None):
         self.choices = set(choices) if choices else None
         self.aliases = aliases
-        super(StringParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
 
     def clean(self, value):
         if not isinstance(value, str):
@@ -83,12 +83,12 @@ class REStringParameter(StringParameter):
 
     def __init__(self, regexp, required=True, default=None):
         self.rx = re.compile(regexp)  # Compile before calling the constructor
-        super(REStringParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
 
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v = super(REStringParameter, self).clean(value)
+        v = super().clean(value)
         if not self.rx.search(v):
             self.raise_error(value)
         return v
@@ -148,7 +148,7 @@ class IntParameter(Parameter):
     def __init__(self, required=True, default=None, min_value=None, max_value=None):
         self.min_value = min_value
         self.max_value = max_value
-        super(IntParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
 
     def clean(self, value):
         if value is None and self.default is not None:
@@ -172,7 +172,7 @@ class FloatParameter(Parameter):
     def __init__(self, required=True, default=None, min_value=None, max_value=None):
         self.min_value = min_value
         self.max_value = max_value
-        super(FloatParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
 
     def clean(self, value):
         if not isinstance(value, float):
@@ -215,7 +215,7 @@ class InstanceOfParameter(Parameter):
     """
 
     def __init__(self, cls, required=True, default=None):
-        super(InstanceOfParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
         self.cls = cls
         if isinstance(cls, str):
             self.is_valid = self.is_valid_classname
@@ -248,7 +248,7 @@ class SubclassOfParameter(Parameter):
     """
 
     def __init__(self, cls, required=True, default=None):
-        super(SubclassOfParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
         self.cls = cls
         if isinstance(cls, str):
             self.is_valid = self.is_valid_classname
@@ -295,14 +295,14 @@ class ListOfParameter(ListParameter):
         self.element = element
         self.is_list = type(element) in (list, tuple)
         self.convert = convert
-        super(ListOfParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
 
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
         if self.convert and not isinstance(value, (list, tuple)):
             value = [value]
-        v = super(ListOfParameter, self).clean(value)
+        v = super().clean(value)
         if self.is_list:
             return [[e.clean(vv) for e, vv in zip(self.element, nv)] for nv in value]
         else:
@@ -311,7 +311,7 @@ class ListOfParameter(ListParameter):
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        v = super(ListOfParameter, self).script_clean_input(profile, value)
+        v = super().script_clean_input(profile, value)
         if self.is_list:
             return [
                 [e.script_clean_input(profile, vv) for e, vv in zip(self.element, nv)]
@@ -323,7 +323,7 @@ class ListOfParameter(ListParameter):
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        v = super(ListOfParameter, self).script_clean_result(profile, value)
+        v = super().script_clean_result(profile, value)
         if self.is_list:
             return [
                 [e.script_clean_result(profile, vv) for e, vv in zip(self.element, nv)]
@@ -339,7 +339,7 @@ class StringListParameter(ListOfParameter):
     """
 
     def __init__(self, required=True, default=None, convert=False, choices=None):
-        super(StringListParameter, self).__init__(
+        super().__init__(
             element=StringParameter(choices=choices),
             required=required,
             default=default,
@@ -353,7 +353,7 @@ class DictParameter(Parameter):
     """
 
     def __init__(self, required=True, default=None, attrs=None, truncate=False):
-        super(DictParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
         self.attrs = attrs or {}
         self.truncate = truncate
         self._defaults = {
@@ -437,7 +437,7 @@ class DictListParameter(ListOfParameter):
     """
 
     def __init__(self, required=True, default=None, attrs=None, convert=False):
-        super(DictListParameter, self).__init__(
+        super().__init__(
             element=DictParameter(attrs=attrs), required=required, default=default, convert=convert
         )
 
@@ -522,7 +522,7 @@ class IPv4Parameter(StringParameter):
         if len(value) == 4:
             # IP address in binary form
             value = ".".join(["%02X" % ord(c) for c in value])
-        v = super(IPv4Parameter, self).clean(value)
+        v = super().clean(value)
         X = v.split(".")
         if len(X) != 4:
             self.raise_error(value)
@@ -544,7 +544,7 @@ class IPv4PrefixParameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v = super(IPv4PrefixParameter, self).clean(value)
+        v = super().clean(value)
         if "/" not in v:
             self.raise_error(value)
         n, m = v.split("/", 1)
@@ -573,7 +573,7 @@ class IPv6Parameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v = super(IPv6Parameter, self).clean(value)
+        v = super().clean(value)
         if not is_ipv6(v):
             self.raise_error(value)
         return IPv6(v).normalized.address
@@ -587,7 +587,7 @@ class IPv6PrefixParameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v = super(IPv6PrefixParameter, self).clean(value)
+        v = super().clean(value)
         if "/" not in v:
             self.raise_error(value)
         n, m = v.split("/", 1)
@@ -634,9 +634,7 @@ class VLANIDParameter(IntParameter):
     """
 
     def __init__(self, required=True, default=None):
-        super(VLANIDParameter, self).__init__(
-            required=required, default=default, min_value=1, max_value=4095
-        )
+        super().__init__(required=required, default=default, min_value=1, max_value=4095)
 
 
 class VLANStackParameter(ListOfParameter):
@@ -645,12 +643,10 @@ class VLANStackParameter(ListOfParameter):
     """
 
     def __init__(self, required=True, default=None):
-        super(VLANStackParameter, self).__init__(
-            element=IntParameter(), required=required, default=default, convert=True
-        )
+        super().__init__(element=IntParameter(), required=required, default=default, convert=True)
 
     def clean(self, value):
-        value = super(VLANStackParameter, self).clean(value)
+        value = super().clean(value)
         if len(value) > 0:
             value[0] = VLANIDParameter().clean(value[0])
         for i in range(1, len(value)):
@@ -664,9 +660,7 @@ class VLANIDListParameter(ListOfParameter):
     """
 
     def __init__(self, required=True, default=None):
-        super(VLANIDListParameter, self).__init__(
-            element=VLANIDParameter(), required=required, default=default
-        )
+        super().__init__(element=VLANIDParameter(), required=required, default=default)
 
 
 class VLANIDMapParameter(StringParameter):
@@ -691,13 +685,13 @@ class MACAddressParameter(StringParameter):
 
     def __init__(self, required=True, default=None, accept_bin=True):
         self.accept_bin = accept_bin
-        super(MACAddressParameter, self).__init__(required=required, default=default)
+        super().__init__(required=required, default=default)
 
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
         if isinstance(value, str):
-            value = super(MACAddressParameter, self).clean(value)
+            value = super().clean(value)
         if not self.accept_bin and len(value) <= 6:
             self.raise_error(value)
         try:
@@ -828,7 +822,7 @@ class ModelParameter(Parameter):
     """
 
     def __init__(self, model, required=True):
-        super(ModelParameter, self).__init__(required=required)
+        super().__init__(required=required)
         self.model = model
 
     def clean(self, value):
@@ -856,7 +850,7 @@ class DocumentParameter(Parameter):
     """
 
     def __init__(self, document, required=True):
-        super(DocumentParameter, self).__init__(required=required)
+        super().__init__(required=required)
         self.document = document
         self.has_get_by_id = bool(getattr(self.document, "get_by_id", None))
 
@@ -877,7 +871,7 @@ class DocumentParameter(Parameter):
 
 class EmbeddedDocumentParameter(Parameter):
     def __init__(self, document, required=True):
-        super(EmbeddedDocumentParameter, self).__init__(required=required)
+        super().__init__(required=required)
         self.document = document
 
     def clean(self, value):
@@ -938,9 +932,7 @@ class ColorParameter(Parameter):
 
 class ObjectIdParameter(REStringParameter):
     def __init__(self, required=True, default=None):
-        super(ObjectIdParameter, self).__init__(
-            "^[0-9a-f]{24}$", required=required, default=default
-        )
+        super().__init__("^[0-9a-f]{24}$", required=required, default=default)
 
 
 if __name__ == "__main__":

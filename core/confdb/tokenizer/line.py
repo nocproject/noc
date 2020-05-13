@@ -31,7 +31,7 @@ class LineTokenizer(BaseTokenizer):
         string_quote=None,
         rewrite=None,
     ):
-        super(LineTokenizer, self).__init__(data)
+        super().__init__(data)
         self.eol = eol
         self.tab_width = tab_width
         self.line_comment = line_comment

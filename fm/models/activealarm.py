@@ -138,7 +138,7 @@ class ActiveAlarm(Document):
             yield "alarm", self.id
 
     def clean(self):
-        super(ActiveAlarm, self).clean()
+        super().clean()
         if not self.last_update:
             self.last_update = self.timestamp
         data = self.managed_object.data

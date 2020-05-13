@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CapabilityListRule
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ class CapabilityListRule(OIDRule):
         default=None,
         path=None,
     ):
-        super(CapabilityListRule, self).__init__(oid, type=type, scale=scale)
+        super().__init__(oid, type=type, scale=scale)
         self.capability = capability
         self.separator = separator
         self.strip = strip

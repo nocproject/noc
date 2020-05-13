@@ -50,7 +50,7 @@ class TimePatternTerm(NOCModel):
         Check syntax before save
         """
         TimePatternTerm.check_syntax(self.term)
-        super(TimePatternTerm, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject

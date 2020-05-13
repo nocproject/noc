@@ -167,14 +167,14 @@ class Address(NOCModel):
         :return:
         """
         self.clean()
-        super(Address, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def clean(self):
         """
         Field validation
         :return:
         """
-        super(Address, self).clean()
+        super().clean()
         # Get proper AFI
         self.afi = "6" if ":" in self.address else "4"
         # Check prefix is of AFI type

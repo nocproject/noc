@@ -21,7 +21,7 @@ class RBDManader(models.Manager):
 
     # Order by first field
     def get_queryset(self):
-        return super(RBDManader, self).get_queryset().extra(order_by=["main_refbookdata.value[1]"])
+        return super().get_queryset().extra(order_by=["main_refbookdata.value[1]"])
 
 
 class RefBookData(NOCModel):

@@ -40,7 +40,7 @@ class AssetCheck(DiscoveryCheck):
     _serial_masks_lock = Lock()
 
     def __init__(self, *args, **kwargs):
-        super(AssetCheck, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.unknown_part_no = {}  # part_no -> list of variants
         self.pn_description = {}  # part_no -> Description
         self.vendors = {}  # code -> Vendor instance

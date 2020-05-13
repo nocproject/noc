@@ -59,7 +59,7 @@ class MODiscoveryJob(PeriodicJob):
     is_periodic = False
 
     def __init__(self, *args, **kwargs):
-        super(MODiscoveryJob, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.out_buffer = StringIO()
         self.logger = PrefixLoggerAdapter(self.logger, "", target=self.out_buffer)
         self.check_timings = []
@@ -76,7 +76,7 @@ class MODiscoveryJob(PeriodicJob):
                 "Timings: %s",
                 ", ".join("%s = %.2fms" % (n, t * 1000) for n, t in self.check_timings),
             )
-        super(MODiscoveryJob, self).schedule_next(status)
+        super().schedule_next(status)
         # Update alarm statuses
         self.update_alarms()
         # Write job log
@@ -731,7 +731,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
     aliased_names_only = False
 
     def __init__(self, *args, **kwargs):
-        super(TopologyDiscoveryCheck, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.neighbor_hostname_cache = {}  # (method, id) -> managed object
         self.neighbor_ip_cache = {}  # (method, ip) -> managed object
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
@@ -1568,6 +1568,4 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         return True
 
     def has_required_script(self):
-        return super(PolicyDiscoveryCheck, self).has_required_script() or self.get_policy() != [
-            "script"
-        ]
+        return super().has_required_script() or self.get_policy() != ["script"]

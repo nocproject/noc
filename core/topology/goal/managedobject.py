@@ -19,7 +19,7 @@ class ManagedObjectGoal(BaseGoal):
     HORIZONTAL_COST = 10
 
     def __init__(self, obj: ManagedObject) -> None:
-        super(ManagedObjectGoal, self).__init__()
+        super().__init__()
         self.object = obj
         # Use A* acceleration
         self.use_segment_path = True

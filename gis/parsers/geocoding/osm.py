@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Parse OSM XML and return address to coodinates bindings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ class OSMXMLParser(GeocodingParser):
     ID_ADDR = "OSM_ID"
 
     def __init__(self):
-        super(OSMXMLParser, self).__init__()
+        super().__init__()
         self.xml_parser = ParserCreate()
         self.xml_parser.StartElementHandler = self.xml_start_element
         self.xml_parser.EndElementHandler = self.xml_stop_element

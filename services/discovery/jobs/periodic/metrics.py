@@ -104,7 +104,7 @@ class MetricsCheck(DiscoveryCheck):
     SLA_CAPS = ["Cisco | IP | SLA | Probes"]
 
     def __init__(self, *args, **kwargs):
-        super(MetricsCheck, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.id_count = itertools.count()
         self.id_metrics = {}
 

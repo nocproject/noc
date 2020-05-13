@@ -59,7 +59,7 @@ class PrefixAccess(NOCModel):
         Field validation
         :return:
         """
-        super(PrefixAccess, self).clean()
+        super().clean()
         # Check prefix is of AFI type
         if self.afi == "4":
             check_ipv4_prefix(self.prefix)

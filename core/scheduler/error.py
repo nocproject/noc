@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Scheduler Exception classes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,5 +13,5 @@ class RetryAfter(Exception):
     """
 
     def __init__(self, msg, delay):
-        super(RetryAfter, self).__init__(msg)
+        super().__init__(msg)
         self.delay = delay

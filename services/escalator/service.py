@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Escalator
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class EscalatorService(Service):
     use_mongo = True
 
     def __init__(self, *args, **kwargs):
-        super(EscalatorService, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.shards = {}
 
     async def on_activate(self):

@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------
 # Exception classes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 
 class MIBRequiredException(Exception):
     def __init__(self, mib, requires_mib):
-        super(MIBRequiredException, self).__init__()
+        super().__init__()
         self.mib = mib
         self.requires_mib = requires_mib
 
@@ -18,7 +18,7 @@ class MIBRequiredException(Exception):
 
 class MIBNotFoundException(Exception):
     def __init__(self, mib):
-        super(MIBNotFoundException, self).__init__()
+        super().__init__()
         self.mib = mib
 
     def __str__(self):

@@ -103,7 +103,7 @@ class Vendor(Document):
         if not self.full_name:
             self.full_name = self.name
         #
-        super(Vendor, self).clean()
+        super().clean()
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:

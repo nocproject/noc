@@ -118,7 +118,7 @@ class VC(NOCModel):
             self.name = self.convert_name(self.name)
         else:
             self.name = "VC_%04d" % self.l1
-        super(VC, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_index(self):
         """

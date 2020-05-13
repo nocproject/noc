@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobjectselector application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
     def cleaned_query(self, q):
         if q.get("id__referred") == "sa.managedobject__selector":
             del q["id__referred"]
-        return super(ManagedObjectSelectorApplication, self).cleaned_query(q)
+        return super().cleaned_query(q)
 
     @view(url=r"(?P<id>\d+)/objects/", method=["GET"], access="read", api=True)
     def api_test(self, request, id):

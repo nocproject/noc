@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Outage Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class RebootsExtractor(BaseExtractor):
     clean_delay = config.bi.clean_delay_reboots
 
     def __init__(self, prefix, start, stop):
-        super(RebootsExtractor, self).__init__(prefix, start, stop)
+        super().__init__(prefix, start, stop)
         self.reboot_stream = Stream(Reboots, prefix)
 
     def extract(self, *args, **options):

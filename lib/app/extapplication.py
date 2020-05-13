@@ -51,7 +51,7 @@ class ExtApplication(Application):
     default_ordering = []
 
     def __init__(self, *args, **kwargs):
-        super(ExtApplication, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.document_root = os.path.join("services", "web", "apps", self.module, self.app)
         self.row_limit = config.web.api_row_limit
         self.pk = "id"

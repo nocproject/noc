@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Access control
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from django.db.models import Q
@@ -67,7 +67,7 @@ class LogicPermision(Permission):
     """
 
     def __init__(self, left, right):
-        super(Permission, self).__init__()
+        super().__init__()
         self.left = left
         self.right = right
 
@@ -138,7 +138,7 @@ class HasPerm(Permission):
     """
 
     def __init__(self, perm):
-        super(HasPerm, self).__init__()
+        super().__init__()
         self.perm = perm
 
     def __repr__(self):

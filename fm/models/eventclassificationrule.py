@@ -54,7 +54,7 @@ class EventClassificationRuleCategory(Document):
             self.parent = p.id
         else:
             self.parent = None
-        super(EventClassificationRuleCategory, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class EventClassificationPattern(EmbeddedDocument):
@@ -103,7 +103,7 @@ class EventClassificationRule(Document):
             c = EventClassificationRuleCategory(name=c_name)
             c.save()
         self.category = c.id
-        super(EventClassificationRule, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def short_name(self):

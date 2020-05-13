@@ -197,7 +197,7 @@ class NetworkSegment(Document):
                 self.enable_horizontal_transit = True
             elif self.profile.horizontal_transit_policy == "D":
                 self.enable_horizontal_transit = False
-        super(NetworkSegment, self).clean()
+        super().clean()
 
     @property
     def effective_settings(self):

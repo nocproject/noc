@@ -57,7 +57,7 @@ class BeefCLI(CLI):
 
     def set_state(self, state):
         changed = self.state != state
-        super(BeefCLI, self).set_state(state)
+        super().set_state(state)
         # Force state enter reply
         if changed:
             self.ioloop.add_callback(self.reply_state, state)
@@ -78,7 +78,7 @@ class BeefCLI(CLI):
     def close(self):
         self.sender.close()
         self.sender = None
-        super(BeefCLI, self).close()
+        super().close()
 
     def send_pager_reply(self, data, match):
         """

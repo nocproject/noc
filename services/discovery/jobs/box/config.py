@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Config check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -95,6 +95,4 @@ class ConfigCheck(DiscoveryCheck):
             return None
 
     def has_required_script(self):
-        return (
-            super(ConfigCheck, self).has_required_script() or self.object.get_config_policy() != "s"
-        )
+        return super().has_required_script() or self.object.get_config_policy() != "s"

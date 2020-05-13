@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # peer.peer application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ class PeerApplication(ExtModelApplication):
     rpsl = RepoInline("rpsl")
 
     def clean(self, data):
-        data = super(PeerApplication, self).clean(data)
+        data = super().clean(data)
         # Check address fields
         if not is_prefix(data["local_ip"]):
             raise ValueError("Invalid 'Local IP Address', must be in x.x.x.x/x form or IPv6 prefix")

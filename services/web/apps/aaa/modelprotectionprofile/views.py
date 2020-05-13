@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # aaa.modelprotectionprofile application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -53,4 +53,4 @@ class ModelProtectionProfileApplication(ExtDocApplication):
                 "permission": o.permission,
                 "permission__label": FIELD_PERMISSIONS[o.permission],
             }
-        return super(ModelProtectionProfileApplication, self).instance_to_dict(o, fields, nocustom)
+        return super().instance_to_dict(o, fields, nocustom)

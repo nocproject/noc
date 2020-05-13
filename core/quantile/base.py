@@ -226,7 +226,7 @@ class BiasedStream(Stream):
     """
 
     def __init__(self, n, epsilon):
-        super(BiasedStream, self).__init__(n)
+        super().__init__(n)
         self.epsilon = epsilon
 
 
@@ -271,7 +271,7 @@ class TargetedStream(Stream):
     """
 
     def __init__(self, n, targets):
-        super(TargetedStream, self).__init__(n)
+        super().__init__(n)
         self.targets = targets
 
     def f(self, r, n):

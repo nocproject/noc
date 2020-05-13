@@ -189,7 +189,7 @@ class VRF(NOCModel):
                         # Cannot change until emptied
                         self.afi_ipv6 = True
         # Save VRF
-        super(VRF, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.afi_ipv4:
             # Create IPv4 root, if not exists
             Prefix.objects.get_or_create(
@@ -242,7 +242,7 @@ class VRF(NOCModel):
         self.afi_ipv6 = False
         self.save()
         # Delete
-        super(VRF, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     @property
     def is_global(self):

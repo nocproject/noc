@@ -17,7 +17,7 @@ class PredicateTransformer(ast.NodeTransformer):
     def __init__(self, engine):
         self.engine = engine
         self.input_counter = itertools.count()
-        super(PredicateTransformer, self).__init__()
+        super().__init__()
 
     def wrap_callable(self, node):
         return ast.Lambda(

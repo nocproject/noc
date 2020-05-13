@@ -63,7 +63,7 @@ class ManagedObjectsExtractor(BaseExtractor):
     }
 
     def __init__(self, prefix, start, stop):
-        super(ManagedObjectsExtractor, self).__init__(prefix, start, stop)
+        super().__init__(prefix, start, stop)
         self.mo_stream = Stream(ManagedObjectBI, prefix)
 
     def extract(self, *args, **options):

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # sa.service application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,5 +31,5 @@ class ServiceApplication(ExtDocApplication):
         if is_objectid(query):
             q = Q(id=query)
         else:
-            q = super(ServiceApplication, self).get_Q(request, query)
+            q = super().get_Q(request, query)
         return q

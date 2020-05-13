@@ -33,7 +33,7 @@ class AlarmsExtractor(ArchivingExtractor):
 
     def __init__(self, prefix, start, stop, use_archive=False):
         self.use_archive = use_archive
-        super(AlarmsExtractor, self).__init__(prefix, start, stop)
+        super().__init__(prefix, start, stop)
         self.alarm_stream = Stream(Alarms, prefix)
 
     def iter_data(self):
@@ -128,7 +128,7 @@ class AlarmsExtractor(ArchivingExtractor):
 
     def clean(self, force=False):
         # Archive
-        super(AlarmsExtractor, self).clean()
+        super().clean()
         # Clean
         if force:
             print("Clean ArchivedAlarm collection before %s" % self.clean_ts)

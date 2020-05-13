@@ -53,7 +53,7 @@ class BaseGoal(object):
 
 class AndGoal(BaseGoal):
     def __init__(self, left: BaseGoal, right: BaseGoal) -> None:
-        super(BaseGoal, self).__init__()
+        super().__init__()
         self.left = left
         self.right = right
 
@@ -70,7 +70,7 @@ class AndGoal(BaseGoal):
 
 class OrGoal(BaseGoal):
     def __init__(self, left: BaseGoal, right: BaseGoal) -> None:
-        super(BaseGoal, self).__init__()
+        super().__init__()
         self.left = left
         self.right = right
 
@@ -87,7 +87,7 @@ class OrGoal(BaseGoal):
 
 class NotGoal(BaseGoal):
     def __init__(self, goal: BaseGoal) -> None:
-        super(BaseGoal, self).__init__()
+        super().__init__()
         self.goal = goal
 
     def is_goal(self, obj: ManagedObject) -> bool:

@@ -684,7 +684,7 @@ class ManagedObjectProfile(NOCModel):
                 self.metrics = m_valid.clean(self.metrics)
             except ValueError as e:
                 raise ValueError(e)
-        super(ManagedObjectProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @classmethod
     def get_max_metrics_interval(cls, managed_object_profiles=None):

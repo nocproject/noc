@@ -269,7 +269,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     ]
 
     def __init__(self, *args, **kwargs):
-        super(Script, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.metrics = []
         self.ts = None
         # SNMP batch to be collected by collect_snmp_metrics

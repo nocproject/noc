@@ -23,13 +23,13 @@ class RefBookList(ListView):
     def get(self, request, *args, **kwargs):
         self._queryset = request._gv_queryset
         self._ctx = request._gv_ctx
-        return super(RefBookList, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         return self._queryset
 
     def get_context_data(self, *args, **kwargs):
-        self._ctx.update(super(ListView, self).get_context_data(*args, **kwargs))
+        self._ctx.update(super().get_context_data(*args, **kwargs))
         return self._ctx
 
     def get_template_names(self):

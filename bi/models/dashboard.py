@@ -119,7 +119,7 @@ class Dashboard(Document):
                     processed += ["g%d" % da.group.id]
             self.access = access
 
-        super(Dashboard, self).save(
+        super().save(
             force_insert=force_insert,
             validate=validate,
             clean=clean,

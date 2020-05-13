@@ -15,7 +15,7 @@ class IfNameCollator(BaseCollator):
     """
 
     def __init__(self):
-        super(IfNameCollator, self).__init__()
+        super().__init__()
         self.names = None
 
     def collate(self, physical_path, interfaces):

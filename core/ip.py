@@ -295,7 +295,7 @@ class IPv4(IP):
             else:
                 prefix += "/32"
         check_ipv4_prefix(prefix)
-        super(IPv4, self).__init__(prefix)
+        super().__init__(prefix)
         # Convert to int
         self.d = struct.unpack("!I", socket.inet_aton(self.address))[0]
 
@@ -548,7 +548,7 @@ class IPv4(IP):
 
     @property
     def special_addresses(self):
-        sa = super(IPv4, self).special_addresses
+        sa = super().special_addresses
         if self.mask < 31:
             sa.add(self.first.set_mask())
             sa.add(self.last.set_mask())
@@ -570,7 +570,7 @@ class IPv6(IP):
             else:
                 prefix += "/128"
         check_ipv6_prefix(prefix)
-        super(IPv6, self).__init__(prefix)
+        super().__init__(prefix)
         # Convert to 4 ints
         p = self._get_parts()
         self.d0 = (p[0] << 16) + p[1]

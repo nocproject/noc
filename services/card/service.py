@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Card service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class CardService(UIService):
 
     def get_handlers(self):
         CardRequestHandler.load_cards()
-        return super(CardService, self).get_handlers() + [
+        return super().get_handlers() + [
             (r"^/api/card/search/$", SearchRequestHandler),
             (r"^/api/card/view/(\S+)/(\S+)/$", CardRequestHandler),
         ]

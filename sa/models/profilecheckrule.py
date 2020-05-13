@@ -61,7 +61,7 @@ class ProfileCheckRule(Document):
         return self.name
 
     def clean(self):
-        super(ProfileCheckRule, self).clean()
+        super().clean()
         if "snmp" in self.method and self.param.startswith("."):
             raise ValidationError("SNMP Param must not be started with dot")
 

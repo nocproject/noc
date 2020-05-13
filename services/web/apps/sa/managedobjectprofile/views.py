@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobjectprofile application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ class ManagedObjectProfileApplication(ExtModelApplication):
         return o.managedobject_set.count()
 
     def instance_to_dict(self, o, fields=None):
-        d = super(ManagedObjectProfileApplication, self).instance_to_dict(o, fields=fields)
+        d = super().instance_to_dict(o, fields=fields)
         if d["metrics"]:
             for m in d["metrics"]:
                 mt = MetricType.get_by_id(m["metric_type"])

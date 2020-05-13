@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv file plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class FilePlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.file.FilePanel"
 
     def init_plugin(self):
-        super(FilePlugin, self).init_plugin()
+        super().init_plugin()
         self.add_view(
             "api_plugin_%s_upload" % self.name,
             self.api_upload,

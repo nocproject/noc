@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Various database utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class SQLNode(Q):
     def __init__(self, sql):
-        super(SQLNode, self).__init__(id__rawsql=sql)
+        super().__init__(id__rawsql=sql)
 
 
 def SQL(sql):

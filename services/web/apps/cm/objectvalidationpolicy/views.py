@@ -26,9 +26,7 @@ class ObjectValidationPolicyApplication(ExtDocApplication):
     }
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
-        v = super(ObjectValidationPolicyApplication, self).instance_to_dict(
-            o, fields=fields, nocustom=nocustom
-        )
+        v = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
         if v.get("rules") and (not fields or "rules" in fields):
             for rule, edoc in zip(o.rules, v["rules"]):
                 edoc["query_params"] = self.params_to_list(rule, edoc.get("query_params"))
@@ -57,4 +55,4 @@ class ObjectValidationPolicyApplication(ExtDocApplication):
     def clean(self, data):
         for rule in data.get("rules", []):
             rule["query_params"] = self.list_to_params(rule.get("query_params") or [])
-        return super(ObjectValidationPolicyApplication, self).clean(data)
+        return super().clean(data)
