@@ -17,7 +17,6 @@ import uuid
 from collections import namedtuple
 
 # Third-party modules
-import tornado.gen
 from typing import Optional
 
 # NOC modules
@@ -144,7 +143,7 @@ class Span(object):
             forensic_logger.info("[<%s]", self.forensic_id)
         if not self.is_sampled:
             return
-        if exc_type and not self.error_text and not self.is_ignorable_error(exc_type):
+        if exc_type and not self.error_text:
             self.error_code = ERR_UNKNOWN
             self.error_text = str(exc_val).strip("\t").replace("\t", " ").replace("\n", " ")
         lt = time.localtime(self.start)
@@ -175,10 +174,6 @@ class Span(object):
         metrics["spans"] += 1
         if self.suppress_trace:
             return True
-
-    @staticmethod
-    def is_ignorable_error(exc_type):
-        return exc_type == tornado.gen.Return
 
     def set_error(self, code: Optional[int] = None, text: Optional[str] = None) -> None:
         """

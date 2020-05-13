@@ -57,6 +57,9 @@ class Command(BaseCommand):
         def run_tests(args):
             self.print("Running test")
             # Must be imported within coverage
+            from noc.core.ioloop.util import setup_asyncio
+
+            setup_asyncio()
             from noc.config import config
 
             if test_db:

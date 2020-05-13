@@ -9,26 +9,23 @@
 import logging
 import random
 import signal
-import sys
-from threading import Lock, Event
-import datetime
+import threading
 import os
 from urllib.parse import urlparse
+from time import perf_counter
+import asyncio
 
 # Third-party modules
-import tornado.gen
-from tornado.ioloop import IOLoop, PeriodicCallback
-import tornado.locks
+from tornado.ioloop import PeriodicCallback
 
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
-from noc.core.comp import reraise
+from noc.core.ioloop.util import run_sync
 from .error import ResolutionError
 
 
 class DCSBase(object):
-    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = datetime.timedelta(seconds=config.dcs.resolution_timeout)
     # Resolver class
     resolver_cls = None
     # HTTP code to be returned by /health endpoint when service is healthy
@@ -37,35 +34,40 @@ class DCSBase(object):
     # and must be temporary removed from resolver
     HEALTH_FAILED_HTTP_CODE = 429
 
-    def __init__(self, url):
+    def __init__(self, runner, url):
+        self.runner = runner
         self.logger = logging.getLogger(__name__)
         self.url = url
         self.parse_url(urlparse(url))
         # service -> resolver instances
         self.resolvers = {}
-        self.resolvers_lock = Lock()
-        self.resolver_expiration_task = PeriodicCallback(self.expire_resolvers, 10000)
+        self.resolvers_lock = threading.Lock()
+        self.resolver_expiration_task = None
         self.health_check_service_id = None
         self.status = True
         self.status_message = ""
+        self.thread_id = None
 
     def parse_url(self, u):
         pass
 
-    def start(self):
+    async def start(self):
         """
-        Run IOLoop if not started yet
+        Start all pending tasks
         :return:
         """
+        self.thread_id = threading.get_ident()
+        self.resolver_expiration_task = PeriodicCallback(self.expire_resolvers, 10000)
         self.resolver_expiration_task.start()
-        # self.ioloop.start()
 
     def stop(self):
         """
-        Stop IOLoop if not stopped yet
+        Stop all pending tasks
         :return:
         """
-        self.resolver_expiration_task.stop()
+        if self.resolver_expiration_task:
+            self.resolver_expiration_task.stop()
+            self.resolver_expiration_task = None
         # Stop all resolvers
         with self.resolvers_lock:
             for svc in self.resolvers:
@@ -73,10 +75,8 @@ class DCSBase(object):
                 self.logger.info("Stopping resolver for service %s", svc)
                 r.stop()
             self.resolvers = {}
-        # self.ioloop.stop()
 
-    @tornado.gen.coroutine
-    def register(self, name, address, port, pool=None, lock=None, tags=None):
+    async def register(self, name, address, port, pool=None, lock=None, tags=None):
         """
         Register service
         :param name:
@@ -93,8 +93,7 @@ class DCSBase(object):
         self.logger.info("Shooting self with SIGTERM")
         os.kill(os.getpid(), signal.SIGTERM)
 
-    @tornado.gen.coroutine
-    def acquire_slot(self, name, limit):
+    async def acquire_slot(self, name, limit):
         """
         Acquire shard slot
         :param name: <service name>-<pool>
@@ -103,8 +102,11 @@ class DCSBase(object):
         """
         raise NotImplementedError()
 
-    @tornado.gen.coroutine
-    def get_resolver(self, name, critical=False, near=False, track=True):
+    async def get_resolver(self, name, critical=False, near=False, track=True):
+        def run_resolver(res):
+            loop = asyncio.get_running_loop()
+            loop.call_soon(loop.create_task, res.start())
+
         if track:
             with self.resolvers_lock:
                 resolver = self.resolvers.get((name, critical, near))
@@ -112,15 +114,14 @@ class DCSBase(object):
                     self.logger.info("Running resolver for service %s", name)
                     resolver = self.resolver_cls(self, name, critical=critical, near=near)
                     self.resolvers[name, critical, near] = resolver
-                    IOLoop.current().add_callback(resolver.start)
+                    run_resolver(resolver)
         else:
             # One-time resolver
             resolver = self.resolver_cls(self, name, critical=critical, near=near, track=False)
-            IOLoop.current().add_callback(resolver.start)
+            run_resolver(resolver)
         return resolver
 
-    @tornado.gen.coroutine
-    def resolve(
+    async def resolve(
         self,
         name,
         hint=None,
@@ -131,14 +132,18 @@ class DCSBase(object):
         near=False,
         track=True,
     ):
-        resolver = yield self.get_resolver(name, critical=critical, near=near, track=track)
-        r = yield resolver.resolve(hint=hint, wait=wait, timeout=timeout, full_result=full_result)
-        return r
+        async def wrap():
+            resolver = await self.get_resolver(name, critical=critical, near=near, track=track)
+            r = await resolver.resolve(
+                hint=hint, wait=wait, timeout=timeout, full_result=full_result
+            )
+            return r
 
-    @tornado.gen.coroutine
-    def expire_resolvers(self):
+        return await self.runner.trampoline(wrap())
+
+    async def expire_resolvers(self):
         with self.resolvers_lock:
-            for svc in self.resolvers:
+            for svc in list(self.resolvers):
                 r = self.resolvers[svc]
                 if r.is_expired():
                     self.logger.info("Stopping expired resolver for service %s", svc)
@@ -155,31 +160,15 @@ class DCSBase(object):
         :return:
         """
 
-        @tornado.gen.coroutine
-        def _resolve():
-            try:
-                r = yield self.resolve(
-                    name, hint=hint, wait=wait, timeout=timeout, full_result=full_result
-                )
-                result.append(r)
-            except tornado.gen.Return as e:
-                result.append(e.value)
-            except Exception:
-                error.append(sys.exc_info())
-            event.set()
+        async def _resolve():
+            r = await self.resolve(
+                name, hint=hint, wait=wait, timeout=timeout, full_result=full_result
+            )
+            return r
 
-        event = Event()
-        result = []
-        error = []
-        IOLoop.current().add_callback(_resolve)
-        event.wait()
-        if error:
-            reraise(*error[0])
-        else:
-            return result[0]
+        return run_sync(_resolve)
 
-    @tornado.gen.coroutine
-    def resolve_near(
+    async def resolve_near(
         self, name, hint=None, wait=True, timeout=None, full_result=False, critical=False
     ):
         """
@@ -218,20 +207,23 @@ class ResolverBase(object):
         self.services = {}
         self.service_ids = []
         self.service_addresses = set()
-        self.lock = Lock()
+        self.lock = threading.Lock()
         self.policy = self.policy_random
         self.rr_index = -1
         self.critical = critical
         self.near = near
-        self.ready_event = tornado.locks.Event()
+        self.is_ready = False
+        self.thread_id = threading.get_ident()
+        self.ready_event_async = asyncio.Event()
+        self.ready_event_sync = threading.Event()
         self.track = track
+        self.last_used = perf_counter()
 
     def stop(self):
         self.to_shutdown = True
         metrics["dcs_resolver_activeservices", ("name", self.name)] = 0
 
-    @tornado.gen.coroutine
-    def start(self):
+    async def start(self):
         raise NotImplementedError()
 
     def set_services(self, services):
@@ -257,29 +249,56 @@ class ResolverBase(object):
                     self.name,
                     ", ".join("%s: %s" % (i, self.services[i]) for i in self.services),
                 )
-                self.ready_event.set()
+                self.set_ready()
             else:
                 self.logger.info("[%s] No active services", self.name)
-                self.ready_event.clear()
+                self.clear_ready()
             metrics["dcs_resolver_activeservices", ("name", self.name)] = len(self.services)
 
-    @tornado.gen.coroutine
-    def resolve(self, hint=None, wait=True, timeout=None, full_result=False):
+    def set_ready(self):
+        self.is_ready = True
+        self.ready_event_async.set()
+        self.ready_event_sync.set()
+
+    def clear_ready(self):
+        self.is_ready = False
+        self.ready_event_async.clear()
+        self.ready_event_sync.clear()
+
+    def is_same_thread(self):
+        return self.thread_id == threading.get_ident()
+
+    async def _wait_for_services_async(self, timeout):
+        try:
+            await asyncio.wait_for(
+                self.ready_event_async.wait(), timeout or config.dcs.resolution_timeout
+            )
+        except asyncio.TimeoutError:
+            metrics["errors", ("type", "dcs_resolver_timeout")] += 1
+            if self.critical:
+                self.dcs.set_faulty_status("Failed to resolve %s: Timeout" % self.name)
+            raise ResolutionError()
+
+    def _wait_for_services_sync(self, timeout):
+        if not self.ready_event_sync.wait(timeout):
+            metrics["errors", ("type", "dcs_resolver_timeout")] += 1
+            if self.critical:
+                self.dcs.set_faulty_status("Failed to resolve %s: Timeout" % self.name)
+            raise ResolutionError()
+
+    async def _wait_for_services(self, timeout=None):
+        if self.is_same_thread():
+            await self._wait_for_services_async(timeout)
+        else:
+            self._wait_for_services_sync(timeout)
+
+    async def resolve(self, hint=None, wait=True, timeout=None, full_result=False):
+        self.last_used = perf_counter()
         metrics["dcs_resolver_requests"] += 1
-        if wait:
+        if not self.services and wait:
             # Wait until service catalog populated
-            if timeout:
-                t = datetime.timedelta(seconds=timeout)
-            else:
-                t = self.dcs.DEFAULT_SERVICE_RESOLUTION_TIMEOUT
-            try:
-                yield self.ready_event.wait(timeout=t)
-            except tornado.gen.TimeoutError:
-                metrics["errors", ("type", "dcs_resolver_timeout")] += 1
-                if self.critical:
-                    self.dcs.set_faulty_status("Failed to resolve %s: Timeout" % self.name)
-                raise ResolutionError()
-        if not wait and not self.ready_event.is_set():
+            await self._wait_for_services(timeout)
+        if not wait and not self.is_ready:
             if self.critical:
                 self.dcs.set_faulty_status("Failed to resolve %s: No active services" % self.name)
             raise ResolutionError()
@@ -310,3 +329,10 @@ class ResolverBase(object):
         """
         self.rr_index = min(self.rr_index + 1, len(self.service_ids) - 1)
         return self.service_ids[self.rr_index]
+
+    def is_expired(self) -> bool:
+        """
+        Check if resolver is no longer used and may be expired
+        :return:
+        """
+        return perf_counter() - self.last_used > config.dcs.resolver_expiration_timeout

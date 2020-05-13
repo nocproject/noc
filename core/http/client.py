@@ -15,14 +15,12 @@ import time
 import struct
 import codecs
 from urllib.parse import urlparse
+import asyncio
 
 # Third-party modules
-import tornado.gen
-import tornado.ioloop
-from tornado.ioloop import IOLoop
-import tornado.iostream
 import cachetools
 import ujson
+from typing import Optional, List
 
 # NOC modules
 from noc.core.perf import metrics
@@ -30,6 +28,8 @@ from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.ioloop.util import run_sync
+
 from http_parser.parser import HttpParser
 
 logger = logging.getLogger(__name__)
@@ -59,8 +59,7 @@ CE_DEFLATE = "deflate"
 CE_GZIP = "gzip"
 
 
-@tornado.gen.coroutine
-def resolve(host):
+async def resolve(host):
     """
     Resolve host and return address
     :param host:
@@ -79,12 +78,11 @@ def resolve(host):
         return None
 
 
-@tornado.gen.coroutine
-def fetch(
+async def fetch(
     url,
     method="GET",
     headers=None,
-    body=None,
+    body: Optional[bytes] = None,
     connect_timeout=DEFAULT_CONNECT_TIMEOUT,
     request_timeout=DEFAULT_REQUEST_TIMEOUT,
     resolver=resolve,
@@ -122,13 +120,19 @@ def fetch(
     :return: code, headers, body
     """
 
-    def get_ssl_options():
-        ssl_options = {}
-        if validate_cert:
-            ssl_options["cert_reqs"] = ssl.CERT_REQUIRED
-        return ssl_options
+    def get_connect_options():
+        opts = {}
+        if use_tls and not proxy:
+            ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+            if validate_cert:
+                ctx.check_hostname = True
+                ctx.verify_mode = ssl.CERT_REQUIRED
+            else:
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+            opts["ssl"] = ctx
+        return opts
 
-    logger.debug("HTTP %s %s", method, url)
     metrics["httpclient_requests", ("method", method.lower())] += 1
     #
     if eof_mark:
@@ -136,6 +140,8 @@ def fetch(
     # Detect proxy when necessary
     u = urlparse(str(url))
     use_tls = u.scheme == "https"
+    proto = "HTTPS" if use_tls else "HTTP"
+    logger.debug("%s %s %s", proto, method, url)
     if ":" in u.netloc:
         host, port = u.netloc.rsplit(":")
         port = int(port)
@@ -147,7 +153,7 @@ def fetch(
     if is_ipv4(host):
         addr = host
     else:
-        addr = yield resolver(host)
+        addr = await resolver(host)
     if not addr:
         return ERR_TIMEOUT, {}, "Cannot resolve host: %s" % host
     # Detect proxy server
@@ -156,34 +162,29 @@ def fetch(
     else:
         proxy = None
     # Connect
-    stream = None
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    reader, writer = None, None
+    if proxy:
+        connect_address = proxy
+    elif isinstance(addr, tuple):
+        connect_address = addr
+    else:
+        connect_address = (addr, port)
     try:
-        if use_tls and not proxy:
-            stream = tornado.iostream.SSLIOStream(s, ssl_options=get_ssl_options())
-        else:
-            stream = tornado.iostream.IOStream(s)
         try:
             if proxy:
-                connect_address = proxy
-            elif isinstance(addr, tuple):
-                connect_address = addr
-            else:
-                connect_address = (addr, port)
-
-            if proxy:
                 logger.debug("Connecting to proxy %s:%s", connect_address[0], connect_address[1])
-            yield tornado.gen.with_timeout(
-                IOLoop.current().time() + connect_timeout,
-                future=stream.connect(connect_address, server_hostname=u.netloc),
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection(
+                    connect_address[0], connect_address[1], **get_connect_options()
+                ),
+                connect_timeout,
             )
-        except tornado.iostream.StreamClosedError:
+        except ConnectionRefusedError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, "Connection refused"
-        except tornado.gen.TimeoutError:
+        except asyncio.TimeoutError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, "Connection timed out"
-        deadline = IOLoop.current().time() + request_timeout
         # Proxy CONNECT
         if proxy:
             logger.debug("Sending CONNECT %s:%s", addr, port)
@@ -193,31 +194,18 @@ def fetch(
                 smart_bytes(port),
                 smart_bytes(DEFAULT_USER_AGENT),
             )
+            writer.write(smart_bytes(req))
             try:
-                yield tornado.gen.with_timeout(
-                    deadline,
-                    future=stream.write(smart_bytes(req)),
-                    quiet_exceptions=(tornado.iostream.StreamClosedError,),
-                )
-            except tornado.iostream.StreamClosedError:
-                metrics["httpclient_proxy_timeouts"] += 1
-                return ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"
-            except tornado.gen.TimeoutError:
+                await asyncio.wait_for(writer.drain(), request_timeout)
+            except asyncio.TimeoutError:
                 metrics["httpclient_proxy_timeouts"] += 1
                 return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
             # Wait for proxy response
             parser = HttpParser()
             while not parser.is_headers_complete():
                 try:
-                    data = yield tornado.gen.with_timeout(
-                        deadline,
-                        future=stream.read_bytes(max_buffer_size, partial=True),
-                        quiet_exceptions=(tornado.iostream.StreamClosedError,),
-                    )
-                except tornado.iostream.StreamClosedError:
-                    metrics["httpclient_proxy_timeouts"] += 1
-                    return ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"
-                except tornado.gen.TimeoutError:
+                    data = await asyncio.wait_for(reader.read(max_buffer_size), request_timeout)
+                except asyncio.TimeoutError:
                     metrics["httpclient_proxy_timeouts"] += 1
                     return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
                 received = len(data)
@@ -228,25 +216,6 @@ def fetch(
             logger.debug("Proxy response: %s", code)
             if not 200 <= code <= 299:
                 return code, parser.get_headers(), "Proxy error: %s" % code
-            # Switch to TLS when necessary
-            if use_tls:
-                logger.debug("Starting TLS negotiation")
-                try:
-                    stream = yield tornado.gen.with_timeout(
-                        deadline,
-                        future=stream.start_tls(
-                            server_side=False,
-                            ssl_options=get_ssl_options(),
-                            server_hostname=u.netloc,
-                        ),
-                        quiet_exceptions=(tornado.iostream.StreamClosedError,),
-                    )
-                except tornado.iostream.StreamClosedError:
-                    metrics["httpclient_proxy_timeouts"] += 1
-                    return ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"
-                except tornado.gen.TimeoutError:
-                    metrics["httpclient_proxy_timeouts"] += 1
-                    return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
         # Process request
         body = body or ""
         content_type = "application/binary"
@@ -274,7 +243,7 @@ def fetch(
                     6, zlib.DEFLATED, -zlib.MAX_WBITS, zlib.DEF_MEM_LEVEL, 0
                 )
                 crc = zlib.crc32(body, 0) & 0xFFFFFFFF
-                body = "\x1f\x8b\x08\x00%s\x02\xff%s%s%s%s" % (
+                body = b"\x1f\x8b\x08\x00%s\x02\xff%s%s%s%s" % (
                     to32u(int(time.time())),
                     compress.compress(body),
                     compress.flush(),
@@ -300,27 +269,20 @@ def fetch(
             body,
         )
         try:
-            yield tornado.gen.with_timeout(
-                deadline,
-                future=stream.write(req),
-                quiet_exceptions=(tornado.iostream.StreamClosedError,),
-            )
-        except tornado.iostream.StreamClosedError:
+            writer.write(req)
+            await asyncio.wait_for(writer.drain(), request_timeout)
+        except ConnectionResetError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, "Connection reset while sending request"
-        except tornado.gen.TimeoutError:
+        except asyncio.TimeoutError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, "Timed out while sending request"
         parser = HttpParser()
-        response_body = []
+        response_body: List[bytes] = []
         while not parser.is_message_complete():
             try:
-                data = yield tornado.gen.with_timeout(
-                    deadline,
-                    future=stream.read_bytes(max_buffer_size, partial=True),
-                    quiet_exceptions=(tornado.iostream.StreamClosedError,),
-                )
-            except tornado.iostream.StreamClosedError:
+                data = await asyncio.wait_for(reader.read(max_buffer_size), request_timeout)
+            except asyncio.IncompleteReadError:
                 if eof_mark and response_body:
                     # Check if EOF mark is in received data
                     response_body = [b"".join(response_body)]
@@ -337,7 +299,7 @@ def fetch(
                             break
                 metrics["httpclient_timeouts"] += 1
                 return ERR_READ_TIMEOUT, {}, "Connection reset"
-            except tornado.gen.TimeoutError:
+            except asyncio.TimeoutError:
                 metrics["httpclient_timeouts"] += 1
                 return ERR_READ_TIMEOUT, {}, "Request timed out"
             received = len(data)
@@ -356,7 +318,7 @@ def fetch(
                 if not new_url:
                     return ERR_PARSE_ERROR, {}, "No Location header"
                 logger.debug("HTTP redirect %s %s", code, new_url)
-                code, parsed_headers, response_body = yield fetch(
+                code, parsed_headers, response_body = await fetch(
                     new_url,
                     method="GET",
                     headers=headers,
@@ -376,10 +338,15 @@ def fetch(
         # @todo: Process gzip and deflate Content-Encoding
         return code, parsed_headers, b"".join(response_body)
     finally:
-        if stream:
-            stream.close()
-        else:
-            s.close()
+        if writer:
+            writer.close()
+            if hasattr(writer, "wait_closed"):
+                await writer.wait_closed()
+            else:
+                # Pass one more tick to ensure transport is closed
+                # Refer to https://github.com/python/asyncio/issues/466
+                # await asyncio.sleep(0)
+                await asyncio.sleep(0.0001)
 
 
 def fetch_sync(
@@ -401,9 +368,8 @@ def fetch_sync(
     content_encoding=None,
     eof_mark=None,
 ):
-    @tornado.gen.coroutine
-    def _fetch():
-        result = yield fetch(
+    async def _fetch():
+        return await fetch(
             url,
             method=method,
             headers=headers,
@@ -422,12 +388,8 @@ def fetch_sync(
             content_encoding=content_encoding,
             eof_mark=eof_mark,
         )
-        r.append(result)
 
-    r = []
-    # Should be another IOLoop instance instance
-    IOLoop().run_sync(_fetch)
-    return r[0]
+    return run_sync(_fetch)
 
 
 def to32u(n):

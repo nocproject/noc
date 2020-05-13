@@ -11,8 +11,8 @@ import codecs
 
 # Third-party modules
 from tornado.iostream import IOStream
-import tornado.gen
-from typing import List, Optional
+from typing import List, Optional, Union
+from tornado.concurrent import Future
 
 # NOC modules
 from noc.core.perf import metrics
@@ -251,26 +251,32 @@ class TelnetIOStream(IOStream):
             logger=self.logger, writer=self.write_to_fd, naws=cli.profile.get_telnet_naws()
         )
 
-    @tornado.gen.coroutine
-    def startup(self):
+    async def startup(self):
         if self.cli.profile.telnet_send_on_connect:
             self.logger.debug("Sending %r on connect", self.cli.profile.telnet_send_on_connect)
-            yield self.write(self.cli.profile.telnet_send_on_connect)
+            await self.write(self.cli.profile.telnet_send_on_connect)
 
-    def read_from_fd(self):
+    def read_from_fd(self, buf: Union[bytearray, memoryview]) -> Optional[int]:
         metrics["telnet_reads"] += 1
-        chunk = super(TelnetIOStream, self).read_from_fd()
-        if chunk:
-            metrics["telnet_read_bytes"] += len(chunk)
-        elif chunk is None:
+        n = super().read_from_fd(buf)
+        if n == 0:
+            return 0  # EOF
+        if n is None:
             metrics["telnet_reads_blocked"] += 1
-        return self.parser.feed(chunk)
+            return None  # EAGAIN
+        metrics["telnet_read_bytes"] += n
+        parsed = self.parser.feed(buf[:n])
+        pn = len(parsed)
+        if not pn:
+            return None  # Incomplete data, blocked until next read
+        buf[:pn] = parsed
+        return pn
 
-    def write(self, data, callback=None):
+    def write(self, data: Union[bytes, memoryview]) -> "Future[None]":
         data = self.parser.escape(data)
         metrics["telnet_writes"] += 1
         metrics["telnet_write_bytes"] += len(data)
-        return super(TelnetIOStream, self).write(data, callback=callback)
+        return super().write(data)
 
 
 class TelnetCLI(CLI):

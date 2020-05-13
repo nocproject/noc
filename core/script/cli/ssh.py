@@ -15,10 +15,10 @@ import codecs
 # Third-party modules modules
 import cachetools
 from tornado.iostream import IOStream
-import tornado.gen
 from ssh2.session import Session, LIBSSH2_HOSTKEY_HASH_SHA1
 from ssh2.exceptions import SSH2Error
 from ssh2.error_codes import LIBSSH2_ERROR_EAGAIN
+from typing import Optional, Union
 
 # NOC modules
 from noc.config import config
@@ -67,8 +67,7 @@ class SSHIOStream(IOStream):
         with open(pub_path) as fpub, open(priv_path) as fpriv:
             return fpub.read(), fpriv.read()
 
-    @tornado.gen.coroutine
-    def startup(self):
+    async def startup(self):
         """
         SSH session startup
         """
@@ -112,10 +111,10 @@ class SSHIOStream(IOStream):
             self.logger.info("SSH Error: %s", e)
             raise CLISSHProtocolError("SSH Error: %s" % e)
 
-    def read_from_fd(self):
+    def read_from_fd(self, buf: Union[bytearray, memoryview]) -> Optional[int]:
         try:
             metrics["ssh_reads"] += 1
-            code, data = self.channel.read(self.read_chunk_size)
+            code, data = self.channel.read(len(buf))
             if code == 0:
                 if self.channel.eof():
                     self.logger.info("SSH session reset")
@@ -123,8 +122,10 @@ class SSHIOStream(IOStream):
                 metrics["ssh_reads_blocked"] += 1
                 return None
             elif code > 0:
-                metrics["ssh_read_bytes"] += len(data)
-                return data
+                n = len(data)
+                metrics["ssh_read_bytes"] += n
+                buf[:n] = data
+                return n
             elif code == LIBSSH2_ERROR_EAGAIN:
                 metrics["ssh_reads_blocked"] += 1
                 return None  # Blocking call

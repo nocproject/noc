@@ -8,10 +8,12 @@
 # Python modules
 import logging
 import re
+import os
 
 # NOC modules
 from noc.config import config
 
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "1"
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 ADMINS = []

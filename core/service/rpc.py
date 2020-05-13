@@ -9,13 +9,10 @@
 import itertools
 import logging
 import random
-import threading
-import sys
 from time import perf_counter
+import asyncio
 
 # Third-party modules
-import tornado.concurrent
-import tornado.gen
 import ujson
 
 # NOC modules
@@ -24,7 +21,7 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.span import Span, get_current_span
-from noc.core.comp import reraise
+from noc.core.ioloop.util import run_sync
 from .error import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
 
 logger = logging.getLogger(__name__)
@@ -53,10 +50,8 @@ class RPCProxy(object):
         self._sync = sync
 
     def __getattr__(self, item):
-        @tornado.gen.coroutine
-        def _call(method, *args, **kwargs):
-            @tornado.gen.coroutine
-            def make_call(url, body, limit=3):
+        async def _call(method, *args, **kwargs):
+            async def make_call(url, body, limit=3):
                 req_headers = {
                     "X-NOC-Calling-Service": self._service.name,
                     "Content-Type": "text/json",
@@ -72,7 +67,7 @@ class RPCProxy(object):
                     if sample:
                         req_headers["X-NOC-Span-Ctx"] = span.span_context
                         req_headers["X-NOC-Span"] = span.span_id
-                    code, headers, data = yield fetch(
+                    code, headers, data = await fetch(
                         url,
                         method="POST",
                         headers=req_headers,
@@ -89,7 +84,7 @@ class RPCProxy(object):
                             raise RPCException("Redirects limit exceeded")
                         url = headers.get("location")
                         self._logger.debug("Redirecting to %s", url)
-                        r = yield make_call(url, data, limit - 1)
+                        r = await make_call(url, data, limit - 1)
                         return r
                     elif code in (598, 599):
                         span.set_error(code)
@@ -122,12 +117,12 @@ class RPCProxy(object):
                 if self._hints:
                     svc = random.choice(self._hints)
                 else:
-                    svc = yield self._service.dcs.resolve(self._service_name)
-                response = yield make_call("http://%s/api/%s/" % (svc, self._api), body)
+                    svc = await self._service.dcs.resolve(self._service_name)
+                response = await make_call("http://%s/api/%s/" % (svc, self._api), body)
                 if response:
                     break
                 else:
-                    yield tornado.gen.sleep(t)
+                    await asyncio.sleep(t)
             t = perf_counter() - t0
             self._logger.debug("[CALL<] %s.%s (%.2fms)", self._service_name, method, t * 1000)
             if response:
@@ -150,33 +145,14 @@ class RPCProxy(object):
             else:
                 raise RPCNoService("No active service %s found" % self._service_name)
 
-        @tornado.gen.coroutine
-        def async_wrapper(*args, **kwargs):
-            result = yield _call(item, *args, **kwargs)
-            return result
+        async def async_wrapper(*args, **kwargs):
+            return await _call(item, *args, **kwargs)
 
         def sync_wrapper(*args, **kwargs):
-            @tornado.gen.coroutine
-            def _sync_call():
-                try:
-                    r = yield _call(item, *args, **kwargs)
-                    result.append(r)
-                except tornado.gen.Return as e:
-                    result.append(e.value)
-                except Exception:
-                    error.append(sys.exc_info())
-                finally:
-                    ev.set()
+            async def wrapper():
+                return await _call(item, *args, **kwargs)
 
-            ev = threading.Event()
-            result = []
-            error = []
-            self._service.ioloop.add_callback(_sync_call)
-            ev.wait()
-            if error:
-                reraise(*error[0])
-            else:
-                return result[0]
+            return run_sync(wrapper)
 
         if item.startswith("_"):
             return self.__dict__[item]

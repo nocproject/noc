@@ -21,7 +21,7 @@ class MRTService(Service):
         traefik_backend = "mrt"
         traefik_frontend_rule = "PathPrefix:/api/mrt"
 
-    def on_activate(self):
+    async def on_activate(self):
         self.sae = self.open_rpc("sae")
 
     def get_handlers(self):

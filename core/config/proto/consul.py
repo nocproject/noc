@@ -5,14 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import tornado.ioloop
-import tornado.gen
-
 # NOC modules
-from .base import BaseProtocol
 from noc.core.consul import ConsulClient
 from noc.core.comp import smart_text
+from noc.core.ioloop.util import run_sync
+from .base import BaseProtocol
 
 
 class ConsulProtocol(BaseProtocol):
@@ -37,8 +34,7 @@ class ConsulProtocol(BaseProtocol):
         self.token = self.url_query.get("token")
         self.path = self.parsed_url.path[1:]
 
-    @tornado.gen.coroutine
-    def load_async(self):
+    async def load_async(self):
         consul = ConsulClient(host=self.host, port=self.port, token=self.token)
         # Convert to dict
         data = {}
@@ -46,7 +42,7 @@ class ConsulProtocol(BaseProtocol):
             pl = len(self.path)
         else:
             pl = len(self.path) + 1
-        index, kv_data = yield consul.kv.get(self.path, recurse=True, token=self.token)
+        index, kv_data = await consul.kv.get(self.path, recurse=True, token=self.token)
         if not kv_data:
             return
         for i in kv_data:
@@ -67,8 +63,7 @@ class ConsulProtocol(BaseProtocol):
         self.config.update(data)
 
     def load(self):
-        ioloop = tornado.ioloop.IOLoop.current()
-        ioloop.run_sync(self.load_async)
+        run_sync(self.load_async)
 
     def dump(self, section=None):
         raise NotImplementedError

@@ -11,11 +11,10 @@ import time
 import ujson
 import uuid
 from urllib.parse import unquote
+import asyncio
 
 # Third-party modules
 import consul.base
-import consul.tornado
-import tornado.gen
 from tornado.ioloop import PeriodicCallback
 
 # NOC modules
@@ -32,14 +31,13 @@ CONSUL_REQUEST_TIMEOUT = config.consul.request_timeout
 CONSUL_NEAR_RETRY_TIMEOUT = config.consul.near_retry_timeout
 
 
-class ConsulHTTPClient(consul.tornado.HTTPClient):
+class ConsulHTTPClient(consul.base.HTTPClient):
     """
-    Gentler version of tornado http client
+    asyncio version of consul http client
     """
 
-    @tornado.gen.coroutine
-    def _request(self, callback, url, method="GET", body=None):
-        code, headers, body = yield fetch(
+    async def _request(self, callback, url, method="GET", body=None):
+        code, headers, body = await fetch(
             url,
             method=method,
             body=body,
@@ -74,15 +72,14 @@ class ConsulClient(consul.base.Consul):
 
 
 class ConsulResolver(ResolverBase):
-    @tornado.gen.coroutine
-    def start(self):
+    async def start(self):
         index = 0
         self.logger.info("[%s] Starting resolver (near=%s)", self.name, self.near)
         while not self.to_shutdown:
             self.logger.debug("[%s] Requesting changes from index %d", self.name, index)
             try:
                 old_index = index
-                index, services = yield self.dcs.consul.health.service(
+                index, services = await self.dcs.consul.health.service(
                     service=self.name,
                     index=index,
                     token=self.dcs.consul_token,
@@ -140,7 +137,7 @@ class ConsulDCS(DCSBase):
 
     resolver_cls = ConsulResolver
 
-    def __init__(self, url):
+    def __init__(self, runner, url):
         self.name = None
         self.consul_host = self.DEFAULT_CONSUL_HOST
         self.consul_port = self.DEFAULT_CONSUL_PORT
@@ -158,7 +155,7 @@ class ConsulDCS(DCSBase):
         self.session = None
         self.slot_number = None
         self.total_slots = None
-        super(ConsulDCS, self).__init__(url)
+        super().__init__(runner, url)
         self.consul = ConsulClient(
             host=self.consul_host, port=self.consul_port, token=self.consul_token
         )
@@ -190,8 +187,7 @@ class ConsulDCS(DCSBase):
             elif k == "release_after":
                 self.release_after = v
 
-    @tornado.gen.coroutine
-    def create_session(self):
+    async def create_session(self):
         """
         Create consul session
         :return:
@@ -200,7 +196,7 @@ class ConsulDCS(DCSBase):
         checks = ["serfHealth"]
         while True:
             try:
-                self.session = yield self.consul.session.create(
+                self.session = await self.consul.session.create(
                     name=self.name,
                     checks=checks,
                     behavior="delete",
@@ -209,7 +205,7 @@ class ConsulDCS(DCSBase):
                 )
                 break
             except ConsulRepeatableErrors:
-                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
         self.logger.info("Session id: %s", self.session)
         self.keep_alive_task = PeriodicCallback(
@@ -217,26 +213,24 @@ class ConsulDCS(DCSBase):
         )
         self.keep_alive_task.start()
 
-    @tornado.gen.coroutine
-    def destroy_session(self):
+    async def destroy_session(self):
         if self.session:
             self.logger.info("Destroying session %s", self.session)
             if self.keep_alive_task:
                 self.keep_alive_task.stop()
                 self.keep_alive_task = None
             try:
-                yield self.consul.session.destroy(self.session)
+                await self.consul.session.destroy(self.session)
             except ConsulRepeatableErrors:
                 pass  # Ignore consul errors
             self.session = None
 
-    @tornado.gen.coroutine
-    def register(self, name, address, port, pool=None, lock=None, tags=None):
+    async def register(self, name, address, port, pool=None, lock=None, tags=None):
         if pool:
             name = "%s-%s" % (name, pool)
         self.name = name
         if lock:
-            yield self.acquire_lock(lock)
+            await self.acquire_lock(lock)
         svc_id = self.session or str(uuid.uuid4())
         tags = tags[:] if tags else []
         tags += [svc_id]
@@ -255,7 +249,7 @@ class ConsulDCS(DCSBase):
                     "Registering service %s: %s:%s (id=%s)", name, address, port, svc_id
                 )
                 try:
-                    r = yield self.consul.agent.service.register(
+                    r = await self.consul.agent.service.register(
                         name=name,
                         service_id=svc_id,
                         address=address,
@@ -266,7 +260,7 @@ class ConsulDCS(DCSBase):
                 except ConsulRepeatableErrors as e:
                     metrics["error", ("type", "cant_register_consul")] += 1
                     self.logger.info("Cannot register service %s: %s", name, e)
-                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                    await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                     continue
                 if r:
                     self.svc_id = svc_id
@@ -275,11 +269,10 @@ class ConsulDCS(DCSBase):
         else:
             return True
 
-    @tornado.gen.coroutine
-    def deregister(self):
+    async def deregister(self):
         if self.session:
             try:
-                yield self.destroy_session()
+                await self.destroy_session()
             except ConsulRepeatableErrors:
                 metrics["error", ("type", "cant_destroy_consul_session_soft")] += 1
             except Exception as e:
@@ -287,7 +280,7 @@ class ConsulDCS(DCSBase):
                 self.logger.error("Cannot destroy session: %s", e)
         if self.svc_id and config.features.service_registration:
             try:
-                yield self.consul.agent.service.deregister(self.svc_id)
+                await self.consul.agent.service.deregister(self.svc_id)
             except ConsulRepeatableErrors:
                 metrics["error", ("type", "cant_deregister_consul_soft")] += 1
             except Exception as e:
@@ -295,8 +288,7 @@ class ConsulDCS(DCSBase):
                 self.logger.error("Cannot deregister service: %s", e)
             self.svc_id = None
 
-    @tornado.gen.coroutine
-    def keep_alive(self):
+    async def keep_alive(self):
         metrics["dcs_consul_keepalives"] += 1
         if self.in_keep_alive:
             metrics["error", ("type", "dcs_consul_overlapped_keepalives")] += 1
@@ -307,7 +299,7 @@ class ConsulDCS(DCSBase):
                 touched = False
                 for n in range(self.keepalive_attempts):
                     try:
-                        yield self.consul.session.renew(self.session)
+                        await self.consul.session.renew(self.session)
                         self.logger.debug("Session renewed")
                         touched = True
                         break
@@ -317,7 +309,7 @@ class ConsulDCS(DCSBase):
                     except ConsulRepeatableErrors as e:
                         self.logger.warning("Cannot refresh session due to ignorable error: %s", e)
                         metrics["error", ("type", "dcs_consul_keepalive_retries")] += 1
-                        yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                        await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 if not touched:
                     self.logger.critical("Cannot refresh session, stopping")
                     if self.keep_alive_task:
@@ -333,16 +325,15 @@ class ConsulDCS(DCSBase):
     def get_lock_path(self, lock):
         return self.consul_prefix + "/locks/" + lock
 
-    @tornado.gen.coroutine
-    def acquire_lock(self, name):
+    async def acquire_lock(self, name):
         if not self.session:
-            yield self.create_session()
+            await self.create_session()
         key = self.get_lock_path(name)
         index = None
         while True:
             self.logger.info("Acquiring lock: %s", key)
             try:
-                status = yield self.consul.kv.put(
+                status = await self.consul.kv.put(
                     key=key, value=self.session, acquire=self.session, token=self.consul_token
                 )
                 if status:
@@ -350,28 +341,27 @@ class ConsulDCS(DCSBase):
                 else:
                     metrics["error", ("type", "dcs_consul_failed_get_lock")] += 1
                     self.logger.info("Failed to acquire lock")
-                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                    await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
             except ConsulRepeatableErrors:
-                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
             # Waiting for lock release
             while True:
                 try:
-                    index, data = yield self.consul.kv.get(
+                    index, data = await self.consul.kv.get(
                         key=key, index=index, token=self.consul_token
                     )
                     if not data:
                         index = None  # Key has been deleted
-                        yield tornado.gen.sleep(
+                        await asyncio.sleep(
                             self.DEFAULT_CONSUL_LOCK_DELAY * (0.5 + random.random())
                         )
                     break
                 except ConsulRepeatableErrors:
-                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                    await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         self.logger.info("Lock acquired")
 
-    @tornado.gen.coroutine
-    def acquire_slot(self, name, limit):
+    async def acquire_slot(self, name, limit):
         """
         Acquire shard slot
         :param name: <service name>-<pool>
@@ -379,7 +369,7 @@ class ConsulDCS(DCSBase):
         :return: (slot number, number of instances)
         """
         if not self.session:
-            yield self.create_session()
+            await self.create_session()
         if self.total_slots is not None:
             return self.slot_number, self.total_slots
         prefix = "%s/slots/%s" % (self.consul_prefix, name)
@@ -389,7 +379,7 @@ class ConsulDCS(DCSBase):
         self.logger.info("Writing contender slot info into %s", contender_path)
         while True:
             try:
-                status = yield self.consul.kv.put(
+                status = await self.consul.kv.put(
                     key=contender_path,
                     value=contender_info,
                     acquire=self.session,
@@ -400,9 +390,9 @@ class ConsulDCS(DCSBase):
                 else:
                     metrics["error", ("type", "dcs_consul_failed_get_slot")] += 1
                     self.logger.info("Failed to write contender slot info")
-                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                    await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
             except ConsulRepeatableErrors:
-                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         index = 0
         cas = 0
         while True:
@@ -413,9 +403,9 @@ class ConsulDCS(DCSBase):
             # Non-blocking for a first time
             # Block until change every next try
             try:
-                index, cv = yield self.consul.kv.get(key=prefix, index=index, recurse=True)
+                index, cv = await self.consul.kv.get(key=prefix, index=index, recurse=True)
             except ConsulRepeatableErrors:
-                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
             for e in cv:
                 if e["Key"] == manifest_path:
@@ -453,7 +443,7 @@ class ConsulDCS(DCSBase):
             # Update manifest
             self.logger.info("Attempting to acquire slot %s/%s", slot_number, total_slots)
             try:
-                r = yield self.consul.kv.put(
+                r = await self.consul.kv.put(
                     key=manifest_path,
                     value=ujson.dumps({"Limit": total_slots, "Holders": holders}, indent=2),
                     cas=cas,
@@ -468,8 +458,7 @@ class ConsulDCS(DCSBase):
                 return slot_number, total_slots
             self.logger.info("Cannot acquire slot: CAS changed, retry")
 
-    @tornado.gen.coroutine
-    def resolve_near(
+    async def resolve_near(
         self, name, hint=None, wait=True, timeout=None, full_result=False, critical=False
     ):
         """
@@ -487,7 +476,7 @@ class ConsulDCS(DCSBase):
         index = 0
         while True:
             try:
-                index, services = yield self.consul.health.service(
+                index, services = await self.consul.health.service(
                     service=name, index=index, near="_agent", token=self.consul_token, passing=True
                 )
             except ConsulRepeatableErrors as e:

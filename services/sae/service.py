@@ -40,7 +40,7 @@ class SAEService(Service):
         for p in Pool.objects.all():
             self.pool_cache[str(p.id)] = p.name
 
-    def on_activate(self):
+    async def on_activate(self):
         self.load_pools()
         self.pg_pool = ThreadedConnectionPool(1, config.sae.db_threads, **config.pg_connection_args)
         self.pg_pool_ready.set()

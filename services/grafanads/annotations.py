@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # annotations handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,8 +28,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
     def initialize(self, service=None):
         self.service = service
 
-    @tornado.gen.coroutine
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         try:
             req = ujson.loads(self.request.body)
         except ValueError:
@@ -47,7 +46,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
         # Annotation to return in reply
         ra = req.get("annotation")
         #
-        result = yield self.service.get_executor("db").submit(self.get_annotations, f, t, ra)
+        result = await self.service.run_in_executor("db", self.get_annotations, f, t, ra)
         self.write(result)
 
     def get_annotations(self, f, t, annotation):

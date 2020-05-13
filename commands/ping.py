@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Pretty command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,14 +10,13 @@ import argparse
 
 # Third-party modules
 from tornado.ioloop import IOLoop
-import tornado.gen
 import tornado.queues
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
 from noc.core.ioloop.ping import Ping
-from noc.config import config
+from noc.core.ioloop.util import setup_asyncio
 
 
 class Command(BaseCommand):
@@ -46,11 +45,7 @@ class Command(BaseCommand):
                 except OSError as e:
                     self.die("Cannot read file %s: %s\n" % (fn, e))
         # Ping
-        if config.features.use_uvlib:
-            from tornaduv import UVLoop
-
-            self.stderr.write("Using libuv\n")
-            tornado.ioloop.IOLoop.configure(UVLoop)
+        setup_asyncio()
         self.ping = Ping()
         self.jobs = jobs
         self.queue = tornado.queues.Queue(self.jobs)
@@ -58,20 +53,18 @@ class Command(BaseCommand):
             IOLoop.current().spawn_callback(self.ping_worker)
         IOLoop.current().run_sync(self.ping_task)
 
-    @tornado.gen.coroutine
-    def ping_task(self):
+    async def ping_task(self):
         for a in self.addresses:
-            yield self.queue.put(a)
+            await self.queue.put(a)
         for i in range(self.jobs):
-            yield self.queue.put(None)
-        yield self.queue.join()
+            await self.queue.put(None)
+        await self.queue.join()
 
-    @tornado.gen.coroutine
-    def ping_worker(self):
+    async def ping_worker(self):
         while True:
-            a = yield self.queue.get()
+            a = await self.queue.get()
             if a:
-                rtt, attempts = yield self.ping.ping_check_rtt(a, count=1, timeout=1000)
+                rtt, attempts = await self.ping.ping_check_rtt(a, count=1, timeout=1000)
                 if rtt:
                     self.stdout.write("%s %.2fms\n" % (a, rtt * 1000))
                 else:

@@ -7,13 +7,13 @@
 
 # Python modules
 import socket
-import datetime
 import re
+import asyncio
 
 # Third-party modules
 import tornado.ioloop
 import tornado.iostream
-import tornado.gen
+from typing import Union
 
 # NOC modules
 from noc.config import config
@@ -88,7 +88,7 @@ class MMLBase(object):
         # Cannot call call_later directly due to
         # thread-safety problems
         # See tornado issue #1773
-        tornado.ioloop.IOLoop.instance().add_callback(self._set_close_timeout, session_timeout)
+        tornado.ioloop.IOLoop.current().add_callback(self._set_close_timeout, session_timeout)
 
     def _set_close_timeout(self, session_timeout):
         """
@@ -96,9 +96,7 @@ class MMLBase(object):
         :param session_timeout:
         :return:
         """
-        self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
-            session_timeout, self.close
-        )
+        self.close_timeout = tornado.ioloop.IOLoop.current().call_later(session_timeout, self.close)
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -116,10 +114,10 @@ class MMLBase(object):
                 s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
 
-    def set_timeout(self, timeout):
+    def set_timeout(self, timeout: Union[int, float]):
         if timeout:
             self.logger.debug("Setting timeout: %ss", timeout)
-            self.current_timeout = datetime.timedelta(seconds=timeout)
+            self.current_timeout = timeout
         else:
             if self.current_timeout:
                 self.logger.debug("Resetting timeouts")
@@ -128,18 +126,16 @@ class MMLBase(object):
     def set_script(self, script):
         self.script = script
         if self.close_timeout:
-            tornado.ioloop.IOLoop.instance().remove_timeout(self.close_timeout)
+            tornado.ioloop.IOLoop.current().remove_timeout(self.close_timeout)
             self.close_timeout = None
 
-    @tornado.gen.coroutine
-    def send(self, cmd):
+    async def send(self, cmd):
         # @todo: Apply encoding
         cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
-        yield self.iostream.write(cmd)
+        await self.iostream.write(cmd)
 
-    @tornado.gen.coroutine
-    def submit(self):
+    async def submit(self):
         # Create iostream and connect, when necessary
         if not self.iostream:
             self.iostream = self.create_iostream()
@@ -149,32 +145,31 @@ class MMLBase(object):
             )
             self.logger.debug("Connecting %s", address)
             try:
-                yield self.iostream.connect(address)
+                await self.iostream.connect(address)
             except tornado.iostream.StreamClosedError:
                 self.logger.debug("Connection refused")
                 self.error = MMLConnectionRefused("Connection refused")
                 return None
             self.logger.debug("Connected")
-            yield self.iostream.startup()
+            await self.iostream.startup()
         # Perform all necessary login procedures
         if not self.is_started:
             self.is_started = True
-            yield self.send(self.profile.get_mml_login(self.script))
-            yield self.get_mml_response()
+            await self.send(self.profile.get_mml_login(self.script))
+            await self.get_mml_response()
             if self.error:
                 self.error = MMLAuthFailed(str(self.error))
                 return None
         # Send command
-        yield self.send(self.command)
-        r = yield self.get_mml_response()
+        await self.send(self.command)
+        r = await self.get_mml_response()
         return r
 
-    @tornado.gen.coroutine
-    def get_mml_response(self):
+    async def get_mml_response(self):
         result = []
         header_sep = self.profile.mml_header_separator
         while True:
-            r = yield self.read_until_end()
+            r = await self.read_until_end()
             r = r.strip()
             # Process header
             if header_sep not in r:
@@ -230,16 +225,15 @@ class MMLBase(object):
             else:
                 return self.result
 
-    @tornado.gen.coroutine
-    def read_until_end(self):
+    async def read_until_end(self):
         connect_retries = self.CONNECT_RETRIES
         while True:
             try:
                 f = self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
                 if self.current_timeout:
-                    r = yield tornado.gen.with_timeout(self.current_timeout, f)
+                    r = await asyncio.wait_for(f, self.current_timeout)
                 else:
-                    r = yield f
+                    r = await f
             except tornado.iostream.StreamClosedError:
                 # Check if remote end closes connection just
                 # after connection established
@@ -250,7 +244,7 @@ class MMLBase(object):
                         self.CONNECT_TIMEOUT,
                     )
                     while connect_retries:
-                        yield tornado.gen.sleep(self.CONNECT_TIMEOUT)
+                        await asyncio.sleep(self.CONNECT_TIMEOUT)
                         connect_retries -= 1
                         self.iostream = self.create_iostream()
                         address = (
@@ -259,7 +253,7 @@ class MMLBase(object):
                         )
                         self.logger.debug("Connecting %s", address)
                         try:
-                            yield self.iostream.connect(address)
+                            await self.iostream.connect(address)
                             break
                         except tornado.iostream.StreamClosedError:
                             if not connect_retries:
@@ -267,9 +261,9 @@ class MMLBase(object):
                     continue
                 else:
                     raise tornado.iostream.StreamClosedError()
-            except tornado.gen.TimeoutError:
+            except asyncio.TimeoutError:
                 self.logger.info("Timeout error")
-                raise tornado.gen.TimeoutError("Timeout")
+                raise asyncio.TimeoutError("Timeout")
             self.logger.debug("Received: %r", r)
             self.buffer += r
             offset = max(0, len(self.buffer) - self.MATCH_TAIL)

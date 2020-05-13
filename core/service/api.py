@@ -7,6 +7,7 @@
 
 # Python modules
 from collections import namedtuple
+import asyncio
 
 # Third-party modules
 import tornado.web
@@ -35,8 +36,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
         self.service = service
         self.api_class = api_class
 
-    @tornado.gen.coroutine
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         span_ctx = self.request.headers.get("X-NOC-Span-Ctx", 0)
         span_id = self.request.headers.get("X-NOC-Span", 0)
         sample = 1 if span_ctx and span_id else 0
@@ -78,13 +78,15 @@ class APIRequestHandler(tornado.web.RequestHandler):
             try:
                 if getattr(h, "executor", ""):
                     # Threadpool version
-                    executor = self.service.get_executor(h.executor)
-                    result = executor.submit(h, *params)
+                    result = await self.service.run_in_executor(h.executor, h, *params)
                 else:
                     # Serialized version
                     result = h(*params)
                 if tornado.gen.is_future(result):
-                    result = yield result
+                    # @todo: Deprecated
+                    result = await result
+                elif asyncio.isfuture(result) or asyncio.iscoroutine(result):
+                    result = await result
                 if isinstance(result, Redirect):
                     # Redirect protocol extension
                     self.set_status(307, "Redirect")

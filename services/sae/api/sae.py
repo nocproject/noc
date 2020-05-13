@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-import tornado.gen
-
 # NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
@@ -64,12 +61,11 @@ class SAEAPI(API):
         WHERE mo.id = %s
     """
 
-    @tornado.gen.coroutine
-    def resolve_activator(self, pool):
+    async def resolve_activator(self, pool):
         sn = "activator-%s" % pool
         for i in range(config.sae.activator_resolution_retries):
             try:
-                svc = yield self.service.dcs.resolve(
+                svc = await self.service.dcs.resolve(
                     sn, timeout=config.sae.activator_resolution_timeout
                 )
                 return svc
@@ -78,9 +74,8 @@ class SAEAPI(API):
                 metrics["error", ("type", "resolve_activator")] += 1
         return None
 
-    @tornado.gen.coroutine
-    def get_activator_url(self, pool):
-        svc = yield self.resolve_activator(pool)
+    async def get_activator_url(self, pool):
+        svc = await self.resolve_activator(pool)
         if svc:
             return "http://%s/api/activator/" % svc
         else:
@@ -88,17 +83,16 @@ class SAEAPI(API):
             return None
 
     @api
-    @tornado.gen.coroutine
-    def script(self, object_id, script, args=None, timeout=None):
+    async def script(self, object_id, script, args=None, timeout=None):
         """
         Execute SA script against ManagedObject
-        :param object: Managed Object id
-        :param script: Script name (Eighter with or without profile)
+        :param object_id: Managed Object id
+        :param script: Script name (Either with or without profile)
         :param args: Dict with input arguments
         :param timeout: Script timeout in seconds
         """
         # Resolve object data
-        data = yield self.service.get_executor("db").submit(self.get_object_data, object_id)
+        data = await self.service.run_in_executor("db", self.get_object_data, object_id)
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
@@ -110,7 +104,7 @@ class SAEAPI(API):
             metrics["error", ("type", "invalid_scripts_request")] += 1
             raise APIError("Invalid script")
         #
-        url = yield self.get_activator_url(pool)
+        url = await self.get_activator_url(pool)
         if not url:
             raise APIError("No active activators for pool '%s'" % pool)
         return self.redirect(
@@ -127,10 +121,9 @@ class SAEAPI(API):
         )
 
     @api
-    @tornado.gen.coroutine
-    def get_credentials(self, object_id):
+    async def get_credentials(self, object_id):
         # Resolve object data
-        data = yield self.service.get_executor("db").submit(self.get_object_data, object_id)
+        data = await self.service.run_in_executor("db", self.get_object_data, object_id)
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:

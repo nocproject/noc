@@ -202,6 +202,7 @@ class Config(BaseConfig):
 
     class dcs(ConfigSection):
         resolution_timeout = SecondsParameter(default="5M")
+        resolver_expiration_timeout = SecondsParameter(default="10M")
 
     class discovery(ConfigSection):
         max_threads = IntParameter(default=20)

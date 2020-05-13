@@ -7,9 +7,7 @@
 
 # Python modules
 import os
-
-# Third-party modules
-from concurrent.futures import as_completed
+import asyncio
 
 # NOC modules
 from noc.core.threadpool import ThreadPoolExecutor
@@ -91,5 +89,5 @@ class ORACLEExtractor(SQLExtractor):
                 futures = [
                     pool.submit(fetch_sql, query, params) for query, params in self.get_sql()
                 ]
-                for f in as_completed(futures):
+                for f in asyncio.as_completed(futures):
                     yield from f.result()

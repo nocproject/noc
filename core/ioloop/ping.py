@@ -18,7 +18,6 @@ from time import perf_counter
 
 # Third-party modules
 from tornado.ioloop import IOLoop
-import tornado.gen
 from tornado.concurrent import Future
 from tornado.util import errno_from_exception
 
@@ -154,7 +153,7 @@ class PingSocket(object):
         """
         Check future is not timed out
         """
-        if future.running():
+        if not future.done():
             if future.sid in self.sessions:
                 logger.debug("[%s] Timed out", future.sid[0])
                 del self.sessions[future.sid]
@@ -322,8 +321,7 @@ class Ping(object):
             logger.error("Failed to create ping socket: %s", e)
             return None
 
-    @tornado.gen.coroutine
-    def ping_check(self, address, size=64, count=1, timeout=1000, policy=CHECK_FIRST):
+    async def ping_check(self, address, size=64, count=1, timeout=1000, policy=CHECK_FIRST):
         """
         Perform ping check and return status
         :param address: IPv4/IPv6 address of host
@@ -340,7 +338,7 @@ class Ping(object):
         req_id = next(self.iter_request) & 0xFFFF
         result = policy == self.CHECK_ALL and count > 0
         for seq in range(count):
-            r = yield socket.ping(address, timeout, size, req_id, seq)
+            r = await socket.ping(address, timeout, size, req_id, seq)
             if r and policy == self.CHECK_FIRST:
                 result = True
                 break
@@ -350,8 +348,7 @@ class Ping(object):
         logger.debug("[%s] Result: %s", address, result)
         return result
 
-    @tornado.gen.coroutine
-    def ping_check_rtt(self, address, size=64, count=1, timeout=1000, policy=CHECK_FIRST):
+    async def ping_check_rtt(self, address, size=64, count=1, timeout=1000, policy=CHECK_FIRST):
         """
         Perform ping check and return round-trip time
         :param address: IPv4/IPv6 address of host
@@ -370,7 +367,7 @@ class Ping(object):
         rtts = []
         attempt = 0
         for seq in range(count):
-            rtt = yield socket.ping(address, timeout, size, req_id, seq)
+            rtt = await socket.ping(address, timeout, size, req_id, seq)
             if rtt is not None:
                 rtts += [rtt]
             if rtt and policy == self.CHECK_FIRST:

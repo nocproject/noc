@@ -9,10 +9,10 @@
 import logging
 import struct
 import random
+import asyncio
 
 # Third-party modules
 import ujson
-import tornado.gen
 from typing import List, Any
 
 # NOC modules
@@ -70,8 +70,7 @@ def mpub_encode(messages: List[Any]) -> bytes:
     return b"".join(iter_msg())
 
 
-@tornado.gen.coroutine
-def mpub(topic, messages, dcs=None, retries=None):
+async def mpub(topic, messages, dcs=None, retries=None):
     """
     Asynchronously publish message to NSQ topic
 
@@ -105,9 +104,9 @@ def mpub(topic, messages, dcs=None, retries=None):
         # Get actual nsqd service's address and port
         si = services[s_index]
         if not nsqd_http_service_param.is_static(si):
-            si = yield dcs.resolve(si, near=True)
+            si = await dcs.resolve(si, near=True)
         # Send message
-        code, _, body = yield fetch(
+        code, _, body = await fetch(
             "http://%s/mpub?topic=%s&binary=true" % (si, topic),
             method="POST",
             body=msg,
@@ -120,7 +119,7 @@ def mpub(topic, messages, dcs=None, retries=None):
         logger.error("Failed to pub to topic '%s': %s (Code=%d)", topic, body, code)
         retries -= 1
         if retries > 0:
-            yield tornado.gen.sleep(config.nsqd.pub_retry_delay)
+            await asyncio.sleep(config.nsqd.pub_retry_delay)
             s_index = (s_index + 1) % num_services
     if code != 200:
         logger.error("Failed to pub to topic '%s'. Giving up", topic)

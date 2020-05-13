@@ -11,12 +11,12 @@ import threading
 from collections import defaultdict
 
 # Third-party modules
-import tornado.ioloop
+from tornado.ioloop import IOLoop
 
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-from .rpc import RPCProxy
 from noc.config import config
+from .rpc import RPCProxy
 
 
 class ServiceStub(object):
@@ -36,7 +36,7 @@ class ServiceStub(object):
         self.is_ready.wait()
 
     def _start(self):
-        self.ioloop = tornado.ioloop.IOLoop.instance()
+        self.ioloop = IOLoop.current()
         # Initialize DCS
         self.dcs = get_dcs(DEFAULT_DCS)
         # Activate service
