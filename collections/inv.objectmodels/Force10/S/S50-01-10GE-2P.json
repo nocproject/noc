@@ -11,6 +11,7 @@
             "direction": "i",
             "gender": "f",
             "name": "port0",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -18,6 +19,7 @@
             "direction": "i",
             "gender": "f",
             "name": "port1",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {
