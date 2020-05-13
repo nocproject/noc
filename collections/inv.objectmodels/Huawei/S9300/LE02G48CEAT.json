@@ -320,7 +320,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/36",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -328,7 +328,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/37",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -336,7 +336,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/38",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -344,7 +344,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/39",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -352,7 +352,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/40",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -360,7 +360,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/41",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -368,7 +368,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/42",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -376,7 +376,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/43",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -384,7 +384,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/44",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -392,7 +392,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/45",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -400,7 +400,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/46",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -408,7 +408,7 @@
             "direction": "i",
             "gender": "f",
             "name": "GigabitEthernetX/0/47",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
