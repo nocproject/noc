@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -149,7 +150,7 @@ class Script(BaseScript):
             match = self.rx_descr.search(s)
             description = match.group("description")
             if description:
-                description = description.decode("ascii", "ignore")
+                description = smart_text(description, errors="ignore", encoding="ascii")
             if iface in portchannel_members:
                 ai, is_lacp = portchannel_members[iface]
                 n["aggregated_interface"] = ai
@@ -204,7 +205,7 @@ class Script(BaseScript):
             mac = match.group("mac")
             match = self.rx_des.search(s)
             if match:
-                description = match.group("des").decode("ascii", "ignore")
+                description = smart_text(match.group("des"), errors="ignore", encoding="ascii")
 
             enabled_protocols = []
             if ospf_enable and iface in ospf:
