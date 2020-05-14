@@ -184,7 +184,7 @@ class AlarmClass(Document):
             c = AlarmClassCategory(name=c_name)
             c.save()
         self.category = c.id
-        super(AlarmClass, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_discriminator(self, vars):
         """

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Link loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,4 +27,4 @@ class LinkLoader(BaseLoader):
         v["link"] = None
         v["error"] = None
         v["warn"] = None
-        return super(LinkLoader, self).change_object(object_id, v)
+        return super().change_object(object_id, v)

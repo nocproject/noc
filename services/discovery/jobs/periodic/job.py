@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Periodic Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
 
     def can_run(self):
         return (
-            super(PeriodicDiscoveryJob, self).can_run()
+            super().can_run()
             and self.object.object_profile.enable_periodic_discovery
             and self.object.object_profile.periodic_discovery_interval
         )

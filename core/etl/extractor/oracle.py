@@ -35,7 +35,7 @@ class ORACLEExtractor(SQLExtractor):
     """
 
     def __init__(self, *args, **kwargs):
-        super(ORACLEExtractor, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.connect = None
 
     def get_cursor(self):

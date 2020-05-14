@@ -28,7 +28,7 @@ class ScriptLoader(BaseLoader):
     protected_names = {"profile", "__init__"}
 
     def __init__(self):
-        super(ScriptLoader, self).__init__()
+        super().__init__()
         self.scripts = {}  # Load scripts
         self.lock = threading.Lock()
         self.all_scripts = set()

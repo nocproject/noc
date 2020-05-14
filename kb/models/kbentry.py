@@ -76,7 +76,7 @@ class KBEntry(NOCModel):
             old_body = KBEntry.objects.get(id=self.id).body
         else:
             old_body = ""
-        super(KBEntry, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if old_body != self.body:
             diff = "\n".join(difflib.unified_diff(self.body.splitlines(), old_body.splitlines()))
             KBEntryHistory(

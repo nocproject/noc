@@ -100,7 +100,7 @@ class Report(ReportNode):
     tag = "report"
 
     def __init__(self, name=None):
-        super(Report, self).__init__(name=name)
+        super().__init__(name=name)
         self.sections = []  # Must be ReportSection instances
 
     def append_section(self, s):
@@ -151,7 +151,7 @@ class TextSection(ReportSection):
     tag = "text"
 
     def __init__(self, name=None, title=None, text=None):
-        super(ReportSection, self).__init__(name=name)
+        super().__init__(name=name)
         self.title = title
         self.text = text  # Either string o list of strings
 
@@ -219,7 +219,7 @@ class TableColumn(ReportNode):
     H_ALIGN_MASK = 3
 
     def __init__(self, name, title=None, align=None, format=None, total=None, total_label=None):
-        super(TableColumn, self).__init__(name=name)
+        super().__init__(name=name)
         # self.name = name
         self.title = title if title else name
         self.align = (
@@ -490,7 +490,7 @@ class TableSection(ReportSection):
     tag = "table"
 
     def __init__(self, name=None, columns=[], enumerate=False, data=[]):
-        super(ReportSection, self).__init__(name=name)
+        super().__init__(name=name)
         self.columns = []
         for c in columns:
             if isinstance(c, str) or hasattr(c, "__unicode__"):
@@ -704,7 +704,7 @@ class MatrixSection(ReportSection):
     """
 
     def __init__(self, name, data=None, enumerate=False):
-        super(ReportSection, self).__init__(name=name)
+        super().__init__(name=name)
         self.data = data or []
         self.enumerate = enumerate
 

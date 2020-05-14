@@ -19,7 +19,7 @@ class NOCBoundField(forms.forms.BoundField):
     """
 
     def __init__(self, *args, **kwargs):
-        super(NOCBoundField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.is_checkbox = isinstance(self.field.widget, forms.CheckboxInput)
 
     def label_tag(self, contents=None, attrs=None):
@@ -35,7 +35,7 @@ class NOCBoundField(forms.forms.BoundField):
         if classes:
             attrs = attrs.copy() if attrs else {}
             attrs["class"] = " ".join(classes)
-        return super(NOCBoundField, self).label_tag(contents=contents, attrs=attrs)
+        return super().label_tag(contents=contents, attrs=attrs)
 
 
 class NOCForm(forms.Form):
@@ -47,7 +47,7 @@ class NOCForm(forms.Form):
         css = {"all": ["/ui/pkg/django-media/admin/css/forms.css"]}
 
     def __init__(self, *args, **kwargs):
-        super(NOCForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.disabled_fields = set()
 
     def disable_field(self, name):

@@ -72,7 +72,7 @@ class BaseConstraint(object):
 
 class AndConstraint(BaseConstraint):
     def __init__(self, left: BaseConstraint, right: BaseConstraint) -> None:
-        super(AndConstraint, self).__init__()
+        super().__init__()
         self.left = left
         self.right = right
 
@@ -93,7 +93,7 @@ class AndConstraint(BaseConstraint):
 
 class OrConstraint(BaseConstraint):
     def __init__(self, left: BaseConstraint, right: BaseConstraint) -> None:
-        super(OrConstraint, self).__init__()
+        super().__init__()
         self.left = left
         self.right = right
 
@@ -114,7 +114,7 @@ class OrConstraint(BaseConstraint):
 
 class NotConstraint(BaseConstraint):
     def __init__(self, constraint: BaseConstraint) -> None:
-        super(NotConstraint, self).__init__()
+        super().__init__()
         self.constraint = constraint
 
     def is_valid_neighbor(self, current: ManagedObject, neighbor: ManagedObject) -> bool:

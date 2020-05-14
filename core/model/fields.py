@@ -27,7 +27,7 @@ class CIDRField(models.Field):
     """
 
     def __init__(self, *args, **kwargs):
-        super(CIDRField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def db_type(self, connection):
         return "CIDR"
@@ -263,10 +263,10 @@ class DocumentReferenceDescriptor(object):
 class DocumentReferenceField(models.Field):
     def __init__(self, document, *args, **kwargs):
         self.document = document
-        super(DocumentReferenceField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def contribute_to_class(self, cls, name, *args, **kwargs):
-        super(DocumentReferenceField, self).contribute_to_class(cls, name, *args, **kwargs)
+        super().contribute_to_class(cls, name, *args, **kwargs)
         setattr(cls, self.name, DocumentReferenceDescriptor(self))
 
     def db_type(self, connection):
@@ -294,7 +294,7 @@ class CachedForeignKeyDescriptor(ForwardManyToOneDescriptor):
         if ref:
             # Fast cached path
             return self.field.remote_field.model.get_by_id(ref)
-        return super(CachedForeignKeyDescriptor, self).get_object(instance)
+        return super().get_object(instance)
 
 
 class CachedForeignKey(models.ForeignKey):

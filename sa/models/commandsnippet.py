@@ -101,7 +101,7 @@ class CommandSnippet(NOCModel):
             return "sa:runsnippet:default"
 
     def save(self, *args, **kwargs):
-        super(CommandSnippet, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         # Create permission if required
         if self.permission_name:
             try:

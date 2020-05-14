@@ -74,7 +74,7 @@ class ExtDocApplication(ExtApplication):
     rx_oper_splitter = re.compile(r"^(?P<field>\S+)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
-        super(ExtDocApplication, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.pk = "id"  # @todo: detect properly
         self.has_uuid = False
         # Prepare field converters
@@ -144,7 +144,7 @@ class ExtDocApplication(ExtApplication):
                 self.custom_fields[fn[6:]] = h
 
     def get_permissions(self):
-        p = super(ExtDocApplication, self).get_permissions()
+        p = super().get_permissions()
         if self.secret_fields:
             p.add("%s:secret" % self.get_app_id().replace(".", ":"))
         return p
@@ -155,7 +155,7 @@ class ExtDocApplication(ExtApplication):
         return list(CustomField.table_fields(self.model._get_collection_name()))
 
     def get_launch_info(self, request):
-        li = super(ExtDocApplication, self).get_launch_info(request)
+        li = super().get_launch_info(request)
         if self.json_collection:
             li["params"]["collection"] = self.json_collection
         cf = self.get_custom_fields()

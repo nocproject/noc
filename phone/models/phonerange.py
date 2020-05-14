@@ -122,7 +122,7 @@ class PhoneRange(Document):
             raise ValidationError("Empty to_number")
         if self.to_number < self.from_number:
             self.from_number, self.to_number = self.to_number, self.from_number
-        super(PhoneRange, self).clean()
+        super().clean()
         # Check overlapped ranges
         q = Q(dialplan=self.dialplan.id) & (
             Q(

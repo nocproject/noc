@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Container loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ class ContainerLoader(BaseLoader):
     CONTAINER_MODEL = "Group"
 
     def __init__(self, *args, **kwargs):
-        super(ContainerLoader, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.model_map = {}
         self.containers = {}  # Path -> Object
 

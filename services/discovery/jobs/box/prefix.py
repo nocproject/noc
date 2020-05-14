@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Prefix check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -111,7 +111,7 @@ class PrefixCheck(DiscoveryCheck):
         return prefixes
 
     def is_enabled(self):
-        enabled = super(PrefixCheck, self).is_enabled()
+        enabled = super().is_enabled()
         if not enabled:
             return False
         return self.is_enabled_for_object(self.object)

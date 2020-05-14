@@ -36,7 +36,7 @@ class VLANConstraint(BaseConstraint):
         allow_untagged: bool = True,
         strict: bool = True,
     ) -> None:
-        super(VLANConstraint, self).__init__()
+        super().__init__()
         self.vlan = vlan
         self.allow_tagged = allow_tagged
         self.allow_untagged = allow_untagged

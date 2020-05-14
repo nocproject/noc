@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Activator service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class ActivatorService(Service):
     use_telemetry = True
 
     def __init__(self):
-        super(ActivatorService, self).__init__()
+        super().__init__()
 
 
 if __name__ == "__main__":

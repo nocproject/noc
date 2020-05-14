@@ -26,7 +26,7 @@ class TaskObjectCollector(BaseCollector):
 
     def __init__(self, service):
         self.schedulers_list = self.load_discovery()
-        super(TaskObjectCollector, self).__init__(service)
+        super().__init__(service)
 
     def load_discovery(self):
         r = OrderedDict()

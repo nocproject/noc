@@ -146,7 +146,7 @@ class Profile(BaseProfile):
     rx_lldp_port = re.compile(r"^\d+(?:[\:\/]\d+)?$")
 
     def clean_lldp_neighbor(self, obj, neighbor):
-        neighbor = super(Profile, self).clean_lldp_neighbor(obj, neighbor)
+        neighbor = super().clean_lldp_neighbor(obj, neighbor)
         if neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_ALIAS and self.rx_lldp_port.search(
             neighbor["remote_port"]
         ):
@@ -404,7 +404,7 @@ class Profile(BaseProfile):
     def cleaned_config(self, config):
         if "System locked by other session!" in config:
             raise CLIOperationError("System locked by other session!")
-        config = super(Profile, self).cleaned_config(config)
+        config = super().cleaned_config(config)
         return config
 
 

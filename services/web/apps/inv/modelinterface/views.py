@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.modelinterface application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,4 +25,4 @@ class ModelInterfaceApplication(ExtDocApplication):
         if "label" in q:
             q["name"] = q["label"]
             del q["label"]
-        return super(ModelInterfaceApplication, self).cleaned_query(q)
+        return super().cleaned_query(q)

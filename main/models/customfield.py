@@ -229,7 +229,7 @@ class CustomField(NOCModel):
             old_indexed = False
         if not self.is_active:
             self.is_indexed = False
-        super(CustomField, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if old_active != self.is_active:
             # Field status changed
             if self.is_active:
@@ -247,7 +247,7 @@ class CustomField(NOCModel):
     def delete(self, using=None):
         if self.is_active:
             self.deactivate_field()
-        super(CustomField, self).delete(using=using)
+        super().delete(using=using)
 
     def model_class(self):
         """

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # HTTP Dahua Auth Middleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class DahuaAuthMiddeware(BaseMiddleware):
     name = "dahuaauth"
 
     def __init__(self, http):
-        super(DahuaAuthMiddeware, self).__init__(http)
+        super().__init__(http)
         self.user = self.http.script.credentials.get("user")
         self.password = self.http.script.credentials.get("password")
 

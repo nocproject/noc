@@ -32,7 +32,7 @@ class FIASParser(AddressParser):
     rx_letter2 = re.compile(r"^(\d*)([^/]*)(/\d+)?(\S*)$")
 
     def __init__(self, config, opts):
-        super(FIASParser, self).__init__(config, opts)
+        super().__init__(config, opts)
         self.prefix = self.config.get("fias", "cache")
         self.regions = set()
         for opt in config.options("fias"):

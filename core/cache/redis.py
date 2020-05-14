@@ -21,7 +21,7 @@ ignorable_redis_errors = (redis.exceptions.ConnectionError, redis.exceptions.Tim
 
 class RedisCache(BaseCache):
     def __init__(self):
-        super(RedisCache, self).__init__()
+        super().__init__()
         self.redis = redis.StrictRedis(
             host=config.redis.addresses[0].host,
             port=config.redis.addresses[0].port,

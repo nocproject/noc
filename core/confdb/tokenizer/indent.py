@@ -15,7 +15,7 @@ class IndentTokenizer(LineTokenizer):
     def __init__(self, data, end_of_context=None, **kwargs):
         kwargs["keep_indent"] = True
         self.end_of_context = end_of_context
-        super(IndentTokenizer, self).__init__(data, **kwargs)
+        super().__init__(data, **kwargs)
 
     def iter_indent(self, iter):
         depths = [0]
@@ -64,7 +64,7 @@ class IndentTokenizer(LineTokenizer):
             last = tokens
 
     def __iter__(self):
-        g = super(IndentTokenizer, self).__iter__()
+        g = super().__iter__()
         if self.end_of_context:
             yield from self.iter_indent_explicit(g)
         else:

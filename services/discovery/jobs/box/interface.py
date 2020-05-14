@@ -57,7 +57,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     ) and Group("vr", "instance", stack={"rt_export", "rt_import"})"""
 
     def __init__(self, *args, **kwargs):
-        super(InterfaceCheck, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.get_interface_profile = InterfaceClassificationRule.get_classificator()
         self.interface_macs = set()
         self.seen_interfaces = []

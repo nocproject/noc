@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.actioncommands application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class ActionCommandsApplication(ExtDocApplication):
     model = ActionCommands
 
     def clean(self, data):
-        data = super(ActionCommandsApplication, self).clean(data)
+        data = super().clean(data)
         try:
             Template(data["commands"])
         except Exception as e:

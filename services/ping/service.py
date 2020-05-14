@@ -37,7 +37,7 @@ class PingService(Service):
     PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
 
     def __init__(self):
-        super(PingService, self).__init__()
+        super().__init__()
         self.mappings_callback = None
         self.probes = {}  # mo id -> ProbeSetting
         self.ping = None
@@ -68,7 +68,7 @@ class PingService(Service):
         self.ioloop.add_callback(self.get_object_mappings)
 
     def get_mon_data(self):
-        r = super(PingService, self).get_mon_data()
+        r = super().get_mon_data()
         r["throttled"] = self.is_throttled
         return r
 

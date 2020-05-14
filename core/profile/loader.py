@@ -24,7 +24,7 @@ class ProfileLoader(BaseLoader):
     name = "profile"
 
     def __init__(self):
-        super(ProfileLoader, self).__init__()
+        super().__init__()
         self.profiles = {}  # Load profiles
         self.lock = threading.Lock()
         self.all_profiles = set()

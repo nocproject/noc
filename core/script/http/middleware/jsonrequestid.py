@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # URLRequestId middleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class JSONRequestIdMiddleware(BaseMiddleware):
     name = "jsonrequestid"
 
     def __init__(self, http, request_id_param="request_id"):
-        super(JSONRequestIdMiddleware, self).__init__(http)
+        super().__init__(http)
         self.request_id_param = request_id_param
 
     def process_post(self, url, body, headers):

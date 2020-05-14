@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Records sharding
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ class ReplicatedSharder(BaseSharder):
     TOPIC = "chwriter-1-%s"
 
     def __init__(self, table=None, chunk=None):
-        super(ReplicatedSharder, self).__init__(table="raw_%s" % table, chunk=chunk)
+        super().__init__(table="raw_%s" % table, chunk=chunk)
         self.n_replicas = config.ch_cluster_topology[0].replicas
 
     def feed(self, records):
@@ -124,7 +124,7 @@ class ShardingSharder(BaseSharder):
     SHARDING_KEYS = {"span": "ctx"}
 
     def __init__(self, table=None, chunk=None):
-        super(ShardingSharder, self).__init__(table="raw_%s" % table, chunk=chunk)
+        super().__init__(table="raw_%s" % table, chunk=chunk)
         self.get_shards = ShardingFunction()
 
     def feed(self, records):

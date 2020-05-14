@@ -108,7 +108,7 @@ class VPNCheck(DiscoveryCheck):
         return vpns
 
     def is_enabled(self):
-        enabled = super(VPNCheck, self).is_enabled()
+        enabled = super().is_enabled()
         if not enabled:
             return False
         return self.is_enabled_for_object(self.object)

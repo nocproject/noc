@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # HTTP Basic Auth Middleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class BasicAuthMiddeware(BaseMiddleware):
     name = "basicauth"
 
     def __init__(self, http, user=None, password=None):
-        super(BasicAuthMiddeware, self).__init__(http)
+        super().__init__(http)
         self.user = user
         self.password = password
 

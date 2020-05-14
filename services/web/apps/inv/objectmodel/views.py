@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.objectmodel application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,14 +40,14 @@ class ObjectModelApplication(ExtDocApplication):
             data["plugins"] = [x.strip() for x in data["plugins"].split(",") if x.strip()]
         else:
             data["plugins"] = None
-        return super(ObjectModelApplication, self).clean(data)
+        return super().clean(data)
 
     def cleaned_query(self, q):
         if "is_container" in q:
             q["data__container__container"] = True
             q["name__ne"] = "Root"
             del q["is_container"]
-        return super(ObjectModelApplication, self).cleaned_query(q)
+        return super().cleaned_query(q)
 
     @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"], access="read", api=True)
     def api_compatible(self, request, id):

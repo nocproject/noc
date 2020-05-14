@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ip.addressrange application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class AddressRangeApplication(ExtModelApplication):
     query_fields = ["name__icontains", "description__icontains"]
 
     def clean(self, data):
-        data = super(AddressRangeApplication, self).clean(data)
+        data = super().clean(data)
         afi = data["afi"]
         from_address = data["from_address"]
         to_address = data["to_address"]

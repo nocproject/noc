@@ -27,7 +27,7 @@ class MemcachedCache(BaseCache):
     """
 
     def __init__(self):
-        super(BaseCache, self).__init__()
+        super().__init__()
         self.tpl_client = pylibmc.Client(
             [str(a) for a in config.memcached.addresses],
             binary=True,

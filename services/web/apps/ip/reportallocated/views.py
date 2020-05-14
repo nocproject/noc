@@ -47,7 +47,7 @@ class ReportAllocated(SimpleReport):
     form = ReportForm
 
     def get_form(self):
-        fc = super(ReportAllocated, self).get_form()
+        fc = super().get_form()
         self.customize_form(fc, "ip_prefix", search=True)
         return fc
 

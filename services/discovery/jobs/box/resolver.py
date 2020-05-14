@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Resolver check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ class ResolverCheck(DiscoveryCheck):
         self.object.save()
 
     def is_enabled(self):
-        if not super(ResolverCheck, self).is_enabled():
+        if not super().is_enabled():
             return False
         if not self.object.fqdn:
             self.logger.info("FQDN field is empty")

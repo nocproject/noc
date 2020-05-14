@@ -101,7 +101,7 @@ class ModelProtectionProfile(Document):
                     processed.add(fa.name)
                     continue
             self.field_access = access
-        super(ModelProtectionProfile, self).save()
+        super().save()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_effective_perm_cache"), lock=lambda _: perm_lock)

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # phone.phonenumber application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ class PhoneNumberApplication(ExtDocApplication):
                 for x in items
             ]
 
-        data = super(PhoneNumberApplication, self).instance_to_dict(o, fields, nocustom)
+        data = super().instance_to_dict(o, fields, nocustom)
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
@@ -56,4 +56,4 @@ class PhoneNumberApplication(ExtDocApplication):
                 continue
             data[fn] = [x["group"] for x in (data.get(fn) or [])]
         # Clean other
-        return super(PhoneNumberApplication, self).clean(data)
+        return super().clean(data)

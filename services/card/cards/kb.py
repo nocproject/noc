@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # KB card
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class KBCard(BaseCard):
     def get_object(self, id):
         if id == "0":
             return "Knowlegde DB"
-        return super(KBCard, self).get_object(id)
+        return super().get_object(id)
 
     def get_template_name(self):
         if self.id == "0":

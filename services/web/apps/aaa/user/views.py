@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # User Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class UsernameParameter(StringParameter):
     user_validate = re.compile(r"^[\w.@+-]+$")
 
     def clean(self, value):
-        r = super(UsernameParameter, self).clean(value)
+        r = super().clean(value)
         match = self.user_validate.match(value)
         if not match:
             raise self.raise_error(
@@ -92,7 +92,7 @@ class UserApplication(ExtModelApplication):
         return self.response(self.instance_to_dict_get(o, fields=only), status=self.OK)
 
     def instance_to_dict_get(self, o, fields=None):
-        r = super(UserApplication, self).instance_to_dict(o, fields)
+        r = super().instance_to_dict(o, fields)
         del r["password"]
         r["permissions"] = self.apps_permissions_list()
         current_perms = Permission.get_user_permissions(o)
@@ -109,7 +109,7 @@ class UserApplication(ExtModelApplication):
         :param data:
         :return:
         """
-        r = super(UserApplication, self).apply_bulk_fields(data=data)
+        r = super().apply_bulk_fields(data=data)
         for x in r:
             if "password" in x:
                 del x["password"]
@@ -121,7 +121,7 @@ class UserApplication(ExtModelApplication):
         if name == "permissions":
             Permission.set_user_permissions(user=o, perms=values)
         else:
-            super(UserApplication, self).update_m2m(o, name, values)
+            super().update_m2m(o, name, values)
 
     @view(method=["GET"], url=r"^new_permissions/$", access="read", api=True)
     def api_read_permission(self, request):

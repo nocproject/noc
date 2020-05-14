@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CapabilityIndexRule
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class CapabilityIndexRule(OIDRule):
     name = "capindex"
 
     def __init__(self, oid, type=None, scale=1, start=0, capability=None):
-        super(CapabilityIndexRule, self).__init__(oid, type=type, scale=scale)
+        super().__init__(oid, type=type, scale=scale)
         self.start = start
         self.capability = capability
 

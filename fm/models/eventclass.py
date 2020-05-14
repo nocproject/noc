@@ -214,7 +214,7 @@ class EventClassCategory(Document):
             self.parent = p.id
         else:
             self.parent = None
-        super(EventClassCategory, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 @on_delete_check(
@@ -312,7 +312,7 @@ class EventClass(Document):
             c = EventClassCategory(name=c_name)
             c.save()
         self.category = c.id
-        super(EventClass, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def display_action(self):

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # kb.kbentry application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class KBEntryApplication(ExtModelApplication):
     file_fields_mask = re.compile(r"^(?P<fname>description|is_hidden)(?P<findex>\d+)")
 
     def instance_to_dict(self, o, fields=None):
-        r = super(KBEntryApplication, self).instance_to_dict(o, fields=fields)
+        r = super().instance_to_dict(o, fields=fields)
         r["attachments"] = [
             {
                 "name": x.name,

@@ -91,7 +91,7 @@ class PhoneNumber(Document):
         return PhoneNumber.objects.filter(id=id).first()
 
     def clean(self):
-        super(PhoneNumber, self).clean()
+        super().clean()
         # Check number is valid integer
         self.number = clean_number(self.number or "")
         if not self.number:

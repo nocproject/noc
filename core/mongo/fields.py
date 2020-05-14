@@ -37,7 +37,7 @@ class PlainReferenceField(BaseField):
                 )
         self.document_type_obj = document_type
         self.dereference = None
-        super(PlainReferenceField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def dereference_cached(self, value):
         return self.document_type.get_by_id(value)
@@ -135,7 +135,7 @@ class PlainReferenceListField(PlainReferenceField):
         # Dereference DBRefs
         if value is not None:
             instance._data[self.name] = [convert(v) for v in value]
-        return super(PlainReferenceField, self).__get__(instance, owner)
+        return super().__get__(instance, owner)
 
     def to_mongo(self, document):
         def convert(value):
@@ -175,7 +175,7 @@ class ForeignKeyField(BaseField):
             raise ValidationError("Argument to ForeignKeyField constructor must be a Model class")
         self.document_type = model
         self.set_dereference()
-        super(ForeignKeyField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def dereference_cached(self, value):
         return self.document_type.get_by_id(value)
@@ -215,7 +215,7 @@ class ForeignKeyField(BaseField):
             value = None
         elif isinstance(value, str):
             value = int(value)
-        super(ForeignKeyField, self).__set__(instance, value)
+        super().__set__(instance, value)
 
     def to_mongo(self, document):
         if isinstance(document, Model):
@@ -263,7 +263,7 @@ class ForeignKeyListField(ForeignKeyField):
         # Dereference DBRefs
         if value is not None:
             instance._data[self.name] = [convert(v) for v in value]
-        return super(ForeignKeyListField, self).__get__(instance, owner)
+        return super().__get__(instance, owner)
 
     def to_mongo(self, document):
         def convert(value):
@@ -291,7 +291,7 @@ class ForeignKeyListField(ForeignKeyField):
 
 class DateField(DateTimeField):
     def to_mongo(self, value):
-        v = super(DateField, self).to_mongo(value)
+        v = super().to_mongo(value)
         if v is None:
             return None
         return datetime.datetime(year=v.year, month=v.month, day=v.day)

@@ -90,7 +90,7 @@ class Peer(NOCModel):
             self.import_filter_name = None
         if self.export_filter_name is not None and not self.export_filter_name.strip():
             self.export_filter_name = None
-        super(Peer, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.touch_rpsl()
 
     @property

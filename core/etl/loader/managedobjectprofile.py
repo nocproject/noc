@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Managed Object Profile loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,6 +24,6 @@ class ManagedObjectProfileLoader(BaseLoader):
         """
         Fix pool
         """
-        v = super(ManagedObjectProfileLoader, self).clean(row)
+        v = super().clean(row)
         v["caps_profile"] = CapsProfile.objects.filter(name="default").first()
         return v

@@ -61,14 +61,14 @@ class ManagedObjectLoader(BaseLoader):
     }
 
     def __init__(self, *args, **kwargs):
-        super(ManagedObjectLoader, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.pools = {p.name: p for p in Pool.objects.all()}
 
     def clean(self, row):
         """
         Fix pool
         """
-        v = super(ManagedObjectLoader, self).clean(row)
+        v = super().clean(row)
         v["pool"] = self.pools[v["pool"]]
         v["fm_pool"] = self.pools[v["fm_pool"]] if v["fm_pool"] else v["pool"]
         if "tags" in v:

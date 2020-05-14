@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SNMP Error Codes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ END_OID_TREE = -5
 
 class SNMPError(Exception):
     def __init__(self, code, oid=None):
-        super(SNMPError, self).__init__()
+        super().__init__()
         self.code = code
         self.oid = oid
 

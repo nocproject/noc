@@ -45,7 +45,7 @@ class CorrelatorService(Service):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
-        super(CorrelatorService, self).__init__()
+        super().__init__()
         self.version = version.version
         self.rules = {}  # event_class -> [Rule]
         self.back_rules = {}  # event_class -> [Rule]
@@ -79,7 +79,7 @@ class CorrelatorService(Service):
         """
         Load rules from database just after loading config
         """
-        super(CorrelatorService, self).on_start()
+        super().on_start()
         connect()  # use_mongo connect do after on_start.
         self.load_rules()
         self.load_triggers()

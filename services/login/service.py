@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Login service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ class LoginService(UIService):
     _apikey_cache = cachetools.TTLCache(100, ttl=3)
 
     def get_handlers(self):
-        return super(LoginService, self).get_handlers() + [
+        return super().get_handlers() + [
             ("^/api/auth/auth/$", AuthRequestHandler, {"service": self}),
             ("^/api/login/logout/$", LogoutRequestHandler),
         ]

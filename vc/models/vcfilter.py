@@ -59,7 +59,7 @@ class VCFilter(NOCModel):
         Check expression before save
         """
         VCFilter.compile(self.expression)
-        super(VCFilter, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @classmethod
     def compile(cls, expression):

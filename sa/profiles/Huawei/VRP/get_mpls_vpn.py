@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_mpls_vpn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ class Script(BaseScript):
         if self.is_ne_platform:
             # NE Platform Set 3 Type for import
             self.VRF_TYPE_MAP = {"rt_export": {"2"}, "rt_import": {"1", "3"}}
-        return super(Script, self).execute_snmp(**kwargs)
+        return super().execute_snmp(**kwargs)
 
     def get_mpls_vpn(self):
         r = []

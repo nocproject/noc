@@ -28,7 +28,7 @@ class MailSenderService(Service):
     name = "mailsender"
 
     def __init__(self, *args, **kwargs):
-        super(MailSenderService, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.tz = None
 
     async def on_activate(self):

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # dev.quiz application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,4 +21,4 @@ class QuizApplication(ExtDocApplication):
     model = Quiz
 
     def deserialize(self, data):
-        return super(QuizApplication, self).deserialize(data)
+        return super().deserialize(data)

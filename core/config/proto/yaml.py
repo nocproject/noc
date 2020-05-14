@@ -27,7 +27,7 @@ class YAMLProtocol(BaseProtocol):
     ESCAPE_START = ("@", "%", "&")
 
     def __init__(self, config, url):
-        super(YAMLProtocol, self).__init__(config, url)
+        super().__init__(config, url)
         if self.parsed_url.path == "/":
             self.path = ""
         else:

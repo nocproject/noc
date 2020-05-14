@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cm.confdbquery application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ class ConfDBQueryApplication(ExtDocApplication):
     glyph = "file-code-o"
 
     def clean(self, data):
-        data = super(ConfDBQueryApplication, self).clean(data)
+        data = super().clean(data)
         src = data.get("source", "")
         try:
             Engine().compile(src)

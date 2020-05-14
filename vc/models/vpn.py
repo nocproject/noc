@@ -83,7 +83,7 @@ class VPN(Document):
         return VPN.objects.filter(bi_id=id).first()
 
     def clean(self):
-        super(VPN, self).clean()
+        super().clean()
         if self.id and "parent" in self._changed_fields and self.has_loop:
             raise ValidationError("Creating VPN loop")
 

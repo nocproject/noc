@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # routeros tokenizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ class RouterOSTokenizer(LineTokenizer):
             yield match.group(0)
 
     def __iter__(self):
-        g = super(RouterOSTokenizer, self).__iter__()
+        g = super().__iter__()
         context = None
         context_fed = False
         n_item = 0

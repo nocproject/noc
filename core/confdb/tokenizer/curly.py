@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # curly tokenizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ class CurlyTokenizer(LineTokenizer):
         self.start_of_context = start_of_context
         self.end_of_context = end_of_context
         self.explicit_eol = explicit_eol
-        super(CurlyTokenizer, self).__init__(data, **kwargs)
+        super().__init__(data, **kwargs)
 
     def iter_strip_explicit_eol(self, iter):
         l_eol = len(self.explicit_eol)
@@ -28,7 +28,7 @@ class CurlyTokenizer(LineTokenizer):
     def __iter__(self):
         contexts = []
         eoc = (self.end_of_context,)
-        g = super(CurlyTokenizer, self).__iter__()
+        g = super().__iter__()
         if self.explicit_eol:
             g = self.iter_strip_explicit_eol(g)
         for tokens in g:

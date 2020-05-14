@@ -141,7 +141,7 @@ class Script(BaseScript):
             #                   "Po 4", "Po 5", "Po 6","Po 7", "Po 8", "Po 9", "Po 10", "Po 11", "Po 12", "Po 13",
             #                   "Po 14", "Po 15", "Po 16"])
             #     if self.match_version(version__regex="4\.0\.8\.1$") and self.match_version(platform__regex="MES-2308P"):
-            #         return super(Script, self).execute_snmp(last_ifname=IFNAME)
+            #         return super().execute_snmp(last_ifname=IFNAME)
             if last_ifname and iface["interface"] not in last_ifname:
                 continue
             i_type = self.INTERFACE_TYPES.get(iface["type"], "other")

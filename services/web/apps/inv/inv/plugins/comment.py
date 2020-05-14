@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ class CommentPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.comment.CommentPanel"
 
     def init_plugin(self):
-        super(CommentPlugin, self).init_plugin()
+        super().init_plugin()
         self.add_view(
             "api_plugin_%s_set_comment" % self.name,
             self.api_set_comment,

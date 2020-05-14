@@ -80,4 +80,4 @@ class PrefixTablePrefix(NOCModel):
     def save(self, *args, **kwargs):
         # Set AFI
         self.afi = IP.prefix(self.prefix).afi
-        return super(PrefixTablePrefix, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)

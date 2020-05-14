@@ -188,7 +188,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 {"group": x, "group__label": smart_text(ResourceGroup.get_by_id(x))} for x in items
             ]
 
-        data = super(ManagedObjectApplication, self).instance_to_dict(o, fields)
+        data = super().instance_to_dict(o, fields)
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
@@ -202,7 +202,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 continue
             data[fn] = [x["group"] for x in (data.get(fn) or [])]
         # Clean other
-        return super(ManagedObjectApplication, self).clean(data)
+        return super().clean(data)
 
     def cleaned_query(self, q):
         if "administrative_domain" in q:
@@ -216,7 +216,7 @@ class ManagedObjectApplication(ExtModelApplication):
             del q["selector"]
         else:
             s = None
-        r = super(ManagedObjectApplication, self).cleaned_query(q)
+        r = super().cleaned_query(q)
         if s:
             r["id__in"] = ManagedObject.objects.filter(s.Q)
         if ad:
@@ -224,14 +224,14 @@ class ManagedObjectApplication(ExtModelApplication):
         return r
 
     def get_Q(self, request, query):
-        q = super(ManagedObjectApplication, self).get_Q(request, query)
+        q = super().get_Q(request, query)
         sq = ManagedObject.get_search_Q(query)
         if sq:
             q |= sq
         return q
 
     def queryset(self, request, query=None):
-        qs = super(ManagedObjectApplication, self).queryset(request, query)
+        qs = super().queryset(request, query)
         if not request.user.is_superuser:
             qs = qs.filter(UserAccess.Q(request.user))
         qs = qs.exclude(name__startswith="wiping-")

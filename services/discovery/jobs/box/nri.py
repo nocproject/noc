@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NRI Topology check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ class NRICheck(TopologyDiscoveryCheck):
         # Bulk interface aliasing
         self.seen_neighbors = set()
         # Actual discovery
-        return super(NRICheck, self).handler()
+        return super().handler()
 
     def iter_neighbors(self, mo):
         self.set_nri_aliases(mo)

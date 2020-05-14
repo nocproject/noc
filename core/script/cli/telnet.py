@@ -244,7 +244,7 @@ class TelnetParser(object):
 
 class TelnetIOStream(IOStream):
     def __init__(self, sock, cli, *args, **kwargs):
-        super(TelnetIOStream, self).__init__(sock, *args, **kwargs)
+        super().__init__(sock, *args, **kwargs)
         self.cli = cli
         self.logger = cli.logger
         self.parser = TelnetParser(

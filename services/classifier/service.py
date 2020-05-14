@@ -102,7 +102,7 @@ class ClassifierService(Service):
     interface_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
 
     def __init__(self):
-        super(ClassifierService, self).__init__()
+        super().__init__()
         self.version = version.version
         self.ruleset = RuleSet()
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]

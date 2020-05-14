@@ -46,7 +46,7 @@ class REST(BasePattern):
 
 class Token(BasePattern):
     def __init__(self, token):
-        super(Token, self).__init__()
+        super().__init__()
         self.token = token
 
     def match(self, token):

@@ -108,7 +108,7 @@ class VLAN(Document):
         return VLAN.objects.filter(bi_id=id).first()
 
     def clean(self):
-        super(VLAN, self).clean()
+        super().clean()
         self.segment = NetworkSegment.get_border_segment(self.segment)
         if self.translation_rule and not self.parent:
             self.translation_rule = None

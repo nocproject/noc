@@ -126,12 +126,12 @@ class DNSZone(NOCModel):
             yield "dnszone", self.id
 
     def clean(self):
-        super(DNSZone, self).clean()
+        super().clean()
         self.type = self.get_type_for_zone(self.name or "")
 
     def save(self, *args, **kwargs):
         self.clean()
-        super(DNSZone, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_type_for_zone(name):

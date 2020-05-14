@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Syslog server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class SyslogServer(UDPServer):
     def __init__(self, service):
-        super(SyslogServer, self).__init__()
+        super().__init__()
         self.service = service
 
     def enable_reuseport(self):

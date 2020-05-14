@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ReportMetrics datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class ReportMetrics(BaseReportColumn):
     KEY_FIELDS = None
 
     def __init__(self, mos_ids, f_date, to_date, columns=None):
-        super(ReportMetrics, self).__init__(mos_ids)
+        super().__init__(mos_ids)
         self.from_date = f_date
         self.to_date = to_date
         self.ch_client = connection()

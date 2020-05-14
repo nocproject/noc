@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Caps check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ class SLACheck(DiscoveryCheck):
     }
 
     def has_required_capabilities(self):
-        if not super(SLACheck, self).has_required_capabilities():
+        if not super().has_required_capabilities():
             return False
         object_caps = self.object.get_caps()
         check_caps = (

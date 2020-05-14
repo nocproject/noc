@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Accelerated Rule Lookup
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class XRuleLookup(RuleLookup):
     _parser_cache = {}
 
     def __init__(self, rules):
-        super(XRuleLookup, self).__init__(sorted(rules, key=lambda x: x.preference))
+        super().__init__(sorted(rules, key=lambda x: x.preference))
         self.index = esm.Index()
         self.kwmask = None
         self.rule_masks = []

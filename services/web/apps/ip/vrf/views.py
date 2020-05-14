@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ip.vrf application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ class VRFApplication(ExtModelApplication):
         if not data.get("vpn_id"):
             vdata = {"type": "VRF", "name": data["name"], "rd": data.get("rd")}
             data["vpn_id"] = get_vpn_id(vdata)
-        return super(VRFApplication, self).clean(data)
+        return super().clean(data)
 
     @view(
         url="^bulk/import/$",

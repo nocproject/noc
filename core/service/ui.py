@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # UI backend service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-1019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -68,6 +68,6 @@ class UIService(Service):
         """
         Initialize additional application handlers
         """
-        return super(UIService, self).get_handlers() + [
+        return super().get_handlers() + [
             (r"^/api/%s/index.html$" % self.name, UIHandler, {"service": self})
         ]

@@ -24,7 +24,7 @@ class ManagedObjectLevelGoal(BaseGoal):
     BACKWARDS_COST = 100
 
     def __init__(self, level):
-        super(ManagedObjectLevelGoal, self).__init__()
+        super().__init__()
         self.level = level
 
     def cost_estimate(

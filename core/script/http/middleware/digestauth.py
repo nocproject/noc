@@ -25,7 +25,7 @@ class DigestAuthMiddeware(BaseMiddleware):
     name = "digestauth"
 
     def __init__(self, http, eof_mark=None):
-        super(DigestAuthMiddeware, self).__init__(http)
+        super().__init__(http)
         self.logger = http.logger
         self.eof_mark = eof_mark
         self.user = self.http.script.credentials.get("user")

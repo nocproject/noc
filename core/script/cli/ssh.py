@@ -37,7 +37,7 @@ class SSHIOStream(IOStream):
     _key_cache = cachetools.TTLCache(100, ttl=60)
 
     def __init__(self, sock, cli, *args, **kwargs):
-        super(SSHIOStream, self).__init__(sock, *args, **kwargs)
+        super().__init__(sock, *args, **kwargs)
         self.cli = cli
         self.script = self.cli.script
         self.logger = cli.logger
@@ -159,7 +159,7 @@ class SSHIOStream(IOStream):
             if self.session:
                 self.logger.debug("Closing ssh session")
                 self.session = None
-        super(SSHIOStream, self).close(exc_info=exc_info)
+        super().close(exc_info=exc_info)
 
     def get_user(self) -> str:
         """

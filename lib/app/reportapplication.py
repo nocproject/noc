@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ReportApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class ReportApplication(Application):
     inline_styles = ""
 
     def __init__(self, site):
-        super(ReportApplication, self).__init__(site)
+        super().__init__(site)
         site.reports += [self]
 
     def get_form(self):

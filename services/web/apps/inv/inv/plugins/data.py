@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class DataPlugin(InvPlugin):
     ]
 
     def init_plugin(self):
-        super(DataPlugin, self).init_plugin()
+        super().init_plugin()
         self.add_view(
             "api_plugin_%s_save_data" % self.name,
             self.api_save_data,

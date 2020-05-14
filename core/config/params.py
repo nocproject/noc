@@ -51,7 +51,7 @@ class BaseParameter(object):
 class StringParameter(BaseParameter):
     def __init__(self, default=None, help=None, choices=None):
         self.choices = choices
-        super(StringParameter, self).__init__(default=default, help=help)
+        super().__init__(default=default, help=help)
 
     def clean(self, v):
         v = smart_text(v)
@@ -63,7 +63,7 @@ class StringParameter(BaseParameter):
 
 class SecretParameter(BaseParameter):
     def __init__(self, default=None, help=None, choices=None):
-        super(SecretParameter, self).__init__(default=default, help=help)
+        super().__init__(default=default, help=help)
 
     def clean(self, v):
         return smart_text(v)
@@ -76,7 +76,7 @@ class IntParameter(BaseParameter):
     def __init__(self, default=None, help=None, min=None, max=None):
         self.min = min
         self.max = max
-        super(IntParameter, self).__init__(default=default, help=None)
+        super().__init__(default=default, help=None)
 
     def clean(self, v):
         v = int(v)
@@ -104,7 +104,7 @@ class FloatParameter(BaseParameter):
 class MapParameter(BaseParameter):
     def __init__(self, default=None, help=None, mappings=None):
         self.mappings = mappings or {}
-        super(MapParameter, self).__init__(default=default, help=help)
+        super().__init__(default=default, help=help)
 
     def clean(self, v):
         try:
@@ -114,7 +114,7 @@ class MapParameter(BaseParameter):
 
     def dump_value(self):
         if not self.mappings:
-            return super(MapParameter, self).dump_value()
+            return super().dump_value()
         for mv in self.mappings:
             if self.mappings[mv] == self.value:
                 return mv
@@ -177,7 +177,7 @@ class SecondsParameter(BaseParameter):
 class ListParameter(BaseParameter):
     def __init__(self, default=None, help=None, item=None):
         self.item = item
-        super(ListParameter, self).__init__(default=default, help=help)
+        super().__init__(default=default, help=help)
 
     def clean(self, v):
         return [self.item.clean(x) for x in v]
@@ -224,7 +224,7 @@ class ServiceParameter(BaseParameter):
         self.wait = wait
         self.full_result = full_result
         self.critical = critical
-        super(ServiceParameter, self).__init__(default=[], help=help)
+        super().__init__(default=[], help=help)
 
     def __get__(self, instance, owner):
         if not self.value:

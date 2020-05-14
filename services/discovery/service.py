@@ -20,7 +20,7 @@ class DiscoveryService(Service):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
-        super(DiscoveryService, self).__init__()
+        super().__init__()
         self.send_callback = None
         self.slot_number = 0
         self.total_slots = 0
@@ -47,7 +47,7 @@ class DiscoveryService(Service):
         self.scheduler.run()
 
     def get_mon_data(self):
-        r = super(DiscoveryService, self).get_mon_data()
+        r = super().get_mon_data()
         if self.scheduler:
             self.scheduler.apply_metrics(r)
         return r

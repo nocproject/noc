@@ -2,7 +2,7 @@
 # Vendor: Intracom
 # OS:     UltraLink
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,5 +19,5 @@ class Profile(BaseProfile):
 
     def cleaned_config(self, config):
         config = config.replace("--\n", "")
-        config = super(Profile, self).cleaned_config(config)
+        config = super().cleaned_config(config)
         return config

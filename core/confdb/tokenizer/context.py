@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Context tokenizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ class ContextTokenizer(LineTokenizer):
     name = "context"
 
     def __init__(self, data, end_of_context=None, contexts=None, **kwargs):
-        super(ContextTokenizer, self).__init__(data, **kwargs)
+        super().__init__(data, **kwargs)
         self.end_of_context = end_of_context
         self.contexts = contexts or []
 
@@ -45,7 +45,7 @@ class ContextTokenizer(LineTokenizer):
 
     def __iter__(self):
         contexts = []
-        for tokens in super(ContextTokenizer, self).__iter__():
+        for tokens in super().__iter__():
             # Process end of context
             if self.end_of_context and contexts and tokens[0] == self.end_of_context:
                 contexts.pop(-1)

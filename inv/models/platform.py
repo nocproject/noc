@@ -84,11 +84,11 @@ class Platform(Document):
         self.full_name = "%s %s" % (self.vendor.name, self.name)
         if self.aliases:
             self.aliases = sorted(a for a in self.aliases if a != self.name)
-        super(Platform, self).clean()
+        super().clean()
 
     def save(self, *args, **kwargs):
         to_merge_aliases = not hasattr(self, "_changed_fields") or "aliases" in self._changed_fields
-        super(Platform, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if to_merge_aliases:
             for a in self.aliases:
                 if a == self.name:

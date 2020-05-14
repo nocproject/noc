@@ -23,7 +23,7 @@ class SelfMonService(Service):
     use_mongo = True
 
     def __init__(self):
-        super(SelfMonService, self).__init__()
+        super().__init__()
         self.collectors = []
         self.runner_thread = None
 

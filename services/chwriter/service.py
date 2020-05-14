@@ -28,7 +28,7 @@ class CHWriterService(Service):
     CH_SUSPEND_ERRORS = {598, 599}
 
     def __init__(self):
-        super(CHWriterService, self).__init__()
+        super().__init__()
         self.channels: Dict[str, Channel] = {}
         self.last_ts = None
         self.last_metrics = 0
@@ -270,7 +270,7 @@ class CHWriterService(Service):
         # Return messages back to queue
         self.requeue_channels()
         # .stop() will wait until queued data will be really published
-        super(CHWriterService, self).stop()
+        super().stop()
 
 
 if __name__ == "__main__":

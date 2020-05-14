@@ -127,7 +127,7 @@ class Interface(Document):
         if (not hasattr(self, "_changed_fields") or "mac" in self._changed_fields) and self.mac:
             self.mac = MACAddressParameter().clean(self.mac)
         try:
-            super(Interface, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
         except Exception as e:
             raise ValueError("%s: %s" % (e.__doc__, e.message))
         if not hasattr(self, "_changed_fields") or "service" in self._changed_fields:

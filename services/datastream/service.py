@@ -33,7 +33,7 @@ class DataStreamService(Service):
         traefik_frontend_rule = "PathPrefix:/api/datastream"
 
     def __init__(self):
-        super(DataStreamService, self).__init__()
+        super().__init__()
         self.ds_queue = {}
 
     def get_datastreams(self):

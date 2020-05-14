@@ -27,7 +27,7 @@ class AutoCompleteTags(Input):
                 if v:
                     initial += [{"id": v, "name": v}]
         initial = ujson.dumps(initial)
-        html = super(AutoCompleteTags, self).render(name, value, attrs)
+        html = super().render(name, value, attrs)
         js = """<script type="text/javascript">
         $(document).ready(function() {
             $("#%s").tokenInput("%s",{

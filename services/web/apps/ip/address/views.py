@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ip.address application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,5 +35,5 @@ class AddressApplication(ExtModelApplication):
         return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
 
     def queryset(self, request, query=None):
-        qs = super(AddressApplication, self).queryset(request, query=query)
+        qs = super().queryset(request, query=query)
         return qs.filter(PrefixAccess.read_Q(request.user, field="address", table="ip_address"))

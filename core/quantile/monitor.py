@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Internal monitoring metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ Q_SUFFIX_LEN = len(Q_SUFFIX)
 
 class Quantile(Summary):
     def __init__(self, scale=DEFAULT_QUANTILE_SCALE):
-        super(Quantile, self).__init__(
+        super().__init__(
             config.metrics.default_quantiles_window,
             1,
             TargetedStream,

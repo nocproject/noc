@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # phone.phonerange application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ class PhoneRangeApplication(ExtDocApplication):
                 for x in items
             ]
 
-        data = super(PhoneRangeApplication, self).instance_to_dict(o, fields, nocustom)
+        data = super().instance_to_dict(o, fields, nocustom)
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
@@ -61,7 +61,7 @@ class PhoneRangeApplication(ExtDocApplication):
                 continue
             data[fn] = [x["group"] for x in (data.get(fn) or [])]
         # Clean other
-        return super(PhoneRangeApplication, self).clean(data)
+        return super().clean(data)
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
@@ -78,6 +78,6 @@ class PhoneRangeApplication(ExtDocApplication):
         }
 
     def get_Q(self, request, query):
-        q = super(PhoneRangeApplication, self).get_Q(request, query)
+        q = super().get_Q(request, query)
         q |= Q(from_number__lte=query, to_number__gte=query)
         return q
