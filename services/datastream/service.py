@@ -13,7 +13,6 @@ import random
 from queue import Queue, Empty
 
 # Third-party modules
-import tornado.gen
 import tornado.locks
 import tornado.ioloop
 import pymongo.errors
@@ -154,8 +153,7 @@ class DataStreamService(Service):
             time.sleep(TIMEOUT + (random.random() - 0.5) * TIMEOUT * 2 * JITER)
             self._run_callbacks(queue)
 
-    @tornado.gen.coroutine
-    def wait(self, ds_name):
+    async def wait(self, ds_name):
         def notify():
             ioloop.add_callback(event.set)
 
@@ -164,7 +162,7 @@ class DataStreamService(Service):
         event = tornado.locks.Event()
         ioloop = tornado.ioloop.IOLoop.current()
         self.ds_queue[ds_name].put(notify)
-        yield event.wait()
+        await event.wait()
 
 
 if __name__ == "__main__":

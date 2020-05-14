@@ -50,7 +50,7 @@ async def snmp_get(
 ):
     """
     Perform SNMP get request and returns Future to be used
-    inside @tornado.gen.coroutine
+    inside async coroutine
     """
     oid_map = {}
     if isinstance(oids, str):
@@ -179,7 +179,7 @@ async def snmp_count(
 ):
     """
     Perform SNMP get request and returns Future to be used
-    inside @tornado.gen.coroutine
+    inside async coroutine
     """
 
     def true(x, y):
@@ -262,7 +262,7 @@ async def snmp_getnext(
 ):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
-    inside @tornado.gen.coroutine
+    inside async coroutine
     """
 
     def true(x, y):
@@ -360,7 +360,7 @@ async def snmp_set(
 ):
     """
     Perform SNMP set request and returns Future to be used
-    inside @tornado.gen.coroutine
+    inside async coroutine
     """
     logger.debug("[%s] SNMP SET %s", address, varbinds)
     if udp_socket:

@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-import tornado.gen
-
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
@@ -93,8 +90,7 @@ class ActivatorAPI(API):
         return "%s %s" % (name, credentials.get("address", "-"))
 
     @api
-    @tornado.gen.coroutine
-    def snmp_v1_get(self, address, community, oid):
+    async def snmp_v1_get(self, address, community, oid):
         """
         Perform SNMP v1 GET and return result
         :param address: IP address
@@ -104,7 +100,7 @@ class ActivatorAPI(API):
         """
         self.logger.debug("SNMP v1 GET %s %s", address, oid)
         try:
-            result = yield snmp_get(
+            result = await snmp_get(
                 address=address,
                 oids=oid,
                 community=community,
@@ -124,8 +120,7 @@ class ActivatorAPI(API):
         return "%s %s" % (address, oid)
 
     @api
-    @tornado.gen.coroutine
-    def snmp_v2c_get(self, address, community, oid):
+    async def snmp_v2c_get(self, address, community, oid):
         """
         Perform SNMP v2c GET and return result
         :param address: IP address
@@ -135,7 +130,7 @@ class ActivatorAPI(API):
         """
         self.logger.debug("SNMP v2c GET %s %s", address, oid)
         try:
-            result = yield snmp_get(
+            result = await snmp_get(
                 address=address,
                 oids=oid,
                 community=community,
@@ -155,8 +150,7 @@ class ActivatorAPI(API):
         return "%s %s" % (address, oid)
 
     @api
-    @tornado.gen.coroutine
-    def http_get(self, url, ignore_errors=False):
+    async def http_get(self, url, ignore_errors=False):
         """
         Perform HTTP/HTTPS get and return result
         :param url: Request URL
@@ -164,7 +158,7 @@ class ActivatorAPI(API):
         :returns" Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
-        code, header, body = yield fetch(
+        code, header, body = await fetch(
             url,
             request_timeout=config.activator.http_request_timeout,
             follow_redirects=True,

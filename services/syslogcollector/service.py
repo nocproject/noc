@@ -10,10 +10,10 @@
 import socket
 import datetime
 from collections import defaultdict, namedtuple
+import asyncio
 
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 
 # NOC modules
 from noc.config import config
@@ -111,8 +111,7 @@ class SyslogCollectorService(Service):
                 ],
             )
 
-    @tornado.gen.coroutine
-    def get_object_mappings(self):
+    async def get_object_mappings(self):
         """
         Subscribe and track datastream changes
         """
@@ -122,17 +121,16 @@ class SyslogCollectorService(Service):
         while True:
             self.logger.info("Starting to track object mappings")
             try:
-                yield client.query(
+                await client.query(
                     limit=config.syslogcollector.ds_limit,
                     filters=["pool(%s)" % config.pool],
                     block=1,
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
-                yield tornado.gen.sleep(1)
+                await asyncio.sleep(1)
 
-    @tornado.gen.coroutine
-    def report_invalid_sources(self):
+    async def report_invalid_sources(self):
         """
         Report invalid event sources
         """

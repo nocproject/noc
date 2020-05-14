@@ -9,7 +9,6 @@
 import operator
 
 # Third-party modules
-import tornado.gen
 import ujson
 
 # NOC modules
@@ -48,9 +47,8 @@ class GetMappingsAPI(NBIAPI):
         }
 
     @authenticated
-    @tornado.gen.coroutine
-    def post(self, *args, **kwargs):
-        yield self.to_executor(self.do_post)
+    async def post(self, *args, **kwargs):
+        await self.to_executor(self.do_post)
 
     def do_post(self):
         # Decode request
@@ -67,8 +65,7 @@ class GetMappingsAPI(NBIAPI):
         return self.do_mapping(**req)
 
     @authenticated
-    @tornado.gen.coroutine
-    def get(self, *args, **kwargs):
+    async def get(self, *args, **kwargs):
         try:
             req = self.cleaned_request(
                 scope=self.get_argument("scope", None),
@@ -79,10 +76,9 @@ class GetMappingsAPI(NBIAPI):
         except ValueError as e:
             self.write_result(400, "Bad request: %s" % e)
             return
-        yield self.to_executor(self.do_mapping, **req)
+        await self.to_executor(self.do_mapping, **req)
 
-    @tornado.gen.coroutine
-    def to_executor(self, handler, *args, **kwargs):
+    async def to_executor(self, handler, *args, **kwargs):
         """
         Continue processing on executor
         :param handler:
@@ -90,7 +86,7 @@ class GetMappingsAPI(NBIAPI):
         :param kwargs:
         :return:
         """
-        code, result = yield self.executor.submit(handler, *args, **kwargs)
+        code, result = await self.executor.submit(handler, *args, **kwargs)
         self.write_result(code, result)
 
     def write_result(self, code, result):

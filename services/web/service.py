@@ -9,7 +9,6 @@
 # Third-party modules
 import tornado.web
 import tornado.httpserver
-import tornado.gen
 import tornado.wsgi
 import django.core.handlers.wsgi
 from tornado import escape

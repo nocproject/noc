@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import tornado.gen
-
 # NOC modules
 from noc.core.service.apiaccess import authenticated
 from noc.sa.models.managedobject import ManagedObject
@@ -18,9 +15,8 @@ class ConfigAPI(NBIAPI):
     name = "config"
 
     @authenticated
-    @tornado.gen.coroutine
-    def get(self, object_id, revision=None):
-        code, result = yield self.executor.submit(self.handler, object_id, revision)
+    async def get(self, object_id, revision=None):
+        code, result = await self.executor.submit(self.handler, object_id, revision)
         self.set_status(code)
         self.set_header("Content-Type", "text/plain")
         if code != 204:

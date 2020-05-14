@@ -11,10 +11,7 @@ import functools
 import time
 import datetime
 import os
-
-# Third-party modules
-import tornado.ioloop
-import tornado.gen
+import asyncio
 
 # NOC modules
 from noc.config import config
@@ -78,8 +75,7 @@ class PingService(Service):
         """
         self.pub("events.%s" % cfg.fm_pool, {"ts": timestamp, "object": cfg.id, "data": data})
 
-    @tornado.gen.coroutine
-    def get_object_mappings(self):
+    async def get_object_mappings(self):
         """
         Subscribe and track datastream changes
         """
@@ -89,7 +85,7 @@ class PingService(Service):
         while True:
             self.logger.info("Starting to track object mappings")
             try:
-                yield client.query(
+                await client.query(
                     limit=config.ping.ds_limit,
                     filters=[
                         "pool(%s)" % config.pool,
@@ -99,7 +95,7 @@ class PingService(Service):
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
-                yield tornado.gen.sleep(1)
+                await asyncio.sleep(1)
 
     def update_probe(self, data):
         if data["id"] in self.probes:
@@ -148,8 +144,7 @@ class PingService(Service):
         metrics["ping_probe_update"] += 1
         metrics["ping_objects"] = len(self.probes)
 
-    @tornado.gen.coroutine
-    def ping_check(self, ps):
+    async def ping_check(self, ps):
         """
         Perform ping check and set result
         """
@@ -163,7 +158,7 @@ class PingService(Service):
             if not eval(ps.time_cond, {"T": dt}):
                 metrics["ping_check_skips"] += 1
                 return
-        rtt, attempts = yield self.ping.ping_check_rtt(
+        rtt, attempts = await self.ping.ping_check_rtt(
             ps.address, policy=ps.policy, size=ps.size, count=ps.count, timeout=ps.timeout
         )
         s = rtt is not None

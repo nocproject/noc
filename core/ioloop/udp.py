@@ -22,13 +22,12 @@ class UDPSocket(object):
     """
     UDP socket abstraction
 
-    @tornado.gen.coroutine
-    def test():
+    async def test():
         sock = UDPSocket()
         # Send request
-        yield sock.sendto(data, (address, port))
+        await sock.sendto(data, (address, port))
         # Wait reply
-        data, addr = yield sock.recvfrom(4096)
+        data, addr = await sock.recvfrom(4096)
         # Close socket
         sock.close()
     """

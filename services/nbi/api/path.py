@@ -10,7 +10,6 @@ from collections import defaultdict
 from time import perf_counter
 
 # Third-party modules
-import tornado.gen
 import ujson
 from typing import Tuple, Optional, Dict, List, Iterable, DefaultDict, Any
 
@@ -105,9 +104,8 @@ class PathAPI(NBIAPI):
     name = "path"
 
     @authenticated
-    @tornado.gen.coroutine
-    def post(self, *args, **kwargs):
-        code, result = yield self.executor.submit(self.handler)
+    async def post(self, *args, **kwargs):
+        code, result = await self.executor.submit(self.handler)
         self.set_status(code)
         if isinstance(result, str):
             self.write(result)

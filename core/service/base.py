@@ -21,7 +21,6 @@ import asyncio
 
 # Third-party modules
 from tornado.ioloop import IOLoop, PeriodicCallback
-import tornado.gen
 import tornado.web
 import tornado.netutil
 import tornado.httpserver
