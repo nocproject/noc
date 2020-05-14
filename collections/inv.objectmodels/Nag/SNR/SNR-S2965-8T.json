@@ -1,0 +1,160 @@
+{
+    "name": "NAG | SNR | SNR-S2965-8T",
+    "$collection": "inv.objectmodels",
+    "uuid": "c6ff36d3-2984-4e3f-9152-0c9901eee39d",
+    "vendor__code": "NAG",
+    "description": "Управляемый Ethernet коммутатор, 6 x 10/100BaseT, 2 x 10/100/1000BaseT, 2 x 100/1000BaseX SFP.\nПитание: 220VAC",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Ethernet1/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/9 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/9_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/9 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfp9",
+            "name": "Ethernet1/0/9_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/0/10 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/0/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/10_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/10 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfp10",
+            "name": "Ethernet1/0/10_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SNR-S2965-8T"]
+        },
+        "dimensions": {
+            "depth": 150,
+            "height": 44,
+            "width": 220
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 11.0
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
