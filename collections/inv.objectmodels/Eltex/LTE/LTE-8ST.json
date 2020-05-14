@@ -1,132 +1,120 @@
 {
-    "name": "Eltex | LTP | LTP-8X-rev.B",
+    "name": "Eltex | LTE | LTE-8ST",
     "$collection": "inv.objectmodels",
-    "uuid": "5f2dfd61-c392-4d66-a694-e18287c23e15",
+    "uuid": "f63365d1-a06b-40bb-abf5-89c8fc3b5f9d",
     "vendor__code": "ELTEX",
-    "description": "Оптический станционный терминал LTP-8X",
+    "description": "Оптический станционный терминал LTE-8ST",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "tags": ["chassis", "sup", "psu", "port", "fan"],
     "connections": [
         {
-            "description": "0",
+            "description": "MNG",
             "direction": "s",
             "gender": "f",
-            "name": "0",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "name": "MNG",
+            "protocols": ["10BASET", "100BASET", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "1",
+            "description": "8 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "8",
+            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "8 port",
             "direction": "s",
             "gender": "f",
-            "name": "1",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "name": "8_rj",
+            "protocols": ["10BASET", "100BASET", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "2",
-            "direction": "s",
-            "gender": "f",
-            "name": "2",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "3",
-            "direction": "s",
-            "gender": "f",
-            "name": "3",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "4",
-            "direction": "s",
-            "gender": "f",
-            "group": "4",
-            "name": "4",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "5",
-            "direction": "s",
-            "gender": "f",
-            "group": "5",
-            "name": "5",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "6",
-            "direction": "s",
-            "gender": "f",
-            "group": "6",
-            "name": "6",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "7",
-            "direction": "s",
-            "gender": "f",
-            "group": "7",
-            "name": "7",
-            "protocols": ["100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Fiber port 4",
+            "description": "8 port",
             "direction": "i",
             "gender": "f",
-            "group": "4",
-            "name": "sfp4",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "internal_name": "sfp8",
+            "name": "8_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Fiber port 5",
+            "description": "9 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "9",
+            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "9_rj",
+            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "9 port",
             "direction": "i",
             "gender": "f",
-            "group": "5",
-            "name": "sfp5",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "internal_name": "sfp9",
+            "name": "9_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Fiber port 6",
+            "description": "10 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "10",
+            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "10_rj",
+            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "10 port",
             "direction": "i",
             "gender": "f",
-            "group": "6",
-            "name": "sfp6",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "internal_name": "sfp10",
+            "name": "9_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Fiber port 7",
+            "description": "11 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "11",
+            "protocols": ["10BASET", "100BASET", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "11 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "11_rj",
+            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "11 port",
             "direction": "i",
             "gender": "f",
-            "group": "7",
-            "name": "sfp7",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "internal_name": "sfp11",
+            "name": "11_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "SFP+ port 0",
-            "direction": "i",
-            "gender": "f",
-            "name": "Te0_sfp+",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "SFP+ port 1",
-            "direction": "i",
-            "gender": "f",
-            "name": "Te1_sfp+",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "gpon 0",
@@ -201,41 +189,35 @@
             "type__name": "Electrical | DB9"
         },
         {
-            "description": "Power slot 1",
-            "direction": "i",
+            "description": "-48V",
+            "direction": "s",
             "gender": "f",
-            "name": "psu1",
-            "type__name": "Eltex | MES | PSU"
-        },
-        {
-            "description": "Power slot 2",
-            "direction": "i",
-            "gender": "f",
-            "name": "psu2",
-            "type__name": "Eltex | MES | PSU"
+            "name": "-48V",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["LTP-8X", "LTP-8X-rev.B", "LTP-8X:rev.B"]
+            "part_no": ["LTE-8ST"]
         },
         "dimensions": {
-            "depth": 259,
-            "height": 44,
+            "depth": 240,
+            "height": 45,
             "width": 420
         },
         "management": {
             "managed": true
         },
         "power": {
-            "power": 20.0
+            "power": 60
         },
         "rackmount": {
             "units": 1.0
         },
         "weight": {
             "is_recursive": true,
-            "weight": 3.5
+            "weight": 2.5
         }
     }
 }
