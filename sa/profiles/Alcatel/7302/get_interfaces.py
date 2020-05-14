@@ -7,11 +7,16 @@
 
 # Python modules
 import re
+from collections import defaultdict
+from itertools import chain
+from typing import Tuple
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.mib import mib
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):
@@ -45,43 +50,67 @@ class Script(BaseScript):
         "ethernet": "physical",
         "slip": "tunnel",
         "xdsl-line": "physical",
-        "xdsl-channel": "physical",
-        "atm-bonding": "physical",
-        "atm": "physical",
-        "atm-ima": "physical",
-        "efm": "physical",
+        "xdsl-channel": "other",
+        "atm-bonding": "other",
+        "atm": "other",
+        "atm-ima": "other",
+        "efm": "other",
         "shdsl": "physical",
-        "l2-vlan": "SVI",
+        "l2-vlan": "other",
         "sw-loopback": "loopback",
         "bonding": "other",
         "bridge-port": "other",
     }
 
-    @staticmethod
-    def wrong_interface(ifname):
-        if ifname.startswith("bonding"):
-            return True
-        elif ifname.startswith("xdsl-line"):
-            return True
-        elif ifname.startswith("xdsl-channel"):
-            return True
-        elif ifname.startswith("bridge-port"):
-            return True
-        elif ifname.startswith("vlan_port"):
-            return True
-        else:
-            return False
+    PROCCESSED_TYPE = {
+        6: {"type": "physical"},  # ethernetCsmacd
+        24: {"type": "loopback", "prefix": "sw-loopback"},  # softwareLoopback
+        249: {"type": "physical"},  # aluELP (xdsl-line)
+    }
 
-    def execute(self):
+    avail_status_map = {
+        1: "available",
+        2: "inTest",
+        3: "failed",
+        4: "powerOff",
+        5: "notInstalled",
+        6: "offLine",
+        7: "dependency",
+    }
+
+    collected_slots_status = {"available", "inTest", "failed", "powerOff"}
+
+    def get_boards_status_cli(self):
+        r = {}
+        v = self.cli("show equipment slot", cached=True)
+        for p in parse_table(v):
+            if not p[0].startswith("lt"):
+                continue
+            slot_id = p[0].split(":", 1)[-1]
+            r[tuple(slot_id.split("/"))] = p[4] in self.collected_slots_status
+        return r
+
+    def execute_cli(self, **kwargs):
         self.cli(
             "environment inhibit-alarms mode batch terminal-timeout timeout:360", ignore_errors=True
         )
 
-        bridge_port = {}
+        subifaces = defaultdict(list)
         v = self.cli("show bridge port")
         for match in self.rx_bridge_port.finditer(v):
-            bridge_port["atm-pvc:%s" % match.group("ifname")] = match.group("pvid")
-
+            # bridge_port[match.group("ifname")] = match.group("pvid")
+            port_id, vpi, vci = match.group("ifname").split(":")
+            name = "%s:%s:%s" % (port_id, vpi, vci)
+            subifaces[port_id] += [
+                {
+                    "name": name,
+                    "vci": vci,
+                    "vpi": vpi,
+                    # "snmp_ifindex": vciifindex,
+                    "enabled_afi": ["ATM", "BRIDGE"],
+                    "untagged_vlan": match.group("pvid"),
+                }
+            ]
         tagged_vlans = {}
         v = self.cli("show vlan shub-port-vlan-map")
         for match in self.rx_vlan_map.finditer(v):
@@ -96,95 +125,55 @@ class Script(BaseScript):
             else:
                 tagged_vlans[ifname] = [match.group("vlan_id")]
 
-        interfaces = []
+        boards_status = self.get_boards_status_cli()
+        self.logger.debug("Boards status: %s", boards_status)
+        interfaces = {}
         v = self.cli("show interface port detail")
         for p in v.split("----\nport\n----"):
             match = self.rx_ifname.search(p)
             if not match:
                 continue
             ifname = match.group("ifname")
-            if self.wrong_interface(ifname):
+            hints = []
+            if ifname.startswith("ethernet"):
+                port_id = ifname
+                hints = ["nni"]
+            else:
+                port_id = ifname.split(":", 1)[-1]
+                slot_id = tuple(port_id.split("/")[:-1])
+                if slot_id in boards_status and not boards_status[slot_id]:
+                    self.logger.debug("Board is not enabled. Skipping...")
+                    continue
+            iftype = self.types.get(self.rx_type.search(p).group("type"))
+            if not iftype or iftype == "other":
                 continue
-            match = self.rx_vpi_vci.search(ifname)
-            if not match:
-                match = self.rx_admin_status.search(p)
-                admin_status = match.group("admin_status") in ["up", "admin-up"]
-                match = self.rx_oper_status.search(p)
-                oper_status = match.group("oper_status") == "up"
-                match = self.rx_type.search(p)
-                iftype = self.types[match.group("type")]
-                match = self.rx_ifindex.search(p)
-                ifindex = match.group("ifindex")
-                i = {
-                    "name": ifname,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "type": iftype,
-                    "snmp_ifindex": int(ifindex),
-                    "enabled_protocols": [],
-                    "subinterfaces": [
-                        {
-                            "name": ifname,
-                            "admin_status": admin_status,
-                            "oper_status": oper_status,
-                            "enabled_afi": [],
-                        }
-                    ],
-                }
-                match = self.rx_mac.search(p)
-                if match:
-                    i["mac"] = match.group("mac")
-                    i["subinterfaces"][0]["mac"] = match.group("mac")
-                match = self.rx_mtu.search(p)
-                if match and int(match.group("mtu")) > 0:
-                    i["subinterfaces"][0]["mtu"] = match.group("mtu")
-                if iftype != "tunnel":
-                    i["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
-                if i["name"].startswith("l2-vlan:"):
-                    i["subinterfaces"][0]["vlan_ids"] = [int(i["name"][8:])]
-                if ifname in tagged_vlans:
-                    i["subinterfaces"][0]["tagged_vlans"] = tagged_vlans[ifname]
-                interfaces += [i]
-
-        # Repeat, because "atm-if" follows "atm-pvc"
-        for p in v.split("----\nport\n----"):
-            match = self.rx_ifname.search(p)
-            if not match:
-                continue
-            ifname = match.group("ifname")
-            if self.wrong_interface(ifname):
-                continue
-            match = self.rx_vpi_vci.search(ifname)
+            interfaces[port_id] = {
+                "name": port_id,
+                "snmp_ifindex": self.rx_ifindex.search(p).group("ifindex"),
+                "oper_status": self.rx_oper_status.search(p).group("oper_status") == "up",
+                "admin_status": self.rx_admin_status.search(p).group("admin_status")
+                in ["up", "admin-up"],
+                "enabled_protocols": [],
+                "subinterfaces": [],
+                "type": iftype,
+                "hints": hints,
+            }
+            if port_id in subifaces:
+                interfaces[port_id]["subinterfaces"] += subifaces[port_id]
+            match = self.rx_mac.search(p)
             if match:
-                ifname1 = match.group("ifname")
-                vpi = match.group("vpi")
-                vci = match.group("vci")
-                match = self.rx_admin_status.search(p)
-                admin_status = match.group("admin_status") in ["up", "admin-up"]
-                match = self.rx_oper_status.search(p)
-                oper_status = match.group("oper_status") == "up"
-                sub = {
-                    "name": ifname,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "enabled_afi": ["BRIDGE", "ATM"],
-                    "vpi": vpi,
-                    "vci": vci,
-                }
-                if ifname in bridge_port:
-                    sub["vlan_ids"] = [int(bridge_port.get(ifname))]
-                ifname = ifname1.replace("atm-pvc:", "atm-if:")
-                for i in interfaces:
-                    if i["name"] == ifname:
-                        i["subinterfaces"] += [sub]
-                        break
+                interfaces[port_id]["mac"] = match.group("mac")
+            match = self.rx_mtu.search(p)
+            if match and int(match.group("mtu")) > 0:
+                # interfaces["subinterfaces"][0]["mtu"] = match.group("mtu")
+                pass
 
         v = self.cli("show ip shub vrf")
         for match in self.rx_ip.finditer(v):
             ip_address = match.group("ip")
             ip_subnet = match.group("mask")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-            i = {
+            interfaces[match.group("iface")] = {
                 "name": match.group("iface"),
                 "admin_status": match.group("admin_status") == "up",
                 "oper_status": match.group("oper_status") == "up",
@@ -201,9 +190,8 @@ class Script(BaseScript):
                     }
                 ],
             }
-            interfaces += [i]
 
-        v = self.cli("info configure system flat")
+        v = self.cli("info configure system management flat")
         match = self.rx_mgmt_ip.search(v)
         if match:
             i = {
@@ -217,6 +205,176 @@ class Script(BaseScript):
             match = self.rx_mgmt_vlan.search(v)
             if match:
                 i["subinterfaces"][0]["vlan_ids"] = [int(match.group("vlan_id"))]
-            interfaces += [i]
+            interfaces["mgmt"] = i
 
-        return [{"interfaces": interfaces}]
+        return [{"interfaces": list(interfaces.values())}]
+
+    def get_boards_status(self):
+        r = {}
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.637.61.1.23.3.1.8"):
+            slot_id = oid.rsplit(".", 1)[-1]
+            rack, shelf, slot = self.profile.get_slot(int(slot_id))
+            slot = (rack, shelf, slot + 1)
+            r[slot] = self.avail_status_map[v] in self.collected_slots_status
+        return r
+
+    def execute_snmp(self, **kwargs):
+        ifaces = {}  # For interfaces
+        subifaces = defaultdict(list)  # For subinterfaces like Fa 0/1.XXX
+        ethernet = {}
+        switchports = self.get_switchport()
+        portchannels = self.get_portchannels()  # portchannel map
+        boards_status = self.get_boards_status()
+        ips = self.get_ip_ifaces()
+        vci_ifindex_map = {}
+        # iface -> vpi, vci, vciifindex
+        for oid, vciifindex in self.snmp.getnext(
+            "1.3.6.1.4.1.637.61.1.4.1.72.1.1",
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+        ):
+            oid, ifindex, vpi, vci = oid.rsplit(".", 3)
+            ifindex, vpi, vci = int(ifindex), int(vpi), int(vci)
+            port_id = self.get_port_id(ifindex)
+            name = "%d/%d/%d/%d:%d:%d" % tuple(list(port_id) + [vpi, vci])
+            sub = {
+                "name": name,
+                "vci": vci,
+                "vpi": vpi,
+                "snmp_ifindex": vciifindex,
+                "enabled_afi": ["ATM"],
+            }
+            vci_ifindex_map[ifindex] = vciifindex
+            if vciifindex in switchports:
+                sub.update(switchports[vciifindex])
+                sub["enabled_afi"] += ["BRIDGE"]
+            if vciifindex in ips:
+                sub.update(ips[vciifindex])
+                sub["enabled_afi"] += ["IPv4"]
+            subifaces[port_id] += [sub]
+
+        # Interface loop
+        for oid, iftype in self.snmp.getnext(
+            mib["IF-MIB::ifType"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+        ):
+            if iftype not in self.PROCCESSED_TYPE:
+                continue
+            oid, ifindex = oid.rsplit(".", 1)
+            ifindex = int(ifindex)
+            port_id = self.get_port_id(ifindex)
+            if port_id[:-1] in boards_status and not boards_status[port_id[:-1]]:
+                self.logger.debug("Board is not enabled. Skipping...")
+                continue
+            ifname = "%d/%d/%d/%d" % port_id
+            if "prefix" in self.PROCCESSED_TYPE[iftype]:
+                ifname = "%s:%s" % (self.PROCCESSED_TYPE[iftype]["prefix"], ifname)
+            if iftype in {6, 24}:
+                # Ethernet ifaces
+                hints = []
+                if iftype == 6:
+                    ifname = "ethernet:%s" % (port_id[-1] - 2)
+                    hints = ["nni"]
+                ethernet[ifindex] = {
+                    "name": ifname,
+                    "snmp_ifindex": ifindex,
+                    "enabled_protocols": [],
+                    "subinterfaces": [],
+                    "type": self.PROCCESSED_TYPE[iftype]["type"],
+                    "hints": hints,
+                }
+            else:
+                ifaces[ifindex] = {
+                    "name": ifname,
+                    "snmp_ifindex": ifindex,
+                    "enabled_protocols": [],
+                    "subinterfaces": [],
+                    "type": self.PROCCESSED_TYPE[iftype]["type"],
+                }
+
+        # Fill interface info
+        iter_tables = []
+        iter_tables += [
+            self.iter_iftable(
+                "admin_status",
+                self.SNMP_ADMIN_STATUS_TABLE,
+                ifindexes=chain(ifaces, ethernet),
+                clean=self.clean_status,
+            )
+        ]
+        iter_tables += [
+            self.iter_iftable(
+                "oper_status",
+                self.SNMP_OPER_STATUS_TABLE,
+                ifindexes=chain(ifaces, ethernet),
+                clean=self.clean_status,
+            )
+        ]
+        iter_tables += [
+            self.iter_iftable(
+                "description",
+                self.SNMP_IF_DESCR_TABLE,
+                ifindexes=chain(ifaces, ethernet),
+                clean=self.clean_ifdescription,
+            )
+        ]
+        iter_tables += [
+            self.iter_iftable(
+                "mac", "IF-MIB::ifPhysAddress", ifindexes=ethernet, clean=self.clean_mac
+            )
+        ]
+        iter_tables += [self.iter_iftable("mtu", "IF-MIB::ifMtu", ifindexes=ethernet)]
+        # Collect and merge results
+        data = self.merge_tables(*tuple(iter_tables))
+        if not ifaces:
+            # If empty result - raise error
+            raise NotImplementedError
+        # Format result to ifname -> iface
+        interfaces = {}
+        for ifindex, iface in ifaces.items():
+            if ifindex in data:
+                iface.update(data[ifindex])
+            port_id = self.get_port_id(ifindex)
+            if port_id in subifaces:
+                iface["subinterfaces"] += subifaces[port_id]
+            interfaces[iface["name"]] = iface
+        for ifindex, iface in ethernet.items():
+            # Ethernet ports
+            if ifindex in data:
+                iface.update(data[ifindex])
+            port_id = self.get_port_id(ifindex)
+            if port_id in subifaces:
+                iface["subinterfaces"] += subifaces[port_id]
+            if ifindex in ips:
+                iface["subinterfaces"] += [
+                    {
+                        "name": iface["name"],
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [IPv4(*i) for i in ips[ifindex]],
+                    }
+                ]
+            if ifindex in switchports:
+                sub = {
+                    "name": iface["name"],
+                    "enabled_afi": ["BRIDGE"],
+                }
+                sub.update(switchports[ifindex])
+                iface["subinterfaces"] += [sub]
+            if ifindex in portchannels:
+                iface["aggregated_interface"] = ifaces[portchannels[ifindex]]["name"]
+                iface["enabled_protocols"] = ["LACP"]
+            interfaces[iface["name"]] = iface
+        return [{"interfaces": list(interfaces.values())}]
+
+    def get_port_id(self, ifindex: int) -> Tuple[int, int, int, int]:
+        # Convert ifindex to rack, shelf, slot, port
+        slot_id = ifindex >> 16
+        rack, shelf, slot = self.profile.get_slot(slot_id)
+        port = ifindex & 0x00000FFF
+        slot += 1
+        return rack, shelf, slot, port + 1
+
+    @staticmethod
+    def clean_mac(mac):
+        return mac or None
