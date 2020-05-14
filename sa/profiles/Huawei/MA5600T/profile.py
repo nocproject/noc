@@ -25,6 +25,7 @@ class Profile(BaseProfile):
         (r"\[to\]\:", "\n"),
         (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n"),
         (r"\{ \<cr\>\|ont\<K\> \}\:", "\n"),
+        (r"\{ \<cr\>|port\<K\> \}:", "\n"),
         (r"Are you sure to modify system time?", "n\n"),
         (r"Are you sure to log out?", "y\n"),
         (r"\{ <cr>\|configuration<K>\|data<K> \}", "\n"),
@@ -62,7 +63,8 @@ class Profile(BaseProfile):
     matchers = {
         "is_gpon_uplink": {"platform": {"$in": ["MA5626G"]}},
         "is_dslam": {"platform": {"$in": ["MA5600"]}},
-        "is_ua5k": {"platform": {"$in": ["UA5000"]}},
+        "is_ua5k": {"platform": {"$in": ["UA5000", "UA5000IPMB", "UA5000PVM"]}},
+        "is_lldp_support": {"version": {"$gte": "V800R018C10"}},
     }
 
     rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
