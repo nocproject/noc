@@ -10,7 +10,7 @@ import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 from noc.core.mib import mib
 
 
@@ -20,6 +20,8 @@ class Script(BaseScript):
     CHECK_SNMP_GETNEXT = {"SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"]}
 
     rx_lacp_id = re.compile(r"^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
+
+    rx_lldp_enable = re.compile(r"LLDP\sstatus\s+:\s*enabled")
 
     @false_on_cli_error
     def has_stp_cli(self):
@@ -39,11 +41,19 @@ class Script(BaseScript):
         return self.rx_lacp_id.search(cmd) is not None
 
     @false_on_cli_error
+    def has_lldp_cli(self):
+        """
+        Check box has LLDP enabled
+        """
+        cmd = self.cli("display lldp local")
+        return self.rx_lldp_enable.search(cmd) is not None
+
+    @false_on_cli_error
     def has_olt_cli(self):
         cmd = self.cli("display ont global-config")
         return bool(cmd)
 
-    @false_on_cli_error
+    @false_on_snmp_error
     def has_olt_snmp(self):
         cmd = self.snmp.get(mib["HUAWEI-XPON-MIB::hwGponDeviceDbaAssignmentMode", 0])
         return bool(cmd)
