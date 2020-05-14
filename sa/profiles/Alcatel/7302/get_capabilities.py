@@ -8,7 +8,7 @@
 # NOC modules
 from noc.core.text import parse_table
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 
 
 class Script(BaseScript):
@@ -30,7 +30,7 @@ class Script(BaseScript):
         return r
 
     @false_on_cli_error
-    def has_stack(self):
+    def has_slots_cli(self):
         """
         Check stack members
         :return:
@@ -39,11 +39,33 @@ class Script(BaseScript):
         return [
             p[0].split("/")[-1]
             for p in parse_table(r)
-            if p[0].startswith("lt") and p[3] == "no-error"
+            if p[0].startswith("lt") and p[4] == "available"
         ]
 
+    @false_on_snmp_error
+    def has_slots_snmp(self):
+        r = []
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.637.61.1.23.3.1.8", bulk=False):
+            if v != 1:
+                # availability != available
+                continue
+            self.logger.info("OID: %s, status: %d", oid, v)
+            slot_id = oid.rsplit(".", 1)[-1]
+            rack, shelf, slot = self.profile.get_slot(int(slot_id))
+            if not 3 < slot < 18:
+                # NCU & ACU
+                continue
+            r += [str(slot)]
+        return r
+
     def execute_platform_cli(self, caps):
-        s = self.has_stack()
+        s = self.has_slots_cli()
+        if s:
+            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(s)
+
+    def execute_platform_snmp(self, caps):
+        s = self.has_slots_snmp()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)

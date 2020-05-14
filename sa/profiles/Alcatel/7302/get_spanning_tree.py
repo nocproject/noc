@@ -23,7 +23,7 @@ class Script(BaseScript):
     # Get key:value STP parameter
     k_v_re = re.compile(r"(?P<key>\S+)\s*:\s*(?P<value>\S+)", re.IGNORECASE)
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = {"mode": "RSTP", "instances": []}
 
         instance = {"id": 0, "vlans": "1-4095", "interfaces": []}
