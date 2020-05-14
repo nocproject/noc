@@ -218,11 +218,16 @@ class Script(BaseScript):
                 c = self.cli("show vlan interface %s" % ifname)
                 t = parse_table(c, allow_wrap=True, n_row_delim=",")
                 for i in t:
-                    if i[1] == "Access":
+                    if i[1] == "Access" and i[4]:
                         sub["untagged_vlan"] = int(i[4])
                     elif i[1] == "Trunk":
                         sub["untagged_vlan"] = int(i[2])
-                        sub["tagged_vlans"] = self.expand_rangelist(i[3])
+                        if i[3] != "none":
+                            try:
+                                sub["tagged_vlans"] = self.expand_rangelist(i[3])
+                            except ValueError:
+                                self.logger.error("Bad tagged vlans format on port: %s", ifname)
+                                sub["tagged_vlans"] = []
                     else:
                         # Need more examples
                         raise self.NotSupportedError()
