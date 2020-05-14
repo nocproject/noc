@@ -1,0 +1,474 @@
+{
+    "name": "NAG | SNR | SNR-S2990G-48T",
+    "$collection": "inv.objectmodels",
+    "uuid": "8b78568e-3d5d-4f36-a305-099458b38062",
+    "vendor__code": "NAG",
+    "description": "Управляемый коммутатор уровня 2+. 48 портов 10/100/1000BaseT, 4 порта 100/1000BaseX SFP. Питание 100-240AC",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Ethernet1/0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/13",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/14",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/15",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/16",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/17",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/18",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/19",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/20",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/21",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/22",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/23",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/24",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/25",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/25",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/26",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/26",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/27",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/27",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/28",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/28",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/29",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/29",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/30",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/30",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/31",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/31",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/32",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/32",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/33",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/33",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/34",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/34",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/35",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/35",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/36",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/36",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/37",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/37",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/38",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/38",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/39",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/39",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/40",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/40",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/41",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/41",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/42",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/42",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/43",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/43",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/44",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/44",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/45",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/45",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/46",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/46",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/47",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/47",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/48",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/48",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 49",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/0/49",
+            "internal_name": "sfp49",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Fiber port 50",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/0/50",
+            "internal_name": "sfp50",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Fiber port 51",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/0/51",
+            "internal_name": "sfp51",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Fiber port 52",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/0/52",
+            "internal_name": "sfp52",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "MGMT",
+            "direction": "s",
+            "gender": "f",
+            "name": "MGMT",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">240VAC", ">100VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SNR-S2990G-48T"]
+        },
+        "dimensions": {
+            "depth": 280,
+            "height": 44,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 37.0
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
