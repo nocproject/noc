@@ -1,0 +1,346 @@
+{
+    "name": "NAG | SNR | SNR-S2960-24G",
+    "$collection": "inv.objectmodels",
+    "uuid": "f5141820-af3c-43f9-aceb-9f65ef9119e4",
+    "vendor__code": "NAG",
+    "description": "Управляемый коммутатор уровня 2, 24 порта 10/100Base-TX, 4 комбо-порта 100/1000Base-T/SFP",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Ethernet1/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/13",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/14",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/15",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/16",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/17",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/18",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/19",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/20",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/21",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/22",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/23",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/24",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/25 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/25",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/25 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/25_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/25 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfp25",
+            "name": "Ethernet1/25_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/26 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/26",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/26 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/26_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/26 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfp26",
+            "name": "Ethernet1/26_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/27 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/27",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/27 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/27_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/27 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfp27",
+            "name": "Ethernet1/27_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/28 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/28",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/28 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/28_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/28 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfp28",
+            "name": "Ethernet1/28_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SNR-S2960-24G"]
+        },
+        "dimensions": {
+            "depth": 230,
+            "height": 44,
+            "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 20.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 2.5
+        }
+    }
+}
+
