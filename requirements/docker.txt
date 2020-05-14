@@ -6,7 +6,7 @@ atomiclong==0.1.1
 bsdiff4==1.1.9
 csiphash==0.0.5
 http-parser==0.9.0
-psycopg2==2.7.3.2
+psycopg2==2.8.5
 pymongo==3.10.1
 geopy==0.97
 geojson==2.5.0
@@ -15,7 +15,7 @@ blinker==1.3
 Jinja2==2.8
 jsonschema==2.4.0
 git+https://github.com/ploxiln/pynsq.git@a9f9a75eaec62904f06d497397d1b019cdb9581a
-pyproj==1.9.4
+pyproj==2.6.0
 python-creole==1.3.2
 pytz>=2014.4
 python-consul==1.1.0
