@@ -244,7 +244,7 @@ class ConsulDCS(DCSBase):
         self.name = name
         if lock:
             yield self.acquire_lock(lock)
-        svc_id = self.session or str(uuid.uuid4())
+        svc_id = self.session or str("svc-%s" % uuid.uuid4())
         tags = tags[:] if tags else []
         tags += [svc_id]
         self.svc_check_url = "http://%s:%s/health/?service=%s" % (address, port, svc_id)
