@@ -1,0 +1,135 @@
+{
+    "name": "NAG | SNR | SNR-S2940-8G",
+    "$collection": "inv.objectmodels",
+    "uuid": "182d414e-a0db-4995-81e0-06df6ace5758",
+    "vendor__code": "NAG",
+    "description": "8 * 10/100M ports + 1 Gigabit Combo (SFP/GT) port.,AC power",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/9 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/9",
+            "protocols": ["1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/9_rj",
+            "protocols": ["1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/9 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfp9",
+            "name": "Ethernet1/9_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SNR-S2940-8G"]
+        },
+        "dimensions": {
+            "depth": 178,
+            "height": 44,
+            "width": 282
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 15.0
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
