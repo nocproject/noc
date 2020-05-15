@@ -38,6 +38,7 @@ from noc.core.debug import error_report
 from noc.core.escape import fm_unescape
 from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
+from noc.services.classifier.patternset import PatternSet
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -49,6 +50,7 @@ rx_oid = re.compile(r"^(\d+\.){6,}$")
 
 CR_FAILED = "events_failed"
 CR_DELETED = "events_deleted"
+CR_IGNORED = "events_ignored"
 CR_SUPPRESSED = "events_suppressed"
 CR_UNKNOWN = "events_unknown"
 CR_CLASSIFIED = "events_classified"
@@ -63,6 +65,7 @@ CR = [
     CR_FAILED,
     CR_DELETED,
     CR_SUPPRESSED,
+    CR_IGNORED,
     CR_UNKNOWN,
     CR_CLASSIFIED,
     CR_PREPROCESSED,
@@ -105,6 +108,7 @@ class ClassifierService(Service):
         super().__init__()
         self.version = version.version
         self.ruleset = RuleSet()
+        self.patternset = PatternSet()
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
@@ -125,6 +129,7 @@ class ClassifierService(Service):
         """
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load()
+        self.patternset.load()
         self.load_triggers()
         self.load_suppression()
         self.load_link_action()
@@ -781,6 +786,11 @@ class ClassifierService(Service):
             source=source,
             repeats=1,
         )  # raw_vars will be filled by classify_event()
+        # Ignore event
+        if self.patternset.find_ignore_rule(event, data):
+            self.logger.debug("Ignored event %s vars %s", event, data)
+            metrics[CR_IGNORED] += 1
+            return True
         # Classify event
         try:
             self.classify_event(event, data)
