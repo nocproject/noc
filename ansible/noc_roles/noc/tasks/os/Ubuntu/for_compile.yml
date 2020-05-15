@@ -15,6 +15,7 @@
       - libgdbm-dev
       - liblzma-dev
       - uuid-dev
+      - libsqlite3-dev
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

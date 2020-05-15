@@ -8,6 +8,7 @@
     packages:
       - openssl-devel
       - bzip2-devel
+      - sqlite-devel
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

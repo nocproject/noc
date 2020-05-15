@@ -44,7 +44,7 @@ provisioner:
     destroy: ../yc/destroy.yml
   options:
     i: inv.yml
-    extra-vars: tower_dist_dir=/tmp noc_version=${NOC_BRANCH}
+    extra-vars: tower_dist_dir=/tmp noc_version=${NOC_BRANCH} noc_py3_ver=${PY3_VERSION}
   lint:
     name: ansible-lint
 scenario:
