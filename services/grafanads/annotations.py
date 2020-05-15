@@ -12,7 +12,6 @@ from time import mktime
 
 # Third-party modules
 import tornado.web
-import tornado.gen
 import ujson
 import dateutil.parser
 from dateutil import tz

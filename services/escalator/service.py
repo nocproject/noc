@@ -8,10 +8,7 @@
 
 # Python modules
 from collections import defaultdict
-
-# Third-party modules
-import tornado.ioloop
-import tornado.gen
+import asyncio
 
 # NOC modules
 from noc.config import config
@@ -39,7 +36,7 @@ class EscalatorService(Service):
             try:
                 await self.shards[s].shutdown()
                 self.logger.info("Shard %s is down", s)
-            except tornado.gen.TimeoutError:
+            except asyncio.TimeoutError:
                 self.logger.info("Cannot shutdown shard %s cleanly: Timeout", s)
 
     def apply_shards(self):

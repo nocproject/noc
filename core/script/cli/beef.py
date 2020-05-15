@@ -28,8 +28,7 @@ class BeefCLI(CLI):
         self.sender = tornado.iostream.IOStream(sender)
         return BeefIOStream(receiver, self)
 
-    @tornado.gen.coroutine
-    def send(self, cmd: bytes) -> None:
+    async def send(self, cmd: bytes) -> None:
         # @todo: Apply encoding
         # cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)

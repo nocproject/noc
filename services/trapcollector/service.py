@@ -9,10 +9,10 @@
 # Python modules
 import socket
 from collections import defaultdict, namedtuple
+import asyncio
 
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 
 # NOC modules
 from noc.config import config
@@ -80,8 +80,7 @@ class TrapCollectorService(Service):
         metrics["events_out"] += 1
         self.pub("events.%s" % cfg.fm_pool, {"ts": timestamp, "object": cfg.id, "data": data})
 
-    @tornado.gen.coroutine
-    def get_object_mappings(self):
+    async def get_object_mappings(self):
         """
         Coroutine to request object mappings
         """
@@ -90,15 +89,14 @@ class TrapCollectorService(Service):
         # Track stream changes
         while True:
             try:
-                yield client.query(
+                await client.query(
                     limit=config.trapcollector.ds_limit, filters=["pool(%s)" % config.pool], block=1
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
-                yield tornado.gen.sleep(1)
+                yield asyncio.sleep(1)
 
-    @tornado.gen.coroutine
-    def report_invalid_sources(self):
+    async def report_invalid_sources(self):
         """
         Report invalid event sources
         """

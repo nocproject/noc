@@ -17,7 +17,6 @@ from time import perf_counter
 
 # Third-party modules
 import cachetools
-import tornado.gen
 import tornado.ioloop
 from bson import ObjectId
 
@@ -793,8 +792,7 @@ class ClassifierService(Service):
         self.logger.info("[%s|%s|%s] Event processed successfully", event.id, mo.name, mo.address)
         return True
 
-    @tornado.gen.coroutine
-    def report(self):
+    async def report(self):
         t = perf_counter()
         if self.last_ts:
             r = []

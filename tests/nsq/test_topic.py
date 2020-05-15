@@ -1,18 +1,19 @@
 # ----------------------------------------------------------------------
 # Test NSQ TopicQueue
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import asyncio
+
 # Third-party modules
 import pytest
-import tornado.gen
-import tornado.ioloop
-import tornado.locks
 
 # NOC modules
 from noc.core.nsq.topic import TopicQueue
+from noc.core.ioloop.util import IOLoopContext
 
 
 @pytest.mark.parametrize("items,expected", [([], True), ([1], False), ([1, 2], False)])
@@ -149,47 +150,45 @@ def test_shutdown():
 
 
 def test_wait():
-    @tornado.gen.coroutine
-    def producer():
+    async def producer():
         for msg in to_produce:
             queue.put(msg)
-            yield tornado.gen.sleep(sleep_timeout)
+            await asyncio.sleep(sleep_timeout)
         queue.shutdown()
 
-    @tornado.gen.coroutine
-    def consumer():
+    async def consumer():
         while not queue.to_shutdown or queue.qsize()[0]:
-            yield queue.wait(1)
+            await queue.wait(1)
             consumed["data"] += list(queue.iter_get(100))
-        io_loop.stop()
+
+    async def test():
+        await asyncio.gather(producer(), consumer())
 
     sleep_timeout = 0.1
     to_produce = ["%04d" % i for i in range(10)]
     consumed = {"data": []}
     queue = TopicQueue("test_wait")
-    io_loop = tornado.ioloop.IOLoop()
-    io_loop.add_callback(producer)
-    io_loop.add_callback(consumer)
-    io_loop.start()
+    with IOLoopContext() as loop:
+        loop.run_until_complete(test())
     assert to_produce == consumed["data"]
 
 
 @pytest.mark.parametrize("sleep_timeout", [0.1, 0.55])
 def test_wait_throttling(sleep_timeout):
-    @tornado.gen.coroutine
-    def producer():
+    async def producer():
         for msg in to_produce:
             queue.put(msg)
-            yield tornado.gen.sleep(sleep_timeout)
+            await asyncio.sleep(sleep_timeout)
         queue.shutdown()
 
-    @tornado.gen.coroutine
-    def consumer():
+    async def consumer():
         while not queue.to_shutdown or queue.qsize()[0]:
-            yield queue.wait(rate=rate)
+            await queue.wait(rate=rate)
             consumed["data"] += list(queue.iter_get(100))
             consumed["n_reads"] += 1
-        io_loop.stop()
+
+    async def test():
+        await asyncio.gather(producer(), consumer())
 
     rate = 4
     n_writes = 10
@@ -197,10 +196,8 @@ def test_wait_throttling(sleep_timeout):
     to_produce = ["%04d" % i for i in range(n_writes)]
     consumed = {"data": [], "n_reads": 0}
     queue = TopicQueue("test_wait")
-    io_loop = tornado.ioloop.IOLoop()
-    io_loop.add_callback(producer)
-    io_loop.add_callback(consumer)
-    io_loop.start()
+    with IOLoopContext() as loop:
+        loop.run_until_complete(test())
     assert to_produce == consumed["data"]
     assert consumed["n_reads"] <= dt * rate + 2
 

@@ -49,19 +49,18 @@ class BeefSNMP(SNMP):
             self.server_iostream = None
         super().close()
 
-    @tornado.gen.coroutine
-    def snmp_server(self):
+    async def snmp_server(self):
         """
         SNMP server coroutine
         :return:
         """
         self.logger.info("Stating BEEF SNMP server")
-        yield self.server_iostream.connect()
+        await self.server_iostream.connect()
         decoder = BERDecoder()
         encoder = BEREncoder()
         while True:
             # Wait for SNMP request
-            request = yield self.server_iostream.read_bytes(self.MAX_REQUEST_SIZE, partial=True)
+            request = await self.server_iostream.read_bytes(self.MAX_REQUEST_SIZE, partial=True)
             pdu = decoder.parse_sequence(request)[0]
             self.logger.info("SNMP REQUEST: %r", pdu)
             version = pdu[0]
@@ -101,7 +100,7 @@ class BeefSNMP(SNMP):
                 ]
             )
             self.logger.info("RESPONSE = %r", data)
-            yield self.server_iostream.write(resp)
+            await self.server_iostream.write(resp)
 
     def snmp_get_response(self, pdu):
         """

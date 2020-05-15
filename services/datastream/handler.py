@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import tornado.gen
 import tornado.web
 
 # NOC modules
@@ -22,8 +21,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         return {"datastream:*", "datastream:%s" % self.datastream.name}
 
     @authenticated
-    @tornado.gen.coroutine
-    def get(self, *args, **kwargs):
+    async def get(self, *args, **kwargs):
         # Get limits
         p_limit = self.get_arguments("limit")
         if p_limit:
@@ -62,7 +60,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
             except ValueError:
                 raise tornado.web.HTTPError(400)
             if to_block and not r:
-                yield self.service.wait(self.datastream.name)
+                await self.service.wait(self.datastream.name)
             else:
                 break
         self.set_header("Cache-Control", "no-cache")

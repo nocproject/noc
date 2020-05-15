@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import tornado.gen
 import ujson
 
 # NOC modules
@@ -23,9 +22,8 @@ class ObjectStatusAPI(NBIAPI):
     name = "objectstatus"
 
     @authenticated
-    @tornado.gen.coroutine
-    def post(self):
-        code, result = yield self.executor.submit(self.handler)
+    async def post(self):
+        code, result = await self.executor.submit(self.handler)
         self.set_status(code)
         if isinstance(result, str):
             self.write(result)

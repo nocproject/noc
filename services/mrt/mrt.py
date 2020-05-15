@@ -29,15 +29,13 @@ logger = logging.getLogger(__name__)
 
 
 class MRTRequestHandler(AuthRequestHandler):
-    @tornado.gen.coroutine
-    def write_chunk(self, obj):
+    async def write_chunk(self, obj):
         data = ujson.dumps(obj)
         self.write("%s|%s" % (len(data), data))
         logger.debug("%s|%s" % (len(data), data))
-        yield self.flush()
+        await self.flush()
 
-    @tornado.gen.coroutine
-    def run_script(self, oid, script, args, span_id=0, bi_id=None):
+    async def run_script(self, oid, script, args, span_id=0, bi_id=None):
         with Span(
             server="MRT",
             service="run_script",
@@ -47,9 +45,9 @@ class MRTRequestHandler(AuthRequestHandler):
             client=self.current_user,
         ) as span:
             try:
-                yield self.write_chunk({"id": str(oid), "running": True})
+                await self.write_chunk({"id": str(oid), "running": True})
                 logger.debug("[%s] Run script %s %s %s", span.context, oid, script, args)
-                r = yield self.service.sae.script(oid, script, args)
+                r = await self.service.sae.script(oid, script, args)
                 metrics["mrt_success"] += 1
             except RPCRemoteError as e:
                 span.set_error_from_exc(e, getattr(e, "remote_code", 1))
@@ -69,8 +67,7 @@ class MRTRequestHandler(AuthRequestHandler):
             span.out_label = r["output"]
             return {"id": str(oid), "result": r["output"]}
 
-    @tornado.gen.coroutine
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         """
         Request is the list of
         {
@@ -118,14 +115,14 @@ class MRTRequestHandler(AuthRequestHandler):
                     continue
                 oid = int(d["id"])
                 if oid not in ids:
-                    yield self.write_chunk({"id": str(d["id"]), "error": "Access denied"})
+                    await self.write_chunk({"id": str(d["id"]), "error": "Access denied"})
                     metrics["mrt_access_denied"] += 1
                 if len(futures) >= config.mrt.max_concurrency:
                     wi = tornado.gen.WaitIterator(*futures)
                     wi_next = getattr(wi, "next")
-                    r = yield wi_next()
+                    r = await wi_next()
                     del futures[wi.current_index]
-                    yield self.write_chunk(r)
+                    await self.write_chunk(r)
                 futures += [
                     self.run_script(
                         oid, d["script"], d.get("args"), span_id=span.span_id, bi_id=ids.get(oid)
@@ -135,6 +132,6 @@ class MRTRequestHandler(AuthRequestHandler):
             wi = tornado.gen.WaitIterator(*futures)
             wi_next = getattr(wi, "next")
             while not wi.done():
-                r = yield wi_next()
-                yield self.write_chunk(r)
+                r = await wi_next()
+                await self.write_chunk(r)
         logger.info("Done")

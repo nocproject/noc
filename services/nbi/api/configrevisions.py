@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import tornado.gen
 import ujson
 
 # NOC modules
@@ -19,9 +18,8 @@ class ConfigRevisionsAPI(NBIAPI):
     name = "configrevisions"
 
     @authenticated
-    @tornado.gen.coroutine
-    def get(self, object_id):
-        code, result = yield self.executor.submit(self.handler, object_id)
+    async def get(self, object_id):
+        code, result = await self.executor.submit(self.handler, object_id)
         self.set_status(code)
         if isinstance(result, str):
             self.write(result)
