@@ -12,7 +12,12 @@ from mongoengine.fields import StringField, BooleanField
 
 
 class IgnorePattern(Document):
-    meta = {"collection": "noc.fm.ignorepatterns", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "noc.fm.ignorepatterns",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": [{"fields": ("source", "pattern"), "unique": True}],
+    }
 
     source = StringField()
     pattern = StringField()
