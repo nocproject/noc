@@ -139,12 +139,6 @@ command:
 {% endif %}
     stderr: []
     timeout: 10000
-  {{ noc_root }}/bin/pip freeze | grep tornado:
-    exit-status: 0
-    stdout:
-    - tornado==4.5
-    stderr: []
-    timeout: 10000
   cd {{ noc_root }}/; git status -sb:
     exit-status: 0
     stdout:
