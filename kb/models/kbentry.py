@@ -14,7 +14,6 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.lib.app.site import site
 from noc.core.model.fields import TagsField
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers.loader import loader
@@ -60,9 +59,6 @@ class KBEntry(NOCModel):
             return "KB%d: %s" % (self.id, self.subject)
         else:
             return "New: %s" % self.subject
-
-    def get_absolute_url(self):
-        return site.reverse("kb:view:view", self.id)
 
     def save(self, *args, **kwargs):
         """

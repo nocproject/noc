@@ -54,7 +54,6 @@ from noc.core.model.fields import (
     ObjectIDArrayField,
 )
 from noc.core.model.sql import SQL
-from noc.lib.app.site import site
 from noc.core.stencil import stencil_registry
 from noc.core.validators import is_ipv4, is_ipv4_prefix
 from noc.core.ip import IP
@@ -627,9 +626,6 @@ class ManagedObject(NOCModel):
 
     def reset_matchers(self):
         self._matchers = None
-
-    def get_absolute_url(self):
-        return site.reverse("sa:managedobject:change", self.id)
 
     @classmethod
     def user_objects(cls, user):

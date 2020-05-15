@@ -22,7 +22,6 @@ from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
 from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey
-from noc.lib.app.site import site
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
@@ -156,9 +155,6 @@ class Prefix(NOCModel):
         if mo:
             return mo[0]
         return None
-
-    def get_absolute_url(self):
-        return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi, self.prefix)
 
     @property
     def has_transition(self):

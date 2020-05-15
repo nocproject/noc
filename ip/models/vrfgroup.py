@@ -12,7 +12,6 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
 from noc.core.model.decorator import on_delete_check
 from noc.core.comp import smart_text
 
@@ -47,6 +46,3 @@ class VRFGroup(NOCModel):
 
     def __str__(self):
         return smart_text(self.name)
-
-    def get_absolute_url(self):
-        return site.reverse("ip:vrfgroup:change", self.id)
