@@ -9,6 +9,7 @@
       - openssl-devel
       - bzip2-devel
       - sqlite-devel
+      - cmake
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

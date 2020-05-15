@@ -16,6 +16,7 @@
       - liblzma-dev
       - uuid-dev
       - libsqlite3-dev
+      - cmake
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
