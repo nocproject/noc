@@ -135,7 +135,7 @@ class MODashboard(BaseDashboard):
                             "status": iface.status,
                             "metrics": interface_dom_metrics(profile),
                             "type": profile.id,
-                            "profile_name": profile.name
+                            "profile_name": profile.name,
                         }
                     ]
                 if iface.type == "physical":
@@ -191,7 +191,7 @@ class MODashboard(BaseDashboard):
             "lags": lags,
             "subifaces": subif,
             "radio_types": radio_types,
-            "dom_types": sorted(dom_types, key=lambda x: alnum_key(x["name"]))
+            "dom_types": sorted(dom_types, key=lambda x: alnum_key(x["name"])),
         }
 
     def render(self):
