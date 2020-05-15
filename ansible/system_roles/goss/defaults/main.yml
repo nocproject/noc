@@ -1,5 +1,5 @@
 ---
-goss_version: 0.3.10
+goss_version: 0.3.11
 goss_download_url: "https://github.com/aelsabbahy/goss/releases/download/v{{ goss_version }}/goss-linux-amd64"
 goss_temp_file: "{{ tower_dist_dir }}/goss-linux-amd64"
 goss_path: "/opt/goss_v{{ goss_version }}"
