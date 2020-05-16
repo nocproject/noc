@@ -139,6 +139,7 @@ class MODashboard(BaseDashboard):
                             "status": iface.status,
                             "metrics": interface_dom_metrics(profile),
                             "type": profile.id,
+                            "profile_name": profile.name,
                         }
                     ]
                 if iface.type == "physical":
@@ -168,7 +169,7 @@ class MODashboard(BaseDashboard):
             if radio:
                 radio_types += [{"type": profile.id, "name": profile.name, "ports": radio}]
             if dom:
-                dom_types = dom
+                dom_types += dom
 
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
@@ -194,7 +195,7 @@ class MODashboard(BaseDashboard):
             "lags": lags,
             "subifaces": subif,
             "radio_types": radio_types,
-            "dom_types": dom_types,
+            "dom_types": sorted(dom_types, key=lambda x: alnum_key(x["name"])),
         }
 
     def render(self):
