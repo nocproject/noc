@@ -17,7 +17,6 @@ from time import perf_counter
 
 # Third-party modules
 import cachetools
-import tornado.ioloop
 from bson import ObjectId
 
 # NOC modules
@@ -43,6 +42,7 @@ from noc.core.perf import metrics
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.services.classifier.exception import EventProcessingFailed
 from noc.core.handler import get_handler
+from noc.core.ioloop.timers import PeriodicCallback
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -134,7 +134,7 @@ class ClassifierService(Service):
         self.load_link_action()
         self.load_handlers()
         await self.subscribe("events.%s" % config.pool, "fmwriter", self.on_event)
-        report_callback = tornado.ioloop.PeriodicCallback(self.report, 1000)
+        report_callback = PeriodicCallback(self.report, 1000)
         report_callback.start()
 
     def load_triggers(self):

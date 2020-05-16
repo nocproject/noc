@@ -11,9 +11,6 @@ import socket
 from collections import defaultdict, namedtuple
 import asyncio
 
-# Third-party modules
-import tornado.ioloop
-
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
@@ -21,6 +18,7 @@ from noc.core.error import NOCError
 from noc.core.service.base import Service
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
+from noc.core.ioloop.timers import PeriodicCallback
 
 SourceConfig = namedtuple("SourceConfig", ["id", "addresses", "fm_pool"])
 
@@ -52,9 +50,7 @@ class TrapCollectorService(Service):
         server.start()
         # Report invalid sources every 60 seconds
         self.logger.info("Stating invalid sources reporting task")
-        self.report_invalid_callback = tornado.ioloop.PeriodicCallback(
-            self.report_invalid_sources, 60000
-        )
+        self.report_invalid_callback = PeriodicCallback(self.report_invalid_sources, 60000)
         self.report_invalid_callback.start()
         # Start tracking changes
         self.ioloop.add_callback(self.get_object_mappings)
@@ -94,7 +90,7 @@ class TrapCollectorService(Service):
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
-                yield asyncio.sleep(1)
+                await asyncio.sleep(1)
 
     async def report_invalid_sources(self):
         """
