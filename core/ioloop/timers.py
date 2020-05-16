@@ -1,20 +1,25 @@
 # ----------------------------------------------------------------------
 # Various ioloop timers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import random
+import asyncio
+import math
 
 # Third-party modules
-from tornado.ioloop import IOLoop, PeriodicCallback
+from typing import Optional, Coroutine
+
+# NOC modules
 from noc.config import config
 
 
 if config.features.use_uvlib:
     import pyuv
+    from tornado.ioloop import IOLoop
 
     class PeriodicOffsetCallback(object):
         """Schedules the given callback to be called periodically
@@ -63,17 +68,52 @@ if config.features.use_uvlib:
 
 else:
 
-    class PeriodicOffsetCallback(PeriodicCallback):
-        """Schedules the given callback to be called periodically
-        with random offset.
-        """
+    class PeriodicCallback(object):
+        def __init__(self, cb: Coroutine, interval: int, delay: int = 0):
+            self.cb = cb
+            self.interval = float(interval) / 1000.0
+            self.delay = float(delay) / 1000.0
+            self._running = False
+            self._timer: Optional[asyncio.TimerHandle] = None
+            self._start_time: Optional[float] = None
 
         def start(self):
-            """Starts the timer."""
             self._running = True
-            io_loop = IOLoop.current()
-            self._next_timeout = io_loop.time() + random.random() * self.callback_time / 1000.0
-            self._timeout = io_loop.add_timeout(self._next_timeout, self._run)
+            self._schedule_next()
 
-        def set_callback_time(self, callback_time):
-            self.callback_time = callback_time
+        def stop(self):
+            self._running = False
+            if self._timer:
+                self._timer.cancel()
+                self._timer = None
+
+        def set_interval(self, interval):
+            if self._running and self._timer:
+                self._timer.cancel()
+                self._timer = None
+                self._schedule_next()
+
+        def _run(self):
+            self._timer = None
+            try:
+                asyncio.ensure_future(self.cb())
+            finally:
+                self._schedule_next()
+
+        def _schedule_next(self):
+            loop = asyncio.get_running_loop()
+            now = loop.time()
+            if self._start_time is None:
+                # First run
+                when = now + self.delay
+                self._start_time = when
+            else:
+                when = (
+                    self._start_time
+                    + (math.floor((now - self._start_time) / self.interval) + 1.0) * self.interval
+                )
+            self._timer = asyncio.get_running_loop().call_at(when, self._run)
+
+    class PeriodicOffsetCallback(PeriodicCallback):
+        def __init__(self, cb: Coroutine, interval: int):
+            super().__init__(cb, interval, random.random() * interval)

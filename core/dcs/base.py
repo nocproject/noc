@@ -15,13 +15,11 @@ from urllib.parse import urlparse
 from time import perf_counter
 import asyncio
 
-# Third-party modules
-from tornado.ioloop import PeriodicCallback
-
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
+from noc.core.ioloop.timers import PeriodicCallback
 from .error import ResolutionError
 
 

@@ -15,12 +15,12 @@ import asyncio
 
 # Third-party modules
 import consul.base
-from tornado.ioloop import PeriodicCallback
 
 # NOC modules
 from noc.config import config
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
+from noc.core.ioloop.timers import PeriodicCallback
 from .base import DCSBase, ResolverBase
 
 ConsulRepearableCodes = {500, 598, 599}

@@ -134,7 +134,7 @@ class PingService(Service):
         self.logger.info("Update probe: %s (%ds)", data["address"], data["interval"])
         ps = self.probes[data["id"]]
         if ps.interval != data["interval"]:
-            ps.task.set_callback_time(data["interval"] * 1000)
+            ps.task.set_interval(data["interval"] * 1000)
         if ps.address != data["address"]:
             self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
             ps.address = data["address"]

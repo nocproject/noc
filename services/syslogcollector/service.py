@@ -12,9 +12,6 @@ import datetime
 from collections import defaultdict, namedtuple
 import asyncio
 
-# Third-party modules
-import tornado.ioloop
-
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
@@ -22,6 +19,7 @@ from noc.core.service.base import Service
 from noc.core.perf import metrics
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
+from noc.core.ioloop.timers import PeriodicCallback
 
 SourceConfig = namedtuple(
     "SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events", "fm_pool"]
@@ -55,9 +53,7 @@ class SyslogCollectorService(Service):
         server.start()
         # Report invalid sources every 60 seconds
         self.logger.info("Stating invalid sources reporting task")
-        self.report_invalid_callback = tornado.ioloop.PeriodicCallback(
-            self.report_invalid_sources, 60000
-        )
+        self.report_invalid_callback = PeriodicCallback(self.report_invalid_sources, 60000)
         self.report_invalid_callback.start()
         # Start tracking changes
         self.ioloop.add_callback(self.get_object_mappings)
