@@ -24,13 +24,13 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        links = self.profile.parseBrokenJson(self.http.get("/link.b", cached=True, eof_mark="}"))
-        vlans = self.profile.parseBrokenJson(self.http.get("/vlan.b", cached=True, eof_mark="}"))
+        links = self.profile.parseBrokenJson(self.http.get("/link.b", cached=True, eof_mark=b"}"))
+        vlans = self.profile.parseBrokenJson(self.http.get("/vlan.b", cached=True, eof_mark=b"}"))
         try:
-            fwds = self.profile.parseBrokenJson(self.http.get("/fwd.b", cached=True, eof_mark="}"))
+            fwds = self.profile.parseBrokenJson(self.http.get("/fwd.b", cached=True, eof_mark=b"}"))
         except HTTPError:
             fwds = links
-        sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark="}"))
+        sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark=b"}"))
         if links.get("prt"):
             prt = int(links["prt"], 16)
             sfp = int(links.get("sfp", "0x0"), 16)

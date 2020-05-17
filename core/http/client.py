@@ -20,7 +20,7 @@ import asyncio
 # Third-party modules
 import cachetools
 import ujson
-from typing import Optional, List
+from typing import Optional, List, Tuple, Any, Dict
 
 # NOC modules
 from noc.core.perf import metrics
@@ -79,24 +79,24 @@ async def resolve(host):
 
 
 async def fetch(
-    url,
-    method="GET",
+    url: str,
+    method: str = "GET",
     headers=None,
     body: Optional[bytes] = None,
     connect_timeout=DEFAULT_CONNECT_TIMEOUT,
     request_timeout=DEFAULT_REQUEST_TIMEOUT,
     resolver=resolve,
     max_buffer_size=DEFAULT_BUFFER_SIZE,
-    follow_redirects=False,
+    follow_redirects: bool = False,
     max_redirects=DEFAULT_MAX_REDIRECTS,
     validate_cert=config.http_client.validate_certs,
-    allow_proxy=False,
+    allow_proxy: bool = False,
     proxies=None,
-    user=None,
-    password=None,
-    content_encoding=None,
-    eof_mark=None,
-):
+    user: Optional[str] = None,
+    password: Optional[str] = None,
+    content_encoding: Optional[str] = None,
+    eof_mark: Optional[bytes] = None,
+) -> Tuple[int, Dict[str, Any], bytes]:
     """
 
     :param url: Fetch URL
@@ -149,7 +149,7 @@ async def fetch(
         host = u.netloc
         port = DEFAULT_PORTS.get(u.scheme)
         if not port:
-            return ERR_TIMEOUT, {}, "Cannot resolve port for scheme: %s" % u.scheme
+            return ERR_TIMEOUT, {}, b"Cannot resolve port for scheme: %s" % smart_bytes(u.scheme)
     if is_ipv4(host):
         addr = host
     else:
@@ -181,10 +181,10 @@ async def fetch(
             )
         except ConnectionRefusedError:
             metrics["httpclient_timeouts"] += 1
-            return ERR_TIMEOUT, {}, "Connection refused"
+            return ERR_TIMEOUT, {}, b"Connection refused"
         except asyncio.TimeoutError:
             metrics["httpclient_timeouts"] += 1
-            return ERR_TIMEOUT, {}, "Connection timed out"
+            return ERR_TIMEOUT, {}, b"Connection timed out"
         # Proxy CONNECT
         if proxy:
             logger.debug("Sending CONNECT %s:%s", addr, port)
@@ -199,7 +199,7 @@ async def fetch(
                 await asyncio.wait_for(writer.drain(), request_timeout)
             except asyncio.TimeoutError:
                 metrics["httpclient_proxy_timeouts"] += 1
-                return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
+                return ERR_TIMEOUT, {}, b"Timed out while sending request to proxy"
             # Wait for proxy response
             parser = HttpParser()
             while not parser.is_headers_complete():
@@ -207,11 +207,11 @@ async def fetch(
                     data = await asyncio.wait_for(reader.read(max_buffer_size), request_timeout)
                 except asyncio.TimeoutError:
                     metrics["httpclient_proxy_timeouts"] += 1
-                    return ERR_TIMEOUT, {}, "Timed out while sending request to proxy"
+                    return ERR_TIMEOUT, {}, b"Timed out while sending request to proxy"
                 received = len(data)
                 parsed = parser.execute(data, received)
                 if parsed != received:
-                    return ERR_PARSE_ERROR, {}, "Parse error"
+                    return ERR_PARSE_ERROR, {}, b"Parse error"
             code = parser.get_status_code()
             logger.debug("Proxy response: %s", code)
             if not 200 <= code <= 299:
@@ -273,16 +273,22 @@ async def fetch(
             await asyncio.wait_for(writer.drain(), request_timeout)
         except ConnectionResetError:
             metrics["httpclient_timeouts"] += 1
-            return ERR_TIMEOUT, {}, "Connection reset while sending request"
+            return ERR_TIMEOUT, {}, b"Connection reset while sending request"
         except asyncio.TimeoutError:
             metrics["httpclient_timeouts"] += 1
-            return ERR_TIMEOUT, {}, "Timed out while sending request"
+            return ERR_TIMEOUT, {}, b"Timed out while sending request"
         parser = HttpParser()
         response_body: List[bytes] = []
         while not parser.is_message_complete():
             try:
                 data = await asyncio.wait_for(reader.read(max_buffer_size), request_timeout)
+                is_eof = not data
             except asyncio.IncompleteReadError:
+                is_eof = True
+            except asyncio.TimeoutError:
+                metrics["httpclient_timeouts"] += 1
+                return ERR_READ_TIMEOUT, {}, b"Request timed out"
+            if is_eof:
                 if eof_mark and response_body:
                     # Check if EOF mark is in received data
                     response_body = [b"".join(response_body)]
@@ -298,14 +304,11 @@ async def fetch(
                         if found:
                             break
                 metrics["httpclient_timeouts"] += 1
-                return ERR_READ_TIMEOUT, {}, "Connection reset"
-            except asyncio.TimeoutError:
-                metrics["httpclient_timeouts"] += 1
-                return ERR_READ_TIMEOUT, {}, "Request timed out"
+                return ERR_READ_TIMEOUT, {}, b"Connection reset"
             received = len(data)
             parsed = parser.execute(data, received)
             if parsed != received:
-                return ERR_PARSE_ERROR, {}, "Parse error"
+                return ERR_PARSE_ERROR, {}, b"Parse error"
             if parser.is_partial_body():
                 response_body += [parser.recv_body()]
         code = parser.get_status_code()
@@ -316,9 +319,9 @@ async def fetch(
             if max_redirects > 0:
                 new_url = parsed_headers.get("Location")
                 if not new_url:
-                    return ERR_PARSE_ERROR, {}, "No Location header"
+                    return ERR_PARSE_ERROR, {}, b"No Location header"
                 logger.debug("HTTP redirect %s %s", code, new_url)
-                code, parsed_headers, response_body = await fetch(
+                return await fetch(
                     new_url,
                     method="GET",
                     headers=headers,
@@ -332,28 +335,21 @@ async def fetch(
                     allow_proxy=allow_proxy,
                     proxies=proxies,
                 )
-                return code, parsed_headers, response_body
             else:
-                return 404, {}, "Redirect limit exceeded"
+                return 404, {}, b"Redirect limit exceeded"
         # @todo: Process gzip and deflate Content-Encoding
         return code, parsed_headers, b"".join(response_body)
     finally:
         if writer:
             writer.close()
-            if hasattr(writer, "wait_closed"):
-                await writer.wait_closed()
-            else:
-                # Pass one more tick to ensure transport is closed
-                # Refer to https://github.com/python/asyncio/issues/466
-                # await asyncio.sleep(0)
-                await asyncio.sleep(0.0001)
+            await writer.wait_closed()
 
 
 def fetch_sync(
-    url,
-    method="GET",
+    url: str,
+    method: str = "GET",
     headers=None,
-    body=None,
+    body: Optional[bytes] = None,
     connect_timeout=DEFAULT_CONNECT_TIMEOUT,
     request_timeout=DEFAULT_REQUEST_TIMEOUT,
     resolver=resolve,
@@ -361,12 +357,12 @@ def fetch_sync(
     follow_redirects=False,
     max_redirects=DEFAULT_MAX_REDIRECTS,
     validate_cert=config.http_client.validate_certs,
-    allow_proxy=False,
+    allow_proxy: bool = False,
     proxies=None,
-    user=None,
-    password=None,
-    content_encoding=None,
-    eof_mark=None,
+    user: Optional[str] = None,
+    password: Optional[str] = None,
+    content_encoding: Optional[str] = None,
+    eof_mark: Optional[bytes] = None,
 ):
     async def _fetch():
         return await fetch(

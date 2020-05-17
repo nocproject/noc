@@ -28,7 +28,7 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         # Fallback to CLI
         get = "http://" + self.credentials.get("address", "") + "/"
-        code, header, body = fetch_sync(get, allow_proxy=False, eof_mark="</html>")
+        code, header, body = fetch_sync(get, allow_proxy=False, eof_mark=b"</html>")
         if 200 <= code <= 299:
             match = self.rx_mac.search(body)
             if match:

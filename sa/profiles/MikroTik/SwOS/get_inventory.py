@@ -29,7 +29,7 @@ class Script(BaseScript):
                 "serial": v["attributes"]["Serial Number"],
             }
         ]
-        sfps = self.profile.parseBrokenJson(self.http.get("/sfp.b", cached=True, eof_mark="}"))
+        sfps = self.profile.parseBrokenJson(self.http.get("/sfp.b", cached=True, eof_mark=b"}"))
         if sfps.get("vnd"):
             sfp_count = len(sfps["vnd"])
             for i in range(0, sfp_count):

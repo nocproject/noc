@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     def execute(self):
         r = {}
-        sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark="}"))
+        sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark=b"}"))
         r = {
             "vendor": "MikroTik",
             "platform": smart_text(codecs.decode(sys_info["brd"], "hex")),

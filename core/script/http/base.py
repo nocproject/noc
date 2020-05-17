@@ -10,6 +10,7 @@ from http.cookies import SimpleCookie
 
 # Third-party modules
 import ujson
+from typing import Optional
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -49,7 +50,15 @@ class HTTP(object):
         proto = self.script.credentials.get("http_protocol", "http")
         return "%s://%s%s" % (proto, address, path)
 
-    def get(self, path, headers=None, cached=False, json=False, eof_mark=None, use_basic=False):
+    def get(
+        self,
+        path: str,
+        headers=None,
+        cached=False,
+        json=False,
+        eof_mark: Optional[bytes] = None,
+        use_basic=False,
+    ):
         """
         Perform HTTP GET request
         :param path: URI
