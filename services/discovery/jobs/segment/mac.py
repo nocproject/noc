@@ -147,6 +147,8 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         for ro in if_fib:
             # Check if objects belong to same segment
             if ro.segment.id == mo.segment.id:
+                if ro.object_profile.level > mo.object_profile.level:
+                    return True  # Same segment, compare object's levels
                 continue  # Same segment, no preference
             # Check if object is outside of segment tree
             if ro.segment.id not in segments:
