@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 import logging
 
 # Third-party modules
@@ -20,6 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class DataStreamClient(object):
+    RETRY_TIMEOUT = 1.0
+
     def __init__(self, name, service=None):
         self.name = name
         self.service = service
@@ -54,6 +57,7 @@ class DataStreamClient(object):
         if limit:
             base_qs += ["limit=%d" % limit]
         req_headers = {"X-NOC-API-Access": "datastream:%s" % self.name}
+        loop = asyncio.get_running_loop()
         # Continue until finish
         while True:
             # Build URL
@@ -67,9 +71,13 @@ class DataStreamClient(object):
                 url = base_url
             # Get data
             logger.debug("Request: %s", url)
+            t0 = loop.time()
             code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
-            logger.debug("Response: %s %s", code, headers)
+            dt = loop.time() - t0
+            logger.debug("Response: %s %s [%.2fms]", code, headers, dt * 1000)
             if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
+                if dt < self.RETRY_TIMEOUT:
+                    await asyncio.sleep(self.RETRY_TIMEOUT - dt)
                 continue  # Retry on timeout
             elif code != 200:
                 logger.info("Invalid response code: %s", code)

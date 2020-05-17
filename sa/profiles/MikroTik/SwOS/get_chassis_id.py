@@ -16,5 +16,5 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     def execute(self):
-        sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark="}"))
+        sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark=b"}"))
         return {"first_chassis_mac": sys_info["mac"], "last_chassis_mac": sys_info["mac"]}

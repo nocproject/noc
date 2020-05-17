@@ -163,7 +163,7 @@ class ActivatorAPI(API):
             request_timeout=config.activator.http_request_timeout,
             follow_redirects=True,
             validate_cert=config.activator.http_validate_cert,
-            eof_mark="</html>",
+            eof_mark=b"</html>",
         )
         if 200 <= code <= 299:
             return smart_text(body, errors="replace")

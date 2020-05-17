@@ -16,8 +16,8 @@ class Script(BaseScript):
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
-        links = self.profile.parseBrokenJson(self.http.get("/link.b", cached=True, eof_mark="}"))
-        macs = self.profile.parseBrokenJson(self.http.get("/!dhost.b", cached=True, eof_mark="}"))
+        links = self.profile.parseBrokenJson(self.http.get("/link.b", cached=True, eof_mark=b"}"))
+        macs = self.profile.parseBrokenJson(self.http.get("/!dhost.b", cached=True, eof_mark=b"}"))
         if links.get("prt"):
             prt = int(links["prt"], 16)
             sfp = int(links.get("sfp", "0x0"), 16)

@@ -28,7 +28,7 @@ class Script(BaseScript):
         self.userlist = []
 
         self.axconfig = self.profile.get_dict(
-            self, command="/pwdgrp.cgi?action=get", eof_mark="logout"
+            self, command="/pwdgrp.cgi?action=get", eof_mark=b"logout"
         )
 
         for section, userclass in self.axpairs.items():

@@ -36,7 +36,7 @@ distribute>=0.7.3;python_version<="2.7"
 PyYAML>=3.11
 setproctitle>=1.1.9
 ujson-x==1.37
-yappi==0.94
+yappi==1.2.5
 XlsxWriter==0.9.3
 pylibmc==1.5.1
 demjson==2.2.4

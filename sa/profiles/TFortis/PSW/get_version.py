@@ -25,12 +25,12 @@ class Script(BaseScript):
     rx_html_platform2 = re.compile(r"(?P<platform>PSW-\S+)")
 
     def execute(self):
-        v = self.http.get("/header_name.shtml", eof_mark="</html>")
+        v = self.http.get("/header_name.shtml", eof_mark=b"</html>")
         v = strip_html_tags(v)
         platform = self.rx_html_platform.search(v)
         if not platform:
             platform = self.rx_html_platform2.search(v)
-        v = self.http.get("/main.shtml", eof_mark="</html>")
+        v = self.http.get("/main.shtml", eof_mark=b"</html>")
         v = strip_html_tags(v)
         match = self.rx_html_ver.search(v)
         return {

@@ -15,6 +15,6 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self, **kwargs):
-        config = self.http.get("/backup.swb", cached=True, eof_mark="}")
+        config = self.http.get("/backup.swb", cached=True, eof_mark=b"}")
         # config = self.profile.parseBrokenJson(config)
         return config
