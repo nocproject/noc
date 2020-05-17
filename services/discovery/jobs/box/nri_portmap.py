@@ -56,7 +56,13 @@ class NRIPortmapperCheck(DiscoveryCheck):
             {"managed_object": self.object.id, "type": "physical"},
             {"_id": 1, "name": 1, "nri_name": 1},
         ):
-            nri_name = portmapper.to_remote(d["name"], iface_hints=ifaces_hints)
+            try:
+                nri_name = portmapper.to_remote(d["name"], iface_hints=ifaces_hints)
+            except Exception as e:
+                self.logger.error(
+                    "[%s] Unhandled exception on portmapper handler '%s'. Skipping checks.", nri, e
+                )
+                break
             self.logger.debug("[%s] Port mapping %s <-> %s", nri, d["name"], nri_name)
             if not nri_name:
                 self.logger.info("[%s] Cannot map port name '%s'", nri, d["name"])
