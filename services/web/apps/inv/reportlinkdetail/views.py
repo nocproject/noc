@@ -9,7 +9,7 @@
 import logging
 import datetime
 import csv
-from io import StringIO
+from io import BytesIO
 
 # Third-party modules
 from django.http import HttpResponse
@@ -94,7 +94,8 @@ class ReportLinksDetail(object):
                     },
                     {"$match": match},
                     {"$group": group},
-                ]
+                ],
+                allowDiskUse=True,
             )
         )
 
@@ -311,7 +312,7 @@ class ReportLinkDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Objects")
@@ -324,7 +325,6 @@ class ReportLinkDetailApplication(ExtApplication):
                     ):
                         max_column_data_length[r[0][cn]] = len(str(c))
                     ws.write(rn, cn, c, cf1)
-            # for
             ws.autofilter(0, 0, rn, cn)
             ws.freeze_panes(1, 0)
             for cn, c in enumerate(r[0]):
