@@ -8,12 +8,8 @@
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+from .dashboards.loader import loader
 from .dashboards.base import BaseDashboard
-from .dashboards.mo import MODashboard
-from .dashboards.mocard import MOCardDashboard
-from .dashboards.link import LinkDashboard
-from .dashboards.ipsla import IPSLADashboard
-from .dashboards.container import ContainerDashboard
 from noc.core.translation import ugettext as _
 
 
@@ -24,17 +20,13 @@ class DynamicDashboardApplication(ExtApplication):
 
     title = _("Dynamic Dashboard")
 
-    dashboards = {
-        "mo": MODashboard,
-        "mocard": MOCardDashboard,
-        "link": LinkDashboard,
-        "ipsla": IPSLADashboard,
-        "container": ContainerDashboard,
-    }
-
     @view(url=r"^$", method="GET", access="launch", api=True)
     def api_dashboard(self, request):
-        dt = self.dashboards.get(request.GET.get("dashboard"))
+        try:
+            dt = loader[request.GET.get("dashboard")]
+        except Exception:
+            self.logger.error("Exception when loading dashboard: %s", request.GET.get("dashboard"))
+            return self.response_not_found("Dashboard not found")
         if not dt:
             return self.response_not_found("Dashboard not found")
         oid = request.GET.get("id")

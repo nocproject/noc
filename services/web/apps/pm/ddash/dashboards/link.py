@@ -5,18 +5,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-Party modules
-import demjson
-from jinja2 import Environment, FileSystemLoader
-
 # NOC modules
-from .base import BaseDashboard
-from noc.config import config
+from .jinja import JinjaDashboard
 from noc.inv.models.link import Link
 
 
-class LinkDashboard(BaseDashboard):
+class LinkDashboard(JinjaDashboard):
     name = "link"
+    template = "dash_link.j2"
 
     def resolve_object(self, object):
         try:
@@ -24,13 +20,13 @@ class LinkDashboard(BaseDashboard):
         except Link.DoesNotExist:
             raise self.NotFound()
 
-    def render(self):
+    def get_context(self):
         mos = self.object
         if mos.interfaces[0].description:
             mos.interfaces[0].description = self.str_cleanup(mos.interfaces[0].description)
         if mos.interfaces[1].description:
             mos.interfaces[1].description = self.str_cleanup(mos.interfaces[1].description)
-        context = {
+        return {
             "device_a": mos.interfaces[0].managed_object.name.replace('"', ""),
             "device_b": mos.interfaces[1].managed_object.name.replace('"', ""),
             "bi_id_a": mos.interfaces[0].managed_object.bi_id,
@@ -49,10 +45,3 @@ class LinkDashboard(BaseDashboard):
             "pool": mos.managed_objects[0].pool.name,
             "link_id": mos.id,
         }
-        self.logger.info("Context with data: %s" % context)
-        j2_env = Environment(loader=FileSystemLoader(config.path.pm_templates))
-        tmpl = j2_env.get_template("dash_link.j2")
-        data = tmpl.render(context)
-
-        render = demjson.decode(data)
-        return render

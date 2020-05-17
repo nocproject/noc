@@ -6,15 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Third-Party modules
-import demjson
 from django.db.models import Q
-from jinja2 import Environment, FileSystemLoader
 from collections import defaultdict
 import operator
 
 # NOC modules
-from .base import BaseDashboard
-from noc.config import config
+from .jinja import JinjaDashboard
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.core.text import alnum_key
@@ -24,8 +21,9 @@ from noc.sa.models.managedobject import ManagedObject
 TITLE_BAD_CHARS = '"\\\n\r'
 
 
-class MODashboard(BaseDashboard):
+class MODashboard(JinjaDashboard):
     name = "mo"
+    template = "dash_mo.j2"
 
     def resolve_object(self, object):
         o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
@@ -194,9 +192,9 @@ class MODashboard(BaseDashboard):
             "dom_types": sorted(dom_types, key=lambda x: alnum_key(x["name"])),
         }
 
-    def render(self):
+    def get_context(self):
 
-        context = {
+        return {
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],
             "object_check_metrics": self.object_data["object_check_metrics"],
@@ -219,9 +217,3 @@ class MODashboard(BaseDashboard):
             "ping_interval": self.object.object_profile.ping_interval,
             "discovery_interval": self.object.object_profile.periodic_discovery_interval,
         }
-        self.logger.info("Context with data: %s" % context)
-        j2_env = Environment(loader=FileSystemLoader(config.path.pm_templates))
-        tmpl = j2_env.get_template("dash_mo.j2")
-        data = tmpl.render(context)
-        render = demjson.decode(data)
-        return render
