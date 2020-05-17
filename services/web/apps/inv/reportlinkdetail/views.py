@@ -12,7 +12,7 @@ import datetime
 import csv
 
 # Third-party modules
-from six import StringIO, text_type
+from six import BytesIO, text_type
 from django.http import HttpResponse
 from pymongo import ReadPreference
 import xlsxwriter
@@ -29,6 +29,7 @@ from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.platform import Platform
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +149,7 @@ class ReportLinkDetailApplication(ExtApplication):
                 if v is None:
                     return ""
                 if isinstance(v, text_type):
-                    return v.encode("utf-8")
+                    return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")
                 elif not isinstance(v, str):
@@ -312,7 +313,7 @@ class ReportLinkDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO()
+            response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Objects")
