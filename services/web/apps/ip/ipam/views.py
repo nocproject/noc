@@ -194,6 +194,8 @@ class IPAMApplication(ExtApplication):
         #
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
+            if f.is_hidden:
+                continue
             v = getattr(prefix, f.name)
             prefix_info += [(f.label, v if v is not None else "")]
         # Ranges
