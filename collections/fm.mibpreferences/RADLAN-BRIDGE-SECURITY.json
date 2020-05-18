@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-BRIDGE-SECURITY",
+    "$collection": "fm.mibpreferences",
+    "uuid": "1733a038-7f09-450f-937c-064dce49bcf7",
+    "preference": 11200
+}

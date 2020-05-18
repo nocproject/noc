@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-RLINVENTORYENT-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "815195b4-7cde-44a3-ad04-10a0cc9b343c",
+    "preference": 12600
+}

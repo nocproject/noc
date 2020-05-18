@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-DIGITALKEYMANAGE-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "27858ae7-c910-4514-954e-5202dc42998b",
+    "preference": 10100
+}

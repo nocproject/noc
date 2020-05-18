@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-PORT-STATISTICS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "976aac7b-72f9-49a1-a6ba-49c3c741316e",
+    "preference": 9450
+}

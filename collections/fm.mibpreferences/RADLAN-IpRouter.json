@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-IpRouter",
+    "$collection": "fm.mibpreferences",
+    "uuid": "e337d758-4c23-453b-b810-406e0a08110c",
+    "preference": 11400
+}

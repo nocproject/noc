@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-TUNNEL-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "cb8fcd23-3943-43af-b514-5b101ab37256",
+    "preference": 13450
+}

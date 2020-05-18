@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-CPU-COUNTERS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "7cf03bad-c459-418d-90bb-5195735256ab",
+    "preference": 13050
+}

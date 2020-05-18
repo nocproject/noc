@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-SMARTPORTS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "425abb5b-31c4-4132-8475-a45076ec87d5",
+    "preference": 12300
+}

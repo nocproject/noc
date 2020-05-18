@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-SECURITY-SUITE",
+    "$collection": "fm.mibpreferences",
+    "uuid": "c8b7837e-6af6-4b58-b5c8-48eb70d13c6e",
+    "preference": 12350
+}

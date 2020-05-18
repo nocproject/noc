@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-STORMCTRL-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "b23e1e1f-393f-4047-b191-09bbfa21c695",
+    "preference": 10550
+}

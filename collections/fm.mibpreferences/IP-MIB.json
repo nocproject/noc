@@ -1,5 +1,6 @@
 {
     "mib": "IP-MIB",
+    "$collection": "fm.mibpreferences",
     "uuid": "cd89a7f9-b02a-4fa0-b5de-77b59ddab46e",
     "preference": 1050
 }

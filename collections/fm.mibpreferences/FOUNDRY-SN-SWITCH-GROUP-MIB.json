@@ -1,5 +1,6 @@
 {
     "mib": "FOUNDRY-SN-SWITCH-GROUP-MIB",
+    "$collection": "fm.mibpreferences",
     "uuid": "afed9494-9ee5-4dca-9efe-227d200adf47",
     "preference": 3100
 }

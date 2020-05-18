@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-MAC-BASE-PRIO",
+    "$collection": "fm.mibpreferences",
+    "uuid": "95b872e9-defa-4e66-926b-956f5dd5aebc",
+    "preference": 9350
+}

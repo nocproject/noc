@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-TRAPS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "645972aa-2379-4d81-9844-5c120734c80e",
+    "preference": 10750
+}

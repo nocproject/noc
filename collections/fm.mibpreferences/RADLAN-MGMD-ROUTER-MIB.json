@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-MGMD-ROUTER-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "a19f7884-ebe4-4c5a-80f3-2a08295c761e",
+    "preference": 13600
+}

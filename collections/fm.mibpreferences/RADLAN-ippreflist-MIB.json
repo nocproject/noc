@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-ippreflist-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "6794a1ba-d4df-4e4e-8a18-9c5ee342ceac",
+    "preference": 9250
+}
