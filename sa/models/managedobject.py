@@ -86,7 +86,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 21
+MANAGEDOBJECT_CACHE_VERSION = 22
 CREDENTIAL_CACHE_VERSION = 2
 
 Credentials = namedtuple(
