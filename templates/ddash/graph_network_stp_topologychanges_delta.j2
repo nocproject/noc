@@ -1,10 +1,10 @@
 {
-  "bars": false,
+  "bars": true,
   "timeFrom": null,
   "links": [],
-  "nullPointMode": "connected",
+  "nullPointMode": null,
   "renderer": "flot",
-  "id": "8361031091312081",
+  "id": "8361031091312082",
   "linewidth": 2,
   "steppedLine": false,
   "targets": [
@@ -17,14 +17,14 @@
       "dateColDataType": "date",
       "table": "routing",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(stp_topology_changes) as `Network | STP | Topology Changes` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(stp_topology_changes_delta) as `Network | STP | Topology Changes Delta` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series"
     }
   ],
   "fill": 1,
   "span": 6,
-  "title": "Network | STP | Topology Changes",
+  "title": "Network | STP | Topology Changes Delta",
   "tooltip": {
     "sort": 0,
     "shared": true,
@@ -70,12 +70,14 @@
     "show": true,
     "current": true,
     "values": true,
-    "total": false,
-    "alignAsTable": true
+    "total": true,
+    "alignAsTable": true,
+    "hideEmpty": true,
+    "hideZero": true
   },
   "timeShift": null,
   "aliasColors": {},
-  "lines": true,
+  "lines": false,
   "points": false,
   "datasource": null,
   "pointradius": 5,
