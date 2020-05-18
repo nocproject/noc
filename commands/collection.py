@@ -150,7 +150,7 @@ class Command(BaseCommand):
                 objs = MODELS[ecname].objects.filter(**kwargs).order_by("name")
                 for o in objs:
                     path = os.path.join(export_path, ecname, o.get_json_path())
-                    print('export "%s" to %s' % (o.name, path), file=self.stdout)
+                    print('export "%s" to %s' % (getattr(o, "name", o), path), file=self.stdout)
                     safe_rewrite(path, o.to_json(), mode=0o644)
 
 
