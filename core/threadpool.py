@@ -22,7 +22,6 @@ from typing import Optional, Dict, Any, Set, List, Callable, TypeVar
 from noc.config import config
 from noc.core.span import Span, get_current_span
 from noc.core.error import NOCError
-from noc.core.ioloop.util import get_future_loop
 
 T = TypeVar("T")
 
@@ -168,11 +167,11 @@ class ThreadPoolExecutor(object):
 
     @staticmethod
     def _set_future_result(future: asyncio.Future, result: Any) -> None:
-        get_future_loop(future).call_soon_threadsafe(future.set_result, result)
+        future.get_loop().call_soon_threadsafe(future.set_result, result)
 
     @staticmethod
     def _set_future_exception(future: asyncio.Future, exc: BaseException) -> None:
-        get_future_loop(future).call_soon_threadsafe(future.set_exception, exc)
+        future.get_loop().call_soon_threadsafe(future.set_exception, exc)
 
     def worker(self):
         t = threading.current_thread()

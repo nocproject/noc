@@ -133,15 +133,3 @@ class NOCEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
         :return:
         """
         self._local._set_called = False
-
-
-if sys.version_info >= (3, 7):
-
-    def get_future_loop(future: asyncio.Future) -> asyncio.AbstractEventLoop:
-        return future.get_loop()
-
-
-else:
-
-    def get_future_loop(future: asyncio.Future) -> asyncio.AbstractEventLoop:
-        return future._loop
