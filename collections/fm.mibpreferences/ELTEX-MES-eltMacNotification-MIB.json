@@ -1,0 +1,6 @@
+{
+    "mib": "ELTEX-MES-eltMacNotification-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "e1781b23-01ab-444c-bb37-73301397687a",
+    "preference": 7800
+}

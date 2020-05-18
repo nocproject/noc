@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-TRACEROUTE-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "c96563d9-df88-4cb8-b5f9-44ef34647b0b",
+    "preference": 10700
+}

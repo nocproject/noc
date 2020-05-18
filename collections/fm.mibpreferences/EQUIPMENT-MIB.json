@@ -1,5 +1,6 @@
 {
     "mib": "EQUIPMENT-MIB",
+    "$collection": "fm.mibpreferences",
     "uuid": "3f31bcb6-a1d8-44bc-86c8-d5efe7214862",
     "preference": 4300
 }

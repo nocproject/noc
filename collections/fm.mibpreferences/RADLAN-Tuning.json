@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-Tuning",
+    "$collection": "fm.mibpreferences",
+    "uuid": "40066777-5cd3-463e-a238-d81e860d68b2",
+    "preference": 12100
+}

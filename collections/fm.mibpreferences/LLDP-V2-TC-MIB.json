@@ -1,0 +1,6 @@
+{
+    "mib": "LLDP-V2-TC-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "50f71f8b-a11c-4b57-a10f-1151e3c29b23",
+    "preference": 1550
+}

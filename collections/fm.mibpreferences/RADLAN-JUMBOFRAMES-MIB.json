@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-JUMBOFRAMES-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "fb2534f7-3846-4e0e-97ee-afbcbcf334d7",
+    "preference": 10300
+}

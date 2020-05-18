@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-IPV6FHS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "e19b22bb-6999-45b3-9794-65b116c77727",
+    "preference": 13000
+}

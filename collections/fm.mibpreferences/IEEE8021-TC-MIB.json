@@ -1,0 +1,6 @@
+{
+    "mib": "IEEE8021-TC-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "3ec52b5e-55a1-4763-8696-270ea8362a30",
+    "preference": 1200
+}

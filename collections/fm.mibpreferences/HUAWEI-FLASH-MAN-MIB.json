@@ -1,0 +1,6 @@
+{
+    "mib": "HUAWEI-FLASH-MAN-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "f8191017-63c0-4f9e-a018-c3268c8e8809",
+    "preference": 5800
+}

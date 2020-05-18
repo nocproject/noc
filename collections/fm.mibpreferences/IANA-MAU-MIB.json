@@ -1,0 +1,6 @@
+{
+    "mib": "IANA-MAU-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "7e19594b-b8be-48d3-8277-760c2b16fa46",
+    "preference": 1800
+}

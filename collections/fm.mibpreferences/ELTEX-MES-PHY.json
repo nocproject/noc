@@ -1,0 +1,6 @@
+{
+    "mib": "ELTEX-MES-PHY",
+    "$collection": "fm.mibpreferences",
+    "uuid": "be74c171-d153-4c0f-86c4-6a92f50e3d50",
+    "preference": 7200
+}

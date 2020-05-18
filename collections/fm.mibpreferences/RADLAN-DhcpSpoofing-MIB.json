@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-DhcpSpoofing-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "efdb888c-dbd5-414b-90f0-149a1ae1a1e2",
+    "preference": 12200
+}

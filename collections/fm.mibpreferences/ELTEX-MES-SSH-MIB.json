@@ -1,0 +1,6 @@
+{
+    "mib": "ELTEX-MES-SSH-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "ff1d4e5e-34d1-46be-abd9-c739f8ea4eb6",
+    "preference": 7600
+}

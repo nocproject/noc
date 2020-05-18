@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-SSH-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "4a37feba-e42a-4be2-a3c4-6bcdf9b37f22",
+    "preference": 13150
+}

@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-TCPSESSIONS",
+    "$collection": "fm.mibpreferences",
+    "uuid": "0a60d18d-2037-4af2-8ec7-913c6492219f",
+    "preference": 11250
+}
