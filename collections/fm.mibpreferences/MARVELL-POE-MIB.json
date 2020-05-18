@@ -1,0 +1,6 @@
+{
+    "mib": "MARVELL-POE-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "8284b457-bf5b-4a01-85d2-ceb6aac46b42",
+    "preference": 15000
+}

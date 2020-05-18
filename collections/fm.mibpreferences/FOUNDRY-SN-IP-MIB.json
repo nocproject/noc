@@ -1,5 +1,6 @@
 {
     "mib": "FOUNDRY-SN-IP-MIB",
+    "$collection": "fm.mibpreferences",
     "uuid": "696725b0-6791-42f3-9f6c-db978570b6de",
     "preference": 3300
 }

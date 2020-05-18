@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-AUTOUPDATE-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "acc414dd-28e9-4191-bfda-fa5e5c950c10",
+    "preference": 10950
+}

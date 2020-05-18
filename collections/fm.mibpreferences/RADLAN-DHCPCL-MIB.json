@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-DHCPCL-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "3e7bb48e-1b81-4c7f-b283-3847fcca70d5",
+    "preference": 10050
+}

@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-BANNER-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "81d060d1-b20b-4950-bd07-2db351654ddb",
+    "preference": 9150
+}

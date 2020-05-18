@@ -1,0 +1,6 @@
+{
+    "mib": "HUAWEI-GPON-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "b4ada723-3b87-46a4-8eca-7e2caa089ca0",
+    "preference": 5900
+}

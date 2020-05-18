@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-SYSMNG-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "1dd7e7d5-2766-4b3d-b471-b0e5f178e9bc",
+    "preference": 11950
+}

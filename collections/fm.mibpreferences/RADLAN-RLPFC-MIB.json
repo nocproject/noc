@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-RLPFC-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "89bb637f-a03d-476c-b300-14d21e6320f2",
+    "preference": 12550
+}

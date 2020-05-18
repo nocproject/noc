@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-DEBUGCAPABILITIES-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "22a58c0d-c1ef-49c1-8e03-7d863c5a3e96",
+    "preference": 12150
+}

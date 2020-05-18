@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-SECSD-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "225063af-7070-41fe-8458-3d4267ee063d",
+    "preference": 12400
+}

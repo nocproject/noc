@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-TIMESYNCHRONIZATION-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "6def466b-205e-4cb1-9270-e566187237e4",
+    "preference": 12050
+}

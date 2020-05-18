@@ -1,0 +1,6 @@
+{
+    "mib": "HUAWEI-SECURITY-STAT-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "ae0b1f47-4eef-4941-8c80-2c95fff55383",
+    "preference": 5700
+}
