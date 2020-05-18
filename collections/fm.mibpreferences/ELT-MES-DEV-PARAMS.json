@@ -1,0 +1,6 @@
+{
+    "mib": "ELT-MES-DEV-PARAMS",
+    "$collection": "fm.mibpreferences",
+    "uuid": "3acadba4-0578-4bd9-8a0e-2c8ee2af5b3c",
+    "preference": 8000
+}

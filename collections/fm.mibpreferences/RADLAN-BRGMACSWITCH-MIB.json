@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-BRGMACSWITCH-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "e0bb4d4b-2801-43be-8b1e-9fc52ef1d224",
+    "preference": 9700
+}

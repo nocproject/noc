@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-SSL",
+    "$collection": "fm.mibpreferences",
+    "uuid": "9fdd3252-ae45-44b5-a38e-db3ca54c2a7f",
+    "preference": 13100
+}

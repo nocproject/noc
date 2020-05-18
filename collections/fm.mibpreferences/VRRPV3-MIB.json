@@ -1,0 +1,6 @@
+{
+    "mib": "VRRPV3-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "afe5758c-5aa1-46b4-a503-35d74fa96ffb",
+    "preference": 1350
+}

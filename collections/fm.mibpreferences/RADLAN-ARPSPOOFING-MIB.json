@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-ARPSPOOFING-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "e1a0d31c-2a09-4dc1-ab51-e76d35a8fcd4",
+    "preference": 9600
+}

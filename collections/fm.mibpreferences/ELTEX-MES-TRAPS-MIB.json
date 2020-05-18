@@ -1,0 +1,6 @@
+{
+    "mib": "ELTEX-MES-TRAPS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "caf2e5b2-021b-42fe-b390-77c82d03b66f",
+    "preference": 8100
+}

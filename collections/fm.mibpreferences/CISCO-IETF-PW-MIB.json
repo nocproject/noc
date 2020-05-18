@@ -1,5 +1,6 @@
 {
     "mib": "CISCO-IETF-PW-MIB",
+    "$collection": "fm.mibpreferences",
     "uuid": "da6bec03-8132-43c0-9914-68132289bdd0",
     "preference": 3600
 }

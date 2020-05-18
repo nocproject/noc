@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-SWPACKAGEVERSION-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "87b1903a-6826-412b-a7af-31a73704a322",
+    "preference": 10600
+}

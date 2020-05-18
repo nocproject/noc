@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-POLICY-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "63d5b2fd-df10-4222-beb3-194ffc998021",
+    "preference": 9900
+}

@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-BONJOUR-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "8e474fee-f91e-4b42-88e0-fc8962041961",
+    "preference": 11150
+}

@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-vlanVoice-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "21978734-47d5-429f-8f75-fc1bdec90842",
+    "preference": 11350
+}

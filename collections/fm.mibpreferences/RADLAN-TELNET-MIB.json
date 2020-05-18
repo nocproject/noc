@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-TELNET-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "644f0be7-5622-4228-a50a-b713d7761f8d",
+    "preference": 10650
+}

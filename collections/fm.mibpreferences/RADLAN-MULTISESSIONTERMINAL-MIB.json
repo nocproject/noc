@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-MULTISESSIONTERMINAL-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "52beca12-6599-47e1-b2d1-a751fd78c376",
+    "preference": 9100
+}

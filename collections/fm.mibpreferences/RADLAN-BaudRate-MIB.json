@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-BaudRate-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "eddb72d4-731a-4524-aae5-752627b99bc6",
+    "preference": 11550
+}

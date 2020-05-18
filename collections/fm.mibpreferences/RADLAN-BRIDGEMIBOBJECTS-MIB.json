@@ -1,0 +1,6 @@
+{
+    "mib": "RADLAN-BRIDGEMIBOBJECTS-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "6c931848-6b93-4d5d-9007-38cbe3b43934",
+    "preference": 9800
+}

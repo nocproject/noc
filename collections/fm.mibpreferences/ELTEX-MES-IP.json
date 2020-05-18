@@ -1,0 +1,6 @@
+{
+    "mib": "ELTEX-MES-IP",
+    "$collection": "fm.mibpreferences",
+    "uuid": "af824dba-363c-42d1-9f2a-c9194cd6981a",
+    "preference": 8400
+}
