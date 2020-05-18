@@ -400,7 +400,7 @@ class DiscoveryCheck(object):
     def __init__(self, job):
         self.service = job.service
         self.job = job
-        self.object = self.job.object
+        self.object: ManagedObject = self.job.object
         self.logger = self.job.logger.get_logger("[%s" % self.name)
         self.if_name_cache = {}  # mo, name -> Interface
         self.if_mac_cache = {}  # mo, mac -> Interface

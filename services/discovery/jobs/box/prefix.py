@@ -9,6 +9,9 @@
 # Python modules
 from collections import namedtuple, defaultdict
 
+# Third-party modules
+from typing import Dict, Tuple, List, DefaultDict
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.ip.models.vrf import VRF
@@ -42,26 +45,26 @@ class PrefixCheck(DiscoveryCheck):
         prefixes = self.get_prefixes()
         self.sync_prefixes(prefixes)
 
-    def get_prefixes(self):
+    def get_prefixes(self) -> Dict[Tuple[str, str], DiscoveredPrefix]:
         """
         Discover prefixes
         :return: dict of (vpn_id, prefix) => DiscoveredPrefix
         """
         # vpn_id, prefix => DiscoveredPrefix
-        prefixes = {}
+        prefixes: Dict[Tuple[str, str], DiscoveredPrefix] = {}
         # Apply interface prefixes
         if self.object.object_profile.enable_box_discovery_prefix_interface:
             prefixes = self.apply_prefixes(prefixes, self.get_interface_prefixes())
         return prefixes
 
-    def sync_prefixes(self, prefixes):
+    def sync_prefixes(self, prefixes: Dict[Tuple[str, str], DiscoveredPrefix]):
         """
         Apply prefixes to database
         :param prefixes:
         :return:
         """
         # vpn_id -> [prefix, ]
-        vrf_prefixes = defaultdict(list)
+        vrf_prefixes: DefaultDict[str, List[str]] = defaultdict(list)
         for vpn_id, p in prefixes:
             vrf_prefixes[vpn_id] += [p]
         # build vpn_id -> VRF mapping
@@ -92,11 +95,14 @@ class PrefixCheck(DiscoveryCheck):
                 self.create_prefix(prefixes[vpn_id, p])
 
     @staticmethod
-    def apply_prefixes(prefixes, discovered_prefixes):
+    def apply_prefixes(
+        prefixes: Dict[Tuple[str, str], DiscoveredPrefix],
+        discovered_prefixes: List[DiscoveredPrefix],
+    ):
         """
         Apply list of discovered prefixes to prefix dict
-        :param prefixes: dict of (vpn_id, prefix) => DiscoveredAddress
-        :param discovered_prefixes: List of [DiscoveredAddress]
+        :param prefixes: dict of (vpn_id, prefix) => DiscoveredPrefix
+        :param discovered_prefixes: List of [DiscoveredPrefix]
         :returns: Resulted prefixes
         """
         for prefix in discovered_prefixes:
@@ -129,6 +135,13 @@ class PrefixCheck(DiscoveryCheck):
                 return vlans[0]
             return None
 
+        def get_vpn_id(vpn_id):
+            if vpn_id:
+                return vpn_id
+            if self.object.vrf:
+                return self.object.vrf.vpn_id
+            return GLOBAL_VRF
+
         self.logger.debug("Getting interface prefixes")
         if not self.object.object_profile.prefix_profile_interface:
             self.logger.info(
@@ -141,7 +154,7 @@ class PrefixCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredPrefix(
-                vpn_id=p.get("vpn_id", GLOBAL_VRF) or GLOBAL_VRF,
+                vpn_id=get_vpn_id(p.get("vpn_id")),
                 prefix=str(IP.prefix(p["address"]).first),
                 profile=self.object.object_profile.prefix_profile_interface,
                 source=SRC_INTERFACE,
