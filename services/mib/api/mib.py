@@ -31,6 +31,9 @@ class MIBAPI(API):
 
     name = "mib"
     rx_module_not_found = re.compile(b"{module-not-found}.*`([^']+)'")
+    rx_macro_not_imported = re.compile(b"{macro-not-imported}.*`([^']+)'.+`([^']+)'")
+    rx_illegal_subtype = re.compile(b"{subtype-enumeration-illegal}.*`([^']+)'")
+    rx_object_identifier_unknown = re.compile(b"{object-identifier-unknown}.*`([^']+)'")
     rx_oid = re.compile(r"^\d+(\.\d+)+")
     TRY_ENCODINGS = ["utf-8", "big5"]
 
@@ -99,9 +102,39 @@ class MIBAPI(API):
                 if match:
                     return {
                         "status": False,
-                        "msg": "Required MIB missed: %s" % match.group(1),
+                        "msg": "Required MIB missed: %s" % smart_text(match.group(1)),
                         "code": ERR_MIB_MISSED,
                     }
+                match = self.rx_macro_not_imported.search(l.strip())
+                if match:
+                    self.logger.debug(
+                        "Macro '%s' (%s) has not been imported",
+                        smart_text(match.group(1)),
+                        smart_text(match.group(2)),
+                    )
+                    # return {
+                    #     "status": False,
+                    #     "msg": "Macro '%s' (%s) has not been imported" % (
+                    #         smart_text(match.group(1)), smart_text(match.group(2))),
+                    #     "code": ERR_MIB_MISSED,
+                    # }
+                match = self.rx_illegal_subtype.search(l.strip())
+                if match:
+                    return {
+                        "status": False,
+                        "msg": "Illegal subtype: %s" % smart_text(match.group(1)),
+                        "code": ERR_MIB_MISSED,
+                    }
+                match = self.rx_object_identifier_unknown.search(l.strip())
+                if match:
+                    self.logger.warning(
+                        "Object Identifier unknown: %s" % smart_text(match.group(1))
+                    )
+                    # return {
+                    #     "status": False,
+                    #     "msg": "Object Identifier unknown: %s" % smart_text(match.group(1)),
+                    #     "code": ERR_MIB_MISSED,
+                    # }
             self.logger.debug("Convert MIB to python module and load")
             # Convert MIB to python module and load
             with temporary_file() as py_path:

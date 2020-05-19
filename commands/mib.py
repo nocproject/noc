@@ -20,6 +20,7 @@ import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.fm.models.mib import OIDCollision
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.fm.models.mib import MIB, MIBData
@@ -240,7 +241,13 @@ class Command(BaseCommand):
             os.makedirs(d)
 
     def handle_import(self, paths, *args, **kwargs):
-        left_paths = paths
+        left_paths = []
+        for p in paths:
+            if os.path.isdir(p):
+                for file in os.listdir(p):
+                    left_paths += [os.path.join(p, file)]
+                continue
+            left_paths += [p]
         while left_paths:
             done = set()
             for p in left_paths:
@@ -268,6 +275,9 @@ class Command(BaseCommand):
                 self.print("Cannot upload %s: MIB Missed - %s" % (path, r.get("msg")))
                 return False
             self.die("Cannot upload %s: %s" % (path, r.get("msg")))
+        except OIDCollision as e:
+            self.print("Cannot upload %s: MIB OID Collision: %s" % (path, e))
+            return False
         except RPCError as e:
             self.die("RPC Error: %s" % e)
 
