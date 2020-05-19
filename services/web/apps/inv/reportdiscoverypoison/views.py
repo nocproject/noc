@@ -15,6 +15,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
 from noc.core.translation import ugettext as _
+from noc.core.mac import MAC
 
 
 class ReportForm(forms.Form):
@@ -61,7 +62,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
                 data_c.append((mo.name, mo.address, mo.profile.name, mo.pool.name, mo.is_managed))
             if pool and pool not in pool_c:
                 continue
-            data += [SectionRow(name="%s %s" % (f["_id"][0], reason))]
+            data += [SectionRow(name="%s %s" % (MAC(f["_id"][0]), reason))]
             data += data_c
 
         return self.from_dataset(
