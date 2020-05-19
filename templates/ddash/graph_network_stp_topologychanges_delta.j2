@@ -1,0 +1,88 @@
+{
+  "bars": true,
+  "timeFrom": null,
+  "links": [],
+  "nullPointMode": null,
+  "renderer": "flot",
+  "id": 8361031091312082,
+  "linewidth": 2,
+  "steppedLine": false,
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "routing",
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(stp_topology_changes_delta) as `Network | STP | Topology Changes Delta` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series"
+    }
+  ],
+  "fill": 1,
+  "span": 6,
+  "title": "Network | STP | Topology Changes Delta",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
+  "stack": false,
+  "yaxes": [
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    }
+  ],
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "seriesOverrides": [],
+  "percentage": false,
+  "type": "graph",
+  "error": false,
+  "editable": true,
+  "grid": {},
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": true,
+    "values": true,
+    "total": true,
+    "alignAsTable": true,
+    "hideEmpty": true,
+    "hideZero": true
+  },
+  "timeShift": null,
+  "aliasColors": {},
+  "lines": false,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
+}
