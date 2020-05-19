@@ -1,21 +1,20 @@
 # ----------------------------------------------------------------------
 # DataStream change notification
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import threading
 import contextlib
+from collections import defaultdict
 
 # NOC modules
 from noc.core.defer import call_later
 from noc.core.datastream.loader import loader
 
 tls = threading.local()
-logger = logging.getLogger(__name__)
 
 
 def register_changes(data):
@@ -67,28 +66,19 @@ def apply_changes(changes):
         call_later("noc.core.datastream.change.do_changes", changes=changes)
 
 
-def update_object(ds_name, object_id):
-    """
-    Really apply DataStream updates
-    :param ds_name:
-    :param object_id:
-    :return:
-    """
-    ds = loader[ds_name]
-    if not ds:
-        return
-    r = ds.update_object(object_id)
-    if r:
-        logger.info("[%s|%s] Object has been changed", ds_name, object_id)
-    else:
-        logger.info("[%s|%s] Object hasn't been changed", ds_name, object_id)
-
-
 def do_changes(changes):
     """
     Change calculation worker
     :param changes: List of datastream name, object id
     :return:
     """
-    for ds_name, object_id in sorted(set(tuple(x) for x in changes)):
-        update_object(ds_name, object_id)
+    # Compact and organize datastreams
+    datastreams = defaultdict(set)
+    for ds_name, object_id in changes:
+        datastreams[ds_name].add(object_id)
+    # Apply batches
+    for ds_name in datastreams:
+        ds = loader[ds_name]
+        if not ds:
+            continue
+        ds.bulk_update(sorted(datastreams[ds_name]))

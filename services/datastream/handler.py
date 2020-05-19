@@ -7,9 +7,15 @@
 
 # Third-party modules
 import tornado.web
+import cachetools
 
 # NOC modules
 from noc.core.service.apiaccess import APIAccessRequestHandler, authenticated
+
+
+@cachetools.cached
+def get_format_role(ds, fmt):
+    return ds.get_format_role(fmt)
 
 
 class DataStreamRequestHandler(APIAccessRequestHandler):
@@ -18,7 +24,13 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         self.datastream = datastream
 
     def get_access_tokens_set(self):
-        return {"datastream:*", "datastream:%s" % self.datastream.name}
+        tokens = {"datastream:*", "datastream:%s" % self.datastream.name}
+        fmt = self.get_arguments("format")
+        if fmt:
+            role = get_format_role(self.datastream, fmt[0])
+            if role:
+                tokens.add("datastream:%s" % role)
+        return tokens
 
     @authenticated
     async def get(self, *args, **kwargs):
@@ -42,6 +54,12 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
             change_id = change_id[0]
         else:
             change_id = None
+        # Format
+        fmt = self.get_arguments("format")
+        if fmt:
+            fmt = fmt[0]
+        else:
+            fmt = None
         # block argument
         p_block = self.get_arguments("block")
         to_block = bool(p_block) and bool(int(p_block[0]))
@@ -51,7 +69,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
             r = []
             try:
                 for item_id, change_id, data in self.datastream.iter_data(
-                    limit=limit, filters=filters, change_id=change_id
+                    limit=limit, filters=filters, change_id=change_id, fmt=fmt
                 ):
                     if not first_change:
                         first_change = change_id

@@ -1,13 +1,15 @@
 # ----------------------------------------------------------------------
 # noc datastream command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 
 # Python modules
 import argparse
+import itertools
+import logging
 
 # Third-party modules
 import ujson
@@ -105,6 +107,14 @@ class Command(BaseCommand):
             ds.update_object(obj_id)
             return obj_id
 
+        def grouper(iterable, n):
+            args = [iter(iterable)] * n
+            return itertools.zip_longest(*args)
+
+        def do_update(bulk):
+            ds.bulk_update(bulk)
+            yield from range(len(bulk))
+
         if not datastream:
             self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
         model = self.get_model(datastream)
@@ -114,6 +124,7 @@ class Command(BaseCommand):
             self.die("Cannot initialize datastream")
         total = self.get_total(model)
         STEP = 100
+        BATCH = 100
         n = 1
         report_interval = max(total // STEP, 1)
         next_report = report_interval
@@ -121,11 +132,17 @@ class Command(BaseCommand):
             from multiprocessing.pool import ThreadPool
 
             pool = ThreadPool(jobs)
-            iter = pool.imap_unordered(update_object, self.iter_id(model))
+            iterable = pool.imap_unordered(update_object, self.iter_id(model))
         else:
-            iter = (update_object(obj_id) for obj_id in self.iter_id(model))
+            iterable = (ds.bulk_update(bulk) for bulk in grouper(self.iter_id(model), BATCH))
 
-        for _ in self.progress(iter, max_value=total):
+        if not self.no_progressbar:
+            # Disable logging
+            from noc.core.datastream.base import logger
+
+            logger.setLevel(logging.CRITICAL)
+
+        for _ in self.progress(iterable, max_value=total / BATCH):
             if self.no_progressbar and n == next_report:
                 self.print("[%02d%%]" % ((n * 100) // total))
                 next_report += report_interval

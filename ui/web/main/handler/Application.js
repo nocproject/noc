@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.handler application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.handler.Application");
@@ -87,6 +87,11 @@ Ext.define("NOC.main.handler.Application", {
                     name: "allow_threshold",
                     xtype: "checkbox",
                     boxLabel: __("Allow Threshold")
+                },
+                {
+                    name: "allow_ds_filter",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow DataStream filter")
                 }
             ]
         });

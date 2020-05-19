@@ -43,6 +43,7 @@ class Handler(Document):
     allow_housekeeping = BooleanField()
     allow_resolver = BooleanField()
     allow_threshold = BooleanField()
+    allow_ds_filter = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
