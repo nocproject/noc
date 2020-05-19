@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.handler Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.handler.Model");
@@ -53,6 +53,10 @@ Ext.define("NOC.main.handler.Model", {
         },
         {
             name: "allow_threshold",
+            type: "boolean"
+        },
+        {
+            name: "allow_ds_filter",
             type: "boolean"
         }
     ]

@@ -95,6 +95,7 @@ _MODELS = {
     "main.CustomFieldEnumGroup": "noc.main.models.customfieldenumgroup.CustomFieldEnumGroup",
     "main.CustomFieldEnumValue": "noc.main.models.customfieldenumvalue.CustomFieldEnumValue",
     "main.DatabaseStorage": "noc.main.models.databasestorage.DatabaseStorage",
+    "main.DataStreamConfig": "noc.main.models.datastreamconfig.DataStreamConfig",
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
     "main.ExtStorage": "noc.main.models.extstorage.ExtStorage",
     "main.Favorites": "noc.main.models.favorites.Favorites",

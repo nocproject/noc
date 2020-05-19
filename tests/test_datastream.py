@@ -31,6 +31,7 @@ class ExampleDataStream(DataStream):
 
 class NoEvenDatastream(DataStream):
     name = "noeven"
+    clean_id = DataStream.clean_id_int
 
     @classmethod
     def get_object(cls, id):
