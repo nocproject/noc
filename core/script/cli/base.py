@@ -733,7 +733,7 @@ class CLI(object):
             self.logger.debug("Recovering from error. Sending %r", seq)
             await self.iostream.write(seq)
         elif callable(seq):
-            if tornado.gen.is_coroutine_function(seq):
+            if asyncio.iscoroutinefunction(seq):
                 # Yield coroutine
                 await seq(self, command, error_text)
             else:
