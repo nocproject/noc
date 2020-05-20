@@ -107,6 +107,7 @@ class MetricsCheck(DiscoveryCheck):
         super().__init__(*args, **kwargs)
         self.id_count = itertools.count()
         self.id_metrics = {}
+        self.iface_speed = {}
 
     @staticmethod
     @cachetools.cached({})
@@ -230,7 +231,7 @@ class MetricsCheck(DiscoveryCheck):
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
                 {"managed_object": self.object.id, "type": "physical"},
-                {"_id": 1, "name": 1, "ifindex": 1, "profile": 1},
+                {"_id": 1, "name": 1, "ifindex": 1, "profile": 1, "out_speed": 1, "in_speed": 1},
             )
         ):
             ipr = self.get_interface_profile_metrics(i["profile"])
@@ -242,6 +243,8 @@ class MetricsCheck(DiscoveryCheck):
                 # Resolve subinterfaces
                 subs = self.get_subinterfaces()
             ifindex = i.get("ifindex")
+            in_speed = i.get("in_speed")
+            out_speed = i.get("out_speed")
             for metric in ipr:
                 if (self.is_box and not ipr[metric].enable_box) or (
                     self.is_periodic and not ipr[metric].enable_periodic
@@ -265,6 +268,11 @@ class MetricsCheck(DiscoveryCheck):
                             m["ifindex"] = si["ifindex"]
                         metrics += [m]
                         self.id_metrics[m_id] = ipr[metric]
+                if in_speed is not None:
+                    speed = {"in_speed": in_speed}
+                if out_speed is not None:
+                    speed.update({"out_speed": out_speed})
+                self.iface_speed[m_id] = speed
         if not metrics:
             self.logger.info("Interface metrics are not configured. Skipping")
         return metrics
@@ -582,6 +590,9 @@ class MetricsCheck(DiscoveryCheck):
                 "Cannot calculate thresholds for %s (%s): Window is not filled", m.metric, m.path
             )
             return None
+        metric = None
+        if self.iface_speed is not None:
+            metric = {"metric": m.label, "speed": self.iface_speed.get(m.id)}
         # Process window function
         wf = cfg.threshold_profile.get_window_function()
         if not wf:
@@ -593,7 +604,7 @@ class MetricsCheck(DiscoveryCheck):
             )
             return None
         try:
-            return wf(window, cfg.threshold_profile.window_config)
+            return wf(window, cfg.threshold_profile.window_config, metric)
         except ValueError as e:
             self.logger.error("Cannot calculate thresholds for %s (%s): %s", m.metric, m.path, e)
             return None

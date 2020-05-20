@@ -210,4 +210,4 @@ def handler(window, config, *args, **kwargs):
     h = get_handler(config)
     if not h:
         raise ValueError("Invalid handler %s" % config)
-    return h(window)
+    return h(window, *args)

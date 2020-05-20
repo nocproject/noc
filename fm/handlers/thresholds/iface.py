@@ -14,6 +14,7 @@ import time
 from noc.inv.models.interface import Interface
 from noc.pm.models.metrictype import MetricType
 from noc.core.pm.utils import get_interface_metrics
+from noc.core.window import get_window_function
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,23 @@ def humanize_speed(speed, type_speed):
                 return "%d %s" % (speed // t, n)
             else:
                 return "%.2f %s" % (float(speed) / t, n)
+
+
+def humanize_speed2(speed, type_speed):
+
+    d_speed = {
+        "bit/s": [(1000000, "Mbit/s")],
+        "kbit/s": [(1000, "Mbit/s")],
+    }
+
+    if speed < 1000 and speed > 0:
+        return "%s " % speed
+    for t, n in d_speed.get(type_speed):
+        if speed >= t:
+            if speed // t * t == speed:
+                return speed // t
+            else:
+                return float(speed) / t
 
 
 def handler(mo, event):
@@ -121,3 +139,19 @@ def handler(mo, event):
     except Exception as e:
         logger.info("Error: \n %s" % (event["path"].split("|")[-1::][0].strip(), e))
         return event
+
+
+def speed_handler(window, metric):
+    wf = get_window_function("last")
+    res = wf(window)
+    if metric:
+        if "Load | Out" in metric["metric"]:
+            iface_speed = humanize_speed2(metric.get("speed")["out_speed"], "kbit/s")
+            load = humanize_speed2(res, "bit/s")
+            speed_p = (100 / iface_speed) * load
+        if "Load | In" in metric["metric"]:
+            iface_speed = humanize_speed2(metric.get("speed")["in_speed"], "kbit/s")
+            load = humanize_speed2(res, "bit/s")
+            speed_p = (100 / iface_speed) * load
+        return round(speed_p, 2)
+    return res
