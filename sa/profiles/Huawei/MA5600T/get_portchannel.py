@@ -1,14 +1,16 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
 
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -21,7 +23,8 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         r = []
         try:
-            s = self.cli("display lacp link-aggregation summary")
+            # On version V800R013 command return otput after empty result
+            s = self.cli("display lacp link-aggregation summary", allow_empty_response=True)
         except self.CLISyntaxError:
             return []
         for match in self.rx_id.finditer(s):
