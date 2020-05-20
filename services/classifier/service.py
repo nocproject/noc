@@ -41,10 +41,9 @@ from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
-from noc.sa.interfaces.base import InterfaceTypeError
-from noc.services.classifier.exception import EventProcessingFailed
 from noc.core.backport.time import perf_counter
 from noc.core.handler import get_handler
+from noc.core.comp import smart_text
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -302,72 +301,6 @@ class ClassifierService(Service):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             self.logger.debug("Failed event %s has been recovered", e.id)
 
-    def find_matching_rule(self, event, vars):
-        """
-        Find first matching classification rule
-
-        :param event: Event
-        :type event: NewEvent
-        :param vars: raw and resolved variables
-        :type vars: dict
-        :returns: Event class and extracted variables
-        :rtype: tuple of (EventClass, dict)
-        """
-        # Get chain
-        src = event.raw_vars.get("source")
-        if src == "syslog":
-            chain = "syslog"
-            if "message" not in event.raw_vars:
-                return None, None
-        elif src == "SNMP Trap":
-            chain = "snmp_trap"
-        else:
-            chain = "other"
-        # Find rules lookup
-        lookup = self.rules.get(event.managed_object.profile.name, {}).get(chain)
-        if lookup:
-            for r in lookup.lookup_rules(event, vars):
-                # Try to match rule
-                v = r.match(event, vars)
-                if v is not None:
-                    self.logger.debug(
-                        "[%s] Matching class for event %s found: %s (Rule: %s)",
-                        event.managed_object.name,
-                        event.id,
-                        r.event_class_name,
-                        r.name,
-                    )
-                    return r, v
-        if self.default_rule:
-            return self.default_rule, {}
-        return None, None
-
-    def eval_rule_variables(self, event, event_class, vars):
-        """
-        Evaluate rule variables
-        """
-        r = {}
-        for ecv in event_class.vars:
-            # Check variable is present
-            if ecv.name not in vars:
-                if ecv.required:
-                    raise Exception("Required variable '%s' is not found" % ecv.name)
-                else:
-                    continue
-            # Decode variable
-            v = vars[ecv.name]
-            decoder = getattr(self, "decode_%s" % ecv.type, None)
-            if decoder:
-                try:
-                    v = decoder(event, v)
-                except InterfaceTypeError:
-                    raise EventProcessingFailed(
-                        "Cannot decode variable '%s'. Invalid %s: %s"
-                        % (ecv.name, ecv.type, repr(v))
-                    )
-            r[ecv.name] = v
-        return r
-
     def to_suppress(self, event, vars):
         """
         Check wrether event must be suppressed
@@ -450,7 +383,9 @@ class ClassifierService(Service):
                 return
             # Find matched event class
             c_vars = event.raw_vars.copy()
-            c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
+            c_vars.update(
+                dict((k, smart_text(fm_unescape(resolved_vars[k]))) for k in resolved_vars)
+            )
             rule, vars = self.ruleset.find_rule(event, c_vars)
             if rule is None:
                 # Something goes wrong.
