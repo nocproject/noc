@@ -569,7 +569,7 @@ class CLI(object):
             # Do not raise privileges
             # Use unprivileged prompt as primary prompt
             self.patterns["prompt"] = self.patterns["unprivileged_prompt"]
-            return self.on_prompt(data, match)
+            return await self.on_prompt(data, match)
 
     async def on_failure(self, data, match, error_cls=None):
         self.set_state("failure")
