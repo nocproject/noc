@@ -9,6 +9,8 @@
 import logging
 import socket
 import errno
+import asyncio
+from typing import Optional
 
 # NOC modules
 from noc.core.snmp.version import SNMP_v2c
@@ -29,7 +31,7 @@ from noc.core.snmp.error import (
     BER_ERROR,
     END_OID_TREE,
 )
-from noc.core.ioloop.udp import UDPSocket
+from noc.core.ioloop.udp import UDPSocket, UDPSocketContext
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 logger = logging.getLogger(__name__)
@@ -44,7 +46,7 @@ async def snmp_get(
     version=SNMP_v2c,
     timeout=10,
     tos=None,
-    udp_socket=None,
+    udp_socket: Optional[UDPSocket] = None,
     raw_varbinds=False,
     display_hints=None,
 ):
@@ -63,105 +65,95 @@ async def snmp_get(
     logger.debug("[%s] SNMP GET %s", address, oids)
     # Send GET PDU
     pdu = get_pdu(community=community, oids=oids, version=version)
-    if udp_socket:
-        sock = udp_socket
-        prev_timeout = sock.get_timeout()
-    else:
-        sock = UDPSocket(tos=tos)
-    sock.settimeout(timeout)
-    # Wait for result
-    try:
-        await sock.sendto(pdu, (address, port))
-        data, addr = await sock.recvfrom(4096)
-    except socket.timeout:
-        raise SNMPError(code=TIMED_OUT, oid=oids[0])
-    except socket.gaierror as e:
-        logger.debug("[%s] Cannot resolve address: %s", address, e)
-        raise SNMPError(code=UNREACHABLE, oid=oids[0])
-    except socket.error as e:
-        logger.debug("[%s] Socket error: %s", address, e)
-        raise SNMPError(code=UNREACHABLE, oid=oids[0])
-    finally:
-        if udp_socket:
-            sock.settimeout(prev_timeout)
-        else:
-            sock.close()
-    try:
-        if raw_varbinds:
-            resp = parse_get_response_raw(data)
-        else:
-            resp = parse_get_response(data, display_hints=display_hints)
-    except ValueError:
-        # Broken response
-        raise SNMPError(code=BER_ERROR, oid=oids[0])
-    if resp.error_status == NO_ERROR:
-        # Success
-        if oid_map:
-            result = {}
-            for k, v in resp.varbinds:
-                if k in oid_map:
-                    result[oid_map[k]] = v
-                else:
-                    logger.error("[%s] Invalid oid %s returned in reply", address, k)
-        else:
-            result = resp.varbinds[0][1]
-        logger.debug("[%s] GET result: %r", address, result)
-        return result
-    elif resp.error_status == NO_SUCH_NAME and len(oids) > 1:
-        # One or more invalid oids
-        b_idx = resp.error_index - 1
-        logger.debug(
-            "[%s] Invalid oid %s detected, trying to exclude", address, resp.varbinds[b_idx][0]
-        )
-        result = {}
-        oid_parts = []
-        if b_idx:
-            # Oids before b_idx are probable correct
-            oid_parts += [[vb[0] for vb in resp.varbinds[:b_idx]]]
-        if b_idx < len(resp.varbinds) - 1:
-            # Some oids after b_idx may be correct
-            oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1 :]]]
-        for new_oids in oid_parts:
-            try:
-                new_result = await snmp_get(
-                    address=address,
-                    oids={k: k for k in new_oids},
-                    port=port,
-                    community=community,
-                    version=version,
-                    timeout=timeout,
-                    tos=tos,
-                    udp_socket=sock,
-                )
-            except SNMPError as e:
-                if e.code == NO_SUCH_NAME and len(new_oids) == 1:
-                    # Ignore NO_SUCH_VALUE for last oid in list
-                    new_result = {}
-                else:
-                    raise
-            for k in new_result:
-                if k in oid_map:
-                    result[oid_map[k]] = new_result[k]
-                else:
-                    logger.info("[%s] Invalid oid %s returned in reply", address, k)
-        if result:
+    with UDPSocketContext(udp_socket, tos=tos) as sock:
+        try:
+            data, addr = await asyncio.wait_for(
+                sock.send_and_receive(pdu, (address, port)), timeout
+            )
+        except asyncio.TimeoutError:
+            raise SNMPError(code=TIMED_OUT, oid=oids[0])
+        except socket.gaierror as e:
+            logger.debug("[%s] Cannot resolve address: %s", address, e)
+            raise SNMPError(code=UNREACHABLE, oid=oids[0])
+        except socket.error as e:
+            logger.debug("[%s] Socket error: %s", address, e)
+            raise SNMPError(code=UNREACHABLE, oid=oids[0])
+        try:
+            if raw_varbinds:
+                resp = parse_get_response_raw(data)
+            else:
+                resp = parse_get_response(data, display_hints=display_hints)
+        except ValueError:
+            # Broken response
+            raise SNMPError(code=BER_ERROR, oid=oids[0])
+        if resp.error_status == NO_ERROR:
+            # Success
+            if oid_map:
+                result = {}
+                for k, v in resp.varbinds:
+                    if k in oid_map:
+                        result[oid_map[k]] = v
+                    else:
+                        logger.error("[%s] Invalid oid %s returned in reply", address, k)
+            else:
+                result = resp.varbinds[0][1]
             logger.debug("[%s] GET result: %r", address, result)
             return result
-        else:
-            # All oids excluded as broken
-            logger.debug("[%s] All oids are broken", address)
-            raise SNMPError(code=NO_SUCH_NAME, oid=oids[0])
-    else:
-        oid = None
-        if resp.error_index and resp.varbinds:
-            if resp.error_index & 0x8000:
-                # Some broken SNMP servers (i.e. Huawei) returns
-                # negative error index. Try to negotiate silently
-                oid = resp.varbinds[65536 - resp.error_index][0]
+        elif resp.error_status == NO_SUCH_NAME and len(oids) > 1:
+            # One or more invalid oids
+            b_idx = resp.error_index - 1
+            logger.debug(
+                "[%s] Invalid oid %s detected, trying to exclude", address, resp.varbinds[b_idx][0]
+            )
+            result = {}
+            oid_parts = []
+            if b_idx:
+                # Oids before b_idx are probable correct
+                oid_parts += [[vb[0] for vb in resp.varbinds[:b_idx]]]
+            if b_idx < len(resp.varbinds) - 1:
+                # Some oids after b_idx may be correct
+                oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1 :]]]
+            for new_oids in oid_parts:
+                try:
+                    new_result = await snmp_get(
+                        address=address,
+                        oids={k: k for k in new_oids},
+                        port=port,
+                        community=community,
+                        version=version,
+                        timeout=timeout,
+                        tos=tos,
+                        udp_socket=sock,
+                    )
+                except SNMPError as e:
+                    if e.code == NO_SUCH_NAME and len(new_oids) == 1:
+                        # Ignore NO_SUCH_VALUE for last oid in list
+                        new_result = {}
+                    else:
+                        raise
+                for k in new_result:
+                    if k in oid_map:
+                        result[oid_map[k]] = new_result[k]
+                    else:
+                        logger.info("[%s] Invalid oid %s returned in reply", address, k)
+            if result:
+                logger.debug("[%s] GET result: %r", address, result)
+                return result
             else:
-                oid = resp.varbinds[resp.error_index - 1][0]
-        logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
-        raise SNMPError(code=resp.error_status, oid=oid)
+                # All oids excluded as broken
+                logger.debug("[%s] All oids are broken", address)
+                raise SNMPError(code=NO_SUCH_NAME, oid=oids[0])
+        else:
+            oid = None
+            if resp.error_index and resp.varbinds:
+                if resp.error_index & 0x8000:
+                    # Some broken SNMP servers (i.e. Huawei) returns
+                    # negative error index. Try to negotiate silently
+                    oid = resp.varbinds[65536 - resp.error_index][0]
+                else:
+                    oid = resp.varbinds[resp.error_index - 1][0]
+            logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
+            raise SNMPError(code=resp.error_status, oid=oid)
 
 
 async def snmp_count(
@@ -175,7 +167,7 @@ async def snmp_count(
     filter=None,
     max_repetitions=BULK_MAX_REPETITIONS,
     tos=None,
-    udp_socket=None,
+    udp_socket: Optional[UDPSocket] = None,
 ):
     """
     Perform SNMP get request and returns Future to be used
@@ -190,57 +182,48 @@ async def snmp_count(
         filter = true
     poid = oid + "."
     result = 0
-    if udp_socket:
-        sock = udp_socket
-        prev_timeout = sock.get_timeout()
-    else:
-        sock = UDPSocket(tos=tos)
-    sock.settimeout(timeout)
-    while True:
-        # Get PDU
-        if bulk:
-            pdu = getbulk_pdu(community, oid, max_repetitions=max_repetitions, version=version)
-        else:
-            pdu = getnext_pdu(community, oid, version=version)
-        # Send request and wait for response
-        try:
-            await sock.sendto(pdu, (address, port))
-            data, addr = await sock.recvfrom(4096)
-        except socket.timeout:
-            raise SNMPError(code=TIMED_OUT, oid=oid)
-        except socket.gaierror as e:
-            logger.debug("[%s] Cannot resolve address: %s", address, e)
-            raise SNMPError(code=UNREACHABLE, oid=oid)
-        except socket.error as e:
-            logger.debug("[%s] Socket error: %s", address, e)
-            raise SNMPError(code=UNREACHABLE, oid=oid)
-        finally:
-            if udp_socket:
-                sock.settimeout(prev_timeout)
+    with UDPSocketContext(udp_socket, tos=tos) as sock:
+        while True:
+            # Get PDU
+            if bulk:
+                pdu = getbulk_pdu(community, oid, max_repetitions=max_repetitions, version=version)
             else:
-                sock.close()
-        # Parse response
-        try:
-            resp = parse_get_response(data)
-        except ValueError:
-            raise SNMPError(code=BER_ERROR, oid=oid)
-        if resp.error_status == NO_SUCH_NAME:
-            # NULL result
-            break
-        elif resp.error_status != NO_ERROR:
-            # Error
-            raise SNMPError(code=resp.error_status, oid=oid)
-        else:
-            # Success value
-            for oid, v in resp.varbinds:
-                if oid.startswith(poid):
-                    # Next value
-                    if filter(oid, v):
-                        result += 1
-                else:
-                    logger.debug("[%s] COUNT result: %s", address, result)
-                    sock.close()
-                    return result
+                pdu = getnext_pdu(community, oid, version=version)
+            # Send request and wait for response
+            try:
+                data, addr = await asyncio.wait_for(
+                    sock.send_and_receive(pdu, (address, port)), timeout
+                )
+            except asyncio.TimeoutError:
+                raise SNMPError(code=TIMED_OUT, oid=oid)
+            except socket.gaierror as e:
+                logger.debug("[%s] Cannot resolve address: %s", address, e)
+                raise SNMPError(code=UNREACHABLE, oid=oid)
+            except socket.error as e:
+                logger.debug("[%s] Socket error: %s", address, e)
+                raise SNMPError(code=UNREACHABLE, oid=oid)
+            # Parse response
+            try:
+                resp = parse_get_response(data)
+            except ValueError:
+                raise SNMPError(code=BER_ERROR, oid=oid)
+            if resp.error_status == NO_SUCH_NAME:
+                # NULL result
+                break
+            elif resp.error_status != NO_ERROR:
+                # Error
+                raise SNMPError(code=resp.error_status, oid=oid)
+            else:
+                # Success value
+                for oid, v in resp.varbinds:
+                    if oid.startswith(poid):
+                        # Next value
+                        if filter(oid, v):
+                            result += 1
+                    else:
+                        logger.debug("[%s] COUNT result: %s", address, result)
+                        sock.close()
+                        return result
 
 
 async def snmp_getnext(
@@ -255,7 +238,7 @@ async def snmp_getnext(
     max_repetitions=BULK_MAX_REPETITIONS,
     only_first=False,
     tos=None,
-    udp_socket=None,
+    udp_socket: Optional[UDPSocket] = None,
     max_retries=0,
     raw_varbinds=False,
     display_hints=None,
@@ -268,84 +251,68 @@ async def snmp_getnext(
     def true(x, y):
         return True
 
-    def close_socket():
-        if udp_socket:
-            sock.settimeout(prev_timeout)
-        else:
-            sock.close()
-
     logger.debug("[%s] SNMP GETNEXT %s", address, oid)
     if not filter:
         filter = true
     poid = oid + "."
     result = []
-    if udp_socket:
-        sock = udp_socket
-        prev_timeout = sock.get_timeout()
-    else:
-        sock = UDPSocket(tos=tos)
-    sock.settimeout(timeout)
-    last_oid = None
-    while True:
-        # Get PDU
-        if bulk:
-            pdu = getbulk_pdu(
-                community,
-                oid,
-                max_repetitions=max_repetitions or BULK_MAX_REPETITIONS,
-                version=version,
-            )
-        else:
-            pdu = getnext_pdu(community, oid, version=version)
-        # Send request and wait for response
-        try:
-            await sock.sendto(pdu, (address, port))
-            data, addr = await sock.recvfrom(4096)
-        except socket.timeout:
-            if not max_retries:
-                close_socket()
-                raise SNMPError(code=TIMED_OUT, oid=oid)
-            max_retries -= 1
-            continue
-        except socket.gaierror as e:
-            logger.debug("[%s] Cannot resolve address: %s", address, e)
-            close_socket()
-            raise SNMPError(code=UNREACHABLE, oid=oid)
-        except socket.error as e:
-            logger.debug("[%s] Socket error: %s", address, e)
-            close_socket()
-            raise SNMPError(code=UNREACHABLE, oid=oid)
-        # Parse response
-        try:
-            if raw_varbinds:
-                resp = parse_get_response_raw(data)
+    with UDPSocketContext(udp_socket, tos=tos) as sock:
+        last_oid = None
+        while True:
+            # Get PDU
+            if bulk:
+                pdu = getbulk_pdu(
+                    community,
+                    oid,
+                    max_repetitions=max_repetitions or BULK_MAX_REPETITIONS,
+                    version=version,
+                )
             else:
-                resp = parse_get_response(data, display_hints=display_hints)
-        except ValueError:
-            raise SNMPError(code=BER_ERROR, oid=oid)
-        if resp.error_status == NO_SUCH_NAME:
-            # NULL result
-            break
-        elif resp.error_status == END_OID_TREE:
-            # End OID Tree
-            return result
-        elif resp.error_status != NO_ERROR:
-            # Error
-            close_socket()
-            raise SNMPError(code=resp.error_status, oid=oid)
-        else:
-            # Success value
-            for oid, v in resp.varbinds:
-                if oid.startswith(poid) and not (only_first and result) and oid != last_oid:
-                    # Next value
-                    if filter(oid, v):
-                        result += [(oid, v)]
-                    last_oid = oid
+                pdu = getnext_pdu(community, oid, version=version)
+            # Send request and wait for response
+            try:
+                data, addr = await asyncio.wait_for(
+                    sock.send_and_receive(pdu, (address, port)), timeout
+                )
+            except asyncio.TimeoutError:
+                if not max_retries:
+                    raise SNMPError(code=TIMED_OUT, oid=oid)
+                max_retries -= 1
+                continue
+            except socket.gaierror as e:
+                logger.debug("[%s] Cannot resolve address: %s", address, e)
+                raise SNMPError(code=UNREACHABLE, oid=oid)
+            except socket.error as e:
+                logger.debug("[%s] Socket error: %s", address, e)
+                raise SNMPError(code=UNREACHABLE, oid=oid)
+            # Parse response
+            try:
+                if raw_varbinds:
+                    resp = parse_get_response_raw(data)
                 else:
-                    logger.debug("[%s] GETNEXT result: %s", address, result)
-                    close_socket()
-                    return result
-    close_socket()
+                    resp = parse_get_response(data, display_hints=display_hints)
+            except ValueError:
+                raise SNMPError(code=BER_ERROR, oid=oid)
+            if resp.error_status == NO_SUCH_NAME:
+                # NULL result
+                break
+            elif resp.error_status == END_OID_TREE:
+                # End OID Tree
+                return result
+            elif resp.error_status != NO_ERROR:
+                # Error
+                raise SNMPError(code=resp.error_status, oid=oid)
+            else:
+                # Success value
+                for oid, v in resp.varbinds:
+                    if oid.startswith(poid) and not (only_first and result) and oid != last_oid:
+                        # Next value
+                        if filter(oid, v):
+                            result += [(oid, v)]
+                        last_oid = oid
+                    else:
+                        logger.debug("[%s] GETNEXT result: %s", address, result)
+                        return result
 
 
 async def snmp_set(
@@ -363,41 +330,32 @@ async def snmp_set(
     inside async coroutine
     """
     logger.debug("[%s] SNMP SET %s", address, varbinds)
-    if udp_socket:
-        sock = udp_socket
-        prev_timeout = sock.get_timeout()  # noqa
-    else:
-        sock = UDPSocket(tos=tos)
-    sock.settimeout(timeout)
     # Send GET PDU
     pdu = set_pdu(community=community, varbinds=varbinds, version=version)
     # Wait for result
-    try:
-        await sock.sendto(pdu, (address, port))
-        data, addr = await sock.recvfrom(4096)
-    except socket.timeout:
-        raise SNMPError(code=TIMED_OUT, oid=varbinds[0][0])
-    except socket.gaierror as e:
-        logger.debug("[%s] Cannot resolve address: %s", address, e)
-        raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
-    except socket.error as e:
-        logger.debug("[%s] Socket error: %s", address, e)
-        raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
-    finally:
-        if udp_socket:
-            sock.settimeout(None)
+    with UDPSocketContext(udp_socket, tos=tos) as sock:
+        try:
+            data, addr = await asyncio.wait_for(
+                sock.send_and_receive(pdu, (address, port)), timeout
+            )
+        except asyncio.TimeoutError:
+            raise SNMPError(code=TIMED_OUT, oid=varbinds[0][0])
+        except socket.gaierror as e:
+            logger.debug("[%s] Cannot resolve address: %s", address, e)
+            raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
+        except socket.error as e:
+            logger.debug("[%s] Socket error: %s", address, e)
+            raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
+        try:
+            resp = parse_get_response(data)
+        except ValueError:
+            raise SNMPError(code=BER_ERROR, oid=varbinds[0][0])
+        if resp.error_status != NO_ERROR:
+            oid = None
+            if resp.error_index and resp.varbinds:
+                oid = resp.varbinds[resp.error_index - 1][0]
+            logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
+            raise SNMPError(code=resp.error_status, oid=oid)
         else:
-            sock.close()
-    try:
-        resp = parse_get_response(data)
-    except ValueError:
-        raise SNMPError(code=BER_ERROR, oid=varbinds[0][0])
-    if resp.error_status != NO_ERROR:
-        oid = None
-        if resp.error_index and resp.varbinds:
-            oid = resp.varbinds[resp.error_index - 1][0]
-        logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
-        raise SNMPError(code=resp.error_status, oid=oid)
-    else:
-        logger.debug("[%s] SET result: OK", address)
-        return True
+            logger.debug("[%s] SET result: OK", address)
+            return True

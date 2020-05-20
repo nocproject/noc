@@ -6,13 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import errno
 import socket
-
-# Third-party modules
-from tornado.ioloop import IOLoop
-from tornado.concurrent import Future
-from tornado.util import errno_from_exception
+from typing import Tuple, Optional
+import asyncio
+import errno
 
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
@@ -32,115 +29,60 @@ class UDPSocket(object):
         sock.close()
     """
 
-    def __init__(self, tos=None):
-        self.send_buffer = None  # (data, address)
-        self.bufsize = None
-        self.timeout_task = None
-        self.socket = None
+    def __init__(self, tos: Optional[int] = None):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         if tos:
             self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, tos)
-        self.fd = self.socket.fileno()
         self.socket.setblocking(False)
-        self.future = None
-        self.timeout = None
-        self.events = None
 
     def __del__(self):
         self.close()
 
-    def get_future(self):
-        """
-        Get future and start timeout task when needed
-        """
-        if not self.future or self.future.done():
-            self.future = Future()
-            self.start_timeout()
-        return self.future
-
-    def settimeout(self, timeout):
-        """
-        Set timeout for following blocking operations
-        """
-        self.stop_timeout()
-        self.timeout = timeout
-
-    def get_timeout(self):
-        return self.timeout
-
-    def start_timeout(self):
-        self.stop_timeout()
-        if self.timeout:
-            self.timeout_task = IOLoop.current().call_later(self.timeout, self.on_timeout)
-
-    def stop_timeout(self):
-        if self.timeout_task:
-            IOLoop.current().remove_timeout(self.timeout_task)
-            self.timeout_task = None
-
-    def add_handler(self, callback, events):
-        self.remove_handler()
-        IOLoop.current().add_handler(self.fd, callback, events)
-        self.events = events
-
-    def remove_handler(self):
-        if self.events:
-            IOLoop.current().remove_handler(self.fd)
-            self.events = 0
-
-    def recvfrom(self, bufsize):
-        future = self.get_future()
-        try:
-            data, addr = self.socket.recvfrom(bufsize)
-            self.remove_handler()
-            future.set_result((data, addr))
-        except socket.error as e:
-            c = errno_from_exception(e)
-            if c in _ERRNO_WOULDBLOCK:
-                self.bufsize = bufsize
-                self.add_handler(self.on_read, IOLoop.READ)
-            else:
-                future.set_exception()
-        return future
-
-    def sendto(self, data, address):
-        future = self.get_future()
-        try:
-            r = self.socket.sendto(data, address)
-            self.remove_handler()
-            future.set_result(r)
-        except socket.error as e:
-            c = errno_from_exception(e)
-            if c in _ERRNO_WOULDBLOCK:
-                # Wait for socket is ready to write
-                self.send_buffer = (data, address)
-                self.add_handler(self.on_write, IOLoop.WRITE)
-            else:
-                future.set_exception(e)
-        return future
-
-    def on_read(self, fd, events):
-        self.recvfrom(self.bufsize)
-
-    def on_write(self, fd, events):
-        IOLoop.current().remove_handler(self.fd)
-        data, address = self.send_buffer
-        self.send_buffer = None
-        self.sendto(data, address)
-
-    def on_timeout(self):
-        if self.future and not self.future.done():
-            self.timeout_task = None
-            try:
-                raise socket.timeout()
-            except Exception as e:
-                self.future.set_exception(e)
-
     def close(self):
-        if self.timeout_task:
-            IOLoop.current().remove_timeout(self.timeout_task)
-            self.timeout_task = None
         if self.socket:
-            self.remove_handler()
             self.socket.close()
             self.socket = None
+
+    async def send_and_receive(
+        self, data: bytes, address: Tuple[str, int]
+    ) -> Tuple[bytes, Tuple[str, int]]:
+        loop = asyncio.get_running_loop()
+        fileno = self.socket.fileno()
+        write_ev = asyncio.Event()
+        loop.add_writer(fileno, write_ev.set)
+        try:
+            await write_ev.wait()
+        finally:
+            loop.remove_writer(fileno)
+        self.socket.sendto(data, address)
+        while True:
+            read_ev = asyncio.Event()
+            loop.add_reader(fileno, read_ev.set)
+            try:
+                await read_ev.wait()
+            finally:
+                loop.remove_reader(fileno)
+            try:
+                return self.socket.recvfrom(65536)
+            except OSError as e:
+                if e.errno in _ERRNO_WOULDBLOCK:
+                    continue
+                raise e
+
+
+class UDPSocketContext(object):
+    def __init__(self, sock: Optional[UDPSocket] = None, tos: Optional[int] = None):
+        if sock:
+            self.sock = sock
+            self.to_close = False
+        else:
+            self.sock = UDPSocket(tos=tos)
+            self.to_close = True
+
+    def __enter__(self):
+        return self.sock
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.to_close:
+            self.sock.close()
+            self.sock = None

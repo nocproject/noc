@@ -8,21 +8,20 @@
 # Python modules
 import argparse
 from time import perf_counter
-
-# Third-party modules
-from tornado.ioloop import IOLoop
-import tornado.queues
+import asyncio
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
 from noc.core.ioloop.snmp import snmp_get, SNMPError
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Command(BaseCommand):
     DEFAULT_OID = "1.3.6.1.2.1.1.2.0"
     DEFAULT_COMMUNITY = "public"
+    VERSION_MAP = {"v1": SNMP_v1, "v2c": SNMP_v2c}
 
     def add_arguments(self, parser):
         parser.add_argument("--in", action="append", dest="input", help="File with addresses")
@@ -34,11 +33,25 @@ class Command(BaseCommand):
         parser.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
         parser.add_argument("addresses", nargs=argparse.REMAINDER, help="Object name")
         parser.add_argument("--convert", type=bool, default=False, help="convert mac address")
-        parser.add_argument("--version", type=int, help="version snmp check")
+        parser.add_argument(
+            "--version",
+            type=str,
+            default="v2c",
+            choices=list(sorted(self.VERSION_MAP)),
+            help="version snmp check",
+        )
 
     def handle(
         self, input, addresses, jobs, community, oid, timeout, convert, version, *args, **options
     ):
+        async def main():
+            loop = asyncio.get_running_loop()
+            # Schedule workers
+            queue = asyncio.Queue()
+            for _ in range(self.jobs):
+                loop.create_task(self.poll_worker(queue, community, oid, timeout, self.version))
+            await self.poll_task(queue)
+
         self.addresses = set()
         # Direct addresses
         for a in addresses:
@@ -59,25 +72,21 @@ class Command(BaseCommand):
         if not community:
             community = [self.DEFAULT_COMMUNITY]
         # Ping
-        self.ioloop = IOLoop.current()
         self.jobs = jobs
         self.convert = convert
-        self.version = version
-        self.queue = tornado.queues.Queue(self.jobs)
-        for i in range(self.jobs):
-            self.ioloop.spawn_callback(self.poll_worker, community, oid, timeout, version)
-        self.ioloop.run_sync(self.poll_task)
+        self.version = self.VERSION_MAP[version]
+        asyncio.run(main())
 
-    async def poll_task(self):
+    async def poll_task(self, queue):
         for a in self.addresses:
-            await self.queue.put(a)
+            await queue.put(a)
         for i in range(self.jobs):
-            await self.queue.put(None)
-        await self.queue.join()
+            await queue.put(None)
+        await queue.join()
 
-    async def poll_worker(self, community, oid, timeout, version):
+    async def poll_worker(self, queue, community, oid, timeout, version):
         while True:
-            a = await self.queue.get()
+            a = await queue.get()
             if a:
                 for c in community:
                     t0 = perf_counter()
@@ -106,7 +115,7 @@ class Command(BaseCommand):
                     except ValueError:
                         pass
                 self.stdout.write("%s,%s,%s,%s,%r\n" % (a, s, dt, mc, r))
-            self.queue.task_done()
+            queue.task_done()
             if not a:
                 break
 
