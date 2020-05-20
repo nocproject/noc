@@ -45,6 +45,7 @@ from noc.sa.interfaces.base import InterfaceTypeError
 from noc.services.classifier.exception import EventProcessingFailed
 from noc.core.backport.time import perf_counter
 from noc.core.handler import get_handler
+from noc.core.comp import smart_text
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -450,7 +451,7 @@ class ClassifierService(Service):
                 return
             # Find matched event class
             c_vars = event.raw_vars.copy()
-            c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
+            c_vars.update(dict((k, smart_text(fm_unescape(resolved_vars[k]))) for k in resolved_vars))
             rule, vars = self.ruleset.find_rule(event, c_vars)
             if rule is None:
                 # Something goes wrong.
