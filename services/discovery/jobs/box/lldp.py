@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # LLDP check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_UNSPECIFIED,
 )
+from noc.inv.models.macblacklist import MACBlacklist
 
 
 class LLDPCheck(TopologyDiscoveryCheck):
@@ -47,7 +48,15 @@ class LLDPCheck(TopologyDiscoveryCheck):
         chassis_subtype = neighbor_id["remote_chassis_id_subtype"]
         chassis_id = neighbor_id["remote_chassis_id"]
         if chassis_subtype == LLDP_CHASSIS_SUBTYPE_MAC:
-            return self.get_neighbor_by_mac(chassis_id)
+            if MACBlacklist.is_banned_mac(chassis_id, is_duplicated=True):
+                self.logger.info("Banned MAC %s found. Trying to negotiate via hostname")
+                if "remote_system_name" in neighbor_id:
+                    return self.get_neighbor_by_hostname(neighbor_id["remote_system_name"])
+                else:
+                    self.logger.info("No remote hostname for %s. Giving up.")
+                    return None
+            else:
+                return self.get_neighbor_by_mac(chassis_id)
         elif chassis_subtype == LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS:
             return self.get_neighbor_by_ip(chassis_id)
         elif chassis_subtype == LLDP_CHASSIS_SUBTYPE_LOCAL:
