@@ -329,6 +329,8 @@ class MIB(Document):
                         n += 1
                         xv >>= 1
                     rv = "(%s)" % ",".join(b)
+                elif syntax["base_type"] == "ObjectIdentifier":
+                    rv = smart_text(v)
                 else:
                     # Render according to TC
                     rv = render_tc(v, syntax["base_type"], syntax.get("display_hint", None))
@@ -343,9 +345,9 @@ class MIB(Document):
                 except ValueError:
                     # escape invalid UTF8
                     rv = fm_escape(rv)
-            if is_oid(v):
+            if is_oid(rv):
                 # Resolve OID in value
-                rv = MIB.get_name(v)
+                rv = MIB.get_name(rv)
             if rk != k or rv != v:
                 r[rk] = rv
         return r
