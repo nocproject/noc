@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Model");
@@ -309,6 +309,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "enable_box_discovery_udld",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_ifdesc",
             type: "boolean",
             defaultValue: false
         },
@@ -812,6 +817,28 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "object_validation_policy__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "ifdesc_patterns",
+            type: "string"
+        },
+        {
+            name: "ifdesc_patterns__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "ifdesc_handler",
+            type: "string"
+        },
+        {
+            name: "ifdesc_handler__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "ifdesc_symmetric",
+            type: "boolean"
         }
     ]
 });

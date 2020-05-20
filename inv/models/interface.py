@@ -364,7 +364,7 @@ class Interface(Document):
                 )
 
     @property
-    def parent(self):
+    def parent(self) -> "Interface":
         """
         Returns aggregated interface for LAG or
         self for non-aggregated interface
@@ -374,7 +374,7 @@ class Interface(Document):
         else:
             return self
 
-    def get_profile(self):
+    def get_profile(self) -> InterfaceProfile:
         if self.profile:
             return self.profile
         return InterfaceProfile.get_default_profile()

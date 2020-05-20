@@ -151,6 +151,7 @@ _MODELS = {
     "inv.Firmware": "noc.inv.models.firmware.Firmware",
     "inv.FirmwarePolicy": "noc.inv.models.firmwarepolicy.FirmwarePolicy",
     "inv.ForwardingInstance": "noc.inv.models.forwardinginstance.ForwardingInstance",
+    "inv.IfDescPatterns": "noc.inv.models.ifdescpatterns.IfDescPatterns",
     "inv.Interface": "noc.inv.models.interface.Interface",
     "inv.InterfaceClassificationRule": "noc.inv.models.interfaceclassificationrule.InterfaceClassificationRule",
     "inv.InterfaceProfile": "noc.inv.models.interfaceprofile.InterfaceProfile",

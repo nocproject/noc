@@ -956,7 +956,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             self.neighbor_ip_cache[ip] = mo
         return self.neighbor_ip_cache[ip]
 
-    def get_remote_interface(self, remote_object, remote_interface):
+    def get_remote_interface(self, remote_object: ManagedObject, remote_interface: str) -> str:
         """
         Return normalized remote interface name
         May return aliases name which can be finally resolved

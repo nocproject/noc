@@ -25,9 +25,11 @@ id_lock = Lock()
     check=[
         ("sa.ManagedObjectProfile", "resolver_handler"),
         ("sa.ManagedObjectProfile", "hk_handler"),
+        ("sa.ManagedObjectProfile", "ifdesc_handler"),
         ("sa.ManagedObject", "config_filter_handler"),
         ("sa.ManagedObject", "config_diff_filter_handler"),
         ("sa.ManagedObject", "config_validation_handler"),
+        ("inv.InterfaceProfile", "ifdesc_handler"),
     ]
 )
 class Handler(Document):
@@ -44,6 +46,7 @@ class Handler(Document):
     allow_resolver = BooleanField()
     allow_threshold = BooleanField()
     allow_ds_filter = BooleanField()
+    allow_ifdesc = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 

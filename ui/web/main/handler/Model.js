@@ -58,6 +58,10 @@ Ext.define("NOC.main.handler.Model", {
         {
             name: "allow_ds_filter",
             type: "boolean"
+        },
+        {
+            name: "allow_ifdesc",
+            type: "boolean"
         }
     ]
 });

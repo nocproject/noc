@@ -108,6 +108,24 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "string",
             persist: false
         },
+        {
+            name: "ifdesc_patterns",
+            type: "string"
+        },
+        {
+            name: "ifdesc_patterns__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "ifdesc_handler",
+            type: "string"
+        },
+        {
+            name: "ifdesc_handler__label",
+            type: "string",
+            persist: false
+        },
         // CSS
         {
             name: "row_class",

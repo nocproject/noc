@@ -37,6 +37,7 @@ from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
 from noc.core.datastream.decorator import datastream
 from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
+from noc.inv.models.ifdescpatterns import IfDescPatterns
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 
@@ -222,6 +223,8 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_mac = models.BooleanField(default=False)
     # Enable extended MAC discovery
     enable_box_discovery_xmac = models.BooleanField(default=False)
+    # Enable interface description discovery
+    enable_box_discovery_ifdesc = models.BooleanField(default=False)
     # Enable metrics
     enable_box_discovery_metrics = models.BooleanField(default=False)
     # Enable Housekeeping
@@ -549,6 +552,10 @@ class ManagedObjectProfile(NOCModel):
         choices=[("D", "Disable"), ("E", "Enable")],
         default="D",
     )
+    # ifdesc settings
+    ifdesc_patterns = DocumentReferenceField(IfDescPatterns, null=True, blank=True)
+    ifdesc_handler = DocumentReferenceField(Handler, null=True, blank=True)
+    ifdesc_symmetric = models.BooleanField(default=False)
     #
     metrics = PickledField(blank=True)
     #

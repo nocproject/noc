@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Application");
@@ -25,6 +25,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.template.LookupField",
         "NOC.main.extstorage.LookupField",
         "NOC.main.handler.LookupField",
+        "NOC.inv.ifdescpatterns.LookupField",
         "NOC.cm.objectvalidationpolicy.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "Ext.ux.form.GridField"
@@ -54,7 +55,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryAddressConfDB: false,
             enableBoxDiscoveryHK: false,
             enableBoxDiscoveryNRIPortmap: false,
-            enableBoxDiscoveryCPEStatus: false
+            enableBoxDiscoveryCPEStatus: false,
+            enableBoxDiscoveryIfDesc: false
         },
         formulas: {
             disableConfigMirrorPolicy: {
@@ -932,6 +934,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "enable_box_discovery_xmac",
                                                     xtype: "checkboxfield",
                                                     boxLabel: __("xMAC")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_ifdesc",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("IfDesc"),
+                                                    reference: "enableBoxDiscoveryIfDesc"
                                                 }
                                             ]
                                         },
@@ -964,6 +972,46 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     value: __("sec")
                                                 }
                                             ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IfDesc Policy"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: 4,
+                                        labelAlign: "right"
+                                    },
+                                    items: [
+                                        {
+                                            name: "ifdesc_symmetric",
+                                            xtype: "checkbox",
+                                            boxLabel: __("Symmetric Check"),
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryIfDesc.checked}"
+                                            }
+                                        },
+                                        {
+                                            name: "ifdesc_patterns",
+                                            xtype: "inv.ifdescpatterns.LookupField",
+                                            fieldLabel: __("Patterns"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryIfDesc.checked}"
+                                            }
+                                        },
+                                        {
+                                            name: "ifdesc_handler",
+                                            xtype: "main.handler.LookupField",
+                                            fieldLabel: __("Handler"),
+                                            allowBlank: true,
+                                            query: {
+                                                allow_ifdesc: true
+                                            },
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryIfDesc.checked}"
+                                            }
                                         }
                                     ]
                                 },
