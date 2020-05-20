@@ -53,6 +53,7 @@ class SegmentTopologySettings(EmbeddedDocument):
             ("mac", "MAC"),
             ("xmac", "xMAC"),
             ("nri", "NRI"),
+            ("ifdesc", "Iface Description"),
         ]
     )
     # Custom method name for *custom*

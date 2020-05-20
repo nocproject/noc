@@ -92,6 +92,11 @@ Ext.define("NOC.main.handler.Application", {
                     name: "allow_ds_filter",
                     xtype: "checkbox",
                     boxLabel: __("Allow DataStream filter")
+                },
+                {
+                    name: "allow_ifdesc",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow IfDesc")
                 }
             ]
         });

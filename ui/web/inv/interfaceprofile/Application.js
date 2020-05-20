@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interfaceprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interfaceprofile.Application");
@@ -18,6 +18,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.ref.windowfunction.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
         "NOC.cm.interfacevalidationpolicy.LookupField",
+        "NOC.inv.ifdescpatterns.LookupField",
+        "NOC.main.handler.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
@@ -204,6 +206,32 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         xtype: "checkbox",
                         boxLabel: __("Allow Autosegmentation"),
                         allowBlank: true
+                    },
+                    {
+                        xtype: "fieldset",
+                        layout: "hbox",
+                        title: __("IfDesc Settings"),
+                        defaults: {
+                            padding: 4,
+                            labelAlign: "right"
+                        },
+                        items: [
+                            {
+                                name: "ifdesc_pattterns",
+                                xtype: "inv.ifdescpatterns.LookupField",
+                                fieldLabel: __("Patterns"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "ifdesc_handler",
+                                xtype: "main.handler.LookupField",
+                                fieldLabel: __("Handler"),
+                                allowBlank: true,
+                                query: {
+                                    allow_ifdesc: true
+                                }
+                            }
+                        ]
                     },
                     {
                         xtype: "fieldset",

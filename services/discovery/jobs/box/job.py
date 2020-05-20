@@ -11,6 +11,10 @@ import random
 
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
+from noc.services.discovery.jobs.periodic.mac import MACCheck
+from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
+from noc.core.span import Span
+from noc.core.datastream.change import bulk_datastream_changes
 from .resolver import ResolverCheck
 from .suggestsnmp import SuggestSNMPCheck
 from .profile import ProfileCheck
@@ -45,10 +49,7 @@ from .prefix import PrefixCheck
 from .address import AddressCheck
 from .segmentation import SegmentationCheck
 from ..periodic.cpestatus import CPEStatusCheck
-from noc.services.discovery.jobs.periodic.mac import MACCheck
-from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
-from noc.core.span import Span
-from noc.core.datastream.change import bulk_datastream_changes
+from .ifdesc import IfDescCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -72,6 +73,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             REPCheck,
             STPCheck,
             XMACCheck,
+            IfDescCheck,
         ]
     }
 

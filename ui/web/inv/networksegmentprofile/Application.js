@@ -147,7 +147,8 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                                     ["bfd", "BFD"],
                                     ["mac", "MAC"],
                                     ["xmac", "xMAC"],
-                                    ["nri", "NRI"]
+                                    ["nri", "NRI"],
+                                    ["ifdesc", "Iface Description"]
                                 ]
                             }
                         },
