@@ -909,9 +909,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         Resolve neighbor by hostname
         """
         if hostname not in self.neighbor_hostname_cache:
-            n = DiscoveryID.objects.filter(hostname=hostname).first()
-            if n:
-                n = n.object
+            hosts = DiscoveryID.objects.filter(hostname=hostname)[:2]
+            n = None
+            if len(hosts) == 1:
+                n = hosts[0].object
             elif "." not in hostname:
                 # Sometimes, domain part is truncated.
                 # Try to resolve anyway
