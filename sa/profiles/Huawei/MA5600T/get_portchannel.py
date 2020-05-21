@@ -22,7 +22,7 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         r = []
         try:
-            s = self.cli("display lacp link-aggregation summary")
+            s = self.cli("display lacp link-aggregation summary", allow_empty_response=False)
         except self.CLISyntaxError:
             return []
         for match in self.rx_id.finditer(s):
