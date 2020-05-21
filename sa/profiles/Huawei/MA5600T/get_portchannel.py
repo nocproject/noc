@@ -24,7 +24,7 @@ class Script(BaseScript):
         r = []
         try:
             # On version V800R013 command return otput after empty result
-            s = self.cli("display lacp link-aggregation summary", allow_empty_response=True)
+            s = self.cli("display lacp link-aggregation summary", allow_empty_response=False)
         except self.CLISyntaxError:
             return []
         for match in self.rx_id.finditer(s):
