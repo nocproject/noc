@@ -196,6 +196,8 @@ class IPAMApplication(ExtApplication):
         #
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
+            if f.is_hidden:
+                continue
             v = getattr(prefix, f.name)
             prefix_info += [(f.label, v if v is not None else "")]
         # Ranges
@@ -250,8 +252,8 @@ class IPAMApplication(ExtApplication):
                 for e in entering:
                     slots[r_slots[e]] = e
                 r[2] = slots[:]
-                for l in leaving:
-                    slots[r_slots[l]] = None
+                for ll in leaving:
+                    slots[r_slots[ll]] = None
             # Assign slots to addresses
             c = [None] * max_slots
             rrs = rs[:]
