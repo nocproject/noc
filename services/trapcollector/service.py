@@ -53,7 +53,7 @@ class TrapCollectorService(Service):
         self.report_invalid_callback = PeriodicCallback(self.report_invalid_sources, 60000)
         self.report_invalid_callback.start()
         # Start tracking changes
-        self.ioloop.add_callback(self.get_object_mappings)
+        asyncio.get_running_loop().create_task(self.get_object_mappings())
 
     def lookup_config(self, address):
         """
@@ -105,10 +105,6 @@ class TrapCollectorService(Service):
             ", ".join("%s: %s" % (s, self.invalid_sources[s]) for s in self.invalid_sources),
         )
         self.invalid_sources = defaultdict(int)
-
-    def on_object_map_change(self, topic):
-        self.logger.info("Object mappings changed. Rerequesting")
-        self.ioloop.add_callback(self.get_object_mappings)
 
     def update_source(self, data):
         # Get old config
