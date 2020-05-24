@@ -22,6 +22,7 @@ class MIBPreference(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "fm.mibpreferences",
+        "json_unique_fields": ["mib", "uuid"],
     }
     mib = StringField(required=True, unique=True)
     preference = IntField(required=True, unique=True)  # The less the better
