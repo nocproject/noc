@@ -43,6 +43,7 @@ class Script(BaseScript):
     SNMP_ADMIN_STATUS_TABLE = "IF-MIB::ifAdminStatus"
     SNMP_OPER_STATUS_TABLE = "IF-MIB::ifOperStatus"
     SNMP_IF_DESCR_TABLE = "IF-MIB::ifAlias"
+    SNMP_MAC_TABLE = "IF-MIB::ifPhysAddress"
 
     def get_bridge_ifindex_mappings(self) -> Dict[int, int]:
         """
@@ -153,11 +154,12 @@ class Script(BaseScript):
                 imap[i] = v["name"]
         return vrfs, imap
 
-    def filter_interface(self, ifindex: int, name: str) -> bool:
+    def filter_interface(self, ifindex: int, name: str, oper_status: bool) -> bool:
         """
         Filter interface
         :param ifindex:
         :param name:
+        :param oper_status:
         :return:
         """
         return True
@@ -171,27 +173,31 @@ class Script(BaseScript):
 
         # Getting initial iface info, filter result if needed
         for iface in self.scripts.get_interface_properties(
-            enable_ifindex=True, enable_interface_mac=True,
+            enable_ifindex=True, enable_oper_status=True,
         ):
-            if not self.filter_interface(iface["ifindex"], iface["interface"]):
+            if not self.filter_interface(
+                    iface["ifindex"], iface["interface"], iface.get("oper_status")
+            ):
                 continue
             if "." in iface["interface"]:
                 subifaces[iface["ifindex"]] = {
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
+                    "oper_status": iface["oper_status"],
                     "type": "SVI",
                 }
-                if "mac" in iface:
-                    subifaces[iface["ifindex"]]["mac"] = iface["mac"]
+                # if "mac" in iface:
+                #     subifaces[iface["ifindex"]]["mac"] = iface["mac"]
             else:
                 ifaces[iface["ifindex"]] = {
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
+                    "oper_status": iface["oper_status"],
                     "enabled_protocols": [],
                     "subinterfaces": [],
                 }
-                if "mac" in iface:
-                    ifaces[iface["ifindex"]]["mac"] = iface["mac"]
+                # if "mac" in iface:
+                #     ifaces[iface["ifindex"]]["mac"] = iface["mac"]
         # Fill interface info
         iter_tables = []
         iter_tables += [
@@ -204,10 +210,9 @@ class Script(BaseScript):
         ]
         iter_tables += [
             self.iter_iftable(
-                "oper_status",
-                self.SNMP_OPER_STATUS_TABLE,
+                "mac",
+                self.SNMP_MAC_TABLE,
                 ifindexes=ifaces,
-                clean=self.clean_status,
             )
         ]
         iter_tables += [
