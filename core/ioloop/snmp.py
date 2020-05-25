@@ -75,7 +75,7 @@ async def snmp_get(
         except socket.gaierror as e:
             logger.debug("[%s] Cannot resolve address: %s", address, e)
             raise SNMPError(code=UNREACHABLE, oid=oids[0])
-        except socket.error as e:
+        except OSError as e:
             logger.debug("[%s] Socket error: %s", address, e)
             raise SNMPError(code=UNREACHABLE, oid=oids[0])
         try:
@@ -199,7 +199,7 @@ async def snmp_count(
             except socket.gaierror as e:
                 logger.debug("[%s] Cannot resolve address: %s", address, e)
                 raise SNMPError(code=UNREACHABLE, oid=oid)
-            except socket.error as e:
+            except OSError as e:
                 logger.debug("[%s] Socket error: %s", address, e)
                 raise SNMPError(code=UNREACHABLE, oid=oid)
             # Parse response
@@ -282,7 +282,7 @@ async def snmp_getnext(
             except socket.gaierror as e:
                 logger.debug("[%s] Cannot resolve address: %s", address, e)
                 raise SNMPError(code=UNREACHABLE, oid=oid)
-            except socket.error as e:
+            except OSError as e:
                 logger.debug("[%s] Socket error: %s", address, e)
                 raise SNMPError(code=UNREACHABLE, oid=oid)
             # Parse response
@@ -343,7 +343,7 @@ async def snmp_set(
         except socket.gaierror as e:
             logger.debug("[%s] Cannot resolve address: %s", address, e)
             raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
-        except socket.error as e:
+        except OSError as e:
             logger.debug("[%s] Socket error: %s", address, e)
             raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
         try:

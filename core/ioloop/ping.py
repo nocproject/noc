@@ -19,7 +19,6 @@ from time import perf_counter
 # Third-party modules
 from tornado.ioloop import IOLoop
 from tornado.concurrent import Future
-from tornado.util import errno_from_exception
 
 # NOC modules
 from noc.speedup.ip import build_icmp_echo_request
@@ -88,7 +87,7 @@ class PingSocket(object):
                 try:
                     sock.setsockopt(socket.SOL_SOCKET, direction, s)
                     return sock.getsockopt(socket.SOL_SOCKET, direction)
-                except socket.error:
+                except OSError:
                     s >>= 2
 
         send_size = set_buffer_size(self.socket, socket.SO_SNDBUF, self.SNDBUF)
@@ -119,12 +118,12 @@ class PingSocket(object):
     def on_read(self, fd, events):
         try:
             msg, addr = self.socket.recvfrom(MAX_RECV)
-        except socket.error as e:
-            if e[0] in IGNORABLE_ERRORS:
+        except OSError as e:
+            if e.args[0] in IGNORABLE_ERRORS:
                 metrics["ignorable_ping_errors"] += 1
                 return  # Exit silently
             metrics["ping_recvfrom_errors"] += 1
-            raise socket.error(e)
+            raise e
         status, address, req_id, seq, rtt = self.parse_reply(msg, addr[0])
         if status is None:
             metrics["ping_unknown_icmp_packets"] += 1
@@ -195,9 +194,8 @@ class PingSocket(object):
         for a, m in self.out_buffer:
             try:
                 self.socket.sendto(m, (a, 0))
-            except socket.error as e:
-                c = errno_from_exception(e)
-                if c in _ERRNO_WOULDBLOCK:
+            except OSError as e:
+                if e.args[0] in _ERRNO_WOULDBLOCK:
                     logger.info("[%s] Out of buffer space, waiting", a)
                     new_buffer += [(a, m)]
                 else:
@@ -317,7 +315,7 @@ class Ping(object):
                 if not self.ping4:
                     self.ping4 = Ping4Socket(tos=self.tos)
                 return self.ping4
-        except socket.error as e:
+        except OSError as e:
             logger.error("Failed to create ping socket: %s", e)
             return None
 
