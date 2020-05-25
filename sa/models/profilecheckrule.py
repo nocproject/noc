@@ -29,6 +29,7 @@ class ProfileCheckRule(Document):
         "auto_create_index": False,
         "json_collection": "sa.profilecheckrules",
         "json_depends_on": ["sa.profile"],
+        "json_unique_fields": ["uuid", "name"],
     }
 
     name = StringField(required=True, unique=True)
