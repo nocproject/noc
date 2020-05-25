@@ -27,6 +27,4 @@ MIB = {
     "RADLAN-STACK-MIB::rlStackTopology": "1.3.6.1.4.1.89.107.6",
 }
 
-DISPLAY_HINTS = {
-
-}
+DISPLAY_HINTS = {}
