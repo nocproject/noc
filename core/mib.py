@@ -37,11 +37,12 @@ class MIBRegistry(object):
                 return v
             # Missed in the MIB or missed MIB
             mib_name = k.split("::", 1)[0]
-            if self.is_loaded(mib_name):
-                # Missed in the MIB
-                raise KeyError(item)
-            # Load MIB
-            self.load_mib(mib_name)
+            with self.load_lock:
+                if self.is_loaded(mib_name):
+                    # Missed in the MIB
+                    raise KeyError(item)
+                # Load MIB
+                self.load_mib(mib_name)
             # Get or raise KeyError
             return self.mib[k]
 
@@ -74,28 +75,25 @@ class MIBRegistry(object):
         :return:
         """
         mod_name = self.mib_to_modname(name)
-        if name in self.loaded_mibs:
+        if self.is_loaded(name):
             return
-        with self.load_lock:
-            if name in self.loaded_mibs:
-                return
-            for root in self.PATHS:
-                if root != "cmibs":
-                    # Custom script
-                    base_name = os.path.basename(os.path.dirname(root))
-                else:
-                    # Common script
-                    base_name = "noc"
-                logger.debug("Loading MIB: %s", name)
-                mn = "%s.cmibs.%s" % (base_name, mod_name)
-                try:
-                    m = __import__(mn, {}, {}, "MIB")
-                except ModuleNotFoundError:
-                    raise KeyError(name)
-                self.mib.update(getattr(m, "MIB"))
-                if hasattr(m, "DISPLAY_HINTS"):
-                    self.hints.update(m.DISPLAY_HINTS)
-                self.loaded_mibs.add(name)
+        for root in self.PATHS:
+            if root != "cmibs":
+                # Custom script
+                base_name = os.path.basename(os.path.dirname(root))
+            else:
+                # Common script
+                base_name = "noc"
+            logger.debug("Loading MIB: %s", name)
+            mn = "%s.cmibs.%s" % (base_name, mod_name)
+            try:
+                m = __import__(mn, {}, {}, "MIB")
+            except ModuleNotFoundError:
+                raise KeyError(name)
+            self.mib.update(getattr(m, "MIB"))
+            if hasattr(m, "DISPLAY_HINTS"):
+                self.hints.update(m.DISPLAY_HINTS)
+            self.loaded_mibs.add(name)
 
     def is_loaded(self, name: str) -> bool:
         """
@@ -103,8 +101,7 @@ class MIBRegistry(object):
         :param name:
         :return:
         """
-        with self.load_lock:
-            return name in self.loaded_mibs
+        return name in self.loaded_mibs
 
     def reset(self) -> None:
         """
