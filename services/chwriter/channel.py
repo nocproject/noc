@@ -46,6 +46,8 @@ class Channel(object):
 
     def feed(self, data: bytes):
         n = data.count(b"\n")
+        if data[-1] != b"\n":
+            n += 1
         self.n += n
         self.data += [data]
         return n
