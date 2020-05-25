@@ -11,6 +11,7 @@ import logging
 import random
 from time import perf_counter
 import asyncio
+import threading
 
 # Third-party modules
 import ujson
@@ -30,6 +31,12 @@ logger = logging.getLogger(__name__)
 CONNECT_TIMEOUT = config.rpc.async_connect_timeout
 # Total request time
 REQUEST_TIMEOUT = config.rpc.async_request_timeout
+
+# WARNING: later ujson versions are not thread-safe when dealing with floating numbers deserealization,
+# so we obliged to lock all RPC deserializations until the better time. i.e:
+# * ujson will became thread-safe once again
+# * ujson will be replaced with proper library
+_ujson_crash_lock = threading.Lock()
 
 
 class RPCProxy(object):
@@ -128,7 +135,8 @@ class RPCProxy(object):
             if response:
                 if not is_notify:
                     try:
-                        result = ujson.loads(response)
+                        with _ujson_crash_lock:
+                            result = ujson.loads(response)
                     except ValueError as e:
                         raise RPCHTTPError("Cannot decode json: %s" % e)
                     if result.get("error"):
