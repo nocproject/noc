@@ -29,7 +29,7 @@ RESULT_JOIN = """interfaces
             test
     Fa0/3
         tagged-vlans
-            20-30,35,5-10,19
+            5-10,19,20-30,35
     Fa0/4
         tagged-vlans
             11"""

@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
+from noc.core.text import alnum_key
+
 
 class Node(object):
     __slots__ = ["token", "children"]
@@ -83,7 +86,7 @@ class Node(object):
 
     def iter_nodes(self):
         if self.children:
-            for name in sorted(self.children, key=lambda x: x or ""):
+            for name in sorted(self.children, key=lambda x: alnum_key(str(x or ""))):
                 yield self.children[name]
 
     def has_children(self):
