@@ -13,7 +13,6 @@ import os
 import sys
 
 # Third-party modules
-from tornado.util import errno_from_exception
 from tornado.ioloop import IOLoop
 from tornado.platform.auto import set_close_exec
 from tornado import process
@@ -141,7 +140,7 @@ class UDPServer(object):
         while True:
             try:
                 data, address = sock.recvfrom(2500)
-            except socket.error as e:
+            except OSError as e:
                 if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                     return
                 raise
@@ -203,8 +202,8 @@ class UDPServer(object):
                 continue
             try:
                 sock = socket.socket(af, socktype, proto)
-            except socket.error as e:
-                if errno_from_exception(e) == errno.EAFNOSUPPORT:
+            except OSError as e:
+                if e.args[0] == errno.EAFNOSUPPORT:
                     continue
                 raise
             set_close_exec(sock.fileno())

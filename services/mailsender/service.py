@@ -9,7 +9,6 @@
 # Python modules
 import datetime
 import smtplib
-import socket
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -88,7 +87,7 @@ class MailSenderService(Service):
         )
         try:
             smtp.connect(config.mailsender.smtp_server, config.mailsender.smtp_port)
-        except socket.error as e:
+        except OSError as e:
             self.logger.error("[%s] SMTP error: %s", message_id, e)
             return False
         smtp.ehlo(config.mailsender.helo_hostname)

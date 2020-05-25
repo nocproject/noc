@@ -7,7 +7,6 @@
 
 # Python modules
 import logging
-import socket
 from collections import defaultdict
 from urllib.error import URLError
 from io import TextIOWrapper
@@ -142,7 +141,7 @@ class WhoisCacheLoader(object):
         except URLError as e:
             logger.error("Failed to download %s: %s" % (url, e))
             raise self.DownloadError("Failed to download %s: %s" % (url, e))
-        except socket.error as e:
+        except OSError as e:
             logger.error("Failed to download %s: %s" % (url, e))
             raise self.DownloadError("Failed to download %s: %s" % (url, e))
         logger.info("Parsing")
