@@ -203,6 +203,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                     name,
                     iface.name,
                     ro.object_profile.level,
+                    ro.object_profile.level,
                     self.object.object_profile.level,
                 )
                 return
