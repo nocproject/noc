@@ -176,7 +176,7 @@ class Script(BaseScript):
             enable_ifindex=True, enable_oper_status=True,
         ):
             if not self.filter_interface(
-                    iface["ifindex"], iface["interface"], iface.get("oper_status")
+                iface["ifindex"], iface["interface"], iface.get("oper_status")
             ):
                 continue
             if "." in iface["interface"]:
@@ -208,13 +208,7 @@ class Script(BaseScript):
                 clean=self.clean_status,
             )
         ]
-        iter_tables += [
-            self.iter_iftable(
-                "mac",
-                self.SNMP_MAC_TABLE,
-                ifindexes=ifaces,
-            )
-        ]
+        iter_tables += [self.iter_iftable("mac", self.SNMP_MAC_TABLE, ifindexes=ifaces)]
         iter_tables += [
             self.iter_iftable(
                 "description",
