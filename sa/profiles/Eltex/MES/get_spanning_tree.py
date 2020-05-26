@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_spanning_tree import Script as BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 from noc.core.text import parse_table
 
@@ -270,7 +270,7 @@ class Script(BaseScript):
             I["interfaces"] = interfaces[I["id"]]
         return r
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         v = self.cli("show spanning-tree", cached=True)
         if "Spanning tree enabled mode STP" in v:
             return self.process_pvst(v, proto="STP", sep="###### STP ")
