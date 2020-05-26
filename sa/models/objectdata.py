@@ -95,6 +95,7 @@ class ObjectData(Document):
             UpdateOne(
                 {"_id": u.object_id},
                 {"$set": {"uplinks": u.uplinks, "rca_neighbors": u.rca_neighbors}},
+                upsert=True,
             )
             for u in uplinks
         ]
