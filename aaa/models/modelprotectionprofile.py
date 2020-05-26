@@ -73,17 +73,7 @@ class ModelProtectionProfile(Document):
         return self.name
 
     def save(
-        self,
-        force_insert=False,
-        validate=True,
-        clean=True,
-        write_concern=None,
-        cascade=None,
-        cascade_kwargs=None,
-        _refs=None,
-        save_condition=None,
-        signal_kwargs=None,
-        **kwargs,
+        self, *args, **kwargs,
     ):
         if "field_access" in getattr(self, "_changed_fields", []):
             # Check unique
