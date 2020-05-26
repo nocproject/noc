@@ -34,6 +34,8 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["errors_out", __("Errors Out (packets/s)"), true],
         ["errors_in_sum", __("Errors In (Summary)"), false],
         ["errors_out_sum", __("Errors Out (Summary)"), false],
+        ["discards_in", __("Discards In (packets/s)"), false],
+        ["discards_out", __("Discards Out (packets/s)"), false],
         ["interface_flap", __("Interface Flap count"), false],
         ["interface_load_url", __("Interface Load URL"), false]
     ],
