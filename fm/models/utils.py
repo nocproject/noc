@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # FM models utils
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from typing import Union
 
 # Third-party modules
 from bson import ObjectId
@@ -20,7 +23,7 @@ def get_event(event_id):
     return None
 
 
-def get_alarm(alarm_id):
+def get_alarm(alarm_id) -> Union["ActiveAlarm", "ArchivedAlarm"]:
     """
         Get alarm by alarm_id
         """

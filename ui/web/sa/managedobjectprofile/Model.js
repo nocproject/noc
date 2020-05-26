@@ -839,6 +839,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "ifdesc_symmetric",
             type: "boolean"
+        },
+        {
+            name: "enable_rca_downlink_merge",
+            type: "boolean"
+        },
+        {
+            name: "rca_downlink_merge_window",
+            type: "integer",
+            defaultValue: 120
         }
     ]
 });

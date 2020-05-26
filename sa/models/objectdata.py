@@ -9,7 +9,8 @@
 from threading import Lock
 import operator
 import logging
-from collections import namedtuple
+from typing import Dict, List, Set, Iterable
+from dataclasses import dataclass
 
 # Third-party modules
 from pymongo.errors import BulkWriteError
@@ -17,9 +18,16 @@ from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import IntField, ListField, ObjectIdField
 import cachetools
+from django.db import connection as pg_connection
 
 
-ObjectUplinks = namedtuple("ObjectUplinks", ["object_id", "uplinks", "rca_neighbors"])
+@dataclass(frozen=True)
+class ObjectUplinks(object):
+    object_id: int
+    uplinks: List[int]
+    rca_neighbors: List[int]
+
+
 id_lock = Lock()
 neighbor_lock = Lock()
 
@@ -33,6 +41,11 @@ class ObjectData(Document):
     uplinks = ListField(IntField())
     # RCA neighbors cache
     rca_neighbors = ListField(IntField())
+    # xRCA donwlink merge window settings
+    # for rca_neighbors.
+    # Each position represents downlink merge windows for each rca neighbor.
+    # Windows are in seconds, 0 - downlink merge is disabled
+    dlm_windows = ListField(IntField())
     # Paths
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
@@ -84,21 +97,60 @@ class ObjectData(Document):
         return uplinks
 
     @classmethod
-    def update_uplinks(cls, uplinks):
+    def update_uplinks(cls, iter_uplinks: Iterable[ObjectUplinks]) -> None:
         """
         Update ObjectUplinks in database
         :param uplinks: Iterable of ObjectUplinks
         :return:
         """
+        obj_data: List[ObjectUplinks] = []
+        seen_neighbors: Set[int] = set()
+        uplinks: Dict[int, Set[int]] = {}
+        for ou in iter_uplinks:
+            obj_data += [ou]
+            seen_neighbors |= set(ou.rca_neighbors)
+            uplinks[ou.object_id] = set(ou.uplinks)
+        if not obj_data:
+            return  # No uplinks for segment
+        # Get downlink_merge window settings
+        dlm_settings: Dict[int, int] = {}
+        if seen_neighbors:
+            with pg_connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT mo.id, mop.enable_rca_downlink_merge, mop.rca_downlink_merge_window
+                    FROM sa_managedobject mo JOIN sa_managedobjectprofile mop
+                        ON mo.object_profile_id = mop.id
+                    WHERE mo.id IN %s""",
+                    [tuple(seen_neighbors)],
+                )
+                dlm_settings = {mo_id: dlm_w for mo_id, is_enabled, dlm_w in cursor if is_enabled}
+        # Propagate downlink-merge settings downwards
+        dlm_windows: Dict[int, int] = {}
+        MAX_WINDOW = 1000000
+        for o in seen_neighbors:
+            ups = uplinks.get(o)
+            if not ups:
+                continue
+            w = min(dlm_settings.get(u, MAX_WINDOW) for u in ups)
+            if w == MAX_WINDOW:
+                w = 0
+            dlm_windows[o] = w
+        # Prepare bulk update operation
         bulk = [
             UpdateOne(
-                {"_id": u.object_id},
-                {"$set": {"uplinks": u.uplinks, "rca_neighbors": u.rca_neighbors}},
+                {"_id": ou.object_id},
+                {
+                    "$set": {
+                        "uplinks": ou.uplinks,
+                        "rca_neighbors": ou.rca_neighbors,
+                        "dlm_windows": [dlm_windows.get(o, 0) for o in ou.rca_neighbors],
+                    }
+                },
+                upsert=True,
             )
-            for u in uplinks
+            for ou in obj_data
         ]
-        if not bulk:
-            return
         try:
             ObjectData._get_collection().bulk_write(bulk, ordered=False)
         except BulkWriteError as e:

@@ -556,6 +556,9 @@ class ManagedObjectProfile(NOCModel):
     ifdesc_patterns = DocumentReferenceField(IfDescPatterns, null=True, blank=True)
     ifdesc_handler = DocumentReferenceField(Handler, null=True, blank=True)
     ifdesc_symmetric = models.BooleanField(default=False)
+    # xRCA settings
+    enable_rca_downlink_merge = models.BooleanField(default=False)
+    rca_downlink_merge_window = models.IntegerField(default=120)
     #
     metrics = PickledField(blank=True)
     #

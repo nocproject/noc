@@ -28,6 +28,7 @@ from noc.config import config
 from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
 from noc.core.span import Span, PARENT_SAMPLE
+from noc.core.fm.enum import RCA_DOWNLINK_MERGE
 
 
 logger = logging.getLogger(__name__)
@@ -134,6 +135,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *arg
             # Check whether consequences has escalations
             cons_escalated = sorted(alarm.iter_escalated(), key=operator.attrgetter("timestamp"))
             affected_objects = sorted(alarm.iter_affected(), key=operator.attrgetter("name"))
+            # Check if alarm has merged downlinks
+            has_merged_downlinks = any(
+                True for a in ActiveAlarm.objects.filter(root=alarm.id, rca_type=RCA_DOWNLINK_MERGE)
+            )
             #
             segment = alarm.managed_object.segment
             if segment.is_redundant:
@@ -157,6 +162,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *arg
                 "lost_redundancy": lost_redundancy,
                 "affected_subscribers": affected_subscribers,
                 "affected_services": affected_services,
+                "has_merged_downlinks": has_merged_downlinks,
             }
             # Escalate to TT
             if a.create_tt and mo.can_escalate():
