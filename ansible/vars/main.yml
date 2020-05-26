@@ -5,7 +5,7 @@
 etc_prefix: /etc
 
 # packages
-grafana_version: "6.3.7"
+grafana_version: "6.7.3"
 grafana_plugin_simple_datasource_version: 1.4.0
 grafana_plugin_clickhouse_datasource_version: 1.9.5
 nsq_version: "0.3.8"
