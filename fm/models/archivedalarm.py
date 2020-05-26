@@ -29,6 +29,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.core.datastream.decorator import datastream
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.span import get_current_span
+from noc.core.fm.enum import RCA_NONE
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .alarmseverity import AlarmSeverity
@@ -101,6 +102,8 @@ class ArchivedAlarm(Document):
     uplinks = ListField(IntField())
     # RCA neighbor cache, for topology_rca only
     rca_neighbors = ListField(IntField())
+    # RCA_* enums
+    rca_type = IntField(default=RCA_NONE)
 
     def __str__(self):
         return "%s" % self.id

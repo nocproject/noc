@@ -330,10 +330,10 @@ class SegmentTopology(BaseTopology):
             # Not including object itself
             if mo in neighbors:
                 neighbors.remove(mo)
+            #
+            rca_neighbors = list(sorted(neighbors))
             # Recalculated result
-            yield ObjectUplinks(
-                object_id=mo, uplinks=obj_uplinks[mo], rca_neighbors=list(sorted(neighbors))
-            )
+            yield ObjectUplinks(object_id=mo, uplinks=obj_uplinks[mo], rca_neighbors=rca_neighbors)
 
 
 def update_uplinks(segment_id):

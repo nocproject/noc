@@ -56,7 +56,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryHK: false,
             enableBoxDiscoveryNRIPortmap: false,
             enableBoxDiscoveryCPEStatus: false,
-            enableBoxDiscoveryIfDesc: false
+            enableBoxDiscoveryIfDesc: false,
+            enableFMRCADownlinkMerge: false
         },
         formulas: {
             disableConfigMirrorPolicy: {
@@ -556,6 +557,31 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     listeners: {
                                         render: me.addTooltip
                                     }
+                                },
+                                {
+                                    type: "container",
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_rca_downlink_merge",
+                                            xtype: "checkbox",
+                                            boxLabel: __("Merge Downlinks"),
+                                            reference: "enableFMRCADownlinkMerge"
+                                        },
+                                        {
+                                            name: "rca_downlink_merge_window",
+                                            xtype: "numberfield",
+                                            minValue: 0,
+                                            fieldLabel: __("Merge Window (sec)"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableFMRCADownlinkMerge.checked}"
+                                            },
+                                        }
+                                    ]
                                 }
                             ]
                         },

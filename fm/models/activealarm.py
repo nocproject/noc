@@ -40,6 +40,7 @@ from noc.core.defer import call_later
 from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
+from noc.core.fm.enum import RCA_NONE, RCA_OTHER
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
@@ -129,6 +130,9 @@ class ActiveAlarm(Document):
     uplinks = ListField(IntField())
     # RCA neighbor cache, for topology_rca only
     rca_neighbors = ListField(IntField())
+    dlm_windows = ListField(IntField())
+    # RCA_* enums
+    rca_type = IntField(default=RCA_NONE)
 
     def __str__(self):
         return "%s" % self.id
@@ -147,6 +151,7 @@ class ActiveAlarm(Document):
         self.container_path = data.container_path
         self.uplinks = data.uplinks
         self.rca_neighbors = data.rca_neighbors
+        self.dlm_windows = data.dlm_windows
 
     def safe_save(self, **kwargs):
         """
@@ -273,6 +278,7 @@ class ActiveAlarm(Document):
             container_path=self.container_path,
             uplinks=self.uplinks,
             rca_neighbors=self.rca_neighbors,
+            rca_type=self.rca_type,
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
@@ -705,7 +711,7 @@ class ActiveAlarm(Document):
                 bulk += [UpdateOne({"_id": root}, op)]
         return bulk
 
-    def set_root(self, root_alarm):
+    def set_root(self, root_alarm, rca_type=RCA_OTHER):
         """
         Set root cause
         """
@@ -715,15 +721,19 @@ class ActiveAlarm(Document):
             raise Exception("Cannot set self as root cause")
         # Set root
         self.root = root_alarm.id
+        self.rca_type = rca_type
         try:
             bulk = self._get_path_summary_bulk()
         except ValueError:
             return  # Loop detected
-        bulk += [UpdateOne({"_id": self.id}, {"$set": {"root": root_alarm.id}})]
+        bulk += [
+            UpdateOne({"_id": self.id}, {"$set": {"root": root_alarm.id, "rca_type": rca_type}})
+        ]
         self.log_message("Alarm %s has been marked as root cause" % root_alarm.id, bulk=bulk)
         # self.save()  Saved by log_message
         root_alarm.log_message("Alarm %s has been marked as child" % self.id, bulk=bulk)
-        ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
+        if self.id:
+            ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
 
     def escalate(self, tt_id, close_tt=False, wait_tt=None):
         self.escalation_tt = tt_id

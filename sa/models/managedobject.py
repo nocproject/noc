@@ -585,7 +585,7 @@ class ManagedObject(NOCModel):
             yield "cfgtrap", self.id
 
     @property
-    def data(self):
+    def data(self) -> ObjectData:
         try:
             return self._data
         except AttributeError:
