@@ -54,7 +54,7 @@ class Script(BaseScript):
             mib["BRIDGE-MIB::dot1dStpDesignatedRoot", 0],
             display_hints={mib["BRIDGE-MIB::dot1dStpDesignatedRoot"]: render_bin},
         )
-        root_p, root_id = root_id[:2], root_id[2:]
+        _, root_id = root_id[:2], root_id[2:]
         root_priority = self.snmp.get(mib["BRIDGE-MIB::dot1dStpPriority", 0])
         bridge_id = self.snmp.get(mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0])
         bridge_priority = self.snmp.get(mib["BRIDGE-MIB::dot1dStpPriority", 0])

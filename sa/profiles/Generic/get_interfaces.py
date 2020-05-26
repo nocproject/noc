@@ -28,6 +28,8 @@ from noc.core.mib import mib
 from noc.core.ip import IPv4
 from noc.core.snmp.render import render_bin
 from noc.core.comp import smart_text
+from noc.core.mac import MAC
+from noc.core.validators import is_mac
 
 
 class Script(BaseScript):
@@ -44,6 +46,13 @@ class Script(BaseScript):
     SNMP_OPER_STATUS_TABLE = "IF-MIB::ifOperStatus"
     SNMP_IF_DESCR_TABLE = "IF-MIB::ifAlias"
     SNMP_MAC_TABLE = "IF-MIB::ifPhysAddress"
+
+    IGNORED_MACS = {
+        "00:00:00:00:00:00",  # Empty MAC
+        "00:01:02:03:04:00",  # Very Smart programmer
+        "00:01:02:03:04:05",  # Very Smart+ programmer
+        "FF:FF:FF:FF:FF:FF",  # Broadcast
+    }
 
     def get_bridge_ifindex_mappings(self) -> Dict[int, int]:
         """
@@ -208,7 +217,9 @@ class Script(BaseScript):
                 clean=self.clean_status,
             )
         ]
-        iter_tables += [self.iter_iftable("mac", self.SNMP_MAC_TABLE, ifindexes=ifaces)]
+        iter_tables += [
+            self.iter_iftable("mac", self.SNMP_MAC_TABLE, ifindexes=ifaces, clean=self.clean_mac)
+        ]
         iter_tables += [
             self.iter_iftable(
                 "description",
@@ -331,6 +342,11 @@ class Script(BaseScript):
     def clean_iftype(self, ifname: str, ifindex: Optional[int] = None) -> str:
         return self.profile.get_interface_type(ifname)
 
+    def clean_mac(self, mac: str):
+        if is_mac(mac) and not self.is_ignored_mac(MAC(mac)):
+            return mac
+        return None
+
     def iter_iftable(
         self, key: str, oid: str, ifindexes: Optional[Iterator[int]] = None, clean: Callable = None,
     ) -> Iterable[Tuple[str, Union[str, int]]]:
@@ -393,3 +409,11 @@ class Script(BaseScript):
 
     def iter_interface_ifindex(self, name, ifindex):
         yield "name", ifindex, self.profile.convert_interface_name(name)
+
+    def is_ignored_mac(self, mac: MAC) -> bool:
+        """
+        Check if MAC address should be ignored
+        :param mac: Normalized MAC address
+        :return: True if MAC should be ignored
+        """
+        return mac in self.IGNORED_MACS or mac.is_multicast
