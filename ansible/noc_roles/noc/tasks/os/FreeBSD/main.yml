@@ -6,8 +6,8 @@
   vars:
     packages:
       - postgresql{{ postgres_version|replace(".","") }}-client
-      - python2
-      - py27-virtualenv
+      - python
+      - py37-virtualenv
       - curl
       - libffi
       - libmemcached
@@ -19,17 +19,6 @@
   retries: 4
   delay: 2
   until: freebsd_pkg_result is succeeded
-
-- name: Create symlink for virtualenv
-  file:
-    src: /usr/local/bin/virtualenv-2.7
-    dest: /usr/local/bin/virtualenv
-    owner: root
-    group: wheel
-    mode: '0755'
-    state: link
-  tags:
-    - requirements
 
 - name: Install supervisord init script
   template:

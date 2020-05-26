@@ -1,7 +1,7 @@
 ---
 - name: Install FreeBSD system packages
   pkgng:
-    name: py27-virtualenv
+    name: py37-virtualenv
     state: present
   tags:
     - requirements

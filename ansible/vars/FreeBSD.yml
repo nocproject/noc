@@ -2,6 +2,8 @@
 ---
 activator_command: "/bin/sh -c 'exec cpuset -l $((%(process_num)d %% $(sysctl -n hw.ncpu))) ./services/activator/service.py'"
 
+noc_py3_ver: "3.7"
+
 etc_prefix: /usr/local/etc
 
 noc_var_lib: /var/db/noc

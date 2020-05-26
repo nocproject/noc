@@ -9,7 +9,7 @@ all:
           activator_script_threads: 20
           activator_tos: 0
           ansible_ssh_pipelining: true
-          ansible_python_interpreter: /usr/local/bin/python2
+          ansible_python_interpreter: /usr/local/bin/python
           bi_language: en-us
           bi_loglevel: info
           bi_power: 2

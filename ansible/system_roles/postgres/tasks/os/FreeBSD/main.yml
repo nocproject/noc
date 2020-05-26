@@ -16,7 +16,7 @@
     state: present
   vars:
     packages:
-      - 'py27-psycopg2'
+      - 'py37-psycopg2'
       - 'postgresql{{ postgres_version|replace(".","") }}-contrib'
   tags:
     - requirements

@@ -15,7 +15,7 @@
     owner: root
   connection: local
   vars:
-    ansible_python_interpreter: /usr/bin/python
+    ansible_python_interpreter: /usr/local/bin/python
 
 - name: update pkg
   pkgng:
