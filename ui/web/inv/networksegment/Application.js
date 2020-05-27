@@ -104,6 +104,11 @@ Ext.define("NOC.inv.networksegment.Application", {
                     text: __("Max Links"),
                     dataIndex: "max_shown_downlinks",
                     width: 70
+                },
+                {
+                    text: __("Max Objects"),
+                    dataIndex: "max_objects",
+                    width: 70
                 }
             ],
 
@@ -163,6 +168,13 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "max_shown_downlinks",
                     xtype: "numberfield",
                     fieldLabel: __("Max Links"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "max_objects",
+                    xtype: "numberfield",
+                    fieldLabel: __("Max Objects"),
                     allowBlank: true,
                     uiStyle: "medium"
                 },

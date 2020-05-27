@@ -78,6 +78,11 @@ Ext.define("NOC.inv.networksegment.Model", {
             defaultValue: 1000
         },
         {
+            name: "max_objects",
+            type: "integer",
+            defaultValue: 300
+        },
+        {
             name: "remote_system",
             type: "string"
         },

@@ -128,6 +128,8 @@ class NetworkSegment(Document):
     # Collapse object's downlinks on network map
     # when count is above the threshold
     max_shown_downlinks = IntField(default=1000)
+    # Limit objects on network map for reach "Too many objects" error
+    max_objects = IntField(default=300)
     # Horizontal transit policy
     horizontal_transit_policy = StringField(
         choices=[("E", "Always Enable"), ("C", "Calculate"), ("D", "Disable"), ("P", "Profile")],
