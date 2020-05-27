@@ -14,7 +14,7 @@ import codecs
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbeef import IGetBeef
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 from noc.core.snmp.error import SNMPError
 
 
@@ -107,7 +107,7 @@ class Script(BaseScript):
                 if ans["type"] == "snmp-get":
                     value = self.snmp.get(ans["value"], raw_varbinds=True)
                     yield {
-                        "oid": str(ans["value"]),
+                        "oid": (ans["value"]),
                         "value": self.encode_mib(value).strip(),
                     }
                 elif ans["type"] == "snmp-getnext":
@@ -135,11 +135,11 @@ class Script(BaseScript):
         """
         Apply CLI encoding
         """
-        return codecs.encode(smart_bytes(s), cls.CLI_ENCODING)
+        return smart_text(codecs.encode(smart_bytes(s), cls.CLI_ENCODING))
 
     @classmethod
     def encode_mib(cls, s):
         """
         Apply MIB encoding
         """
-        return codecs.encode(smart_bytes(s), cls.MIB_ENCODING)
+        return smart_text(codecs.encode(smart_bytes(s), cls.MIB_ENCODING))
