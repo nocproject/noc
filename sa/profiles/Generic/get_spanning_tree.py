@@ -54,17 +54,28 @@ class Script(BaseScript):
             mib["BRIDGE-MIB::dot1dStpDesignatedRoot", 0],
             display_hints={mib["BRIDGE-MIB::dot1dStpDesignatedRoot"]: render_bin},
         )
+        root_port = self.snmp.get(mib["BRIDGE-MIB::dot1dStpRootPort", 0])
         _, root_id = root_id[:2], root_id[2:]
         root_priority = self.snmp.get(mib["BRIDGE-MIB::dot1dStpPriority", 0])
         bridge_id = self.snmp.get(mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0])
         bridge_priority = self.snmp.get(mib["BRIDGE-MIB::dot1dStpPriority", 0])
         ifaces = []
-        for stp_port, priority, state, role, d_root, d_bridge, d_port in self.snmp.get_tables(
+        for (
+            stp_port,
+            priority,
+            state,
+            role,
+            d_root,
+            d_cost,
+            d_bridge,
+            d_port,
+        ) in self.snmp.get_tables(
             [
                 mib["BRIDGE-MIB::dot1dStpPortPriority"],
                 mib["BRIDGE-MIB::dot1dStpPortState"],
                 mib["BRIDGE-MIB::dot1dStpPortEnable"],
                 mib["BRIDGE-MIB::dot1dStpPortDesignatedRoot"],
+                mib["BRIDGE-MIB::dot1dStpPortDesignatedCost"],
                 mib["BRIDGE-MIB::dot1dStpPortDesignatedBridge"],
                 mib["BRIDGE-MIB::dot1dStpPortDesignatedPort"],
             ],
@@ -75,6 +86,11 @@ class Script(BaseScript):
             },
         ):
             d_priority, d_bridge = d_bridge[:2], d_bridge[2:]
+            role = "disabled"
+            if int(stp_port) == root_port:
+                role = "root"
+            elif d_cost:
+                role = "designated"
             ifaces += [
                 {
                     # Interface name
@@ -84,7 +100,7 @@ class Script(BaseScript):
                     # Interface state
                     "state": self.state_map[state],
                     # Interface role
-                    "role": "disabled",
+                    "role": role,
                     # Port priority
                     "priority": priority,
                     # Designated bridge ID
