@@ -17,7 +17,7 @@ from noc.core.validators import is_int
 class Profile(BaseProfile):
     name = "Eltex.MES24xx"
     pattern_more = [(r"--More--", " ")]
-    pattern_prompt = r"(?P<hostname>\S+)#\s*"
+    pattern_prompt = r"(?P<hostname>\S+)(?:\(config[^\)]*\))?#\s*"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = r"^% Invalid (?:Command|input detected at)$"
     # command_disable_pager = "set cli pagination off"  - need conf t mode
