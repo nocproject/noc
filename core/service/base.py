@@ -695,7 +695,6 @@ class Service(object):
                 await self.nsq_publisher(queue)
             except Exception as e:
                 self.logger.error("Unhandled exception in NSQ publisher, restarting: %s", e)
-        queue.shutdown_complete.set()
 
     async def nsq_publisher(self, queue: TopicQueue):
         """
