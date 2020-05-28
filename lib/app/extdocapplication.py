@@ -251,7 +251,7 @@ class ExtDocApplication(ExtApplication):
                 del q[p]
         # Extract IN
         # extjs not working with same parameter name in query
-        for p in q:
+        for p in list(q.keys()):
             if p.endswith("__in") and self.rx_oper_splitter.match(p):
                 field = self.rx_oper_splitter.match(p).group("field") + "__in"
                 if field not in q:
