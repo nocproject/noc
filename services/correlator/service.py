@@ -498,7 +498,7 @@ class CorrelatorService(Service):
         except Exception:
             metrics["alarm_dispose_error"] += 1
             error_report()
-        self.ioloop.add_callback(message.finish)
+        self.loop.call_soon(message.finish)
 
     def lookup_event(self, event_id):
         """

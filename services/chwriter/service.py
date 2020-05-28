@@ -8,6 +8,7 @@
 
 # Python modules
 from time import perf_counter
+import asyncio
 
 # Third-party modules
 from typing import Dict
@@ -211,10 +212,7 @@ class CHWriterService(Service):
         if self.restore_timeout:
             return
         self.logger.info("Suspending")
-        self.restore_timeout = self.ioloop.add_timeout(
-            self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
-            self.check_restore,
-        )
+        self.restore_timeout = self.loop.create_task(self.check_restore())
         metrics["suspends"] += 1
         self.suspend_subscription(self.on_data)
         # Return data to channels
@@ -234,15 +232,18 @@ class CHWriterService(Service):
             self.logger.info("Trying to restore during stopping. Ignoring")
             return
         self.logger.info("Resuming")
-        self.ioloop.remove_timeout(self.restore_timeout)
         self.restore_timeout = None
         metrics["resumes"] += 1
         self.resume_subscription(self.on_data)
 
     async def check_restore(self):
-        if self.stopping:
-            self.logger.info("Checking restore during stopping. Ignoring")
-        else:
+        while not self.stopping:
+            # Wait
+            await asyncio.sleep(float(config.chwriter.suspend_timeout_ms) / 1000.0)
+            #
+            if self.stopping:
+                self.logger.info("Checking restore during stopping. Ignoring")
+                return
             code, headers, body = await fetch(
                 "http://%s/?user=%s&password=%s&database=%s&query=%s"
                 % (
@@ -255,11 +256,7 @@ class CHWriterService(Service):
             )
             if code == 200:
                 self.resume()
-            else:
-                self.restore_timeout = self.ioloop.add_timeout(
-                    self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
-                    self.check_restore,
-                )
+                return
 
     def stop(self):
         self.stopping = True
