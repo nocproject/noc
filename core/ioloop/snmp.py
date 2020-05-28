@@ -10,7 +10,7 @@ import logging
 import socket
 import errno
 import asyncio
-from typing import Optional
+from typing import Optional, Callable, Any, Dict, Union
 
 # NOC modules
 from noc.core.snmp.version import SNMP_v2c
@@ -227,21 +227,21 @@ async def snmp_count(
 
 
 async def snmp_getnext(
-    address,
-    oid,
-    port=161,
-    community="public",
-    version=SNMP_v2c,
-    timeout=10,
-    bulk=False,
-    filter=None,
-    max_repetitions=BULK_MAX_REPETITIONS,
-    only_first=False,
-    tos=None,
+    address: str,
+    oid: str,
+    port: int = 161,
+    community: str = "public",
+    version: int = SNMP_v2c,
+    timeout: float = 10,
+    bulk: bool = False,
+    filter: Optional[Callable[[bytes, Any], bool]] = None,
+    max_repetitions: int = BULK_MAX_REPETITIONS,
+    only_first: bool = False,
+    tos: Optional[int] = None,
     udp_socket: Optional[UDPSocket] = None,
-    max_retries=0,
-    raw_varbinds=False,
-    display_hints=None,
+    max_retries: int = 0,
+    raw_varbinds: bool = False,
+    display_hints: Optional[Dict[str, Optional[Callable[[str, bytes], Union[str, bytes]]]]] = None,
 ):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
@@ -302,12 +302,24 @@ async def snmp_getnext(
             elif resp.error_status != NO_ERROR:
                 # Error
                 raise SNMPError(code=resp.error_status, oid=oid)
-            else:
+            elif not raw_varbinds:
                 # Success value
                 for oid, v in resp.varbinds:
                     if oid.startswith(poid) and not (only_first and result) and oid != last_oid:
                         # Next value
                         if filter(oid, v):
+                            result += [(oid, v)]
+                        last_oid = oid
+                    else:
+                        logger.debug("[%s] GETNEXT result: %s", address, result)
+                        return result
+            else:
+                # Raw varbinds
+                for oid, v in resp.varbinds:
+                    s_oid = str(oid)
+                    if s_oid.startswith(poid) and not (only_first and result) and oid != last_oid:
+                        # Next value
+                        if filter(s_oid, v):
                             result += [(oid, v)]
                         last_oid = oid
                     else:
