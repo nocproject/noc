@@ -6,12 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
-
-# Third-party modules
-import tornado.gen
-import tornado.iostream
-from tornado.concurrent import Future
+from typing import Tuple
 
 # NOC modules
 from noc.core.snmp.ber import BERDecoder, BEREncoder
@@ -23,84 +18,73 @@ from noc.core.snmp.consts import (
 )
 from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME, END_OID_TREE
 from noc.core.script.error import ScriptError
-from .base import SNMP
 from noc.core.comp import smart_bytes
+from .base import SNMP
 
 
 class BeefSNMP(SNMP):
     name = "beef_snmp"
-    MAX_REQUEST_SIZE = 65535
-
-    def __init__(self, script):
-        super().__init__(script)
-        self.server_iostream = None
 
     def get_socket(self):
         if not self.socket:
-            c_socket, s_socket = socket.socketpair()
-            self.socket = BeefClientIOStream(c_socket)
-            self.server_iostream = BeefServerIOStream(s_socket, self.script)
-            self.ioloop.add_callback(self.snmp_server)
+            self.socket = BeefSNMPSocket(self)
         return self.socket
 
-    def close(self):
-        if self.server_iostream:
-            self.server_iostream.close()
-            self.server_iostream = None
-        super().close()
 
-    async def snmp_server(self):
-        """
-        SNMP server coroutine
-        :return:
-        """
-        self.logger.info("Stating BEEF SNMP server")
-        await self.server_iostream.connect()
-        decoder = BERDecoder()
+class BeefSNMPSocket(object):
+    def __init__(self, snmp):
+        self.script = snmp.script
+        self.logger = snmp.logger
+        if not self.script.request_beef():
+            raise ScriptError("Beef not found")
+
+    def close(self):
+        self.script = None
+        self.logger = None
+
+    async def send_and_receive(
+        self, data: bytes, address: Tuple[str, int]
+    ) -> Tuple[bytes, Tuple[str, int]]:
+        pdu = BERDecoder().parse_sequence(data)[0]
+        self.logger.info("SNMP REQUEST: %r", pdu)
+        version = pdu[0]
+        community = pdu[1]
+        pdu_type = pdu[2][0]
+        request_id = pdu[2][1]
+        if pdu_type == PDU_GET_REQUEST:
+            err_status, err_index, data = self.snmp_get_response(pdu)
+        elif pdu_type == PDU_GETNEXT_REQUEST:
+            err_status, err_index, data = self.snmp_getnext_response(pdu)
+        elif pdu_type == PDU_GETBULK_REQUEST:
+            err_status, err_index, data = self.snmp_getbulk_response(pdu)
+        else:
+            raise ScriptError("Unknown PDU type")
+        # Build response
         encoder = BEREncoder()
-        while True:
-            # Wait for SNMP request
-            request = await self.server_iostream.read_bytes(self.MAX_REQUEST_SIZE, partial=True)
-            pdu = decoder.parse_sequence(request)[0]
-            self.logger.info("SNMP REQUEST: %r", pdu)
-            version = pdu[0]
-            community = pdu[1]
-            pdu_type = pdu[2][0]
-            request_id = pdu[2][1]
-            if pdu_type == PDU_GET_REQUEST:
-                err_status, err_index, data = self.snmp_get_response(pdu)
-            elif pdu_type == PDU_GETNEXT_REQUEST:
-                err_status, err_index, data = self.snmp_getnext_response(pdu)
-            elif pdu_type == PDU_GETBULK_REQUEST:
-                err_status, err_index, data = self.snmp_getbulk_response(pdu)
-            else:
-                # @todo: Unsupported PDU type
-                pass
-            # Build response
-            resp = encoder.encode_sequence(
-                [
-                    encoder.encode_int(version),
-                    encoder.encode_octet_string(community),
-                    encoder.encode_choice(
-                        PDU_RESPONSE,
-                        [
-                            encoder.encode_int(request_id),
-                            encoder.encode_int(err_status),
-                            encoder.encode_int(err_index),
-                            encoder.encode_sequence(
-                                [
-                                    encoder.encode_sequence(
-                                        [encoder.encode_oid(str(oid)), smart_bytes(value)]
-                                    )
-                                    for oid, value in data
-                                ]
-                            ),
-                        ],
-                    ),
-                ]
-            )
-            self.logger.info("RESPONSE = %r", data)
-            await self.server_iostream.write(resp)
+        response = encoder.encode_sequence(
+            [
+                encoder.encode_int(version),
+                encoder.encode_octet_string(community),
+                encoder.encode_choice(
+                    PDU_RESPONSE,
+                    [
+                        encoder.encode_int(request_id),
+                        encoder.encode_int(err_status),
+                        encoder.encode_int(err_index),
+                        encoder.encode_sequence(
+                            [
+                                encoder.encode_sequence(
+                                    [encoder.encode_oid(str(oid)), smart_bytes(value)]
+                                )
+                                for oid, value in data
+                            ]
+                        ),
+                    ],
+                ),
+            ]
+        )
+        self.logger.info("RESPONSE = %r", data)
+        return response, address
 
     def snmp_get_response(self, pdu):
         """
@@ -163,52 +147,3 @@ class BeefSNMP(SNMP):
             if len(r) >= max_repetitions:
                 break
         return err_status, err_index, r
-
-
-class BeefServerIOStream(tornado.iostream.IOStream):
-    def __init__(self, socket, script, *args, **kwargs):
-        super().__init__(socket, *args, **kwargs)
-        self.script = script
-
-    def connect(self, *args, **kwargs):
-        """
-        Always connected
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        future = self._connect_future = Future()
-        # Force beef downloading
-        beef = self.script.request_beef()
-        if not beef:
-            # Connection refused
-            self.close(exc_info=True)
-            future.set_exception(ScriptError("Beef not found"))
-            return future
-        future.set_result(True)
-        # Start replying start state
-        self._add_io_state(self.io_loop.WRITE)
-        return future
-
-    def close(self, exc_info=False):
-        if self.socket:
-            self.socket.close()
-            self.socket = None
-
-
-class BeefClientIOStream(tornado.iostream.IOStream):
-    def get_timeout(self):
-        return None
-
-    def settimeout(self, timeout):
-        return None
-
-    @tornado.gen.coroutine
-    def sendto(self, pdu, address):
-        self._address = address
-        self.socket.send(pdu)
-
-    @tornado.gen.coroutine
-    def recvfrom(self, buffsize):
-        data = yield self.read_bytes(buffsize, partial=True)
-        return data, self._address
