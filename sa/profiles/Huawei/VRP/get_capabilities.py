@@ -40,7 +40,7 @@ class Script(BaseScript):
         """
         Check box has LLDP enabled
         """
-        r = self.cli("display lldp local")
+        r = self.cli("display lldp local", cached=True)
         return (
             "LLDP is not enabled" not in r
             and "Global status of LLDP: Disable" not in r
@@ -62,7 +62,7 @@ class Script(BaseScript):
         """
         Check box has NDP enabled
         """
-        r = self.cli("display ndp")
+        r = self.cli("display ndp", cached=True)
         return "enabled" in r
 
     @false_on_cli_error

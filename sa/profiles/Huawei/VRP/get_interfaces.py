@@ -1,20 +1,29 @@
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 
 # Python modules
+from typing import (
+    Dict,
+    Union,
+    DefaultDict,
+)
 import re
-import time
 from collections import defaultdict
+from itertools import compress, chain
+
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.validators import is_vlan
+from noc.core.mib import mib
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -53,7 +62,7 @@ class Script(BaseScript):
         r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+",
         re.MULTILINE,
     )
-    rx_ndp = re.compile(r"^\s*Interface: (?P<name>\S+)\s*\n" r"^\s*Status: Enabled", re.MULTILINE)
+    rx_ndp = re.compile(r"^\s*Interface: (?P<name>\S+)\s*\n^\s*Status: Enabled", re.MULTILINE)
     rx_ifindex = re.compile(
         r"^Name: (?P<name>\S+)\s*\n"
         r"^Physical IF Info:\s*\n"
@@ -61,8 +70,137 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_lldp = re.compile(
-        r"\n^\s*Interface\s(?P<name>\S+):" r"\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
+        r"\n^\s*Interface\s(?P<name>\S+):\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
     )
+
+    rx_vlan_splitter = re.compile(r"(\d+\s+\S+\s+)", re.MULTILINE)
+    rx_vlan_match = re.compile(r"(?P<vid>\d+)\s+(?P<type>\S+)\s+", re.MULTILINE)
+    rx_vlan_switch_splitter = re.compile(r"(UT|TG|ST|MP):", re.MULTILINE)
+    rx_iface_find = re.compile(r"\s*(?P<ifname>\S+)\s*\([UD]\)\s*")
+
+    rx_vlan_port = re.compile(
+        r"\s+VLAN\s+ID\s*:\s*(?P<vlan_id>\d+)\n"
+        r"\s+VLAN\s+Type\s*:\s*(?P<vlan_type>\S+)\n"
+        r"\s+Route\s+Interface\s*:\s*(?P<router_iface>.+|)\n"
+        r"(?:\s+IP\s+Address\s*:\s*\S+\n)?(?:\s+Subnet\s+Mask\s*:\s*\S+\n)?"
+        r"\s+Description\s*:\s*(?P<description>.+|)\n"
+        r"\s+Name\s*:\s*(?P<name>.+|)\n"
+        r"\s+Tagged\s+Ports\s*:(?:\s*|\snone)(?P<tagged_ports>(?:\n.+)+)\n"
+        r"\s+Untagged\s+Ports\s*:(?:\s*|\snone)(?:(?P<untagged_ports>(?:\n.+)*))$",
+        re.MULTILINE,
+    )
+
+    rx_vlan_port_check = re.compile(
+        r"\s+Total\s+\d+\sVLAN\sexist\(s\)\s*\.\s*\n"
+        r"\s+The\s+following\s+VLANs\s+exist\s*:\s*\n"
+        r"\s+(\d+,\s*|\d+-\d+,\s*|\d+\(\S+\),\s*)+\s*(\S+)",
+        re.MULTILINE,
+    )
+
+    def parse_disp_vlan_all(self, v):
+        return
+
+    def get_switchport_cli(self) -> DefaultDict[str, Dict[str, Union[int, list, None]]]:
+        result = defaultdict(lambda: {"untagged": None, "tagged": []})
+        try:
+            v = self.cli("display vlan", cached=True)
+        except self.CLISyntaxError:
+            return result
+        if self.rx_vlan_port_check.match(v):
+            self.logger.info("Use 'display vlan all' command")
+            v = self.cli("display vlan all")
+            for block in v.split("\n\n"):
+                match = self.rx_vlan_port.search(block)
+                print("---------\n", block, match, "\n-----------\n")
+                if not match:
+                    continue
+                for iface in match.group("tagged_ports").split():
+                    result[iface]["tagged"] += [match.group("vlan_id")]
+                for iface in match.group("untagged_ports").split():
+                    result[iface]["untagged"] = match.group("vlan_id")
+            return result
+        rr = v.split("\n\n")
+        switchports = ""
+        if len(rr) == 3:
+            _, switchports, _ = rr  # total info, mapping vlan interface table, vlans table
+        elif len(rr) == 2:
+            _, switchports, _ = rr[0], rr[1], []
+        elif len(rr) == 1:
+            # total = rr[0]
+            pass
+        vid = None
+        for block in self.rx_vlan_splitter.split(switchports):
+            if not block:
+                continue
+            elif self.rx_vlan_match.match(block):
+                vid = int(self.rx_vlan_match.match(block).group("vid"))
+                continue
+            elif vid is None:
+                continue
+            key = None
+            for switchport in self.rx_vlan_switch_splitter.split(block):
+                if switchport.startswith("UT"):
+                    key = "untagged"
+                    continue
+                elif switchport.startswith("TG"):
+                    key = "tagged"
+                    continue
+                elif key is None:
+                    continue
+                for match in self.rx_iface_find.finditer(switchport):
+                    # if key not in r[match.group("iface")]:
+                    #     r[match.group("iface")][key] = []
+                    ifname = self.profile.convert_interface_name(match.group("ifname"))
+                    if key == "untagged":
+                        result[ifname][key] = vid
+                    else:
+                        result[ifname][key] += [vid]
+        return result
+
+    def get_switchport(self) -> DefaultDict[int, Dict[str, Union[int, list, None]]]:
+        result = defaultdict(lambda: {"tagged_vlans": [], "untagged_vlan": None})
+        pid_ifindex_mappings = {}
+        for port_num, ifindex, port_type, pvid in self.snmp.get_tables(
+            [
+                mib["HUAWEI-L2IF-MIB::hwL2IfPortIfIndex"],
+                mib["HUAWEI-L2IF-MIB::hwL2IfPortType"],
+                mib["HUAWEI-L2IF-MIB::hwL2IfPVID"],
+            ],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            timeout=self.get_snmp_timeout(),
+        ):
+            if not pvid:
+                # Avoid zero-value untagged
+                # Found on ME60-X8 5.160 (V600R008C10SPC300)
+                continue
+            result[ifindex]["untagged_vlan"] = pvid
+            pid_ifindex_mappings[port_num] = ifindex
+
+        for oid, vlans_bank in self.snmp.getnext(
+            mib["HUAWEI-L2IF-MIB::hwL2IfTrunkPortTable"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            display_hints={mib["HUAWEI-L2IF-MIB::hwL2IfTrunkPortTable"]: render_bin},
+            timeout=self.get_snmp_timeout(),
+        ):
+            oid, port_num = oid.rsplit(".", 1)
+            if oid.endswith("1.3"):
+                # HighVLAN
+                # start = 2048
+                vlans = range(2048, 4096)
+            else:
+                vlans = range(0, 2048)
+            result[pid_ifindex_mappings[port_num]]["tagged_vlans"] += list(
+                compress(
+                    vlans,
+                    [
+                        int(x)
+                        for x in chain.from_iterable("{0:08b}".format(mask) for mask in vlans_bank)
+                    ],
+                )
+            )
+        return result
 
     def get_ospfint(self):
         try:
@@ -78,7 +216,7 @@ class Script(BaseScript):
 
     def get_ndpint(self):
         try:
-            v = self.cli("display ndp")
+            v = self.cli("display ndp", cached=True)
         except self.CLISyntaxError:
             return []
         ndp = []
@@ -113,7 +251,7 @@ class Script(BaseScript):
 
     def get_lldpint(self):
         try:
-            v = self.cli("display lldp local")
+            v = self.cli("display lldp local", cached=True)
         except self.CLISyntaxError:
             return {}
         lldp = []
@@ -144,45 +282,9 @@ class Script(BaseScript):
                 imap[i] = v["name"]
         return vrfs, imap
 
-    def execute_snmp(self):
-        vlans = self.scripts.get_switchport()
-        r = super().execute_snmp()
-        if vlans:
-            vlans = {
-                v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])}
-                for v in vlans
-            }
-            for fi in r:
-                for iface in fi["interfaces"]:
-                    if iface["name"] in vlans:
-                        if vlans[iface["name"]]["untagged"]:
-                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]][
-                                "untagged"
-                            ]
-                        iface["subinterfaces"][0]["tagged_vlans"] = vlans[iface["name"]]["tagged"]
-        time.sleep(2)
-        vrfs, imap = self.get_mpls_vpn()
-        if imap:
-            for fi in r:
-                for iface in fi["interfaces"]:
-                    subs = iface["subinterfaces"]
-                    for vrf in set(imap.get(si["name"], "default") for si in subs):
-                        c = iface.copy()
-                        c["subinterfaces"] = [
-                            si for si in subs if imap.get(si["name"], "default") == vrf
-                        ]
-                        vrfs[vrf]["interfaces"] += [c]
-            return list(vrfs.values())
-        return r
-
     def execute_cli(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
-        switchports = {}
-        for sp in self.scripts.get_switchport():
-            switchports[sp["interface"]] = (
-                sp["untagged"] if "untagged" in sp else None,
-                sp["tagged"],
-            )
+        switchports = self.get_switchport_cli()
         # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -236,7 +338,7 @@ class Script(BaseScript):
             if ifname in switchports and ifname not in portchannel_members:
                 # Bridge
                 sub["enabled_afi"] += ["BRIDGE"]
-                u, t = switchports[ifname]
+                u, t = switchports[ifname]["untagged"], switchports[ifname].get("tagged")
                 if u:
                     sub["untagged_vlan"] = u
                 if t:
@@ -352,37 +454,20 @@ class Script(BaseScript):
                 if is_vlan(vlan_id):
                     sub["vlan_ids"] = [vlan_id]
                 interfaces[ifname]["subinterfaces"] += [sub]
-        # Process VRFs
-        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
-        imap = {}  # interface -> VRF
-        try:
-            r = self.scripts.get_mpls_vpn()
-        except self.CLISyntaxError:
-            r = []
-        for v in r:
-            vrfs[v["name"]] = {
-                "forwarding_instance": v["name"],
-                "type": v["type"],
-                "vpn_id": v.get("vpn_id"),
-                "interfaces": [],
-            }
-            rd = v.get("rd")
-            if rd:
-                vrfs[v["name"]]["rd"] = rd
-            for i in v["interfaces"]:
-                imap[i] = v["name"]
+        # VRF and forwarding_instance proccessed
+        vrfs, vrf_if_map = self.get_mpls_vpn_mappings()
         for i in interfaces.keys():
             iface_vrf = "default"
             subs = interfaces[i]["subinterfaces"]
             interfaces[i]["subinterfaces"] = []
-            if i in imap:
-                iface_vrf = imap[i]
-                vrfs[imap[i]]["interfaces"] += [interfaces[i]]
+            if i in vrf_if_map:
+                iface_vrf = vrf_if_map[i]
+                vrfs[vrf_if_map[i]]["interfaces"] += [interfaces[i]]
             else:
                 vrfs["default"]["interfaces"] += [interfaces[i]]
             for s in subs:
-                if s["name"] in imap and imap[s["name"]] != iface_vrf:
-                    vrfs[imap[s["name"]]]["interfaces"] += [
+                if s["name"] in vrf_if_map and vrf_if_map[s["name"]] != iface_vrf:
+                    vrfs[vrf_if_map[s["name"]]]["interfaces"] += [
                         {
                             "name": s["name"],
                             "type": "other",

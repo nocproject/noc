@@ -276,6 +276,8 @@ class SNMP(object):
         min_index=None,
         max_index=None,
         cached=False,
+        max_repetitions=None,
+        timeout=15,
         max_retries=0,
         display_hints=None,
     ):
@@ -289,6 +291,8 @@ class SNMP(object):
         :param min_index:
         :param max_index:
         :param cached:
+        :param max_repetitions,
+        :param timeout:
         :param max_retries:
         :param display_hints:
         :return:
@@ -301,8 +305,10 @@ class SNMP(object):
                 community_suffix=community_suffix,
                 cached=cached,
                 bulk=bulk,
+                max_repetitions=max_repetitions,
                 max_retries=max_retries,
                 display_hints=display_hints,
+                timeout=timeout,
             ):
                 yield tuple([int(x) for x in o[line:].split(".")]), v
 
