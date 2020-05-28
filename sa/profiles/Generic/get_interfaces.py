@@ -114,7 +114,7 @@ class Script(BaseScript):
                 mib["IEEE8023-LAG-MIB::dot3adAggPortAttachedAggID"],
             ]
         ):
-            if att_pc:
+            if att_pc and att_pc != int(ifindex):
                 if sel_pc > 0:
                     r[int(ifindex)] = int(att_pc)
         return r
