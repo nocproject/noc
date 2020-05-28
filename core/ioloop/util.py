@@ -36,7 +36,7 @@ class IOLoopContext(object):
 
     def drop_context(self):
         # Cancel all tasks
-        to_cancel = asyncio.Task.all_tasks(self.new_loop)
+        to_cancel = asyncio.all_tasks(self.new_loop)
         for task in to_cancel:
             task.cancel()
         asyncio.gather(*to_cancel, loop=self.new_loop, return_exceptions=True)

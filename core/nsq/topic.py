@@ -8,15 +8,12 @@
 # Python modules
 from collections import deque
 from threading import Lock
-import datetime
 from time import perf_counter
 import asyncio
 from typing import Optional, Tuple
 
 # Third-party modules
 import ujson
-import tornado.locks
-from tornado.ioloop import IOLoop
 from typing import Union, Iterable, List, Dict, Any
 
 # NOC modules
@@ -24,16 +21,15 @@ from noc.config import config
 
 
 class TopicQueue(object):
-    def __init__(self, topic: str) -> None:
+    def __init__(self, topic: str, loop: Optional[asyncio.BaseEventLoop] = None) -> None:
         self.topic = topic
         self.lock = Lock()
-        self.put_condition = tornado.locks.Condition()
-        self.shutdown_complete = tornado.locks.Event()
+        self.waiter: Optional[asyncio.Event] = None
         self.queue: deque = deque()
         self.queue_size = 0
         self.to_shutdown = False
-        self.last_get = None
-        self.io_loop = IOLoop.current()
+        self.last_get: Optional[float] = None
+        self.loop = loop
         # Metrics
         self.msg_put = 0
         self.msg_get = 0
@@ -97,15 +93,37 @@ class TopicQueue(object):
             self.queue_size += m_size
             self.msg_put += 1
             self.msg_put_size += m_size
-            # Unblock waiters in main thread
-            if self.io_loop:
-                # Execute in the main thread
-                self.io_loop.add_callback(self._notify_all)
-            else:
-                self._notify_all()
+            self._notify_waiters()
 
-    def _notify_all(self):
-        self.put_condition.notify_all()
+    def _notify_waiters(self):
+        """
+        Notify waiting coroutine.
+        Must be called within lock
+        :return:
+        """
+        if not self.waiter:
+            return
+        waiter = self.waiter
+        if self.loop:
+            self.loop.call_soon_threadsafe(waiter.set)
+        else:
+            waiter.set()
+
+    async def _wait_for_data(self, timeout: Optional[float] = None):
+        if self.waiter:
+            raise RuntimeError("Incomplete wait")
+        with self.lock:
+            self.waiter = asyncio.Event()
+        try:
+            if timeout:
+                await asyncio.wait_for(self.waiter.wait(), timeout)
+            else:
+                await self.waiter.wait()
+        except asyncio.TimeoutError:
+            pass
+        finally:
+            with self.lock:
+                self.waiter = None
 
     def return_messages(self, messages: List[str]) -> None:
         """
@@ -121,8 +139,7 @@ class TopicQueue(object):
                 self.queue.appendleft(msg)
                 self.msg_requeued += 1
                 self.msg_requeued_size += len(msg)
-            # Unblock waiters in main thread
-            self.put_condition.notify_all()
+            self._notify_waiters()
 
     def iter_get(
         self, n: int = 1, size: int = None, total_overhead: int = 0, message_overhead: int = 0
@@ -188,7 +205,7 @@ class TopicQueue(object):
             raise RuntimeError("Already in shutdown")
         self.to_shutdown = True
         with self.lock:
-            self.put_condition.notify_all()
+            self._notify_waiters()
 
     async def wait(self, timeout: Optional[float] = None, rate: Optional[int] = None):
         """
@@ -213,9 +230,7 @@ class TopicQueue(object):
         # Check if queue already contains messages
         if not self.queue_size and not self.to_shutdown:
             # No messages, wait
-            if timeout is not None:
-                timeout = datetime.timedelta(seconds=timeout)
-            await self.put_condition.wait(timeout)
+            await self._wait_for_data(timeout)
 
     def apply_metrics(self, data: Dict[str, Any]) -> None:
         data.update(
