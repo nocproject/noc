@@ -11,6 +11,7 @@ from threading import Lock
 import datetime
 from time import perf_counter
 import asyncio
+from typing import Optional, Tuple
 
 # Third-party modules
 import ujson
@@ -160,8 +161,7 @@ class TopicQueue(object):
                     break
             self.last_get = perf_counter()
 
-    def is_empty(self):
-        # () -> bool
+    def is_empty(self) -> bool:
         """
         Check if queue is empty
 
@@ -169,8 +169,7 @@ class TopicQueue(object):
         """
         return not self.queue_size
 
-    def qsize(self):
-        # () -> int
+    def qsize(self) -> Tuple[int, int]:
         """
         Returns amount of messages and size of queue
 
@@ -179,8 +178,7 @@ class TopicQueue(object):
         with self.lock:
             return len(self.queue), self.queue_size
 
-    def shutdown(self):
-        # () -> ()
+    def shutdown(self) -> None:
         """
         Begin shutdown sequence. Disable queue writes
 
@@ -192,8 +190,7 @@ class TopicQueue(object):
         with self.lock:
             self.put_condition.notify_all()
 
-    async def wait(self, timeout=None, rate=None):
-        # (Optional[float], Optional[int]) -> None
+    async def wait(self, timeout: Optional[float] = None, rate: Optional[int] = None):
         """
         Block and wait up to `timeout`
         :param timeout: Max. wait in seconds

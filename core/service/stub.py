@@ -9,9 +9,7 @@
 import logging
 import threading
 from collections import defaultdict
-
-# Third-party modules
-from tornado.ioloop import IOLoop
+import asyncio
 
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
@@ -36,14 +34,14 @@ class ServiceStub(object):
         self.is_ready.wait()
 
     def _start(self):
-        self.ioloop = IOLoop.current()
+        self.loop = asyncio.get_event_loop()
         # Initialize DCS
         self.dcs = get_dcs(DEFAULT_DCS)
         # Activate service
         self.logger.warning("Activating stub service")
         self.logger.warning("Starting IOLoop")
-        self.ioloop.add_callback(self.is_ready.set)
-        self.ioloop.start()
+        self.loop.call_soon(self.is_ready.set)
+        self.loop.run_forever()
 
     def open_rpc(self, name, pool=None, sync=False, hints=None):
         """

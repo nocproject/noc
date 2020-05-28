@@ -18,16 +18,14 @@ import threading
 from time import perf_counter
 import datetime
 import asyncio
+from typing import Optional, Dict, List, Tuple, Callable, Any, TypeVar, NoReturn
 
 # Third-party modules
-from tornado.ioloop import IOLoop
 import tornado.web
 import tornado.netutil
 import tornado.httpserver
-import tornado.locks
 import setproctitle
 import ujson
-from typing import Dict, List, Tuple, Callable, Any, TypeVar
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
@@ -136,7 +134,7 @@ class Service(object):
     def __init__(self):
         set_service(self)
         sys.excepthook = excepthook
-        self.ioloop = None
+        self.loop: Optional[asyncio.BaseEventLoop] = None
         self.logger = None
         self.service_id = str(uuid.uuid4())
         self.executors = {}
@@ -220,13 +218,13 @@ class Service(object):
             )
 
     @classmethod
-    def die(cls, msg=""):
+    def die(cls, msg: str = "") -> NoReturn:
         """
         Dump message to stdout and terminate process with error code
         """
         sys.stdout.write(str(msg) + "\n")
         sys.stdout.flush()
-        sys.exit(1)
+        os._exit(1)
 
     def setup_logging(self, loglevel=None):
         """
@@ -326,13 +324,13 @@ class Service(object):
             self.logger.warning("Running service %s", self.name)
         try:
             setup_asyncio()
-            self.ioloop = IOLoop.current()
+            self.loop = asyncio.get_event_loop()
             # Initialize DCS
             self.dcs = get_dcs(cmd_options["dcs"])
             # Activate service
-            self.ioloop.add_callback(self.activate)
+            self.loop.create_task(self.activate())
             self.logger.warning("Starting IOLoop")
-            self.ioloop.start()
+            self.loop.run_forever()
         except KeyboardInterrupt:
             self.logger.warning("Interrupted by Ctrl+C")
         except self.RegistrationError:
@@ -340,8 +338,8 @@ class Service(object):
         except Exception:
             error_report()
         finally:
-            if self.ioloop:
-                self.ioloop.add_callback(self.deactivate)
+            if self.loop:
+                self.loop.create_task(self.deactivate())
         for cb, args, kwargs in self.close_callbacks:
             cb(*args, **kwargs)
         self.logger.warning("Service %s has been terminated", self.name)
@@ -355,11 +353,10 @@ class Service(object):
 
     def stop(self):
         self.logger.warning("Stopping")
-        self.ioloop.add_callback(self.deactivate)
+        self.loop.create_task(self.deactivate())
 
     def on_SIGHUP(self, signo, frame):
         # self.logger.warning("SIGHUP caught, rereading config")
-        # self.ioloop.add_callback(self.load_config)
         pass
 
     def on_SIGTERM(self, signo, frame):
@@ -412,7 +409,7 @@ class Service(object):
             "log_function": self.log_request,
         }
 
-    def activate(self):
+    async def activate(self):
         """
         Initialize services before run
         """
@@ -457,7 +454,7 @@ class Service(object):
         #
         if self.use_telemetry:
             self.start_telemetry_callback()
-        self.ioloop.add_callback(self.on_register)
+        self.loop.create_task(self.on_register())
 
     async def deactivate(self):
         if not self.is_active:
@@ -487,8 +484,8 @@ class Service(object):
         # Continue deactivation
         # Finally stop ioloop
         self.dcs = None
-        self.logger.info("Stopping IOLoop")
-        self.ioloop.stop()
+        self.logger.info("Stopping EventLoop")
+        self.loop.stop()
         m = {}
         apply_metrics(m)
         apply_hists(m)
@@ -689,7 +686,7 @@ class Service(object):
                 return q  # Created in concurrent task
             q = TopicQueue(topic)
             self.topic_queues[topic] = q
-            self.ioloop.add_callback(self.nsq_publisher_guard, q)
+            self.loop.create_task(self.nsq_publisher_guard(q))
             return q
 
     async def nsq_publisher_guard(self, queue: TopicQueue):
