@@ -109,9 +109,13 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         # Stack numbers for filter
         self._chassis_filter = None
-        if "Stack | Member Ids" in self.capabilities:
-            self._chassis_filter = set(self.capabilities["Stack | Member Ids"].split(" | "))
-        self.logger.debug("Chassis members filter: %s", self._chassis_filter)
+        if self.is_3124:
+            if (
+                "Stack | Member Ids" in self.capabilities
+                and self.capabilities["Stack | Member Ids"] != "0"
+            ):
+                self._chassis_filter = set(self.capabilities["Stack | Member Ids"].split(" | "))
+            self.logger.debug("Chassis members filter: %s", self._chassis_filter)
         return super().execute_snmp()
 
     def execute_cli(self):
