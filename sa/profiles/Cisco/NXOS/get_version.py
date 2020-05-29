@@ -30,34 +30,41 @@ class Script(BaseScript):
     rx_snmp_platform = re.compile(r"^Nexus\s+(?P<platform>\S+).+Chassis$", re.IGNORECASE)
     rx_snmp_platform1 = re.compile(r"^(?P<platform>N\dK-C\d\d\d\d\S+)$")
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
         r = {"vendor": "Cisco", "version": "Unsupported", "platform": "Unsupported"}
-        if self.has_snmp():
-            try:
-                v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
-                match = self.rx_snmp_ver.search(v)
-                r["version"] = match.group("version")
-                # Get platform via ENTITY-MIB
-                # ENTITY-MIB::entPhysicalName
-                for oid, v in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.7"):
-                    match = self.rx_snmp_platform.match(v)
-                    if match:
-                        r["platform"] = match.group("platform")
-                        break
-                    match = self.rx_snmp_platform1.match(v)
-                    if match:
-                        r["platform"] = match.group("platform")
-                        break
-                return r
-            except self.snmp.TimeOutError:
-                pass
+        try:
+            v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
+            match = self.rx_snmp_ver.search(v)
+            r["version"] = match.group("version")
+            # Get platform via ENTITY-MIB
+            # ENTITY-MIB::entPhysicalName
+            for oid, v in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.7"):
+                match = self.rx_snmp_platform.match(v)
+                if match:
+                    r["platform"] = match.group("platform")
+                    break
+                match = self.rx_snmp_platform1.match(v)
+                if match:
+                    r["platform"] = match.group("platform")
+                    break
+            return r
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
+            raise self.NotSupportedError
+
+    def execute_cli(self, **kwargs):
+        r = {"vendor": "Cisco", "version": "Unsupported", "platform": "Unsupported"}
         v = self.cli("show version | no-more")
         match = self.rx_ver.search(v)
         if match:
             r["version"] = match.group("version")
         # Use first chassis PID from inventory for platform
-        v = self.cli("show inventory chassis | no-more")
+        try:
+            v = self.cli("show inventory chassis | no-more")
+        except self.CLISyntaxError:
+            v = self.cli("show inventory | no-more")
         for match in self.rx_item.finditer(v):
             r["platform"] = match.group("pid")
+            r["attributes"] = {}
+            r["attributes"]["Serial Number"] = match.group("serial")
             break
         return r
