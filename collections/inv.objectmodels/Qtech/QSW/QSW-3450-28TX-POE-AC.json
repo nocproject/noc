@@ -213,7 +213,7 @@
             "gender": "f",
             "name": "Te25_sfp+",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Fiber port 26",
@@ -221,7 +221,7 @@
             "gender": "f",
             "name": "Te26_sfp+",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Fiber port 27",
@@ -229,7 +229,7 @@
             "gender": "f",
             "name": "Te27_sfp+",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Fiber port 28",
@@ -237,7 +237,7 @@
             "gender": "f",
             "name": "Te28_sfp+",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Console port",
