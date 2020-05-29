@@ -98,6 +98,13 @@ class Script(BaseScript):
             chassis, slot, port = self.rx_slot_splitter.match(name).groups()
             if chassis not in self._chassis_filter:
                 return False
+        if (
+            (name.startswith("Vl") or name.startswith("Lo"))
+            and self.vlan_filter
+            and ifindex not in self.vlan_filter
+        ):
+            # Filter all vlan ifaces without IP
+            return False
         return True
 
     # if ascii or rus text in description
@@ -105,6 +112,16 @@ class Script(BaseScript):
         if desc:
             return smart_bytes(smart_text(desc, errors="replace"))
         return desc
+
+    def get_ip_ifindex(self):
+        r = set()
+        for _, ifindex in self.snmp.getnext(
+            mib["RFC1213-MIB::ipAdEntIfIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+        ):
+            r.add(ifindex)
+        return r
 
     def execute_snmp(self, **kwargs):
         # Stack numbers for filter
@@ -116,6 +133,8 @@ class Script(BaseScript):
             ):
                 self._chassis_filter = set(self.capabilities["Stack | Member Ids"].split(" | "))
             self.logger.debug("Chassis members filter: %s", self._chassis_filter)
+        self.vlan_filter = self.get_ip_ifindex()
+        self.logger.info("Use Vlan filter: %s", self.vlan_filter)
         return super().execute_snmp()
 
     def execute_cli(self):
