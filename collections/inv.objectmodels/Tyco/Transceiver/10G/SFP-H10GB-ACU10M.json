@@ -14,7 +14,7 @@
             "gender": "m",
             "name": "in1",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "cross": "in1",
@@ -23,7 +23,7 @@
             "gender": "m",
             "name": "in2",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         }
     ],
     "data": {

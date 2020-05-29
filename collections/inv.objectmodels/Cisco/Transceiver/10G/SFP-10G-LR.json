@@ -7,12 +7,12 @@
     "cr_context": "XCVR",
     "connections": [
         {
-            "description": "SFP connector",
+            "description": "SFP+ connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+ | Cisco"
         },
         {
             "description": "RX Port",

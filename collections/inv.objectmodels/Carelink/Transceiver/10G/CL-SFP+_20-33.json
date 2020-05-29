@@ -3,17 +3,17 @@
     "$collection": "inv.objectmodels",
     "uuid": "9be01d95-62ab-48af-b6c1-1ddbe58d5c7a",
     "vendor__code": "CARELINK",
-    "description": "Carelink SFP transceiver 20km (1270 rx, 1330 tx)",
+    "description": "Carelink SFP+ transceiver 20km (1270 rx, 1330 tx)",
     "cr_context": "XCVR",
     "tags": ["xcvr"],
     "connections": [
         {
-            "description": "SFP Connector",
+            "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "RxTx SC Port",

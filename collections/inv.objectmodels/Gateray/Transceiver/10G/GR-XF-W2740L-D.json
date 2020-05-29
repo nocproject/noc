@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "157cfa44-fa04-4c76-9c1e-a1532daa441c",
     "vendor__code": "GATERAY",
-    "description": "GateRay SFP WDM transceiver 40km (1270 tx, 1330 rx) with ddm",
+    "description": "GateRay SFP+ WDM transceiver 40km (1270 tx, 1330 rx) with ddm",
     "cr_context": "XCVR",
     "tags": ["xcvr"],
     "connections": [
@@ -13,7 +13,7 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "RxTx LC Port",
