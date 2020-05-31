@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Qtech.QSW2800"
     pattern_more = [
-        (r"^ --More-- $", " "),
+        (r"^\s*--More--\s*$", " "),
         (r"^Confirm to overwrite current startup-config configuration " r"[Y/N]:", "\nY\n"),
         (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
