@@ -17,11 +17,11 @@ class DefaultLLDPStatusApplicator(QueryApplicator):
     CHECK_QUERY = "Match('hints', 'protocols', 'lldp', 'status')"
     QUERY = [
         # LLDP is globally enabled
-        "Match('hints', 'protocols', 'lldp', 'status', 'on') and "
+        "Match('hints', 'protocols', 'lldp', 'status', True) and "
         # Get all physical interfaces and bind to variable X
         "Match('interfaces', X, 'type', 'physical') and "
         # Only admin-status up interfaces
-        "Match('interfaces', X, 'admin-status', 'on') and "
+        "Match('interfaces', X, 'admin-status', True) and "
         # Filter out explicitly disabled interfaces
         "NotMatch('hints', 'protocols', 'lldp', 'interface', X, 'off') and "
         # For each interface with lldp admin status is not set
