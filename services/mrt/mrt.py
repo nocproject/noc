@@ -8,10 +8,10 @@
 
 # Python modules
 import logging
+import asyncio
 
 # Third-party modules
 import ujson
-import tornado.gen
 
 # Python modules
 from noc.core.service.authhandler import AuthRequestHandler
@@ -109,7 +109,7 @@ class MRTRequestHandler(AuthRequestHandler):
                 logger.info(
                     "[%s] Enable telemetry for task, user: %s", span.span_id, self.current_user
                 )
-            futures = []
+            futures = set()
             for d in req:
                 if "id" not in d or "script" not in d:
                     continue
@@ -117,21 +117,21 @@ class MRTRequestHandler(AuthRequestHandler):
                 if oid not in ids:
                     await self.write_chunk({"id": str(d["id"]), "error": "Access denied"})
                     metrics["mrt_access_denied"] += 1
-                if len(futures) >= config.mrt.max_concurrency:
-                    wi = tornado.gen.WaitIterator(*futures)
-                    wi_next = getattr(wi, "next")
-                    r = await wi_next()
-                    del futures[wi.current_index]
-                    await self.write_chunk(r)
-                futures += [
+                    continue
+                while len(futures) >= config.mrt.max_concurrency:
+                    done, futures = asyncio.wait(futures, return_when=asyncio.FIRST_COMPLETED)
+                    for f in done:
+                        r = await f
+                        await self.write_chunk(r)
+                futures.add(
                     self.run_script(
                         oid, d["script"], d.get("args"), span_id=span.span_id, bi_id=ids.get(oid)
                     )
-                ]
+                )
             # Wait for rest
-            wi = tornado.gen.WaitIterator(*futures)
-            wi_next = getattr(wi, "next")
-            while not wi.done():
-                r = await wi_next()
-                await self.write_chunk(r)
+            while futures:
+                done, futures = await asyncio.wait(futures, return_when=asyncio.FIRST_COMPLETED)
+                for f in done:
+                    r = await f
+                    await self.write_chunk(r)
         logger.info("Done")
