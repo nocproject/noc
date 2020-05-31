@@ -344,6 +344,9 @@ class Service(object):
             cb(*args, **kwargs)
         self.logger.warning("Service %s has been terminated", self.name)
 
+    def get_event_loop(self) -> asyncio.BaseEventLoop:
+        return self.loop
+
     def on_start(self):
         """
         Reload config

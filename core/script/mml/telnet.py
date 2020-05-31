@@ -6,10 +6,13 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from ..cli.telnet import TelnetIOStream
+from ..cli.stream import BaseStream
+from ..cli.telnet import TelnetStream
 from .base import MMLBase
 
 
 class TelnetMML(MMLBase):
-    iostream_class = TelnetIOStream
-    default_port = 23
+    name = "mml"
+
+    def get_stream(self) -> BaseStream:
+        return TelnetStream(self)

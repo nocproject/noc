@@ -6,145 +6,63 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
 import os
 from urllib.request import parse_http_list, parse_keqv_list
 import asyncio
+from typing import Tuple, Dict, Any
 
 # Third-party modules
-import tornado.ioloop
-import tornado.iostream
 import hashlib
-from typing import Union
 
 # NOC modules
 from noc.config import config
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 from noc.core.span import Span
-from ..cli.telnet import TelnetIOStream
+from noc.core.ioloop.util import IOLoopContext
+from noc.core.perf import metrics
+from ..cli.base import BaseCLI
+from ..cli.stream import BaseStream
 from .error import RTSPConnectionRefused, RTSPAuthFailed, RTSPBadResponse, RTSPError
 
-DEFAULT_PROTOCOL = "RTSP/1.0"
-DEFAULT_USER_AGENT = config.http_client.user_agent
+DEFAULT_PROTOCOL = b"RTSP/1.0"
+DEFAULT_USER_AGENT = smart_bytes(config.http_client.user_agent)
 MULTIPLE_HEADER = {"WWW-Authenticate"}
 
 
-class RTSPBase(object):
+class RTSPBase(BaseCLI):
     name = "rtsp"
-    iostream_class = TelnetIOStream
-    default_port = 554
     BUFFER_SIZE = config.activator.buffer_size
     MATCH_TAIL = 256
-    # Retries on immediate disconnect
-    CONNECT_RETRIES = config.activator.connect_retries
-    # Timeout after immediate disconnect
-    CONNECT_TIMEOUT = config.activator.connect_timeout
-    # compiled capabilities
-    HAS_TCP_KEEPALIVE = hasattr(socket, "SO_KEEPALIVE")
-    HAS_TCP_KEEPIDLE = hasattr(socket, "TCP_KEEPIDLE")
-    HAS_TCP_KEEPINTVL = hasattr(socket, "TCP_KEEPINTVL")
-    HAS_TCP_KEEPCNT = hasattr(socket, "TCP_KEEPCNT")
-    HAS_TCP_NODELAY = hasattr(socket, "TCP_NODELAY")
-    # Time until sending first keepalive probe
-    KEEP_IDLE = 10
-    # Keepalive packets interval
-    KEEP_INTVL = 10
-    # Terminate connection after N keepalive failures
-    KEEP_CNT = 3
+    SYNTAX_ERROR_CODE = b"+@@@NOC:SYNTAXERROR@@@+"
 
     def __init__(self, script, tos=None):
-        self.script = script
-        self.profile = script.profile
-        self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
-        self.iostream = None
-        self.ioloop = None
+        super().__init__(script, tos)
         self.path = None
         self.cseq = 1
         self.method = None
-        self.headers = None
+        self.headers: Dict[str, Any] = None
         self.auth = None
-        self.buffer = ""
+        self.buffer: bytes = b""
         self.is_started = False
         self.result = None
         self.error = None
-        self.is_closed = False
         self.close_timeout = None
         self.current_timeout = None
-        self.tos = tos
         self.rx_rtsp_end = "\r\n\r\n"
 
-    def close(self):
-        self.script.close_current_session()
-        self.close_iostream()
-        if self.ioloop:
-            self.logger.debug("Closing IOLoop")
-            self.ioloop.close(all_fds=True)
-            self.ioloop = None
-        self.is_closed = True
+    def get_stream(self) -> BaseStream:
+        return RTSPStream(self)
 
-    def close_iostream(self):
-        if self.iostream:
-            self.iostream.close()
-
-    def deferred_close(self, session_timeout):
-        if self.is_closed or not self.iostream:
-            return
-        self.logger.debug("Setting close timeout to %ss", session_timeout)
-        # Cannot call call_later directly due to
-        # thread-safety problems
-        # See tornado issue #1773
-        tornado.ioloop.IOLoop.current().add_callback(self._set_close_timeout, session_timeout)
-
-    def _set_close_timeout(self, session_timeout):
-        """
-        Wrapper to deal with IOLoop.add_timeout thread safety problem
-        :param session_timeout:
-        :return:
-        """
-        self.close_timeout = tornado.ioloop.IOLoop.current().call_later(session_timeout, self.close)
-
-    def create_iostream(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if self.tos:
-            s.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, self.tos)
-        if self.HAS_TCP_NODELAY:
-            s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        if self.HAS_TCP_KEEPALIVE:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-            if self.HAS_TCP_KEEPIDLE:
-                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, self.KEEP_IDLE)
-            if self.HAS_TCP_KEEPINTVL:
-                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPINTVL, self.KEEP_INTVL)
-            if self.HAS_TCP_KEEPCNT:
-                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
-        return self.iostream_class(s, self)
-
-    def set_timeout(self, timeout: Union[int, float]):
-        if timeout:
-            self.logger.debug("Setting timeout: %ss", timeout)
-            self.current_timeout = timeout
-        else:
-            if self.current_timeout:
-                self.logger.debug("Resetting timeouts")
-            self.current_timeout = None
-
-    def set_script(self, script):
-        self.script = script
-        if self.close_timeout:
-            tornado.ioloop.IOLoop.current().remove_timeout(self.close_timeout)
-            self.close_timeout = None
-
-    def get_uri(self, port=None):
+    def get_uri(self, port: int = None) -> str:
         address = self.script.credentials.get("address")
         if not port:
-            port = self.default_port
+            port = RTSPStream.default_port
         if port:
             address += ":%s" % port
         uri = "rtsp://%s%s" % (address, self.path)
-        return uri.encode("utf-8")
+        return uri
 
-    async def send(self, method=None, body=None):
+    async def send(self, method: str = None, body: str = None):
         # @todo: Apply encoding
         self.error = None
         body = body or ""
@@ -160,31 +78,24 @@ class RTSPBase(object):
                 self.get_uri(), method, self.headers["WWW-Authenticate"]["Digest"]
             )
         req = b"%s %s %s\r\n%s\r\n\r\n%s" % (
-            method,
-            self.get_uri(),
+            smart_bytes(method),
+            smart_bytes(self.get_uri()),
             DEFAULT_PROTOCOL,
-            "\r\n".join(b"%s: %s" % (k, h[k]) for k in h),
-            body,
+            b"\r\n".join(b"%s: %s" % (smart_bytes(k), smart_bytes(h[k])) for k in h),
+            smart_bytes(body),
         )
-
         self.logger.debug("Send: %r", req)
-        await self.iostream.write(req)
+        await self.stream.write(req)
         self.cseq += 1
 
     async def submit(self):
         # Create iostream and connect, when necessary
-        if not self.iostream:
-            self.iostream = self.create_iostream()
-            address = (self.script.credentials.get("address"), self.default_port)
-            self.logger.debug("Connecting %s", address)
+        if not self.stream:
             try:
-                await self.iostream.connect(address)
-            except tornado.iostream.StreamClosedError:
-                self.logger.debug("Connection refused")
+                await self.start_stream()
+            except ConnectionRefusedError:
                 self.error = RTSPConnectionRefused("Connection refused")
-                return None
-            self.logger.debug("Connected")
-            await self.iostream.startup()
+                return
         # Perform all necessary login procedures
         if not self.is_started:
             self.is_started = True
@@ -203,7 +114,7 @@ class RTSPBase(object):
 
     async def get_rtsp_response(self):
         result = []
-        header_sep = "\r\n\r\n"
+        header_sep = b"\r\n\r\n"
         while True:
             r = await self.read_until_end()
             # r = r.strip()
@@ -213,7 +124,7 @@ class RTSPBase(object):
                 self.error = RTSPBadResponse("Missed header separator")
                 return None
             header, r = r.split(header_sep, 1)
-            code, msg, headers = self.parse_rtsp_header(header)
+            code, headers, msg = self.parse_rtsp_header(header)
             self.headers = headers
             self.logger.debug(
                 "Parsed received, err code: %d, err message: %s, headers: %s", code, msg, headers
@@ -229,17 +140,18 @@ class RTSPBase(object):
                 return None
             result += [r]
             break
-        self.result = "".join(result)
+        self.result = smart_text(b"".join(result))
         return self.result
 
     @staticmethod
-    def parse_rtsp_header(data):
-        code, msg, headers = 200, "", {}
+    def parse_rtsp_header(data: bytes) -> Tuple[int, Dict[str, Any], bytes]:
+        code, headers, msg = 200, {}, b""
         for line in data.splitlines():
-            if line.startswith("RTSP/1.0"):
+            if line.startswith(b"RTSP/1.0"):
                 _, code, msg = line.split(None, 2)
-            elif ":" in line:
-                h, v = line.split(":", 1)
+            elif b":" in line:
+                h, v = line.split(b":", 1)
+                h, v = smart_text(h), smart_text(v)
                 if h in MULTIPLE_HEADER:
                     if h not in headers:
                         headers[h] = {}
@@ -248,7 +160,7 @@ class RTSPBase(object):
                     headers[h][auth] = parse_keqv_list(items)
                     continue
                 headers[h] = v.strip()
-        return int(code), msg, headers
+        return int(code), headers, msg
 
     def execute(self, path, method, **kwargs):
         """
@@ -258,76 +170,43 @@ class RTSPBase(object):
         :param kwargs:
         :return:
         """
-        if self.close_timeout:
-            self.logger.debug("Removing close timeout")
-            self.ioloop.remove_timeout(self.close_timeout)
-            self.close_timeout = None
-        self.buffer = ""
-        # self.command = self.profile.get_mml_command(cmd, **kwargs)
+        self.buffer = b""
         self.path = path
         self.method = method
         self.error = None
-        if not self.ioloop:
+        if not self.loop_context:
             self.logger.debug("Creating IOLoop")
-            self.ioloop = tornado.ioloop.IOLoop()
+            self.loop_context = IOLoopContext()
+            self.loop_context.get_context()
         with Span(
             server=self.script.credentials.get("address"), service=self.name, in_label=self.method
         ) as s:
-            self.ioloop.run_sync(self.submit)
+            self.loop_context.get_loop().run_until_complete(self.submit())
             if self.error:
                 if s:
                     s.error_text = str(self.error)
                 raise self.error
-            else:
-                return self.result
+            return self.result
 
     async def read_until_end(self):
-        connect_retries = self.CONNECT_RETRIES
         while True:
             try:
-                f = self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
-                if self.current_timeout:
-                    r = await asyncio.wait_for(f, self.current_timeout)
-                else:
-                    r = await f
-            except tornado.iostream.StreamClosedError:
-                # Check if remote end closes connection just
-                # after connection established
-                if not self.is_started and connect_retries:
-                    self.logger.info(
-                        "Connection reset. %d retries left. Waiting %d seconds",
-                        connect_retries,
-                        self.CONNECT_TIMEOUT,
-                    )
-                    while connect_retries:
-                        await asyncio.sleep(self.CONNECT_TIMEOUT)
-                        connect_retries -= 1
-                        self.iostream = self.create_iostream()
-                        address = (
-                            self.script.credentials.get("address"),
-                            self.script.credentials.get("cli_port", self.default_port),
-                        )
-                        self.logger.debug("Connecting %s", address)
-                        try:
-                            await self.iostream.connect(address)
-                            break
-                        except tornado.iostream.StreamClosedError:
-                            if not connect_retries:
-                                raise tornado.iostream.StreamClosedError()
-                    continue
-                else:
-                    raise tornado.iostream.StreamClosedError()
+                metrics["cli_reads", ("proto", self.name)] += 1
+                r = await self.stream.read(self.BUFFER_SIZE)
+                if r == self.SYNTAX_ERROR_CODE:
+                    metrics["cli_syntax_errors", ("proto", self.name)] += 1
+                    return self.SYNTAX_ERROR_CODE
+                metrics["cli_read_bytes", ("proto", self.name)] += len(r)
+                if self.script.to_track:
+                    self.script.push_cli_tracking(r, self.state)
             except asyncio.TimeoutError:
                 self.logger.info("Timeout error")
-                raise asyncio.TimeoutError("Timeout")
+                metrics["cli_timeouts", ("proto", self.name)] += 1
+                # IOStream must be closed to prevent hanging read callbacks
+                self.close_stream()
+                raise asyncio.TimeoutError("Timeout")  # @todo: Uncaught
             self.logger.debug("Received: %r", r)
             self.buffer += r
-            # offset = max(0, len(self.buffer) - self.MATCH_TAIL)
-            # match = self.rx_mml_end.search(self.buffer, offset)
-            # if match:
-            #     self.logger.debug("End of the block")
-            #     r = self.buffer[:match.start()]
-            #     self.buffer = self.buffer[match.end()]
             return r
 
     def shutdown_session(self):
@@ -428,3 +307,7 @@ class DigestAuth(object):
         self.last_opaque = opaque
 
         return "Digest %s" % (str(base))
+
+
+class RTSPStream(BaseStream):
+    default_port = 554

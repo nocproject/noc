@@ -10,7 +10,6 @@ import re
 import logging
 import itertools
 import operator
-from threading import Lock
 from functools import reduce
 from time import perf_counter
 
@@ -42,6 +41,7 @@ from .error import (
 from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
 from .http.base import HTTP
+from .sessionstore import SessionStore
 
 
 class BaseScriptMetaclass(type):
@@ -85,10 +85,9 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     #
     _x_seq = itertools.count()
     # Sessions
-    session_lock = Lock()
-    session_cli = {}
-    session_mml = {}
-    session_rtsp = {}
+    cli_session_store = SessionStore()
+    mml_session_store = SessionStore()
+    rtsp_session_store = SessionStore()
     # In session mode when active CLI session exists
     # * True -- reuse session
     # * False -- close session and run new without session context
@@ -881,15 +880,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             return self.root.get_cli_stream()
         if not self.cli_stream and self.session:
             # Try to get cached session's CLI
-            with self.session_lock:
-                self.cli_stream = self.session_cli.get(self.session)
-                if self.cli_stream:
-                    if self.cli_stream.is_closed:
-                        # Stream closed by external reason,
-                        # mark as invalid and start new one
-                        self.cli_stream = None
-                    # Remove stream from pool to prevent cli session hijacking
-                    del self.session_cli[self.session]
+            self.cli_stream = self.cli_session_store.get(self.session)
             if self.cli_stream:
                 if self.to_reuse_cli_session():
                     self.logger.debug("Using cached session's CLI")
@@ -903,10 +894,9 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.cli_stream = get_handler(self.cli_protocols[protocol])(self, tos=self.tos)
             # Store to the sessions
             if self.session:
-                with self.session_lock:
-                    self.session_cli[self.session] = self.cli_stream
+                self.cli_session_store.put(self.session, self.cli_stream)
             self.cli_stream.setup_session()
-            # Disable pager when nesessary
+            # Disable pager when necessary
             # @todo: Move to CLI
             if self.to_disable_pager:
                 self.logger.debug("Disable paging")
@@ -926,9 +916,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         if self.cli_stream:
             if self.session and self.to_keep_cli_session():
                 # Return cli stream to pool
-                self.session_cli[self.session] = self.cli_stream
-                # Schedule stream closing
-                self.cli_stream.deferred_close(self.session_idle_timeout)
+                self.cli_session_store.put(self.session, self.cli_stream, self.session_idle_timeout)
             else:
                 self.cli_stream.shutdown_session()
                 self.cli_stream.close()
@@ -957,11 +945,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             return self.root.get_mml_stream()
         if not self.mml_stream and self.session:
             # Try to get cached session's CLI
-            with self.session_lock:
-                self.mml_stream = self.session_mml.get(self.session)
-                if self.mml_stream and self.mml_stream.is_closed:
-                    self.mml_stream = None
-                    del self.session_mml[self.session]
+            self.mml_stream = self.mml_session_store.get(self.session)
             if self.mml_stream:
                 if self.to_reuse_cli_session():
                     self.logger.debug("Using cached session's MML")
@@ -975,8 +959,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.mml_stream = get_handler(self.mml_protocols[protocol])(self, tos=self.tos)
             # Store to the sessions
             if self.session:
-                with self.session_lock:
-                    self.session_mml[self.session] = self.mml_stream
+                self.mml_session_store.put(self.session, self.mml_stream)
         return self.mml_stream
 
     def close_mml_stream(self):
@@ -984,7 +967,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             return
         if self.mml_stream:
             if self.session and self.to_keep_cli_session():
-                self.mml_stream.deferred_close(self.session_idle_timeout)
+                self.mml_session_store.put(self.session, self.mml_stream, self.session_idle_timeout)
             else:
                 self.mml_stream.close()
             self.cli_stream = None
@@ -1006,11 +989,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             return self.root.get_rtsp_stream()
         if not self.rtsp_stream and self.session:
             # Try to get cached session's CLI
-            with self.session_lock:
-                self.rtsp_stream = self.session_rtsp.get(self.session)
-                if self.rtsp_stream and self.rtsp_stream.is_closed:
-                    self.rtsp_stream = None
-                    del self.session_rtsp[self.session]
+            self.rtsp_stream = self.rtsp_session_store.get(self.session)
             if self.rtsp_stream:
                 if self.to_reuse_cli_session():
                     self.logger.debug("Using cached session's RTSP")
@@ -1024,8 +1003,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.rtsp_stream = get_handler(self.rtsp_protocols[protocol])(self, tos=self.tos)
             # Store to the sessions
             if self.session:
-                with self.session_lock:
-                    self.session_rtsp[self.session] = self.rtsp_stream
+                self.rtsp_session_store.put(self.session, self.rtsp_stream)
         return self.rtsp_stream
 
     def close_rtsp_stream(self):
@@ -1033,7 +1011,9 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             return
         if self.rtsp_stream:
             if self.session and self.to_keep_cli_session():
-                self.rtsp_stream.deferred_close(self.session_idle_timeout)
+                self.rtsp_session_store.put(
+                    self.session, self.rtsp_stream, self.session_idle_timeout
+                )
             else:
                 self.rtsp_stream.close()
             self.cli_stream = None
@@ -1048,25 +1028,9 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         Explicit session closing
         :return:
         """
-        with cls.session_lock:
-            cli_stream = cls.session_cli.get(session_id)
-            if cli_stream:
-                del cls.session_cli[session_id]
-            mml_stream = cls.session_mml.get(session_id)
-            if mml_stream:
-                del cls.session_mml[session_id]
-            rtsp_stream = cls.session_rtsp.get(session_id)
-            if rtsp_stream:
-                del cls.session_rtsp[session_id]
-        if cli_stream and not cli_stream.is_closed:
-            cli_stream.shutdown_session()
-            cli_stream.close()
-        if mml_stream and not mml_stream.is_closed:
-            mml_stream.shutdown_session()
-            mml_stream.close()
-        if rtsp_stream and not rtsp_stream.is_closed:
-            rtsp_stream.shutdown_session()
-            rtsp_stream.close()
+        cls.cli_session_store.remove(session_id, shutdown=True)
+        cls.mml_session_store.remove(session_id, shutdown=True)
+        cls.rtsp_session_store.remove(session_id, shutdown=True)
 
     def get_access_preference(self):
         preferred = self.get_always_preferred()

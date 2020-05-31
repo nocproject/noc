@@ -24,6 +24,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
 from noc.main.models.extstorage import ExtStorage
 from noc.core.comp import smart_text, smart_bytes
+from noc.core.ioloop.util import setup_asyncio
 
 
 class Command(BaseCommand):
@@ -104,6 +105,7 @@ class Command(BaseCommand):
         build_test_case_parser.add_argument("--test-path", type=smart_text, help="Path name")
 
     def handle(self, cmd, *args, **options):
+        setup_asyncio()
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_collect(

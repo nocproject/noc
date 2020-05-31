@@ -70,21 +70,17 @@ def get_lines_from_file(filename, lineno, context_lines, loader=None, module_nam
             source = source.splitlines()
     if source is None:
         try:
-            f = open(filename)
-            try:
+            with open(filename) as f:
                 source = f.readlines()
-            finally:
-                f.close()
         except (OSError, IOError):
             pass
-    if source is None:
+    if source is None or lineno >= len(source):
         return None, [], None, []
-    source = [smart_text(sline) for sline in source]
     lower_bound = max(0, lineno - context_lines)
     upper_bound = lineno + context_lines
-    pre_context = [line.strip("\n") for line in source[lower_bound:lineno]]
-    context_line = source[lineno].strip("\n")
-    post_context = [line.strip("\n") for line in source[lineno + 1 : upper_bound]]
+    pre_context = [smart_text(line).strip("\n") for line in source[lower_bound:lineno]]
+    context_line = smart_text(source[lineno]).strip("\n")
+    post_context = [smart_text(line).strip("\n") for line in source[lineno + 1 : upper_bound]]
     return lower_bound, pre_context, context_line, post_context
 
 

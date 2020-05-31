@@ -14,6 +14,7 @@ from noc.core.error import (
     ERR_CLI_LOW_PRIVILEGES,
     ERR_CLI_SSH_PROTOCOL_ERROR,
     ERR_CLI_CONNECTION_REFUSED,
+    ERR_CLI_CONNECTION_RESET,
 )
 
 
@@ -45,3 +46,8 @@ class CLILowPrivileges(CLIError):
 class CLISSHProtocolError(CLIError):
     default_code = ERR_CLI_SSH_PROTOCOL_ERROR
     default_msg = "SSH Protocol error"
+
+
+class CLIConnectionReset(CLIError):
+    default_code = ERR_CLI_CONNECTION_RESET
+    default_msg = "Connection reset"

@@ -600,9 +600,9 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     @classmethod
     async def send_backspaces(cls, cli, command, error_text):
         # Send backspaces to clean up previous command
-        await cli.iostream.write(b"\x08" * len(command))
+        await cli.stream.write(b"\x08" * len(command))
         # Send command_submit to force prompt
-        await cli.iostream.write(cls.command_submit)
+        await cli.stream.write(cls.command_submit)
         # Wait until prompt
         await cli.read_until_prompt()
 
