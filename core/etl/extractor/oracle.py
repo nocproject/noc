@@ -7,7 +7,7 @@
 
 # Python modules
 import os
-import asyncio
+from threading import Condition
 
 # NOC modules
 from noc.core.threadpool import ThreadPoolExecutor
@@ -70,24 +70,42 @@ class ORACLEExtractor(SQLExtractor):
             cursor.arraysize = int(self.config["ORACLE_ARRAYSIZE"])
         return cursor
 
-    def iter_data(self):
+    def iter_data_single(self):
+        cursor = self.get_cursor()
+        # Fetch data
+        self.logger.info("Fetching data")
+        for query, params in self.get_sql():
+            cursor.execute(query, params)
+            yield from cursor
+
+    def iter_data_parallel(self, concurrency):
         def fetch_sql(query, params):
             cursor = self.get_cursor()
             cursor.execute(query, params)
-            return list(cursor)
+            out = list(cursor)
+            with cond:
+                buffer.append(out)
+                cond.notify()
 
+        cond = Condition()
+        buffer = []
+        with ThreadPoolExecutor(max_workers=concurrency) as pool:
+            left = 0
+            for query, params in self.get_sql():
+                left += 1
+                pool.submit(fetch_sql, query, params)
+            while left > 0:
+                with cond:
+                    if not buffer:
+                        cond.wait()
+                    data, buffer = buffer, []
+                for seq in data:
+                    yield from seq
+                    left -= 1
+
+    def iter_data(self):
         concurrency = int(self.config.get("ORACLE_ARRAYSIZE", 1))
         if concurrency == 1:
-            cursor = self.get_cursor()
-            # Fetch data
-            self.logger.info("Fetching data")
-            for query, params in self.get_sql():
-                cursor.execute(query, params)
-                yield from cursor
+            yield from self.iter_data_single()
         else:
-            with ThreadPoolExecutor(max_workers=concurrency) as pool:
-                futures = [
-                    pool.submit(fetch_sql, query, params) for query, params in self.get_sql()
-                ]
-                for f in asyncio.as_completed(futures):
-                    yield from f.result()
+            yield from self.iter_data_parallel(concurrency)
