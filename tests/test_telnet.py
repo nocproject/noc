@@ -5,13 +5,48 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import logging
 
 # Third-party modules
 import pytest
 from io import BytesIO
 
 # NOC modules
-from noc.core.script.cli.telnet import TelnetParser
+from noc.core.script.cli.base import BaseCLI
+from noc.core.script.cli.telnet import TelnetStream
+from noc.core.ioloop.util import IOLoopContext
+
+
+class ProfileStub(object):
+    telnet_send_on_connect = None
+
+    @classmethod
+    def get_telnet_naws(cls) -> bytes:
+        return b"\x00\x80\x00\x80"
+
+
+class CLIStub(BaseCLI):
+    def __init__(self):
+        self.tos = 0
+        self.logger = logging.getLogger("CLIStub")
+        self.profile = ProfileStub()
+
+
+class TestTelnetStream(TelnetStream):
+    def __init__(self):
+        super().__init__(CLIStub())
+        self.writer = BytesIO()
+
+    async def write(self, data: bytes, raw: bool = False):
+        if not raw:
+            data = self.escape(data)
+        self.writer.write(data)
+
+    def get_write_buffer(self) -> bytes:
+        data = self.writer.getvalue()
+        self.writer = BytesIO()
+        return data
 
 
 @pytest.mark.parametrize(
@@ -82,14 +117,12 @@ from noc.core.script.cli.telnet import TelnetParser
     ],
 )
 def test_telnet_scenario(scenario):
-    parser = TelnetParser()
+    stream = TestTelnetStream()
     for feed, expected, sent_expected in scenario:
-        writer = BytesIO()
-        parser.set_writer(writer.write)
-        data = parser.feed(feed)
+        with IOLoopContext() as loop:
+            data = loop.run_until_complete(stream.feed(feed))
         assert data == expected
-        ctl = writer.getvalue()
-        assert ctl == sent_expected
+        assert stream.get_write_buffer() == sent_expected
 
 
 @pytest.mark.parametrize(
@@ -104,9 +137,9 @@ def test_telnet_scenario(scenario):
     ],
 )
 def test_telnet_escape(data, expected):
-    assert TelnetParser.escape(data) == expected
+    assert TestTelnetStream().escape(data) == expected
 
 
 @pytest.mark.parametrize("cmd, opt, expected", [])
 def test_telnet_iac_repr(cmd, opt, expected):
-    assert TelnetParser.iac_repr(cmd, opt) == expected
+    assert TestTelnetStream().iac_repr(cmd, opt) == expected

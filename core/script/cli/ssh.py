@@ -14,35 +14,34 @@ import codecs
 
 # Third-party modules modules
 import cachetools
-from tornado.iostream import IOStream
 from ssh2.session import Session, LIBSSH2_HOSTKEY_HASH_SHA1
 from ssh2.exceptions import SSH2Error
 from ssh2.error_codes import LIBSSH2_ERROR_EAGAIN
-from typing import Optional, Union
 
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes, smart_text
-from .base import CLI
+from .cli import CLI
+from .base import BaseStream
 from .error import CLIAuthFailed, CLISSHProtocolError
 
 key_lock = threading.Lock()
 logger = logging.getLogger(__name__)
 
 
-class SSHIOStream(IOStream):
+class SSHStream(BaseStream):
+    default_port = 22
     SSH_KEY_PREFIX = config.path.ssh_key_prefix
 
     _key_cache = cachetools.TTLCache(100, ttl=60)
 
-    def __init__(self, sock, cli, *args, **kwargs):
-        super().__init__(sock, *args, **kwargs)
-        self.cli = cli
-        self.script = self.cli.script
-        self.logger = cli.logger
+    def __init__(self, cli: CLI):
+        super().__init__(cli)
+        self.script = cli.script  # @todo: Remove
         self.session = None
         self.channel = None
+        self.credentials = cli.script.credentials
 
     def __del__(self):
         self.channel = None
@@ -71,7 +70,7 @@ class SSHIOStream(IOStream):
         """
         SSH session startup
         """
-        user = self.script.credentials["user"]
+        user = self.credentials["user"]
         if user is None:
             user = ""
         self.logger.debug("Startup ssh session for user '%s'", user)
@@ -111,55 +110,55 @@ class SSHIOStream(IOStream):
             self.logger.info("SSH Error: %s", e)
             raise CLISSHProtocolError("SSH Error: %s" % e)
 
-    def read_from_fd(self, buf: Union[bytearray, memoryview]) -> Optional[int]:
-        try:
-            metrics["ssh_reads"] += 1
-            code, data = self.channel.read(len(buf))
-            if code == 0:
-                if self.channel.eof():
-                    self.logger.info("SSH session reset")
-                    self.close()
-                metrics["ssh_reads_blocked"] += 1
-                return None
-            elif code > 0:
-                n = len(data)
-                metrics["ssh_read_bytes"] += n
-                buf[:n] = data
-                return n
-            elif code == LIBSSH2_ERROR_EAGAIN:
-                metrics["ssh_reads_blocked"] += 1
-                return None  # Blocking call
-            metrics["ssh_errors", ("code", code)] += 1
-            raise CLISSHProtocolError("SSH Error code %s" % code)
-        except SSH2Error as e:
-            raise CLISSHProtocolError("SSH Error: %s" % e)
+    async def read(self, n: int) -> bytes:
+        while True:
+            try:
+                await self.wait_for_read()
+                metrics["ssh_reads"] += 1
+                code, data = self.channel.read(n)
+                if code == 0:
+                    if self.channel.eof():
+                        self.logger.info("SSH session reset")
+                        self.close()
+                        return b""
+                    metrics["ssh_reads_blocked"] += 1
+                    continue
+                elif code > 0:
+                    n = len(data)
+                    metrics["ssh_read_bytes"] += n
+                    return data
+                elif code == LIBSSH2_ERROR_EAGAIN:
+                    metrics["ssh_reads_blocked"] += 1
+                    continue
+                metrics["ssh_errors", ("code", code)] += 1
+                raise CLISSHProtocolError("SSH Error code %s" % code)
+            except SSH2Error as e:
+                raise CLISSHProtocolError("SSH Error: %s" % e)
 
-    def write_to_fd(self, data):
-        # ssh2 doesn't accept memoryview
+    async def write(self, data: bytes):
         metrics["ssh_writes"] += 1
-        if isinstance(data, memoryview):
-            data = data.tobytes()
-        try:
-            _, written = self.channel.write(data)
-            metrics["ssh_write_bytes"] += written
-            return written
-        except SSH2Error as e:
-            raise CLISSHProtocolError("SSH Error: %s" % e)
+        while data:
+            await self.wait_for_write()
+            try:
+                _, sent = self.channel.write(data)
+                metrics["ssh_write_bytes"] += sent
+                data = data[sent:]
+            except SSH2Error as e:
+                raise CLISSHProtocolError("SSH Error: %s" % e)
 
     def close(self, exc_info=False):
-        if not self.closed():
-            if self.channel:
-                self.logger.debug("Closing channel")
-                try:
-                    self.channel.close()
-                except SSH2Error as e:
-                    self.logger.debug("Cannot close channel clearly: %s", e)
-                # The causes of memory leak
-                # self.channel = None
-            if self.session:
-                self.logger.debug("Closing ssh session")
-                self.session = None
-        super().close(exc_info=exc_info)
+        if self.channel:
+            self.logger.debug("Closing channel")
+            try:
+                self.channel.close()
+            except SSH2Error as e:
+                self.logger.debug("Cannot close channel clearly: %s", e)
+            # The causes of memory leak
+            # self.channel = None
+        if self.session:
+            self.logger.debug("Closing ssh session")
+            self.session = None
+        super().close()
 
     def get_user(self) -> str:
         """
@@ -225,5 +224,6 @@ class SSHIOStream(IOStream):
 
 class SSHCLI(CLI):
     name = "ssh"
-    default_port = 22
-    iostream_class = SSHIOStream
+
+    def get_stream(self) -> BaseStream:
+        return SSHStream(self)

@@ -6,60 +6,32 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
 import re
 import asyncio
 
-# Third-party modules
-import tornado.ioloop
-import tornado.iostream
-from typing import Union
-
 # NOC modules
 from noc.config import config
-from noc.core.log import PrefixLoggerAdapter
-from .error import MMLConnectionRefused, MMLAuthFailed, MMLBadResponse, MMLError
 from noc.core.span import Span
+from noc.core.comp import smart_bytes
+from noc.core.perf import metrics
+from noc.core.ioloop.util import IOLoopContext
+from .error import MMLConnectionRefused, MMLAuthFailed, MMLBadResponse, MMLError
+from ..cli.base import BaseCLI
 
 
-class MMLBase(object):
+class MMLBase(BaseCLI):
     name = "mml"
-    iostream_class = None
-    default_port = None
     BUFFER_SIZE = config.activator.buffer_size
     MATCH_TAIL = 256
-    # Retries on immediate disconnect
-    CONNECT_RETRIES = config.activator.connect_retries
-    # Timeout after immediate disconnect
-    CONNECT_TIMEOUT = config.activator.connect_timeout
-    # compiled capabilities
-    HAS_TCP_KEEPALIVE = hasattr(socket, "SO_KEEPALIVE")
-    HAS_TCP_KEEPIDLE = hasattr(socket, "TCP_KEEPIDLE")
-    HAS_TCP_KEEPINTVL = hasattr(socket, "TCP_KEEPINTVL")
-    HAS_TCP_KEEPCNT = hasattr(socket, "TCP_KEEPCNT")
-    HAS_TCP_NODELAY = hasattr(socket, "TCP_NODELAY")
-    # Time until sending first keepalive probe
-    KEEP_IDLE = 10
-    # Keepalive packets interval
-    KEEP_INTVL = 10
-    # Terminate connection after N keepalive failures
-    KEEP_CNT = 3
+    SYNTAX_ERROR_CODE = b"+@@@NOC:SYNTAXERROR@@@+"
 
     def __init__(self, script, tos=None):
-        self.script = script
-        self.profile = script.profile
-        self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
-        self.iostream = None
-        self.ioloop = None
+        super().__init__(script, tos)
         self.command = None
         self.buffer = ""
         self.is_started = False
         self.result = None
         self.error = None
-        self.is_closed = False
-        self.close_timeout = None
-        self.current_timeout = None
-        self.tos = tos
         self.rx_mml_end = re.compile(self.script.profile.pattern_mml_end, re.MULTILINE)
         if self.script.profile.pattern_mml_continue:
             self.rx_mml_continue = re.compile(
@@ -68,90 +40,19 @@ class MMLBase(object):
         else:
             self.rx_mml_continue = None
 
-    def close(self):
-        self.script.close_current_session()
-        self.close_iostream()
-        if self.ioloop:
-            self.logger.debug("Closing IOLoop")
-            self.ioloop.close(all_fds=True)
-            self.ioloop = None
-        self.is_closed = True
-
-    def close_iostream(self):
-        if self.iostream:
-            self.iostream.close()
-
-    def deferred_close(self, session_timeout):
-        if self.is_closed or not self.iostream:
-            return
-        self.logger.debug("Setting close timeout to %ss", session_timeout)
-        # Cannot call call_later directly due to
-        # thread-safety problems
-        # See tornado issue #1773
-        tornado.ioloop.IOLoop.current().add_callback(self._set_close_timeout, session_timeout)
-
-    def _set_close_timeout(self, session_timeout):
-        """
-        Wrapper to deal with IOLoop.add_timeout thread safety problem
-        :param session_timeout:
-        :return:
-        """
-        self.close_timeout = tornado.ioloop.IOLoop.current().call_later(session_timeout, self.close)
-
-    def create_iostream(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if self.tos:
-            s.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, self.tos)
-        if self.HAS_TCP_NODELAY:
-            s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        if self.HAS_TCP_KEEPALIVE:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-            if self.HAS_TCP_KEEPIDLE:
-                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, self.KEEP_IDLE)
-            if self.HAS_TCP_KEEPINTVL:
-                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPINTVL, self.KEEP_INTVL)
-            if self.HAS_TCP_KEEPCNT:
-                s.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
-        return self.iostream_class(s, self)
-
-    def set_timeout(self, timeout: Union[int, float]):
-        if timeout:
-            self.logger.debug("Setting timeout: %ss", timeout)
-            self.current_timeout = timeout
-        else:
-            if self.current_timeout:
-                self.logger.debug("Resetting timeouts")
-            self.current_timeout = None
-
-    def set_script(self, script):
-        self.script = script
-        if self.close_timeout:
-            tornado.ioloop.IOLoop.current().remove_timeout(self.close_timeout)
-            self.close_timeout = None
-
     async def send(self, cmd):
         # @todo: Apply encoding
-        cmd = str(cmd)
+        cmd = smart_bytes(cmd)
         self.logger.debug("Send: %r", cmd)
-        await self.iostream.write(cmd)
+        await self.stream.write(cmd)
 
     async def submit(self):
-        # Create iostream and connect, when necessary
-        if not self.iostream:
-            self.iostream = self.create_iostream()
-            address = (
-                self.script.credentials.get("address"),
-                self.script.credentials.get("cli_port", self.default_port),
-            )
-            self.logger.debug("Connecting %s", address)
+        if not self.stream:
             try:
-                await self.iostream.connect(address)
-            except tornado.iostream.StreamClosedError:
-                self.logger.debug("Connection refused")
+                await self.start_stream()
+            except ConnectionRefusedError:
                 self.error = MMLConnectionRefused("Connection refused")
-                return None
-            self.logger.debug("Connected")
-            await self.iostream.startup()
+                return
         # Perform all necessary login procedures
         if not self.is_started:
             self.is_started = True
@@ -204,66 +105,40 @@ class MMLBase(object):
         :param kwargs:
         :return:
         """
-        if self.close_timeout:
-            self.logger.debug("Removing close timeout")
-            self.ioloop.remove_timeout(self.close_timeout)
-            self.close_timeout = None
-        self.buffer = ""
+        self.buffer = b""
         self.command = self.profile.get_mml_command(cmd, **kwargs)
         self.error = None
-        if not self.ioloop:
+        if not self.loop_context:
             self.logger.debug("Creating IOLoop")
-            self.ioloop = tornado.ioloop.IOLoop()
+            self.loop_context = IOLoopContext()
+            self.loop_context.get_context()
         with Span(
             server=self.script.credentials.get("address"), service=self.name, in_label=self.command
         ) as s:
-            self.ioloop.run_sync(self.submit)
+            self.loop_context.get_loop().run_until_complete(self.submit())
             if self.error:
                 if s:
                     s.error_text = str(self.error)
                 raise self.error
-            else:
-                return self.result
+            return self.result
 
     async def read_until_end(self):
-        connect_retries = self.CONNECT_RETRIES
         while True:
             try:
-                f = self.iostream.read_bytes(self.BUFFER_SIZE, partial=True)
-                if self.current_timeout:
-                    r = await asyncio.wait_for(f, self.current_timeout)
-                else:
-                    r = await f
-            except tornado.iostream.StreamClosedError:
-                # Check if remote end closes connection just
-                # after connection established
-                if not self.is_started and connect_retries:
-                    self.logger.info(
-                        "Connection reset. %d retries left. Waiting %d seconds",
-                        connect_retries,
-                        self.CONNECT_TIMEOUT,
-                    )
-                    while connect_retries:
-                        await asyncio.sleep(self.CONNECT_TIMEOUT)
-                        connect_retries -= 1
-                        self.iostream = self.create_iostream()
-                        address = (
-                            self.script.credentials.get("address"),
-                            self.script.credentials.get("cli_port", self.default_port),
-                        )
-                        self.logger.debug("Connecting %s", address)
-                        try:
-                            await self.iostream.connect(address)
-                            break
-                        except tornado.iostream.StreamClosedError:
-                            if not connect_retries:
-                                raise tornado.iostream.StreamClosedError()
-                    continue
-                else:
-                    raise tornado.iostream.StreamClosedError()
+                metrics["mml_reads", ("proto", self.name)] += 1
+                r = await self.stream.read(self.BUFFER_SIZE)
+                if r == self.SYNTAX_ERROR_CODE:
+                    metrics["mml_syntax_errors", ("proto", self.name)] += 1
+                    return self.SYNTAX_ERROR_CODE
+                metrics["mml_read_bytes", ("proto", self.name)] += len(r)
+                if self.script.to_track:
+                    self.script.push_cli_tracking(r, self.state)
             except asyncio.TimeoutError:
                 self.logger.info("Timeout error")
-                raise asyncio.TimeoutError("Timeout")
+                metrics["mml_timeouts", ("proto", self.name)] += 1
+                # Stream must be closed to prevent hanging read callbacks
+                self.close_stream()
+                raise asyncio.TimeoutError("Timeout")  # @todo: Uncaught
             self.logger.debug("Received: %r", r)
             self.buffer += r
             offset = max(0, len(self.buffer) - self.MATCH_TAIL)

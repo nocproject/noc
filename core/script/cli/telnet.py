@@ -10,13 +10,12 @@ import logging
 import codecs
 
 # Third-party modules
-from tornado.iostream import IOStream
-from typing import List, Optional, Union
-from tornado.concurrent import Future
+from typing import List, Optional
 
 # NOC modules
 from noc.core.perf import metrics
-from .base import CLI
+from .cli import CLI
+from .stream import BaseStream
 
 _logger = logging.getLogger(__name__)
 
@@ -103,23 +102,43 @@ ACCEPTED_TELNET_OPTIONS = {0x01, 0x03, 0x18, 0x1F}
 OPTS = {B_OPT_TTYPE_IS: "TTYPE IS", B_OPT_WS: "WS"}
 
 
-def bytes_seq(*args: int) -> bytes:
-    return bytes(args)
+class TelnetStream(BaseStream):
+    default_port = 23
 
-
-class TelnetParser(object):
-    """
-    Telnet protocol state and commands processing
-    """
-
-    def __init__(self, logger=None, writer=None, naws=b"\x00\x80\x00\x80"):
-        self.logger = logger or _logger
-        self.writer = writer
+    def __init__(self, cli: CLI):
+        super().__init__(cli)
+        self.send_on_connect = cli.profile.telnet_send_on_connect
+        self.naws = cli.profile.get_telnet_naws()
         self.iac_seq: bytes = b""
         self.out_iac_seq: List[bytes] = []
-        self.naws = naws
 
-    def feed(self, chunk: bytes) -> bytes:
+    async def startup(self):
+        if self.send_on_connect:
+            self.logger.debug("Sending %r on connect", self.send_on_connect)
+            await self.write(self.send_on_connect)
+
+    async def read(self, n: int):
+        metrics["telnet_reads"] += 1
+        while True:
+            data = await super().read(n)
+            if not data:
+                return data  # Return EOF
+            data = await self.feed(data)
+            if data:
+                return data
+
+    async def write(self, data: bytes, raw: bool = False):
+        if not raw:
+            data = self.escape(data)
+        metrics["telnet_writes"] += 1
+        metrics["telnet_write_bytes"] += len(data)
+        await super().write(data)
+
+    @staticmethod
+    def escape(data: bytes) -> bytes:
+        return data.replace(B_IAC, B_IAC2)
+
+    async def feed(self, chunk: bytes) -> bytes:
         """
         Feed chunk of data to parser
 
@@ -169,7 +188,7 @@ class TelnetParser(object):
                 break
         if self.out_iac_seq:
             out_seq = b"".join(self.out_iac_seq)
-            self.writer(out_seq)
+            await self.write(out_seq, raw=True)
             self.out_iac_seq = []
         return b"".join(r)
 
@@ -178,7 +197,7 @@ class TelnetParser(object):
         Send IAC response
         """
         self.logger.debug("Send %s", self.iac_repr(cmd, opt))
-        self.out_iac_seq += [bytes_seq(IAC, cmd, opt)]
+        self.out_iac_seq += [bytes((IAC, cmd, opt))]
 
     def send_iac_sb(self, opt: bytes, data: Optional[bytes] = None) -> None:
         sb: List[bytes] = [B_IAC_SB, opt]
@@ -228,58 +247,9 @@ class TelnetParser(object):
         """
         return "%s %s" % (IAC_CMD.get(cmd, cmd), TELNET_OPTIONS.get(opt, opt))
 
-    @staticmethod
-    def escape(data: bytes) -> bytes:
-        return data.replace(B_IAC, B_IAC2)
-
-    def set_writer(self, writer):
-        """
-        Replace current writer.
-
-        :param writer: Callable accepting bytes
-        :return:
-        """
-        self.writer = writer
-
-
-class TelnetIOStream(IOStream):
-    def __init__(self, sock, cli, *args, **kwargs):
-        super().__init__(sock, *args, **kwargs)
-        self.cli = cli
-        self.logger = cli.logger
-        self.parser = TelnetParser(
-            logger=self.logger, writer=self.write_to_fd, naws=cli.profile.get_telnet_naws()
-        )
-
-    async def startup(self):
-        if self.cli.profile.telnet_send_on_connect:
-            self.logger.debug("Sending %r on connect", self.cli.profile.telnet_send_on_connect)
-            await self.write(self.cli.profile.telnet_send_on_connect)
-
-    def read_from_fd(self, buf: Union[bytearray, memoryview]) -> Optional[int]:
-        metrics["telnet_reads"] += 1
-        n = super().read_from_fd(buf)
-        if n == 0:
-            return 0  # EOF
-        if n is None:
-            metrics["telnet_reads_blocked"] += 1
-            return None  # EAGAIN
-        metrics["telnet_read_bytes"] += n
-        parsed = self.parser.feed(buf[:n])
-        pn = len(parsed)
-        if not pn:
-            return None  # Incomplete data, blocked until next read
-        buf[:pn] = parsed
-        return pn
-
-    def write(self, data: Union[bytes, memoryview]) -> "Future[None]":
-        data = self.parser.escape(data)
-        metrics["telnet_writes"] += 1
-        metrics["telnet_write_bytes"] += len(data)
-        return super().write(data)
-
 
 class TelnetCLI(CLI):
     name = "telnet"
-    default_port = 23
-    iostream_class = TelnetIOStream
+
+    def get_stream(self) -> BaseStream:
+        return TelnetStream(self)

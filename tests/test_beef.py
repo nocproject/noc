@@ -17,6 +17,7 @@ import ujson
 # NOC modules
 from noc.config import config
 from noc.core.script.loader import loader
+from noc.core.ioloop.util import setup_asyncio
 
 rx_tc = re.compile(r"^.+/\d\d\d\d\.\S+\.json\.bz2")
 
@@ -29,6 +30,7 @@ class ServiceStub(object):
 
     def __init__(self, pool):
         self.config = self.ServiceConfig(pool=pool)
+        setup_asyncio()
 
 
 def get_beef_tests():

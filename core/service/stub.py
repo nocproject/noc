@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service stub for scripts and commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ import logging
 import threading
 from collections import defaultdict
 import asyncio
+from typing import Optional
 
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
@@ -26,6 +27,7 @@ class ServiceStub(object):
         self.is_ready = threading.Event()
         self.config = None
         self._metrics = defaultdict(list)
+        self.loop: Optional[asyncio.BaseEventLoop] = None
 
     def start(self):
         t = threading.Thread(target=self._start)
@@ -42,6 +44,9 @@ class ServiceStub(object):
         self.logger.warning("Starting IOLoop")
         self.loop.call_soon(self.is_ready.set)
         self.loop.run_forever()
+
+    def get_event_loop(self) -> asyncio.BaseEventLoop:
+        return self.loop
 
     def open_rpc(self, name, pool=None, sync=False, hints=None):
         """

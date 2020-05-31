@@ -293,7 +293,7 @@ class ListOfParameter(ListParameter):
 
     def __init__(self, element, required=True, default=None, convert=False):
         self.element = element
-        self.is_list = type(element) in (list, tuple)
+        self.is_list = isinstance(element, (list, tuple))
         self.convert = convert
         super().__init__(required=required, default=default)
 
