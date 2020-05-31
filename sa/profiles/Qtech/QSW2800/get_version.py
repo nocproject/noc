@@ -12,6 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.mib import mib
+from noc.core.text import parse_kv
 
 
 class Script(BaseScript):
@@ -134,20 +135,42 @@ class Script(BaseScript):
         if not match or "platform" not in match or match["platform"] == "Switch":
             oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
             r["platform"] = self.fix_platform(oid)
-        if "version" not in r:
+        if "version" not in r and sys_descr:
             r["version"] = self.rx_version.search(sys_descr).group("version")
-        if "bootprom" in match:
+        if match and "bootprom" in match:
             r["attributes"]["Boot PROM"] = match["bootprom"]
         hw_ver, serial = self.fix_hw_serial()
-        if "hardware" in match:
+        if match and "hardware" in match:
             r["attributes"]["HW version"] = match["hardware"]
         elif hw_ver:
             r["attributes"]["HW version"] = hw_ver
-        if "serial" in match:
+        if match and "serial" in match:
             r["attributes"]["Serial Number"] = match["serial"]
         elif serial:
             r["attributes"]["Serial Number"] = serial
+        if "version" not in r:
+            raise NotImplementedError
         return r
+
+    info_map = {
+        "firmware version": "fw_ver",
+        "firmware date": "fw_date",
+        "system object id": "sysid",
+    }
+
+    def get_info(self):
+        # For QSW-3470-10T  3.0.1-R1-BETA3 fw
+        try:
+            v = self.cli("show info")
+        except self.CLISyntaxError:
+            return {}
+        r = parse_kv(self.info_map, v, ":")
+        platform = self.fix_platform(r["sysid"])
+        return {
+            "vendor": "Qtech",
+            "platform": platform,
+            "version": "%s (%s)" % (r["fw_ver"], r["fw_date"]),
+        }
 
     def execute_cli(self, **kwargs):
         ver = self.cli("show version", cached=True)
@@ -178,4 +201,8 @@ class Script(BaseScript):
                 },
             }
         else:
+            # For QSW-3470-10T  3.0.1-R1-BETA3 fw
+            r = self.get_info()
+            if r:
+                return r
             raise NotImplementedError("Unknown platform")
