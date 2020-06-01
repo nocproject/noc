@@ -108,14 +108,11 @@ class MMLBase(BaseCLI):
         self.buffer = b""
         self.command = self.profile.get_mml_command(cmd, **kwargs)
         self.error = None
-        if not self.loop_context:
-            self.logger.debug("Creating IOLoop")
-            self.loop_context = IOLoopContext()
-            self.loop_context.get_context()
         with Span(
             server=self.script.credentials.get("address"), service=self.name, in_label=self.command
         ) as s:
-            self.loop_context.get_loop().run_until_complete(self.submit())
+            with IOLoopContext() as loop:
+                loop.run_until_complete(self.submit())
             if self.error:
                 if s:
                     s.error_text = str(self.error)
