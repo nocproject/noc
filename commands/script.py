@@ -159,12 +159,14 @@ class Command(BaseCommand):
         """
         Resolve object by name or by id
         """
+        if object_name.endswith(".json") and os.path.isfile(object_name):
+            return JSONObject(object_name)
+
         from noc.sa.models.managedobject import ManagedObject
         from django.db.models import Q
 
         connect()
-        if object_name.endswith(".json") and os.path.isfile(object_name):
-            return JSONObject(object_name)
+
         q = Q(name=object_name)
         if is_int(object_name):
             q = Q(id=int(object_name)) | q
