@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
+from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 from noc.core.confdb.syntax.defs import DEF
 from noc.core.confdb.syntax.patterns import IF_NAME, BOOL
 
@@ -39,6 +39,7 @@ class VRPNormalizer(BaseNormalizer):
         )
     ]
 
+    #  Systems
     @match("sysname", ANY)
     def normalize_hostname(self, tokens):
         yield self.make_hostname(tokens[1])
@@ -99,11 +100,16 @@ class VRPNormalizer(BaseNormalizer):
     def normalize_vlan_description(self, tokens):
         yield self.make_vlan_description(vlan_id=tokens[1], description=" ".join(tokens[3:]))
 
+    # Interfaces
     @match("interface", ANY)
     def normalize_interface(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        unit_name = if_name
         if "." not in tokens[1]:
-            if_name = self.interface_name(tokens[1])
             yield self.make_interface(interface=if_name)
+        elif "." in if_name:
+            if_name, _ = if_name.split(".", 1)
+        yield self.make_unit_description(interface=if_name, unit=unit_name, description="")
 
     @match("interface", ANY, "mpls")
     def normalize_interface_mpls(self, tokens):
@@ -120,19 +126,16 @@ class VRPNormalizer(BaseNormalizer):
     @match("interface", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
         if_name = self.interface_name(tokens[1])
-        # if "." in tokens[1]:
-        yield self.defer(
-            "fi.iface.%s" % if_name,
-            self.make_unit_description,
-            instance=deferable("instance"),
-            interface=if_name,
-            unit=if_name,
-            description=" ".join(tokens[3:]),
+        unit_name = if_name
+        if "." not in tokens[1]:
+            yield self.make_interface_description(
+                interface=self.interface_name(tokens[1]), description=" ".join(tokens[2:])
+            )
+        elif "." in if_name:
+            if_name, _ = if_name.split(".", 1)
+        yield self.make_unit_description(
+            interface=if_name, unit=unit_name, description=" ".join(tokens[3:]),
         )
-        # else:
-        #    yield self.make_interface_description(
-        #        interface=self.interface_name(tokens[1]), description=" ".join(tokens[2:])
-        #    )
 
     @match("interface", ANY, "port-security", "max-mac-num", ANY)
     def normalize_port_security(self, tokens):
@@ -164,30 +167,12 @@ class VRPNormalizer(BaseNormalizer):
             interface=self.interface_name(tokens[1]), cost=tokens[4]
         )
 
-    @match("interface", ANY, "port", "hybrid", "pvid", "vlan", ANY)
-    def normalize_switchport_untagged(self, tokens):
-        if_name = self.interface_name(tokens[1])
-        yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=tokens[6])
+    # Protocols
 
-    @match("interface", ANY, "port", "trunk", "allow-pass", "vlan", REST)
-    def normalize_switchport_tagged(self, tokens):
-        if_name = self.interface_name(tokens[1])
-        yield self.make_switchport_tagged(
-            interface=if_name,
-            unit=if_name,
-            vlan_filter=" ".join(tokens[6:]).replace(" to ", "-").replace(" ", ","),
-        )
-
-    @match("interface", ANY, "undo", "negotiation", "auto")
-    def normalize_interface_negotiation(self, tokens):
-        yield self.make_interface_ethernet_autonegotiation(
-            interface=self.interface_name(tokens[1]), mode="manual"
-        )
-
-    @match("interface", ANY, "bpdu", "enable")
+    @match("interface", ANY, "bpdu", ANY)
     def normalize_interface_bpdu(self, tokens):
         yield self.make_interface_ethernet_bpdu(
-            interface=self.interface_name(tokens[1]), enabled=True
+            interface=self.interface_name(tokens[1]), enabled=tokens[3] == "enable"
         )
 
     @match("interface", ANY, "loopback-detect", "enable")
@@ -201,14 +186,14 @@ class VRPNormalizer(BaseNormalizer):
         self.set_context("lldp_disabled", False)
         yield self.make_global_lldp_status(status=True)
 
+    @match("interface", ANY, "undo", "lldp", "enable")
+    def normalize_interface_lldp_enable(self, tokens):
+        yield self.make_lldp_interface_disable(interface=self.interface_name(tokens[1]))
+
     @match("enable", "stp")
     def normalize_enable_stp(self, tokens):
         self.set_context("stp_disabled", False)
         yield self.make_global_stp_status(status=True)
-
-    @match("interface", ANY, "undo", "lldp", "enable")
-    def normalize_interface_lldp_enable(self, tokens):
-        yield self.make_lldp_interface_disable(interface=self.interface_name(tokens[1]))
 
     @match("interface", ANY, "stp", "disable")
     def normalize_interface_stp_status(self, tokens):
@@ -220,27 +205,70 @@ class VRPNormalizer(BaseNormalizer):
             interface=self.interface_name(tokens[1]), enabled=True
         )
 
-    @match("interface", ANY, "ip", "address", ANY, ANY)
-    def normalize_vlan_ip(self, tokens):
-        if_name = self.interface_name(tokens[1])
-        yield self.defer(
-            "fi.iface.%s" % if_name,
-            self.make_unit_inet_address,
-            instance=deferable("instance"),
-            interface=if_name,
-            unit=if_name,
-            address=self.to_prefix(tokens[4], tokens[5]),
+    @match("interface", ANY, "undo", "negotiation", "auto")
+    def normalize_interface_negotiation(self, tokens):
+        yield self.make_interface_ethernet_autonegotiation(
+            interface=self.interface_name(tokens[1]), mode="manual"
         )
 
-    @match("interface", ANY, "l2", "binding", "vsi", ANY)
-    def normalize_interface_vsi_binding(self, tokens):
-        # yield self.defer("fi.iface.%s" % self.interface_name(tokens[5]), instance=tokens[1])
-        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
+    # Unit
+    @match("interface", ANY, "port", "hybrid", "pvid", "vlan", ANY)
+    def normalize_switchport_untagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=tokens[6])
 
-    @match("interface", ANY, "ip", "binding", "vpn-instance", ANY)
-    def normalize_interface_vpn_instance_binding(self, tokens):
-        # yield self.defer("fi.iface.%s" % self.interface_name(tokens[5]), instance=tokens[1])
-        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
+    @match("interface", ANY, "port", "default", "vlan", ANY)
+    def normalize_switchport_default_vlan(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=tokens[5])
+
+    # @match("interface", ANY, "port", "hybrid", "untagged", "vlan", REST)
+    # def normalize_switchport_hybrid_untagged(self, tokens):
+    #     if_name = self.interface_name(tokens[1])
+    #     yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=tokens[6])
+
+    @match("interface", ANY, "port", "hybrid", "tagged", "vlan", REST)
+    @match("interface", ANY, "port", "trunk", "allow-pass", "vlan", REST)
+    def normalize_switchport_tagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        yield self.make_switchport_tagged(
+            interface=if_name,
+            unit=if_name,
+            vlan_filter=" ".join(tokens[6:]).replace(" to ", "-").replace(" ", ","),
+        )
+
+    # Interfaces
+    @match("interface", "vlan", ANY)
+    def normalize_interface_vlan(self, tokens):
+        if_name = self.interface_name("Vlanif%s " % tokens[2])
+        yield self.make_unit_description(interface=if_name, unit=if_name, description="")
+
+    @match("interface", "vlan", ANY, "ip", "address", ANY, ANY, "sub")
+    @match("interface", "vlan", ANY, "ip", "address", ANY, ANY)
+    def normalize_vlan_ip(self, tokens):
+        if_name = self.interface_name("Vlanif%s " % tokens[2])
+        yield self.make_unit_inet_address(
+            interface=if_name, unit=if_name, address=self.to_prefix(tokens[5], tokens[6])
+        )
+
+    @match("interface", ANY, "ip", "address", ANY, ANY, "sub")
+    @match("interface", ANY, "ip", "address", ANY, ANY)
+    def normalize_interface_ip(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        unit_name = if_name
+        if "." in if_name:
+            if_name, _ = if_name.split(".", 1)
+        yield self.make_unit_inet_address(
+            interface=if_name, unit=unit_name, address=self.to_prefix(tokens[4], tokens[5])
+        )
+        # yield self.defer(
+        #     "fi.iface.%s" % if_name,
+        #     self.make_unit_inet_address,
+        #     instance=deferable("instance"),
+        #     interface=if_name,
+        #     unit=if_name,
+        #     address=self.to_prefix(tokens[4], tokens[5]),
+        # )
 
     @match("ip", "route-static", ANY, ANY, ANY)
     def normalize_default_gateway(self, tokens):
@@ -278,6 +306,90 @@ class VRPNormalizer(BaseNormalizer):
             for token in tokens[4:-1]:
                 yield self.make_forwarding_instance_export_target(instance=tokens[2], target=token)
 
+    @match("interface", ANY, "ip", "binding", "vpn-instance", ANY)
+    def normalize_interface_vpn_instance_binding(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        unit_name = if_name
+        if "." in if_name:
+            if_name, _ = if_name.split(".", 1)
+        yield self.rebase(
+            (
+                "virtual-router",
+                "default",
+                "forwarding-instance",
+                "default",
+                "interfaces",
+                if_name,
+                "unit",
+                unit_name,
+            ),
+            (
+                "virtual-router",
+                "default",
+                "forwarding-instance",
+                tokens[5],
+                "interfaces",
+                if_name,
+                "unit",
+                unit_name,
+            ),
+        )
+
+    @match("interface", ANY, "mpls", "l2vc", ANY, ANY)
+    def normalize_interface_l2vc(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        unit_name = if_name
+        if "." in if_name:
+            if_name, _ = if_name.split(".", 1)
+        yield self.make_forwarding_instance_type(instance=tokens[5], type="vll")
+        yield self.make_forwarding_instance_vpn_id(instance=tokens[5], vpn_id=tokens[5])
+        if if_name.startswith("Vl"):
+            yield self.rebase(
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    "default",
+                    "interfaces",
+                    if_name,
+                ),
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    tokens[5],
+                    "interfaces",
+                    if_name,
+                ),
+            )
+        else:
+            yield self.rebase(
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    "default",
+                    "interfaces",
+                    if_name,
+                    "unit",
+                    unit_name,
+                ),
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    tokens[5],
+                    "interfaces",
+                    if_name,
+                    "unit",
+                    unit_name,
+                ),
+            )
+        #     # yield self.make_mpls_lsp_to_address(
+        #     #     instance=tokens[5], address=self.to_prefix(tokens[4], None)
+        #     # )
+        #     yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
+
     @match("vsi", ANY)
     @match("vsi", ANY, ANY)
     def normalize_vsi_instance(self, tokens):
@@ -291,14 +403,54 @@ class VRPNormalizer(BaseNormalizer):
     def normalize_vsi_ldp_lsp_address(self, tokens):
         yield self.make_mpls_lsp_to_address(instance=tokens[1], address=tokens[6])
 
-    @match("interface", ANY, "mpls", "l2vc", ANY, ANY)
-    def normalize_interface_l2vc(self, tokens):
-        yield self.make_forwarding_instance_type(instance=tokens[5], type="vll")
-        yield self.make_forwarding_instance_vpn_id(instance=tokens[5], vpn_id=tokens[5])
-        # yield self.make_mpls_lsp_to_address(
-        #     instance=tokens[5], address=self.to_prefix(tokens[4], None)
-        # )
-        yield self.defer("fi.iface.%s" % self.interface_name(tokens[1]), instance=tokens[5])
+    @match("interface", ANY, "l2", "binding", "vsi", ANY)
+    def normalize_interface_vsi_binding(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        unit_name = if_name
+        if "." in if_name:
+            if_name, _ = if_name.split(".", 1)
+        if if_name.startswith("Vl"):
+            yield self.rebase(
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    "default",
+                    "interfaces",
+                    if_name,
+                ),
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    tokens[5],
+                    "interfaces",
+                    if_name,
+                ),
+            )
+        else:
+            yield self.rebase(
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    "default",
+                    "interfaces",
+                    if_name,
+                    "unit",
+                    unit_name,
+                ),
+                (
+                    "virtual-router",
+                    "default",
+                    "forwarding-instance",
+                    tokens[5],
+                    "interfaces",
+                    if_name,
+                    "unit",
+                    unit_name,
+                ),
+            )
 
     @match("interface", ANY, "vrrp", "vrid", ANY, "virtual-ip", ANY)
     def normalize_vrrp_group(self, tokens):
