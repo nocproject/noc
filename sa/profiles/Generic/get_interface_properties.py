@@ -19,6 +19,9 @@ from noc.core.mac import MAC
 class Script(BaseScript):
     name = "Generic.get_interface_properties"
     interface = IGetInterfaceProperties
+    cache = True
+    requires = []
+
     MAX_REPETITIONS = 40
     MAX_GETNEXT_RETIRES = 0
 
@@ -44,11 +47,7 @@ class Script(BaseScript):
     ):
         iter_tables = []
         ifindex = None
-        if interface:
-            ifindex = self.get_interface_ifindex(interface)
-            iter_tables += [self.iter_interface_ifindex(interface, ifindex)]
-        else:
-            iter_tables += [self.iter_iftable("name", mib[self.SNMP_NAME_TABLE])]
+        iter_tables += [self.iter_interface_ifindex(interface)]
         if enable_interface_mac:
             iter_tables += [self.iter_iftable("mac", mib[self.SNMP_MAC_TABLE], ifindex=ifindex)]
         if enable_admin_status:
@@ -176,8 +175,11 @@ class Script(BaseScript):
                 return int(r_oid.rsplit(".", 1)[1])
         raise KeyError
 
-    def iter_interface_ifindex(self, name, ifindex):
-        yield "name", ifindex, self.profile.convert_interface_name(name)
+    def iter_interface_ifindex(self, name: str):
+        for key, ifindex, v in self.iter_iftable("name", mib[self.SNMP_NAME_TABLE]):
+            if name and self.profile.convert_interface_name(v) != name:
+                continue
+            yield "name", ifindex, v
 
     def is_ignored_mac(self, mac: MAC) -> bool:
         """
