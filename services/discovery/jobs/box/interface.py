@@ -475,10 +475,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         for i in r:
             if i["interface"] not in missed_properties:
                 continue
-            if resolve_mac:
-                updates[i["interface"]]["ifindex"] = i["ifindex"]
             if resolve_ifindex:
+                updates[i["interface"]]["ifindex"] = i["ifindex"]
+            if resolve_mac:
                 updates[i["interface"]]["mac"] = i["mac"]
+                self.interface_macs.add(i["mac"])
         if not updates:
             return
         for n, i in updates.items():
