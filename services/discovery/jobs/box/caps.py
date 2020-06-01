@@ -20,9 +20,10 @@ class CapsCheck(PolicyDiscoveryCheck):
     name = "caps"
     required_script = "get_capabilities"
 
-    LLDP_QUERY = "Match('system', 'protocols', 'lldp', 'interface')"
-    CDP_QUERY = "Match('system', 'protocols', 'cdp', 'interface')"
-    UDLD_QUERY = "Match('system', 'protocols', 'udld', 'interface')"
+    LLDP_QUERY = "Match('protocols', 'lldp', 'interface', X)"
+    CDP_QUERY = "Match('protocols', 'cdp', 'interface', X)"
+    UDLD_QUERY = "Match('protocols', 'udld', 'interface', X)"
+    STP_QUERY = "Match('protocols', 'stp', 'interface', X)"
 
     def handler(self):
         self.sections = self.object.object_profile.caps_profile.get_sections(
@@ -43,13 +44,27 @@ class CapsCheck(PolicyDiscoveryCheck):
         return self.object.scripts.get_capabilities(only=self.sections)
 
     def get_data_from_confdb(self):
+        self.logger.debug("Filling capabilities from ConfDB")
         caps = {}
         if self.is_requested("lldp") and self.confdb_has_lldp():
             caps["Network | LLDP"] = True
         if self.is_requested("cdp") and self.confdb_has_cdp():
             caps["Network | CDP"] = True
+        if self.is_requested("stp") and self.confdb_has_stp():
+            caps["Network | STP"] = True
         if self.is_requested("udld") and self.confdb_has_udld():
             caps["Network | UDLD"] = True
+        if self.object.get_caps_discovery_policy() in {"C", "S"} and set(
+            self.sections
+        ).intersection({"snmp", "snmp_v1", "snmp_v2c"}):
+            # Filling SNMP caps.
+            self.logger.debug("Filling SNMP capabilities from script")
+            r = self.object.scripts.get_capabilities(
+                only=list(set(self.sections).intersection({"snmp", "snmp_v1", "snmp_v2c"}))
+            )
+            if r is not None:
+                self.logger.error("Failed to get SNMP capabilities")
+                caps.update(r)
         return caps
 
     def is_requested(self, section):
@@ -67,6 +82,9 @@ class CapsCheck(PolicyDiscoveryCheck):
 
     def confdb_has_cdp(self):
         return any(self.confdb.query(self.CDP_QUERY))
+
+    def confdb_has_stp(self):
+        return any(self.confdb.query(self.STP_QUERY))
 
     def confdb_has_udld(self):
         return any(self.confdb.query(self.UDLD_QUERY))
