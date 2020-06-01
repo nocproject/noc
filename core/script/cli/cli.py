@@ -80,10 +80,6 @@ class CLI(BaseCLI):
         self.error = None
         self.ignore_errors = ignore_errors
         self.allow_empty_response = allow_empty_response
-        if not self.loop_context:
-            self.logger.debug("Creating IOLoop")
-            self.loop_context = IOLoopContext()
-            self.loop_context.get_context()
         if obj_parser:
             parser = functools.partial(
                 self.parse_object_stream, obj_parser, smart_bytes(cmd_next), smart_bytes(cmd_stop)
@@ -93,7 +89,8 @@ class CLI(BaseCLI):
         with Span(
             server=self.script.credentials.get("address"), service=self.name, in_label=cmd
         ) as s:
-            self.loop_context.get_loop().run_until_complete(self.submit(parser))
+            with IOLoopContext() as loop:
+                loop.run_until_complete(self.submit(parser))
             if self.error:
                 if s:
                     s.error_text = str(self.error)
