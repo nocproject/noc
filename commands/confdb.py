@@ -43,6 +43,12 @@ class Command(BaseCommand):
         query_parser.add_argument("--profile", help="Profile Name")
         query_parser.add_argument("--config", help="Config Path")
         query_parser.add_argument("query", help="Query request")
+        # query command
+        dump_parser = subparsers.add_parser("dump")
+        dump_parser.add_argument(
+            "--show-hints", action="store_true", help="Disable cleanup hints section"
+        )
+        dump_parser.add_argument("--object", type=smart_text, help="Managed Object ID")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -197,6 +203,17 @@ class Command(BaseCommand):
             self.print("Result:\n", format_table(width, [headers] + table))
         else:
             self.print("Result:")
+
+    def handle_dump(self, object=None, show_hints=False, *args, **kwargs):
+        if object:
+            connect()
+            from noc.sa.models.managedobject import ManagedObject
+
+            mo = ManagedObject.objects.get(name=object)
+            if not mo:
+                self.die("Managed Object not found")
+        confdb = mo.get_confdb(cleanup=not show_hints)
+        self.print(confdb.dump())
 
 
 if __name__ == "__main__":
