@@ -24,12 +24,14 @@ class Script(BaseScript):
         re.DOTALL | re.IGNORECASE,
     )
 
-    def execute_cli(self):
-        # Does not work for Cisco CRS-16/S Version IOSXR 4.3.2. Impossible get chassis mac over CLI
-        # must be use SNMP method
-        if self.is_platform_crs16 and self.has_snmp():
-            return self.execute_snmp()
+    def execute(self, **kwargs):
+        if self.is_platform_crs16:
+            # Does not work for Cisco CRS-16/S Version IOSXR 4.3.2. Impossible get chassis mac over CLI
+            # must be use SNMP method
+            self.always_prefer = "S"
+        return super().execute(**kwargs)
 
+    def execute_cli(self, **kwargs):
         v = self.cli("admin show diag chassis eeprom-info")
         macs = []
         for f, t in [
