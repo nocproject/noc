@@ -85,10 +85,13 @@ class Script(BaseScript):
         return r
     """
 
+    def execute(self, **kwargs):
+        if self.is_3124:
+            # Model 3124/3124F, 3324(F)/3348(F) high CPU utilization if use CLI
+            self.always_prefer = "S"
+        return super().execute(**kwargs)
+
     def execute_cli(self, interface=None, vlan=None, mac=None):
-        # Model 3124/3124F high CPU utilization if use CLI
-        if self.is_3124 and self.has_snmp():
-            return self.execute_snmp()
         r = []
         # Fallback to CLI
         cmd = "show mac address-table"
