@@ -21,9 +21,9 @@ def hsv_to_rgb(h, s, v):
     h = float(h)
     hi = math.floor(h / 60.0) % 6
     f = (h / 60.0) - math.floor(h / 60.0)
-    p = v * (1.0 - s)
-    q = v * (1.0 - (f * s))
-    t = v * (1.0 - ((1.0 - f) * s))
+    p = int(v * (1.0 - s))
+    q = int(v * (1.0 - (f * s)))
+    t = int(v * (1.0 - ((1.0 - f) * s)))
     return {0: (v, t, p), 1: (q, v, p), 2: (p, v, t), 3: (p, q, v), 4: (t, p, v), 5: (v, p, q)}[hi]
 
 
@@ -49,7 +49,7 @@ def get_colors(N):
         if not hs:
             # Rebuild colors
             hs = [i * d for i in range(p)]
-        H = hs.pop(len(hs) / 2 if N % 2 else 0)
+        H = hs.pop(len(hs) // 2 if N % 2 else 0)
         # Yield current color
         yield "#%02x%02x%02x" % (hsv_to_rgb(H, S, V))
         N = N - 1
@@ -72,7 +72,7 @@ def get_float_pallete(n):
         if not hs:
             # Rebuild colors
             hs = [i * d for i in range(p)]
-        h = hs.pop(len(hs) / 2 if n % 2 else 0)
+        h = hs.pop(len(hs) // 2 if n % 2 else 0)
         # Yield current color
         yield [float(x) / 256.0 for x in hsv_to_rgb(h, s, v)]
         n = n - 1
