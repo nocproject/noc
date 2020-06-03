@@ -19,7 +19,7 @@ from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
 from noc.core.comp import smart_text, smart_bytes
-from noc.core.deprecations import RemovedInNOC2002Warning
+from noc.core.deprecations import RemovedInNOC2003Warning
 
 
 class BaseProfileMetaclass(type):
@@ -43,14 +43,14 @@ class BaseProfileMetaclass(type):
         #
         if n.command_more:
             warnings.warn(
-                "%s: 'command_more' is deprecated and will be removed in NOC 20.2" % n.name,
-                RemovedInNOC2002Warning,
+                "%s: 'command_more' is deprecated and will be removed in NOC 20.3" % n.name,
+                RemovedInNOC2003Warning,
             )
         if isinstance(n.pattern_more, str):
             warnings.warn(
                 "%s: 'command_more' must be a list of (pattern, command). "
-                "Support for textual 'command_more' will be removed in NOC 20.2" % n.name,
-                RemovedInNOC2002Warning,
+                "Support for textual 'command_more' will be removed in NOC 20.3" % n.name,
+                RemovedInNOC2003Warning,
             )
             n.pattern_more = [(n.pattern_more, n.command_more)]
             n.command_more = None
@@ -59,9 +59,9 @@ class BaseProfileMetaclass(type):
             v = getattr(n, attr, None)
             if v is not None and isinstance(v, str):
                 warnings.warn(
-                    "%s: '%s' must be of binary type. Support for text values will be removed in NOC 20.2"
+                    "%s: '%s' must be of binary type. Support for text values will be removed in NOC 20.3"
                     % (n.name, attr),
-                    RemovedInNOC2002Warning,
+                    RemovedInNOC2003Warning,
                 )
                 setattr(n, attr, smart_bytes(v))
         # Fix command_more
