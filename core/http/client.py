@@ -291,7 +291,7 @@ async def fetch(
             try:
                 data = await asyncio.wait_for(reader.read(max_buffer_size), request_timeout)
                 is_eof = not data
-            except asyncio.IncompleteReadError:
+            except (asyncio.IncompleteReadError, ConnectionResetError):
                 is_eof = True
             except asyncio.TimeoutError:
                 metrics["httpclient_timeouts"] += 1
