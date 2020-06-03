@@ -65,7 +65,7 @@ class Script(BaseScript):
             portchannels[p["interface"]] = p["members"]
 
         i = 0
-        for s in range(len(lines) / step):
+        for s in range(int(len(lines) / step)):
 
             if i == portsnum * step:
                 break
