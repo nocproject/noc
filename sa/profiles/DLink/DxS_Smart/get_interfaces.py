@@ -10,7 +10,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.core.mac import MAC
@@ -28,7 +28,7 @@ class Script(BaseScript):
 
     rx_mgmt_vlan = re.compile(r"^802.1Q Management VLAN\s+: (?P<vlan>\S+)\s*\n")
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         interfaces = []
         # Get portchannels
         portchannel_members = {}  # member -> (portchannel, type)
@@ -40,7 +40,7 @@ class Script(BaseScript):
         admin_status = {}
         try:
             for n, s in self.snmp.join_tables(
-                "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.7"
+                mib["IF-MIB::ifName"], mib["IF-MIB::ifAdminStatus"]
             ):  # IF-MIB
                 if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
                     continue
@@ -53,7 +53,7 @@ class Script(BaseScript):
         mac = {}
         try:
             for i, m in self.snmp.join_tables(
-                mib["IF-MIB::ifIndex"], mib["IF-MIB::ifPhysAddress"]
+                mib["IF-MIB::ifName"], mib["IF-MIB::ifPhysAddress"]
             ):  # IF-MIB
                 if i[:6] == "Slot0/":
                     i = i[6:]
