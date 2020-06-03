@@ -25,6 +25,7 @@ class Profile(BaseProfile):
         r"% (?:Invalid input detected at '\^' marker|"
         r"(?:Ambiguous|Incomplete|.+Unknown) command)|"
         r"Error input in the position market by"
+        r"|Unknown command"
     )
     command_disable_pager = "terminal length 0"
     command_super = "enable"

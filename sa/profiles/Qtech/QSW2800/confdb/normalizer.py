@@ -39,7 +39,10 @@ class Qtech2800Normalizer(BaseNormalizer):
 
     @match("vlan", ANY)
     def normalize_vlan_id(self, tokens):
-        for vlan in ranges_to_list(tokens[1], splitter=";"):
+        splitter = ";"
+        if "," in tokens[1]:
+            splitter = ","
+        for vlan in ranges_to_list(tokens[1], splitter=splitter):
             yield self.make_vlan_id(vlan_id=vlan)
 
     @match("interface", ANY)
