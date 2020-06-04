@@ -33,4 +33,4 @@ class Script(BaseScript):
         Check box has lldp enabled
         """
         cmd = self.cli("show spanning-tree")
-        return "Disable" not in cmd
+        return "Disable" not in cmd and "disable" not in cmd
