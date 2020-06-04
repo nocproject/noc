@@ -7,6 +7,7 @@
 
 # Python modules
 import functools
+import urllib.parse
 
 # Third-party modules
 import tornado.web
@@ -36,7 +37,7 @@ class APIAccessRequestHandler(tornado.web.RequestHandler):
         return self.access_tokens_set
 
     def get_current_user(self):
-        api_access = self.request.headers.get(self.API_ACCESS_HEADER, "")
+        api_access = urllib.parse.unquote(self.request.headers.get(self.API_ACCESS_HEADER, ""))
         a_set = set(api_access.split(","))
         if self.get_access_tokens_set() & a_set:
             return True
