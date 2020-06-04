@@ -20,6 +20,7 @@ from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.deprecations import RemovedInNOC2003Warning
+from noc.core.snmp.get import _ResponseParser
 
 
 class BaseProfileMetaclass(type):
@@ -282,6 +283,9 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     snmp_ifstatus_get_chunk = 15
     # Timeout for snmp GET request for get_interface_status_ex
     snmp_ifstatus_get_timeout = 2
+    # _ResponseParser for customized SNMP response processing.
+    # Broken SNMP implementations are urged to use `parse_get_response_strict`
+    snmp_response_parser: Optional[_ResponseParser] = None
     # Allow CLI sessions by default
     enable_cli_session = True
     # True - Send multiline command at once
@@ -755,6 +759,10 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         :return:
         """
         return cls.snmp_display_hints
+
+    @classmethod
+    def get_snmp_response_parser(cls, script) -> Optional[_ResponseParser]:
+        return cls.snmp_response_parser
 
     @classmethod
     def has_confdb_support(cls, object):
