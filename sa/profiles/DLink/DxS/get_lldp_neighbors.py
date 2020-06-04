@@ -93,6 +93,8 @@ class Script(BaseScript):
                 neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
             if neigh["remote_port_subtype"] == 3:
                 neigh["remote_port"] = MAC(neigh["remote_port"])
+            else:
+                neigh["remote_port"] = smart_text(neigh["remote_port"]).rstrip("\x00")
             for i in neigh:
                 if isinstance(neigh[i], six.string_types):
                     neigh[i] = neigh[i].rstrip(smart_text("\x00"))
