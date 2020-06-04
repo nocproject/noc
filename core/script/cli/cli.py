@@ -400,6 +400,7 @@ class CLI(BaseCLI):
                     "password": self.on_super_password,
                     "prompt": self.on_prompt,
                     "pager": self.send_pager_reply,
+                    "unprivileged_prompt": (self.on_failure, CLILowPrivileges),
                 },
                 self.profile.cli_timeout_super,
             )
