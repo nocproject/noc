@@ -12,14 +12,17 @@ import re
 
 # NOC module
 from noc.core.profile.base import BaseProfile
+from noc.core.snmp.get import parse_get_response_strict
 
 
 class Profile(BaseProfile):
     name = "Qtech.BFC_PBIC_S"
     # to one SNMP GET request
-    snmp_metrics_get_chunk = 3
+    snmp_metrics_get_chunk = 1
     # Timeout for snmp GET request
     snmp_metrics_get_timeout = 5
+
+    snmp_response_parser = parse_get_response_strict
 
     rx_interface_name = re.compile(r"^\d+$")
 
