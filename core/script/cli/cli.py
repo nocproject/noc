@@ -176,9 +176,10 @@ class CLI(BaseCLI):
             except (asyncio.TimeoutError, TimeoutError):
                 self.logger.info("Timeout error")
                 metrics["cli_timeouts", ("proto", self.name)] += 1
-                # IOStream must be closed to prevent hanging read callbacks
+                # Stream must be closed to prevent hanging read callbacks
+                # @todo: Really? May be changed during migration to asyncio
                 self.close_stream()
-                raise asyncio.TimeoutError("Timeout")  # @todo: Uncaught
+                raise CLIConnectionReset()
             if not r:
                 self.logger.debug("Connection reset")
                 await self.on_failure(r, None, error_cls=CLIConnectionReset)

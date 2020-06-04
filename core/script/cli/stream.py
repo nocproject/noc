@@ -116,7 +116,11 @@ class BaseStream(object):
         :return:
         """
         await self.wait_for_read()
-        return self.socket.recv(n)
+        try:
+            return self.socket.recv(n)
+        except ConnectionResetError:
+            self.logger.debug("Connection reset")
+            raise asyncio.TimeoutError
 
     async def write(self, data: bytes):
         """
