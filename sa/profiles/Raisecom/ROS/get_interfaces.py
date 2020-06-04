@@ -9,10 +9,11 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import ranges_to_list
 from noc.core.ip import IPv4
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -95,6 +96,21 @@ class Script(BaseScript):
             r = match.groupdict()
         return r
 
+    def get_bridge_ifindex_mappings(self):
+        """
+        Getting mappings for bridge port number -> ifindex
+        :return:
+        """
+        pid_ifindex_mappings = {}
+        for oid, v in self.snmp.getnext(
+            mib["IF-MIB::ifIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            timeout=self.get_snmp_timeout(),
+        ):
+            pid_ifindex_mappings[oid.split(".")[-1]] = v
+        return pid_ifindex_mappings
+
     def get_lldp_config(self):
         r = {}
         try:
@@ -106,7 +122,7 @@ class Script(BaseScript):
             r = {el for el in self.expand_rangelist(match.group("ports"))}
         return r
 
-    def get_switchport(self):
+    def get_switchport_cli(self):
         r = {}
         if self.is_rotek:
             return r
@@ -239,7 +255,7 @@ class Script(BaseScript):
                     interfaces[port["name"]].update(port)
                 else:
                     interfaces[port["name"]] = port
-        vlans = self.get_switchport()
+        vlans = self.get_switchport_cli()
         for ifname in interfaces:
             port = interfaces[ifname]
             name = str(port["name"])
