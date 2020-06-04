@@ -53,7 +53,7 @@ class Script(GetMetricsScript):
                     value=bool(result["success"]),
                     multi=True,
                 )
-                if result["success"]:
+                if result["success"] and "avg" in result:
                     self.set_metric(
                         id=("Check | RTT", None),
                         metric="Check | RTT",
