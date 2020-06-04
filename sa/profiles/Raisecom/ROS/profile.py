@@ -40,6 +40,7 @@ class Profile(BaseProfile):
     matchers = {
         "is_iscom2624g": {"platform": {"$regex": "ISCOM26(?:24|08)G"}},
         "is_rotek": {"vendor": {"$in": ["Rotek", "ROTEK"]}},
+        "is_ifname_use": {"platform": {"$regex": "QSW-8200"}},
     }
 
     rx_port = re.compile(r"^port(|\s+)(?P<port>\d+)")
@@ -76,4 +77,6 @@ class Profile(BaseProfile):
             # for ISCOM26(?:24|08)G
             # @todo use matchers
             return "management"
+        elif name.isdigit():
+            return "physical"
         return cls.INTERFACE_TYPES.get(name[:2].lower())
