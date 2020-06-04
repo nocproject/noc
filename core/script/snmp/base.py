@@ -110,6 +110,7 @@ class SNMP(object):
                     version=version,
                     raw_varbinds=raw_varbinds,
                     display_hints=display_hints,
+                    response_parser=self.script.profile.get_snmp_response_parser(self.script),
                 )
                 self.timeouts = self.timeouts_limit
                 return r
@@ -226,6 +227,7 @@ class SNMP(object):
                     timeout=timeout,
                     raw_varbinds=raw_varbinds,
                     display_hints=display_hints,
+                    response_parser=self.script.profile.get_snmp_response_parser(self.script),
                 )
                 return r
             except SNMPError as e:

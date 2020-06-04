@@ -8,14 +8,16 @@
 # Python modules
 import random
 from collections import namedtuple
+from typing import Optional, Callable, Dict, Union
 
 # NOC modules
 from .ber import parse_p_oid, BERDecoder, encoder
 from .consts import PDU_GET_REQUEST, PDU_GETNEXT_REQUEST, PDU_RESPONSE, PDU_GETBULK_REQUEST
 from .version import SNMP_v1, SNMP_v2c
+from noc.core.perf import metrics
 
 
-def _build_pdu(community, pdu_type, oids, request_id, version=SNMP_v2c):
+def _build_pdu(community: str, pdu_type: int, oids, request_id, version: int = SNMP_v2c) -> bytes:
     """
     Generate SNMP v2c GET/GETNEXT
     :param version:
@@ -107,8 +109,17 @@ GetResponse = namedtuple(
     "GetResponse", ["community", "request_id", "error_status", "error_index", "varbinds"]
 )
 
+_DisplayHints = Dict[str, Callable[[str, bytes], Union[str, bytes]]]
+_ResponseParser = Callable[[bytes, Optional[_DisplayHints]], GetResponse]
 
-def parse_get_response(pdu, display_hints=None):
+
+def parse_get_response(pdu: bytes, display_hints: Optional[_DisplayHints] = None) -> GetResponse:
+    """
+    Common response parser
+    :param pdu:
+    :param display_hints:
+    :return:
+    """
     decoder = BERDecoder(display_hints=display_hints)
     data = decoder.parse_sequence(pdu)[0]
     pdu = data[2]
@@ -123,7 +134,16 @@ def parse_get_response(pdu, display_hints=None):
     )
 
 
-def parse_get_response_raw(pdu):
+def parse_get_response_raw(
+    pdu: bytes, display_hints: Optional[_DisplayHints] = None
+) -> GetResponse:
+    """
+    Raw response parser for beef collector
+
+    :param pdu:
+    :param display_hints:
+    :return:
+    """
     decoder = BERDecoder()
     # Strip outer sequence
     msg, _ = decoder.split_tlv(pdu)
@@ -157,4 +177,41 @@ def parse_get_response_raw(pdu):
         error_status=pdu[2],
         error_index=pdu[3],
         varbinds=varbinds,
+    )
+
+
+def parse_get_response_strict(
+    pdu: bytes, display_hints: Optional[_DisplayHints] = None
+) -> GetResponse:
+    """
+    Strict response parser suspects that VarBind part of response
+    may contain broken items, so it tries to fix them to the
+    reasonal values, rather than blowing out processing pipeline.
+    May have performance impact over `parse_get_response`
+
+    :param pdu:
+    :param display_hints:
+    :return:
+    """
+    decoder = BERDecoder(display_hints=display_hints)
+    data = decoder.parse_sequence(pdu)[0]
+    pdu = data[2]
+    if pdu[0] != PDU_RESPONSE:
+        raise ValueError("Invalid response PDU type: %s" % pdu[0])
+    _, request_id, err_status, err_index, varbinds = pdu
+    cleaned_varbinds = []
+    for n, item in enumerate(varbinds):
+        if not isinstance(item, list) or not len(item) == 2 or not isinstance(item[0], str):
+            # Try to mitigate broken item
+            if err_status and err_index - 1 > n:
+                err_index -= 1
+            metrics["broken_varbinds"] += 1
+        else:
+            cleaned_varbinds += [item]
+    return GetResponse(
+        community=data[1],
+        request_id=request_id,
+        error_status=err_status,
+        error_index=err_index,
+        varbinds=cleaned_varbinds,
     )

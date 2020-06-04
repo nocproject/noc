@@ -18,6 +18,7 @@ from noc.core.snmp.get import (
     get_pdu,
     getnext_pdu,
     getbulk_pdu,
+    _ResponseParser,
     parse_get_response,
     parse_get_response_raw,
 )
@@ -38,6 +39,14 @@ logger = logging.getLogger(__name__)
 BULK_MAX_REPETITIONS = 20
 
 
+def _get_parser(
+    parser: Optional[_ResponseParser] = None, raw_varbinds: bool = False
+) -> _ResponseParser:
+    if raw_varbinds:
+        return parse_get_response_raw
+    return parser or parse_get_response
+
+
 async def snmp_get(
     address,
     oids,
@@ -49,6 +58,7 @@ async def snmp_get(
     udp_socket: Optional[UDPSocket] = None,
     raw_varbinds=False,
     display_hints=None,
+    response_parser: Optional[_ResponseParser] = None,
 ):
     """
     Perform SNMP get request and returns Future to be used
@@ -63,6 +73,7 @@ async def snmp_get(
     else:
         raise ValueError("oids must be either string or dict")
     logger.debug("[%s] SNMP GET %s", address, oids)
+    parser = _get_parser(response_parser, raw_varbinds)
     # Send GET PDU
     pdu = get_pdu(community=community, oids=oids, version=version)
     with UDPSocketContext(udp_socket, tos=tos) as sock:
@@ -79,10 +90,7 @@ async def snmp_get(
             logger.debug("[%s] Socket error: %s", address, e)
             raise SNMPError(code=UNREACHABLE, oid=oids[0])
         try:
-            if raw_varbinds:
-                resp = parse_get_response_raw(data)
-            else:
-                resp = parse_get_response(data, display_hints=display_hints)
+            resp = parser(data, display_hints)
         except ValueError:
             # Broken response
             raise SNMPError(code=BER_ERROR, oid=oids[0])
@@ -242,6 +250,7 @@ async def snmp_getnext(
     max_retries: int = 0,
     raw_varbinds: bool = False,
     display_hints: Optional[Dict[str, Optional[Callable[[str, bytes], Union[str, bytes]]]]] = None,
+    response_parser: Optional[_ResponseParser] = None,
 ):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
@@ -256,6 +265,7 @@ async def snmp_getnext(
         filter = true
     poid = oid + "."
     result = []
+    parser = _get_parser(response_parser, raw_varbinds)
     with UDPSocketContext(udp_socket, tos=tos) as sock:
         last_oid = None
         while True:
@@ -287,10 +297,7 @@ async def snmp_getnext(
                 raise SNMPError(code=UNREACHABLE, oid=oid)
             # Parse response
             try:
-                if raw_varbinds:
-                    resp = parse_get_response_raw(data)
-                else:
-                    resp = parse_get_response(data, display_hints=display_hints)
+                resp = parser(data, display_hints)
             except ValueError:
                 raise SNMPError(code=BER_ERROR, oid=oid)
             if resp.error_status == NO_SUCH_NAME:
