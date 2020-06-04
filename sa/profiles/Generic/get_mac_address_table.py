@@ -48,6 +48,13 @@ class Script(BaseScript):
                 # For iface == 0
                 continue
             r_oid = r_oid.rsplit(".", 7)[-7:]
+            if iface not in iface_map:
+                self.logger.error(
+                    "Unknown interface index %s, for MAC: %s",
+                    iface,
+                    ":".join("%02x" % int(c) for c in r_oid[1:]),
+                )
+                continue
             iface = iface_map[iface]
             if interface and iface != interface:
                 continue
