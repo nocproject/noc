@@ -22,6 +22,7 @@ from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NAME,
     LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS,
     LLDP_CAP_OTHER,
     LLDP_CAP_REPEATER,
     LLDP_CAP_BRIDGE,
@@ -57,6 +58,7 @@ class Script(BaseScript):
     PORT_SUBTYPE = {
         "Mac Address": LLDP_PORT_SUBTYPE_MAC,
         "Interface Name": LLDP_PORT_SUBTYPE_NAME,
+        "Interface Alias": LLDP_PORT_SUBTYPE_ALIAS,
         "Local": LLDP_PORT_SUBTYPE_LOCAL,
     }
 
