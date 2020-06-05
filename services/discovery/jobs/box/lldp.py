@@ -49,11 +49,13 @@ class LLDPCheck(TopologyDiscoveryCheck):
         chassis_id = neighbor_id["remote_chassis_id"]
         if chassis_subtype == LLDP_CHASSIS_SUBTYPE_MAC:
             if MACBlacklist.is_banned_mac(chassis_id, is_duplicated=True):
-                self.logger.info("Banned MAC %s found. Trying to negotiate via hostname")
+                self.logger.info(
+                    "Banned MAC %s found. Trying to negotiate via hostname", chassis_id
+                )
                 if "remote_system_name" in neighbor_id:
                     return self.get_neighbor_by_hostname(neighbor_id["remote_system_name"])
                 else:
-                    self.logger.info("No remote hostname for %s. Giving up.")
+                    self.logger.info("No remote hostname for %s. Giving up.", neighbor_id)
                     return None
             else:
                 return self.get_neighbor_by_mac(chassis_id)
