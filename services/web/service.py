@@ -13,6 +13,7 @@ import tornado.wsgi
 import django.core.handlers.wsgi
 from tornado import escape
 from tornado import httputil
+import urllib.parse
 
 # NOC modules
 from noc.config import config
@@ -91,7 +92,7 @@ class NOCWSGIHandler(tornado.web.RequestHandler):
         if config.features.forensic:
             in_label = "%s %s %s %s" % (
                 request.remote_ip,
-                request.headers.get("Remote-User", "-"),
+                urllib.parse.unquote(request.headers.get("Remote-User", "-")),
                 request.method,
                 request.uri,
             )
@@ -136,7 +137,7 @@ class NOCWSGIHandler(tornado.web.RequestHandler):
         method = request.method
         uri = request.uri
         remote_ip = request.remote_ip
-        user = request.headers.get("Remote-User", "-")
+        user = urllib.parse.unquote(request.headers.get("Remote-User", "-"))
         agent = request.headers.get("User-Agent", "-")
         referer = request.headers.get("Referer", "-")
         self.service.logger.info(

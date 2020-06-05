@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+import urllib.parse
 
 # Third-party modules
 import cachetools
@@ -34,4 +35,6 @@ class AuthRequestHandler(tornado.web.RequestHandler):
             return None
 
     def get_current_user(self):
-        return self.get_user_by_name(self.request.headers.get("Remote-User"))
+        return self.get_user_by_name(
+            urllib.parse.unquote(self.request.headers.get("Remote-User"))
+        )
