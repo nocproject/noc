@@ -61,8 +61,8 @@ RUN apk add --update vim \
     && apk del python-dev gcc musl-dev \
     && rm -rf /var/cache/apk/* /root/.cache/pip
 
-
-HEALTHCHECK NONE 
+HEALTHCHECK --interval=10s --timeout=1s \
+    CMD curl -f http://0.0.0.0:1200/health/ || exit 1
 
 FROM nginx:alpine AS static
 
