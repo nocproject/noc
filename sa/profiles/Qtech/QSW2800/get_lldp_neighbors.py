@@ -24,7 +24,9 @@ class Script(BaseScript):
         r"ChassisIdSubtype\s+:(?P<chassis_subtype>\d+)\n"
         r"ChassisId\s+:(?P<chassis_id>.+)\n"
         r"PortIdSubtype\s+:(?P<port_subtype>.+)\n"
-        r"PortId\s+:(?P<port_id>.+)\n",
+        r"PortId\s+:(?P<port_id>.+)"
+        r"(?:\nPortDesc\s+:(?P<port_descr>.+))?"
+        r"(?:\nSysName\s+:(?P<remote_system_name>.+))?",
         re.MULTILINE,
     )
 
@@ -47,6 +49,7 @@ class Script(BaseScript):
                         {
                             "remote_chassis_id_subtype": match.group("chassis_subtype"),
                             "remote_chassis_id": match.group("chassis_id"),
+                            "remote_system_name": match.group("remote_system_name") or None,
                             "remote_port_subtype": {
                                 "Interface alias": 1,
                                 "Port component": 2,
@@ -55,6 +58,7 @@ class Script(BaseScript):
                                 "MAC address": 3,
                             }[match.group("port_subtype")],
                             "remote_port": match.group("port_id"),
+                            "remote_port_description": match.group("port_descr") or None,
                         }
                     ],
                 }
