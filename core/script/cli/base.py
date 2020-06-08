@@ -11,6 +11,8 @@ from typing import Optional
 # NOC module
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.perf import metrics
+from noc.core.ioloop.util import IOLoopContext
+from noc.core.comp import smart_bytes
 
 
 class BaseCLI(object):
@@ -30,6 +32,9 @@ class BaseCLI(object):
     def close_stream(self):
         if self.stream:
             self.logger.debug("Closing stream")
+            if self.is_started and self.profile.command_exit:
+                with IOLoopContext() as loop:
+                    loop.run_until_complete(self.send(smart_bytes(self.profile.command_exit)))
             self.stream.close()
             self.stream = None
 
