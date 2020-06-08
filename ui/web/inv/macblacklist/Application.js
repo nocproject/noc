@@ -40,7 +40,7 @@ Ext.define("NOC.inv.macblacklist.Application", {
                 },
                 {
                     text: __("To"),
-                    dataIndex: "from_mac",
+                    dataIndex: "to_mac",
                     width: 150
                 },
                 {
