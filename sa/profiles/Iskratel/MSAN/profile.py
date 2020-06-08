@@ -38,6 +38,8 @@ class Profile(BaseProfile):
     send_on_syntax_error = b"\x1b[B"
     rogue_chars = [b"\r", b"\x00"]
 
+    matchers = {"is_switch_board": {"platform": {"$regex": r".*Switch.*"}}}
+
     rx_hw = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
         r"Current CPU (?:Load|Usage)\.+ \d+%\n"
