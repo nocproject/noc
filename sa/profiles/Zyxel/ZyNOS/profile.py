@@ -10,9 +10,11 @@
 """
 # Python modules
 import re
+import six
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.comp import smart_bytes
 
 
 class Profile(BaseProfile):
@@ -31,6 +33,7 @@ class Profile(BaseProfile):
     command_exit_zynos = "sys cli newCLI"
     pattern_syntax_error = "Invalid (command|input)"
     enable_cli_session = False
+    rogue_chars = [r"\x1b7", "\r"]
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     rx_ifname = re.compile(r"^swp(?P<number>\d+)$")
 
@@ -65,11 +68,20 @@ class ZyNOSContextManager(object):
     def __enter__(self):
         """Entering zynos mode context"""
         self.script.enter_config()
-        self.script.push_prompt_pattern(self.script.profile.pattern_zynos)
+        if six.PY3:
+            self.script.push_prompt_pattern(b"^\S+?>")  # noqa
+        else:
+            self.script.push_prompt_pattern(self.script.profile.pattern_zynos)
         self.script.cli(self.profile.command_enter_zynos)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Leaving zynos mode context"""
         if exc_type is None:
             self.script.pop_prompt_pattern()
+            if six.PY3:
+                self.script.push_prompt_pattern(
+                    smart_bytes(self.script.profile.pattern_unprivileged_prompt)
+                )
+            else:
+                self.script.push_prompt_pattern(self.script.profile.pattern_unprivileged_prompt)
             self.script.cli(self.profile.command_exit_zynos)
