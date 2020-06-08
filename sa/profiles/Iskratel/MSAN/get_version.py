@@ -19,19 +19,28 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_ver = re.compile(r"Software Version\.+ (?P<version>\S+)")
+    rx_platform = re.compile(r"(Machine Model|Board Type)\.+\s+(?P<platform>.+)\n")
+    rx_serial = re.compile(r"(Board Serial Number|Serial Number)\.+ (?P<serial>\S+)\n")
+
+    rx_ver = re.compile(r"(Steer|Appl\.|Package)\s*Version\.+\s*(?P<version>\S+)")
 
     def execute_cli(self):
-        v = self.profile.get_hardware(self)
-        if "api_ver" in v and v["api_ver"] is not None:
-            version = v["api_ver"]
+        v = self.cli("show hardware", cached=True)
+        match = self.rx_platform.search(v)
+        if match:
+            platform = match.group("platform")
         else:
-            c = self.cli("show version")
-            match = self.rx_ver.search(c)
-            version = match.group("version")
+            raise NotImplementedError
+        match = self.rx_serial.search(v)
+        if match:
+            serial = match.group("serial")
+        # 1.3.6.1.4.1.1332.1.1.5.1.3.11.1.3.1
+        c = self.cli("show version")
+        match = self.rx_ver.search(c)
+        version = match.group("version")
         return {
             "vendor": "Iskratel",
-            "platform": v["platform"],
+            "platform": platform,
             "version": version,
-            "attributes": {"Serial Number": v["serial"]},
+            "attributes": {"Serial Number": serial},
         }
