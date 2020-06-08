@@ -16,7 +16,6 @@ from collections import defaultdict
 import time
 import threading
 from time import perf_counter
-import datetime
 import asyncio
 from typing import Optional, Dict, List, Tuple, Callable, Any, TypeVar, NoReturn
 
@@ -707,7 +706,7 @@ class Service(object):
         """
         topic = queue.topic
         self.logger.info("[nsq|%s] Starting NSQ publisher", topic)
-        while not queue.to_shutdown:
+        while not queue.to_shutdown or not queue.is_empty():
             # Message throttling. Wait and allow to collect more messages
             await queue.wait(timeout=10, rate=config.nsqd.topic_mpub_rate)
             # Get next batch up to `mpub_messages` messages or up to `mpub_size` size
@@ -739,6 +738,8 @@ class Service(object):
                     queue.return_messages(messages)
             del messages  # Release memory
         self.logger.info("[nsq|%s] Stopping NSQ publisher", topic)
+        # Queue is shut down and empty, notify
+        queue.notify_shutdown()
 
     async def shutdown_executors(self):
         if self.executors:
@@ -767,7 +768,7 @@ class Service(object):
                 has_topics = bool(self.topic_queues)
             try:
                 self.logger.info("Waiting shutdown of topic queue %s", topic)
-                await queue.shutdown_complete.wait(datetime.timedelta(seconds=5))
+                await queue.wait_for_shutdown(5.0)
             except asyncio.TimeoutError:
                 self.logger.info("Failed to shutdown topic queue %s: Timed out", topic)
 

@@ -25,6 +25,7 @@ class TopicQueue(object):
         self.topic = topic
         self.lock = Lock()
         self.waiter: Optional[asyncio.Event] = None
+        self.shutdown_waiter: Optional[asyncio.Event] = None
         self.queue: deque = deque()
         self.queue_size = 0
         self.to_shutdown = False
@@ -204,8 +205,26 @@ class TopicQueue(object):
         if self.to_shutdown:
             raise RuntimeError("Already in shutdown")
         self.to_shutdown = True
+        self.shutdown_waiter = asyncio.Event()
         with self.lock:
-            self._notify_waiters()
+            self._notify_waiters()  # Leave publisher waiting state
+
+    async def wait_for_shutdown(self, timeout: Optional[float] = None) -> None:
+        """
+        Get publisher a chance to drain collected items
+        :param timeout:
+        :return:
+        """
+        if not self.shutdown_waiter:
+            return
+        try:
+            await asyncio.wait_for(self.shutdown_waiter.wait(), timeout)
+        except asyncio.TimeoutError:
+            pass
+
+    def notify_shutdown(self):
+        if self.shutdown_waiter:
+            self.shutdown_waiter.set()
 
     async def wait(self, timeout: Optional[float] = None, rate: Optional[int] = None):
         """
