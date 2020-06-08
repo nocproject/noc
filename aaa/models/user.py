@@ -40,6 +40,7 @@ id_lock = Lock()
         ("kb.KBEntryHistory", "user"),
         ("ip.PrefixAccess", "user"),
         ("main.Favorites", "user"),
+        ("bi.Dashboard", "owner"),
     ]
 )
 class User(NOCModel):

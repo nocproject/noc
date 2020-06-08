@@ -16,11 +16,12 @@ from collections import namedtuple
 import sys
 import threading
 import operator
+from base64 import b85decode
 
 # Third-party modules
 import ujson
 import bson
-from mongoengine.fields import ListField, EmbeddedDocumentField
+from mongoengine.fields import ListField, EmbeddedDocumentField, BinaryField
 from mongoengine.errors import NotUniqueError
 from pymongo import UpdateOne
 import cachetools
@@ -237,6 +238,9 @@ class Collection(object):
                 except ValueError as e:
                     v = []
                     self.partial_errors[d["uuid"]] = str(e)
+            # Dereference binary field
+            if isinstance(field, BinaryField):
+                v = b85decode(v)
             r[str(k)] = v
         return r
 

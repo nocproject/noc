@@ -307,6 +307,7 @@ _MODELS = {
     "sla.SLAProbe": "noc.sla.models.slaprobe.SLAProbe",
     # bi models
     "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout",
+    "bi.Dashboard": "noc.bi.models.dashboard.Dashboard",
     # phone models
     "phone.DialPlan": "noc.phone.models.dialplan.DialPlan",
     "phone.NumberCategory": "noc.phone.models.numbercategory.NumberCategory",
@@ -353,5 +354,6 @@ COLLECTIONS = [
     "fm.CloneClassificationRule",
     "sa.ProfileCheckRule",
     "bi.DashboardLayout",
+    "bi.Dashboard",
     "cm.ConfDBQuery",
 ]
