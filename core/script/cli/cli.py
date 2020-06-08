@@ -129,7 +129,9 @@ class CLI(BaseCLI):
                 await self.stream.wait_for_read()
         parser = parser or self.read_until_prompt
         self.result = await parser()
-        self.logger.debug("Command: %s\n%s", self.command.strip(), smart_text(self.result))
+        self.logger.debug(
+            "Command: %s\n%s", self.command.strip(), smart_text(self.result, errors="replace")
+        )
         if (
             self.profile.rx_pattern_syntax_error
             and not self.ignore_errors
