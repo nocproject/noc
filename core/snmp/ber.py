@@ -8,6 +8,7 @@
 # Python modules
 import math
 import struct
+import codecs
 
 # Third-party modules
 from typing import Tuple, Any, List, Optional
@@ -62,7 +63,7 @@ class BERDecoder(object):
                 pt += " application %d" % tag_class
             raise ValueError(
                 "Cannot find BER decoder for %s class %d (0x%X): %s"
-                % (pt, tag, tag, value.encode("hex"))
+                % (pt, tag, tag, codecs.encode(value, "hex").decode("utf-8"))
             )
 
     def parse_eoc(self, msg):
