@@ -129,7 +129,7 @@ class CLI(BaseCLI):
                 await self.stream.wait_for_read()
         parser = parser or self.read_until_prompt
         self.result = await parser()
-        self.logger.debug("Command: %s\n%s", self.command.strip(), self.result)
+        self.logger.debug("Command: %s\n%s", self.command.strip(), smart_text(self.result))
         if (
             self.profile.rx_pattern_syntax_error
             and not self.ignore_errors
@@ -262,7 +262,7 @@ class CLI(BaseCLI):
                 break
             # Parse all possible objects
             while buffer:
-                pr = parser(smart_text(buffer))
+                pr = parser(smart_text(buffer, errors="replace"))
                 if not pr:
                     break  # No new objects
                 key, obj, buffer = pr
