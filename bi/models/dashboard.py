@@ -7,6 +7,7 @@
 
 # Python modules
 import datetime
+from base64 import b85encode
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -17,12 +18,15 @@ from mongoengine.fields import (
     IntField,
     BinaryField,
     EmbeddedDocumentField,
+    UUIDField,
 )
 
 # NOC modules
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.core.mongo.fields import ForeignKeyField
+from noc.core.prettyjson import to_json
+from noc.core.comp import smart_text
 
 DAL_NONE = -1
 DAL_RO = 0
@@ -42,6 +46,8 @@ class Dashboard(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": ["owner", "tags"],
+        "json_collection": "bi.dashboards",
+        "json_unique_fields": ["uuid"],
     }
 
     title = StringField()
@@ -60,9 +66,16 @@ class Dashboard(Document):
     changed = DateTimeField(default=datetime.datetime.now)
     #
     access = ListField(EmbeddedDocumentField(DashboardAccess))
+    # Global ID
+    uuid = UUIDField(binary=True, unique=True)
 
     def __str__(self):
-        return self.title
+        return self.title or str(self.uuid)
+
+    @property
+    def name(self):
+        # For collection sync
+        return "%s: %s" % (self.owner.username, self.title or str(self.uuid))
 
     def get_user_access(self, user):
         # Direct match as owner
@@ -146,3 +159,23 @@ class Dashboard(Document):
         else:
             update = {"$pull": "access"}
         self._get_collection().update(match, update)
+
+    def to_json(self):
+        return to_json(
+            {
+                "title": self.title,
+                "$collection": self._meta["json_collection"],
+                "uuid": str(self.uuid),
+                "description": self.description,
+                "format": self.format,
+                "config": smart_text(b85encode(self.config)),
+                "owner__username": "admin",
+                "created": self.created.isoformat(),
+                "changed": self.changed.isoformat(),
+                "access": [],
+            },
+            order=["title", "uuid", "description", "created"],
+        )
+
+    def get_json_path(self):
+        return "%s.json" % self.uuid
