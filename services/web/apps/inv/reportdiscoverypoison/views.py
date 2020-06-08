@@ -15,6 +15,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
 from noc.core.translation import ugettext as _
 from noc.core.mac import MAC
+from noc.inv.models.macblacklist import MACBlacklist
 
 
 class ReportForm(forms.Form):
@@ -24,13 +25,14 @@ class ReportForm(forms.Form):
         initial=None,
         choices=[(x, x) for x in Pool.objects.order_by("name").scalar("name")] + [(None, "-")],
     )
+    filter_dup_macs = forms.BooleanField(label=_("Exclude on MAC Black List"), required=False)
 
 
 class ReportDiscoveryIDPoisonApplication(SimpleReport):
     title = _("Discovery ID cache poison")
     form = ReportForm
 
-    def get_data(self, request, pool=None, **kwargs):
+    def get_data(self, request, pool=None, filter_dup_macs=False, **kwargs):
 
         data = []
         # Find object with equal ID
@@ -61,7 +63,14 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
                 data_c.append((mo.name, mo.address, mo.profile.name, mo.pool.name, mo.is_managed))
             if pool and pool not in pool_c:
                 continue
-            data += [SectionRow(name="%s %s" % (MAC(f["_id"][0]), reason))]
+            if reason == "Other" and MACBlacklist.is_banned_mac(f["_id"][0], is_duplicated=True):
+                if filter_dup_macs:
+                    continue
+                data += [
+                    SectionRow(name="%s %s (%s)" % (MAC(f["_id"][0]), reason, "On duplicated"))
+                ]
+            else:
+                data += [SectionRow(name="%s %s" % (MAC(f["_id"][0]), reason))]
             data += data_c
 
         return self.from_dataset(
