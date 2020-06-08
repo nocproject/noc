@@ -124,6 +124,9 @@ class Profile(BaseProfile):
             match = self.rx_cable_if.search(interface)
             if match:
                 return "Ca %s/%s" % (match.group("pr_if"), match.group("sub_if"))
+        # StackSub, Stack
+        if il.startswith("stack"):
+            return il
         if il.endswith(" type tunnel"):
             il = il[:-12]
         if il.startswith("virtual-template"):
@@ -208,6 +211,7 @@ class Profile(BaseProfile):
         "Sr": "physical",  # Spatial Reuse Protocol
         "Se": "physical",  # Serial
         "Sp": "physical",  # Special-Services-Engine
+        "St": "physiocal",  # StackSub-St, StackPort1
         "Te": "physical",  # TenGigabitEthernet
         "To": "physical",  # TokenRing
         "Tu": "tunnel",  # Tunnel

@@ -9,12 +9,15 @@
 import re
 import time
 from collections import defaultdict
+from itertools import compress, chain
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.profiles.Cisco.IOS.profile import uBR
+from noc.core.mib import mib
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -255,37 +258,66 @@ class Script(BaseScript):
 
         return vrfs, imap
 
-    def execute_snmp(self):
-        vlans = self.scripts.get_switchport()
+    def get_switchport(self):
+        result = defaultdict(lambda: {"tagged_vlans": [], "untagged_vlan": None})
+        for oid, pvid in self.snmp.getnext(
+            mib["CISCO-VLAN-MEMBERSHIP-MIB::vmVlan"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            timeout=self.get_snmp_timeout(),
+        ):
+            if not pvid:
+                # if pvid is 0
+                continue
+            o = oid.split(".")[-1]
+            result[int(o)]["untagged_vlan"] = pvid
+        for (
+            ifindex,
+            native_vlan,
+            enc_type,
+            vlans_base,
+            vlans_2k,
+            vlans_3k,
+            vlans_4k,
+        ) in self.snmp.get_tables(
+            [
+                mib["CISCO-VTP-MIB::vlanTrunkPortNativeVlan"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortEncapsulationOperType"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled2k"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled3k"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled4k"]
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined2k"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"],
+            ],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            timeout=self.get_snmp_timeout(),
+            display_hints={
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined"]: render_bin,
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined2k"]: render_bin,
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"]: render_bin,
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"]: render_bin,
+            },
+        ):
+            # print(ifindex, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k)
+            if int(enc_type) != 4:
+                # not dot1Q
+                continue
+            vlans_bank = b"".join([vlans_base, vlans_2k, vlans_3k, vlans_4k])
+            result[int(ifindex)]["tagged_vlans"] += list(
+                compress(
+                    range(0, 4096),
+                    [
+                        int(x)
+                        for x in chain.from_iterable("{0:08b}".format(mask) for mask in vlans_bank)
+                    ],
+                )
+            )
         time.sleep(2)
-        r = super().execute_snmp()
-        if vlans:
-            vlans = {
-                v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])}
-                for v in vlans
-            }
-            for fi in r:
-                for iface in fi["interfaces"]:
-                    if iface["name"] in vlans:
-                        if vlans[iface["name"]]["untagged"]:
-                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]][
-                                "untagged"
-                            ]
-                        iface["subinterfaces"][0]["tagged_vlans"] = vlans[iface["name"]]["tagged"]
-        time.sleep(2)
-        vrfs, imap = self.get_mpls_vpn()
-        if imap:
-            for fi in r:
-                for iface in fi["interfaces"]:
-                    subs = iface["subinterfaces"]
-                    for vrf in set(imap.get(si["name"], "default") for si in subs):
-                        c = iface.copy()
-                        c["subinterfaces"] = [
-                            si for si in subs if imap.get(si["name"], "default") == vrf
-                        ]
-                        vrfs[vrf]["interfaces"] += [c]
-            return list(vrfs.values())
-        return r
+        return result
 
     def execute_cli(self):
         # Get port-to-vlan mappings
@@ -365,7 +397,7 @@ class Script(BaseScript):
             ip = "%s/%s" % (match.group("address"), match.group("mask"))
             ipv6_interfaces[c_iface] += [ip]
         #
-        interfaces = []
+        interfaces = {}
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
         # Get PIM interfaces
@@ -387,7 +419,7 @@ class Script(BaseScript):
             if ":" in ifname:
                 inm = ifname.split(":")[0]
                 # Create root interface if not exists yet
-                if inm != interfaces[-1]["name"]:
+                if inm not in interfaces:
                     iface = {
                         "name": inm,
                         "admin_status": True,
@@ -403,7 +435,7 @@ class Script(BaseScript):
                         iface["enabled_protocols"] += ["OAM"]
                     if inm in cdp:
                         iface["enabled_protocols"] += ["CDP"]
-                    interfaces += [iface]
+                    interfaces[inm] = iface
             a_stat = match.group("admin_status").lower() == "up"
             o_stat = match.group("oper_status").lower() == "up"
             hw = match.group("hardw")
@@ -500,39 +532,39 @@ class Script(BaseScript):
                 # Ifindex
                 if full_ifname in ifindex:
                     iface["snmp_ifindex"] = ifindex[full_ifname]
-                interfaces += [iface]
+                interfaces[ifname] = iface
             else:
                 # Append additional subinterface
+                if ":" in ifname:
+                    if_name, vlan_id = ifname.split(":", 1)
+                else:
+                    if_name, vlan_id = ifname.split(".", 1)
                 try:
-                    interfaces[-1]["subinterfaces"] += [sub]
+                    interfaces[if_name]["subinterfaces"] += [sub]
                 except KeyError:
-                    interfaces[-1]["subinterfaces"] = [sub]
-        # Process VRFs
-        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
-        imap = {}  # interface -> VRF
-        try:
-            r = self.scripts.get_mpls_vpn()
-        except self.CLISyntaxError:
-            r = []
-        for v in r:
-            if v["type"] == "VRF":
-                vrfs[v["name"]] = {
-                    "forwarding_instance": v["name"],
-                    "type": "VRF",
-                    "interfaces": [],
-                }
-                rd = v.get("rd")
-                if rd:
-                    vrfs[v["name"]]["rd"] = rd
-                vpn_id = v.get("vpn_id")
-                if vpn_id:
-                    vrfs[v["name"]]["vpn_id"] = vpn_id
-                for i in v["interfaces"]:
-                    imap[i] = v["name"]
-        for i in interfaces:
-            subs = i["subinterfaces"]
-            for vrf in set(imap.get(si["name"], "default") for si in subs):
-                c = i.copy()
-                c["subinterfaces"] = [si for si in subs if imap.get(si["name"], "default") == vrf]
-                vrfs[vrf]["interfaces"] += [c]
+                    interfaces[if_name]["subinterfaces"] = [sub]
+
+        # VRF and forwarding_instance proccessed
+        vrfs, vrf_if_map = self.get_mpls_vpn_mappings()
+        for i in interfaces.keys():
+            iface_vrf = "default"
+            subs = interfaces[i]["subinterfaces"]
+            interfaces[i]["subinterfaces"] = []
+            if i in vrf_if_map:
+                iface_vrf = vrf_if_map[i]
+                vrfs[vrf_if_map[i]]["interfaces"] += [interfaces[i]]
+            else:
+                vrfs["default"]["interfaces"] += [interfaces[i]]
+            for s in subs:
+                if s["name"] in vrf_if_map and vrf_if_map[s["name"]] != iface_vrf:
+                    vrfs[vrf_if_map[s["name"]]]["interfaces"] += [
+                        {
+                            "name": s["name"],
+                            "type": "other",
+                            "enabled_protocols": [],
+                            "subinterfaces": [s],
+                        }
+                    ]
+                else:
+                    interfaces[i]["subinterfaces"] += [s]
         return list(vrfs.values())
