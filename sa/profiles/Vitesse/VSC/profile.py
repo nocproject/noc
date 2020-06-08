@@ -21,8 +21,7 @@ class Profile(BaseProfile):
     command_submit = "\r"
     username_submit = "\r"
     password_submit = "\r"
-    pattern_more = "-- more --, next page: Space, continue: g, quit: ^"
-    command_more = "g"
+    pattern_more = [(r"-- more --, next page: Space, continue: g, quit:", "g\n")]
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
