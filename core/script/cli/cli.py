@@ -568,8 +568,10 @@ class CLI(BaseCLI):
         :return:
         """
         if isinstance(seq, str):
+            self.logger.debug("Recovering sequece must byte type")
+        elif isinstance(seq, bytes):
             self.logger.debug("Recovering from error. Sending %r", seq)
-            await self.stream.write(smart_bytes(seq))
+            await self.stream.write(seq)
         elif callable(seq):
             if asyncio.iscoroutinefunction(seq):
                 # Await coroutine
