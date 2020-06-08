@@ -58,6 +58,7 @@ class HTTP(object):
         json=False,
         eof_mark: Optional[bytes] = None,
         use_basic=False,
+        raw_result=False,
     ):
         """
         Perform HTTP GET request
@@ -67,6 +68,7 @@ class HTTP(object):
         :param json: Decode json if set to True
         :param eof_mark: Waiting eof_mark in stream for end session (perhaps device return length 0)
         :param use_basic: Use basic authentication
+        :param raw_result: Return raw result
         """
         self.ensure_session()
         self.request_id += 1
@@ -106,15 +108,23 @@ class HTTP(object):
                 result = ujson.loads(result)
             except ValueError as e:
                 raise HTTPError("Failed to decode JSON: %s" % e)
-        else:
-            result = smart_text(result)
+        elif not raw_result:
+            result = smart_text(result, errors="ignore")
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
         return result
 
     def post(
-        self, path, data, headers=None, cached=False, json=False, eof_mark=None, use_basic=False
+        self,
+        path,
+        data,
+        headers=None,
+        cached=False,
+        json=False,
+        eof_mark=None,
+        use_basic=False,
+        raw_result=False,
     ):
         """
         Perform HTTP GET request
@@ -124,6 +134,7 @@ class HTTP(object):
         :param json: Decode json if set to True
         :param eof_mark: Waiting eof_mark in stream for end session (perhaps device return length 0)
         :param use_basic: Use basic authentication
+        :param raw_result: Return raw result
         """
         self.ensure_session()
         self.request_id += 1
@@ -165,8 +176,8 @@ class HTTP(object):
                 return ujson.loads(result)
             except ValueError as e:
                 raise HTTPError(msg="Failed to decode JSON: %s" % e)
-        else:
-            result = smart_text(result)
+        elif not raw_result:
+            result = smart_text(result, errors="ignore")
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
