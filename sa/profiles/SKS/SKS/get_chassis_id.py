@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
@@ -17,6 +17,8 @@ class Script(BaseScript):
     name = "SKS.SKS.get_chassis_id"
     cache = True
     interface = IGetChassisID
+
+    always_prefer = "S"
 
     rx_mac = re.compile(r"^(?:System|Base ethernet) MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
 
