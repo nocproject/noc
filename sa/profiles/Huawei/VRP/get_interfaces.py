@@ -111,7 +111,7 @@ class Script(BaseScript):
             v = self.cli("display vlan all")
             for block in v.split("\n\n"):
                 match = self.rx_vlan_port.search(block)
-                print("---------\n", block, match, "\n-----------\n")
+                self.logger.debug("---------\n%s %s \n-----------\n", block, match)
                 if not match:
                     continue
                 for iface in match.group("tagged_ports").split():
