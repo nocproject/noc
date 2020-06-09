@@ -9,13 +9,15 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
     name = "SKS.SKS.get_mac_address_table"
     interface = IGetMACAddressTable
+
+    always_prefer = "S"
 
     rx_line1 = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<iface>\S+)", re.MULTILINE
