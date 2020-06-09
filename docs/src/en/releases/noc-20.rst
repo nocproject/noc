@@ -7,4 +7,5 @@
 .. toctree::
     :titlesonly:
 
+    /releases/gen-20.2
     /releases/gen-20.1
