@@ -20,11 +20,13 @@ class Profile(BaseProfile):
     INTERFACE_TYPES = {
         "ad": "physical",  # adsl
         "up": "physical",  # uplink
+        "et": "physical",  # eth
         "lo": "loopback",
         "br": "SVI",  # brUIK
         "hb": "SVI",  # hbr
         "he": "SVI",  # heoa
         "hu": "SVI",  # huplink
+        "hd": "physical",  # hdlc1
     }
 
     @classmethod
