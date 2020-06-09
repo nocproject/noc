@@ -64,7 +64,10 @@ class Script(BaseScript):
 
     def execute_cli(self):
         interfaces = []
-        v = self.cli("port adsl adsl", command_submit=b"\t")
+        try:
+            v = self.cli("port adsl ", command_submit=b"\t")
+        except self.CLISyntaxError:
+            v = ""
         self.cli("\x01\x0b")  # ^a + ^k
         for match in self.rx_port_phys.finditer(v):
             ifname = match.group("port")
@@ -72,7 +75,10 @@ class Script(BaseScript):
             c = self.cli("port adsl %s show" % ifname)
             iface = self.get_phys_iface(c, ifname, descr)
             interfaces += [iface]
-        v = self.cli("port uplink uplink", command_submit=b"\t")
+        try:
+            v = self.cli("port uplink ", command_submit=b"\t")
+        except self.CLISyntaxError:
+            v = ""
         self.cli("\x01\x0b")  # ^a + ^k
         for match in self.rx_port_phys.finditer(v):
             ifname = match.group("port")
