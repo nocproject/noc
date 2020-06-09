@@ -23,6 +23,7 @@ from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 from noc.config import config
 from noc.core.mongo.connection import connect
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
@@ -65,16 +66,16 @@ class Command(BaseCommand):
             else:
                 f = open(path, "r")
             if mib:
-                data = f.read(4096)
+                data = smart_text(f.read(4096))
                 match = self.rx_last_updated.search(data)
                 if not match:
                     # Not in first chunk. Read rest
-                    data += f.read()
+                    data += smart_text(f.read())
                     match = self.rx_last_updated.search(data)
                 last_updated = self.decode_date(match.group(1))
                 if (last_updated > mib.last_updated) or force:
                     self.print("    updating %s" % mib_name)
-                    self.update_mib(mib, data + f.read(), version=0)
+                    self.update_mib(mib, data + smart_text(f.read()), version=0)
                 elif last_updated == mib.last_updated:
                     # Check internal version
                     match = self.rx_version.search(data)
@@ -82,7 +83,7 @@ class Command(BaseCommand):
                         version = int(match.group(1))
                     else:
                         # Read rest
-                        data += f.read()
+                        data += smart_text(f.read())
                         match = self.rx_version.search(data)
                         if match:
                             version = int(match.group(1))
@@ -90,10 +91,10 @@ class Command(BaseCommand):
                             version = 0
                     if version > mib.version:
                         self.print("    updating %s" % mib_name)
-                        self.update_mib(mib, data + f.read(), version=version)
+                        self.update_mib(mib, data + smart_text(f.read()), version=version)
             else:
                 self.print("    creating %s" % mib_name)
-                self.create_mib(f.read())
+                self.create_mib(smart_text(f.read()))
             f.close()
 
     def decode_date(self, s):

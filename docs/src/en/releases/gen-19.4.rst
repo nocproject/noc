@@ -9,4 +9,6 @@
 
     /releases/release-19.4
     /releases/release-19.4.1
+    /releases/release-19.4.2
+
 
