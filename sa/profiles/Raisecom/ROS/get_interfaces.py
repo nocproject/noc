@@ -108,7 +108,7 @@ class Script(BaseScript):
             max_retries=self.get_getnext_retires(),
             timeout=self.get_snmp_timeout(),
         ):
-            pid_ifindex_mappings[oid.split(".")[-1]] = v
+            pid_ifindex_mappings[int(oid.split(".")[-1])] = v
         return pid_ifindex_mappings
 
     def get_lldp_config(self):
