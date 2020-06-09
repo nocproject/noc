@@ -1,22 +1,23 @@
-FROM alpine:3.8 AS code
+FROM alpine:3.11 AS code
 
 MAINTAINER Aleksey Shirokih <shirokih@nocproject.org>
 
 WORKDIR /opt/noc
 ENV\
     DJANGO_SETTINGS_MODULE=noc.settings \
-    PYTHONPATH=/opt/noc:/opt:/usr/bin/python2.7 \
+    PYTHONPATH=/opt/noc:/opt:/usr/bin/python3.8 \
     VERSION=${VERSION} \
-    NOC_LISTEN="auto:1200"
+    NOC_LISTEN="auto:1200" \
+    NOC_PYTHON_INTERPRETER=/usr/bin/python3
 
 COPY . /opt/noc
 
 RUN apk add --update --no-cache \
     ca-certificates \
     libpq \
-    py-cffi \
-    py-numpy \
-    py-pip \
+    py3-cffi \
+    py3-numpy \
+    py3-pip \
     snappy \
     tzdata \
     libmemcached \
@@ -33,10 +34,10 @@ RUN apk add --update --no-cache \
         libressl-dev \
         musl-dev \
         postgresql-dev \
-        python-dev \
+        python3-dev \
         zlib-dev \
         cmake \
-    && pip install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/docker.txt \
+    && pip3 install --src=/tmp/src --no-cache --trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/ --upgrade -r /opt/noc/requirements/docker.txt \
     && python ./scripts/deploy/install-packages requirements/web.json \
     && python ./scripts/deploy/install-packages requirements/card.json \
     && python ./scripts/deploy/install-packages requirements/bi.json \
@@ -44,20 +45,19 @@ RUN apk add --update --no-cache \
     && /usr/bin/cythonize -i speedup/*.pyx \
     && apk del -r .build-deps \
     && adduser -h /opt/noc -s /bin/sh -S -D -H -u 1200 noc \
-    && chown noc /opt/noc \
-    && sed -i 's/g = \"ascii"/g = \"utf-8\"/g' /usr/lib/python2.7/site.py
+    && chown noc /opt/noc
 
 EXPOSE 1200
 
 VOLUME /opt/noc
-VOLUME /usr/lib/python2.7/site-packages/django
+VOLUME /usr/lib/python3.8/site-packages/django
 
 FROM code AS dev
 
 RUN apk add --update vim \
     python-dev \
     gcc musl-dev \
-    && pip install pudb ipython \
+    && pip3 install pudb ipython \
     && apk del python-dev gcc musl-dev \
     && rm -rf /var/cache/apk/* /root/.cache/pip
 
@@ -68,6 +68,6 @@ FROM nginx:alpine AS static
 
 RUN apk add --no-cache curl
 
-COPY --from=code /usr/lib/python3.6/site-packages/django /usr/lib/python3.6/site-packages/django
+COPY --from=code /usr/lib/python3.8/site-packages/django /usr/lib/python3.8/site-packages/django
 COPY --from=code /opt/noc/ui /opt/noc/ui
 
