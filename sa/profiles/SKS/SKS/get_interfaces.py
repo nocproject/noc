@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import parse_table
 
@@ -94,7 +94,7 @@ class Script(BaseScript):
             return []
         return []
 
-    def get_old_sks(self, c):
+    def get_sks(self):
         interfaces = []
         descr = []
         adm_status = []
@@ -103,6 +103,7 @@ class Script(BaseScript):
         stp = self.get_stp()
         ctp = self.get_ctp()
         lldp = self.get_lldp()
+        c = self.cli("show interfaces description")
         for line in c.split("\n"):
             match = self.rx_descr.match(line.strip())
             if match:
@@ -194,9 +195,9 @@ class Script(BaseScript):
         for l in self.cli("show ipv6 interface").split("\n"):
             continue
         """
-        return interfaces
+        return [{"interfaces": interfaces}]
 
-    def get_new_sks(self):
+    def get_sks_achtung(self):
         interfaces = []
         for match in self.rx_iface.finditer(self.cli("show interface")):
             ifname = match.group("ifname")
@@ -251,15 +252,10 @@ class Script(BaseScript):
                 sub["enabled_afi"] = ["IPv4"]
             iface["subinterfaces"] = [sub]
             interfaces += [iface]
-        return interfaces
+        return [{"interfaces": interfaces}]
 
     def execute_cli(self):
-        try:
-            c = self.cli("show interfaces description")
-        except self.CLISyntaxError:
-            c = None
-        if c:
-            interfaces = self.get_old_sks(c)
+        if self.is_sks_achtung:
+            return self.get_sks_achtung()
         else:
-            interfaces = self.get_new_sks()
-        return [{"interfaces": interfaces}]
+            return self.get_sks()
