@@ -19,7 +19,7 @@ from typing import (
     DefaultDict,
 )
 from collections import defaultdict
-from itertools import compress, chain
+from itertools import chain
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -66,13 +66,13 @@ class Script(BaseScript):
             max_retries=self.get_getnext_retires(),
             timeout=self.get_snmp_timeout(),
         ):
-            pid_ifindex_mappings[oid.split(".")[-1]] = v
+            pid_ifindex_mappings[int(oid.split(".")[-1])] = v
         return pid_ifindex_mappings
 
     def get_switchport(self) -> DefaultDict[int, Dict[str, Union[int, list, None]]]:
         result = defaultdict(lambda: {"tagged_vlans": [], "untagged_vlan": None})
         pid_ifindex_mappings = self.get_bridge_ifindex_mappings()
-        iface_list = sorted(pid_ifindex_mappings, key=int)
+        self.logger.debug("PID <-> ifindex mappings: %s", pid_ifindex_mappings)
         for oid, pvid in self.snmp.getnext(
             mib["Q-BRIDGE-MIB::dot1qPvid"],
             max_repetitions=self.get_max_repetitions(),
@@ -82,7 +82,7 @@ class Script(BaseScript):
             if not pvid:
                 # if pvid is 0
                 continue
-            o = oid.split(".")[-1]
+            o = int(oid.split(".")[-1])
             result[pid_ifindex_mappings[o]]["untagged_vlan"] = pvid
         for oid, ports_mask in self.snmp.getnext(
             mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"],
@@ -93,17 +93,17 @@ class Script(BaseScript):
         ):
             vlan_num = int(oid.split(".")[-1])
             # Getting port as mask,  convert to vlan: Iface list
-            for o in compress(
-                iface_list,
-                [
-                    int(x)
-                    for x in chain.from_iterable("{0:08b}".format(mask) for mask in ports_mask)
-                ],
+            for port, is_egress in enumerate(
+                chain.from_iterable("{0:08b}".format(mask) for mask in ports_mask), start=1
             ):
-                if vlan_num == result[pid_ifindex_mappings[o]]["untagged_vlan"]:
-                    # Perhaps port is switchport @todo getting port type
+                if is_egress == "0":
                     continue
-                result[pid_ifindex_mappings[o]]["tagged_vlans"] += [vlan_num]
+                elif port not in pid_ifindex_mappings:
+                    self.logger.error("Port not in PID mappings")
+                    continue
+                elif vlan_num == result[pid_ifindex_mappings[port]]["untagged_vlan"]:
+                    continue
+                result[pid_ifindex_mappings[port]]["tagged_vlans"] += [vlan_num]
         return result
 
     def get_portchannels(self) -> Dict[int, int]:
