@@ -28,6 +28,7 @@ from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.platform import Platform
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +149,7 @@ class ReportLinkDetailApplication(ExtApplication):
                 if v is None:
                     return ""
                 if isinstance(v, str):
-                    return v.encode("utf-8")
+                    return smart_text(v)
                 elif isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")
                 elif not isinstance(v, str):
