@@ -123,7 +123,7 @@ class InterfacePathCard(BaseCard):
         sig, data = query[: cls.SIG_LEN], query[cls.SIG_LEN :]
         if sig != cls.get_signature(data):
             raise ValueError
-        return ujson.loads(codecs.decode(data, "base64"))
+        return ujson.loads(codecs.decode(data.encode(), "base64"))
 
     @staticmethod
     def split_interfaces(
