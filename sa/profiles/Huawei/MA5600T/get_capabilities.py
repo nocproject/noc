@@ -19,6 +19,9 @@ class Script(BaseScript):
 
     CHECK_SNMP_GETNEXT = {"SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"]}
 
+    # Stuck respons on command and broken next script on discovery
+    keep_cli_session = False
+
     rx_lacp_id = re.compile(r"^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
 
     rx_lldp_enable = re.compile(r"LLDP\sstatus\s+:\s*enabled")
