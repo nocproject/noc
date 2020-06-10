@@ -46,7 +46,6 @@ class ManagedObjectLoader(BaseLoader):
         "tt_system",
         "tt_queue",
         "tt_system_id",
-        "fm_pool",
     ]
 
     mapped_fields = {
