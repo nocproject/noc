@@ -30,7 +30,7 @@ class TagApplication(ExtDocApplication):
         """
         query = request.GET.get("__query")
         if query:
-            tags = Tag.objects.filter(tag__contains=query[0])
+            tags = Tag.objects.filter(tag__icontains=query)
         else:
             # If not query - return all
             tags = Tag.objects.filter()
