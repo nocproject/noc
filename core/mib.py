@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import logging
 from threading import Lock
 
@@ -80,20 +79,22 @@ class MIBRegistry(object):
         for root in self.PATHS:
             if root != "cmibs":
                 # Custom script
-                base_name = os.path.basename(os.path.dirname(root))
+                base_name = "noc.custom"
             else:
                 # Common script
                 base_name = "noc"
             logger.debug("Loading MIB: %s", name)
             mn = "%s.cmibs.%s" % (base_name, mod_name)
             try:
-                m = __import__(mn, {}, {}, "MIB")
+                m = __import__(mn, {}, {}, ["MIB"])
             except ModuleNotFoundError:
-                raise KeyError(name)
+                continue
             self.mib.update(getattr(m, "MIB"))
             if hasattr(m, "DISPLAY_HINTS"):
                 self.hints.update(m.DISPLAY_HINTS)
             self.loaded_mibs.add(name)
+            return
+        raise KeyError(name)
 
     def is_loaded(self, name: str) -> bool:
         """
