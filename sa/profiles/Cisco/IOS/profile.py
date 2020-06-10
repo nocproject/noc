@@ -112,6 +112,10 @@ class Profile(BaseProfile):
             return "FXO %s" % interface[8:].strip()
         if il.startswith("fxs"):
             return "FXS %s" % interface[3:].strip()
+        if il.startswith("voice encapsulation (pots)"):
+            return "Dial-peer voice %s" % interface[33:].strip()
+        if il.startswith("voice over ip peer"):
+            return "Dial-peer voip %s" % interface[20:].strip()
         if il.startswith("efxs"):
             return "EFXS %s" % interface[4:].strip()
         if il.startswith("cpp"):
@@ -190,6 +194,7 @@ class Profile(BaseProfile):
         "CD": "physical",  # CDMA Ix
         "Ce": "physical",  # Cellular
         "Em": "physical",  # Embedded Service Engine
+        "E1": "voice",  # E1
         "Et": "physical",  # Ethernet
         "Fa": "physical",  # FastEthernet
         "Fd": "physical",  # Fddi
