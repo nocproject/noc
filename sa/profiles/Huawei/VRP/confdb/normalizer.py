@@ -254,6 +254,9 @@ class VRPNormalizer(BaseNormalizer):
     @match("interface", ANY, "ip", "address", ANY, ANY, "sub")
     @match("interface", ANY, "ip", "address", ANY, ANY)
     def normalize_interface_ip(self, tokens):
+        if tokens[4] == "auto":
+            # IPv6 link-local
+            return
         if_name = self.interface_name(tokens[1])
         unit_name = if_name
         if "." in if_name:
