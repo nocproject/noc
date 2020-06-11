@@ -502,6 +502,21 @@ class ManagedObjectApplication(ExtModelApplication):
             "l3": sorted_iname(l3),
         }
 
+    @view(
+        url=r"^(?P<id>\d+)/interface/(?P<if_id>[0-9a-f]{24})/$",
+        method=["DELETE"],
+        access="change_interface",
+        api=True,
+    )
+    def api_delete_interface(self, request, id, if_id):
+        o = self.get_object_or_404(ManagedObject, id=int(id))
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        iface = Interface.objects.filter(managed_object=int(id), id=if_id).first()
+        if iface:
+            iface.delete()
+        return {"success": True}
+
     @view(url=r"^(?P<id>\d+)/interface/$", method=["POST"], access="change_interface", api=True)
     def api_set_interface(self, request, id):
         def get_or_none(c, v):
@@ -517,23 +532,30 @@ class ManagedObjectApplication(ExtModelApplication):
             i = self.get_object_or_404(Interface, id=d["id"])
             if i.managed_object.id != o.id:
                 return self.response_not_found()
-            # Set profile
-            if "profile" in d:
-                p = get_or_none(InterfaceProfile, d["profile"])
-                i.profile = p
-                if p:
-                    i.profile_locked = True
-            # Project
-            if "project" in d:
-                i.project = get_or_none(Project, d["project"])
-            # State
-            if "state" in d:
-                i.state = get_or_none(ResourceState, d["state"])
-            # VC Domain
-            if "vc_domain" in d:
-                i.vc_domain = get_or_none(VCDomain, d["vc_domain"])
-            #
-            i.save()
+        else:
+            i = Interface(managed_object=o.id, type="physical")
+        # Set name
+        if "name" in d:
+            i.name = o.get_profile().convert_interface_name(d["name"])
+        if "description" in d:
+            i.description = d["description"].strip()
+        # Set profile
+        if "profile" in d:
+            p = get_or_none(InterfaceProfile, d["profile"])
+            i.profile = p
+            if p:
+                i.profile_locked = True
+        # Project
+        if "project" in d:
+            i.project = get_or_none(Project, d["project"])
+        # State
+        if "state" in d:
+            i.state = get_or_none(ResourceState, d["state"])
+        # VC Domain
+        if "vc_domain" in d:
+            i.vc_domain = get_or_none(VCDomain, d["vc_domain"])
+        #
+        i.save()
         return {"success": True}
 
     @view(method=["DELETE"], url=r"^(?P<id>\d+)/?$", access="delete", api=True)
@@ -558,7 +580,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o.description = "Wiping! Do not touch!"
         o.save()
         call_later("noc.sa.wipe.managedobject.wipe", o=o.id)
-        return HttpResponse(status=self.DELETED)
+        return HttpResponse(ujson.dumps({"status": True}), status=self.DELETED)
 
     @view(
         url=r"^actions/run_discovery/$",
