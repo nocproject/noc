@@ -9,8 +9,9 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -57,6 +58,21 @@ class Script(BaseScript):
         r"^Operational Trunk Untagged VLANs:.*\n",
         re.MULTILINE,
     )
+
+    def get_bridge_ifindex_mappings(self):
+        """
+        Getting mappings for bridge port number -> ifindex
+        :return:
+        """
+        pid_ifindex_mappings = {}
+        for oid, v in self.snmp.getnext(
+            mib["IF-MIB::ifIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            timeout=self.get_snmp_timeout(),
+        ):
+            pid_ifindex_mappings[int(oid.split(".")[-1])] = v
+        return pid_ifindex_mappings
 
     def execute_cli(self):
         r = []
