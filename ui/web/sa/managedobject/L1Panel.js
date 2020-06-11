@@ -20,20 +20,29 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
     rowClassField: "row_class",
 
     initComponent: function() {
-        var me = this,
-            gridPlugins = [];
+        var me = this;
+        me.gridPlugins = [];
 
         if(NOC.hasPermission("change_interface")) {
-            gridPlugins.push(
+            me.gridPlugins.push(
                 Ext.create("Ext.grid.plugin.RowEditing", {
                     clicksToEdit: 2,
                     listeners: {
                         scope: me,
-                        edit: me.onEdit
+                        edit: me.onEdit,
+                        canceledit: me.onCancelEdit
                     }
                 })
             );
         }
+
+        me.addInterfaceButton = Ext.create("Ext.button.Button", {
+            text: __("Add Interface"),
+            glyph: NOC.glyph.plus,
+            scope: me,
+            disabled: !NOC.hasPermission("sa:managedobject:change_interface"),
+            handler: me.onAddInterface
+        });
 
         Ext.apply(me, {
             items: [
@@ -47,7 +56,11 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                     columns: [
                         {
                             text: __("Name"),
-                            dataIndex: "name"
+                            dataIndex: "name",
+                            editor: {
+                                xtype: 'textfield',
+                                allowBlank: false
+                            }
                         },
                         {
                             text: __("Status"),
@@ -103,13 +116,33 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         {
                             text: __("Description"),
                             dataIndex: "description",
-                            width: 150,
-                            flex: 1
+                            flex: 1,
+                            editor: {
+                                xtype: 'textfield'
+                            }
                         },
                         {
                             text: __("ifIndex"),
                             dataIndex: "ifindex",
                             hidden: true
+                        },
+                        {
+                            xtype: 'glyphactioncolumn',
+                            items: [{
+                                disabled: !NOC.hasPermission("sa:managedobject:change_interface"),
+                                glyph: NOC.glyph.minus_circle,
+                                scope: me,
+                                handler: me.onRemoveInterface
+                            }]
+                        }
+                    ],
+                    dockedItems: [
+                        {
+                            xtype: "toolbar",
+                            dock: "top",
+                            items: [
+                                me.addInterfaceButton
+                            ]
                         }
                     ],
                     viewConfig: {
@@ -119,7 +152,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                             cellclick: me.onCellClick
                         }
                     },
-                    plugins: gridPlugins
+                    plugins: me.gridPlugins
                 }
             ]
         });
@@ -142,20 +175,32 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
     //
     onEdit: function(editor, e) {
         var me = this,
-            r = e.record;
+            r = e.record,
+            data = {
+                profile: r.get("profile"),
+                project: r.get("project"),
+                state: r.get("state"),
+                vc_domain: r.get("vc_domain"),
+                description: r.get("description")
+            },
+            isNewRecord = Ext.isEmpty(e.originalValues.name);
+        if(isNewRecord) {
+            data["name"] = r.get("name");
+        } else {
+            data["id"] = r.get("id");
+        }
         Ext.Ajax.request({
             url: "/sa/managedobject/" + me.app.currentRecord.get("id") + "/interface/",
             method: "POST",
-            jsonData: {
-                "id": r.get("id"),
-                "profile": r.get("profile"),
-                "project": r.get("project"),
-                "state": r.get("state"),
-                "vc_domain": r.get("vc_domain")
-            },
+            jsonData: data,
             scope: me,
-            success: function(response) {
+            success: function() {
                 me.app.onRefresh();
+                if(isNewRecord) {
+                    NOC.info(__("Created interface: ") + r.get("name"));
+                } else {
+                    NOC.info(__("Saved"));
+                }
                 // @todo: Set tab
             },
             failure: function() {
@@ -179,11 +224,57 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
     onCellClick: function(view, cell, cellIndex, record, row,
                           rowIndex, e) {
         var me = this;
-        if(e.target.tagName == "A") {
+        if(e.target.tagName === "A") {
             var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
             if(header.onClick) {
                 header.onClick.apply(me, [record]);
             }
         }
+    },
+
+    onRemoveInterface: function(grid, rowIndex) {
+        var me = this,
+            rec = grid.getStore().getAt(rowIndex);
+        console.log(me.app.currentRecord.get("id"));
+        Ext.Msg.show({
+            title: __("Remove interface"),
+            msg: __("Would you like remove interface ") + rec.get("name"),
+            buttons: Ext.Msg.YESNO,
+            modal: true,
+            fn: function(button) {
+                if(button === "yes") {
+                    me.removeInterface(me.app.currentRecord.get("id"), rec.get("id"));
+                }
+            }
+        })
+    },
+
+    onAddInterface: function() {
+        var me = this,
+            editPlugin = me.gridPlugins[0];
+        editPlugin.cancelEdit();
+        me.store.insert(0, {});
+        editPlugin.startEdit(0, 0);
+    },
+
+    onCancelEdit: function(editor, context) {
+        if(context.record.phantom) {
+            context.grid.store.removeAt(context.rowIdx);
+        }
+    },
+
+    removeInterface: function(objectId, interfaceId) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + objectId + "/interface/" + interfaceId + "/",
+            method: "DELETE",
+            success: function(response) {
+                me.app.onRefresh();
+                NOC.info(__("Deleted"));
+            },
+            failure: function() {
+                NOC.error(__("Failed to remove interface"));
+            }
+        });
     }
 });
