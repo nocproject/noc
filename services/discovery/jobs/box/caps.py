@@ -24,6 +24,9 @@ class CapsCheck(PolicyDiscoveryCheck):
     CDP_QUERY = "Match('protocols', 'cdp', 'interface', X)"
     UDLD_QUERY = "Match('protocols', 'udld', 'interface', X)"
     STP_QUERY = "Match('protocols', 'stp', 'interface', X)"
+    LACP_QUERY = "Match('protocols', 'lacp', 'interface', X)"
+    LDP_QUERY = """Match('virtual-router', VR, 'forwarding-instance', FI, 'protocols', 'ldp', 'interface', X)"""
+    OSPF_QUERY = """Match('virtual-router', VR, 'forwarding-instance', FI, 'protocols', 'ospf', 'interface', X)"""
 
     def handler(self):
         self.sections = self.object.object_profile.caps_profile.get_sections(
@@ -54,6 +57,12 @@ class CapsCheck(PolicyDiscoveryCheck):
             caps["Network | STP"] = True
         if self.is_requested("udld") and self.confdb_has_udld():
             caps["Network | UDLD"] = True
+        if self.is_requested("lacp") and self.confdb_has_lacp():
+            caps["Network | LACP"] = True
+        if self.is_requested("ldp") and self.confdb_has_ldp():
+            caps["Network | LDP"] = True
+        if self.is_requested("ospf") and self.confdb_has_ospf():
+            caps["Network | OSFP | v2"] = True
         if self.object.get_caps_discovery_policy() in {"C", "S"} and set(
             self.sections
         ).intersection({"snmp", "snmp_v1", "snmp_v2c"}):
@@ -88,3 +97,12 @@ class CapsCheck(PolicyDiscoveryCheck):
 
     def confdb_has_udld(self):
         return any(self.confdb.query(self.UDLD_QUERY))
+
+    def confdb_has_lacp(self):
+        return any(self.confdb.query(self.LACP_QUERY))
+
+    def confdb_has_ldp(self):
+        return any(self.confdb.query(self.LDP_QUERY))
+
+    def confdb_has_ospf(self):
+        return any(self.confdb.query(self.OSPF_QUERY))

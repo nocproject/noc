@@ -32,6 +32,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     name = "interface"
     required_script = "get_interfaces"
 
+    AGG_QUERY = """Match("interfaces", if_name, "lag", "members", member)"""
+
     IF_QUERY = """(
         Match("interfaces", if_name) or
         Match("interfaces", if_name, "type", type) or
@@ -58,7 +60,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     PROTOCOLS_QUERY = """(Collapse("protocols", "lldp", "interface", if_name, "admin-status", join=",") or
         Match("protocols", "lldp", "interface", if_name, "admin-status", lldp_status) or
-        Match("protocols", "spanning-tree", "interface", if_name, "admin-status", stp_status)
+        Match("protocols", "spanning-tree", "interface", if_name, "admin-status", stp_status) or
+        Match("protocols", "lacp", "interface", if_name, "mode", lacp_status)
     ) and Group("if_name")"""
 
     def __init__(self, *args, **kwargs):
@@ -509,6 +512,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         interfaces = {d["if_name"]: d for d in self.confdb.query(self.IF_QUERY)}
         vrfs = {(d["vr"], d["instance"]): d for d in self.confdb.query(self.VRF_QUERY)}
         iface_proto = {d["if_name"]: d for d in self.confdb.query(self.PROTOCOLS_QUERY)}
+        aggregated = {d["member"]: d["if_name"] for d in self.confdb.query(self.AGG_QUERY)}
         instances = defaultdict(dict)
         for d in self.confdb.query(self.UNIT_QUERY):
             r = instances[d["vr"], d["instance"]]
@@ -563,6 +567,10 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                             iface["enabled_protocols"] += ["STP"]
                         if iface_proto[if_name].get("lldp_status"):
                             iface["enabled_protocols"] += ["LLDP"]
+                        if iface_proto[if_name].get("lacp_status"):
+                            iface["enabled_protocols"] += ["LACP"]
+                    if if_name in aggregated:
+                        iface["aggregated_interface"] = aggregated[if_name]
             unit = iface["subinterfaces"].get(d["unit"])
             if unit is None:
                 unit = {"name": d["unit"], "enabled_afi": []}
