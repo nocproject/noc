@@ -44,7 +44,7 @@ class Profile(BaseProfile):
     iface_type_map = {
         "g": "GigaEthernet",
         "gi": "GigabitEthernet",
-        "gig": "GigabitEthernet",
+        "gig": "GigaEthernet",  # 2.0.2H, 2.0.2C from LLDP neighbors
         "gigabitethernet": "GigabitEthernet",
         "tg": "TGigaEthernet",
         "te": "TenGigabitEthernet",
