@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_ALIAS,
@@ -54,7 +54,7 @@ class Script(BaseScript):
         "ifName": LLDP_PORT_SUBTYPE_NAME,
     }
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         result = []
         c = self.cli("show lldp remote detail")
         for match in self.rx_int.finditer(c):
