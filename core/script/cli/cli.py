@@ -61,6 +61,7 @@ class CLI(BaseCLI):
         self.native_encoding = self.script.native_encoding
         # State retries
         self.super_password_retries = self.profile.cli_retries_super_password
+        self.cli_retries_unprivileged_mode = self.profile.cli_retries_unprivileged_mode
 
     def set_state(self, state):
         self.logger.debug("Changing state to <%s>", state)
@@ -396,16 +397,28 @@ class CLI(BaseCLI):
             # xxx>enable
             # { <cr>|level-value<U><1,15> }:
             # xxx#
-            self.expect(
-                {
-                    "username": self.on_super_username,
-                    "password": self.on_super_password,
-                    "prompt": self.on_prompt,
-                    "pager": self.send_pager_reply,
-                    "unprivileged_prompt": (self.on_failure, CLILowPrivileges),
-                },
-                self.profile.cli_timeout_super,
-            )
+            if self.cli_retries_unprivileged_mode > 1:
+                self.cli_retries_unprivileged_mode -= 1
+                self.expect(
+                    {
+                        "username": self.on_super_username,
+                        "password": self.on_super_password,
+                        "prompt": self.on_prompt,
+                        "pager": self.send_pager_reply,
+                    },
+                    self.profile.cli_timeout_super,
+                )
+            else:
+                self.expect(
+                    {
+                        "username": self.on_super_username,
+                        "password": self.on_super_password,
+                        "prompt": self.on_prompt,
+                        "pager": self.send_pager_reply,
+                        "unprivileged_prompt": (self.on_failure, CLILowPrivileges),
+                    },
+                    self.profile.cli_timeout_super,
+                )
         else:
             # Do not raise privileges
             # Use unprivileged prompt as primary prompt
