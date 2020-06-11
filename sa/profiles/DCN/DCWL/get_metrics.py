@@ -23,8 +23,9 @@ class Script(GetMetricsScript):
     def get_cpu_metrics(self, metrics):
         with self.profile.shell(self):
             c = self.cli("cat /proc/loadavg")
-            cpu = c.split(" ")[1].strip()
-            self.set_metric(id=("CPU | Usage", None), value=round(float(cpu) + 0.5))
+            if c:
+                cpu = c.split(" ")[1].strip()
+                self.set_metric(id=("CPU | Usage", None), value=round(float(cpu) + 0.5))
 
     @metrics(["Memory | Usage"], volatile=False, access="C")  # CLI version
     def get_memory_metrics(self, metrics):
