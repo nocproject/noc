@@ -18,6 +18,8 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
+    always_prefer = "S"
+
     rx_ver = re.compile(
         r"Product Name: (?P<platform>.*)\s*\n"
         r"(Product Version:.*\n)?"
@@ -31,7 +33,20 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        # Try SNMP first
+        platform = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.19.0")
+        version = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.1.0")
+        serial = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.14.0")
+        _, bootprom = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.13.0").split("/")
+        return {
+            "vendor": "Qtech",
+            "platform": platform,
+            "version": version,
+            "attributes": {"Boot PROM": bootprom.strip(), "Serial Number": serial},
+        }
+
+    def execute_cli(self, **kwargs):
         ver = self.cli("show version", cached=True)
         match = self.rx_ver.search(ver)
         platform = match.group("platform")
