@@ -263,6 +263,9 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     # Amount of retries for enable passwords
     # Increase if box asks for enable password twice
     cli_retries_super_password = 1
+    # Amount of retries for unprivileged prompt
+    # Increase if box send unprivileged prompt twice
+    cli_retries_unprivileged_mode = 1
     # Additional hints for snmp binary OctetString data processing
     # Contains mapping of
     # oid -> render_callable
