@@ -37,8 +37,13 @@ class Script(BaseScript):
         # Try SNMP first
         platform = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.19.0")
         version = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.1.0")
+        if not version:
+            # QSW-8200-28F 3.41.307
+            version = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.16.0").split()[1]
         serial = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.14.0")
-        _, bootprom = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.13.0").split("/")
+        bootprom = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.13.0")
+        if bootprom and "/" in bootprom:
+            _, bootprom = bootprom.split("/")
         return {
             "vendor": "Qtech",
             "platform": platform,
