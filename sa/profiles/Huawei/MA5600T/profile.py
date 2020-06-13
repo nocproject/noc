@@ -34,6 +34,7 @@ class Profile(BaseProfile):
         (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\>(\|\|\<K\>|) \}", "\n"),
         (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
         (r"\{ groupindex\<K\>\|<cr> \}\:", "\n"),
+        (r"\{ \<cr\>\|instance\<K\>\|port\<K\> \}\:", "\n"),
         (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n"),
         # The ONT automatic loading policy will be deleted
         (r"\s*Are you sure to proceed\(y/n\)\[[yn]\]", "y\n"),
@@ -44,7 +45,12 @@ class Profile(BaseProfile):
         r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?(\(diagnose\))?(#$|#\s|%%)"
     )
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
-    pattern_operation_error = "Configuration console time out, please retry to log on"
+    pattern_operation_error = (
+        r"(Configuration console time out, please retry to log on|"
+        r"\s*Failure:\s*System is busy, please retry after a while|"
+        r"It will take several minutes to save configuration file, please wait|"
+        r"Failure:\s*System is reading or writing flash, please retry after a while)"
+    )
     # Found on MA5616, V800R015C10
     send_on_syntax_error = BaseProfile.send_backspaces
     command_more = " "
@@ -55,7 +61,14 @@ class Profile(BaseProfile):
     command_leave_config = "quit"
     command_save_config = "save\ny\n"
     command_exit = "quit\ny\n"
-    rogue_chars = [b"\xff", b"\r"]
+    rx_alarm_clean = re.compile(
+        rb"\s+\!\s*\d+\[\S+\s\S+\]:\n\n"
+        rb"\s+ALARM.+\n"
+        rb"(\s+(ALARM NAME|PARAMETERS|DESCRIPTION|CAUSE|ADVICE)\s+:\s*(.+\n)+)+\s+\-+\s*END",
+        re.MULTILINE,
+    )
+    rogue_chars = [b"\xff", b"\r", rx_alarm_clean]
+    cli_retries_unprivileged_mode = 2
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "#"}
 

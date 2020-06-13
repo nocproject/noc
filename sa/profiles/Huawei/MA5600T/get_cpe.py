@@ -8,6 +8,7 @@
 # Python modules
 import re
 import codecs
+import time
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -15,6 +16,8 @@ from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.core.text import parse_table_header
 from noc.core.text import parse_kv
 from noc.core.mib import mib
+from noc.core.snmp.render import render_bin
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -112,7 +115,12 @@ class Script(BaseScript):
         for ont_id in r:
             # if r[ont_id]["status"] != "active":
             #     continue
-            v = self.cli("display ont info %s %s %s %s" % tuple(ont_id.split("/")))
+            try:
+                v = self.cli("display ont info %s %s %s %s" % tuple(ont_id.split("/")))
+            except self.CLIOperationError:
+                self.logger.info("Configuration saving, skip command")
+                time.sleep(10)
+                continue
             parts = self.splitter.split(v)
             parse_result = parse_kv(self.detail_map, parts[1])
             try:
@@ -133,6 +141,7 @@ class Script(BaseScript):
                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntDespt"],
             ],
             bulk=False,
+            display_hints={mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"]: render_bin},
         ):
             ifindex, ont_id = ont_index.split(".")
             ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
@@ -140,9 +149,9 @@ class Script(BaseScript):
                 "interface": names[int(ifindex)],
                 "status": "inactive",
                 "id": ont_id,
-                "global_id": codecs.encode(ont_serial, "hex").upper(),
+                "global_id": smart_text(codecs.encode(ont_serial, "hex")).upper(),
                 "type": "ont",
-                "serial": codecs.encode(ont_serial, "hex").upper(),
+                "serial": smart_text(codecs.encode(ont_serial, "hex")).upper(),
                 "description": ont_descr,
                 "location": "",
             }
