@@ -21,6 +21,11 @@ class Script(BaseScript):
         False  # Fix stuck CLI after execute command show interface vlan GigaEthernet1/0/20
     )
 
+    always_prefer = "S"
+
+    MAX_REPETITIONS = 5
+    MAX_GETNEXT_RETIRES = 1
+
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<oper_status>Up|Down|Not Present)",
