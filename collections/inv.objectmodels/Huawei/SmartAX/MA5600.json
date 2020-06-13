@@ -130,7 +130,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["MA5600"]
+            "part_no": ["H511UPBA", "MA5600"]
         },
         "dimensions": {
             "depth": 420,

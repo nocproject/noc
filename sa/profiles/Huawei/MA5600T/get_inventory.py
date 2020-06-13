@@ -244,14 +244,21 @@ class Script(BaseScript):
         if self.is_dslam:
             # On MA5600 chassis and subboard serial is not supported
             # frame = self.cli("display frame info 0")
+            part_no = "H511UPBA"  # MA5600
+            descr = "MA5600's H511UPBA backplane, with double CELLBUS and GE bus"
+            # Detect MA5600/MA5603
+            slots, _ = self.profile.get_board(self)
+            if slots == 7:
+                part_no = "MA5603"
+                descr = "MA5603 subrack"
             r += [
                 {
                     "type": "CHASSIS",
                     "number": 0,
                     "vendor": "Huawei",
-                    "part_no": "H511UPBA",
+                    "part_no": part_no,
                     "serial": None,
-                    "description": "MA5600's H511UPBA backplane, with double CELLBUS and GE bus",
+                    "description": descr,
                 }
             ]
             subboards = self.get_ma5600_subboard()
