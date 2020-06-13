@@ -32,7 +32,7 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
-        v = self.cli("show equipment shelf")
+        v = self.cli("show equipment slot")
         slots = self.rx_slots.search(v)
         v = self.cli("show software-mngt oswp")
         match_ver = self.rx_ver.search(v)
@@ -43,13 +43,17 @@ class Script(BaseScript):
         }
 
     rack_map = {
-        "ARAM-D": "7330",
-        "ALTS-T": "7302",
+        "ARAM-D": "7330",  # Mini shelf 7330 FTTN host (4LT-slots)
+        "ALTS-T": "7302",  # ETSI shelf for lineboard
+        "ASPS-A": "",  # ETSI splitter shelf with backplane
+        "ASPS-C": "",  # ETSI splitter shelf without backplane
+        "EREM-A": "7330",  # 7330 FTTN Remote expansion Module, REM-XD
+        # "NFXS-A": "",
     }
 
     def execute_snmp(self, **kwargs):
         v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.4.17")
-        platform = self.rack_map[v]
+        platform = self.rack_map.get(v, "7302")
         version = None
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.637.61.1.24.1.1.1.2"):
             if v == "NO_OSWP":
