@@ -85,12 +85,12 @@ class Script(BaseScript):
 
     # Version start  ROS_5.1.1.420 (Compiled May 15 2015, 12:36:24)
     rx_ver_2015 = re.compile(
-        r"Product name: (?P<platform>\S+)\s*\n"
+        r"Product name:\s*(Gazelle |)(?P<platform>\S+)\s*\n"
         r"(ROS|QOS)\s+Version(:|)\s*(?P<version>\S+)(\.|)\s*\(Compiled(?P<compiled>.+)\)\s*\n"
         r"Product Version: \S+\s*\n"
         r"BOOT Room Version\s*(:|)\s*(?P<bootstrap>\S+)\s*\n"
         r"CPLD Version: \S+\s*\n"
-        r"Hardware\s*\S*\s*Version(\sRev\.|:)?\s*(?P<hw_rev>\S+)\s*\n\n"
+        r"Hardware\s*(Gazelle |)\S*\s*Version(\sRev\.|:)?\s*(?P<hw_rev>\S+)\s*\n\n"
         r"System MacAddress( is)?\s*:\s*(?P<mac>\S+)\s*\n"
         r"Serial number\s*:\s*(?P<serial>\S+)\s*",
         re.MULTILINE | re.IGNORECASE,
