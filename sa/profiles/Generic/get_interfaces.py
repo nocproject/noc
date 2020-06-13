@@ -390,7 +390,7 @@ class Script(BaseScript):
         return self.MAX_GETNEXT_RETIRES
 
     def get_snmp_timeout(self):
-        return self.MAX_GETNEXT_RETIRES
+        return self.MAX_TIMEOUT
 
     def get_interface_ifindex(self, name: str) -> int:
         """
