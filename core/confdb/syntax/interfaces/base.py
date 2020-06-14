@@ -141,6 +141,22 @@ INTERFACES_SYNTAX = DEF(
                         ),
                     ],
                 ),
+                DEF(
+                    "lag",
+                    [
+                        DEF(
+                            "members",
+                            [
+                                DEF(
+                                    IF_NAME,
+                                    multi=True,
+                                    name="member_interface_name",
+                                    gen="make_interface_lag_members",
+                                )
+                            ],
+                        )
+                    ],
+                ),
             ],
             multi=True,
             name="interface",
