@@ -129,7 +129,7 @@ class VRPNormalizer(BaseNormalizer):
         unit_name = if_name
         if "." not in tokens[1]:
             yield self.make_interface_description(
-                interface=self.interface_name(tokens[1]), description=" ".join(tokens[2:])
+                interface=self.interface_name(tokens[1]), description=" ".join(tokens[3:])
             )
         elif "." in if_name:
             if_name, _ = if_name.split(".", 1)
@@ -210,6 +210,23 @@ class VRPNormalizer(BaseNormalizer):
         yield self.make_interface_ethernet_autonegotiation(
             interface=self.interface_name(tokens[1]), mode="manual"
         )
+
+    @match("interface", ANY, "eth-trunk", ANY)
+    def normalize_interface_lag_member(self, tokens):
+        lag_name = "Eth-Trunk%s" % tokens[3]
+        yield self.make_interface_lag_members(
+            member_interface_name=self.interface_name(tokens[1]), interface=lag_name
+        )
+        yield self.make_lacp_interface_mode(
+            member_name=self.interface_name(tokens[1]), mode="active"
+        )
+
+    # @match("interface", ANY, "mode", "lacp-static")
+    # def normalize_interface_lag(self, tokens):
+    #     lag_name = "Eth-Trunk%s" % tokens[3]
+    #     yield self.make_interface_lag_members(
+    #         member_interface_name=self.interface_name(tokens[1]), interface=lag_name
+    #     )
 
     # Unit
     @match("interface", ANY, "port", "hybrid", "pvid", "vlan", ANY)
@@ -338,6 +355,7 @@ class VRPNormalizer(BaseNormalizer):
             ),
         )
 
+    @match("interface", ANY, "mpls", "l2vc", ANY, ANY, "mtu", ANY)
     @match("interface", ANY, "mpls", "l2vc", ANY, ANY)
     def normalize_interface_l2vc(self, tokens):
         if_name = self.interface_name(tokens[1])
