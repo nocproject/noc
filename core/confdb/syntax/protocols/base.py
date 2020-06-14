@@ -13,6 +13,7 @@ from .lldp.base import PROTOCOLS_LLDP_SYNTAX
 from .spanningtree.base import PROTOCOLS_SPANNING_TREE_SYNTAX
 from .udld.base import PROTOCOLS_UDLD_SYNTAX
 from .loopdetect.base import PROTOCOLS_LOOP_DETECT_SYNTAX
+from .lacp.base import PROTOCOLS_LACP_SYNTAX
 
 
 PROTOCOLS_SYNTAX = DEF(
@@ -24,5 +25,6 @@ PROTOCOLS_SYNTAX = DEF(
         PROTOCOLS_UDLD_SYNTAX,
         PROTOCOLS_SPANNING_TREE_SYNTAX,
         PROTOCOLS_LOOP_DETECT_SYNTAX,
+        PROTOCOLS_LACP_SYNTAX,
     ],
 )
