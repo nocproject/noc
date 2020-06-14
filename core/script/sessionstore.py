@@ -35,7 +35,7 @@ class SessionStore(object):
             if item is None:
                 return None
             # Delete from store to prevent session hijacking
-            del self._sessions[session]
+            # del self._sessions[session]
             self._set_timer(item, None)
             if item.stream.is_closed():
                 return None
@@ -46,11 +46,14 @@ class SessionStore(object):
             item = self._sessions.get(session)
             if not item:
                 return
-            del self._sessions[session]
+            if not shutdown:
+                del self._sessions[session]
             self._set_timer(item, None)
         if not item.stream.is_closed():
             if shutdown:
                 item.stream.shutdown_session()
+            with self._lock:
+                del self._sessions[session]
             item.stream.close()
 
     def put(self, session: str, stream: BaseCLI, timeout: Optional[int] = None):
