@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ class Script(BaseScript):
         r"^\s+BootRom Version (?P<bootprom>\S+)\s*\n"
         r"^\s+HardWare Version (?P<hardware>\S+)\s*\n"
         r"^\s+CPLD Version.*\n"
-        r"^\s+Serial No.:(?P<serial>\S+)\s*\n",
+        r"^\s+(?:Serial No.:|Device serial number)\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_ver_snmp = re.compile(
