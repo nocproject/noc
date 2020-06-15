@@ -179,6 +179,9 @@ class Script(BaseScript):
         for key, ifindex, v in self.iter_iftable("name", mib[self.SNMP_NAME_TABLE]):
             if name and self.profile.convert_interface_name(v) != name:
                 continue
+            if not self.interface_filter(v):
+                self.logger.info("Interface will be ignored: %s", v)
+                continue
             yield "name", ifindex, v
 
     def is_ignored_mac(self, mac: MAC) -> bool:
@@ -188,3 +191,11 @@ class Script(BaseScript):
         :return: True if MAC should be ignored
         """
         return mac in self.IGNORED_MACS or mac.is_multicast
+
+    def interface_filter(self, interface: str) -> bool:
+        """
+        Check interface by name, False is ignored
+        :param interface: Interface name
+        :return:
+        """
+        return True
