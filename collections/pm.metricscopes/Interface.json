@@ -29,5 +29,6 @@
             "is_required": false,
             "name": "unit"
         }
-    ]
+    ],
+    "enable_timedelta": true
 }
