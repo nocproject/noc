@@ -112,6 +112,12 @@ class Profile(BaseProfile):
             return "FXO %s" % interface[8:].strip()
         if il.startswith("fxs"):
             return "FXS %s" % interface[3:].strip()
+        if il.startswith("foreign exchange station"):
+            return "FXS %s" % interface[24:].strip()
+        if il.startswith("receive and transmit"):
+            return "E&M %s" % interface[21:].strip()
+        if il.startswith("cas channel"):
+            return "ds0-group %s" % interface[11:].strip()
         if il.startswith("voice encapsulation (pots)"):
             return "Dial-peer voice %s" % interface[33:].strip()
         if il.startswith("voice over ip peer"):
@@ -122,8 +128,6 @@ class Profile(BaseProfile):
             return "CPP"
         if il.startswith("srp"):
             return "SRP %s" % interface[3:].strip()
-        if il.startswith("Foreign Exchange Station"):
-            return "FXS %s" % interface[24:].strip()
         if il.startswith("cable"):
             match = self.rx_cable_if.search(interface)
             if match:
@@ -194,7 +198,7 @@ class Profile(BaseProfile):
         "CD": "physical",  # CDMA Ix
         "Ce": "physical",  # Cellular
         "Em": "physical",  # Embedded Service Engine
-        "E1": "voice",  # E1
+        "E1": "other",  # E1
         "Et": "physical",  # Ethernet
         "Fa": "physical",  # FastEthernet
         "Fd": "physical",  # Fddi
