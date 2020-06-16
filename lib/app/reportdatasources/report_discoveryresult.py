@@ -54,6 +54,7 @@ class ReportDiscoveryResult(BaseReportColumn):
         "prefix",
         "address",
         "metrics",
+        "cpestatus",
         "nri",
         "nri_portmap",
         "nri_service",
