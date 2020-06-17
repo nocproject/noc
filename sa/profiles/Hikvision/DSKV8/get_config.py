@@ -40,7 +40,8 @@ class Script(BaseScript):
         v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
-        for key, value in sorted(v["DeviceInfo"]).items():
+        for key in sorted(v["DeviceInfo"]):
+            value = v["DeviceInfo"][key]
             if key == "_text" or isinstance(value, str):
                 continue
             c += "    %s %s\n" % (key, value[0]["_text"] if value[0] else "")
