@@ -59,6 +59,7 @@
       - libmemcached
       - zlib-devel
       - bzip2
+      - cmake
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

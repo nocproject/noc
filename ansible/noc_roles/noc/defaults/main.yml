@@ -6,22 +6,25 @@ noc_var_lib: /var/lib/noc
 noc_repo: https://github.com/nocproject/noc.git
 noc_version: stable
 noc_root: /opt/noc
+noc_dist: /opt/noc_dist
 noc_etc: "{{ noc_root }}/etc"
 noc_reports_dir: "{{ noc_var_lib }}/reports"
 noc_crashinfo_dir: "{{ noc_var_lib }}/var/cp/crashinfo/new"
 noc_services_file: "{{ noc_etc }}/noc_services.conf"
-noc_py3_ver: "3.6"
+noc_python_interpreter: python3
+noc_py3_ver: "3.8"
 pypy_version: 5.9
 pypy_hash_sha256: 8d39eb98df3adf7882a7f3551f47b8c7cff47a0e20d6aabc57bb592f155c2616
 pypy_download_url_base: https://bitbucket.org/squeaky/portable-pypy/downloads
 pypy_download_url: "{{ pypy_download_url_base }}/pypy-{{ pypy_version }}-linux_x86_64-portable.tar.bz2"
 pypy_tmp_path: "{{ tower_dist_dir }}/pypy-{{ pypy_version }}-linux_x86_64-portable.tar.bz2"
 pypy_path: "{{ noc_root }}/../pypy"
-noc_python_interpreter: python
 bi_export_dir: "{{ noc_var_lib }}/bi"
 supervisorctl_key: "{{ lookup('supervisorctl_key', tower_data + '/noc/supervisorctl.key') }}"
 django_key: "{{ lookup('django_key', tower_data + '/noc/secret.key') }}"
 supervisor_sock_path: /var/run/supervisor_noc.sock
+noc_py3_force_updates: false
+host_mount_points: "{{ ansible_mounts|json_query('[].mount') }}"
 
 py_version:
   py3.6: "3.6.10"
@@ -32,3 +35,6 @@ py_hashes:
   py3.6: "986078f11b39074be22a199e56491d98"
   py3.7: "172c650156f7bea68ce31b2fd01fa766"
   py3.8: "3000cf50aaa413052aef82fd2122ca78"
+
+py_rel_name: "{{ py_version['py' ~ noc_py3_ver] }}"
+noc_python_url: "https://cdn.getnoc.com/noc/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz"

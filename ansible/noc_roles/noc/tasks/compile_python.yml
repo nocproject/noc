@@ -1,48 +1,51 @@
 ---
-- name: "Python{{ noc_py3_ver }} | Check that {{ noc_py3_ver }} is still not installed"
-  stat:
-    path: "/opt/python{{ noc_py3_ver }}/bin/python{{ noc_py3_ver }}"
-  register: already_installed
-  ignore_errors: true
-# @todo check of minor version
+- name: "Fail if Python version for download is not recommended"
+  fail:
+    msg: |
+      In case if system doesn't have system Python of chosen version {{ noc_py3_ver }},
+      we recommend to use last supported for that release: https://getnoc.com/blog/
+  when: noc_py3_ver == "3.7"
 
-- name: Create dir for compiling
+- name: Create dirs for Python's archives
   file:
-    path: "/opt/python{{ noc_py3_ver }}"
+    path: "{{ item }}"
     state: directory
-  when: not already_installed.stat.exists
+  with_items:
+    - "{{ noc_dist }}"
+    - "/opt/python{{ noc_py3_ver }}"
 
-- name: "Python{{ noc_py3_ver }} | Download"
+- name: "Python{{ noc_py3_ver }} | Download archive's checksum"
   get_url:
-    url: "https://www.python.org/ftp/python/{{ py_version['py' ~ noc_py3_ver] }}/Python-{{ py_version['py' ~ noc_py3_ver] }}.tar.xz"
-    dest: "{{ tower_dist_dir }}/Python-{{ py_version['py' ~ noc_py3_ver] }}.tar.xz"
-    checksum: "md5:{{ py_hashes['py' ~ noc_py3_ver] }}"
-  delegate_to: 127.0.0.1
+    url: "{{ noc_python_url ~ '_SHA1SUMS' }}"
+    dest: "{{ noc_dist }}"
+    force: true
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  when: not already_installed.stat.exists
+
+- name: "Python{{ noc_py3_ver }} | Read checksum"
+  slurp:
+    src: "{{ noc_dist }}/python{{ py_rel_name }}.tar.gz_SHA1SUMS"
+  register: python_checksum
+
+- name: "Python{{ noc_py3_ver }} | Download precompiled archive"
+  get_url:
+    url: "{{ noc_python_url }}"
+    dest: "{{ noc_dist }}/Python-{{ py_rel_name }}.tar.gz"
+    checksum: "sha1:{{ python_checksum['content'] | b64decode }}"
+  register: python_archive_download
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: "Python{{ noc_py3_ver }} | Uncompress"
   unarchive:
-    src: "{{ tower_dist_dir }}/Python-{{ py_version['py' ~ noc_py3_ver] }}.tar.xz"
+    src: "{{ noc_dist }}/Python-{{ py_rel_name }}.tar.gz"
     dest: "/opt/python{{ noc_py3_ver }}/"
-    creates: "/opt/python{{ noc_py3_ver }}/Python-{{ py_version['py' ~ noc_py3_ver] }}"
-  when: not already_installed.stat.exists
+    creates: "/opt/python{{ noc_py3_ver }}/Python-{{ py_rel_name }}"
+    remote_src: true
+  when: python_archive_download is changed
 
-- name: "Include OS-specific tasks for compiling"
-  include_tasks: "os/{{ ansible_distribution }}/for_compile.yml"
-
-- name: "Python{{ noc_py3_ver }} | Compile and install"
-  command: "{{ item }}"
-  args:
-    chdir: "/opt/python{{ noc_py3_ver }}/Python-{{ py_version['py' ~ noc_py3_ver] }}"
-  with_items:
-    - "./configure --prefix /opt/python{{ noc_py3_ver }}"
-    - make
-    - make altinstall
-  when: not already_installed.stat.exists
-
-- name: Take path for new python3
+- name: Take path for Python3
   set_fact:
     noc_init_python_path: "/opt/python{{ noc_py3_ver }}/bin/python{{ noc_py3_ver }}"

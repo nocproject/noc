@@ -57,6 +57,10 @@ forms:
         - "3.6"
         - "3.7"
         - "3.8"
+    py3_force_updates:
+      label: "Reinstall Python3 in case of microversion updates (3.X.m -> 3.X.n)"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
 
 services:
   noc:
