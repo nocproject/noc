@@ -238,6 +238,14 @@ Ext.define("NOC.fm.alarm.view.form.AlarmModel", {
                             type: "string"
                         },
                         {
+                            name: "platform",
+                            type: "string"
+                        },
+                        {
+                            name: "platform__label",
+                            type: "string"
+                        },
+                        {
                             name: "row_class",
                             type: "string"
                         }

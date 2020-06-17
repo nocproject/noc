@@ -188,6 +188,11 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                             renderer: NOC.render.Lookup("alarm_class")
                         },
                         {
+                            dataIndex: "platform",
+                            text: __("Platform"),
+                            renderer: NOC.render.Lookup("platform")
+                        },
+                        {
                             dataIndex: "subject",
                             text: __("Subject"),
                             flex: 1

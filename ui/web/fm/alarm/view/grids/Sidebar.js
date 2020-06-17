@@ -243,6 +243,15 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
+                    xtype: "fm.alarm.tagfield",
+                    url: "/inv/platform/lookup/",
+                    fieldLabel: __("Platform"),
+                    name: "platform",
+                    bind: {
+                        selected: "{activeFilter.platform}"
+                    }
+                },
+                {
                     xtype: "searchfield",
                     fieldLabel: __("TT"),
                     name: "escalation_tt__contains",

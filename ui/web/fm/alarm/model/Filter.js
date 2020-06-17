@@ -46,6 +46,10 @@ Ext.define("NOC.fm.alarm.model.Filter", {
             type: "string"
         },
         {
+            name: "platform",
+            type: "string"
+        },
+        {
             name: "escalation_tt__contains",
             type: "string"
         },

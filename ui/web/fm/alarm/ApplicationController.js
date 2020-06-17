@@ -19,6 +19,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         administrative_domain: "",
         managedobjectselector: "",
         alarm_class: "",
+        platform: "",
         escalation_tt__contains: "",
         timestamp__gte: null,
         timestamp__lte: null,
@@ -242,7 +243,8 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         ], restoreCombo, this);
         // restore tag fields
         Ext.each([
-            "alarm_class"
+            "alarm_class",
+            "platform"
         ], restoreTagField, this);
         // don't change, http params is string compare with int, 0 == "0"
         if(params.hasOwnProperty("cleared_after") && params.cleared_after != 0) {
@@ -308,7 +310,8 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             {key: "managed_object", valueField: "id"},
             {key: "managedobjectselector", valueField: "id"},
             // tag field
-            {key: "alarm_class", valueField: "id"}
+            {key: "alarm_class", valueField: "id"},
+            {key: "platform", valueField: "id"},
         ], setParam);
         if(value.hasOwnProperty("profiles")) {
             var i, len = value.profiles.length;

@@ -35,6 +35,14 @@ Ext.define("NOC.fm.alarm.Model", {
             type: "string"
         },
         {
+            name: "platform",
+            type: "string"
+        },
+        {
+            name: "platform__label",
+            type: "string"
+        },
+        {
             name: "timestamp",
             type: "date"
         },
