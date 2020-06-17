@@ -88,7 +88,7 @@ class CronTab(Document):
         if not self.is_active:
             return None
         entry = self.get_entry()
-        delta = next(entry)
+        delta = entry.next(default_utc=False)
         if not delta:
             return None
         return datetime.datetime.now() + datetime.timedelta(seconds=delta)
