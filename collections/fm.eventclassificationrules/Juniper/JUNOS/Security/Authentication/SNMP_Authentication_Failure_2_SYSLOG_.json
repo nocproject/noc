@@ -16,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) \\(.+\\)$"
+            "value_re": "SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from (?P<ip>\\S+) to (?P<dst_ip>\\S+) \\(.+\\)$"
         }
     ]
 }
