@@ -296,7 +296,7 @@ class MIB(Document):
             if not is_oid(k):
                 # Nothing to resolve
                 continue
-            v = fm_unescape(vars[k])
+            v = smart_text(fm_unescape(vars[k]))
             rk, syntax = cls.get_name_and_syntax(k)
             rv = v
             if syntax:
