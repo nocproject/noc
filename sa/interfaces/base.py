@@ -31,7 +31,7 @@ class NoneParameter(Parameter):
     def clean(self, value):
         if value is not None:
             self.raise_error(value)
-        return value
+        return None
 
 
 class StringParameter(Parameter):
@@ -43,19 +43,26 @@ class StringParameter(Parameter):
         self.choices = set(choices) if choices else None
         self.aliases = aliases
         super().__init__(required=required, default=default)
+        self.morph_clean()
 
     def clean(self, value):
+        # if self.default is not None {
+        if value is None and self.default is not None:
+            return self.default
+        # }
         if not isinstance(value, str):
-            if value is None and self.default is not None:
-                return self.default
             try:
                 value = str(value)
             except Exception:
                 self.raise_error(value)
+        # if self.aliases {
         if self.aliases:
             value = self.aliases.get(value, value)
+        # }
+        # if self.choices {
         if self.choices and value not in self.choices:
             self.raise_error(value)
+        # }
         return value
 
 
@@ -149,18 +156,25 @@ class IntParameter(Parameter):
         self.min_value = min_value
         self.max_value = max_value
         super().__init__(required=required, default=default)
+        self.morph_clean()
 
     def clean(self, value):
+        # if self.default is not None {
         if value is None and self.default is not None:
             return self.default
+        # }
         try:
             i = int(value)
         except (ValueError, TypeError):
             self.raise_error(value)
-        if (self.min_value is not None and i < self.min_value) or (
-            self.max_value is not None and i > self.max_value
-        ):
+        # if self.min_value is not None {
+        if self.min_value is not None and i < self.min_value:
             self.raise_error(value)
+        # }
+        # if self.max_value is not None {
+        if self.max_value is not None and i > self.max_value:
+            self.raise_error(value)
+        # }
         return i
 
 
@@ -173,19 +187,26 @@ class FloatParameter(Parameter):
         self.min_value = min_value
         self.max_value = max_value
         super().__init__(required=required, default=default)
+        self.morph_clean()
 
     def clean(self, value):
+        # if self.default is not None {
+        if value is None and self.default is not None:
+            return self.default
+        # }
         if not isinstance(value, float):
-            if value is None and self.default is not None:
-                return self.default
             try:
                 value = float(value)
             except ValueError:
                 self.raise_error(value)
-        if (self.min_value is not None and value < self.min_value) or (
-            self.max_value is not None and value > self.max_value
-        ):
+        # if self.min_value is not None {
+        if self.min_value is not None and i < self.min_value:
             self.raise_error(value)
+        # }
+        # if self.max_value is not None {
+        if self.max_value is not None and i > self.max_value:
+            self.raise_error(value)
+        # }
         return value
 
 
@@ -194,9 +215,15 @@ class ListParameter(Parameter):
     Check value is list
     """
 
+    def __init__(self, required=True, default=None):
+        super().__init__(required=required, default=default)
+        # self.morph_clean()
+
     def clean(self, value):
+        # if self.default is not None {
         if value is None and self.default is not None:
             return self.default
+        # }
         try:
             return list(value)
         except ValueError:
@@ -296,41 +323,57 @@ class ListOfParameter(ListParameter):
         self.is_list = isinstance(element, (list, tuple))
         self.convert = convert
         super().__init__(required=required, default=default)
+        self.morph_clean()
+        self.morph_script_clean()
 
     def clean(self, value):
+        # if self.default is not None {
         if value is None and self.default is not None:
             return self.default
+        # }
+        # if self.convert {
         if self.convert and not isinstance(value, (list, tuple)):
             value = [value]
-        v = super().clean(value)
+        # }
+        try:
+            v = list(value)
+        except ValueError:
+            self.raise_error(value)
+        # if self.is_list {
         if self.is_list:
             return [[e.clean(vv) for e, vv in zip(self.element, nv)] for nv in value]
-        else:
-            return [self.element.clean(x) for x in v]
+        # }
+        return [self.element.clean(x) for x in v]
 
     def script_clean_input(self, profile, value):
+        # if self.default is not None {
         if value is None and self.default is not None:
             return self.default
+        # }
         v = super().script_clean_input(profile, value)
+        # if self.is_list {
         if self.is_list:
             return [
                 [e.script_clean_input(profile, vv) for e, vv in zip(self.element, nv)]
                 for nv in value
             ]
-        else:
-            return [self.element.script_clean_input(profile, x) for x in v]
+        # }
+        return [self.element.script_clean_input(profile, x) for x in v]
 
     def script_clean_result(self, profile, value):
+        # if self.default is not None {
         if value is None and self.default is not None:
             return self.default
+        # }
         v = super().script_clean_result(profile, value)
+        # if self.is_list {
         if self.is_list:
             return [
                 [e.script_clean_result(profile, vv) for e, vv in zip(self.element, nv)]
                 for nv in value
             ]
-        else:
-            return [self.element.script_clean_result(profile, x) for x in v]
+        # }
+        return [self.element.script_clean_result(profile, x) for x in v]
 
 
 class StringListParameter(ListOfParameter):

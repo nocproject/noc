@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.codemorph import code_morpher
 from .error import InterfaceTypeError
 
 
@@ -98,6 +99,27 @@ class BaseParameter(object):
             "fieldLabel": label,
             "allowBlank": not self.required,
         }
+
+    def morph_clean(self) -> None:
+        """
+        Replace .clean with morphed version
+        :return:
+        """
+        fn = code_morpher.code_morph(self.clean, {"self": self})
+        if fn != self.clean:
+            self.clean = fn
+
+    def morph_script_clean(self) -> None:
+        """
+        Replace .script_clean with morphed version
+        :return:
+        """
+        fn = code_morpher.code_morph(self.script_clean_input, {"self": self})
+        if fn != self.script_clean_input:
+            self.script_clean_input = fn
+        fn = code_morpher.code_morph(self.script_clean_result, {"self": self})
+        if fn != self.script_clean_result:
+            self.script_clean_result = fn
 
 
 class ORParameter(BaseParameter):
