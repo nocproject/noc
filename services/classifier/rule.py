@@ -16,6 +16,7 @@ from noc.inv.models.subinterface import SubInterface
 from noc.lib.datasource import datasource_registry
 from noc.services.classifier.exception import InvalidPatternException
 from noc.core.escape import fm_unescape
+from noc.core.comp import smart_text
 
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
@@ -240,7 +241,7 @@ class Rule(object):
                         ]
                 else:
                     c += [
-                        'args = [%s, fm_unescape(e_vars["%s"])]'
+                        'args = [%s, smart_text(fm_unescape(e_vars["%s"]))]'
                         % (", ".join(['"%s"' % x for x in r[2:]]), name)
                     ]
                     c += ['e_vars["%s"] = self.fixup_%s(*args)' % (r[0], r[1])]
@@ -256,7 +257,16 @@ class Rule(object):
         cc += ["rule.match = types.MethodType(match, rule)"]
         self.code = "\n".join(cc)
         code = compile(self.code, "<string>", "exec")
-        exec(code, {"rule": self, "types": types, "logging": logging, "fm_unescape": fm_unescape})
+        exec(
+            code,
+            {
+                "rule": self,
+                "types": types,
+                "logging": logging,
+                "fm_unescape": fm_unescape,
+                "smart_text": smart_text,
+            },
+        )
 
     def clone(self, rules):
         """
