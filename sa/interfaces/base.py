@@ -350,7 +350,10 @@ class ListOfParameter(ListParameter):
         if value is None and self.default is not None:
             return self.default
         # }
-        v = super().script_clean_input(profile, value)
+        try:
+            v = list(value)
+        except ValueError:
+            self.raise_error(value)
         # if self.is_list {
         if self.is_list:
             return [
@@ -365,7 +368,10 @@ class ListOfParameter(ListParameter):
         if value is None and self.default is not None:
             return self.default
         # }
-        v = super().script_clean_result(profile, value)
+        try:
+            v = list(value)
+        except ValueError:
+            self.raise_error(value)
         # if self.is_list {
         if self.is_list:
             return [
