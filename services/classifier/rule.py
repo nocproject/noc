@@ -231,12 +231,12 @@ class Rule(object):
                     if r[1] in ("ifindex",):
                         # call fixup with managed object
                         c += [
-                            'e_vars["%s"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars["%s"]))'
+                            'e_vars["%s"] = self.fixup_%s(event.managed_object, smart_text(fm_unescape(e_vars["%s"])))'
                             % (r[0], r[1], name)
                         ]
                     else:
                         c += [
-                            'e_vars["%s"] = self.fixup_%s(fm_unescape(e_vars["%s"]))'
+                            'e_vars["%s"] = self.fixup_%s(smart_text(fm_unescape(e_vars["%s"])))'
                             % (r[0], r[1], name)
                         ]
                 else:
@@ -272,6 +272,7 @@ class Rule(object):
         """
         Factory returning clone rules
         """
+        # pylint: disable=unnecessary-pass
         pass
 
     def fixup_int_to_ip(self, v):
