@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.LTP.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,10 +25,12 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    rx_version = re.compile(r"^Eltex \S+ software version\s+(?P<version>\S+\s+build\s+\d+)")
+    rx_version = re.compile(
+        r"^Eltex \S+ software version\s+(?P<version>\S+\s+build\s+\d+)", re.MULTILINE
+    )
 
     rx_snmp_version = re.compile(
-        r"^Eltex (?P<platform>\S+)" r" software version (?P<version>\S+\s+build\s+\d+)\s+"
+        r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s+"
     )
 
     def execute_snmp(self, **kwargs):
