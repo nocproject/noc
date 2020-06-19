@@ -4,6 +4,7 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+# cython: language_level=3
 
 from libc.stdio cimport snprintf
 
@@ -85,7 +86,7 @@ def parse_p_oid(bytes msg):
 
     ptr = msg
     o_ptr = out
-    if ptr[0] == "+":
+    if ptr[0] == 0x2b:
         o_ptr += snprintf(o_ptr, 1024 - (o_ptr - out), "1.3")
     else:
         o_ptr += snprintf(
