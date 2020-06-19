@@ -109,7 +109,7 @@ class Command(BaseCommand):
 
         def grouper(iterable, n):
             args = [iter(iterable)] * n
-            return itertools.zip_longest(*args)
+            return itertools.filterfalse(lambda x: not x, itertools.zip_longest(*args))
 
         def do_update(bulk):
             ds.bulk_update(bulk)
