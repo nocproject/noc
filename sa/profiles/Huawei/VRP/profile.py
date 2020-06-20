@@ -161,6 +161,8 @@ class Profile(BaseProfile):
         "Cascade": "physical",
         "Logic-Channel": "tunnel",
         "LoopBack": "loopback",
+        "InLoopBack": "loopback",
+        "Console": "other",
         "MEth": "management",
         "M-Ethernet": "management",
         "MTunnel": None,
@@ -202,7 +204,7 @@ class Profile(BaseProfile):
         return "\n".join(r)
 
     rx_interface_name = re.compile(
-        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$"
+        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Gi|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$"
     )
 
     def convert_interface_name(self, s):
@@ -228,6 +230,7 @@ class Profile(BaseProfile):
                 "Ten-GigabitEthernet": "XGigabitEthernet",
                 "XGE": "XGigabitEthernet",
                 "GE": "GigabitEthernet",
+                "Gi": "GigabitEthernet",
                 "Eth": "Ethernet",
                 "MEth": "M-Ethernet",
                 "VE": "Virtual-Ethernet"
