@@ -11,6 +11,8 @@ from typing import Dict, Any, Callable
 import inspect
 from types import FunctionType, MethodType
 from threading import Lock
+
+# NOC modules
 from noc.core.hash import hash_int
 
 
@@ -65,14 +67,14 @@ class CodeMorpher(object):
         return cls._compile(fn, morphed_src)
 
     @classmethod
-    def _compile(cls, fn: Callable, src: str):
+    def _compile(cls, fn: Callable[..., Any], src: str):
         src = src.lstrip()
         key = hash_int(src)
         with cls.lock:
             mfn = cls.cache.get(key)
             if not mfn:
-                code = compile(src, "<string>", "exec")
-                mfn = FunctionType(code.co_consts[0], globals(), fn.__name__)
+                code = compile(src, "<string>", "exec").co_consts[0]
+                mfn = FunctionType(code, globals(), fn.__name__)
                 cls.cache[key] = mfn
         return MethodType(mfn, fn.__self__)
 

@@ -335,10 +335,7 @@ class ListOfParameter(ListParameter):
         if self.convert and not isinstance(value, (list, tuple)):
             value = [value]
         # }
-        try:
-            v = list(value)
-        except ValueError:
-            self.raise_error(value)
+        v = super().clean(value)
         # if self.is_list {
         if self.is_list:
             return [[e.clean(vv) for e, vv in zip(self.element, nv)] for nv in value]
@@ -350,10 +347,7 @@ class ListOfParameter(ListParameter):
         if value is None and self.default is not None:
             return self.default
         # }
-        try:
-            v = list(value)
-        except ValueError:
-            self.raise_error(value)
+        v = super().clean(value)
         # if self.is_list {
         if self.is_list:
             return [
@@ -368,10 +362,7 @@ class ListOfParameter(ListParameter):
         if value is None and self.default is not None:
             return self.default
         # }
-        try:
-            v = list(value)
-        except ValueError:
-            self.raise_error(value)
+        v = super().clean(value)
         # if self.is_list {
         if self.is_list:
             return [
