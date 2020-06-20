@@ -55,6 +55,7 @@ class Command(BaseCommand):
             "hk",
             "mac",
             "xmac",
+            "ifdesc",
             "bfd",
             "fdp",
             "vpn",
