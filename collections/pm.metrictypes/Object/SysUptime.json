@@ -1,0 +1,10 @@
+{
+    "name": "Object | SysUptime",
+    "$collection": "pm.metrictypes",
+    "uuid": "30575960-8062-41e2-93bf-13d3952a1283",
+    "scope__name": "Object",
+    "field_name": "sys_uptime",
+    "field_type": "UInt64",
+    "description": "Object  RFC1213-MIB:SysUptime ",
+    "measure": "sec"
+}
