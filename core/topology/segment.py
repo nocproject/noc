@@ -314,6 +314,12 @@ class SegmentTopology(BaseTopology):
             obj_uplinks[mo] = ups
             for u in ups:
                 obj_downlinks[u].add(mo)
+        # Check uplinks with DownlinkMerge settings
+        dlm_settings = set(
+            ManagedObject.objects.filter(
+                id__in=obj_uplinks, object_profile__enable_rca_downlink_merge=True
+            ).values_list("id", flat=True)
+        )
         # Calculate RCA neighbors and yield result
         for mo in obj_uplinks:
             # Filter out only current segment. Neighbors will be updated by their
@@ -327,6 +333,10 @@ class SegmentTopology(BaseTopology):
                 neighbors.add(dmo)
                 # And uplinks of downlinks
                 neighbors |= set(obj_uplinks[dmo])
+            # Downlinks of uplink if MergeDownlinks setting is set
+            if dlm_settings and dlm_settings.intersection(set(obj_uplinks[mo])):
+                for dumo in obj_uplinks[mo]:
+                    neighbors |= obj_downlinks[dumo]
             # Not including object itself
             if mo in neighbors:
                 neighbors.remove(mo)
