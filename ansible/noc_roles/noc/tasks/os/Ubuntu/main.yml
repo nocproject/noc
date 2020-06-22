@@ -23,6 +23,7 @@
       - bzip2
       - zlib1g-dev
       - cmake
+      - libssl-dev
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

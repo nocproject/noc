@@ -21,6 +21,7 @@
       - patch
       - bzip2
       - cmake
+      - libssl-dev
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
