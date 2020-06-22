@@ -1,14 +1,16 @@
 # ---------------------------------------------------------------------
 # Vendor: D-Link
 # OS:     DxS_Smart
-# Compatible:
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 
+# Python modules
 import re
+
+# NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.core.script.error import NotSupportedError
 
@@ -30,6 +32,11 @@ class Profile(BaseProfile):
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
+
+    matchers = {
+        "is_has_cli": {"platform": {"$regex": r"^(D[EGX]S-1210|DGS-1500)"}},
+    }
+
     #
     # Version comparison
     # Version format:
@@ -53,6 +60,13 @@ class Profile(BaseProfile):
         "DGS-1210-28P/C1": "1.3.6.1.4.1.171.10.76.21.1",
         "DGS-1210-52/C1": "1.3.6.1.4.1.171.10.76.22.1",
         "DGS-1210-52P/C1": "1.3.6.1.4.1.171.10.76.33.1",
+        "DGS-1210-10/F1": "1.3.6.1.4.1.171.10.153.3.1",
+        "DGS-1210-10P/F1": "1.3.6.1.4.1.171.10.153.1.1",
+        "DGS-1210-20/F1": "1.3.6.1.4.1.171.10.153.4.1",
+        "DGS-1210-26/F1": "1.3.6.1.4.1.171.10.153.6.1",
+        "DGS-1210-28/F1": "1.3.6.1.4.1.171.10.153.5.1",
+        "DGS-1210-28P/F1": "1.3.6.1.4.1.171.10.153.8.1",
+        "DGS-1210-52/F1": "1.3.6.1.4.1.171.10.153.7.1",
         "DGS-1500-20": "1.3.6.1.4.1.171.10.126.1.1",
         "DGS-1500-28": "1.3.6.1.4.1.171.10.126.2.1",
         "DGS-1500-28P": "1.3.6.1.4.1.171.10.126.3.1",
@@ -223,23 +237,3 @@ class Profile(BaseProfile):
                     }
                 ]
         return vlans
-
-
-# DES-1210-series
-def DES1210(v):
-    return v["platform"].startswith("DES-1210")
-
-
-# DGS-1210-series
-def DGS1210(v):
-    return v["platform"].startswith("DGS-1210")
-
-
-# DXS-1210-series
-def DXS1210(v):
-    return v["platform"].startswith("DXS-1210")
-
-
-# DGS-1500-series
-def DGS1500(v):
-    return v["platform"].startswith("DGS-1500")
