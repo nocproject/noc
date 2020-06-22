@@ -11,10 +11,9 @@ import threading
 import time
 import random
 from queue import Queue, Empty
+import asyncio
 
 # Third-party modules
-import tornado.locks
-import tornado.ioloop
 import pymongo.errors
 
 # NOC modules
@@ -155,12 +154,11 @@ class DataStreamService(Service):
 
     async def wait(self, ds_name):
         def notify():
-            ioloop.add_callback(event.set)
+            asyncio.get_running_loop().call_soon(event.set)
 
         if ds_name not in self.ds_queue:
             return
-        event = tornado.locks.Event()
-        ioloop = tornado.ioloop.IOLoop.current()
+        event = asyncio.Event()
         self.ds_queue[ds_name].put(notify)
         await event.wait()
 
