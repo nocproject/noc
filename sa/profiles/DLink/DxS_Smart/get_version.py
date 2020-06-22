@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.sa.profiles.DLink.DxS_Smart.profile import DES1210, DGS1210, DXS1210, DGS1500
 
 
 class Script(BaseScript):
@@ -27,7 +26,7 @@ class Script(BaseScript):
         r"system serial number\s+:\s*(?P<serial>\S+)",
         re.MULTILINE | re.DOTALL | re.I,
     )
-    rx_snmp_ver = re.compile(r"^(?P<platform>\S+)\s*", re.DOTALL)
+    rx_snmp_ver = re.compile(r"^(?:WS6-)?(?P<platform>\S+)\s*")
 
     def execute(self):
         r = {"vendor": "DLink"}
@@ -40,9 +39,9 @@ class Script(BaseScript):
                 pass
         else:
             raise self.NotSupportedError()
-        if DES1210(r) or DGS1210(r) or DXS1210(r) or DGS1500(r):
+        if self.is_has_cli:
             s = self.cli("show switch", cached=True)
-            match = self.re_search(self.rx_ver, s)
+            match = self.rx_ver.search(s)
             r.update(
                 {
                     "version": match.group("version"),
