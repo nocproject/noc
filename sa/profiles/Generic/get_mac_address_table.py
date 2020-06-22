@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.core.mib import mib
+from noc.core.validators import is_vlan
 
 
 class Script(BaseScript):
@@ -70,6 +71,13 @@ class Script(BaseScript):
             if r_oid not in mac_port:
                 continue
             vlan_id, mac = r_oid[0], ":".join("%02x" % int(c) for c in r_oid[1:])
+            # Some devices return CPU/management vlan as 0
+            if vlan_id != "0" and not is_vlan(vlan_id):
+                # Found vlan `4155` on Eltex MES-3124F fw 2.5.48.6
+                self.logger.error(
+                    "Invalid vlan number %s, for MAC: %s, Port: %s", vlan_id, mac, mac_port[r_oid],
+                )
+                continue
             r += [
                 {
                     "interfaces": [mac_port[r_oid]],
