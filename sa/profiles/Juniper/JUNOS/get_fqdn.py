@@ -30,3 +30,4 @@ class Script(BaseScript):
             if match.group("dname"):
                 fqdn = "%s.%s" % (fqdn, match.group("dname"))
             return fqdn
+        raise NotImplementedError

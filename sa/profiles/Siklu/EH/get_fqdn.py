@@ -1,16 +1,15 @@
-"""
 # ---------------------------------------------------------------------
 # Siklu.EH.get_fqdn
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
+
 # Python modules
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
@@ -19,15 +18,9 @@ class Script(BaseScript):
     interface = IGetFQDN
     rx_hostname = re.compile(r"^system\sname\s+:\s*(?P<hostname>\S+)\n", re.MULTILINE)
 
-    def execute(self):
-        if self.has_snmp():
-            try:
-                # sysName.0
-                v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
-                if v:
-                    return v
-            except self.snmp.TimeOutError:
-                pass
+    always_prefer = "S"
+
+    def execute_cli(self, **kwargs):
         v = self.cli("show system")
         fqdn = []
         match = self.rx_hostname.search(v)
