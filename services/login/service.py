@@ -16,6 +16,7 @@ import cachetools
 from noc.core.service.ui import UIService
 from noc.services.login.auth import AuthRequestHandler
 from noc.services.login.logout import LogoutRequestHandler
+from noc.services.login.logged import IsLoggedRequestHandler
 from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
 from noc.aaa.models.user import User
@@ -41,6 +42,7 @@ class LoginService(UIService):
         return super().get_handlers() + [
             ("^/api/auth/auth/$", AuthRequestHandler, {"service": self}),
             ("^/api/login/logout/$", LogoutRequestHandler),
+            ("^/api/login/is_logged/$", IsLoggedRequestHandler),
         ]
 
     # Fields excluded from logging
@@ -78,7 +80,11 @@ class LoginService(UIService):
             metrics["auth_success", ("method", method)] += 1
             # Set cookie
             handler.set_secure_cookie(
-                "noc_user", user, expires_days=config.login.session_ttl, httponly=True, secure=True
+                AuthRequestHandler.USER_COOKIE,
+                user,
+                expires_days=config.login.session_ttl,
+                httponly=True,
+                secure=True,
             )
             # Register last login
             if config.login.register_last_login:
