@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // project.project application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.project.project.Application");
@@ -73,12 +73,5 @@ Ext.define("NOC.project.project.Application", {
                 "/api/card/view/project/" + me.currentRecord.get("id") + "/"
             );
         }
-    },
-    //
-    onPreview: function(record) {
-        var me = this;
-        window.open(
-            "/api/card/view/project/" + record.get("id") + "/"
-        );
     }
 });

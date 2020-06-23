@@ -40,6 +40,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.main.timepattern.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.main.handler.LookupField",
+        "NOC.project.project.LookupField",
         "NOC.inv.vendor.LookupField",
         "NOC.inv.platform.LookupField",
         "NOC.inv.firmware.LookupField",
@@ -754,6 +755,17 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     ),
                                     allowBlank: false,
                                     tabIndex: 110,
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "project",
+                                    xtype: "project.project.LookupField",
+                                    fieldLabel: __("Project"),
+                                    allowBlank: true,
+                                    tabIndex: 111,
                                     groupEdit: true,
                                     listeners: {
                                         render: me.addTooltip

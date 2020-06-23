@@ -163,6 +163,28 @@
     <tr>
     {% endif %}
 
+    {% if managed_objects %}
+    <tr>
+        <th scope="row">{{ _("Managed Objects") }}</th>
+        <td>
+            <table class="table">
+                <thead>
+                    <th>{{ _("Object") }}</th>
+                    <th>{{ _("Address") }}</th>
+                </thead>
+                <tbody>
+                    {% for mo in managed_objects %}
+                        <tr>
+                            <td><a href="/api/card/view/managedobject/{{ mo.id }}/">{{ mo.name }}</a></td>
+                            <td>{{ mo.address }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
     {% if interfaces %}
     <tr>
         <th scope="row">{{ _("Interface") }}</th>

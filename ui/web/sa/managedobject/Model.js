@@ -72,6 +72,15 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "project",
+            type: "string"
+        },
+        {
+            name: "project__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "profile",
             type: "string"
         },

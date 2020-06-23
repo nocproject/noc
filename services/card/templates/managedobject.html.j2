@@ -65,6 +65,17 @@
                     {{ object | object_location }}
                 </div>
             </div> <!-- row-->
+            {% if object.project %}
+            <div class="line"></div>
+            <div class="row">
+                <div class="col-sm-1">
+                    <b>{{ _("Project") }}</b>
+                </div>
+                <div class="col-sm-10">
+                    <a href="/api/card/view/project/{{ object.project.id }}/">{{ object.project }}</a>
+                </div>
+            </div> <!-- row -->
+            {% endif %}
             <div class="line"></div>
             <div class="row">
                 <div class="col-sm-1">
