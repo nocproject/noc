@@ -107,7 +107,6 @@ _MODELS = {
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
     "main.NotificationGroupOther": "noc.main.models.notificationgroup.NotificationGroupOther",
     "main.NotificationGroupUser": "noc.main.models.notificationgroup.NotificationGroupUser",
-    "main.OrderMap": "noc.main.models.ordermap.OrderMap",
     "main.Pool": "noc.main.models.pool.Pool",
     "main.PrefixTable": "noc.main.models.prefixtable.PrefixTable",
     "main.PyRule": "noc.main.models.pyrule.PyRule",
