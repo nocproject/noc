@@ -250,10 +250,10 @@ build:Master Docs:
     paths:
       - build/docs/en
     expire_in: 2 hours
-  only:
-    refs:
-      - master
-      - /^release-\d+\.\d+/
+#  only:
+#    refs:
+#      - master
+#      - /^release-\d+\.\d+/
 
 build:Release Image:
   stage: Build
