@@ -254,6 +254,8 @@ build:Master Docs:
 #    refs:
 #      - master
 #      - /^release-\d+\.\d+/
+  only:
+    - merge_requests
 
 build:Release Image:
   stage: Build
@@ -329,3 +331,5 @@ upload docs:
 #    refs:
 #      - master
 #      - /^release-\d+\.\d+/
+  only:
+    - merge_requests
