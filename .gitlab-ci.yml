@@ -231,8 +231,8 @@ build:Docs:
     paths:
       - build/docs/en
     expire_in: 2 hours
-  only:
-    - merge_requests
+#  only:
+#    - merge_requests
 
 build:Master Docs:
   stage: Build
