@@ -28,6 +28,7 @@ Ext.define("NOC.core.LookupField", {
     },
     isLookupField: true,
     restUrl: null,
+    dataFields: ["id", "label"],
 
     initComponent: function() {
         var me = this;
@@ -45,7 +46,7 @@ Ext.define("NOC.core.LookupField", {
 
         Ext.apply(me, {
             store: {
-                fields: ["id", "label"],
+                fields: me.dataFields,
                 pageSize: 25,
                 proxy: {
                     type: "rest",

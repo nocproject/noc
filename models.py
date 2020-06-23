@@ -98,7 +98,9 @@ _MODELS = {
     "main.DataStreamConfig": "noc.main.models.datastreamconfig.DataStreamConfig",
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
     "main.ExtStorage": "noc.main.models.extstorage.ExtStorage",
+    "main.Font": "noc.main.models.font.Font",
     "main.Favorites": "noc.main.models.favorites.Favorites",
+    "main.Glyph": "noc.main.models.glyph.Glyph",
     "main.Handler": "noc.main.models.handler.Handler",
     "main.Language": "noc.main.models.language.Language",
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
@@ -324,6 +326,8 @@ _MODELS = {
 FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "vc.VC", "sa.ManagedObject"]
 
 COLLECTIONS = [
+    "main.Font",
+    "main.Glyph",
     "fm.SyntaxAlias",
     "sa.Profile",
     "dev.Quiz",
