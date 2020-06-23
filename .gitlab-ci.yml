@@ -1,7 +1,7 @@
 ---
 stages:
   - Lint
-  - Test
+#  - Test
   - Build
   - Upload
 
