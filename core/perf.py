@@ -9,7 +9,7 @@
 from collections import defaultdict
 
 # Third-party modules
-from atomiclong import AtomicLong
+from atomicl import AtomicLong
 
 #
 # Performance metrics

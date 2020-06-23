@@ -1,4 +1,4 @@
-atomiclong==0.1.1
+atomicl==0.1.1
 bsdiff4==1.1.9
 csiphash==0.0.5
 http-parser==0.9.0
