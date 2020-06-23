@@ -323,7 +323,7 @@ upload docs:
   extends: .upload
   variables:
     SOURCE: build/docs/*
-    DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG
+    DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
   only:
     refs:
       - master
