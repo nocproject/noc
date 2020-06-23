@@ -9,7 +9,7 @@
 import bisect
 
 # Third-party modules
-from atomiclong import AtomicLong
+from atomicl import AtomicLong
 
 DEFAULT_HIST_SCALE = 1000000
 
