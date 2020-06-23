@@ -1,7 +1,7 @@
 ---
 stages:
   - Lint
-#  - Test
+  - Test
   - Build
   - Upload
 
@@ -196,7 +196,7 @@ py:test:
       down -v
   only:
     refs:
-      - merge_requests
+#      - merge_requests
       - master
       - /^release-\d+\.\d+/
   tags:
