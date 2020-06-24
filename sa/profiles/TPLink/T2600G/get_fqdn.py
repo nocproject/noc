@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # TPLink.T2600G.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,21 +9,16 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
 class Script(BaseScript):
     name = "TPLink.T2600G.get_fqdn"
     interface = IGetFQDN
+
     rx_hostname = re.compile(r"^hostname\s+\"(?P<hostname>\S+)\"", re.MULTILINE)
     rx_domain_name = re.compile(r"^ip domain[ \-]name\s+(?P<domain>\S+)", re.MULTILINE)
-
-    def execute_snmp(self, **kwargs):
-        v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
-        if v:
-            return v
-        raise self.NotSupportedError
 
     def execute_cli(self):
         v = self.cli("show running-config | include hostname")

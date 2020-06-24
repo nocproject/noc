@@ -9,25 +9,20 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
 class Script(BaseScript):
     name = "Alcatel.AOS.get_fqdn"
     interface = IGetFQDN
+    always_prefer = "S"
+
     rx_hostname = re.compile(r"\s+Name:\s+(?P<hostname>.*),", re.MULTILINE)
 
-    def execute(self):
-        if self.has_snmp():
-            try:
-                # sysName.0
-                v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
-                if v:
-                    return v
-            except self.snmp.TimeOutError:
-                pass
+    def execute_cli(self):
         v = self.cli("show SYSTEM")
         match = self.rx_hostname.search(v)
         if match:
             return match.group("hostname")
+        raise NotImplementedError
