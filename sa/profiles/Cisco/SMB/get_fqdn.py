@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_fqdn
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,8 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.mib import mib
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
@@ -24,8 +23,3 @@ class Script(BaseScript):
         match = self.rx_hostname.search(v)
         fqdn = [match.group("hostname")]
         return fqdn
-
-    def execute_snmp(self):
-        v = self.snmp.get(mib["SNMPv2-MIB::sysName.0"], cached=True)
-        if v:
-            return v

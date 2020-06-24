@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,9 +9,8 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -19,9 +18,6 @@ class Script(BaseScript):
     interface = IGetFQDN
 
     rx_name = re.compile(r"^System [Nn]ame\s+:(?P<name>.*)$", re.MULTILINE)
-
-    def execute_snmp(self):
-        return self.snmp.get(mib["SNMPv2-MIB::sysName.0"])
 
     def execute_cli(self):
         v = self.scripts.get_switch()

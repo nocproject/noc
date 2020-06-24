@@ -9,31 +9,19 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
 class Script(BaseScript):
     name = "Cisco.WLC.get_fqdn"
     interface = IGetFQDN
+    always_prefer = "S"
+
     rx_hostname = re.compile(r"^hostname\s+(?P<hostname>\S+)", re.MULTILINE)
     rx_domain_name = re.compile(r"^ip domain[ \-]name\s+(?P<domain>\S+)", re.MULTILINE)
 
-    def execute_snmp(self, **kwargs):
-        v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
-        if v:
-            return v
-        raise self.NotSupportedError
-
     def execute_cli(self):
-        if self.has_snmp():
-            try:
-                # sysName.0
-                v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
-                if v:
-                    return v
-            except self.snmp.TimeOutError:
-                pass
         v = self.cli("show running-config | include ^(hostname|ip domain.name)")
         fqdn = []
         match = self.rx_hostname.search(v)
