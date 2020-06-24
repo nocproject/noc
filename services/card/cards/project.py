@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # project card
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ from noc.vc.models.vpn import VPN
 from noc.vc.models.vlan import VLAN
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
+from noc.sa.models.managedobject import ManagedObject
 from .base import BaseCard
 
 
@@ -39,6 +40,8 @@ class ProjectCard(BaseCard):
         addresses = list(Address.objects.filter(project=self.object).order_by("address"))
         # Get project's DNS zones
         dns_zones = list(DNSZone.objects.filter(project=self.object).order_by("name"))
+        # Get project's managed objects
+        managed_objects = list(ManagedObject.objects.filter(project=self.object).order_by("name"))
         # Get project's interfaces
         interfaces = list(Interface.objects.filter(project=self.object).order_by("name"))
         # Get project's subinterfaces
@@ -67,6 +70,7 @@ class ProjectCard(BaseCard):
             "prefixes": prefixes,
             "addresses": addresses,
             "dns_zones": dns_zones,
+            "managed_objects": managed_objects,
             "interfaces": interfaces,
             "sub_interfaces": sub_interfaces,
             "ases": ases,

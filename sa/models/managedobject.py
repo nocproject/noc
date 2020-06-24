@@ -45,6 +45,7 @@ from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.project.models.project import Project
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from noc.core.model.fields import (
     INETField,
@@ -86,7 +87,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 22
+MANAGEDOBJECT_CACHE_VERSION = 23
 CREDENTIAL_CACHE_VERSION = 2
 
 Credentials = namedtuple(
@@ -150,6 +151,9 @@ class ManagedObject(NOCModel):
     )
     segment = DocumentReferenceField(NetworkSegment, null=False, blank=False)
     pool = DocumentReferenceField(Pool, null=False, blank=False)
+    project = CachedForeignKey(
+        Project, verbose_name="Project", on_delete=CASCADE, null=True, blank=True
+    )
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
     profile = DocumentReferenceField(Profile, null=False, blank=False)
