@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -74,24 +74,23 @@ class Script(BaseScript):
                 inv = self.cli("sys sw sfp disp")
             rx_trans = re.compile(
                 r"SFP\s+:\s+(?P<number>\d+)\s*\n"
-                r"Vendor\s+:\s+(?P<vendor>\S+)\s*\n"
-                r"Part\sNumber\s+:\s+(?P<part_no>\S+\s*\S*)\s*\n"
-                r"Series\sNumber\s+:\s+(?P<serial>\S+)\s*\n"
+                r"Vendor\s+:\s+(?P<vendor>\S+)?\s*\n"
+                r"Part\sNumber\s+:\s+(?P<part_no>\S+\s*\S*)?\s*\n"
+                r"Series\sNumber\s+:\s+(?P<serial>\S+)?\s*\n"
                 r"Revision\s+:\s+(?P<rev>\S+)?\s*\n"
                 r"Transceiver\s+:\s+(?P<type>\S+)",
                 re.MULTILINE | re.DOTALL,
             )
 
         for match in rx_trans.finditer(inv):
-            try:
-                vendor = match.group("vendor").encode("utf-8")
-            except UnicodeDecodeError:
-                vendor = "NONAME"
-            try:
-                part_no = match.group("part_no").encode("utf-8").strip()
-            except UnicodeDecodeError:
-                part_no = "NoName | Transceiver | Unknown SFP"
-            part_no_orig = self.remove_non_ascii(match.group("part_no").strip())
+            vendor = "NONAME"
+            part_no = "NoName | Transceiver | Unknown SFP"
+            part_no_orig = ""
+            if match.group("vendor"):
+                vendor = match.group("vendor").strip()
+            if match.group("part_no"):
+                part_no = match.group("part_no").strip()
+                part_no_orig = self.remove_non_ascii(match.group("part_no").strip())
             if vendor in ["NONAME", "OEM", "CISCO-FINISAR", "AODevices"]:
                 part_no = "NoName | Transceiver | "
                 description = match.group("type")
@@ -115,20 +114,24 @@ class Script(BaseScript):
                     part_no = part_no + "1G | SFP BXD"
                 else:
                     part_no = part_no + "Unknown SFP"
-            revision = self.remove_non_ascii(match.group("rev"), "") if match.group("rev") else None
+            description = "%s (%s)" % (match.group("type"), vendor)
+            if part_no_orig:
+                description = "%s (p/n: %s)" % (description, part_no_orig)
             o = {
                 "type": "XCVR",
                 "number": xcvr_n(match.group("number")),
                 "vendor": vendor,
-                "description": "%s (%s)" % (match.group("type"), vendor),
+                "description": description,
                 "part_no": [part_no.strip()],
                 "builtin": False,
             }
+            revision = self.remove_non_ascii(match.group("rev"), "") if match.group("rev") else None
             if revision:
                 o["revision"] = revision
-            try:
-                o["serial"] = match.group("serial").encode("utf-8")
-            except UnicodeDecodeError:
-                pass
+            serial_no = (
+                self.remove_non_ascii(match.group("serial"), "") if match.group("serial") else None
+            )
+            if serial_no:
+                o["serial"] = serial_no
             objects += [o]
         return objects
