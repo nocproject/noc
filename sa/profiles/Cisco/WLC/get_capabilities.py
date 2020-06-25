@@ -19,8 +19,7 @@ class Script(BaseScript):
         """
         Check box has cdp enabled
         """
-        # ciscoCdpMIB::cdpGlobalRun
-        r = self.snmp.get(mib["CISCO-CDP-MIB::cdpGlobalRun", "0"])
+        r = self.snmp.get(mib["CISCO-CDP-MIB::cdpGlobalRun", 0])
         return r == 1
 
     @false_on_cli_error
