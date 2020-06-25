@@ -157,7 +157,7 @@ class MonMapCard(BaseCard):
                 status = "good"
                 if mo_id in maintenance:
                     status = "maintenance"
-                elif 100 < alarms.get(mo_id) <= 2000:
+                elif 100 < alarms.get(mo_id, 0) <= 2000:
                     status = "warning"
                 elif alarms.get(mo_id) > 2000:
                     status = "error"
