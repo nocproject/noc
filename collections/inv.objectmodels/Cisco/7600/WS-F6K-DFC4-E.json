@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 7600 | WS-F6K-DFC4-E",
+    "$collection": "inv.objectmodels",
+    "uuid": "882f1047-b6f0-11ea-a011-00e081b84be0",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-F6K-DFC4-E Distributed Forwarding Card 4",
+    "cr_context": "DFC",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-F6K-DFC4-E"]
+        }
+    }
+}

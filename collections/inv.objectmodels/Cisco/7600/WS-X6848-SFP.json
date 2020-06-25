@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | 7600 | WS-X6748-SFP",
+    "name": "Cisco | 7600 | WS-X6848-SFP",
     "$collection": "inv.objectmodels",
-    "uuid": "326e35a3-a855-4ff6-a1bc-cb0e32842029",
+    "uuid": "2f07a5bb-b6f0-11ea-a011-00e081b84be0",
     "vendor__code": "CISCO",
-    "description": "Cisco WS-X6748-SFP CEF720 linecard with 48 1G SFP ports",
+    "description": "Cisco WS-X6848-SFP CEF720 linecard with 48 1G SFP ports",
     "cr_context": "LINECARD",
     "connections": [
         {
@@ -415,7 +415,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-X6748-SFP"]
+            "part_no": ["WS-X6848-SFP"]
         }
     }
 }
