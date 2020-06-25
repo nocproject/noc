@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_capabilities_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -53,8 +53,7 @@ class Script(BaseScript):
         """
         Check box has cdp enabled
         """
-        # ciscoCdpMIB::cdpGlobalRun
-        r = self.snmp.get("1.3.6.1.4.1.9.9.23.1.3.1.0")
+        r = self.snmp.get(mib["CISCO-CDP-MIB::cdpGlobalRun", 0])
         return r == 1
 
     @false_on_cli_error
