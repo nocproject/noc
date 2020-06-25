@@ -113,7 +113,7 @@ class MetaApplicator(BaseApplicator):
                     yield "interfaces", iface.name, "meta", "hints", hint
             # interfaces X meta link
             if iface.name in links:
-                for n, ro in enumerate(sorted(links[iface.name])):
+                for n, ro in enumerate(sorted(links[iface.name], key=str)):
                     n = str(n)
                     yield "interfaces", iface.name, "meta", "link", n, "object", "id", str(ro.id)
                     yield "interfaces", iface.name, "meta", "link", n, "object", "name", ro.name
