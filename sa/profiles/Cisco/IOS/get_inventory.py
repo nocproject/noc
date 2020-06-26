@@ -345,8 +345,10 @@ class Script(BaseScript):
             (lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
             and not pid.startswith("WS-CAC-")
             and not pid.endswith("-MB")
+            and not pid.endswith("-FAN")
             and "Clock" not in descr
             and "VTT FRU" not in descr
+            and "VTT-E FRU" not in descr
             and "C2801 Motherboard " not in descr
             and "xx Switch Stack" not in descr
         ):
@@ -393,6 +395,7 @@ class Script(BaseScript):
             or pid.startswith("WS-X67")
             or pid.startswith("WS-X65")
             or pid.startswith("WS-X68")
+            or pid.startswith("WS-X69")
             or pid.startswith("WS-X49")
         ) and "port" in descr:
             return "LINECARD", self.slot_id, pid
@@ -441,7 +444,7 @@ class Script(BaseScript):
             if match:
                 self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
-        elif pid.startswith("FAN") or pid == "WS-X4992":
+        elif pid.startswith("FAN") or pid.endswith("-FAN") or pid == "WS-X4992":
             # Fan module
             return "FAN", self.slot_id, pid
         elif (
@@ -482,10 +485,10 @@ class Script(BaseScript):
         elif pid.startswith("C3900-SPE"):
             # SPE for 3900
             return "SPE", self.slot_id, pid
-        elif "Clock FRU" in descr:
+        elif "Clock FRU" in descr or (pid.endswith("-CL") and "Clock type" in descr):
             # Clock module
             return "CLK", self.slot_id, pid
-        elif "VTT FRU" in descr:
+        elif "VTT FRU" in descr or "VTT-E FRU" in descr:
             # Clock module
             return "VTT", self.slot_id, pid
         elif "Compact Flash Disk" in descr:
