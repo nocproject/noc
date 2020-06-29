@@ -1,9 +1,9 @@
 {
-    "name": "Qtech | QSW | QSW-2500E",
+    "name": "Qtech | QSW | QSW-3470-10T-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "cbbc0dc3-2b76-4b43-b7e6-d9d10f4c86de",
+    "uuid": "1e0d3c4b-73f5-45ac-b2d4-0ee95422b0b8",
     "vendor__code": "QTECH",
-    "description": "Управляемый коммутатор уровня L2+, 8 портов 10/100BASE-T, 2 100/1000BASE-X SFP",
+    "description": "Управляемый коммутатор уровня L2+, 8 портов 10/100/1000BASE-T, 2 порта 100/1000BASE-X SFP, 4K VLAN, 8K MAC адресов, консольный порт, встроенный БП разъем питания на передней панели, 100-240В AC, размеры ШхГхВ (335x220x44 мм) ",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -12,7 +12,7 @@
             "direction": "s",
             "gender": "f",
             "name": "1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -20,7 +20,7 @@
             "direction": "s",
             "gender": "f",
             "name": "2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +28,7 @@
             "direction": "s",
             "gender": "f",
             "name": "3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +36,7 @@
             "direction": "s",
             "gender": "f",
             "name": "4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +44,7 @@
             "direction": "s",
             "gender": "f",
             "name": "5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +52,7 @@
             "direction": "s",
             "gender": "f",
             "name": "6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +60,7 @@
             "direction": "s",
             "gender": "f",
             "name": "7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,13 +68,14 @@
             "direction": "s",
             "gender": "f",
             "name": "8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "Fiber port 9",
             "direction": "i",
             "gender": "f",
+            "group": "9",
             "name": "sfp9",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -83,6 +84,7 @@
             "description": "Fiber port 10",
             "direction": "i",
             "gender": "f",
+            "group": "10",
             "name": "sfp10",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -106,25 +108,25 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["QSW-2500-E+", "QSW-2500E-10"]
+            "part_no": ["QSW-3470-10T-AC"]
         },
         "dimensions": {
-            "depth": 130,
+            "depth": 220,
             "height": 44,
-            "width": 260
+            "width": 335
         },
         "management": {
             "managed": true
         },
         "power": {
-            "power": 11.0
+            "power": 20.0
         },
         "rackmount": {
             "units": 1.0
         },
         "weight": {
             "is_recursive": true,
-            "weight": 1.2
+            "weight": 1.7
         }
     }
 }
