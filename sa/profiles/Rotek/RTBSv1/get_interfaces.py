@@ -24,7 +24,7 @@ class Script(BaseScript):
     keep_cli_session = False
 
     rx_sh_int = re.compile(
-        r"^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g|a|w)\S+):\s"
+        r"^(?P<ifindex>\d+):\s+(?P<ifname>[eltbrgaw]\S+):\s"
         r"<(?P<flags>.*?)>\s+mtu\s+(?P<mtu>\d+).+?\n"
         r"^\s+link/\S+(?:\s+(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}))?\s+.+?\n"
         r"(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?",
@@ -35,7 +35,7 @@ class Script(BaseScript):
     re_ath = re.compile(r"(?P<ath>ath\d)", re.MULTILINE)
 
     def execute_snmp(self):
-        interfaces = []
+        interfaces = {}
         ss = {}
         for soid, sname in self.snmp.getnext("1.3.6.1.4.1.41752.3.10.1.2.1.1.4"):
             sifindex = int(soid.split(".")[-1])
@@ -50,17 +50,18 @@ class Script(BaseScript):
                 "freq": freq,
                 "broadcast": "enable" if broadcast else "disable",
             }
-        for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
+        print(ss)
+        for v in self.snmp.getnext(mib["IF-MIB::ifIndex"]):
             ifindex = v[1]
-            name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
-            iftype = self.profile.get_interface_type(name)
-            if "peer" in name:
+            ifname = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
+            iftype = self.profile.get_interface_type(ifname)
+            if "peer" in ifname:
                 continue
-            if not name:
+            if not ifname:
                 self.logger.info("Ignoring unknown interface type: '%s", iftype)
                 continue
             mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
-            mtu = self.snmp.get("1.3.6.1.2.1.2.2.1.4.%s" % str(ifindex))
+            mtu = self.snmp.get(mib["IF-MIB::ifMtu", ifindex])
             astatus = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
             if astatus == 1:
                 admin_status = True
@@ -71,32 +72,46 @@ class Script(BaseScript):
                 oper_status = True
             else:
                 oper_status = False
-            iface = {
-                "type": iftype,
-                "name": name,
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "snmp_ifindex": ifindex,
-                "subinterfaces": [
-                    {
-                        "name": name,
-                        "snmp_ifindex": ifindex,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "mtu": mtu,
-                        "enabled_afi": ["BRIDGE"],
-                    }
-                ],
-            }
+            if "." in ifname:
+                ifname, vlan_ids = ifname.split(".", 1)
+                if ifname in interfaces:
+                    interfaces[ifname]["subinterfaces"] += [
+                        {
+                            "name": "%s.%s" % (ifname, vlan_ids),
+                            "snmp_ifindex": ifindex,
+                            "admin_status": admin_status,
+                            "oper_status": oper_status,
+                            "mtu": mtu,
+                            "enabled_afi": ["BRIDGE"],
+                            "vlan_ids": vlan_ids,
+                        }
+                    ]
+            else:
+                interfaces[ifname] = {
+                    "type": iftype,
+                    "name": ifname,
+                    "admin_status": admin_status,
+                    "oper_status": oper_status,
+                    "snmp_ifindex": ifindex,
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "snmp_ifindex": ifindex,
+                            "admin_status": admin_status,
+                            "oper_status": oper_status,
+                            "mtu": mtu,
+                            "enabled_afi": ["BRIDGE"],
+                        }
+                    ],
+                }
             if mac:
-                iface["mac"] = MAC(mac)
-                iface["subinterfaces"][0]["mac"] = MAC(mac)
-            interfaces += [iface]
+                interfaces[ifname]["mac"] = MAC(mac)
+                interfaces[ifname]["subinterfaces"][0]["mac"] = MAC(mac)
             if self.is_platform_BS24:
                 for i in ss.items():
                     if int(i[0]) == ifindex:
-                        vname = "%s.%s" % (name, i[1]["ssid"])
-                        iface = {
+                        vname = "%s.%s" % (ifname, i[1]["ssid"])
+                        interfaces[vname] = {
                             "type": iftype,
                             "name": vname,
                             "admin_status": admin_status,
@@ -116,10 +131,9 @@ class Script(BaseScript):
                             ],
                         }
                         if mac:
-                            iface["mac"] = MAC(mac)
-                            iface["subinterfaces"][0]["mac"] = MAC(mac)
-                        interfaces += [iface]
-        return [{"interfaces": interfaces}]
+                            interfaces[vname]["mac"] = MAC(mac)
+                            interfaces[vname]["subinterfaces"][0]["mac"] = MAC(mac)
+        return [{"interfaces": list(interfaces.values())}]
 
     def execute_cli(self):
         interfaces = []
