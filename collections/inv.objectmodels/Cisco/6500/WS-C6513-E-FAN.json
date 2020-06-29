@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | WS-C6513-E-FAN",
+    "$collection": "inv.objectmodels",
+    "uuid": "0e06c38e-b6f2-11ea-a011-00e081b84be0",
+    "vendor__code": "CISCO",
+    "description": "WS-C6513-E FAN tray",
+    "cr_context": "FAN-E",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | FAN-E"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-C6513-E-FAN"]
+        }
+    }
+}
