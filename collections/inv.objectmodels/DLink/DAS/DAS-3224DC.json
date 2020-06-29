@@ -1,0 +1,85 @@
+{
+    "name": "DLink | DAS | DAS-3224DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "deb66a28-bffd-4230-bcb2-dd5d7b153b60",
+    "vendor__code": "DLINK",
+    "description": "24-port with built-in POTS-splitter ADSL/ADSL2/2+ module",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "USER 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "LINE1",
+            "protocols": ["ADSL", "ADSL2+"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "PSTN 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "PSTN1",
+            "protocols": ["PSTN"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Port 1 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "1",
+            "protocols": ["100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 2 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "name": "2",
+            "protocols": ["100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DAS-3224DC"]
+        },
+        "dimensions": {
+            "depth": 400,
+            "height": 44,
+            "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 150.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 6.8
+        }
+    }
+}
