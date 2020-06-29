@@ -11,7 +11,6 @@ import glob
 import os
 import hashlib
 import logging
-import json
 from collections import defaultdict
 import operator
 from urllib.parse import urlencode
@@ -177,7 +176,7 @@ class Site(object):
                             app_logger.error("ERROR: %s", errors)
                         # Return error response
                         ext_format = "__format=ext" in request.META["QUERY_STRING"].split("&")
-                        r = json.dumps({"status": False, "errors": errors})
+                        r = ujson.dumps({"status": False, "errors": errors})
                         status = 200 if ext_format else 400  # OK or BAD_REQUEST
                         return HttpResponse(
                             r, status=status, content_type="text/json; charset=utf-8"
@@ -188,7 +187,7 @@ class Site(object):
                     if request.method in ("POST", "PUT"):
                         ct = request.META.get("CONTENT_TYPE")
                         if ct and ("text/json" in ct or "application/json" in ct):
-                            a = json.loads(request.body)
+                            a = ujson.loads(request.body)
                         else:
                             a = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
                     elif request.method == "GET":
@@ -226,7 +225,7 @@ class Site(object):
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
-                    r = HttpResponse(json.dumps(r), content_type="text/json; charset=utf-8")
+                    r = HttpResponse(ujson.dumps(r), content_type="text/json; charset=utf-8")
                 except Exception:
                     error_report(logger=app_logger)
                     r = HttpResponse(error_report(), status=500)
