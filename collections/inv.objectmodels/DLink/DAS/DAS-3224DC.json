@@ -51,12 +51,12 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Power outlet",
+            "description": "Power inlet",
             "direction": "s",
             "gender": "f",
             "name": "power",
-            "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
+            "protocols": [">-42VDC", ">-56VDC"],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
     "data": {
