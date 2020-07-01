@@ -9,7 +9,7 @@
     "tags": ["chassis"],
     "connections": [
         {
-            "description": "USER 1-24",
+            "description": "Line 1-24",
             "direction": "s",
             "gender": "f",
             "name": "LINE1",
@@ -17,7 +17,7 @@
             "type__name": "Electrical | Telco-50"
         },
         {
-            "description": "PSTN 1-24",
+            "description": "POTS 1-24",
             "direction": "s",
             "gender": "f",
             "name": "PSTN1",
@@ -30,7 +30,15 @@
             "gender": "f",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "Alarm port",
+            "direction": "s",
+            "gender": "f",
+            "name": "alarm",
+            "protocols": [">DryContact"],
+            "type__name": "Electrical | MSTB 2,5/13-ST-5,08"
         },
         {
             "description": "Port 1 (Copper)",
@@ -42,6 +50,15 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "Port 1 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "sfp1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "description": "Port 2 (Copper)",
             "direction": "s",
             "gender": "f",
@@ -51,11 +68,20 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "Port 2 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "name": "sfp2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
             "name": "power",
-            "protocols": [">-42VDC", ">-56VDC"],
+            "protocols": [">-48VDC", ">-60VDC"],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
