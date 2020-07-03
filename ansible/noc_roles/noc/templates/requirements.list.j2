@@ -1,0 +1,17 @@
+{% if host in groups["svc-activator-exec"] %}
+activator
+{% endif %}
+{% if host in groups["svc-classifier-exec"] %}
+classifier
+{% endif %}
+{% if login_methods is defined and 'ldap' in login_methods %}
+login-ldap
+{% endif %}
+{% if login_methods is defined and 'radius' in login_methods %}
+login-radius
+{% endif %}
+{% if noc_env_type == "prod" %}
+prod-tools
+{% endif %}
+supervisor
+cython

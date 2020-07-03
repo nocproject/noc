@@ -8,6 +8,7 @@
   when:
     - login_methods is defined
     - "'radius' in login_methods"
+    - not single_req.stat.exists
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -25,6 +26,7 @@
   when:
     - login_methods is defined
     - "'ldap' in login_methods"
+    - not single_req.stat.exists
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

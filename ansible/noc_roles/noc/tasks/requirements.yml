@@ -16,6 +16,7 @@
   when:
     - "'prod' in noc_env_type"
     - noc_python_interpreter is search "python"
+    - not single_req.stat.exists
   tags:
     - requirements
 
