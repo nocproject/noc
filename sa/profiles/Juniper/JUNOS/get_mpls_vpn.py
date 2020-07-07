@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_mpls_vpn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mpls_vpn import Script as BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 
 
@@ -32,7 +32,7 @@ class Script(BaseScript):
     rx_vrf_target = re.compile(r"target:(?P<rd>\d+:\d+)")
     type_map = {"vrf": "VRF", "vpls": "VPLS", "l2vpn": "VLL", "evpn": "EVPN"}
 
-    def execute(self, **kwargs):
+    def execute_cli(self, **kwargs):
         c = self.cli(
             'help apropos "instance" | match "^show route instance" ',
             cached=True,
