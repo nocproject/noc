@@ -13,7 +13,7 @@
 
 - name: Register supervisord's version 1/2
   slurp:
-    src: "{{ noc_root }}/requirements/node.txt"
+    src: "{{ noc_root }}/requirements{{ '/node' if not single_req.stat.exists }}.txt"
   register: node_req
   tags:
     - config
