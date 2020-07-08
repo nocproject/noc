@@ -246,7 +246,8 @@ class Script(BaseScript):
             if not l:
                 continue
             stp += [l.split()[1]]
-        stp.pop(0)
+        if stp:
+            stp.pop(0)
         return stp
 
     def get_lldpint(self):

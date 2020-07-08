@@ -5,9 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-import re
 
 
 class Script(BaseScript):
@@ -28,7 +31,29 @@ class Script(BaseScript):
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+"
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_snmp(self, **kwargs):
+        r = []
+        interface_mappings = {
+            x["ifindex"]: x["interface"]
+            for x in self.scripts.get_interface_properties(enable_ifindex=True)
+        }
+        # hwDynFdbPort
+        for oid, port in self.snmp.getnext(
+            "1.3.6.1.4.1.2011.5.25.42.2.1.3.1.4", max_retries=1, max_repetitions=20, timeout=20
+        ):
+            mac, vlan_id, vid1, vid2 = oid.rsplit(".", 3)
+            mac = ":".join("%02X" % int(x) for x in mac.split(".")[-6:])
+            r += [
+                {
+                    "vlan_id": vlan_id,
+                    "mac": mac,
+                    "interfaces": [interface_mappings[port]],
+                    "type": "D",
+                }
+            ]
+        return r
+
+    def execute_cli(self, interface=None, vlan=None, mac=None, **kwargs):
         cmd = "display mac-address"
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
