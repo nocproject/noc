@@ -13,9 +13,33 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.objectdata import ObjectData
 from noc.core.topology.segment import SegmentTopology
 
+BATCH_SIZE = 5000
+
+
+def iter_ids_batch():
+    match = {}
+    while True:
+        cursor = (
+            NetworkSegment._get_collection()
+            .find(match, {"_id": 1}, no_cursor_timeout=True)
+            .sort("_id")
+            .limit(BATCH_SIZE)
+        )
+        d = [d["_id"] for d in cursor]
+        if not d:
+            break
+        for link in NetworkSegment.objects.filter(id__in=d).timeout(False):
+            yield link
+        # if match and match["_id"]["$gt"] == d[-1]:
+        #     break
+        match = {"_id": {"$gt": d[-1]}}
+
 
 def fix():
-    total = NetworkSegment._get_collection().estimated_document_count()
-    for ns in progressbar.progressbar(NetworkSegment.objects.timeout(False), max_value=total):
-        st = SegmentTopology(ns)
-        ObjectData.update_uplinks(st.iter_uplinks())
+    max_value = NetworkSegment._get_collection().estimated_document_count()
+    for ns in progressbar.progressbar(iter_ids_batch(), max_value=max_value):
+        try:
+            st = SegmentTopology(ns)
+            ObjectData.update_uplinks(st.iter_uplinks())
+        except Exception as e:
+            print("[%s] %s" % (ns.name, e))
