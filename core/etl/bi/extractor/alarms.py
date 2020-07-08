@@ -79,6 +79,7 @@ class AlarmsExtractor(ArchivingExtractor):
                 duration=max(0, int((d["clear_timestamp"] - d["timestamp"]).total_seconds())),
                 alarm_id=str(d["_id"]),
                 root=str(d.get("root") or ""),
+                rca_type=d.get("rca_type") or 0,
                 alarm_class=AlarmClass.get_by_id(d["alarm_class"]),
                 severity=d["severity"],
                 reopens=d.get("reopens") or 0,
