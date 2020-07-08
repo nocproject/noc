@@ -40,7 +40,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ASR1001-RP"]
+            "order_part_no": ["ASR1000-RP1", "ASR1001-RP"]
         }
     }
 }
