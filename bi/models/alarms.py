@@ -58,6 +58,7 @@ class Alarms(Model):
     duration = Int32Field(description=_("Duration"))
     alarm_id = StringField(description=_("Id"))
     root = StringField(description=_("Alarm Root"))
+    rca_type = Int16Field(description=_("RCA Type"))
     alarm_class = ReferenceField(AlarmClass, description=_("Alarm Class"))
     severity = Int32Field(description=_("Severity"))
     reopens = Int32Field(description=_("Reopens"))
