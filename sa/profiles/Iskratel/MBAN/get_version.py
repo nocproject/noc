@@ -23,25 +23,29 @@ class Script(BaseScript):
         r"^\s*CPU: IskraTEL (?P<platform>\S+) .+\n"
         r"^\s*VxWorks: \S+\s*\n"
         r"^\s*Kernel: WIND version \S+\s*\n"
-        r"^\s*ADSL(?:2PLUS)? over (?:POTS|ISDN) GS firmware version:\s+(?P<version>\S+)\s*\n",
+        r"^\s(ADSL(?:2PLUS)? over (?:POTS|ISDN) GS|SHDSL) firmware version:\s+(?P<version>\S+)\s*\n",
         re.MULTILINE,
     )
+    rx_steer_ver = re.compile(r"IL\s*steer\s*:\s*(?P<version>\S+)")
     rx_inv1 = re.compile(
-        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+" r"(?P<serial>[NZ]\S+)\s+",
+        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+(?P<serial>[NZ]\S+)\s+",
         re.MULTILINE,
     )
     rx_inv2 = re.compile(
-        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+[UN]\S+\s+" r"(?P<serial>[0-9A-Z\/]+)\s+",
+        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+[UN]\S+\s+(?P<serial>[0-9A-Z\/]+)\s+",
         re.MULTILINE,
     )
 
     def execute(self):
         c = self.cli("show version", cached=True)
         match = self.rx_ver.search(c)
+        version = match.group("version")
+        if self.rx_steer_ver.search(c):
+            version = self.rx_steer_ver.search(c).group("version")
         r = {
             "vendor": "Iskratel",
             "platform": match.group("platform"),
-            "version": match.group("version"),
+            "version": version,
         }
         c = self.cli("show board", cached=True)
         match = self.rx_inv1.search(c)
