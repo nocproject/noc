@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
 from noc.core.text import parse_kv
 
@@ -17,6 +17,8 @@ from noc.core.text import parse_kv
 class Script(BaseScript):
     name = "Huawei.VRP.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+
+    always_prefer = "C"  # For old models, not supported by SNMP
 
     rx_iface_sep = re.compile(r"^(\S+)\s+has\s+\d+\s+neighbors?", re.MULTILINE)
     rx_iface3_sep = re.compile(

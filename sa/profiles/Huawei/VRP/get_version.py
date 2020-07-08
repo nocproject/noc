@@ -115,7 +115,7 @@ class Script(BaseScript):
 
     def parse_serial(self):
         r = []
-        if self.has_snmp():
+        if self.has_snmp_access():
             # Trying SNMP
             try:
                 # SNMPv2-MIB::sysDescr.0
@@ -127,6 +127,8 @@ class Script(BaseScript):
                     return r
             except (self.snmp.TimeOutError, self.snmp.SNMPError):
                 pass
+        if self.has_snmp_only_access():
+            return r
         try:
             v = self.cli("display elabel slot 0")
         except self.CLISyntaxError:
@@ -139,9 +141,9 @@ class Script(BaseScript):
                 r += [v["BarCode"].strip()]
         return r
 
-    def parse_patch(self):
+    def parse_patch(self, snmp_only=False):
         r = []
-        if self.has_snmp():
+        if self.has_snmp_access():
             # Trying SNMP
             try:
                 # SNMPv2-MIB::sysDescr.0
@@ -153,6 +155,8 @@ class Script(BaseScript):
                     return r
             except (self.snmp.TimeOutError, self.snmp.SNMPError):
                 pass
+        if self.has_snmp_only_access():
+            return r
         try:
             v = self.cli("display patch-information")
         except self.CLISyntaxError:
