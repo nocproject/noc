@@ -110,7 +110,7 @@ class Dashboard(Document):
             # Check unique
             processed = []
             access = []
-            for da in sorted(self.access, reverse=True):
+            for da in sorted(self.access, reverse=True, key=lambda x: x.level):
                 # Deduplicate rights
                 # @todo changing priority (reverse order)
                 if da.user and "u%d" % da.user.id in processed:
