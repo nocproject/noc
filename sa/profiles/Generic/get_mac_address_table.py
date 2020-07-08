@@ -15,8 +15,9 @@ from noc.core.validators import is_vlan
 class Script(BaseScript):
     name = "Generic.get_mac_address_table"
     interface = IGetMACAddressTable
-    MAX_REPETITIONS = 40
+    MAX_REPETITIONS = 20
     MAX_GETNEXT_RETIRES = 1
+
     BULK = None
 
     mac_status_map = {
@@ -27,12 +28,28 @@ class Script(BaseScript):
         5: "C",  # MGMT
     }
 
+    def get_iface_mapping(self):
+        # Get PID -> ifindex mapping
+        pid_iface_map = {}
+        r = {}
+        for oid, v in self.snmp.getnext(
+            mib["BRIDGE-MIB::dot1dBasePortIfIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            bulk=self.get_bulk(),
+        ):
+            pid_iface_map[int(oid.split(".")[-1])] = v
+        for i in self.scripts.get_interface_properties(enable_ifindex=True):
+            if i["ifindex"] not in pid_iface_map:
+                self.logger.warning("Not PID iface mapping: %s", i["interface"])
+                continue
+            r[i["ifindex"]] = i["interface"]
+        return r
+
     def execute_snmp(self, interface=None, vlan=None, mac=None):
         r = []
-        iface_map = {
-            i["ifindex"]: i["interface"]
-            for i in self.scripts.get_interface_properties(enable_ifindex=True)
-        }
+        iface_map = self.get_iface_mapping()
+        self.logger.debug("Interface map: %s", iface_map)
         port_oid = mib["Q-BRIDGE-MIB::dot1qTpFdbPort"]
         status_oid = mib["Q-BRIDGE-MIB::dot1qTpFdbStatus"]
         if vlan:
@@ -48,7 +65,7 @@ class Script(BaseScript):
             if not iface:
                 # For iface == 0
                 continue
-            r_oid = r_oid.rsplit(".", 7)[-7:]
+            r_oid = tuple(r_oid.rsplit(".", 7)[-7:])
             if iface not in iface_map:
                 self.logger.error(
                     "Unknown interface index %s, for MAC: %s",
@@ -59,7 +76,7 @@ class Script(BaseScript):
             iface = iface_map[iface]
             if interface and iface != interface:
                 continue
-            mac_port[tuple(r_oid)] = iface
+            mac_port[r_oid] = iface
         # Apply status
         for r_oid, status in self.snmp.getnext(
             status_oid,
