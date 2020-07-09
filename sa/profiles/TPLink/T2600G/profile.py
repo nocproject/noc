@@ -47,3 +47,15 @@ class Profile(BaseProfile):
             return "Gi1/0/%d" % int(match.group("number"))
         else:
             return s
+
+    INTERFACE_TYPES = {
+        "gi": "physical",  # gigabitethernet
+        "fa": "physical",  # fastethernet
+        "ex": "physical",  # extreme-ethernet
+        "te": "physical",
+        "vl": "SVI",  # vlan
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get((name[:2]).lower())
