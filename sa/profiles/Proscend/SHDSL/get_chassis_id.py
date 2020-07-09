@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Proscend.SHDSL.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,4 +16,4 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 1]}
+    SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
