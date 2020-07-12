@@ -49,7 +49,7 @@ class BasePortMapper(object, metaclass=PortMapperBase):
     def __init__(self, managed_object):
         self.managed_object = managed_object
         self.profile = self.managed_object.profile.name
-        self.platform = self.managed_object.platform.name
+        self.platform = self.managed_object.platform.name if self.managed_object.platform else None
 
     def to_local(self, name, iface_hints=None):
         """
