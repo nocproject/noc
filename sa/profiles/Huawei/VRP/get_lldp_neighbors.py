@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Script(BaseScript):
 
     rx_iface_sep = re.compile(r"^(\S+)\s+has\s+\d+\s+neighbors?", re.MULTILINE)
     rx_iface3_sep = re.compile(
-        r"^LLDP neighbor-information of port \d+\[(?P<local_iface>\S+)\]:", re.MULTILINE
+        r"LLDP neighbor-information of port \d+\[(?P<local_iface>\S+)\]:", re.MULTILINE
     )
 
     rx_neighbor_split = re.compile(r"^\s*Neighbor", re.MULTILINE)
