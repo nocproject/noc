@@ -51,6 +51,13 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
 
+- name: Check if we have single requirements.txt
+  stat:
+    path: "{{ noc_root }}/requirements.txt"
+  register: single_req
+  tags:
+    - requirements
+
 - name: Install mercurial for freebsd
   pip:
     chdir: "{{ noc_root }}"
