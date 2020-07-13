@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     listen_syslog:
       default: "0.0.0.0:514"
       label: "Listen SYSLOG"

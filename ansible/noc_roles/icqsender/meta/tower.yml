@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     token:
       label: Token
       type: str

@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     db_threads:
       default: 10
       label: "Concurrent query limit per process"

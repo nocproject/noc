@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     whitelist_access:
       type: text
       default: ""

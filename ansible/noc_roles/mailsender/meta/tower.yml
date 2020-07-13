@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     smtp_server:
       label: "SMTP server address"
       type: str

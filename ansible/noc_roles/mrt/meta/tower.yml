@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     max_concurrency:
       default: 50
       label: "Amount of concurrent tasks"

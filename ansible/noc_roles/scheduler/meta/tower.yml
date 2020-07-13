@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     max_threads:
       default: 10
       label: "Scheduler threads"

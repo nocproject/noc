@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     batch_delay_ms:
       default: 1000
       label: "Delay batch write up to ms"

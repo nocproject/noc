@@ -25,7 +25,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     script_threads:
       default: 20
       label: "Script threads"

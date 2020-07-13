@@ -24,7 +24,7 @@ forms:
         - info
         - warning
         - error
-        - critial
+        - critical
     listen_traps:
       default: "0.0.0.0:162"
       label: "Listen SNMP Traps"
