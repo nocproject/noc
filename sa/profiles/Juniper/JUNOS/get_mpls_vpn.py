@@ -16,6 +16,7 @@ from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 class Script(BaseScript):
     name = "Juniper.JUNOS.get_mpls_vpn"
     interface = IGetMPLSVPN
+    always_prefer = "C"
 
     rx_ri = re.compile(
         r"(?P<name>\S+?):\n"
