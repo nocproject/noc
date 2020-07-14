@@ -445,7 +445,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             if m == "C":
                 handler = cli_handler
             elif m == "S":
-                if self.has_snmp():
+                if self.has_snmp() or self.name.endswith(".get_version"):
                     handler = snmp_handler
                 else:
                     self.logger.debug("SNMP is not enabled. Passing to next method")
