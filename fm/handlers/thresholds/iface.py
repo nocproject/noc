@@ -35,7 +35,16 @@ def humanize_speed(speed, type_speed):
                 return "%.2f %s" % (float(speed) / t, n)
 
 
-def handler(mo, event):
+def th_interval(mo, event):
+    periodic_interval = mo.object.object_profile.periodic_discovery_interval
+    if event["window_type"] == "m":
+        threshold_interval = int(periodic_interval) * int(event["window"])
+    else:
+        threshold_interval = int(event["window"])
+    return int(threshold_interval) / 60
+
+
+def grafana_date():
     # Date Time Block
     from_date = datetime.datetime.now() - datetime.timedelta(hours=6)
     date_limit = datetime.datetime.now() - datetime.timedelta(days=6)
@@ -44,12 +53,11 @@ def handler(mo, event):
     ts_date_limit = time.mktime(date_limit.timetuple())
     if ts_from_date < ts_date_limit:
         ts_from_date = ts_date_limit
+    return str(int(ts_from_date * 1000))
+
+
+def handler(mo, event):
     metric = MetricType.objects.get(name=event["metric"])
-    periodic_interval = mo.object.object_profile.periodic_discovery_interval
-    if event["window_type"] == "m":
-        threshold_interval = int(periodic_interval) * int(event["window"])
-    else:
-        threshold_interval = int(event["window"])
     iface = Interface.objects.get(
         name=event["path"].split("|")[-1::][0].strip(), managed_object=mo.object
     )
@@ -57,8 +65,8 @@ def handler(mo, event):
         event["interface"] = event["path"].split("|")[-1::][0].strip()
         if iface.description:
             event["description"] = str(iface.description)
-        event["threshold_interval"] = int(threshold_interval) / 60
-        event["ts_from_date"] = str(int(ts_from_date * 1000))
+        event["threshold_interval"] = th_interval(mo, event)
+        event["ts_from_date"] = grafana_date()
         if "Load" in event["metric"]:
             if iface.in_speed and iface.out_speed:
                 if "In" in event["metric"]:
@@ -117,6 +125,19 @@ def handler(mo, event):
                     event["linked_object"] = linked_object[0].managed_object.name
                     event["linked_object_interface"] = linked_object[0].name
 
+        return event
+    except Exception as e:
+        logger.info("Error: \n %s" % (event["path"].split("|")[-1::][0].strip(), e))
+        return event
+
+
+def handler_object(mo, event):
+    try:
+        event["threshold_interval"] = th_interval(mo, event)
+        event["ts_from_date"] = grafana_date()
+        res = event["path"].split("|")
+        if len(res) > 2:
+            event["name"] = res[-1::][0]
         return event
     except Exception as e:
         logger.info("Error: \n %s" % (event["path"].split("|")[-1::][0].strip(), e))
