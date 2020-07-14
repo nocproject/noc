@@ -22,9 +22,10 @@ T = TypeVar("T")
 
 
 class IOLoopContext(object):
-    def __init__(self):
+    def __init__(self, suppress_trace=False):
         self.prev_loop = None
         self.new_loop = None
+        self.suppress_trace = suppress_trace
 
     def get_context(self):
         self.prev_loop = asyncio._get_running_loop()
@@ -60,6 +61,8 @@ class IOLoopContext(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.drop_context()
+        if self.suppress_trace:
+            return True
 
 
 def run_sync(cb: Callable[..., T], close_all: bool = True) -> T:
