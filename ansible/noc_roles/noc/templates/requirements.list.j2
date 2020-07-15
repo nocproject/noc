@@ -15,3 +15,9 @@ prod-tools
 {% endif %}
 supervisor
 cython
+{% if groups["svc-memcached-exec"]|length>0 %}
+cache-memcached
+{% endif %}
+{% if groups["svc-redis-exec"]|length>0 %}
+cache-redis
+{% endif %}
