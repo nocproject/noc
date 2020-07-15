@@ -87,6 +87,14 @@ class Script(BaseScript):
     )
     rx_oam = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
 
+    def filter_interface(self, ifindex, name, oper_status):
+        if name[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co", "Em"]:
+            return False
+        # NOC-378 - Dirty hack for interface like ATM0/IMA0
+        if "/ima" in name.lower():
+            return False
+        return True
+
     def get_lldp_interfaces(self):
         """
         Returns a set of normalized LLDP interface names
@@ -411,10 +419,9 @@ class Script(BaseScript):
         for match in self.rx_sh_int.finditer(v):
             full_ifname = match.group("interface").strip()
             ifname = self.profile.convert_interface_name(full_ifname)
-            if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co", "Em"]:
+            if not self.filter_interface(0, ifname, True):
                 continue
-            # NOC-378 - Dirty hack for interface like ATM0/IMA0
-            if "/ima" in full_ifname.lower():
+            if not self.filter_interface(0, full_ifname, True):
                 continue
             if ":" in ifname:
                 inm = ifname.split(":")[0]
