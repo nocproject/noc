@@ -1,0 +1,8 @@
+{
+    "name": "Electrical | MSTB 2,5/13-ST-5,08",
+    "$collection": "inv.connectiontypes",
+    "uuid": "53822bf7-c978-4878-ac12-d9e524591e9a",
+    "description": "Terminal block outlet, 13 pins",
+    "c_group": [],
+    "genders": "m"
+}
