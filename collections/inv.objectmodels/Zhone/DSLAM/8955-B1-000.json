@@ -1,0 +1,31 @@
+{
+    "name": "Zhone | DSLAM | 8955-B1-000",
+    "$collection": "inv.objectmodels",
+    "uuid": "6e49a018-7a2a-45f9-9103-16bbddb720f9",
+    "vendor__code": "DZS",
+    "description": "24-port ReachDSL card that interoperates with ReachDSL modem",
+    "connection_rule__name": "Zhone | GranDSLAM",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "USER 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "DSL",
+            "protocols": ["ReachDSL"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Zhone | GranDSLAM | card"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["8955-B1-000"]
+        }
+    }
+}

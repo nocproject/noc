@@ -1,0 +1,101 @@
+{
+    "name": "Zhone | DSLAM | 4229-A2-520",
+    "$collection": "inv.objectmodels",
+    "uuid": "9da854e2-a06f-4aac-ad3e-160d8b3ab047",
+    "vendor__code": "DZS",
+    "description": "GranDSLAM 4200 (24-Port) ADSL without POTS Splitter\n",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "USER 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "DSL",
+            "protocols": ["ADSL", "ADSL+"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Alarm port",
+            "direction": "s",
+            "gender": "f",
+            "name": "alarm",
+            "protocols": [">DryContact"],
+            "type__name": "Electrical | MSTB 2,5/5-ST-5,08"
+        },
+        {
+            "description": "Port 1 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 2 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 3 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "name": "3",
+            "protocols": ["100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 3 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "3",
+            "name": "sfp3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">-48VDC", ">-60VDC"],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["4229-A1-520", "4229-A2-520"]
+        },
+        "dimensions": {
+            "depth": 299,
+            "height": 44,
+            "width": 436
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 37.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3.7
+        }
+    }
+}

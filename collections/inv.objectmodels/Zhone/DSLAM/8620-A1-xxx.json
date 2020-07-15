@@ -1,0 +1,63 @@
+{
+    "name": "Zhone | DSLAM | 8620-A1-xxx",
+    "$collection": "inv.objectmodels",
+    "uuid": "304a35d3-9083-4ea8-8363-68d6fa90c0ba",
+    "vendor__code": "DZS",
+    "description": "8620 Broadband Access Concentrator",
+    "connection_rule__name": "Zhone | GranDSLAM",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card1",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card2",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card3",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 19 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card19",
+            "type__name": "Zhone | GranDSLAM | card"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["8620-A1-402", "8620-A1-530"]
+        },
+        "dimensions": {
+            "depth": 304,
+            "height": 132,
+            "width": 436
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 850.0
+        },
+        "rackmount": {
+            "units": 3.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 25.0
+        }
+    }
+}

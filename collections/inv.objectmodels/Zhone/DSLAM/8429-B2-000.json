@@ -1,0 +1,49 @@
+{
+    "name": "Zhone | DSLAM | 8429-B2-000",
+    "$collection": "inv.objectmodels",
+    "uuid": "6cac903d-77c0-4f02-9156-d8871ba9183c",
+    "vendor__code": "DZS",
+    "description": "SCP Card: Gigabit Ethernet",
+    "connection_rule__name": "Zhone | GranDSLAM",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Port 2 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 1 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "1",
+            "protocols": ["100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 1 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "sfp1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Zhone | GranDSLAM | card"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["8429-B2-000"]
+        }
+    }
+}

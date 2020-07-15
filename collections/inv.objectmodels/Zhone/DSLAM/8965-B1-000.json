@@ -1,0 +1,31 @@
+{
+    "name": "Zhone | DSLAM | 8965-B1-000",
+    "$collection": "inv.objectmodels",
+    "uuid": "ead4fd97-691c-4ef4-b40e-5644faa2ea02",
+    "vendor__code": "DZS",
+    "description": "24-port ATM ADSL cards, for use with the SCP card",
+    "connection_rule__name": "Zhone | GranDSLAM",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "USER 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "DSL",
+            "protocols": ["ADSL"],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Zhone | GranDSLAM | card"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["8965-B1-000", "8965-B2-000"]
+        }
+    }
+}
