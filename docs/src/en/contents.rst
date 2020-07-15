@@ -9,6 +9,7 @@ this Manual and additional editions of this text.
     :titlesonly:
 
     /introduction
+    /howto
     /reference
     /services
     /discovery
