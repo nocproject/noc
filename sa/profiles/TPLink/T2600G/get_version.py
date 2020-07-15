@@ -21,6 +21,19 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
+    def execute_snmp(self, **kwargs):
+        v = self.snmp.get("1.3.6.1.4.1.11863.6.1.1.5.0")
+        platform, version = v.split()
+        version = self.snmp.get("1.3.6.1.4.1.11863.6.1.1.6.0")
+        serial = self.snmp.get("1.3.6.1.4.1.11863.6.1.1.8.0")
+        r = {
+            "vendor": "TP-Link",
+            "platform": platform,
+            "version": version,
+            "attributes": {"Serial Number": serial},
+        }
+        return r
+
     def execute_cli(self):
         ver = self.cli("show system-info", cached=True)
         match = rx_platform.search(ver)

@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
@@ -21,6 +21,18 @@ class Script(BaseScript):
         r"(?P<type>\w+)\s+\S+",
         re.MULTILINE,
     )
+
+    def get_iface_mapping(self):
+        # Get PID -> ifindex mapping
+        r = {}
+        if not self.is_platform_T2600G:
+            return super().get_iface_mapping()
+        for i in self.scripts.get_interface_properties(enable_ifindex=True):
+            try:
+                r[int(i["interface"].split("/")[-1])] = i["interface"]
+            except ValueError:
+                continue
+        return r
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"
