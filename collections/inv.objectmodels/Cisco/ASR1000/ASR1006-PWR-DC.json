@@ -1,0 +1,38 @@
+{
+    "name": "Cisco | ASR1000 | ASR1006-PWR-DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "85d63a19-0648-46e7-99b5-7ed63e449410",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR1006 DC Power Supply",
+    "cr_context": "PSU",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR1000 | ASR1006 PSU"
+        },
+        {
+            "description": "Alarm connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "alarm",
+            "type__name": "Electrical | DB25"
+        },
+        {
+            "description": "DC power inlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/2-G-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1006-PWR-DC"]
+        }
+    }
+}
