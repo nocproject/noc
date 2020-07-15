@@ -1,0 +1,175 @@
+{
+    "name": "Zhone | DSLAM | 8820-A2-xxx",
+    "$collection": "inv.objectmodels",
+    "uuid": "d1a56f54-6ac3-4df2-abb4-a164017571bb",
+    "vendor__code": "DZS",
+    "description": "8820 Broadband Access Concentrator",
+    "connection_rule__name": "Zhone | GranDSLAM",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis"],
+    "connections": [
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card1",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card2",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card3",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 4 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card4",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 5 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card5",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 6 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card6",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 7 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card7",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 8 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card8",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 9 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card9",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 10 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card10",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 11 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card11",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 12 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card12",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 13 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card13",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 14 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card14",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 15 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card15",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 16 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card16",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 17 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card17",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 18 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card18",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 19 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card19",
+            "type__name": "Zhone | GranDSLAM | card"
+        },
+        {
+            "description": "Linecard 20 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card20",
+            "type__name": "Zhone | GranDSLAM | card"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["8820-A2-500", "8820-A2-530", "8820-A2-xxx"]
+        },
+        "dimensions": {
+            "depth": 304,
+            "height": 622,
+            "width": 436
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 1300.0
+        },
+        "rackmount": {
+            "units": 14.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 22.3
+        }
+    }
+}

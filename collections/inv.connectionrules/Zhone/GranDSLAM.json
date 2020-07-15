@@ -1,0 +1,52 @@
+{
+    "name": "Zhone | GranDSLAM",
+    "$collection": "inv.connectionrules",
+    "uuid": "343b9a6d-8c7f-4793-b1c7-21cde7a5ed1f",
+    "description": "Zhone GranDSLAM connection rules",
+    "context": [
+        {
+            "reset_scopes": ["linecard"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "linecard",
+            "type": "LINECARD"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "card{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "LINECARD"
+        }
+    ]
+}
