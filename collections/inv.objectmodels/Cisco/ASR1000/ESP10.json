@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | ASR1000 | ESP10",
+    "$collection": "inv.objectmodels",
+    "uuid": "21f44585-7fca-46df-a22f-995112d9e83b",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR 1000 Embedded Services Processor 10Gbps",
+    "cr_context": "ESP",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR1000 | ESP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1000-ESP10"]
+        }
+    }
+}
