@@ -87,6 +87,11 @@ class Script(BaseScript):
         "evpn": "EVPN",
     }
 
+    def filter_interface(self, ifindex, name, oper_status):
+        if not self.profile.valid_interface_name(self, name):
+            return False
+        return True
+
     def get_vrf(self):
         c = self.cli(
             'help apropos "instance" | match "^show route instance" ',
@@ -161,7 +166,7 @@ class Script(BaseScript):
             name = match.group("ifname")
             if name.endswith(")"):
                 name = name[:-1]
-            if not self.profile.valid_interface_name(self, name):
+            if not self.filter_interface(0, name, True):
                 continue
             # Detect interface type
             if name.startswith("lo"):
