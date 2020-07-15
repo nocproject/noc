@@ -29,7 +29,7 @@ from noc.core.ip import IPv4
 from noc.core.snmp.render import render_bin
 from noc.core.comp import smart_text
 from noc.core.mac import MAC
-from noc.core.validators import is_mac
+from noc.core.validators import is_mac, is_vlan
 
 
 class Script(BaseScript):
@@ -38,6 +38,7 @@ class Script(BaseScript):
     MAX_REPETITIONS = 30
     MAX_GETNEXT_RETIRES = 1
     MAX_TIMEOUT = 20
+    INVALID_MTU = 2147483647
 
     # Replace on get_interface_properties
     # SNMP_NAME_TABLE = "IF-MIB::ifDescr"
@@ -99,7 +100,7 @@ class Script(BaseScript):
                 if is_egress == "0":
                     continue
                 elif port not in pid_ifindex_mappings:
-                    self.logger.error("Port not in PID mappings")
+                    self.logger.error("Port %s not in PID mappings", port)
                     continue
                 elif vlan_num == result[pid_ifindex_mappings[port]]["untagged_vlan"]:
                     continue
@@ -193,7 +194,6 @@ class Script(BaseScript):
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
                     "oper_status": iface["oper_status"],
-                    "type": "SVI",
                 }
                 # if "mac" in iface:
                 #     subifaces[iface["ifindex"]]["mac"] = iface["mac"]
@@ -241,6 +241,8 @@ class Script(BaseScript):
         for ifindex, iface in ifaces.items():
             if ifindex in data:
                 iface.update(data[ifindex])
+                if int(iface["mtu"]) == self.INVALID_MTU:
+                    del iface["mtu"]
             iface["type"] = self.clean_iftype(iface["name"], ifindex)
             if not iface["type"]:
                 self.logger.error("Unknown type for interface %s", iface["name"])
@@ -277,7 +279,7 @@ class Script(BaseScript):
                 sub["ipv4_addresses"] = [IPv4(*i) for i in ips[ifindex]]
             if num.isdigit():
                 vlan_ids = int(sub["name"].rsplit(".", 1)[-1])
-                if 1 <= vlan_ids < 4095:
+                if is_vlan(vlan_ids):
                     sub["vlan_ids"] = vlan_ids
             interfaces[ifname]["subinterfaces"] += [sub]
         # VRF and forwarding_instance proccessed
