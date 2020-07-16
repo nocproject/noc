@@ -15,7 +15,7 @@ class Script(BaseScript):
     """
     """
 
-    name = "SecurityCode.Kontinent"
+    name = "SecurityCode.Kontinent.get_chassis_id"
     interface = IGetChassisID
 
     SNMP_GETNEXT_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress"]]}

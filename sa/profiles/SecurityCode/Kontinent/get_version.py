@@ -10,7 +10,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "SecurityCode.Kontinent"
+    name = "SecurityCode.Kontinent.get_version"
     interface = IGetVersion
 
     def execute_snmp(self):

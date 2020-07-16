@@ -15,7 +15,7 @@ class Script(BaseScript):
     """
     """
 
-    name = "SecurityCode.Kontinent"
+    name = "SecurityCode.Kontinent.get_interfaces"
     interface = IGetInterfaces
 
     def clean_iftype(self, ifname, ifindex):

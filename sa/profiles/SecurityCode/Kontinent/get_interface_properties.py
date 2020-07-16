@@ -13,6 +13,6 @@ class Script(BaseScript):
     """
     """
 
-    name = "SecurityCode.Kontinent"
+    name = "SecurityCode.Kontinent.get_interfaces"
 
     SNMP_NAME_TABLE = "IF-MIB::ifName"
