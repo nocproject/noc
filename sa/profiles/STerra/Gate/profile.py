@@ -21,7 +21,6 @@ class Profile(BaseProfile):
         1: "other",
         6: "physical",  # ethernetCsmacd
         24: "loopback",  # softwareLoopback
-        0: "physical",  # gigabitEthernet
         53: "SVI",  # propVirtual
     }
 
