@@ -15,7 +15,7 @@ class Script(BaseScript):
     """
     """
 
-    name = "STerra.Gate"
+    name = "STerra.Gate.get_interfaces"
     interface = IGetInterfaces
 
     def clean_iftype(self, ifname, ifindex):

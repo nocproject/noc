@@ -13,6 +13,6 @@ class Script(BaseScript):
     """
     """
 
-    name = "STerra.Gate"
+    name = "STerra.Gate.get_interface_properties"
 
     SNMP_NAME_TABLE = "IF-MIB::ifName"

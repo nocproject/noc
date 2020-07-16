@@ -15,7 +15,7 @@ class Script(BaseScript):
     """
     """
 
-    name = "STerra.Gate"
+    name = "STerra.Gate.get_chassis_id"
     interface = IGetChassisID
 
     SNMP_GETNEXT_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress"]]}

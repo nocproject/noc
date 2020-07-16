@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "STerra.Gate"
+    name = "STerra.Gate.get_version"
     cache = True
     interface = IGetVersion
     rx_ver = re.compile(r"(?P<ver>\d.\d.\d\S+\s#\d\s\S.+)", re.MULTILINE)
