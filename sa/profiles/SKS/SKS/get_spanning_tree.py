@@ -9,13 +9,15 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_spanning_tree import Script as BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 
 
 class Script(BaseScript):
     name = "SKS.SKS.get_spanning_tree"
     interface = IGetSpanningTree
+
+    always_prefer = "S"
 
     rx_mode1 = re.compile(r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
     rx_mode2 = re.compile(r"^\s*(?P<mode>\S+STP)\s+\(running\)")
