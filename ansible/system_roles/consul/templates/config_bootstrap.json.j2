@@ -25,7 +25,7 @@
   "log_level": "{{ consul_log_level }}",
   "enable_syslog": {{ consul_syslog_enable|lower }},
   "domain": "{{ consul_domain }}",
-  "enable_script_checks": true,
+  "enable_local_script_checks": true,
   {% if consul_acl_enable -%}
     "acl_datacenter": "{{ consul_acl_datacenter }}",
     "acl_default_policy": "{{ consul_acl_default_policy }}",
