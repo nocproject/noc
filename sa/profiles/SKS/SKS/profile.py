@@ -48,6 +48,7 @@ class Profile(BaseProfile):
         "gigabitethernet": "GigabitEthernet",
         "tg": "TGigaEthernet",
         "te": "TenGigabitEthernet",
+        "tengigabitethernet": "TenGigabitEthernet",
         "v": "Vlan",
         "VLAN": "Vlan",
         "n": "Null",
@@ -67,7 +68,8 @@ class Profile(BaseProfile):
         Port-aggregator1 - p1
         For other
         GigabitEthernet1/1/1 - gi1/1/1
-        TenGigabitEthernet1/1/1 - te1/1/2
+        TenGigabitEthernet1/1/2 - te1/1/2
+        tengigabitethernet1/1/2 - TenGigabitEthernet1/1/2
         Port-Channel1 - Po1
         1 - Vlan1
         :param interface:
