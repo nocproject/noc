@@ -1,0 +1,108 @@
+{
+    "name": "Eltex | RG | RG-1412G-Wac",
+    "$collection": "inv.objectmodels",
+    "uuid": "337a0957-27d3-448e-ae02-2f7005dc2ffd",
+    "vendor__code": "ELTEX",
+    "description": "gateway with one FXS ports, two USB, a Wi-Fi module 2.4G|5G and an optical port for connecting to an external network",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "connections": [
+        {
+            "description": "phone port",
+            "direction": "s",
+            "gender": "f",
+            "name": "fxs0",
+            "protocols": ["PSTN"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "wan port",
+            "direction": "i",
+            "gender": "f",
+            "name": "wan",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "lan port",
+            "direction": "s",
+            "gender": "f",
+            "name": "lan0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "lan port",
+            "direction": "s",
+            "gender": "f",
+            "name": "lan1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "lan port",
+            "direction": "s",
+            "gender": "f",
+            "name": "lan2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "lan port",
+            "direction": "s",
+            "gender": "f",
+            "name": "lan3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2.4G antenna interface internal",
+            "direction": "s",
+            "gender": "f",
+            "name": "rf1",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        },
+        {
+            "description": "5G antenna interface internal",
+            "direction": "s",
+            "gender": "f",
+            "name": "rf2",
+            "protocols": ["802.11abgn"],
+            "type__name": "Radio | RF | N"
+        },
+        {
+            "description": "usb port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": [">USB10", ">USB11", ">USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "usb port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": [">USB10", ">USB11", ">USB20"],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["RG-1412G-Wac"]
+        },
+        "dimensions": {
+            "depth": 120,
+            "height": 49,
+            "width": 218
+        },
+        "power": {
+            "power": 18.5
+        },
+        "weight": {
+            "weight": 0.30000000000000004
+        }
+    }
+}
