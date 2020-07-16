@@ -1,0 +1,13 @@
+{
+    "name": "STerra | Gate | ALL sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "34275ea9-ce76-4410-8f87-6223660529aa",
+    "description": "STerra Gate",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.9.1.227",
+    "action": "match",
+    "profile__name": "STerra.Gate"
+}
