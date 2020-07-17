@@ -2,7 +2,7 @@
 # Vendor: Ubiquiti
 # OS:     AirOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,3 +17,13 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?\.v(?P<version>\S+)#"
     command_more = "a"
     config_volatile = [r"^%.*?$"]
+
+    INTERFACE_TYPES = {
+        1: "other",
+        6: "physical",  # ethernetCsmacd
+        24: "loopback",  # softwareLoopback
+        53: "SVI",  # propVirtual
+    }
+
+    def get_interface_type(self, name):
+        return self.INTERFACE_TYPES.get(name)
