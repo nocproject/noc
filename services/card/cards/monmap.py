@@ -159,7 +159,7 @@ class MonMapCard(BaseCard):
                     status = "maintenance"
                 elif 100 < alarms.get(mo_id, 0) <= 2000:
                     status = "warning"
-                elif alarms.get(mo_id) > 2000:
+                elif alarms.get(mo_id, 0) > 2000:
                     status = "error"
                 objects_status[status] += [mo_id]
                 # update_dict(sss[status], s_service["service"])
