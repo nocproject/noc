@@ -53,7 +53,11 @@ class Profile(BaseProfile):
     command_leave_config = "return"
     command_save_config = "save"
     command_exit = "quit"
-    rogue_chars = [re.compile(rb"\x1b\[42D\s+\x1b\[42D"), b"\r"]
+    rogue_chars = [
+        re.compile(rb"\x1b\[42D\s+\x1b\[42D"),
+        b"\r",
+        re.compile(rb"\x1b\[16D\s+\x1b\[16D"),
+    ]
     config_tokenizer = "indent"
     config_tokenizer_settings = {
         # "end_of_context": "#"
@@ -84,6 +88,7 @@ class Profile(BaseProfile):
         "is_ar12_93xx": {"platform": {"$regex": r"^(S93..|AR[12].+)$"}},
         "is_cloud_engine": {"platform": {"$regex": r"^CE\S+"}},
         "is_cx300": {"platform": {"$regex": r"^CX300\S*"}},
+        "is_cx200X": {"platform": {"$regex": r"^CX200\S*"}},
     }
 
     rx_ver = re.compile(
