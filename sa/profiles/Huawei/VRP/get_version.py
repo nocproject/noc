@@ -49,7 +49,7 @@ class Script(BaseScript):
     )
     rx_ver_snmp3 = re.compile(
         r"^\s*VRP.+Software, Version (?P<version>\S+)\s+"
-        r"\((?P<platform>S\S+|CX\d+) (?P<image>[^)]+)",
+        r"\((?P<platform>S\S+|CX\d+\w?) (?P<image>[^)]+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp4_ne_me = re.compile(
@@ -141,7 +141,7 @@ class Script(BaseScript):
                 r += [v["BarCode"].strip()]
         return r
 
-    def parse_patch(self, snmp_only=False):
+    def parse_patch(self):
         r = []
         if self.has_snmp_access():
             # Trying SNMP

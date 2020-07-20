@@ -24,6 +24,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.validators import is_vlan
 from noc.core.mib import mib
 from noc.core.snmp.render import render_bin
+from noc.core.text import ranges_to_list
 
 
 class Script(BaseScript):
@@ -97,8 +98,12 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def parse_disp_vlan_all(self, v):
-        return
+    rx_port_allow_vlan = re.compile(r"(?P<iface>\S+)\s+(?:trunking)\s+(?:\d)\s+(?P<vlans>\S+)")
+
+    def parse_displ_port_allow_vlan(self):
+        v = self.cli("display port allow-vlan")
+        for iface, vlan in self.rx_port_allow_vlan.findall(v):
+            yield iface, ranges_to_list(vlan)
 
     def get_switchport_cli(self) -> DefaultDict[str, Dict[str, Union[int, list, None]]]:
         result = defaultdict(lambda: {"untagged": None, "tagged": []})
@@ -155,6 +160,10 @@ class Script(BaseScript):
                         result[ifname][key] = vid
                     else:
                         result[ifname][key] += [vid]
+        if not result:
+            self.logger.debug("Empty result. Use display port allow-vlan")
+            for iface, vlans in self.parse_displ_port_allow_vlan():
+                result[self.profile.convert_interface_name(iface)]["tagged"] += vlans
         return result
 
     def get_switchport(self) -> DefaultDict[int, Dict[str, Union[int, list, None]]]:
