@@ -36,6 +36,7 @@ class Script(BaseScript):
         r"Line protocol current state :\s*(?P<o_state>UP|DOWN)", re.IGNORECASE
     )
     rx_pvid = re.compile(r"PVID\s+:\s+(?P<pvid>\d+)")
+    rx_inline_ifindex = re.compile(r"\(ifindex\s*:\s*(?P<ifindex>\d+)\)")
     rx_mtu = re.compile(r"The Maximum Transmit Unit is (?P<mtu>\d+)( bytes)?")
     rx_mac = re.compile(
         r"Hardware [Aa]ddress(?::| is) (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
@@ -101,7 +102,10 @@ class Script(BaseScript):
     rx_port_allow_vlan = re.compile(r"(?P<iface>\S+)\s+(?:trunking)\s+(?:\d)\s+(?P<vlans>\S+)")
 
     def parse_displ_port_allow_vlan(self):
-        v = self.cli("display port allow-vlan")
+        try:
+            v = self.cli("display port allow-vlan")
+        except self.CLISyntaxError:
+            v = ""
         for iface, vlan in self.rx_port_allow_vlan.findall(v):
             yield iface, ranges_to_list(vlan)
 
@@ -367,6 +371,7 @@ class Script(BaseScript):
                 # SVI
                 sub["vlan_ids"] = [int(ifname[14:].strip())]
             # Parse data
+            ifindex = self.rx_inline_ifindex.search(data)
             a_stat, data = data.split("\n", 1)
             a_stat = a_stat.lower().endswith("up")
             o_stat = None
@@ -438,6 +443,8 @@ class Script(BaseScript):
                 }
                 if ifname in ifindexes:
                     iface["snmp_ifindex"] = int(ifindexes[ifname], 16)
+                elif ifindex:
+                    iface["snmp_ifindex"] = int(ifindex.group("ifindex"))
                 if "mac" in sub:
                     iface["mac"] = sub["mac"]
                 if "description" in sub:
@@ -460,6 +467,8 @@ class Script(BaseScript):
                         iface["enabled_protocols"] += ["LACP"]
                 interfaces[ifname] = iface
             else:
+                if ifindex:
+                    sub["snmp_ifindex"] = int(ifindex.group("ifindex"))
                 ifname, vlan_id = ifname.split(".")
                 if is_vlan(vlan_id):
                     sub["vlan_ids"] = [vlan_id]
