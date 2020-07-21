@@ -155,10 +155,12 @@ class Script(BaseScript):
         interfaces = {}
         ifaces = []
 
-        q = self.cli("show interfaces media | match interface:")
-        ifaces = self.rx_phys.findall(q)
+        v = self.cli("show interfaces media | match interface:")
+        ifaces = self.rx_phys.findall(v)
 
         for iface in ifaces:
+            if not self.filter_interface(0, iface, True):
+                continue
             v = self.cli("show interfaces %s" % iface)
             L = self.rx_log_split.split(v)
             phy = L.pop(0)
@@ -167,6 +169,7 @@ class Script(BaseScript):
             name = match.group("ifname")
             if name.endswith(")"):
                 name = name[:-1]
+            # Do not remove, additional verification
             if not self.filter_interface(0, name, True):
                 continue
             # Detect interface type
