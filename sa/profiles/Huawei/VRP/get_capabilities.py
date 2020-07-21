@@ -164,7 +164,7 @@ class Script(BaseScript):
                     cached=True,
                 )
             ):
-                if entity_class == 9 and entity_fru == 2:
+                if entity_class == 9:
                     modules.add(str(index.split(".")[-1]))
         return list(modules)
 
