@@ -18,7 +18,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
     rx_ver = re.compile(r"(?P<version>\d.\d.\d\S+\s#\d\s\S.+)", re.MULTILINE)
-    rx_ver42 = re.compile(r"S-Terra\s(?P<platform>\S+\s\d.\d.\d+),\s.+, Version (?P<version>\S+), ", re.MULTILINE)
+    rx_ver42 = re.compile(
+        r"S-Terra\s(?P<platform>\S+\s\d.\d.\d+),\s.+, Version (?P<version>\S+), ", re.MULTILINE
+    )
 
     def execute_snmp(self):
         version = "Unknown"
