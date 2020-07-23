@@ -1,0 +1,94 @@
+# ----------------------------------------------------------------------
+# NOC Python requirements
+# Following extras can be set:
+# * activator
+# * cache-redis
+# * cache-memcached
+# * classifier
+# * cython
+# * dev
+# * login-ldap
+# * login-pam
+# * login-radius
+# * prod-tools
+# * supervisor
+# * testing
+
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Basic node requirements
+Django==3.0.6
+Jinja2==2.8
+PyYAML==5.3.1
+Pygments==2.2.0
+XlsxWriter==0.9.3
+atomicl==0.1.1
+blinker==1.3
+bsdiff4==1.1.9
+cachetools==4.1.0
+crontab==0.22.6
+csiphash==0.0.5
+demjson==2.2.4
+fs==2.4.11
+future==0.17.1
+geojson==2.5.0
+geopy==0.97
+http-parser==0.9.0
+jsonschema==2.4.0
+manhole==1.6.0
+markerlib==0.6.0
+mistune==0.5
+mongoengine==0.20.0
+networkx==2.4
+numpy==1.18.3
+progressbar2==3.51.0
+psycopg2==2.8.5
+pymongo==3.10.1
+git+https://github.com/ploxiln/pynsq.git@a9f9a75eaec62904f06d497397d1b019cdb9581a
+pyproj==2.6.0
+python-consul==1.1.0
+python-creole==1.3.2
+python-dateutil==2.4.0
+pytz==2020.1
+requests==2.20.0
+setproctitle==1.1.10
+tornadis==0.8.1
+tornado==6.0.4
+ujson-x==1.37
+yappi==1.2.5
+# Activator requirements
+ssh2-python==0.18.0.post1; extra == "activator"
+# Classifier
+bitarray==0.8.1; extra == "classifier"
+# Cache-Redis
+hiredis==1.0.1; extra == "cache-redis"
+redis==3.5.2; extra == "cache-redis"
+# Cache-Memcached
+pylibmc==1.5.1; extra == "cache-memcached"
+# Dev requirements
+Babel==2.3.4; extra == "dev"
+ipython==7.14.0; extra == "dev"
+pojson==0.6; extra == "dev"
+# Login LDAP
+ldap3==2.6.1; extra == "login-ldap"
+# Login PAM
+pam==0.1.4; extra == "login-pam"
+# Login RADIUS
+pyrad==2.0; extra == "login-radius"
+# Standalone node with supervisor
+supervisor==4.1.0; extra == "supervisor"
+supervisor-serialrestart==0.1.1; extra == "supervisor"
+# Additional prod tools
+alerta==4.7.16; extra == "prod-tools"
+raven==6.1.0; extra == "prod-tools"
+supervisor-wildcards==0.1.3; extra == "prod-tools"
+# Test
+Coverage[toml]==5.0.3; extra == "testing"
+pytest==5.4.1; extra == "testing"
+pytest-assume==2.2.1; extra == "testing"
+pytest-dependency==0.5.1; extra == "testing"
+# Cython
+Cython==0.29.20; extra == "cython"
