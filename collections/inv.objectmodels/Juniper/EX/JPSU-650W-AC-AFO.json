@@ -27,7 +27,7 @@
         "asset": {
             "description": ["JPSU-650W-AC-AFO"],
             "order_part_no": ["JPSU-650W-AC-AFO"],
-            "part_no": ["740-041741"]
+            "part_no": ["740-041741", "740-070749"]
         },
         "power": {
             "power": 650.0
