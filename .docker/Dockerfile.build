@@ -9,9 +9,6 @@ ENV\
     NOC_THREAD_STACK_SIZE=524288 \
     NOC_PYTHON_INTERPRETER=/usr/bin/python3
 
-COPY requirements/docker.txt /opt/noc/requirements/docker.txt
-COPY requirements/test.txt /opt/noc/requirements/test.txt
-
 RUN apk add --update --no-cache \
     ca-certificates \
     libpq \
@@ -37,8 +34,12 @@ RUN apk add --no-cache --virtual .build-deps \
     cmake \
     proj-util \
     proj-dev
-RUN pip3 install --src=/tmp/src --no-cache --upgrade -r /opt/noc/requirements/docker.txt \
-    && pip3 install --src=/tmp/src --no-cache --upgrade -r /opt/noc/requirements/test.txt
+
+COPY requirements.txt /opt/noc/requirements.txt
+COPY scripts/build/get-noc-requirements.py /opt/noc/scripts/build/get-noc-requirements.py
+RUN ./scripts/build/get-noc-requirements.py \
+  testing activator classifier login-ldap login-radius prod-tools cache-redis cache-memcached \
+  | pip3 install --src=/tmp/src --no-cache --upgrade -r /dev/stdin
 
 RUN pip3 install cython
 

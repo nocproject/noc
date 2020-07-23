@@ -1,4 +1,0 @@
-ipython==7.14.0
-Babel==2.3.4
-pojson==0.6
-

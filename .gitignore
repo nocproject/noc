@@ -12,10 +12,6 @@ include/*
 lib/python*
 lib64
 local/*
-static/doc/*
-contrib/lib/*
-contrib/bin/*
-contrib/share/*
 .*
 !/.docker/*
 !/.gitignore
@@ -25,9 +21,9 @@ contrib/share/*
 !/.pylintrc
 !/.coveragerc
 !/.prettierrc
+!/scripts/build/
 ext_*
 etc/requirements/local.txt
-static/pkg/
 share/
 static/test/
 pip-selfcheck.json
