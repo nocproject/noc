@@ -33,7 +33,7 @@ class Profile(BaseProfile):
         (r"\{ (?:spm\<K\>\|)?\<cr\>\|frameid/slotid\<S\>\<\d+,15\> \}\:", "\n"),
         (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\>(\|\|\<K\>|) \}", "\n"),
         (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
-        (r"\{ (\|\S+\<K\>)+ \}", "\n"),
+        (r"\{ (\|*\S+\<K\>)+ \}", "\n"),
         (r"\{ groupindex\<K\>\|<cr> \}\:", "\n"),
         (r"\{ \<cr\>\|instance\<K\>\|port\<K\> \}\:", "\n"),
         (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n"),
