@@ -347,7 +347,7 @@ gemnasium-python-dependency_scanning:
     reports:
       dependency_scanning: gl-dependency-scanning-report.json
   rules:
-    - if: $DEPENDENCY_SCANNING_DISABLED || $DS_DISABLE_DIND == 'false'
+    - if: $DEPENDENCY_SCANNING_DISABLED
       when: never
     - if: $CI_COMMIT_BRANCH &&
           $GITLAB_FEATURES =~ /\bdependency_scanning\b/
@@ -357,9 +357,5 @@ gemnasium-python-dependency_scanning:
         - '{Pipfile,*/Pipfile,*/*/Pipfile}'
         - '{requires.txt,*/requires.txt,*/*/requires.txt}'
         - '{setup.py,*/setup.py,*/*/setup.py}'
-        # Support passing of $PIP_REQUIREMENTS_FILE
-        # See https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#configuring-specific-analyzers-used-by-dependency-scanning
-    - if: $CI_COMMIT_BRANCH &&
-          $GITLAB_FEATURES =~ /\bdependency_scanning\b/ &&
-          $DS_DEFAULT_ANALYZERS =~ /gemnasium-python/ &&
-          $PIP_REQUIREMENTS_FILE
+    - changes:
+        - requirements.txt
