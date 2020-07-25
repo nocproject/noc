@@ -119,7 +119,7 @@ class DataStreamService(Service):
                 cb = queue.get(block=False)
             except Empty:
                 break
-            cb()
+            cb(self.loop)
 
     def watch_waiter(self, coll, queue):
         """
@@ -153,8 +153,9 @@ class DataStreamService(Service):
             self._run_callbacks(queue)
 
     async def wait(self, ds_name):
-        def notify():
-            asyncio.get_running_loop().call_soon(event.set)
+        def notify(loop):
+            loop.call_soon(event.set)
+            # asyncio.get_running_loop().call_soon(event.set)
 
         if ds_name not in self.ds_queue:
             return
