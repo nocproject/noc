@@ -78,6 +78,7 @@ class Profile(BaseProfile):
         "is_dslam": {"platform": {"$in": ["MA5600", "MA5603"]}},
         "is_ua5k": {"platform": {"$in": ["UA5000", "UA5000IPMB", "UA5000PVM"]}},
         "is_lldp_support": {"version": {"$gte": "V800R018C10"}},
+        "is_gpon_ports": {"caps": {"$in": ["Network | PON | OLT"]}},
     }
 
     rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
