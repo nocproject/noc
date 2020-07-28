@@ -287,7 +287,13 @@ class ReportObjectDetailApplication(ExtApplication):
             roa = None
         hn = iter(ReportObjectsHostname1(mos_id))
         rc = iter(ReportObjectConfig(mos_id))
+        segment_lookup = {}
         # ccc = iter(ReportObjectCaps(mos_id))
+        if "segment" in columns_filter:
+            segment_lookup = {
+                str(n["_id"]): n["name"]
+                for n in NetworkSegment._get_collection().find({}, {"name": 1})
+            }
         if "adm_path" in columns_filter:
             ad_path = ReportAdPath()
             r[-1].extend([_("ADM_PATH1"), _("ADM_PATH1"), _("ADM_PATH1")])
@@ -318,6 +324,9 @@ class ReportObjectDetailApplication(ExtApplication):
             dp_columns = discovery_result.ATTRS
             dp = iter(discovery_result)
             r[-1].extend(dp_columns)
+        icount = 0
+        l_count = 10000
+        self.logger.debug("[%s|reportobjectdetail] Start main Loop", request.user)
         for (
             mo_id,
             name,
@@ -388,7 +397,8 @@ class ReportObjectDetailApplication(ExtApplication):
                             _("Yes") if avail.get(mo_id, None) else _("No"),
                             ad,
                             mo_continer[0],
-                            NetworkSegment.get_by_id(m_segment) if m_segment else "",
+                            # NetworkSegment.get_by_id(m_segment) if m_segment else "",
+                            segment_lookup.get(m_segment, "") if segment_lookup else "",
                             next(iface_count)[0],
                             next(link_count)[0],
                             next(rc)[0],
@@ -416,6 +426,16 @@ class ReportObjectDetailApplication(ExtApplication):
                 r[-1].extend(out_tags)
             if "discovery_problem" in columns_filter:
                 r[-1].extend(next(dp)[0])
+            if not icount:
+                self.logger.debug("[%s|reportobjectdetail] First chunk", request.user)
+            if icount // l_count:
+                self.logger.debug(
+                    "[%s|reportobjectdetail] Proccessed chunk number %d", request.user, icount
+                )
+                l_count += 10000
+            icount += 1
+            # r.append(x)
+        self.logger.debug("[%s|reportobjectdetail] End mail loop", request.user)
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
