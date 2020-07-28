@@ -303,6 +303,10 @@ Ext.define("NOC.core.ModelApplication", {
                 color: NOC.colors.edit,
                 tooltip: __("Edit"),
                 scope: me,
+                isDisabled: function() {
+                    var me = this;
+                    return !me.hasPermission("read") && !me.hasPermission("update");
+                },
                 handler: function(grid, rowIndex, colIndex) {
                     var me = this,
                         record = me.store.getAt(rowIndex);
