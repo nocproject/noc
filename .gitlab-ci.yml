@@ -352,10 +352,6 @@ gemnasium-python-dependency_scanning:
     - if: $CI_COMMIT_BRANCH &&
           $GITLAB_FEATURES =~ /\bdependency_scanning\b/
       exists:
-        - '{requirements.txt,*/requirements.txt,*/*/requirements.txt}'
-        - '{requirements.pip,*/requirements.pip,*/*/requirements.pip}'
-        - '{Pipfile,*/Pipfile,*/*/Pipfile}'
-        - '{requires.txt,*/requires.txt,*/*/requires.txt}'
-        - '{setup.py,*/setup.py,*/*/setup.py}'
-    - changes:
+        - requirements.txt
+      changes:
         - requirements.txt
