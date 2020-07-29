@@ -1,0 +1,22 @@
+{
+    "name": "Extreme | Summit | X650 | FAN-FB",
+    "$collection": "inv.objectmodels",
+    "uuid": "3265f43d-10d6-49c7-a749-bc70bcf72090",
+    "vendor__code": "EXTREME",
+    "description": "Fan module for Summit X650 series switches, Front-to-Back airflow",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Extreme | Summit | X650 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["450237-00-08"]
+        }
+    }
+}
