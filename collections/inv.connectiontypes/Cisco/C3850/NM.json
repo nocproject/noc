@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | C3850 | NM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5be5444b-c5e6-4891-b943-01c8a1278614",
+    "description": "Cisco С3850 Network Module slot",
+    "c_group": [],
+    "genders": "mf"
+}
