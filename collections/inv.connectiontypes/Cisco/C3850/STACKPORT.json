@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | C3850 | STACKPORT",
+    "$collection": "inv.connectiontypes",
+    "uuid": "7b36507f-6461-4a99-aa0b-45e43b655734",
+    "description": "Cisco С3850 Container of stacking",
+    "c_group": [],
+    "genders": "mf"
+}
