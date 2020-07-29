@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | C3850 | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "ed1f5156-cc10-4924-943b-7f9f8b850fd1",
+    "description": "Cisco С3850 Container of Power Supply",
+    "c_group": [],
+    "genders": "mf"
+}
