@@ -16,6 +16,8 @@ class GponPortsRule(OIDRule):
     METRIC_MAP = {
         "Interface | Load | In": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticSendBytes",
         "Interface | Load | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedBytes",
+        "Interface | Packets | In": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedPakts",
+        "Interface | Packets | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticSendPakts",
     }
 
     def iter_oids(self, script, metric):
