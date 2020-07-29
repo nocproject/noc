@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Planet.WGSD.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,16 +17,6 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    """
-    Eltex.MES.get_interfaces
-    @todo: VRF support
-    @todo: IPv6
-    @todo: ISIS
-    @todo: isis, bgp, rip
-    @todo: subinterfaces
-    @todo: Q-in-Q
-    """
-
     name = "Planet.WGSD.get_interfaces"
     cache = True
     interface = IGetInterfaces
@@ -120,6 +110,7 @@ class Script(BaseScript):
         # Get ifname and description
         i = []
         c = self.cli("show interfaces description").split("\n\n")
+        c[0] = c[0] + "\n"  # Add terminal CR
         i = self.rx_sh_int_des.findall(c[0])
         if not i:
             i = self.rx_sh_int_des2.findall(c[0])
@@ -128,6 +119,7 @@ class Script(BaseScript):
         for res in i:
             mac = None
             ifindex = 0
+            mtu = 0
             name = res[0].strip()
             if name in d:
                 ifindex = d[name]["sifindex"]
@@ -144,7 +136,6 @@ class Script(BaseScript):
 
             sub = {
                 "name": name,
-                "mtu": mtu,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "description": description.strip(),
@@ -152,6 +143,8 @@ class Script(BaseScript):
             }
             if ifindex:
                 sub["snmp_ifindex"] = ifindex
+            if mtu:
+                sub["mtu"] = mtu
             if mac:
                 sub["mac"] = mac
             iface = {
