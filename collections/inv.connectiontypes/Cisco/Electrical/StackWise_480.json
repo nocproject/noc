@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Electrical | StackWise 480",
+    "$collection": "inv.connectiontypes",
+    "uuid": "197a5713-18dc-4522-8c5a-160ad75143ae",
+    "description": "480G Stacking cable connector",
+    "c_group": [],
+    "genders": "mf"
+}
