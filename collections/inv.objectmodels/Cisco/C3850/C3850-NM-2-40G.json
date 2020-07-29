@@ -1,0 +1,38 @@
+{
+    "name": "Cisco | C3850 | C3850-NM-2-40G",
+    "$collection": "inv.objectmodels",
+    "uuid": "6754d38d-f074-4c85-a4fb-2ce56ca8e822",
+    "vendor__code": "CISCO",
+    "description": "2x40G Uplink Module generated from KND-OFF01-ST3850-1, platform: WS-C3850-24XS-S",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "FortyGigabitEthernet0/0/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Fo1_sfp",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "FortyGigabitEthernet0/0/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Fo2_sfp",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 3850 | NM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["C3850-NM-2-40G"]
+        }
+    }
+}
