@@ -31,8 +31,10 @@ from noc.core.script.oidrules.match import MatcherRule
 from noc.core.script.oidrules.oids import OIDsRule
 from noc.core.script.oidrules.loader import load_rule, with_resolver
 from noc.config import config
+from noc.core.perf import metrics as noc_metrics
 
 NS = 1000000000.0
+SNMP_OVERLOAD_VALUE = 18446744073709551615  # '0xffffffffffffffff' for 64-bit counter
 PROFILES_PATH = os.path.join("sa", "profiles")
 
 
@@ -507,6 +509,10 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         :param multi: True if single request can return several different paths.
             When False - only first call with composite path for same path will be returned
         """
+        if value == SNMP_OVERLOAD_VALUE:
+            self.logger.debug("SNMP Counter is full. Skipping value...")
+            noc_metrics["error", ("type", "snmp_overload_drops")] += 1
+            return
         if callable(scale):
             if not isinstance(value, list):
                 value = [value]
