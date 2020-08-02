@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | PWR | PWR-C1-715WAC",
+    "$collection": "inv.objectmodels",
+    "uuid": "e58723c2-6369-42f1-9386-f053ef63f7b9",
+    "vendor__code": "CISCO",
+    "description": "715 Watt AC PSU for Cisco Catalyst 3850 Series switches",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "m",
+            "name": "PSU",
+            "type__name": "Cisco | 3850 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PWR-C1-715WAC"]
+        }
+    }
+}
