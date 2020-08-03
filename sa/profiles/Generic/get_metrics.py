@@ -396,6 +396,12 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         """
         for m in self.metric_configs[metric]:
             for oid, vtype, scale, path in rule.iter_oids(self, m):
+                if m.id in self.seen_ids:
+                    # If override Generic metrics by profile skipping duplicate
+                    self.logger.debug(
+                        "SNMP Rule %s for metric %s already set. Skipping", m.id, rule
+                    )
+                    continue
                 self.snmp_batch[oid] += [
                     BatchConfig(id=m.id, metric=m.metric, path=path, type=vtype, scale=scale)
                 ]
