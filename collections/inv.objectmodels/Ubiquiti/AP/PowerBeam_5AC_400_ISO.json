@@ -1,0 +1,26 @@
+{
+    "name": "Ubiquiti | AP | PowerBeam 5AC 400 ISO",
+    "$collection": "inv.objectmodels",
+    "uuid": "c595bf74-9ac7-46dd-96a7-e9e5fa3d8573",
+    "vendor__code": "UBIQUITI",
+    "description": "High-Performance airMAX Bridge, PtP/PtMP, 5 GHz, 22-29 dBi,",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Uplink port",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PowerBeam 5AC 400 ISO"]
+        },
+        "management": {
+            "managed": true
+        }
+    }
+}
