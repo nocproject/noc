@@ -62,7 +62,7 @@ class Script(BaseScript):
         r"(^\s+Management address\s+:(?P<mgmt_addr>.+)\s*\n)?"
         r"(^\s+Interface numbering subtype\s+:(?P<interface_numbering_subtype>.+)\s*\n)?"
         r"(^\s+Interface number\s+:(?P<interface_number>.+)\s*\n)?"
-        r"(^\s+Object identifier\s+:\s*\n)?"
+        r"(^\s+Object identifier\s+:.*\n)?"
         r"(^\s*\n)?"
         r"(^\s*\n)?"
         r"^\s+Port ID type\s+:(?P<port_id_type>.+)\s*\n"
