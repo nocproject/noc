@@ -32,6 +32,7 @@ class Script(BaseScript):
     rx_ver3 = re.compile(
         r"^\s*VERSION\s*:\s*(?P<platform>(MA|UA)\S+)(?P<version>V\d+R\d+\S+)\s*\n", re.MULTILINE
     )
+    rx_patch = re.compile(r"\s*PATCH\s*:\s*(?P<patch>.+)$", re.MULTILINE)
 
     def execute_cli(self):
         v = self.cli("display version")
@@ -41,19 +42,22 @@ class Script(BaseScript):
             platform1 = match.group("platform1")
             if platform1 and platform1 != platform:
                 platform = platform1
-            return {"vendor": "Huawei", "platform": platform, "version": match.group("version")}
+            r = {"vendor": "Huawei", "platform": platform, "version": match.group("version")}
         else:
             match = self.rx_ver2.search(v)
             if match:
-                return {
+                r = {
                     "vendor": "Huawei",
                     "platform": match.group("platform"),
                     "version": match.group("version"),
                 }
             else:
                 match = self.rx_ver3.search(v)
-                return {
+                r = {
                     "vendor": "Huawei",
                     "platform": match.group("platform"),
                     "version": match.group("version"),
                 }
+        if self.rx_patch.search(v):
+            r["attributes"] = {"Patch Version": self.rx_patch.search(v).group("patch").strip()}
+        return r
