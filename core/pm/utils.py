@@ -83,9 +83,10 @@ def get_objects_metrics(managed_objects):
             from_date.isoformat(sep=" "),
             ", ".join(bi_map),
         )
-        SQL = SQL % ("", "")
         if table in path_table:
             SQL = SQL % ("arrayStringConcat(path, '|') as path,", ", path")
+        else:
+            SQL = SQL % ("", "")
         try:
             for result in ch.execute(post=SQL):
                 print(result)
