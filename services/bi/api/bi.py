@@ -15,6 +15,7 @@ from collections import defaultdict
 # Third-party modules
 import bson
 import ujson
+import uuid
 from mongoengine.queryset import Q
 import cachetools
 
@@ -331,6 +332,7 @@ class BIAPI(API):
         d.title = config.get("title")  # @todo: Generate title
         d.description = config.get("description")
         d.tags = config.get("tags", [])
+        d.uuid = uuid.uuid4()
         d.save()
         return str(d.id)
 
