@@ -18,6 +18,8 @@ class GponPortsRule(OIDRule):
         "Interface | Load | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedBytes",
         "Interface | Packets | In": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedPakts",
         "Interface | Packets | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticSendPakts",
+        "Interface | Discards | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticDropPakts",
+        "Interface | Errors | In": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedCRCErrPakts",
     }
 
     def iter_oids(self, script, metric):
