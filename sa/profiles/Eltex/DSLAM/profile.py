@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     DSLAM
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_username = r"(?<!Last )[Ll]ogin: "
     pattern_more = [(r"--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
     pattern_prompt = (
-        r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@]+)> (?!Command not found|fail to run,)"
+        r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@\#]+)> (?!Command not found|fail to run,)"
     )
     pattern_syntax_error = r"Command not found|fail to run,"
     pattern_operation_error = (
