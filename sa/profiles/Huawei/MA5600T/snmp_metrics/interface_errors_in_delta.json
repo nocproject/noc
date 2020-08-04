@@ -1,0 +1,18 @@
+{
+  "$metric": "Interface | Errors | In",
+  "$type": "match",
+  "$match": [
+    {
+      "$match": "is_gpon_ports",
+      "$type": "gponports",
+      "oid": "{{ oid_prifix }}.{{ ifindex }}",
+      "type": "delta"
+    },
+    {
+  "$metric": "Interface | Errors | In",
+  "$type": "ifindex",
+  "oid": "IF-MIB::ifInErrors.{{ ifIndex }}",
+  "type": "delta"
+}
+]
+}
