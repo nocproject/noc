@@ -9,12 +9,15 @@
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.core.text import parse_kv
 from noc.core.mib import mib
+from .oidrules.gpon_ports import GponPortsRule
 
 SNMP_UNKNOWN_VALUE = 2147483647
 
 
 class Script(GetMetricsScript):
     name = "Huawei.MA5600T.get_metrics"
+
+    OID_RULES = [GponPortsRule]
 
     kv_map = {
         "rx optical power(dbm)": "optical_rx_dbm",

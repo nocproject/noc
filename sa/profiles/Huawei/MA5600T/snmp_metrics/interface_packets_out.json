@@ -1,0 +1,24 @@
+{
+  "$metric": "Interface | Packets | Out",
+  "$type": "match",
+  "$match": [
+    {
+      "$match": "is_gpon_ports",
+      "$type": "gponports",
+      "oid": "{{ oid_prifix }}.{{ ifindex }}",
+      "type": "counter"
+    },
+    {
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHCOutUcastPkts..{{ ifIndex }}",
+    "type": "counter"
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifOutUcastPkts.{{ ifIndex }}",
+    "type": "counter"
+  }
+}]
+}
