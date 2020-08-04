@@ -17,5 +17,9 @@ def fix():
         "cfgsyslog",
         "cfgtrap",
         "dnszone",
+        "address",
+        "prefix",
+        "vrf",
+        "resourcegroup",
     ]:
         Command().run_from_argv(["rebuild", "--datastream", ds])
