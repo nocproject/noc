@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | MA | MA4000 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ed9dd83e-0293-4ad3-a5a6-54153583d6a6",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.13",
+    "action": "match",
+    "profile__name": "Eltex.MA4000"
+}
