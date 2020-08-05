@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -111,6 +111,7 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": {
                     "macAddress": LLDP_CHASSIS_SUBTYPE_MAC,
                     "networkAddress": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+                    "local": LLDP_CHASSIS_SUBTYPE_LOCAL,
                 }[match.group("ch_type")],
                 "remote_chassis_id": match.group("ch_id") if not ext_ch_id else None,
                 "remote_port_subtype": {
