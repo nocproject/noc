@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,8 +42,8 @@ class Script(BaseScript):
             "connector": "connector",
             "type": "type",
             "wavelength": "wavelength",
-            "sfp or sfp+": "sfp_type",
             "rev": "rev",
+            "ge compliance": "ge_compliance",
         }
         if slot:
             v = "debug hal show optic-info slot %d" % slot
@@ -61,43 +61,44 @@ class Script(BaseScript):
             if self.rx_no_trans.match(block) or not port:
                 continue
             d = parse_kv(k_map, block)
-            # 1300Mb/sec-1310nm-LC-20.0km(0.009mm)
-            # description = ""
-            description = "-".join(
+            if not d.get("part_no", ""):
+                continue
+            # 1300Mb/sec 1310nm LC-20.0km(0.009mm)
+            # 1000BASE-LX 1310nm LC
+            description = " ".join(
                 [
-                    d.get("type", "").strip(),
+                    d.get("type", d.get("ge_compliance", "")).strip(),
                     d.get("wavelength", "").strip() + "nm",
                     d.get("connector", "").strip()
                     # d["Transfer Distance(meter)"].strip() + "m"
                 ]
             )
-            if "part_no" not in d:
-                continue
-            if "mfg_date" in d:
+            xcvr = {
+                "type": "XCVR",
+                "number": port,
+                "part_no": d["part_no"],
+                "description": description,
+            }
+            if not d.get("vendor", ""):
+                xcvr["vendor"] = "NONAME"
+            else:
+                xcvr["vendor"] = d.get("vendor")
+            if "serial" in d and d["serial"] != "":
+                xcvr["serial"] = d["serial"]
+            if "rev" in d and d["rev"] != "":
+                xcvr["revision"] = d["rev"]
+            if "mfg_date" in d and d["mfg_date"] != "":
                 try:
                     if len(d["mfg_date"]) > 6:
                         d["mfg_date"] = d["mfg_date"][:6]
                     d["mfg_date"] = datetime.datetime.strptime(d["mfg_date"], "%y%m%d")
-                    d["mfg_date"] = d["mfg_date"].strftime("%Y-%m-%d")
+                    xcvr["mfg_date"] = d["mfg_date"].strftime("%Y-%m-%d")
                 except ValueError:
                     self.logger.error(
                         "Unconverted format manufactured date: %s, on port: %s"
                         % (d["mfg_date"], port)
                     )
-                    d["mfg_date"] = None
-            r += [
-                {
-                    "type": "XCVR",
-                    "number": port,
-                    "vendor": d.get("vendor", "NONAME"),
-                    "part_no": d["part_no"].strip(),
-                    "serial": d.get("serial", ""),
-                    "description": description,
-                    "mfg_date": d.get("mfg_date", "00-00-00"),
-                }
-            ]
-            if "rev" in d:
-                r[-1]["revision"] = d["rev"]
+            r += [xcvr]
             port = None
         return r
 
@@ -109,7 +110,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return {}
         slot = 1
-        number = None
+        number = 0
         for block in self.rx_power_split.split(v):
             if is_int(block):
                 if int(block.strip()) < number:
