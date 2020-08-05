@@ -241,7 +241,7 @@ class Script(BaseScript):
         for ifindex, iface in ifaces.items():
             if ifindex in data:
                 iface.update(data[ifindex])
-                if int(iface["mtu"]) == self.INVALID_MTU:
+                if "mtu" in iface and int(iface["mtu"]) == self.INVALID_MTU:
                     del iface["mtu"]
             iface["type"] = self.clean_iftype(iface["name"], ifindex)
             if not iface["type"]:
