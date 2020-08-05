@@ -11,7 +11,7 @@ import datetime
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.base import get_document
-from mongoengine.fields import BaseField, DateTimeField, DictField, ListField
+from mongoengine.fields import BaseField, DateTimeField, DictField
 from mongoengine.errors import ValidationError
 from bson import ObjectId
 from django.db.models import Model
@@ -112,41 +112,7 @@ class PlainReferenceField(BaseField):
         self.ttl = ttl
 
 
-class PlainReferenceListField(ListField):
-    def __init__(self, document_type, *args, **kwargs):
-        if not isinstance(document_type, str):
-            if not issubclass(document_type, (Document, str)):
-                raise ValidationError(
-                    "Argument to PlainReferenceField constructor "
-                    "must be a document class or a string"
-                )
-        self.document_type_obj = document_type
-        self.dereference = None
-        super().__init__(*args, **kwargs)
-
-    def dereference_cached(self, value):
-        return self.document_type.get_by_id(value)
-
-    def dereference_uncached(self, value):
-        return self.document_type.objects.filter(pk=value).first()
-
-    def set_dereference(self):
-        if hasattr(self.document_type, "get_by_id"):
-            self.dereference = self.dereference_cached
-        else:
-            self.dereference = self.dereference_uncached
-
-    @property
-    def document_type(self):
-        if isinstance(self.document_type_obj, str):
-            if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
-                self.document_type_obj = self.owner_document
-            elif isinstance(self.document_type_obj, str):
-                self.document_type_obj = get_model(self.document_type_obj)
-            else:
-                self.document_type_obj = get_document(self.document_type_obj)
-        return self.document_type_obj
-
+class PlainReferenceListField(PlainReferenceField):
     def __get__(self, instance, owner):
         def convert(value):
             if isinstance(value, ObjectId):
@@ -192,16 +158,10 @@ class PlainReferenceListField(ListField):
         else:
             return document
 
-    def lookup_member(self, name):
-        return self.document_type._fields.get(name)
-
     def prepare_query_value(self, op, value):
         if value is None:
             return None
         return PlainReferenceField.to_mongo(self, value)
-
-    def set_cache(self, ttl=None):
-        self.ttl = ttl
 
 
 class ForeignKeyField(BaseField):
