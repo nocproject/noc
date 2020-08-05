@@ -14,8 +14,8 @@ class GponPortsRule(OIDRule):
     name = "gponports"
 
     METRIC_MAP = {
-        "Interface | Load | In": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticSendBytes",
-        "Interface | Load | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedBytes",
+        "Interface | Load | In": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedBytes",
+        "Interface | Load | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticSendBytes",
         "Interface | Packets | In": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticReceivedPakts",
         "Interface | Packets | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticSendPakts",
         "Interface | Discards | Out": "HUAWEI-XPON-MIB::hwGponOltEthernetStatisticDropPakts",
