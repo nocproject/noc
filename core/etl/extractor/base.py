@@ -11,9 +11,11 @@ import gzip
 import os
 import csv
 import itertools
-from collections import namedtuple
 import io
 from time import perf_counter
+import contextlib
+from typing import Any, List
+import dataclasses
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -23,13 +25,21 @@ from noc.core.comp import smart_text
 logger = logging.getLogger(__name__)
 
 
+@dataclasses.dataclass
+class Problem(object):
+    line: int
+    is_rej: bool
+    p_class: str
+    message: str
+    row: List[Any]
+
+
 class BaseExtractor(object):
     """
     Data extractor interface. Subclasses must provide
     *iter_data* method
     """
 
-    Problem = namedtuple("Problem", ["line", "is_rej", "p_class", "message", "row"])
     name = None
     PREFIX = config.path.etl_import
     REPORT_INTERVAL = 1000
@@ -43,34 +53,76 @@ class BaseExtractor(object):
         self.config = system.config
         self.logger = PrefixLoggerAdapter(logger, "%s][%s" % (system.name, self.name))
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
-        self.fatal_problems = []
-        self.quality_problems = []
+        self.fatal_problems: List[Problem] = []
+        self.quality_problems: List[Problem] = []
 
-    def register_quality_problem(self, line, p_class, message, row):
+    def register_quality_problem(self, line: int, p_class: str, message: str, row: List[Any]):
         self.quality_problems += [
-            self.Problem(line=line + 1, is_rej=False, p_class=p_class, message=message, row=row)
+            Problem(line=line + 1, is_rej=False, p_class=p_class, message=message, row=row)
         ]
 
-    def register_fatal_problem(self, line, p_class, message, row):
+    def register_fatal_problem(self, line: int, p_class: str, message: str, row: List[Any]):
         self.fatal_problems += [
-            self.Problem(line=line + 1, is_rej=True, p_class=p_class, message=message, row=row)
+            Problem(line=line + 1, is_rej=True, p_class=p_class, message=message, row=row)
         ]
 
-    def get_new_state(self):
-        if not os.path.isdir(self.import_dir):
-            self.logger.info("Creating directory %s", self.import_dir)
-            os.makedirs(self.import_dir)
-        path = os.path.join(self.import_dir, "import.csv.gz")
-        self.logger.info("Writing to %s", path)
-        return io.TextIOWrapper(gzip.GzipFile(path, "w"))
+    def open_compressed_file(self, path: str, mode: str) -> io.TextIOWrapper:
+        path = path + ".gz"
+        return io.TextIOWrapper(gzip.GzipFile(path, mode))
 
-    def get_problem_file(self):
-        if not os.path.isdir(self.import_dir):
-            self.logger.info("Creating directory %s", self.import_dir)
-            os.makedirs(self.import_dir)
-        path = os.path.join(self.import_dir, "import.csv.rej.gz")
+    def ensure_import_dir(self):
+        """
+        Ensure import directory is exists
+        :return:
+        """
+        if os.path.isdir(self.import_dir):
+            return
+        self.logger.info("Creating directory %s", self.import_dir)
+        os.makedirs(self.import_dir)
+
+    def get_new_state(self) -> io.TextIOWrapper:
+        self.ensure_import_dir()
+        path = os.path.join(self.import_dir, "import.csv")
         self.logger.info("Writing to %s", path)
-        return io.TextIOWrapper(gzip.GzipFile(path, "w"))
+        return self.open_compressed_file(path, "w")
+
+    @contextlib.contextmanager
+    def with_new_state(self):
+        """
+        New state context manager. Usage::
+
+        with e.with_new_state() as f:
+            ...
+
+        :return:
+        """
+        f = self.get_new_state()
+        try:
+            yield f
+        finally:
+            f.close()
+
+    def get_problem_file(self) -> io.TextIOWrapper:
+        self.ensure_import_dir()
+        path = os.path.join(self.import_dir, "import.csv.rej")
+        self.logger.info("Writing to %s", path)
+        return self.open_compressed_file(path, "w")
+
+    @contextlib.contextmanager
+    def with_problem_file(self):
+        """
+        New state context manager. Usage::
+
+        with e.with_problem_file() as f:
+            ...
+
+        :return:
+        """
+        f = self.get_problem_file()
+        try:
+            yield f
+        finally:
+            f.close()
 
     def iter_data(self):
         yield from self.data
@@ -116,10 +168,9 @@ class BaseExtractor(object):
         # Sort
         data.sort()
         # Write
-        f = self.get_new_state()
-        writer = csv.writer(f)
-        writer.writerows(data)
-        f.close()
+        with self.with_new_state() as f:
+            writer = csv.writer(f)
+            writer.writerows(data)
         if self.fatal_problems or self.quality_problems:
             self.logger.warning(
                 "Detect problems on extracting, fatal: %d, quality: %d",
@@ -137,21 +188,19 @@ class BaseExtractor(object):
                 )
             # Dump problem to file
             try:
-                f = self.get_problem_file()
-                writer = csv.writer(f, delimiter=";")
-                for p in itertools.chain(self.quality_problems, self.fatal_problems):
-                    writer.writerow(
-                        [smart_text(c) for c in p.row]
-                        + [
-                            "Fatal problem, line was rejected"
-                            if p.is_rej
-                            else "Data quality problem"
-                        ]
-                        + [p.message.encode("utf-8")]
-                    )
+                with self.with_problem_file() as f:
+                    writer = csv.writer(f, delimiter=";")
+                    for p in itertools.chain(self.quality_problems, self.fatal_problems):
+                        writer.writerow(
+                            [smart_text(c) for c in p.row]
+                            + [
+                                "Fatal problem, line was rejected"
+                                if p.is_rej
+                                else "Data quality problem"
+                            ]
+                            + [p.message.encode("utf-8")]
+                        )
             except IOError as e:
                 self.logger.error("Error when saved problems %s", e)
-            finally:
-                f.close()
         else:
             self.logger.info("No problems detected")
