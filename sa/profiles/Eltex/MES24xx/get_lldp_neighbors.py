@@ -15,6 +15,7 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.mib import mib
 from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
     LLDP_CHASSIS_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NAME,
@@ -51,7 +52,11 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
 
-    CHASSIS_SUBTYPE = {"Mac Address": LLDP_CHASSIS_SUBTYPE_MAC, "Local": LLDP_CHASSIS_SUBTYPE_LOCAL}
+    CHASSIS_SUBTYPE = {
+        "Mac Address": LLDP_CHASSIS_SUBTYPE_MAC,
+        "Network Address": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+        "Local": LLDP_CHASSIS_SUBTYPE_LOCAL,
+    }
     PORT_SUBTYPE = {
         "Mac Address": LLDP_PORT_SUBTYPE_MAC,
         "Interface Name": LLDP_PORT_SUBTYPE_NAME,
