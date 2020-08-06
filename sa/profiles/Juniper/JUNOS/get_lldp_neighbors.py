@@ -80,10 +80,10 @@ class Script(BaseScript):
         r = []
         # Collect data
         local_port_ids = {}  # name -> id
-        v = self.cli("show lldp local-information")
+        v = self.cli("show lldp local-information | no-more")
         for port, local_id in self.rx_localport.findall(v):
             local_port_ids[port] = IntParameter().clean(local_id)
-        v = self.cli("show lldp neighbors")
+        v = self.cli("show lldp neighbors | no-more")
         ifs = [
             {"local_interface": match.group("local_if"), "neighbors": []}
             for match in self.rx_neigh.finditer(v)

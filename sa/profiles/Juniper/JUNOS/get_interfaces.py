@@ -155,13 +155,13 @@ class Script(BaseScript):
         interfaces = {}
         ifaces = []
 
-        v = self.cli("show interfaces media | match interface:")
+        v = self.cli("show interfaces media | match interface: | no-more")
         ifaces = self.rx_phys.findall(v)
 
         for iface in ifaces:
             if not self.filter_interface(0, iface, True):
                 continue
-            v = self.cli("show interfaces %s" % iface)
+            v = self.cli("show interfaces %s | no-more" % iface)
             L = self.rx_log_split.split(v)
             phy = L.pop(0)
             phy = phy.replace(" )", "")

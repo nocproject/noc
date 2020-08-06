@@ -12,5 +12,5 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        config = self.cli("show configuration | display omit")
+        config = self.cli("show configuration | display omit | no-more")
         return self.cleaned_config(config)

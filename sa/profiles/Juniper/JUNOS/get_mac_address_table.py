@@ -35,6 +35,7 @@ class Script(BaseScript):
             cmd += " interface %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
+        cmd += " | no-more"
         for l in self.cli(cmd).splitlines():
             match = self.rx_line.match(l.strip())
             if match:

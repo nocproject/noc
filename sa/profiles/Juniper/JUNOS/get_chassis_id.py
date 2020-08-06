@@ -31,7 +31,7 @@ class Script(BaseScript):
     )
 
     def execute_cli(self):
-        v = self.cli("show chassis mac-addresses")
+        v = self.cli("show chassis mac-addresses | no-more")
         macs = []
         for f, t in [
             (mac, MAC(mac).shift(int(count) - 1)) for _, mac, count in self.rx_range.findall(v)

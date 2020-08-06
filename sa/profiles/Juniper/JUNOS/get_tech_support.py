@@ -16,5 +16,5 @@ class Script(BaseScript):
     interface = IGetTechSupport
 
     def execute(self):
-        c = self.cli("request support information")
+        c = self.cli("request support information | no-more")
         return smart_bytes(smart_text(c, errors="ignore"))

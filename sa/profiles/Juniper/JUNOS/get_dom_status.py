@@ -30,7 +30,7 @@ class Script(BaseScript):
 
     def execute(self, interface=None):
         r = []
-        v = self.cli("show interfaces diagnostics optics")
+        v = self.cli("show interfaces diagnostics optics | no-more")
         for I in self.rx_phy_split.split(v)[1:]:
             name = self.rx_phy_name.search(I).group("ifname")
             match = self.rx_temp.search(I)

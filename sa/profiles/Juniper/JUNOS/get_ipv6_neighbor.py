@@ -25,5 +25,5 @@ class Script(BaseScript):
     )
 
     def execute(self, vrf=None):
-        cmd = "show ipv6 neighbor"
+        cmd = "show ipv6 neighbor | no-more"
         return self.cli(cmd, list_re=self.rx_line)

@@ -23,7 +23,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         fqdn = []
-        v = self.cli("show configuration system | match -name", cached=True)
+        v = self.cli("show configuration system | match -name | no-more", cached=True)
         match = self.rx_config.search(v)
         if match:
             fqdn = match.group("hostname")

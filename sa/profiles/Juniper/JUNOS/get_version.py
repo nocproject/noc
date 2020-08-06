@@ -42,7 +42,7 @@ class Script(BaseScript):
         }
 
     def execute_cli(self):
-        v = self.cli("show version")
+        v = self.cli("show version | no-more")
         match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver2.search(v)

@@ -27,13 +27,13 @@ class Script(BaseScript):
 
     def execute(self):
         try:
-            v = self.cli("show lacp interfaces")
+            v = self.cli("show lacp interfaces | no-more")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         r = []
         ifaces = self.rx_ifname.findall(v)
         for i in ifaces:
-            v = self.cli('show interfaces %s extensive | find "LACP info"' % i)
+            v = self.cli('show interfaces %s extensive | find "LACP info" | no-more' % i)
             if "Pattern not found" in v:
                 continue
             bundle = []

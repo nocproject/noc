@@ -37,7 +37,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         r = []
-        v = self.cli("show services rpm probe-results")
+        v = self.cli("show services rpm probe-results | no-more")
         for match in self.rx_res.finditer(v):
             r += [
                 {

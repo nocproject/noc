@@ -21,7 +21,7 @@ class Script(BaseScript):
         """
         Check box has STP enabled
         """
-        r = self.cli("show spanning-tree bridge | match Enabled")
+        r = self.cli("show spanning-tree bridge | match Enabled | no-more")
         if "?STP" in r or "MSTP" in r:
             return True
         return False
@@ -31,7 +31,7 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        r = self.cli("show lldp | match Enabled")
+        r = self.cli("show lldp | match Enabled | no-more")
         return "Enabled" in r
 
     def has_lldp_snmp(self):
@@ -68,7 +68,7 @@ class Script(BaseScript):
         """
         Check box has bfd enabled
         """
-        r = self.cli("show bfd session")
+        r = self.cli("show bfd session | no-more")
         return "0 sessions, 0 clients" not in r
 
     def has_bfd_snmp(self):
@@ -86,7 +86,7 @@ class Script(BaseScript):
         """
         Check box has lacp enabled
         """
-        r = self.cli("show lacp interfaces")
+        r = self.cli("show lacp interfaces | no-more")
         return "lacp subsystem not running" not in r
 
     @false_on_cli_error

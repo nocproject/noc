@@ -39,7 +39,7 @@ class Script(BaseScript):
 
     def execute_cli(self, interface=None):
         r = []
-        cmd = "show interfaces media | match interface:"
+        cmd = "show interfaces media | match interface: | no-more"
         for l in self.cli(cmd).splitlines():
             match = self.rx_interface_status.search(l)
             if match:

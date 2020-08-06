@@ -99,7 +99,7 @@ class Script(BaseScript):
     def execute_cli(self):
         self.chassis_no = None
         self.virtual_chassis = None
-        v = self.cli("show chassis hardware", cached=True)
+        v = self.cli("show chassis hardware | no-more", cached=True)
         objects = []
         chassis_sn = set()
         p_hardware = self.parse_hardware(v)

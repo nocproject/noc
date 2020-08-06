@@ -21,6 +21,6 @@ class Script(BaseScript):
 
     def execute(self):
         r = {}
-        for match in self.rx_line.finditer(self.cli("show system license")):
+        for match in self.rx_line.finditer(self.cli("show system license | no-more")):
             r[match.group("name")] = int(match.group("inst"))
         return r

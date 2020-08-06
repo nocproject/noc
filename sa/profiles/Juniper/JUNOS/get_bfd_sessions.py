@@ -42,7 +42,7 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        s = self.cli("show bfd session extensive")
+        s = self.cli("show bfd session extensive | no-more")
         for bs in find_indented(s):
             match = self.rx_session.search(bs)
             if match:

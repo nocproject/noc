@@ -41,7 +41,7 @@ class Script(BaseScript):
         r = []
         if not self.profile.command_exist(self, "oam"):
             return []
-        v = self.cli("show oam ethernet link-fault-management detail")
+        v = self.cli("show oam ethernet link-fault-management detail | no-more")
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_interface.search(s)
             if not match:

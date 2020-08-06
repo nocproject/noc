@@ -29,7 +29,7 @@ class Script(BaseScript):
         if not self.profile.command_exist(self, "dhcp server"):
             return []
         r = []
-        data = self.cli("show dhcp server binding")
+        data = self.cli("show dhcp server binding | no-more")
         for match in self.rx_line.finditer(data):
             e = match.group("expires")
             expire = datetime.datetime.fromtimestamp(time.time() + int(e))

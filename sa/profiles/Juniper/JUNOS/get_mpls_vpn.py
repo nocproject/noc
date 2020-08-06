@@ -43,7 +43,7 @@ class Script(BaseScript):
             return []
 
         vpns = []
-        v = self.cli("show route instance detail")
+        v = self.cli("show route instance detail | no-more")
         for match in self.rx_ri.finditer(v):
             name = match.group("name")
             rt = match.group("type").lower()

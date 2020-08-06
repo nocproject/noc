@@ -25,7 +25,7 @@ class Script(BaseScript):
         if not self.is_switch or not self.profile.command_exist(self, "vlans"):
             return []
         r = []
-        v = self.cli("show vlans brief")
+        v = self.cli("show vlans brief | no-more")
         for match in self.rx_vlan_line.finditer(v):
             r += [match.groupdict()]
         return r
