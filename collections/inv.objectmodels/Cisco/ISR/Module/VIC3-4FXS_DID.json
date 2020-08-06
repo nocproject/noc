@@ -1,0 +1,55 @@
+{
+    "name": "Cisco | ISR | Module | VIC3-4FXS/DID",
+    "$collection": "inv.objectmodels",
+    "uuid": "1d49a28a-2049-4e7e-a340-5d14ffce161c",
+    "vendor__code": "CISCO",
+    "description": "3rd generation four port FXS DID voice interface daughtercard generated from KND-OFF01-RW02, platform: 2911R-V",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "description": "voice-port N/X/0 telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port0",
+            "protocols": ["FXS"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port N/X/1 telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port0",
+            "protocols": ["FXS"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port N/X/2 telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port0",
+            "protocols": ["FXS"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "voice-port N/X/3 telephone",
+            "direction": "s",
+            "gender": "f",
+            "name": "voice-port0",
+            "protocols": ["FXS"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "Voice Interface Card connector slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["VIC"],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["VIC3-4FXS/DID"]
+        }
+    }
+}

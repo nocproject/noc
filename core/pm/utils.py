@@ -44,7 +44,12 @@ def get_objects_metrics(managed_objects):
     object_profiles = set(
         mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map))
     )
-    msd = {ms.id: ms.table_name for ms in MetricScope.objects.filter()}
+    msd = {}
+    path_table = set()
+    for ms in MetricScope.objects.filter():
+        msd[ms.id] = ms.table_name
+        if ms.path:
+            path_table.add(ms.table_name)
     mts = {
         str(mt.id): (msd[mt.scope.id], mt.field_name, mt.name) for mt in MetricType.objects.all()
     }
@@ -64,13 +69,13 @@ def get_objects_metrics(managed_objects):
 
     for table, fields in itertools.groupby(sorted(mmm, key=lambda x: x[0]), key=lambda x: x[0]):
         fields = list(fields)
-        SQL = """SELECT managed_object, argMax(ts, ts), arrayStringConcat(path, '|') as path, %s
+        SQL = """SELECT managed_object, argMax(ts, ts), %%s %s
               FROM %s
               WHERE
                 date >= toDate('%s')
                 AND ts >= toDateTime('%s')
                 AND managed_object IN (%s)
-              GROUP BY managed_object, path
+              GROUP BY managed_object %%s
               """ % (
             ", ".join(["argMax(%s, ts) as %s" % (f[1], f[1]) for f in fields]),
             table,
@@ -78,12 +83,22 @@ def get_objects_metrics(managed_objects):
             from_date.isoformat(sep=" "),
             ", ".join(bi_map),
         )
+        if table in path_table:
+            SQL = SQL % ("arrayStringConcat(path, '|') as path,", ", path")
+        else:
+            SQL = SQL % ("", "")
         try:
             for result in ch.execute(post=SQL):
-                mo_bi_id, ts, path = result[:3]
+                print(result)
+                if table in path_table:
+                    mo_bi_id, ts, path = result[:3]
+                    result = result[3:]
+                else:
+                    mo_bi_id, ts = result[:2]
+                    path, result = "", result[2:]
                 mo = bi_map.get(mo_bi_id)
                 i = 0
-                for r in result[3:]:
+                for r in result:
                     f_name = fields[i][2]
                     mtable += [[mo, ts, path, r]]
                     if mo not in metric_map:
