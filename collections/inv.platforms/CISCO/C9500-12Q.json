@@ -1,5 +1,5 @@
 {
-    "vendor__name": "Cisco Systems",
+    "vendor__code": "CISCO",
     "name": "C9500-12Q",
     "$collection": "inv.platforms",
     "uuid": "8f3400ae-f029-4f1b-8d9b-840830ea2295",
