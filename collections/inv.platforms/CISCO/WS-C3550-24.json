@@ -3,6 +3,6 @@
     "name": "WS-C3550-24",
     "$collection": "inv.platforms",
     "uuid": "c4eb7344-2822-4ce4-b980-8f066c254514",
-    "aliases": ["WS-C3550-24-EMI","WS-C3550-24-SMI"],
+    "aliases": ["WS-C3550-24-EMI", "WS-C3550-24-SMI"],
     "snmp_sysobjectid": "1.3.6.1.4.1.9.1.366"
 }
