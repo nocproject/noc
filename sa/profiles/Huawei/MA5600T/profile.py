@@ -2,7 +2,7 @@
 # Vendor: Huawei
 # OS:     MA5600T
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -50,7 +50,8 @@ class Profile(BaseProfile):
         r"(Configuration console time out, please retry to log on|"
         r"\s*Failure:\s*System is busy, please retry after a while|"
         r"It will take several minutes to save configuration file, please wait|"
-        r"Failure:\s*System is reading or writing flash, please retry after a while)"
+        r"Failure:\s*System is reading or writing flash, please retry after a while|"
+        r"Failure:\s*Command can not be executed rightly, the cause is:\s*Loading\s*\(backuping,rollbacking...\) command being executed. Please retry later)"
     )
     # Found on MA5616, V800R015C10
     send_on_syntax_error = BaseProfile.send_backspaces
