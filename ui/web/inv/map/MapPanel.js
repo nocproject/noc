@@ -290,7 +290,14 @@ Ext.define("NOC.inv.map.MapPanel", {
     renderMap: function(data) {
         var me = this,
             nodes = [],
-            links = [];
+            badges = [],
+            links = [],
+            pushNodeAndBadges = function(data) {
+                nodes.push(data.node);
+                if(data.badges.length) {
+                    badges.push(data.badges);
+                }
+            };
 
         me.isInteractive = false;
         me.isDirty = false;
@@ -307,7 +314,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 // skip create
                 return;
             }
-            nodes.push(me.createNode(node));
+            pushNodeAndBadges(me.createNode(node));
             Ext.each(node.ports, function(port) {
                 me.portObjects[port.id] = node.id;
                 Ext.each(port.ports, function(ifname) {
@@ -329,6 +336,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
         me.graph.addCells(nodes);
         me.graph.addCells(links);
+        me.graph.addCells(badges);
         // Run status polling
         if(me.statusPollingTaskId) {
             me.getObjectStatus();
@@ -347,6 +355,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     createNode: function(data) {
         var me = this,
+            badges = [],
             sclass, node;
         var dataName = data.name;
         if(dataName.indexOf('#') > 0) {
@@ -382,14 +391,20 @@ Ext.define("NOC.inv.map.MapPanel", {
             data: {
                 type: data.type,
                 id: data.id,
-                caps: data.caps
+                caps: data.caps,
+                isMaintenance: false
             }
+        });
+        Ext.each(data.shape_overlay, function(config) {
+            var badge = me.createBadge(node, config);
+            node.embed(badge);
+            badges.push(badge);
         });
         me.objectNodes[data.id] = node;
         if(data.type === "managedobject") {
             me.objectsList.push(data.id)
         }
-        return node;
+        return {node: node, badges: badges};
     },
     //
     createLink: function(data) {
@@ -749,6 +764,56 @@ Ext.define("NOC.inv.map.MapPanel", {
         }
     },
 
+    createBadge: function(node, config) {
+        var nodeSize = node.get('size'),
+            size = Math.max(Math.min(nodeSize.height / 3, nodeSize.width / 3), 18),
+            shape = config.form === 's' ? "Rectangle" : "Circle",
+            // default NE
+            x = node.get('position').x + nodeSize.width - 0.62 * size,
+            y = node.get('position').y - 0.38 * size;
+        switch(config.position) {
+            case "N":
+                x = node.get('position').x + nodeSize.width / 2 - size / 2;
+                y = node.get('position').y - 0.38 * size;
+                break;
+            case "E":
+                x = node.get('position').x + nodeSize.width - 0.62 * size;
+                y = node.get('position').y + size;
+                break;
+            case "SE":
+                x = node.get('position').x + nodeSize.width - 0.62 * size;
+                y = node.get('position').y + 2.25 * size;
+                break;
+            case "S":
+                x = node.get('position').x + nodeSize.width / 2 - size / 2;
+                y = node.get('position').y + 2.25 * size;
+                break;
+            case "SW":
+                x = node.get('position').x - 0.38 * size;
+                y = node.get('position').y + 2.25 * size;
+                break;
+            case "W":
+                x = node.get('position').x - 0.38 * size;
+                y = node.get('position').y + size;
+                break;
+            case "NW":
+                x = node.get('position').x - 0.38 * size;
+                y = node.get('position').y - 0.38 * size;
+                break;
+        }
+        return new joint.shapes.standard[shape]({
+            position: {
+                x: x,
+                y: y
+            },
+            size: {width: size, height: size},
+            attrs: {
+                body: {strokeWidth: 0.5},
+                text: {text: String.fromCharCode(config.code), 'font-family': 'FontAwesome', 'font-size': size / 1.7}
+            }
+        });
+    },
+
     applyObjectStatuses: function(data) {
         var me = this;
         Ext.Object.each(data, function(s) {
@@ -757,32 +822,23 @@ Ext.define("NOC.inv.map.MapPanel", {
                 return;
             }
             node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintenance bit
-            var embeddedCells = node.getEmbeddedCells();
-            if(data[s] & 0x20) {
-                if(embeddedCells.length === 0) {
-                    var nodeSize = node.get('size');
-                    var size = nodeSize.width / 3;
-                    var wrench = new joint.shapes.basic.Circle({
-                        position: {
-                            x: node.get('position').x + nodeSize.width - size,
-                            y: node.get('position').y - size / 2
-                        },
-                        size: {width: size, height: size},
-                        attrs: {
-                            circle: {fill: '#FFFFFF', stoke: '#FFFFFF'},
-                            text: {text: '\uf0ad', 'font-family': 'FontAwesome', 'font-size': size / 1.7}
-                        }
-                    });
+            if(data[s] & 0x20) { // Maintenance mode
+                if(!node.get('data').isMaintenance) {
+                    var wrench = me.createBadge(node, {position: "NE", form: "c", code: "\uf0ad"});
+                    node.set('data', {isMaintenance: true});
                     wrench.set('data', {type: 'wrench'});
                     node.embed(wrench);
                     me.graph.addCell(wrench);
-                    me.paper.findViewByModel(wrench).options.interactive = false;
                 }
             } else {
-                if(embeddedCells.length !== 0) {
+                if(node.get('data').isMaintenance) {
+                    var embeddedCells = node.getEmbeddedCells();
+                    node.set('data', {isMaintenance: false});
                     Ext.each(embeddedCells, function(cell) {
-                        node.unembed(cell);
-                        cell.remove();
+                        if(cell.get(data) && cell.get(data).type === 'wrench') {
+                            node.unembed(cell);
+                            cell.remove();
+                        }
                     });
                 }
             }

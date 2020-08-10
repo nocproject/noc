@@ -80,6 +80,8 @@ from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 from noc.core.comp import smart_text, smart_bytes
+from noc.main.models.glyph import Glyph
+from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -252,6 +254,21 @@ class ManagedObject(NOCModel):
     # Stencils
     shape = CharField(
         "Shape", blank=True, null=True, choices=stencil_registry.choices, max_length=128
+    )
+    shape_overlay_glyph = DocumentReferenceField(Glyph, null=True, blank=True)
+    shape_overlay_position = CharField(
+        "S.O. Position",
+        max_length=2,
+        choices=[(x.value, x.value) for x in ShapeOverlayPosition],
+        null=True,
+        blank=True,
+    )
+    shape_overlay_form = CharField(
+        "S.O. Form",
+        max_length=1,
+        choices=[(x.value, x.value) for x in ShapeOverlayForm],
+        null=True,
+        blank=True,
     )
     #
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)

@@ -8,15 +8,24 @@
 # Python modules
 import os
 import logging
-from collections import namedtuple
 from operator import itemgetter
 from xml.etree.ElementTree import parse as xml_parse, ParseError as XMLParseError
+from dataclasses import dataclass
+from typing import Optional
 
 logger = logging.getLogger(__name__)
-Stencil = namedtuple("Stencil", ["id", "title", "width", "height", "path"])
 
 
-class StencilRegistry:
+@dataclass
+class Stencil(object):
+    id: str
+    title: str
+    width: float
+    height: float
+    path: str
+
+
+class StencilRegistry(object):
     prefix = os.path.join("ui", "pkg", "stencils")
     # Replace missed stencil with Cisco | Router
     DEFAULT_STENCIL = "Cisco/router"
@@ -27,7 +36,7 @@ class StencilRegistry:
         self.stencils = {}  # id -> stencil
 
     @classmethod
-    def stencil_from_svg(cls, path):
+    def _stencil_from_svg(cls, path: str) -> Optional[Stencil]:
         """
         Read SVG and fetch metadata
 
@@ -81,7 +90,7 @@ class StencilRegistry:
             for f in files:
                 if not f.endswith(".svg"):
                     continue
-                stencil = self.stencil_from_svg(os.path.join(root, f))
+                stencil = self._stencil_from_svg(os.path.join(root, f))
                 if stencil:
                     self.stencils[stencil.id] = stencil
         self.choices = sorted(
@@ -96,9 +105,9 @@ class StencilRegistry:
         :return: Stencil instance
         """
         stencil = self.stencils.get(stencil_id)
-        if not stencil:
-            stencil = self.stencils.get(self.DEFAULT_STENCIL)
-        return stencil
+        if stencil:
+            return stencil
+        return self.stencils.get(self.DEFAULT_STENCIL)
 
 
 stencil_registry = StencilRegistry()

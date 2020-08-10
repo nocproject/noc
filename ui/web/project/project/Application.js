@@ -9,7 +9,10 @@ console.debug("Defining NOC.project.project.Application");
 Ext.define("NOC.project.project.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.project.project.Model"
+        "NOC.project.project.Model",
+        "NOC.main.glyph.LookupField",
+        "NOC.main.ref.soposition.LookupField",
+        "NOC.main.ref.soform.LookupField"
     ],
     model: "NOC.project.project.Model",
     search: true,
@@ -61,6 +64,34 @@ Ext.define("NOC.project.project.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("Shape Overlay"),
+                    layout: "hbox",
+                    defaults: {
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "shape_overlay_glyph",
+                            xtype: "main.glyph.LookupField",
+                            fieldLabel: __("Glyph"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "shape_overlay_position",
+                            xtype: "main.ref.soposition.LookupField",
+                            fieldLabel: __("Position"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "shape_overlay_form",
+                            xtype: "main.ref.soform.LookupField",
+                            fieldLabel: __("Form"),
+                            allowBlank: true
+                        }
+                    ]
                 }
             ]
         });

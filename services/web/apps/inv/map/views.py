@@ -9,6 +9,7 @@
 from collections import defaultdict
 import datetime
 import threading
+from typing import List, Set
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -66,7 +67,6 @@ class MapApplication(ExtApplication):
             if x["type"] == "managedobject":
                 del x["mo"]
                 x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
-                # x["id"] = str(x["id"])
             elif d["type"] == "cloud":
                 del x["link"]
                 x["external"] = False
@@ -248,11 +248,6 @@ class MapApplication(ExtApplication):
         api=True,
     )
     def api_info_cloud(self, request, id, link_id):
-        def q(s):
-            if isinstance(s, str):
-                s = s.encode("utf-8")
-            return s
-
         self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
@@ -285,25 +280,25 @@ class MapApplication(ExtApplication):
         api=True,
         validate={"objects": ListOfParameter(IntParameter())},
     )
-    def api_objects_statuses(self, request, objects):
-        def get_alarms(objects):
+    def api_objects_statuses(self, request, objects: List[int]):
+        def get_alarms(objects: List[int]) -> Set[int]:
             """
             Returns a set of objects with alarms
             """
-            r = set()
-            c = ActiveAlarm._get_collection()
+            alarms: Set[int] = set()
+            coll = ActiveAlarm._get_collection()
             while objects:
                 chunk, objects = objects[:500], objects[500:]
-                a = c.aggregate(
+                a = coll.aggregate(
                     [
                         {"$match": {"managed_object": {"$in": chunk}}},
                         {"$group": {"_id": "$managed_object", "count": {"$sum": 1}}},
                     ]
                 )
-                r.update([d["_id"] for d in a])
-            return r
+                alarms.update(d["_id"] for d in a)
+            return alarms
 
-        def get_maintenance(objects):
+        def get_maintenance(objects: List[int]) -> Set[int]:
             """
             Returns a set of objects currently in maintenance
             :param objects:
@@ -311,13 +306,12 @@ class MapApplication(ExtApplication):
             """
             now = datetime.datetime.now()
             so = set(objects)
-            r = set()
+            mnt_objects = set()
             for m in Maintenance._get_collection().find(
                 {"is_completed": False, "start": {"$lte": now}}, {"_id": 0, "affected_objects": 1}
             ):
-                mo = set(r["object"] for r in m["affected_objects"])
-                r |= so & mo
-            return r
+                mnt_objects |= so & {x["object"] for x in m["affected_objects"]}
+            return mnt_objects
 
         # Mark all as unknown
         r = {o: self.ST_UNKNOWN for o in objects}
@@ -343,8 +337,7 @@ class MapApplication(ExtApplication):
         r = ManagedObject.objects.filter(name=name).values_list("id")
         if r:
             return r[0][0]
-        else:
-            return None
+        return None
 
     @classmethod
     @cachedmethod(key="interface-tags-to-id-%s-%s", lock=lambda _: tags_lock)
@@ -353,8 +346,7 @@ class MapApplication(ExtApplication):
         i = Interface._get_collection().find_one({"managed_object": mo, "name": interface_name})
         if i:
             return i["_id"]
-        else:
-            return None
+        return None
 
     @view(
         url=r"^metrics/$",

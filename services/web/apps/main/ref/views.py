@@ -25,6 +25,7 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
 from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
 from noc.core.window import wf_choices
+from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.models import iter_model_id
 
 
@@ -177,6 +178,12 @@ class RefAppplication(ExtApplication):
 
     def build_kbparser(self):
         return [{"id": x, "label": x} for x in sorted(kbparser_loader)]
+
+    def build_soposition(self):
+        return [{"id": x.value, "label": x.name} for x in ShapeOverlayPosition]
+
+    def build_soform(self):
+        return [{"id": x.value, "label": x.name} for x in ShapeOverlayForm]
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
