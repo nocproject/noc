@@ -12,6 +12,7 @@ import datetime
 from mongoengine.document import Document
 from mongoengine.base import get_document
 from mongoengine.fields import BaseField, DateTimeField, DictField
+from mongoengine.base.datastructures import BaseList
 from mongoengine.errors import ValidationError
 from bson import ObjectId
 from django.db.models import Model
@@ -132,9 +133,9 @@ class PlainReferenceListField(PlainReferenceField):
             return self
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        # Dereference DBRefs
+        # Dereference DBRefs value = BaseList(value, instance, self.name)
         if value is not None:
-            instance._data[self.name] = [convert(v) for v in value]
+            instance._data[self.name] = BaseList([convert(v) for v in value], instance, self.name)
         return super().__get__(instance, owner)
 
     def to_mongo(self, document):
