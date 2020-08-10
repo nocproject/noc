@@ -7,6 +7,8 @@
 
 # Python modules
 import operator
+from typing import Optional, List, Set
+from dataclasses import asdict
 
 # Third-Party modules
 from networkx import nx
@@ -14,11 +16,13 @@ import numpy as np
 import cachetools
 
 # NOC modules
-from noc.core.stencil import stencil_registry
+from noc.core.stencil import stencil_registry, Stencil
 from noc.core.text import alnum_key
+from noc.sa.models.managedobject import ManagedObject
 from .layout.ring import RingLayout
 from .layout.spring import SpringLayout
 from .layout.tree import TreeLayout
+from .types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
 
 
 class BaseTopology(object):
@@ -96,6 +100,7 @@ class BaseTopology(object):
                 "shape": getattr(stencil, "path", ""),
                 "shape_width": getattr(stencil, "width", 0),
                 "shape_height": getattr(stencil, "height", 0),
+                "shape_overlay": [asdict(x) for x in self.get_object_stencil_overlays(mo)],
                 "level": mo.object_profile.level,
                 "ports": [],
                 "caps": list(oc),
@@ -146,19 +151,58 @@ class BaseTopology(object):
         self.G.add_edge(o1, o2, **a)
 
     @staticmethod
-    def get_object_stencil(mo):
+    def get_object_stencil(mo: ManagedObject) -> Optional[Stencil]:
         if mo.shape:
             # Use mo's shape, if set
-            shape_id = mo.shape
+            return stencil_registry.get(mo.shape)
         elif mo.object_profile.shape:
             # Use profile's shape
-            shape_id = mo.object_profile.shape
-        else:
-            shape_id = None
-        return stencil_registry.get(shape_id)
+            return stencil_registry.get(mo.object_profile.shape)
+        return None
 
     @staticmethod
-    def get_cloud_stencil(link):
+    def get_object_stencil_overlays(mo: ManagedObject) -> List[ShapeOverlay]:
+        seen: Set[ShapeOverlayPosition] = set()
+        r: List[ShapeOverlay] = []
+        # ManagedObject
+        if mo.shape_overlay_glyph:
+            pos = mo.shape_overlay_position or ShapeOverlayPosition.NW
+            r += [
+                ShapeOverlay(
+                    code=mo.shape_overlay_glyph.code,
+                    position=pos,
+                    form=mo.shape_overlay_form or ShapeOverlayForm.Circle,
+                )
+            ]
+            seen.add(pos)
+        # Project
+        if mo.project and mo.project.shape_overlay_glyph:
+            pos = mo.project.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=mo.project.shape_overlay_glyph.code,
+                        position=pos,
+                        form=mo.project.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        # ManagedObjectProfile
+        if mo.object_profile.shape_overlay_glyph:
+            pos = mo.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=mo.object_profile.shape_overlay_glyph.code,
+                        position=pos,
+                        form=mo.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        return r
+
+    @staticmethod
+    def get_cloud_stencil(link) -> Stencil:
         return stencil_registry.get(link.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
 
     def order_nodes(self, uplink, downlinks):

@@ -21,11 +21,19 @@ import bson
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.model.decorator import on_delete_check
 from .font import Font
 
 id_lock = Lock()
 
 
+@on_delete_check(
+    check=[
+        ("project.Project", "shape_overlay_glyph"),
+        ("sa.ManagedObject", "shape_overlay_glyph"),
+        ("sa.ManagedObjectProfile", "shape_overlay_glyph"),
+    ]
+)
 class Glyph(Document):
     meta = {
         "collection": "glyphs",

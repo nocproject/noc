@@ -16,6 +16,9 @@ import cachetools
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import DocumentReferenceField
+from noc.main.models.glyph import Glyph
+from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 
 id_lock = Lock()
 
@@ -55,6 +58,21 @@ class Project(NOCModel):
     code = models.CharField("Code", max_length=256, unique=True)
     name = models.CharField("Name", max_length=256)
     description = models.TextField("Description", null=True, blank=True)
+    shape_overlay_glyph = DocumentReferenceField(Glyph, null=True, blank=True)
+    shape_overlay_position = models.CharField(
+        "S.O. Position",
+        max_length=2,
+        choices=[(x.value, x.value) for x in ShapeOverlayPosition],
+        null=True,
+        blank=True,
+    )
+    shape_overlay_form = models.CharField(
+        "S.O. Form",
+        max_length=1,
+        choices=[(x.value, x.value) for x in ShapeOverlayForm],
+        null=True,
+        blank=True,
+    )
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 

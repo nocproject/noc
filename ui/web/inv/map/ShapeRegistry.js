@@ -65,6 +65,10 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
             setFilter: function(filter) {
                 var me = this;
                 me.attr("image/filter", "url(#" + filter + ")");
+                Ext.each(me.getEmbeddedCells(), function(badge) {
+                    badge.attr("body/filter", "url(#" + filter + ")");
+                    badge.attr("text/filter", "url(#" + filter + ")");
+                });
             }
         });
         me.shapes[name] = sc;

@@ -52,6 +52,9 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.ip.vrf.LookupField",
         "NOC.fm.ttsystem.LookupField",
         "NOC.maintenance.maintenancetype.LookupField",
+        "NOC.main.glyph.LookupField",
+        "NOC.main.ref.soposition.LookupField",
+        "NOC.main.ref.soform.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.managedobject.Model",
@@ -432,7 +435,26 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Shape"),
                                     allowBlank: true,
                                     groupEdit: true
-                                }]
+                                },
+                                {
+                                    name: "shape_overlay_glyph",
+                                    xtype: "main.glyph.LookupField",
+                                    fieldLabel: __("Glyph"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "shape_overlay_position",
+                                    xtype: "main.ref.soposition.LookupField",
+                                    fieldLabel: __("Position"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "shape_overlay_form",
+                                    xtype: "main.ref.soform.LookupField",
+                                    fieldLabel: __("Form"),
+                                    allowBlank: true
+                                }
+                            ]
                         }
                     ]
                 },

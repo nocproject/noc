@@ -38,6 +38,8 @@ from noc.main.models.template import Template
 from noc.core.datastream.decorator import datastream
 from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from noc.inv.models.ifdescpatterns import IfDescPatterns
+from noc.main.models.glyph import Glyph
+from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 
@@ -84,6 +86,21 @@ class ManagedObjectProfile(NOCModel):
     # Stencils
     shape = models.CharField(
         _("Shape"), blank=True, null=True, choices=stencil_registry.choices, max_length=128
+    )
+    shape_overlay_glyph = DocumentReferenceField(Glyph, null=True, blank=True)
+    shape_overlay_position = models.CharField(
+        "S.O. Position",
+        max_length=2,
+        choices=[(x.value, x.value) for x in ShapeOverlayPosition],
+        null=True,
+        blank=True,
+    )
+    shape_overlay_form = models.CharField(
+        "S.O. Form",
+        max_length=1,
+        choices=[(x.value, x.value) for x in ShapeOverlayForm],
+        null=True,
+        blank=True,
     )
     # Name restrictions
     # Regular expression to check name format
