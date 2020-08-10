@@ -13,6 +13,7 @@ from pymongo.errors import BulkWriteError
 from noc.main.models.tag import Tag
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
+from noc.core.comp import smart_text
 
 
 def fix():
@@ -40,7 +41,7 @@ def fix():
                     upsert=True,
                 )
             ]
-        ex_tags += [t.decode("utf8") for t in tags]
+        ex_tags += [smart_text(t) for t in tags]
     # Documents
     print("Fixing documents....")
     for m in [NetworkSegment]:
