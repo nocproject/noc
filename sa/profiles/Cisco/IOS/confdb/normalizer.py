@@ -5,9 +5,21 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
 from noc.core.text import ranges_to_list
+
+rx_multi_split = re.compile(r"\d+([km])")
+
+
+def convert_multi(self, v):
+    # 20k -> 20000, 20m -> 20000000
+    if self.rx_multi_split.match(v):
+        v = v.replace("k", "0" * 3).replace("m", "0" * 6)
+    return v
 
 
 class CiscoIOSNormalizer(BaseNormalizer):
@@ -107,7 +119,7 @@ class CiscoIOSNormalizer(BaseNormalizer):
     def normalize_interface_storm_control_broadcast_pps(self, tokens):
         level = tokens[5]
         if tokens[5] in {"bps", "pps"}:
-            level = tokens[6]
+            level = convert_multi(tokens[6])
         yield self.make_interface_storm_control_broadcast_level(
             interface=self.interface_name(tokens[1]), level=level
         )
@@ -119,7 +131,7 @@ class CiscoIOSNormalizer(BaseNormalizer):
     def normalize_interface_storm_control_multicast_pps(self, tokens):
         level = tokens[5]
         if tokens[5] in {"bps", "pps"}:
-            level = tokens[6]
+            level = convert_multi(tokens[6])
         yield self.make_interface_storm_control_multicast_level(
             interface=self.interface_name(tokens[1]), level=level
         )
@@ -131,7 +143,7 @@ class CiscoIOSNormalizer(BaseNormalizer):
     def normalize_interface_storm_control_unicast_pps(self, tokens):
         level = tokens[5]
         if tokens[5] in {"bps", "pps"}:
-            level = tokens[6]
+            level = convert_multi(tokens[6])
         yield self.make_interface_storm_control_unicast_level(
             interface=self.interface_name(tokens[1]), level=level
         )
