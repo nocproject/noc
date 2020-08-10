@@ -27,6 +27,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.handler.LookupField",
         "NOC.inv.ifdescpatterns.LookupField",
         "NOC.cm.objectvalidationpolicy.LookupField",
+        "NOC.main.glyph.LookupField",
+        "NOC.main.ref.soposition.LookupField",
+        "NOC.main.ref.soform.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "Ext.ux.form.GridField"
     ],
@@ -227,6 +230,24 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "shape",
                                     xtype: "main.ref.stencil.LookupField",
                                     fieldLabel: __("Shape"),
+                                    allowBlank: true
+                                },
+                                                                {
+                                    name: "shape_overlay_glyph",
+                                    xtype: "main.glyph.LookupField",
+                                    fieldLabel: __("Glyph"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "shape_overlay_position",
+                                    xtype: "main.ref.soposition.LookupField",
+                                    fieldLabel: __("Position"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "shape_overlay_form",
+                                    xtype: "main.ref.soform.LookupField",
+                                    fieldLabel: __("Form"),
                                     allowBlank: true
                                 },
                                 {
