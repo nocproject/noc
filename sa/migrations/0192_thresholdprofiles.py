@@ -18,6 +18,7 @@ import cachetools
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.mongo.connection import get_db
+from noc.core.comp import smart_bytes
 
 
 class Migration(BaseMigration):
@@ -37,7 +38,7 @@ class Migration(BaseMigration):
         for p_id, name, p_metrics in settings:
             if not p_metrics:
                 continue
-            metrics = loads(str(p_metrics)) or []
+            metrics = loads(smart_bytes(p_metrics)) or []
             changed = [m for m in metrics if self.has_thresholds(m)]
             if not changed:
                 continue
