@@ -43,7 +43,8 @@ class Profile(BaseProfile):
         "is_ifname_use": {"platform": {"$regex": "QSW-8200"}},
     }
 
-    rx_port = re.compile(r"^port(|\s+)(?P<port>\d+)")
+    rx_port = re.compile(r"^[Pp]ort(|\s+)(?P<port>\d+)")  # Port1-FastEthernet,port 1
+    rx_port_ip = re.compile(r"^(IP|ip interface)(|\s+)(?P<port>\d+)")  # ip interface 0, IP0
 
     def convert_interface_name(self, interface):
         if interface.startswith("GE"):
@@ -53,6 +54,9 @@ class Profile(BaseProfile):
         if self.rx_port.match(interface):
             match = self.rx_port.match(interface)
             return match.group("port")
+        if self.rx_port_ip.match(interface):
+            match = self.rx_port_ip.match(interface)
+            return "ip %s" % match.group("port")
         else:
             return interface
 
@@ -68,6 +72,7 @@ class Profile(BaseProfile):
         "mn": "management",  # Stack-port
         # "te": "physical",  # TenGigabitEthernet
         "vl": "SVI",  # vlan
+        "ip": "SVI",  # IP interface
         "un": "unknown",
     }
 
