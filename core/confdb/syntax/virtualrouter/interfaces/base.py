@@ -67,6 +67,18 @@ VR_INTERFACES_SYNTAX = DEF(
                                 DEF("iso", gen="make_unit_iso"),
                                 DEF("mpls", gen="make_unit_mpls"),
                                 DEF(
+                                    "vlan_ids",
+                                    [
+                                        DEF(
+                                            ANY,
+                                            required=True,
+                                            multi=True,
+                                            name="vlan_id",
+                                            gen="make_unit_vlan_id",
+                                        )
+                                    ],
+                                ),
+                                DEF(
                                     "bridge",
                                     [
                                         DEF(
