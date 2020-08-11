@@ -229,7 +229,9 @@ class Script(BaseScript):
             )
         ]
         iter_tables += [
-            self.iter_iftable("mtu", "IF-MIB::ifMtu", ifindexes=chain(ifaces, subifaces))
+            self.iter_iftable(
+                "mtu", "IF-MIB::ifMtu", ifindexes=chain(ifaces, subifaces), clean=self.clean_mtu
+            )
         ]
         # Collect and merge results
         data = self.merge_tables(*tuple(iter_tables))
@@ -241,8 +243,6 @@ class Script(BaseScript):
         for ifindex, iface in ifaces.items():
             if ifindex in data:
                 iface.update(data[ifindex])
-                if "mtu" in iface and int(iface["mtu"]) == self.INVALID_MTU:
-                    del iface["mtu"]
             iface["type"] = self.clean_iftype(iface["name"], ifindex)
             if not iface["type"]:
                 self.logger.error("Unknown type for interface %s", iface["name"])
@@ -348,6 +348,14 @@ class Script(BaseScript):
         if is_mac(mac) and not self.is_ignored_mac(MAC(mac)):
             return mac
         return None
+
+    def clean_mtu(self, mtu: int):
+        if not mtu:
+            raise ValueError
+        mtu = int(mtu)
+        if mtu == self.INVALID_MTU:
+            raise ValueError
+        return mtu
 
     def iter_iftable(
         self, key: str, oid: str, ifindexes: Optional[Iterator[int]] = None, clean: Callable = None,
