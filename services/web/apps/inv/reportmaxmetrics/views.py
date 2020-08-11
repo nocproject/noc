@@ -7,8 +7,8 @@
 
 # Python modules
 import datetime
-from collections import defaultdict, Iterable
-from collections import namedtuple
+from collections import defaultdict, namedtuple
+from typing import Iterable
 import csv
 from io import BytesIO
 
