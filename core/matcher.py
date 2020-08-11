@@ -7,7 +7,7 @@
 
 # Python modules
 import re
-from collections.abc import Iterable
+from typing import Iterable
 
 # NOC modules
 from noc.core.text import alnum_key
