@@ -1,13 +1,15 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
+# Python modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+# NOC modules
 import re
 
 
@@ -20,7 +22,7 @@ class Script(BaseScript):
     rx_iface = re.compile(
         r"^(?P<ifname>\S+) is (?P<admin_status>activate|deactivate|down|administratively down|up),\s*"
         r"line protocol is (?P<oper_status>down|up).+\n"
-        r"^\s+Description is none",
+        r"^\s+Description is (?P<descr>.+)\n",
         re.MULTILINE,
     )
     rx_vlan = re.compile(
@@ -46,7 +48,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_mac = re.compile(
-        r"^\s+Description is none\s*\n" r"^\s+MAC address is (?P<mac>\S+)\s*\n", re.MULTILINE
+        r"^\s+Description is (?P<descr>.+)\n^\s+MAC address is (?P<mac>\S+)\s*\n", re.MULTILINE
     )
 
     def execute_cli(self):
@@ -62,6 +64,7 @@ class Script(BaseScript):
                 match = self.rx_iface.search(v)
                 admin_status = bool(match.group("admin_status") == "up")
                 oper_status = bool(match.group("oper_status") == "up")
+                descr = match.group("descr").strip()
                 iface = {
                     "name": ifname,
                     "type": "physical",
@@ -69,6 +72,8 @@ class Script(BaseScript):
                     "oper_status": oper_status,
                     "subinterfaces": [],
                 }
+                if descr not in ["none", "none."]:
+                    iface["description"] = descr
                 if prefix == "gei_":
                     v = self.cli("show vlan port %s" % ifname)
                     match = self.rx_vlan.search(v)
