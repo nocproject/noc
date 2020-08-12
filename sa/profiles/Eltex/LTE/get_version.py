@@ -20,7 +20,9 @@ class Script(BaseScript):
 
     rx_version = re.compile(r"^Eltex LTE software version\s+(?P<version>\S+\s+build\s+\d+)")
     rx_hw = re.compile(
-        r"^Device type:\s+(?P<platform>\S+)\s*\n" r"^Serial number:\s+(?P<serial>\S+)\s*\n",
+        r"^Device type:\s+(?P<platform>\S+)\s*\n"
+        r"(^Hardware revision:\s+(?P<hardware>\S+)\s*\n)?"
+        r"^Serial number:\s+(?P<serial>\S+)\s*\n",
         re.MULTILINE,
     )
 
@@ -35,6 +37,8 @@ class Script(BaseScript):
             r["platform"] = match.group("platform")
             r["attributes"] = {}
             r["attributes"]["Serial Number"] = match.group("serial")
+            if match.group("hardware"):
+                r["attributes"]["HW version"] = match.group("hardware")
         except self.CLISyntaxError:
             pass
 
