@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # PM Utils
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
-from collections import defaultdict, Iterable
+from collections import defaultdict
+from typing import Iterable
 import itertools
 
 # NOC modules
