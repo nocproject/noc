@@ -1,7 +1,7 @@
 {
     "name": "Eltex | WOPLR | WOP-2ac-LR5 sysObjectID.0",
     "$collection": "sa.profilecheckrules",
-    "uuid": "da921dbe-9104-4cf2-82f7-f273edfa16f3",
+    "uuid": "88949d4a-6b5c-49cd-99b6-657f353a0287",
     "description": null,
     "preference": 100,
     "method": "snmp_v2c_get",

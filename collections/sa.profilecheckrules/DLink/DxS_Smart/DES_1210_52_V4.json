@@ -1,7 +1,7 @@
 {
   "name": "DLink | DxS_Smart | DES-1210-52 V4 sysObjectID",
   "$collection": "sa.profilecheckrules",
-  "uuid": "eb2c4492-48ca-4e10-9fea-fe7322e8fad3",
+  "uuid": "024c4196-1318-4d06-872b-76c4ce637a5e",
   "description": "",
   "preference": 10,
   "method": "snmp_v2c_get",
