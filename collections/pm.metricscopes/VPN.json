@@ -1,0 +1,26 @@
+{
+    "name": "VPN",
+    "$collection": "pm.metricscopes",
+    "uuid": "3e164372-199a-45c7-bda4-177b6b5c853a",
+    "table_name": "vpns",
+    "description": "Metrics for L2/L3 vpn tunnels.\nInstance - VPN ID: use it for L2 VPN name\nlocal_endpoint and remote_endpoint: For IPSEC it contains local IP and remote IP, for other type some string\n",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "instance"
+        },
+        {
+            "is_required": false,
+            "name": "local_endpoint"
+        },
+        {
+            "is_required": false,
+            "name": "remote_endpoint"
+        }
+    ],
+    "enable_timedelta": true
+}
