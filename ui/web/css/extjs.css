@@ -440,6 +440,7 @@ TABLE {
 
 .x-fieldset {
     overflow: visible;
+    background: unset;
 }
 
 .fas {

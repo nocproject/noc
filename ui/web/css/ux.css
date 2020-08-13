@@ -84,13 +84,13 @@
     cursor: default;
 }
 
-.x-panel-body-default {
-    background-color: #ecf0f1 !important;
-}
+/*.x-panel-body-default {*/
+/*    background-color: #ecf0f1 !important;*/
+/*}*/
 
-.x-grid-row {
-    background-color: #ecf0f1 !important;
-}
+/*.x-grid-row {*/
+/*    background-color: #ecf0f1 !important;*/
+/*}*/
 
 .x-summary {
     color: #7f8c8d;

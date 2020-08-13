@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
-// fm.alarm application
+// fm.alarm.tagfield widget
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.Tagfield");
@@ -11,6 +11,7 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
     alias: "widget.fm.alarm.tagfield",
     controller: "fm.alarm.tagfield",
     requires: [
+        "NOC.fm.alarm.view.grids.TreePicker",
         "NOC.fm.alarm.view.grids.TagfieldController"
     ],
     displayField: "label",
@@ -49,28 +50,18 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
         "selected"
     ],
     listeners: {
-        change: "onChange"
+        change: "onChangeTagValue"
     },
     initComponent: function() {
         this.store.proxy.url = this.url;
         if(this.isTree) {
-            this.currentLeaf = false;
+            // this.treePicker = this.createTreePicker();
             this.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
-            // tree panel store
-            this.treeStore = Ext.create("Ext.data.Store",
-                Ext.merge(
-                    Ext.clone(this.store),
-                    {
-                        autoLoad: true,
-                        proxy: {
-                            extraParams: {parent: ""}
-                        },
-                        listeners: {
-                            scope: this,
-                            load: this.onLoad
-                        }
-                    }, true));
-            this.treePicker = this.createTreePicker();
+            this.treePicker = Ext.create({
+                xtype: "fm.alarm.treepicker",
+                displayField: this.displayField,
+                scope: this,
+            });
         }
         // Fix combobox when use remote paging
         this.pickerId = this.getId() + '-picker';
@@ -85,178 +76,231 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
     setWidgetValues: function(data) {
         this.setSelection(data);
     },
-    createTreePicker: function() {
-        var searchField = this.searchField = new Ext.create({
-            xtype: "searchfield",
-            width: "100%",
-            emptyText: __("pattern"),
-            enableKeyEvents: true,
-            triggers: {
-                clear: {
-                    cls: "x-form-clear-trigger",
-                    hidden: true,
-                    scope: this,
-                    handler: this.onClearSearchField
-                }
-            },
-            listeners: {
-                scope: this,
-                keyup: this.onChangeSearchField
-            }
-        });
-        return new Ext.tree.Panel({
-            baseCls: Ext.baseCSSPrefix + "boundlist",
-            shrinkWrap: 2,
-            shrinkWrapDock: true,
-            animCollapse: true,
-            singleExpand: false,
-            useArrows: true,
-            scrollable: true,
-            floating: true,
-            displayField: this.displayField,
-            manageHeight: false,
-            collapseFirst: false,
-            rootVisible: false,
-            root: {
-                expanded: true,
-                children: []
-            },
-            // ToDo make variable for theme
-            bodyStyle: {
-                background: "#ecf0f1"
-            },
-            tbar: [
-                searchField
-            ],
-            listeners: {
-                scope: this,
-                itemclick: this.onItemClick,
-                itemkeydown: this.onPickerKeyDown,
-                beforeitemexpand: this.onItemBeforeExpand,
-                itemexpand: this.onItemExpand,
-                focusleave: this.onLeaveFocusTreePicker
-            }
-        });
-    },
-    getParentNode: function() {
-        var store = this.treePicker.getStore();
-        if(!this.currentLeaf) {
-            return store.getRootNode();
-        } else {
-            return store.getById(this.currentLeaf);
-        }
-    },
-    selectItem: function(record) {
-        var value = {};
-        value[this.valueField] = record.id;
-        value[this.displayField] = record.get("label");
-        this.addValue(Ext.create("Ext.data.Model", value));
-        // this.treePicker.hide();
-    },
-    doFilter: function() {
-        var me = this, parentNode = me.getParentNode();
-        if(parentNode) {
-            parentNode.removeAll();
-            if(this.searchField.getValue()) {
-                parentNode.appendChild(me.cache.filter(
-                    function(node) {
-                        return node.data[me.displayField].toLowerCase()
-                        .indexOf(me.searchField.getValue().toLowerCase()) !== -1;
-                    }
-                ));
-            } else {
-                parentNode.appendChild(me.cache);
-                parentNode.expand();
-            }
-        }
-    },
-    loadChildren: function(id) {
-        var me = this;
-        if(!me.treePicker.hidden) {
-            me.treePicker.mask(__("loading ..."));
-        }
-        this.treeStore.load({
-            params: {
-                parent: id
-            },
-            callback: function() {
-                if(!me.treePicker.hidden) {
-                    me.treePicker.unmask();
-                }
-            }
-        });
-    },
-    // events
     onTriggerClick: function() {
-        var position,
-            heightAbove = this.getPosition()[1] - Ext.getBody().getScroll().top,
-            heightBelow = Ext.Element.getViewportHeight() - heightAbove - this.getHeight();
-        this.treePicker.setWidth(this.getWidth());
-        this.treePicker.height = Math.max(heightAbove, heightBelow) - 5;
-        this.setEditable(false);
-        position = this.getPosition();
-        if(heightAbove > heightBelow) {
-            position[1] -= this.treePicker.height - this.getHeight();
-        }
-        this.treePicker.showAt(position);
-    },
-    onLoad: function(store, records, success) {
-        var parentNode = this.getParentNode();
-        if(!parentNode.hasChildNodes() && success) {
-            parentNode.appendChild(records.map(function(item) {
-                return Ext.merge({
-                    leaf: !item.get("has_children"),
-                    qtip: item.get(this.displayField)
-                }, item.getData());
-            }));
-            parentNode.expand();
-        }
-        if(!this.cache) { // first run, root elements
-            this.cache = Ext.clone(parentNode.childNodes);
+        if(this.isTree) {
+            var position,
+                heightAbove = this.getPosition()[1] - Ext.getBody().getScroll().top,
+                heightBelow = Ext.Element.getViewportHeight() - heightAbove - this.getHeight();
+            this.treePicker.setWidth(this.getWidth());
+            this.treePicker.height = Math.max(heightAbove, heightBelow) - 5;
+            this.setEditable(false);
+            position = this.getPosition();
+            if(heightAbove > heightBelow) {
+                position[1] -= this.treePicker.height - this.getHeight();
+            }
+            this.treePicker.showAt(position);
+        } else {
+            Ext.form.field.Tag.prototype.onTriggerClick.apply(this, arguments);
         }
     },
-    onItemClick: function(view, record) {
-        this.selectItem(record);
-    },
-    onPickerKeyDown: function(treeView, record, item, index, e) {
-        var key = e.getKey();
-        if(key === e.ENTER || (key === e.TAB && this.selectOnTab)) {
-            this.selectItem(record);
-        }
-    },
-    onItemBeforeExpand: function(self) {
-        var node;
-        if(this.currentLeaf && (this.currentLeaf !== self.getId())) {
-            node = this.treePicker.getStore().getNodeById(this.currentLeaf);
-            node.removeAll();
-            node.appendChild(this.cache);
-        }
-        this.currentLeaf = self.getId();
-        this.cache = Ext.clone(self.childNodes);
-        if(!self.hasChildNodes()) {
-            this.loadChildren(this.currentLeaf);
-            return false;
-        }
-    },
-    onItemExpand: function() {
-        this.doFilter();
-    },
-    onLeaveFocusTreePicker: function() {
-        this.setEditable(true);
-        this.treePicker.hide();
-    },
+    // createTreePicker: function() {
+    //     var searchField = this.searchField = new Ext.create({
+    //         xtype: "searchfield",
+    //         width: "90%",
+    //         emptyText: __("pattern"),
+    //         enableKeyEvents: true,
+    //         triggers: {
+    //             clear: {
+    //                 cls: "x-form-clear-trigger",
+    //                 hidden: true,
+    //                 scope: this,
+    //                 handler: this.onClearSearchField
+    //             }
+    //         },
+    //         listeners: {
+    //             scope: this,
+    //             keyup: this.onChangeSearchField
+    //         }
+    //     });
+    //     this.currentLeaf = false;
+    //     this.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
+    //     // tree panel store
+    //     this.treeStore = Ext.create("Ext.data.Store",
+    //         Ext.merge(
+    //             Ext.clone(this.store),
+    //             {
+    //                 autoLoad: true,
+    //                 proxy: {
+    //                     extraParams: {parent: ""}
+    //                 },
+    //                 listeners: {
+    //                     scope: this,
+    //                     load: this.onLoadTree
+    //                 }
+    //             }, true));
+    //     return new Ext.tree.Panel({
+    //         baseCls: Ext.baseCSSPrefix + "boundlist",
+    //         shrinkWrap: 2,
+    //         shrinkWrapDock: true,
+    //         animCollapse: true,
+    //         singleExpand: false,
+    //         useArrows: true,
+    //         scrollable: true,
+    //         floating: true,
+    //         displayField: this.displayField,
+    //         manageHeight: false,
+    //         collapseFirst: false,
+    //         rootVisible: false,
+    //         root: {
+    //             expanded: true,
+    //             children: []
+    //         },
+    //         selModel: {
+    //             mode: "SIMPLE"
+    //         },
+    //         tbar: [
+    //             searchField,
+    //             {
+    //                 glyph: NOC.glyph.times_circle,
+    //                 tooltip: __("Close"),
+    //                 scope: this,
+    //                 handler: this.onClosePanel
+    //             }
+    //         ],
+    //         listeners: {
+    //             scope: this,
+    //             itemclick: this.onItemClick,
+    //             itemkeydown: this.onPickerKeyDown,
+    //             beforeitemexpand: this.onItemBeforeExpand,
+    //             itemexpand: this.onItemExpand,
+    //             focusleave: this.onLeaveFocusTreePicker
+    //         }
+    //     });
+    // },
+    // getParentNode: function() {
+    //     var store = this.treePicker.getStore();
+    //     if(!this.currentLeaf) {
+    //         return store.getRootNode();
+    //     } else {
+    //         return store.getById(this.currentLeaf);
+    //     }
+    // },
+    // selectItem: function(record) {
+    //     var me = this, value = {},
+    //         isExist;
+    //     if(this.getSelected()) {
+    //         isExist = Ext.Array.findBy(this.getSelected(), function(el) {
+    //             return el.id === record.id
+    //         });
+    //     }
+    //     if(isExist) {
+    //         this.removeValue(isExist);
+    //     } else {
+    //         value[me.valueField] = record.id;
+    //         value[me.displayField] = record.get("label");
+    //         this.addValue(Ext.create("Ext.data.Model", value));
+    //     }
+    // },
+    // selectNode: function() {
+    //     var treePicker = this.treePicker, selection = [];
+    //     if(treePicker) {
+    //         // maping to tree-picker store
+    //         Ext.Array.each(this.getPicker().getSelectionModel().getSelection(), function(record) {
+    //             var node = treePicker.getStore().getNodeById(record.id);
+    //             if(node) {
+    //                 selection.push(node);
+    //             }
+    //         });
+    //         if(selection.length) {
+    //             treePicker.getSelectionModel().select(selection);
+    //         }
+    //         if(selection.length === 0) {
+    //             treePicker.getSelectionModel().deselectAll(selection);
+    //         }
+    //     }
+    // },
+    // doFilter: function() {
+    //     var me = this, parentNode = me.getParentNode();
+    //     if(parentNode) {
+    //         me.treePicker.getStore().filterBy(function(record) {
+    //             if(record.parentNode.id !== me.currentLeaf) {
+    //                 return true;
+    //             }
+    //             if(!me.searchField.getValue()) {
+    //                 return true;
+    //             }
+    //             return record.get(me.displayField).toLowerCase().indexOf(me.searchField.getValue().toLowerCase()) !== -1;
+    //         })
+    //         this.selectNode();
+    //     }
+    // },
+    // loadChildren: function(id) {
+    //     var me = this;
+    //     if(!me.treePicker.hidden) {
+    //         me.treePicker.mask(__("loading ..."));
+    //     }
+    //     this.treeStore.load({
+    //         params: {
+    //             parent: id
+    //         },
+    //         callback: function() {
+    //             if(!me.treePicker.hidden) {
+    //                 me.treePicker.unmask();
+    //             }
+    //         }
+    //     });
+    // },
+    // events
+    // onLoadTree: function(store, records, success) {
+    //     var parentNode = this.getParentNode();
+    //     if(!parentNode.hasChildNodes() && success) {
+    //         parentNode.appendChild(records.map(function(item) {
+    //             return Ext.merge({
+    //                 leaf: !item.get("has_children"),
+    //                 qtip: item.get(this.displayField)
+    //             }, item.getData());
+    //         }));
+    //         parentNode.expand();
+    //     }
+    //     if(!this.cache) { // first run, root elements
+    //         this.cache = Ext.clone(parentNode.childNodes);
+    //     }
+    // },
+    // onItemClick: function(view, record) {
+    //     this.selectItem(record);
+    // },
+    // onPickerKeyDown: function(view, record, item, index, e) {
+    //     var key = e.getKey();
+    //     if(key === e.ENTER || (key === e.TAB && this.selectOnTab)) {
+    //         this.selectItem(record);
+    //     }
+    // },
+    // onItemBeforeExpand: function(self) {
+    //     var node;
+    //     if(this.currentLeaf && (this.currentLeaf !== self.getId())) {
+    //         node = this.treePicker.getStore().getNodeById(this.currentLeaf);
+    //         node.removeAll();
+    //         node.appendChild(this.cache);
+    //     }
+    //     this.currentLeaf = self.getId();
+    //     this.cache = Ext.clone(self.childNodes);
+    //     if(!self.hasChildNodes()) {
+    //         this.loadChildren(this.currentLeaf);
+    //         return false;
+    //     }
+    // },
+    // onItemExpand: function() {
+    //     this.doFilter();
+    // },
+    // onLeaveFocusTreePicker: function() {
+    //     this.setEditable(true);
+    //     this.treePicker.hide();
+    // },
+    // onClosePanel: function() {
+    //     this.treePicker.hide();
+    // },
     // search field events
-    onClearSearchField: function(self) {
-        self.setValue();
-        self.getTrigger("clear").hide();
-        this.doFilter();
-    },
-    onChangeSearchField: function(self) {
-        if(self.getValue() == null || !self.getValue().length) {
-            this.onClearSearchField(self);
-            return;
-        }
-        this.doFilter();
-        self.getTrigger("clear").show();
-    }
+    // onClearSearchField: function(self) {
+    //     self.setValue();
+    //     self.getTrigger("clear").hide();
+    //     this.doFilter();
+    // },
+    // onChangeSearchField: function(self) {
+    //     if(self.getValue() == null || !self.getValue().length) {
+    //         this.onClearSearchField(self);
+    //         return;
+    //     }
+    //     this.doFilter();
+    //     self.getTrigger("clear").show();
+    // }
 });

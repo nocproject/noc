@@ -11,9 +11,6 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
 
     title: undefined,
     scrollable: 'vertical',
-    bodyStyle: {
-        background: '#c0c0c0'
-    },
     defaults: {
         padding: 4
     },

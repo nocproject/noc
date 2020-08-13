@@ -9,8 +9,12 @@ Ext.define("NOC.fm.alarm.view.grids.TagfieldController", {
     extend: "Ext.app.ViewController",
     alias: "controller.fm.alarm.tagfield",
 
-    onChange: function(self) {
-        var selected = self.getPicker().getSelectionModel().getSelection();
-        this.getView().setSelected(selected, true);
-    }
+    onChangeTagValue: function(self) {
+        var view = this.getView(),
+            selected = self.getPicker().getSelectionModel().getSelection();
+        if(view.treePicker) {
+            view.treePicker.getController().selectNode(selected);
+        }
+        view.setSelected(selected, true);
+    },
 });
