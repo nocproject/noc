@@ -216,49 +216,13 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
-                    // xtype: "noc.core.tagtree",
-                    // restUrl: "/sa/administrativedomain/",
                     xtype: "fm.alarm.tagfield",
                     url: "/sa/administrativedomain/lookup/",
                     isTree: true,
                     fieldLabel: __("Adm. Domain"),
-                    // valueField: "id",
-                    // displayField: "label",
-                    // store: {
-                    //     pageSize: 0,
-                    //     proxy: {
-                    //         type: "rest",
-                    //         url: "/sa/administrativedomain/lookup/",
-                    //         pageParam: "__page",
-                    //         startParam: "__start",
-                    //         limitParam: "__limit",
-                    //         sortParam: "__sort",
-                    //         extraParams: {
-                    //             __format: "ext"
-                    //         },
-                    //         reader: {
-                    //             rootProperty: "data",
-                    //             totalProperty: "total",
-                    //             successProperty: "success"
-                    //         }
-                    //     },
-                    //     autoLoad: true,
-                    //     remoteFilter: false,
-                    //     fields: ["label", "id", "has_children"],
-                    //     remoteSort: true,
-                    //     sorters: [
-                    //         {
-                    //             property: "name"
-                    //         }
-                    //     ]
-                    // },
                     name: "administrative_domain",
                     bind: {
                         selected: "{activeFilter.administrative_domain}"
-                    },
-                    getSubTplData (fieldData) {
-                        console.log(fieldData);
-                        return Ext.form.field.Tag.prototype.getSubTplData.apply(this, arguments);
                     }
                 },
                 {
