@@ -44,10 +44,8 @@ Ext.define("NOC.fm.alarm.view.grids.TreePickerController", {
     onItemBeforeExpand: function(self) {
         var me = this.getView(), node;
         if(me.currentLeaf && (me.currentLeaf !== self.getId())) {
-            console.log("remove all");
-            node = this.getView().getStore().getNodeById(me.currentLeaf);
-            node.removeAll();
-            node.appendChild(this.cache);
+            node = me.getStore().getNodeById(me.currentLeaf);
+            node.appendChild(me.cache);
         }
         me.currentLeaf = self.getId();
         me.cache = Ext.clone(self.childNodes);
