@@ -15,9 +15,9 @@ from noc.core.text import ranges_to_list
 rx_multi_split = re.compile(r"\d+([km])")
 
 
-def convert_multi(self, v):
+def convert_multi(v):
     # 20k -> 20000, 20m -> 20000000
-    if self.rx_multi_split.match(v):
+    if rx_multi_split.match(v):
         v = v.replace("k", "0" * 3).replace("m", "0" * 6)
     return v
 
