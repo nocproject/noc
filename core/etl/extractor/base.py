@@ -7,7 +7,6 @@
 
 # Python modules
 import logging
-import gzip
 import os
 import csv
 import itertools
@@ -21,6 +20,7 @@ import dataclasses
 from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.etl.compression import compressor
 
 logger = logging.getLogger(__name__)
 
@@ -66,10 +66,6 @@ class BaseExtractor(object):
             Problem(line=line + 1, is_rej=True, p_class=p_class, message=message, row=row)
         ]
 
-    def open_compressed_file(self, path: str, mode: str) -> io.TextIOWrapper:
-        path = path + ".gz"
-        return io.TextIOWrapper(gzip.GzipFile(path, mode))
-
     def ensure_import_dir(self):
         """
         Ensure import directory is exists
@@ -82,9 +78,9 @@ class BaseExtractor(object):
 
     def get_new_state(self) -> io.TextIOWrapper:
         self.ensure_import_dir()
-        path = os.path.join(self.import_dir, "import.csv")
+        path = os.path.join(self.import_dir, "import.csv") + compressor.ext
         self.logger.info("Writing to %s", path)
-        return self.open_compressed_file(path, "w")
+        return compressor(path, "w").open()
 
     @contextlib.contextmanager
     def with_new_state(self):
@@ -104,9 +100,9 @@ class BaseExtractor(object):
 
     def get_problem_file(self) -> io.TextIOWrapper:
         self.ensure_import_dir()
-        path = os.path.join(self.import_dir, "import.csv.rej")
+        path = os.path.join(self.import_dir, "import.csv.rej") + compressor.ext
         self.logger.info("Writing to %s", path)
-        return self.open_compressed_file(path, "w")
+        return compressor(path, "w").open()
 
     @contextlib.contextmanager
     def with_problem_file(self):

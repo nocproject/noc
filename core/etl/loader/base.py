@@ -8,13 +8,11 @@
 # Python modules
 import os
 import logging
-import gzip
 import re
 import csv
 import time
 import shutil
 import functools
-import io
 from itertools import zip_longest
 from io import StringIO
 
@@ -23,6 +21,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.etl.compression import compressor
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +33,11 @@ class BaseLoader(object):
         import/
             <system name>/
                 <loader name>/
-                    import.csv[.gz]  -- state to load, can have .gz extension
+                    import.csv[.ext]  -- state to load, must have .ext extension
+                                         according to selected compressor
                     mappings.csv -- ID mappings
                     archive/
-                        import-YYYY-MM-DD-HH-MM-SS.csv.gz -- imported state
+                        import-YYYY-MM-DD-HH-MM-SS.csv.ext -- imported state
 
     Import file format: CSV, unix end of lines, UTF-8, comma-separated
     First column - record id in the terms of connected system,
@@ -66,8 +66,9 @@ class BaseLoader(object):
     # List of tags to add to the created records
     tags = []
 
-    PREFIX = config.path.etl_import
-    rx_archive = re.compile(r"^import-\d{4}(?:-\d{2}){5}.csv.gz$")
+    rx_archive = re.compile(
+        r"^import-\d{4}(?:-\d{2}){5}.csv%s$" % compressor.ext.replace(".", r"\.")
+    )
 
     # Discard records which cannot be dereferenced
     discard_deferred = False
@@ -84,7 +85,7 @@ class BaseLoader(object):
         self.system = chain.system
         self.logger = PrefixLoggerAdapter(logger, "%s][%s" % (self.system.name, self.name))
         self.disable_mappings = False
-        self.import_dir = os.path.join(self.PREFIX, self.system.name, self.name)
+        self.import_dir = os.path.join(config.path.etl_import, self.system.name, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(self.import_dir, "mappings.csv")
         self.mappings = {}
@@ -167,12 +168,12 @@ class BaseLoader(object):
             logger.info("Loading from %s", path)
             self.new_state_path = path
             return open(path, "r")
-        # Try import.csv.gz
-        path += ".gz"
+        # Try import.csv.<ext>
+        path += compressor.ext
         if os.path.isfile(path):
             logger.info("Loading from %s", path)
             self.new_state_path = path
-            return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
+            return self.iter_cleaned(compressor(path, "r").open())
         # No data to import
         return None
 
@@ -189,13 +190,13 @@ class BaseLoader(object):
                 self.logger.error("Failed to create directory: %s (%s)", self.archive_dir, e)
                 # @todo: Die
         if os.path.isdir(self.archive_dir):
-            fn = sorted(f for f in os.listdir(self.archive_dir) if self.rx_archive.match(f))
+            fn = list(sorted(f for f in os.listdir(self.archive_dir) if self.rx_archive.match(f)))
         else:
             fn = []
         if fn:
             path = os.path.join(self.archive_dir, fn[-1])
             logger.info("Current state from %s", path)
-            return self.iter_cleaned(io.TextIOWrapper(gzip.GzipFile(path, "r")))
+            return self.iter_cleaned(compressor(path, "r").open())
         # No current state
         return StringIO("")
 
@@ -462,18 +463,18 @@ class BaseLoader(object):
         self.logger.info("Error delete by reffered: %s", "\n".join(self.reffered_errors))
         t = time.localtime()
         archive_path = os.path.join(
-            self.archive_dir, "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(t[:6])
+            self.archive_dir,
+            "import-%04d-%02d-%02d-%02d-%02d-%02d.csv%s" % (tuple(t[:6]) + (compressor.ext,)),
         )
         self.logger.info("Moving %s to %s", self.new_state_path, archive_path)
-        if self.new_state_path.endswith(".gz"):
+        if self.new_state_path.endswith(compressor.ext):
             # Simply move the file
             shutil.move(self.new_state_path, archive_path)
         else:
             # Compress the file
             self.logger.info("Compressing")
-            with open(self.new_state_path, "r") as s:
-                with gzip.open(archive_path, "w") as d:
-                    d.write(s.read())
+            with open(self.new_state_path, "r") as s, compressor(archive_path, "w") as d:
+                d.write(s.read())
             os.unlink(self.new_state_path)
         self.logger.info("Saving mappings to %s", self.mappings_path)
         mdata = "\n".join("%s,%s" % (k, self.mappings[k]) for k in sorted(self.mappings))
