@@ -219,6 +219,9 @@ class Config(BaseConfig):
         wait_tt_check_interval = SecondsParameter(default="60s")
         sample = IntParameter(default=0)
 
+    class etl(ConfigSection):
+        compression = StringParameter(choices=["plain", "gzip", "bz2", "lzma"], default="gzip")
+
     class features(ConfigSection):
         use_uvlib = BooleanParameter(default=False)
         cp = BooleanParameter(default=True)
