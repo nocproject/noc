@@ -10,7 +10,7 @@ import re
 import functools
 from functools import reduce
 import asyncio
-from typing import Optional, Callable
+from typing import Optional, Any, Type, Callable, Dict
 
 # NOC modules
 from noc.core.text import replace_re_group
@@ -26,6 +26,13 @@ from .error import (
     CLILowPrivileges,
     CLIConnectionRefused,
     CLIConnectionReset,
+    CLIStartTimeout,
+    CLISetupTimeout,
+    CLIUsernameTimeout,
+    CLIPasswordTimeout,
+    CLISuperTimeout,
+    CLISuperUsernameTimeout,
+    CLISuperPasswordTimeout,
 )
 from .base import BaseCLI
 
@@ -48,7 +55,6 @@ class CLI(BaseCLI):
         self.prompt_stack = []
         self.patterns = self.profile.patterns.copy()
         self.buffer: bytes = b""
-        self.is_started = False
         self.result = None
         self.error = None
         self.pattern_table = None
@@ -59,6 +65,7 @@ class CLI(BaseCLI):
         self.ignore_errors = None
         self.allow_empty_response = None
         self.native_encoding = self.script.native_encoding
+        self.prompt_matched = False
         # State retries
         self.super_password_retries = self.profile.cli_retries_super_password
         self.cli_retries_unprivileged_mode = self.profile.cli_retries_unprivileged_mode
@@ -182,7 +189,7 @@ class CLI(BaseCLI):
                 # Stream must be closed to prevent hanging read callbacks
                 # @todo: Really? May be changed during migration to asyncio
                 self.close_stream()
-                raise CLIConnectionReset()
+                raise self.timeout_exception_cls()
             if not r:
                 self.logger.debug("Connection reset")
                 await self.on_failure(r, None, error_cls=CLIConnectionReset)
@@ -316,7 +323,12 @@ class CLI(BaseCLI):
                 return
         raise self.InvalidPagerPattern(pg)
 
-    def expect(self, patterns, timeout=None):
+    def expect(
+        self,
+        patterns: Dict[str, Any],
+        timeout: Optional[float] = None,
+        error: Optional[Type[Exception]] = None,
+    ):
         """
         Send command if not none and set reply patterns
         """
@@ -326,12 +338,16 @@ class CLI(BaseCLI):
             if not rx:
                 continue
             self.pattern_table[rx] = patterns[pattern_name]
-        self.set_timeout(timeout)
+        self.set_timeout(timeout, error=error)
 
     async def on_start(self, data=None, match=None):
         self.set_state("start")
         if self.profile.setup_sequence and not self.setup_complete:
-            self.expect({"setup": self.on_setup_sequence}, self.profile.cli_timeout_setup)
+            self.expect(
+                {"setup": self.on_setup_sequence},
+                self.profile.cli_timeout_setup,
+                error=CLISetupTimeout,
+            )
         else:
             self.expect(
                 {
@@ -342,6 +358,7 @@ class CLI(BaseCLI):
                     "pager": self.send_pager_reply,
                 },
                 self.profile.cli_timeout_start,
+                error=CLIStartTimeout,
             )
 
     async def on_username(self, data, match):
@@ -360,6 +377,7 @@ class CLI(BaseCLI):
                 "prompt": self.on_prompt,
             },
             self.profile.cli_timeout_user,
+            error=CLIUsernameTimeout,
         )
 
     async def on_password(self, data, match):
@@ -380,6 +398,7 @@ class CLI(BaseCLI):
                 "pager": self.send_pager_reply,
             },
             self.profile.cli_timeout_password,
+            error=CLIPasswordTimeout,
         )
 
     async def on_unprivileged_prompt(self, data, match):
@@ -407,6 +426,7 @@ class CLI(BaseCLI):
                         "pager": self.send_pager_reply,
                     },
                     self.profile.cli_timeout_super,
+                    error=CLISuperTimeout,
                 )
             else:
                 self.expect(
@@ -418,6 +438,7 @@ class CLI(BaseCLI):
                         "unprivileged_prompt": (self.on_failure, CLILowPrivileges),
                     },
                     self.profile.cli_timeout_super,
+                    error=CLISuperTimeout,
                 )
         else:
             # Do not raise privileges
@@ -440,7 +461,10 @@ class CLI(BaseCLI):
             self.resolve_pattern_prompt(match)
         d = b"".join(self.collected_data + [data])
         self.collected_data = []
-        self.expect({"prompt": self.on_prompt, "pager": self.send_pager_reply})
+        self.expect(
+            {"prompt": self.on_prompt, "pager": self.send_pager_reply},
+            self.profile.cli_timeout_prompt,
+        )
         return d
 
     async def on_super_username(self, data, match):
@@ -460,6 +484,7 @@ class CLI(BaseCLI):
                 "pager": self.send_pager_reply,
             },
             self.profile.cli_timeout_user,
+            error=CLISuperUsernameTimeout,
         )
 
     async def on_super_password(self, data, match):
@@ -485,6 +510,7 @@ class CLI(BaseCLI):
                 "unprivileged_prompt": unprivileged_handler,
             },
             self.profile.cli_timeout_password,
+            error=CLISuperPasswordTimeout,
         )
 
     async def on_setup_sequence(self, data, match):
