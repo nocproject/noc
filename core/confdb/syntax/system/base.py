@@ -8,6 +8,7 @@
 # NOC modules
 from ..defs import DEF
 from ..patterns import ANY, CHOICES, HHMM, INTEGER
+from .aaa.base import SYSTEM_AAA_SYNTAX
 
 SYSTEM_SYNTAX = DEF(
     "system",
@@ -125,6 +126,11 @@ SYSTEM_SYNTAX = DEF(
                     name="username",
                 )
             ],
+        ),
+        SYSTEM_AAA_SYNTAX,
+        DEF(
+            "security",
+            [DEF("certificate", [DEF(ANY, name="name", gen="make_system_security_certificate")]),],
         ),
     ],
 )
