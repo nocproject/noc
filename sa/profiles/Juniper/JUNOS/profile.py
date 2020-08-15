@@ -32,6 +32,8 @@ class Profile(BaseProfile):
         "line_comment": "#",
         "inline_comment": "##",
         "explicit_eol": ";",
+        "start_of_group": "[",
+        "end_of_group": "]",
         # "string_quote": "\""
     }
     config_normalizer = "JunOSNormalizer"

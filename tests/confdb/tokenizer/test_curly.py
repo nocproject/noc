@@ -101,12 +101,34 @@ TOKENS2 = [
     ("snmp", "community", "TTT", "clients", "10.10.10.0/26"),
 ]
 
+CFG3 = """dns {
+    search-domains [ "test.example.com" "example.com" ];
+}
+"""
+
+TOKENS3 = [
+    ("dns",),
+    ("dns", "search-domains", "test.example.com"),
+    ("dns", "search-domains", "example.com"),
+]
+
 
 @pytest.mark.parametrize(
     "input,config,expected",
     [
         (CFG1, {"line_comment": "#", "explicit_eol": ";"}, TOKENS1),
         (CFG2, {"line_comment": "#", "explicit_eol": ";", "string_quote": '"'}, TOKENS2),
+        (
+            CFG3,
+            {
+                "line_comment": "#",
+                "explicit_eol": ";",
+                "string_quote": '"',
+                "start_of_group": "[",
+                "end_of_group": "]",
+            },
+            TOKENS3,
+        ),
     ],
 )
 def test_tokenizer(input, config, expected):
