@@ -251,7 +251,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     max_scripts = None
     # CLI timeouts
     # Timeout between connection established and login prompt
-    cli_timeout_start = 60
+    cli_timeout_start = 50
     # Timeout after user name provided
     cli_timeout_user = 30
     # Timeout after password provided
@@ -260,6 +260,8 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     cli_timeout_super = 10
     # Timeout waiting next setup sequence response
     cli_timeout_setup = 10
+    # Timeout until next prompt
+    cli_timeout_prompt = 3600
     # Amount of retries for enable passwords
     # Increase if box asks for enable password twice
     cli_retries_super_password = 1

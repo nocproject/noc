@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, Type
 
 # NOC module
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.perf import metrics
 from noc.core.ioloop.util import IOLoopContext
 from noc.core.comp import smart_bytes
+from .error import CLIConnectionReset
 
 
 class BaseCLI(object):
@@ -24,6 +25,9 @@ class BaseCLI(object):
         self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
         self.stream: Optional[BaseStream] = None
         self.tos = tos
+        self.is_started = False
+        # Current error to raise on TimeoutError
+        self.timeout_exception_cls = CLIConnectionReset
 
     def close(self):
         self.script.close_current_session()
@@ -48,12 +52,17 @@ class BaseCLI(object):
     def shutdown_session(self):
         raise NotImplementedError
 
-    def set_timeout(self, timeout: Optional[float]) -> None:
+    def set_timeout(
+        self, timeout: Optional[float] = None, error: Optional[Type[Exception]] = None
+    ) -> None:
         if timeout:
-            self.logger.debug("Setting timeout: %ss", timeout)
+            error = error or CLIConnectionReset
+            self.logger.debug("Setting timeout: %ss, error=%s", timeout, error.__name__)
+            self.timeout_exception_cls = error
             self.stream.set_timeout(timeout)
         else:
             self.logger.debug("Resetting timeouts")
+            self.timeout_exception_cls = CLIConnectionReset
             self.stream.set_timeout(None)
 
     def get_stream(self) -> "BaseStream":
@@ -77,6 +86,9 @@ class BaseCLI(object):
             raise ConnectionRefusedError
         self.logger.debug("Connected")
         await self.stream.startup()
+
+    async def send(self, cmd: bytes) -> None:
+        raise NotImplementedError
 
 
 # Avoid circular references
