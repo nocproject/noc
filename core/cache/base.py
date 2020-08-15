@@ -7,6 +7,7 @@
 
 # Python modules
 import logging
+from typing import Optional, Any, Iterable, Dict
 
 # NOC modules
 from noc.config import config
@@ -22,18 +23,24 @@ class BaseCache(object):
     """
 
     @staticmethod
-    def make_key(key, version=None):
+    def make_key(key: str, version: Optional[int] = None) -> str:
         return "%s|%s" % (key, version or 0)
 
-    def get(self, key, default=None, version=None):
+    def get(
+        self, key: str, default: Optional[Any] = None, version: Optional[int] = None
+    ) -> Optional[Any]:
         """
         Returns value or raise KeyError
         :param key:
+        :param version:
+        :param default:
         :return:
         """
         return default
 
-    def set(self, key, value, ttl=None, version=None):
+    def set(
+        self, key: str, value: Any, ttl: Optional[int] = None, version: Optional[int] = None
+    ) -> None:
         """
         Set key
         :param key:
@@ -43,13 +50,13 @@ class BaseCache(object):
         """
         pass
 
-    def delete(self, key, version=None):
+    def delete(self, key: str, version: Optional[Any] = None) -> None:
         pass
 
-    def has_key(self, key, version=None):
+    def has_key(self, key: str, version: Optional[int] = None) -> bool:
         return self.get(key, version=version) is not None
 
-    def get_many(self, keys, version=None):
+    def get_many(self, keys: Iterable, version: Optional[int] = None) -> Dict[str, Any]:
         """
         Fetch a bunch of keys from the cache.
         """
@@ -60,22 +67,24 @@ class BaseCache(object):
                 d[k] = val
         return d
 
-    def set_many(self, data, ttl=None, version=None):
+    def set_many(
+        self, data: Dict[str, Any], ttl: Optional[int] = None, version: Optional[int] = None
+    ) -> None:
         for k in data:
             self.set(k, data[k], ttl=ttl, version=version)
 
-    def delete_many(self, keys, version=None):
+    def delete_many(self, keys: Iterable, version: Optional[int] = None) -> None:
         for k in keys:
             self.delete(k, version=version)
 
-    def __getitem__(self, item):
-        self.get(item)
+    def __getitem__(self, item: str) -> Optional[Any]:
+        return self.get(item)
 
-    def __contains__(self, item):
+    def __contains__(self, item: str) -> bool:
         return self.get(item) is not None
 
     @classmethod
-    def get_cache(cls):
+    def get_cache(cls) -> "BaseCache":
         logger.info("Using cache backend: %s", config.cache.cache_class)
         c = get_handler(config.cache.cache_class)
         if c:

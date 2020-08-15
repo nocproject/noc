@@ -94,6 +94,22 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
             persist: false
         },
         {
+            name: "is_persistent",
+            type: "boolean"
+        },
+        {
+            name: "bio_collision_policy",
+            type: "auto"
+        },
+        {
+            name: "calcified_profile",
+            type: "string"
+        },
+        {
+            name: "calcified_profile__label",
+            type: "string"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false
