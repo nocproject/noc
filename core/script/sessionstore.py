@@ -10,6 +10,7 @@ from typing import Optional, Dict
 from threading import Lock
 from dataclasses import dataclass
 import asyncio
+from contextlib import suppress
 
 # NOC modules
 from noc.core.service.loader import get_service
@@ -51,7 +52,9 @@ class SessionStore(object):
             self._set_timer(item, None)
         if not item.stream.is_closed():
             if shutdown:
-                item.stream.shutdown_session()
+                with suppress(Exception):
+                    # Under all conditions Session be removed
+                    item.stream.shutdown_session()
             with self._lock:
                 del self._sessions[session]
             item.stream.close()
