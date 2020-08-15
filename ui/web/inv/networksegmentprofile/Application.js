@@ -200,6 +200,96 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     xtype: "vc.vlanprofile.LookupField",
                     fieldLabel: __("Default VLAN Profile"),
                     allowBlank: true
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("Biosegmentation"),
+                    items: [
+                        {
+                            name: "is_persistent",
+                            xtype: "checkbox",
+                            boxLabel: __("Persistent")
+                        },
+                        {
+                            name: "bio_collision_policy",
+                            xtype: "gridfield",
+                            fieldLabel: __("Collision Policy"),
+                            columns: [
+                                {
+                                    text: __("Match Type"),
+                                    dataIndex: "match_type",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["p", __("Persistent")],
+                                            ["f", __("Floating")],
+                                            ["*", __("Any")]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "p": __("Persistent"),
+                                        "f": __("Floating"),
+                                        "*": __("Any")
+                                    })
+                                },
+                                {
+                                    text: __("Match Level"),
+                                    dataIndex: "match_level",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["-", __("No link")],
+                                            ["<", "<"],
+                                            ["<=", "<="],
+                                            ["==", "=="],
+                                            [">=", ">="],
+                                            [">", ">"],
+                                            ["*", __("Any")]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "-": __("No link"),
+                                        "<": "<",
+                                        "<=": "<=",
+                                        "==": "==",
+                                        ">=": ">=",
+                                        ">": ">",
+                                        "*": __("Any")
+                                    })
+                                },
+                                {
+                                    text: __("Policy"),
+                                    dataIndex: "policy",
+                                    flex: 1,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["merge", __("Merge")],
+                                            ["keep", __("Keep")],
+                                            ["eat", __("Eat")],
+                                            ["feed", __("Feed")],
+                                            ["calcify", __("Calcify")]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "merge": __("Merge"),
+                                        "keep": __("Keep"),
+                                        "eat": __("Eat"),
+                                        "feed": __("Feed"),
+                                        "calcify": __("Calcify")
+                                    })
+                                }
+                            ]
+                        },
+                        {
+                            name: "calcified_profile",
+                            xtype: "inv.networksegmentprofile.LookupField",
+                            fieldLabel: __("Calcified Profile"),
+                            allowBlank: true
+                        }
+                    ]
                 }
             ]
         });

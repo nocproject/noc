@@ -9,6 +9,7 @@
 import operator
 import cachetools
 from threading import Lock
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -61,6 +62,9 @@ class SegmentTopologySettings(EmbeddedDocument):
     handler = StringField()
     is_active = BooleanField(default=True)
 
+    def __str__(self):
+        return self.method
+
 
 class UplinkPolicySettings(EmbeddedDocument):
     method = StringField(
@@ -74,10 +78,81 @@ class UplinkPolicySettings(EmbeddedDocument):
     )
     is_active = BooleanField(default=True)
 
+    def __str__(self):
+        return self.method
+
+
+class BioCollisionPolicy(EmbeddedDocument):
+    # Type of segment to match: persistent, floating, all
+    match_type = StringField(choices=[("p", "Persistent"), ("f", "Float"), ("*", "All")])
+    # Neighbor level comparison (only with require_link)
+    match_level = StringField(
+        choices=[(x, x) for x in ("-", "<", "<=", "==", ">=", ">", "*")], default="-"
+    )
+    # Proposed policy
+    policy = StringField(
+        choices=[
+            ("merge", "Merge"),
+            ("keep", "Keep"),
+            ("eat", "Eat"),
+            ("feed", "Feed"),
+            ("calcify", "Calcify"),
+        ],
+        default="keep",
+    )
+
+    def __str__(self):
+        return "%s %s -> %s" % (self.match_type, self.match_level, self.policy)
+
+    def check(
+        self,
+        persistent: bool,
+        attacker_level: Optional[int] = None,
+        target_level: Optional[int] = None,
+    ):
+        return self.check_type(persistent) and self.check_level(attacker_level, target_level)
+
+    def check_type(self, persistent: bool) -> bool:
+        """
+        Check for matching by type
+        :param persistent:
+        :return:
+        """
+        if self.match_type == "p" and not persistent:
+            return False
+        if self.match_type == "f" and persistent:
+            return False
+        return True
+
+    def check_level(
+        self, attacker_level: Optional[int] = None, target_level: Optional[int] = None
+    ) -> bool:
+        if self.match_level == "-":
+            return attacker_level is None and target_level is None
+        if attacker_level is None or target_level is None:
+            return False
+        if self.match_level == "*":
+            return True
+        if self.match_level == "<" and attacker_level < target_level:
+            return True
+        if self.match_level == "<=" and attacker_level <= target_level:
+            return True
+        if self.match_level == "==" and attacker_level == target_level:
+            return True
+        if self.match_level == ">=" and attacker_level >= target_level:
+            return True
+        if self.match_level == ">" and attacker_level > target_level:
+            return True
+        return False
+
 
 @bi_sync
 @on_delete_check(
-    check=[("inv.NetworkSegment", "profile"), ("inv.NetworkSegmentProfile", "autocreated_profile")]
+    check=[
+        ("inv.NetworkSegment", "profile"),
+        ("inv.NetworkSegmentProfile", "autocreated_profile"),
+        ("inv.NetworkSegmentProfile", "calcified_profile"),
+    ]
 )
 @on_save
 class NetworkSegmentProfile(Document):
@@ -114,6 +189,12 @@ class NetworkSegmentProfile(Document):
     enable_vlan = BooleanField(default=False)
     # Default VLAN profile for discovered VLANs
     default_vlan_profile = PlainReferenceField("vc.VLANProfile")
+    # Biosegmentation persistence
+    is_persistent = BooleanField(default=True)
+    # Biosegmentation collision policy
+    bio_collision_policy = ListField(EmbeddedDocumentField(BioCollisionPolicy))
+    # Target segment profile on calcification
+    calcified_profile = PlainReferenceField("inv.NetworkSegmentProfile")
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

@@ -142,6 +142,7 @@ _MODELS = {
     "gis.Street": "noc.gis.models.street.Street",
     # inv models
     "inv.AllocationGroup": "noc.inv.models.allocationgroup.AllocationGroup",
+    "inv.BioSegTrial": "noc.inv.models.biosegtrial.BioSegTrial",
     "inv.Capability": "noc.inv.models.capability.Capability",
     "inv.ConnectionRule": "noc.inv.models.connectionrule.ConnectionRule",
     "inv.ConnectionType": "noc.inv.models.connectiontype.ConnectionType",

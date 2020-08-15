@@ -97,6 +97,9 @@ class Config(BaseConfig):
         )
         alarms_archive_batch_limit = IntParameter(default=10000)
 
+    class biosegmentation(ConfigSection):
+        processed_trials_ttl = SecondsParameter(default="1w")
+
     brand = StringParameter(default="NOC")
 
     class cache(ConfigSection):
