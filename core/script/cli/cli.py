@@ -304,7 +304,7 @@ class CLI(BaseCLI):
                     self.logger.debug("Match: %s", rx.pattern)
                     matched = buffer[: match.start()]
                     buffer = self.buffer[match.end() :]
-                    r = handler(matched, match)
+                    r = await handler(matched, match)
                     if r is not None:
                         self.logger.debug("Prompt matched")
                         done = True
