@@ -1,119 +1,84 @@
 {
+  "title": "CPU | Load | 5min per CPU",
+  "aliasColors": {},
   "bars": false,
-  "timeFrom": null,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": 1151904820716515,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
   "links": [],
   "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
   "renderer": "flot",
-  "id": 6120621811818619,
-  "linewidth": 2,
+  "seriesOverrides": [],
+  "span": 6,
+  "stack": false,
   "steppedLine": false,
   "targets": [
     {
-      "dsType": "influxdb",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=",
-          "value": "$device"
-        }
-      ],
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "cpu",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((slot, CPUUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'/') as slot, \n        avg(load_5min) as `CPUUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY arrayStringConcat(path,'/'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
-      "alias": "CPU | Load | 5min on cpu $tag_slot",
-      "resultFormat": "time_series",
-      "measurement": "CPU | Load | 5min",
-      "policy": "default",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "type": "tag",
-          "params": [
-            "slot"
-          ]
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ]
+      "resultFormat": "time_series"
     }
   ],
-  "fill": 1,
-  "span": 6,
-  "title": "CPU | Load | 5min per cpu",
+  "timeFrom": null,
+  "timeShift": null,
   "tooltip": {
-    "sort": 0,
+    "msResolution": false,
     "shared": true,
-    "value_type": "cumulative",
-    "msResolution": false
+    "sort": 0,
+    "value_type": "cumulative"
   },
-  "stack": false,
+  "type": "graph",
+  "x-axis": true,
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
   "yaxes": [
     {
-      "logBase": 1,
-      "format": "short",
-      "max": null,
-      "show": true,
+      "format": "percent",
       "label": null,
-      "min": null
+      "logBase": 1,
+      "max": 100,
+      "min": 0,
+      "show": true
     },
     {
-      "logBase": 1,
       "format": "short",
-      "max": null,
-      "show": true,
       "label": null,
-      "min": null
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
     }
-  ],
-  "xaxis": {
-    "show": true,
-    "mode": "time",
-    "name": null,
-    "values": []
-  },
-  "seriesOverrides": [],
-  "percentage": false,
-  "type": "graph",
-  "error": false,
-  "editable": true,
-  "grid": {},
-  "legend": {
-    "avg": true,
-    "min": true,
-    "max": true,
-    "show": true,
-    "current": true,
-    "values": true,
-    "total": false,
-    "alignAsTable": true,
-    "rightSide": false
-  },
-  "timeShift": null,
-  "aliasColors": {},
-  "lines": true,
-  "points": false,
-  "datasource": null,
-  "pointradius": 5,
-  "thresholds": []
+  ]
 }
