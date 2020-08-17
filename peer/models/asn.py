@@ -42,7 +42,7 @@ class AS(NOCModel):
         db_table = "peer_as"
         app_label = "peer"
 
-    asn = models.IntegerField("ASN", unique=True)
+    asn = models.BigIntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
     profile = DocumentReferenceField(ASProfile, null=False, blank=False)
