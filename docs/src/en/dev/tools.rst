@@ -30,7 +30,7 @@ Press :guilabel:`+` button. Fill the form:
 
 * :guilabel:`Name`: `flake8`
 * :guilabel:`Program`: `/usr/local/bin/docker`
-* :guilabel:`Arguments`: `run --rm -w /src -v $ProjectFileDir$:/src registry.getnoc.com/infrastructure/noc-lint:master /usr/local/bin/flake8 $FileDirRelativeToProjectRoot$/$FileName$`
+* :guilabel:`Arguments`: `run --rm -w /src -v $ProjectFileDir$:/src registry.getnoc.com/infrastructure/noc-py-lint:master /usr/local/bin/flake8 $FileDirRelativeToProjectRoot$/$FileName$`
 * :guilabel:`Working Directory`: `$ProjectFileDir$`
 * :guilabel:`Open console for tool output`: Check
 
@@ -52,7 +52,7 @@ Press :guilabel:`+` button. Fill the form:
 
 * :guilabel:`Name`: `black format`
 * :guilabel:`Program`: `/usr/local/bin/docker`
-* :guilabel:`run --rm -w /src -v $ProjectFileDir$:/src registry.getnoc.com/infrastructure/black:master /usr/local/bin/black $FileDirRelativeToProjectRoot$/$FileName$`
+* :guilabel:`Arguments`: `run --rm -w /src -v $ProjectFileDir$:/src registry.getnoc.com/infrastructure/noc-py-lint:master /usr/local/bin/black $FileDirRelativeToProjectRoot$/$FileName$`
 * :guilabel:`Working Directory`: `$ProjectFileDir$`
 * :guilabel:`Open console for tool output`: Check
 
