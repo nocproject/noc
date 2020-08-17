@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+from typing import Optional, Iterator, Iterable, Tuple
 
 # NOC modules
 from .base import BaseTokenizer
@@ -22,13 +23,13 @@ class LineTokenizer(BaseTokenizer):
 
     def __init__(
         self,
-        data,
-        eol="\n",
-        tab_width=0,
-        line_comment=None,
-        inline_comment=None,
-        keep_indent=False,
-        string_quote=None,
+        data: str,
+        eol: str = "\n",
+        tab_width: int = 0,
+        line_comment: Optional[str] = None,
+        inline_comment: Optional[str] = None,
+        keep_indent: bool = False,
+        string_quote: Optional[str] = None,
         rewrite=None,
     ):
         super().__init__(data)
@@ -40,7 +41,7 @@ class LineTokenizer(BaseTokenizer):
         self.string_quote = string_quote
         self.rewrite = rewrite
 
-    def iter_lines(self):
+    def iter_lines(self) -> Iterator[Tuple[str]]:
         dl = len(self.data)
         i = 0
         leol = len(self.eol)
@@ -52,29 +53,29 @@ class LineTokenizer(BaseTokenizer):
             yield self.data[i:ni]
             i = ni + leol
 
-    def iter_line_comments(self, iter):
+    def iter_line_comments(self, iter: Iterable) -> Iterator[Tuple[str]]:
         for line in iter:
             if not line.lstrip().startswith(self.line_comment):
                 yield line
 
-    def iter_inline_comments(self, iter):
+    def iter_inline_comments(self, iter: Iterable) -> Iterator[Tuple[str]]:
         for line in iter:
             i = line.find(self.inline_comment)
             if i != -1:
                 line = line[:i]
             yield line
 
-    def iter_not_empty(self, iter):
+    def iter_not_empty(self, iter: Iterable) -> Iterator[Tuple[str]]:
         for line in iter:
             if line.strip():
                 yield line
 
-    def iter_untabify(self, iter):
+    def iter_untabify(self, iter: Iterable) -> Iterator[Tuple[str]]:
         tr = " " * self.tab_width
         for line in iter:
             yield line.replace("\t", tr)
 
-    def iter_rewrite(self, iter):
+    def iter_rewrite(self, iter: Iterable) -> Iterator[Tuple[str]]:
         """
         Apply `rewrite`
         :param iter:
@@ -87,7 +88,7 @@ class LineTokenizer(BaseTokenizer):
                     break
             yield line
 
-    def iter_line_tokens(self, line):
+    def iter_line_tokens(self, line) -> Iterator[Tuple[str]]:
         """
         Iterate line tokens
         :param line:
@@ -100,7 +101,7 @@ class LineTokenizer(BaseTokenizer):
                 line = line[match.end() :]
         yield from line.split()
 
-    def iter_line_quoted_tokens(self, line):
+    def iter_line_quoted_tokens(self, line) -> Iterator[Tuple[str]]:
         """
         Iterate line tokens considering strings
         :param line:
@@ -132,7 +133,7 @@ class LineTokenizer(BaseTokenizer):
             # No quoted strings
             yield from line.split()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Tuple[str]]:
         g = self.iter_lines()
         if self.tab_width:
             g = self.iter_untabify(g)
