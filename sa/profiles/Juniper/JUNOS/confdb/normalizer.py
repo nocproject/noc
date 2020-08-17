@@ -1,12 +1,13 @@
 # ----------------------------------------------------------------------
 # Juniper.JunOS config normalizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
+from noc.core.confdb.syntax.patterns import IP_ADDRESS
 
 
 class JunOSNormalizer(BaseNormalizer):
@@ -155,3 +156,11 @@ class JunOSNormalizer(BaseNormalizer):
     @match("system", "ntp", "server", ANY, ANY, ANY, ANY, ANY)
     def normalize_ntp_server(self, tokens):
         yield self.make_ntp_server_address(name=tokens[3], address=tokens[3])
+
+    @match("system", "name-server", IP_ADDRESS)
+    def normalize_dns_name_server(self, tokens):
+        yield self.make_dns_name_server_ip(ip=tokens[2])
+
+    @match("system", "domain-search", ANY)
+    def normalize_dns_name_server_search_suffix(self, tokens):
+        yield self.make_dns_name_server_ip(suffix=tokens[2])
