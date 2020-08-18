@@ -1,4 +1,5 @@
 {% macro interface(interface, lindex) -%}
+{% set comma = joiner(",") -%}
 {
   "title": "{{interface.name}} : Members {{ interface.status | join(", ") }}",
   "aliasColors": {},
@@ -44,12 +45,9 @@
   "stack": false,
   "steppedLine": false,
   "targets": [
-  {% set comma = joiner(",") -%}
-  {%for port in interface.ports %}
-  {{ comma() }}
       {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(load_in) as `Input {{ port }}`,  avg(load_out) as `Output {{ port }}`, avg(status_oper) as `Oper status`, avg(status_admin) as `Admin status` FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{port}}') and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, sum(load_in) as `Input {{ interface.name }}`,  sum(load_out) as `Output {{ interface.name }}` FROM $table WHERE managed_object = $bi_id and path[4] in ({%for port in interface.ports %}{{ comma() }}'{{port}}'{%endfor%}) and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
       "database": "noc",
@@ -60,7 +58,6 @@
       "dateColDataType": "date",
       "dateTimeColDataType": "ts"
     }
-  {%endfor%}
   ],
   "timeFrom": null,
   "timeShift": null,
