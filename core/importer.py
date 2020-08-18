@@ -8,7 +8,7 @@
 # Python modules
 import sys
 import os
-import imp
+import importlib
 
 # NOC modules
 from noc.config import config
@@ -68,11 +68,10 @@ class NOCLoader(object):
         if source is None:
             return None
 
-        if fullname in sys.modules:
-            mod = sys.modules[fullname]
-        else:
-            mod = sys.modules.setdefault(fullname, imp.new_module(fullname))
-
+        mod = sys.modules.get(fullname)
+        if mod is None:
+            spec = importlib.util.spec_from_loader(fullname, loader=None)
+            mod = sys.modules.setdefault(fullname, importlib.util.module_from_spec(spec))
         # Set a few properties required by PEP 302
         mod.__file__ = self._get_filename(fullname)
         mod.__name__ = fullname
