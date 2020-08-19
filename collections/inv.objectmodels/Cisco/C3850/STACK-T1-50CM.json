@@ -1,0 +1,35 @@
+{
+    "name": "Cisco | C3850 | STACK-T1-50CM",
+    "$collection": "inv.objectmodels",
+    "uuid": "c84c62c3-e81d-416a-ad09-8eb34b88906e",
+    "vendor__code": "CISCO",
+    "description": "50cm stacking cable for STACK-T1-50CM",
+    "connection_rule__name": "Cisco | 3850",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "cross": "1",
+            "description": "480G stacking connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "0",
+            "type__name": "Cisco | Electrical | StackWise 480"
+        },
+        {
+            "cross": "0",
+            "description": "480G stacking connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "1",
+            "type__name": "Cisco | Electrical | StackWise 480"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["STACK-T1-50CM"]
+        },
+        "length": {
+            "length": 0.5
+        }
+    }
+}
