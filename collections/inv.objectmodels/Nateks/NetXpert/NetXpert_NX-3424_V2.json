@@ -1,0 +1,282 @@
+{
+    "name": "Nateks | NetXpert | NetXpert NX-3424 V2",
+    "$collection": "inv.objectmodels",
+    "uuid": "c69d8e98-ec4f-4b94-a419-a8af308bcdb9",
+    "vendor__code": "NATEKS",
+    "description": "24 FastEthernet ports 10/100 Mb/s and 2 ports GE-Combo",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "f24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "g1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "g1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "g2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "g2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NetXpert NX-3424 V2"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
