@@ -1,0 +1,30 @@
+{
+    "name": "Juniper | MX | SCB-MX204",
+    "$collection": "inv.objectmodels",
+    "uuid": "01e15f66-4b8d-4e01-a6b8-6904f30d7c07",
+    "vendor__code": "JUNIPER",
+    "description": "MX Switch Control Board",
+    "cr_context": "SCB",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | SCB"
+        },
+        {
+            "description": "Routing Engine slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "re",
+            "type__name": "Juniper | MX | RE"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["JNP204 [MX204]"],
+            "part_no": ["750-069579"]
+        }
+    }
+}
