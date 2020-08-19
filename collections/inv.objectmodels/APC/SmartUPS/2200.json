@@ -1,0 +1,39 @@
+{
+    "name": "APC | SmartUPS | 2200",
+    "$collection": "inv.objectmodels",
+    "uuid": "afd4e64e-cb59-45be-aae6-ade00920474f",
+    "vendor__code": "APC",
+    "description": "Smart-UPS 2200 SNMP card interface",
+    "connection_rule__name": "APC | SmartUPS",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "APC Smart Slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "APC | UPS | SS"
+        },
+        {
+            "description": "Outband Management",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | 2.5mm-jack"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SMT2200RMI2U"]
+        }
+    }
+}
