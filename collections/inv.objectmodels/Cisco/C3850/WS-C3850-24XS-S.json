@@ -1,0 +1,268 @@
+{
+    "name": "Cisco | C3850 | WS-C3850-24XS-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "098f74df-7944-47a2-9660-548eef0557c0",
+    "vendor__code": "CISCO",
+    "description": "WS-C3850-24XS-S generated from KND-OFF01-ST3850-1, platform: WS-C3850-24XS-S",
+    "connection_rule__name": "Cisco | 3850",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "FRULink Slot 1 - FRULink Module",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm1",
+            "type__name": "Cisco | 3850 | NM"
+        },
+        {
+            "description": "Power Supply A",
+            "direction": "i",
+            "gender": "f",
+            "name": "psuA",
+            "type__name": "Cisco | 3850 | PSU"
+        },
+        {
+            "description": "Power Supply B",
+            "direction": "i",
+            "gender": "f",
+            "name": "psuB",
+            "type__name": "Cisco | 3850 | PSU"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | mini-USB"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/1 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/2 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/3 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/4 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/5 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/5",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/6 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/6",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/7 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/7",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/8 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/8",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/9 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/9",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/10 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/10",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/11 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/11",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/12 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/12",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/13 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/13",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/14 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/14",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/15 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/15",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/16 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/16",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/17 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/17",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/18 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/18",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/19 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/19",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/20 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/20",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/21 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/21",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/22 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/22",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/23 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/23",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TenGigabitEthernet0/0/24 port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0/0/24",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "StackPort0/1 StackWise-480",
+            "direction": "i",
+            "gender": "f",
+            "name": "StackPort0/1",
+            "type__name": "Cisco | Electrical | StackWise 480"
+        },
+        {
+            "description": "StackPort0/2 StackWise-480",
+            "direction": "i",
+            "gender": "f",
+            "name": "StackPort0/2",
+            "type__name": "Cisco | Electrical | StackWise 480"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-C3850-24XS-S"]
+        },
+        "dimensions": {
+            "depth": 450,
+            "height": 44,
+            "width": 445
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 715.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        }
+    }
+}
