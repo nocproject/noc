@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+from itertools import chain
 
 # Third-party modules
 from noc.core.translation import ugettext as _
@@ -643,6 +644,7 @@ class ManagedObjectProfile(NOCModel):
 
     def on_save(self):
         from .managedobject import CREDENTIAL_CACHE_VERSION
+        from noc.inv.models.link import Link
 
         box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
         periodic_changed = (
@@ -667,6 +669,20 @@ class ManagedObjectProfile(NOCModel):
                 ["cred-%s" % x for x in self.managedobject_set.values_list("id", flat=True)],
                 version=CREDENTIAL_CACHE_VERSION,
             )
+        if (
+            self.initial_data["enable_rca_downlink_merge"] != self.enable_rca_downlink_merge
+            or self.initial_data["rca_downlink_merge_window"] != self.rca_downlink_merge_window
+        ):
+            for x in set(
+                chain.from_iterable(
+                    Link.objects.filter(
+                        linked_objects__in=list(
+                            set(self.managedobject_set.values_list("id", flat=True))
+                        )
+                    ).scalar("linked_segments")
+                )
+            ):
+                call_later("noc.core.topology.segment.update_uplinks", 60, segment_id=x)
 
     def can_escalate(self, depended=False):
         """
