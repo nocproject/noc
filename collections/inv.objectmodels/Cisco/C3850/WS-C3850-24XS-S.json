@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "098f74df-7944-47a2-9660-548eef0557c0",
     "vendor__code": "CISCO",
-    "description": "WS-C3850-24XS-S generated from KND-OFF01-ST3850-1, platform: WS-C3850-24XS-S",
+    "description": "24 SFP+ ports with optional module slot",
     "connection_rule__name": "Cisco | 3850",
     "cr_context": "CHASSIS",
     "connections": [

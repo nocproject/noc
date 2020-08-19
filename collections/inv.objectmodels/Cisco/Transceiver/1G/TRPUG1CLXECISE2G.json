@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "2aea2c28-1ac7-46e0-ac42-d54819a6b756",
     "vendor__code": "CISCO",
-    "description": "SFP Transceiver generated from KND-OBS01-SW01, platform: WS-C2960+24PC-S",
+    "description": "SFP Transceiver",
     "cr_context": "XCVR",
     "connections": [
         {

@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "1d49a28a-2049-4e7e-a340-5d14ffce161c",
     "vendor__code": "CISCO",
-    "description": "3rd generation four port FXS DID voice interface daughtercard generated from KND-OFF01-RW02, platform: 2911R-V",
+    "description": "3rd generation four port FXS DID voice interface daughtercard",
     "cr_context": "DCS",
     "connections": [
         {
