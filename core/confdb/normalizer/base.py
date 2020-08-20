@@ -9,6 +9,7 @@
 import itertools
 from collections import defaultdict
 from functools import partial
+from typing import List
 
 # NOC modules
 from noc.core.ip import IPv4
@@ -31,13 +32,30 @@ class Node(object):
         else:
             self.token = token
         self.handler = None
-        self.children = []
+        self.children: List[Node] = []
         self.matcher = None
 
     def __repr__(self):
         if self.handler:
             return "<Node %s (%s)>" % (repr(self.token), self.handler.__name__)
         return "<Node %s>" % repr(self.token)
+
+    def clone(self) -> "Node":
+        node = self.__class__(self.token)
+        node.handler = self.handler
+        node.matcher = self.matcher
+        node.children = [c.clone() for c in self.children]
+        return node
+
+    def dump(self) -> str:
+        def _dump(node, indent=0):
+            prefix = "  " * indent
+            r = ["%s%s" % (prefix, repr(node))]
+            for c in node.children:
+                r += _dump(c, indent + 1)
+            return r
+
+        return "\n".join(_dump(self))
 
     def get_children(self, token):
         """
@@ -78,11 +96,8 @@ class Node(object):
 class RootNode(Node):
     __slots__ = ["token", "handler", "children", "matcher"]
 
-    def __init__(self):
-        self.token = None
-        self.handler = None
-        self.children = []
-        self.matcher = None
+    def __init__(self, token=None):
+        super().__init__(token)
 
     def __repr__(self):
         return "<RootNode>"
@@ -101,8 +116,13 @@ class RootNode(Node):
 class BaseNormalizerMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
-        # Process matchers
+        # Initialize matching tree
         n.mtree = RootNode()
+        for base in bases:
+            if hasattr(base, "mtree"):
+                n.mtree = base.mtree.clone()
+                break
+        # Process matchers
         for k in attrs:
             f = attrs[k]
             if not callable(f) or not hasattr(f, "_seq"):
