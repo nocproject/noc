@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # maintenance.maintenance application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
@@ -27,8 +28,12 @@ class MaintenanceApplication(ExtDocApplication):
         """
         Filter records for lookup
         """
+        qs = super().queryset(request)
+        if not request.user.is_superuser:
+            user_ads = UserAccess.get_domains(request.user)
+            qs = qs.filter(administrative_domain__in=user_ads)
         if query and self.query_fields:
-            q = self.model.objects.filter(self.get_Q(request, query))
+            q = qs.filter(self.get_Q(request, query))
             if q:
                 return q
             sq = ManagedObject.get_search_Q(query)
@@ -38,9 +43,9 @@ class MaintenanceApplication(ExtDocApplication):
                 obj = ManagedObject.objects.filter(name__contains=query)
             if obj:
                 mos = obj.values_list("id", flat=True)
-                return Maintenance.objects.filter(affected_objects__object__in=mos)
+                return qs.filter(affected_objects__object__in=mos)
         else:
-            return self.model.objects.all()
+            return qs
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
@@ -62,7 +67,7 @@ class MaintenanceApplication(ExtDocApplication):
             "escalate_managed_object__label": o.escalate_managed_object.name
             if o.escalate_managed_object
             else "",
-            "escalation_tt": None,
+            "escalation_tt": o.escalation_tt if o.escalation_tt else None,
             "is_completed": o.is_completed,
             "direct_objects": [],
             "affected_objects": [],

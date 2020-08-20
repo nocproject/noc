@@ -53,6 +53,10 @@ Ext.define("NOC.maintenance.maintenance.Model", {
             persist: false
         },
         {
+            name: "escalation_tt",
+            type: "string"
+        },
+        {
             name: "is_completed",
             type: "boolean"
         },

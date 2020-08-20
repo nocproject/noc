@@ -32,6 +32,7 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.sa.models.objectdata import ObjectData
 from noc.main.models.timepattern import TimePattern
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.defer import call_later
 
 id_lock = Lock()
@@ -51,7 +52,7 @@ class Maintenance(Document):
         "collection": "noc.maintenance",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["affected_objects.object", ("start", "is_completed")],
+        "indexes": ["affected_objects.object", ("start", "is_completed"), "administrative_domain"],
         "legacy_collections": ["noc.maintainance"],
     }
 
@@ -74,6 +75,8 @@ class Maintenance(Document):
     direct_segments = ListField(EmbeddedDocumentField(MaintenanceSegment))
     # All objects affected by maintenance
     affected_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
+    # All Administrative Domain for all affected objects
+    administrative_domain = ListField(ForeignKeyField(AdministrativeDomain))
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_tt = StringField(required=False)
@@ -167,8 +170,13 @@ class Maintenance(Document):
 
         # @todo: Calculate affected objects considering topology
         affected = [{"object": o} for o in sorted(affected)]
+        # Calculate affected administrative_domain
+        affected_ad = list(
+            set(o.object.administrative_domain.id for o in self.direct_objects if o.object)
+        )
         Maintenance._get_collection().update(
-            {"_id": self.id}, {"$set": {"affected_objects": affected}}
+            {"_id": self.id},
+            {"$set": {"affected_objects": affected, "administrative_domain": affected_ad}},
         )
 
     @classmethod
