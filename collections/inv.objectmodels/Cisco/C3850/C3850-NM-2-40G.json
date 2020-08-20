@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "6754d38d-f074-4c85-a4fb-2ce56ca8e822",
     "vendor__code": "CISCO",
-    "description": "2x40G Uplink Module generated from KND-OFF01-ST3850-1, platform: WS-C3850-24XS-S",
+    "description": "2 x 40GE Network Module QSFP+ for 3850 series",
     "cr_context": "NM",
     "connections": [
         {
