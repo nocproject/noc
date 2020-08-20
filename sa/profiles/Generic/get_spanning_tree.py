@@ -55,6 +55,11 @@ class Script(BaseScript):
             display_hints={mib["BRIDGE-MIB::dot1dStpDesignatedRoot"]: render_bin},
         )
         root_port = self.snmp.get(mib["BRIDGE-MIB::dot1dStpRootPort", 0])
+        if not root_port:
+            return {
+                "mode": "RSTP",
+                "instances": [],
+            }
         _, root_id = root_id[:2], root_id[2:]
         root_priority = self.snmp.get(mib["BRIDGE-MIB::dot1dStpPriority", 0])
         bridge_id = self.snmp.get(mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0])
@@ -85,6 +90,12 @@ class Script(BaseScript):
                 mib["BRIDGE-MIB::dot1dStpPortDesignatedPort"]: render_bin,
             },
         ):
+            if not d_port:
+                continue
+            elif isinstance(d_port, int):
+                d_port = "%02d.%02d" % (32774 >> 8, 32774 & 0xFF)
+            else:
+                d_port = "%02d.%02d" % tuple(d_port)
             d_priority, d_bridge = d_bridge[:2], d_bridge[2:]
             role = "disabled"
             if int(stp_port) == root_port:
@@ -108,7 +119,7 @@ class Script(BaseScript):
                     # Designated bridge priority
                     "designated_bridge_priority": int("%02X%02X" % tuple(d_priority), 16),
                     # Designated port id
-                    "designated_port_id": "%02d.%02d" % tuple(d_port),
+                    "designated_port_id": d_port,
                     # P2P indicator
                     "point_to_point": False,
                     # MSTP EdgePort
