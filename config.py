@@ -220,7 +220,7 @@ class Config(BaseConfig):
         sample = IntParameter(default=0)
 
     class features(ConfigSection):
-        use_uvlib = BooleanParameter(default=False)
+        use_uvloop = BooleanParameter(default=False)
         cp = BooleanParameter(default=True)
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
