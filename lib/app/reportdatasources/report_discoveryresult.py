@@ -47,6 +47,7 @@ class ReportDiscoveryResult(BaseReportColumn):
         "bfd",
         "oam",
         "udld",
+        "ifdesc",
         "mac",
         "uptime",
         "segmentation",
