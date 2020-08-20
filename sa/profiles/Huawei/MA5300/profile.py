@@ -2,10 +2,11 @@
 # Vendor: Huawei
 # OS:     MA5300
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import re
 
 # NOC modules
@@ -16,7 +17,8 @@ class Profile(BaseProfile):
     name = "Huawei.MA5300"
     pattern_more = [
         (r"--- More:", " "),
-        (r"\s*---- More \(Press CTRL\+C break\) ---\s*", " "),
+        (r"[ ]+---- More \(Press CTRL\+C break\) ---[ ]+", " "),  # [ ]+ use for save \n in output
+        # stream, because more pattern remove from stream
         (r"Note: Terminal", "\n"),
         (r"Warning: Battery is low power!", "\n"),
         (r"\{\s<cr>.*\s\}:", "\n"),

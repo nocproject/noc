@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5300.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,10 +34,10 @@ class Script(BaseScript):
         r"^(?:Adsl|Ethernet|GigabitEthernet)(?P<card>\d+)/\d+/(?P<port>\d+)", re.MULTILINE
     )
     rx_tagged = re.compile(
-        r"^\s*(?:Description:\s+\S+\s+)?(?:Route Interface: not configured\s+)?Tagged\s+Ports:(?P<tagged>.+)Untagged",
+        r"^\s*(?:Description:.+?)?(?:Route Interface: (?:not )?configured\s*)?.*?Tagged\s+Ports:(?P<tagged>.+)Untagged",
         re.MULTILINE | re.DOTALL,
     )
-    rx_untagged = re.compile(r"^\s*Untagged\s+Ports:(?P<untagged>.+)", re.MULTILINE | re.DOTALL)
+    rx_untagged = re.compile(r"\s+Untagged\s+Ports:(?P<untagged>.+)", re.MULTILINE | re.DOTALL)
     rx_ip_iface = re.compile(
         r"^\s*(?P<iface>\S+\d+) is (?P<admin_state>up|down),\s*"
         r"line protocol is (?P<oper_state>up|down)",
@@ -60,7 +60,11 @@ class Script(BaseScript):
                 vlan["tagged"] += [v.group("port")]
             match = self.rx_untagged.search(vlan_entry)
             for v in self.rx_port.finditer(match.group("untagged")):
-                vlan["untagged"] += [v.group("port")]
+                if v != "none":
+                    # Found on SmartAX MA5300 V100R006 VRP Version V3R000M03
+                    # Tagged   Ports:
+                    #             Ethernet7/2/0 Untagged Ports: none
+                    vlan["untagged"] += [v.group("port")]
             vlan_table += [vlan]
         # ADSL ports state
         adsl_state = {}
