@@ -20,6 +20,16 @@ from noc.core.comp import reraise
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
+USE_UVLOOP = False
+
+if config.features.use_uvloop:
+    try:
+        import uvloop
+
+        USE_UVLOOP = True
+    except ImportError:
+        pass
+
 
 class IOLoopContext(object):
     def __init__(self, suppress_trace=False):
@@ -104,20 +114,20 @@ def setup_asyncio() -> None:
 
     :return:
     """
-    global _setup_completed
+    global _setup_completed, USE_UVLOOP
 
     if _setup_completed:
         return
     logger.info("Setting up asyncio event loop policy")
-    if config.features.use_uvlib:
-        try:
-            import uvloop
-
-            logger.info("Setting up libuv event loop")
-            uvloop.install()
-        except ImportError:
-            logger.info("libuv is not installed, using default event loop")
-    asyncio.set_event_loop_policy(NOCEventLoopPolicy())
+    if USE_UVLOOP:
+        logger.info("Setting up uvloop event loop")
+        asyncio.set_event_loop_policy(NOCEventUVLoopPolicy())
+    elif config.features.use_uvloop:
+        logger.info("uvloop is not installed, using default event loop")
+        asyncio.set_event_loop_policy(NOCEventLoopPolicy())
+    else:
+        logger.info("Setting up default event loop")
+        asyncio.set_event_loop_policy(NOCEventLoopPolicy())
     _setup_completed = True
 
 
@@ -136,3 +146,22 @@ class NOCEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
         :return:
         """
         self._local._set_called = False
+
+
+if USE_UVLOOP:
+
+    class NOCEventUVLoopPolicy(uvloop.EventLoopPolicy):
+        def get_event_loop(self) -> asyncio.AbstractEventLoop:
+            try:
+                return super().get_event_loop()
+            except RuntimeError:
+                loop = self.new_event_loop()
+                self.set_event_loop(loop)
+                return loop
+
+        def reset_called(self) -> None:
+            """
+            Reset called status
+            :return:
+            """
+            self._local._set_called = False

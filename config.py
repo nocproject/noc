@@ -226,7 +226,7 @@ class Config(BaseConfig):
         compression = StringParameter(choices=["plain", "gzip", "bz2", "lzma"], default="gzip")
 
     class features(ConfigSection):
-        use_uvlib = BooleanParameter(default=False)
+        use_uvloop = BooleanParameter(default=False)
         cp = BooleanParameter(default=True)
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
