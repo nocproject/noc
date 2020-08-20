@@ -129,7 +129,7 @@ class Platform(Document):
         return to_json(
             r,
             order=[
-                "vendor__name",
+                "vendor__code",
                 "name",
                 "$collection",
                 "uuid",
