@@ -267,6 +267,7 @@ async def snmp_getnext(
     result = []
     parser = _get_parser(response_parser, raw_varbinds)
     with UDPSocketContext(udp_socket, tos=tos) as sock:
+        first_oid = None
         last_oid = None
         while True:
             # Get PDU
@@ -312,11 +313,15 @@ async def snmp_getnext(
             elif not raw_varbinds:
                 # Success value
                 for oid, v in resp.varbinds:
-                    if oid.startswith(poid) and not (only_first and result) and oid != last_oid:
+                    if oid == first_oid:
+                        logger.warning("[%s] GETNEXT Oid wrap detected", address)
+                        return result
+                    elif oid.startswith(poid) and not (only_first and result) and oid != last_oid:
                         # Next value
                         if filter(oid, v):
                             result += [(oid, v)]
                         last_oid = oid
+                        first_oid = first_oid or oid
                     else:
                         logger.debug("[%s] GETNEXT result: %s", address, result)
                         return result
@@ -324,11 +329,15 @@ async def snmp_getnext(
                 # Raw varbinds
                 for oid, v in resp.varbinds:
                     s_oid = str(oid)
-                    if s_oid.startswith(poid) and not (only_first and result) and oid != last_oid:
+                    if oid == first_oid:
+                        logger.warning("[%s] GETNEXT Oid wrap detected", address)
+                        return result
+                    elif s_oid.startswith(poid) and not (only_first and result) and oid != last_oid:
                         # Next value
                         if filter(s_oid, v):
                             result += [(oid, v)]
                         last_oid = oid
+                        first_oid = first_oid or oid
                     else:
                         logger.debug("[%s] GETNEXT result: %s", address, result)
                         return result
