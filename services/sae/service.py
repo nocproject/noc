@@ -11,7 +11,7 @@ import contextlib
 import threading
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.main.models.pool import Pool
 from noc.services.sae.api.sae import SAEAPI
 from noc.config import config
@@ -20,7 +20,7 @@ from noc.config import config
 from psycopg2.pool import ThreadedConnectionPool
 
 
-class SAEService(Service):
+class SAEService(TornadoService):
     name = "sae"
     api = [SAEAPI]
     # Some activator pools may be unavailable

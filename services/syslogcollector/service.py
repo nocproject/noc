@@ -14,7 +14,7 @@ import asyncio
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.perf import metrics
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
@@ -25,7 +25,7 @@ SourceConfig = namedtuple(
 )
 
 
-class SyslogCollectorService(Service):
+class SyslogCollectorService(TornadoService):
     name = "syslogcollector"
     leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True

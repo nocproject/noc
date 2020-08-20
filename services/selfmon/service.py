@@ -12,13 +12,13 @@ import operator
 import time
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.debug import error_report
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.services.selfmon.loader import iter_collectors
 
 
-class SelfMonService(Service):
+class SelfMonService(TornadoService):
     name = "selfmon"
     use_mongo = True
 

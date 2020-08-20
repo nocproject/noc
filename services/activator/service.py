@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.services.activator.api.activator import ActivatorAPI
 
 
-class ActivatorService(Service):
+class ActivatorService(TornadoService):
     name = "activator"
     pooled = True
     api = [ActivatorAPI]

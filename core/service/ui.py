@@ -15,7 +15,7 @@ import tornado.web
 
 # NOC modules
 from noc.core.comp import smart_bytes
-from .base import Service
+from .tornado import TornadoService
 from noc.config import config
 
 logger = logging.getLogger("ui")
@@ -63,7 +63,7 @@ class UIHandler(tornado.web.RequestHandler):
         return "%s?%s" % (url, hash)
 
 
-class UIService(Service):
+class UIService(TornadoService):
     def get_handlers(self):
         """
         Initialize additional application handlers

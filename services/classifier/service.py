@@ -21,7 +21,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventlog import EventLog
@@ -86,7 +86,7 @@ E_SRC_METRICS = {
 }
 
 
-class ClassifierService(Service):
+class ClassifierService(TornadoService):
     """
     Events-classification service
     """

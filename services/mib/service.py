@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.services.mib.api.mib import MIBAPI
 
 
-class MIBService(Service):
+class MIBService(TornadoService):
     name = "mib"
     api = [MIBAPI]
     use_mongo = True

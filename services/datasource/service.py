@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.services.datasource.handler import DataSourceRequestHandler
 
 
-class DataSourceService(Service):
+class DataSourceService(TornadoService):
     name = "datasource"
     use_mongo = True
 

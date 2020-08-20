@@ -12,12 +12,12 @@ import asyncio
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 
 
-class EscalatorService(Service):
+class EscalatorService(TornadoService):
     name = "escalator"
     leader_lock_name = "escalator"
     use_telemetry = True

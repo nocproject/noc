@@ -7,12 +7,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.services.mrt.mrt import MRTRequestHandler
 from noc.config import config
 
 
-class MRTService(Service):
+class MRTService(TornadoService):
     name = "mrt"
     use_telemetry = config.mrt.enable_command_logging
     use_mongo = True

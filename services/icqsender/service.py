@@ -14,7 +14,7 @@ import time
 from urllib.parse import urlencode
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.http.client import fetch_sync
 from noc.core.perf import metrics
 from noc.config import config
@@ -22,7 +22,7 @@ from noc.config import config
 API = "https://api.icq.net/bot/v1/messages/sendText?token="
 
 
-class IcqSenderService(Service):
+class IcqSenderService(TornadoService):
     name = "icqsender"
 
     async def on_activate(self):

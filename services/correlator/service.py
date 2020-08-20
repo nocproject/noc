@@ -17,7 +17,7 @@ import operator
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.mongo.connection import connect
 from services.correlator.rule import Rule
@@ -40,7 +40,7 @@ from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 
 
-class CorrelatorService(Service):
+class CorrelatorService(TornadoService):
     name = "correlator"
     pooled = True
     use_mongo = True
