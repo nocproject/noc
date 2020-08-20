@@ -5,10 +5,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 from noc.core.confdb.syntax.defs import DEF
 from noc.core.confdb.syntax.patterns import IF_NAME, BOOL
+
+rx_vlan_if = re.compile(r"Vlan(?:if|If|)(\d+)")
 
 
 class VRPNormalizer(BaseNormalizer):
@@ -110,6 +115,10 @@ class VRPNormalizer(BaseNormalizer):
         elif "." in if_name:
             if_name, _ = if_name.split(".", 1)
         yield self.make_unit_description(interface=if_name, unit=unit_name, description="")
+        if rx_vlan_if.match(if_name):
+            yield self.make_unit_vlan_id(
+                interface=if_name, unit=unit_name, vlan_id=int(rx_vlan_if.match(if_name).group(1))
+            )
 
     @match("interface", ANY, "mpls")
     def normalize_interface_mpls(self, tokens):
@@ -253,6 +262,11 @@ class VRPNormalizer(BaseNormalizer):
             unit=if_name,
             vlan_filter=" ".join(tokens[6:]).replace(" to ", "-").replace(" ", ","),
         )
+
+    @match("interface", ANY, "undo", "port", "hybrid", "vlan", ANY)
+    def normalize_switchport_undo_default_vlan(self, tokens):
+        if_name = self.interface_name(tokens[1])
+        yield self.make_virtual_router_interface_untagged_disabled(interface=if_name)
 
     # Interfaces
     @match("interface", "vlan", ANY)
