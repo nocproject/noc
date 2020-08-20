@@ -11,6 +11,7 @@ import os
 
 # Third-party modules
 from django.http import HttpResponse
+from django.db.models.query import QuerySet
 import ujson
 
 # NOC modules
@@ -206,8 +207,10 @@ class ExtApplication(Application):
             fav_items = self.get_favorite_items(request.user)
             if fs:
                 data = data.filter(id__in=fav_items)
-            else:
+            elif isinstance(data, QuerySet):  # Model
                 data = data.exclude(id__in=fav_items)
+            else:  # Doc
+                data = data.filter(id__nin=fav_items)
         # Store unpaged/unordered queryset
         unpaged_data = data
         # Select related records when fetching for models
