@@ -1,0 +1,13 @@
+config: |
+  system {
+      domain-search [ google.com google.ru ];
+      name-server {
+          8.8.8.8;
+          1.1.1.1;
+      }
+  }
+result:
+  - ["protocols", "dns", "search", "google.com"]
+  - ["protocols", "dns", "search", "google.ru"]
+  - ["protocols", "dns", "name-server", "8.8.8.8"]
+  - ["protocols", "dns", "name-server", "1.1.1.1"]

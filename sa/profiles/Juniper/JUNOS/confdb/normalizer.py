@@ -159,8 +159,8 @@ class JunOSNormalizer(BaseNormalizer):
 
     @match("system", "name-server", IP_ADDRESS)
     def normalize_dns_name_server(self, tokens):
-        yield self.make_dns_name_server_ip(ip=tokens[2])
+        yield self.make_protocols_dns_name_server(ip=tokens[2])
 
     @match("system", "domain-search", ANY)
     def normalize_dns_name_server_search_suffix(self, tokens):
-        yield self.make_dns_name_server_ip(suffix=tokens[2])
+        yield self.make_protocols_dns_search_suffix(suffix=tokens[2])

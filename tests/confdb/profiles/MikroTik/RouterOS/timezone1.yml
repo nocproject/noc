@@ -1,0 +1,5 @@
+config: |
+  /system clock
+  set time-zone-autodetect=no time-zone-name=Europe/Moscow
+result:
+  - ["system", "clock", "timezone", "Europe/Moscow"]
