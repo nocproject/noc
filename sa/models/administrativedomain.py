@@ -40,6 +40,7 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
         ("sa.ManagedObjectSelector", "filter_administrative_domain"),
         ("sa.UserAccess", "administrative_domain"),
         ("sa.AdministrativeDomain", "parent"),
+        ("maintenance.Maintenance", "administrative_domain"),
         ("phone.PhoneNumber", "administrative_domain"),
         ("phone.PhoneRange", "administrative_domain"),
     ]

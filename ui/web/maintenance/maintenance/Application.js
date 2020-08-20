@@ -28,7 +28,6 @@ Ext.define("NOC.maintenance.maintenance.Application", {
             "NOC.maintenance.maintenance.ObjectsPanel"
         );
 
-
         me.cardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
             glyph: NOC.glyph.eye,
@@ -72,6 +71,25 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                     dataIndex: "time_pattern",
                     width: 150,
                     renderer: NOC.render.Lookup("time_pattern")
+                },
+                {
+                    text: __("TT"),
+                    dataIndex: "escalation_tt",
+                    width: 150,
+                    sortable: false,
+                    renderer: function(v, _, record) {
+                        var r = [],
+                            tt = record.get("escalation_tt") || false,
+                            ee = record.get("escalation_error") || false;
+                        if(tt) {
+                            r.push('<a href="/api/card/view/tt/' + tt + '/" target="_blank">' + tt + '</a>');
+                        } else {
+                            if(ee) {
+                                r.push('<i class="fa fa-exclamation-triangle"></i> Error')
+                            }
+                        }
+                        return r;
+                    }
                 },
                 {
                     text: __("Subject"),
@@ -172,6 +190,54 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                     allowBlank: true
                 }
             ],
+            gridToolbar: [
+                {
+                    xtype: "combo",
+                    fieldLabel: __("Status"),
+                    store: [
+                        ["true", __("Active")],
+                        ["false", __("Completed")]
+                    ],
+                    triggerAction: "all",
+                    editable: false,
+                    queryMode: "local",
+                    // ToDo need check
+                    hasAccess: function(app) {
+                        return app.search === true;
+                    },
+                    triggers: {
+                        clear: {
+                            cls: "x-form-clear-trigger",
+                            hidden: true,
+                            weight: -1,
+                            handler: function(field) {
+                                field.setValue(null);
+                                field.fireEvent("select", field);
+                            }
+                        }
+                    },
+                    listeners: {
+                        scope: me,
+                        select: function(field) {
+                            var me = this,
+                                value = field.getValue();
+                            if(value) {
+                                me.currentQuery.is_completed = value;
+                            } else {
+                                delete me.currentQuery.is_completed;
+                            }
+                            me.reloadStore();
+                        },
+                        change: function(field, value) {
+                            if(value == null || value === "") {
+                                field.getTrigger("clear").hide();
+                                return;
+                            }
+                            field.getTrigger("clear").show();
+                        }
+                    }
+                }
+            ],
             formToolbar: [
                 me.cardButton,
                 me.affectedButton
@@ -179,7 +245,6 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         });
         me.callParent();
     },
-
     inlines: [
         {
             title: __("Objects"),
