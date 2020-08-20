@@ -290,9 +290,12 @@ class ReportObjectDetailApplication(ExtApplication):
         segment_lookup = {}
         # ccc = iter(ReportObjectCaps(mos_id))
         if "segment" in columns_filter:
+            # if segment save name=None, name remove from documents
             segment_lookup = {
                 str(n["_id"]): n["name"]
-                for n in NetworkSegment._get_collection().find({}, {"name": 1})
+                for n in NetworkSegment._get_collection().find(
+                    {"name": {"$exists": True}}, {"name": 1}
+                )
             }
         if "adm_path" in columns_filter:
             ad_path = ReportAdPath()
@@ -394,7 +397,9 @@ class ReportObjectDetailApplication(ExtApplication):
                             mo_serials[0].get("serial", "") or serial,
                             patch or "",
                             auth_profile,
-                            _("Yes") if avail.get(mo_id, None) else _("No"),
+                            {True: _("Yes"), False: _("No"), None: _("Unknown")}[
+                                avail.get(mo_id, None)
+                            ],
                             ad,
                             mo_continer[0],
                             # NetworkSegment.get_by_id(m_segment) if m_segment else "",
