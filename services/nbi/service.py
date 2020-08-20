@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.config import config
 from noc.services.nbi.loader import loader
 from noc.core.perf import metrics
@@ -15,7 +15,7 @@ from noc.services.nbi.base import NBIAPI
 from noc.core.comp import smart_text
 
 
-class NBIService(Service):
+class NBIService(TornadoService):
     name = "nbi"
     use_mongo = True
     if config.features.traefik:

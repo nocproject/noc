@@ -16,12 +16,12 @@ from tornado import httputil
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.main.models.customfield import CustomField
 from noc.core.perf import metrics
 
 
-class WebService(Service):
+class WebService(TornadoService):
     name = "web"
     api = []
     use_translation = True

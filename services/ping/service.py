@@ -16,7 +16,7 @@ import asyncio
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
 from noc.core.perf import metrics
@@ -24,7 +24,7 @@ from noc.services.ping.probesetting import ProbeSetting
 from noc.services.ping.datastream import PingDataStreamClient
 
 
-class PingService(Service):
+class PingService(TornadoService):
     name = "ping"
     #
     leader_group_name = "ping-%(pool)s"

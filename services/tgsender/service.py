@@ -14,7 +14,7 @@ import time
 from urllib.parse import urlencode
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.http.client import fetch_sync
 from noc.core.perf import metrics
 from noc.config import config
@@ -23,7 +23,7 @@ from noc.core.comp import smart_text
 API = "https://api.telegram.org/bot"
 
 
-class TgSenderService(Service):
+class TgSenderService(TornadoService):
     name = "tgsender"
 
     async def on_activate(self):

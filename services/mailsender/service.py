@@ -19,11 +19,11 @@ import pytz
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.perf import metrics
 
 
-class MailSenderService(Service):
+class MailSenderService(TornadoService):
     name = "mailsender"
 
     def __init__(self, *args, **kwargs):

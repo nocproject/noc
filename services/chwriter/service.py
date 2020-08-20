@@ -14,7 +14,7 @@ import asyncio
 from typing import Dict
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.http.client import fetch
 from noc.config import config
 from noc.core.perf import metrics
@@ -23,7 +23,7 @@ from noc.core.comp import smart_text
 from noc.core.ioloop.timers import PeriodicCallback
 
 
-class CHWriterService(Service):
+class CHWriterService(TornadoService):
     name = "chwriter"
 
     CH_SUSPEND_ERRORS = {598, 599}

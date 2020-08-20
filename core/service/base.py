@@ -17,12 +17,9 @@ import time
 import threading
 from time import perf_counter
 import asyncio
-from typing import Optional, Dict, List, Tuple, Callable, Any, TypeVar, NoReturn
+from typing import Optional, Dict, Tuple, Callable, Any, TypeVar, NoReturn
 
 # Third-party modules
-import tornado.web
-import tornado.netutil
-import tornado.httpserver
 import setproctitle
 import ujson
 
@@ -44,20 +41,13 @@ from noc.core.nsq.error import NSQPubError
 from noc.core.clickhouse.shard import ShardingFunction
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
-from .api import API, APIRequestHandler
-from .doc import DocRequestHandler
-from .mon import MonRequestHandler
-from .metrics import MetricsHandler
-from .health import HealthRequestHandler
-from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
-from .ctl import CtlAPI
 from .loader import set_service
 
 T = TypeVar("T")
 
 
-class Service(object):
+class BaseService(object):
     """
     Basic service implementation.
 
@@ -88,10 +78,6 @@ class Service(object):
     process_name = "noc-%(name).10s"
     # Connect to MongoDB on activate
     use_mongo = False
-    # List of API instances
-    api: List[API] = []
-    # Request handler class
-    api_request_handler = APIRequestHandler
     # Initialize gettext and process *language* configuration
     use_translation = False
     # Initialize jinja2 templating engine
@@ -145,7 +131,6 @@ class Service(object):
         self.telemetry_callback = None
         self.dcs = None
         # Effective address and port
-        self.server = None
         self.address = None
         self.port = None
         self.is_active = False
@@ -384,23 +369,6 @@ class Service(object):
         port = int(port) + port_tracker
         return addr, port
 
-    def update_service_address(self):
-        """
-        Update service address and port from tornado TCPServer
-        :param server:
-        :return:
-        """
-        for f in self.server._sockets:
-            sock = self.server._sockets[f]
-            self.address, self.port = sock.getsockname()
-            break
-
-    def get_handlers(self):
-        """
-        Returns a list of additional handlers
-        """
-        return []
-
     def get_app_settings(self):
         """
         Returns tornado application settings
@@ -411,6 +379,20 @@ class Service(object):
             "log_function": self.log_request,
         }
 
+    async def init_api(self):
+        """
+        Initialize API routers and handlers
+        :return:
+        """
+        raise NotImplementedError
+
+    async def shutdown_api(self):
+        """
+        Stop API services
+        :return:
+        """
+        raise NotImplementedError
+
     async def activate(self):
         """
         Initialize services before run
@@ -420,39 +402,8 @@ class Service(object):
             from noc.core.mongo.connection import connect
 
             connect()
-        handlers = [
-            (r"^/mon/$", MonRequestHandler, {"service": self}),
-            (r"^/metrics$", MetricsHandler, {"service": self}),
-            (r"^/health/$", HealthRequestHandler, {"service": self}),
-        ]
-        api = [CtlAPI]
-        if self.api:
-            api += self.api
-        addr, port = self.get_service_address()
-        sdl = {}  # api -> [methods]
-        # Collect and register exposed API
-        for a in api:
-            url = "^/api/%s/$" % a.name
-            handlers += [(url, self.api_request_handler, {"service": self, "api_class": a})]
-            # Populate sdl
-            sdl[a.name] = a.get_methods()
-        if self.api:
-            handlers += [
-                ("^/api/%s/doc/$" % self.name, DocRequestHandler, {"service": self}),
-                ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl}),
-            ]
-        handlers += self.get_handlers()
-        app = tornado.web.Application(handlers, **self.get_app_settings())
-        self.server = tornado.httpserver.HTTPServer(app, xheaders=True, no_keep_alive=True)
-        self.server.listen(port, addr)
-        # Get effective address and port
-        self.update_service_address()
-        #
-        self.logger.info("Running HTTP APIs at http://%s:%s/", self.address, self.port)
-        for a in api:
-            self.logger.info(
-                "Supported API: %s at http://%s:%s/api/%s/", a.name, self.address, self.port, a.name
-            )
+
+        await self.init_api()
         #
         if self.use_telemetry:
             self.start_telemetry_callback()
@@ -464,8 +415,7 @@ class Service(object):
         self.is_active = False
         self.logger.info("Deactivating")
         # Shutdown API
-        self.logger.info("Stopping API")
-        self.server.stop()
+        await self.shutdown_api()
         # Release registration
         if self.dcs:
             self.logger.info("Deregistration")

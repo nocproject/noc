@@ -8,11 +8,11 @@
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 
 
-class SchedulerService(Service):
+class SchedulerService(TornadoService):
     name = "scheduler"
     leader_group_name = "scheduler"
     leader_lock_name = "scheduler"

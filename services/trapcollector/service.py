@@ -14,7 +14,7 @@ import asyncio
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
 from noc.core.ioloop.timers import PeriodicCallback
@@ -22,7 +22,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 SourceConfig = namedtuple("SourceConfig", ["id", "addresses", "fm_pool"])
 
 
-class TrapCollectorService(Service):
+class TrapCollectorService(TornadoService):
     name = "trapcollector"
     leader_group_name = "trapcollector-%(dc)s-%(node)s"
     pooled = True

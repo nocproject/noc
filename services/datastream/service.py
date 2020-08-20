@@ -17,13 +17,13 @@ import asyncio
 import pymongo.errors
 
 # NOC modules
-from noc.core.service.base import Service
+from noc.core.service.tornado import TornadoService
 from noc.services.datastream.handler import DataStreamRequestHandler
 from noc.core.datastream.loader import loader
 from noc.config import config
 
 
-class DataStreamService(Service):
+class DataStreamService(TornadoService):
     name = "datastream"
     use_mongo = True
     if config.features.traefik:
