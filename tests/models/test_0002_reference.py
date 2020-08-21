@@ -37,7 +37,10 @@ def iter_references():
                 if isinstance(f, ForeignKey):
                     yield f.remote_field.model, model_id, f.name
                 elif isinstance(f, DocumentReferenceField):
-                    yield f.document, model_id, f.name
+                    f_doc = f.document
+                    if not is_document(f_doc):
+                        f_doc = get_model(f_doc)
+                    yield f_doc, model_id, f.name
 
 
 def iter_referred_models():

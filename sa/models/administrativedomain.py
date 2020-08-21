@@ -8,6 +8,7 @@
 # Python modules
 from threading import Lock
 import operator
+from typing import Optional, TYPE_CHECKING
 
 # Third-party modules
 from noc.core.translation import ugettext as _
@@ -18,6 +19,7 @@ import cachetools
 from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.main.models.pool import Pool
+from noc.main.models.template import Template
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.core.model.decorator import on_delete_check, on_init
@@ -63,6 +65,13 @@ class AdministrativeDomain(NOCModel):
     )
     description = models.TextField(_("Description"), null=True, blank=True)
     default_pool = DocumentReferenceField(Pool, null=True, blank=True)
+    # Biosegmentation settings
+    bioseg_floating_name_template = models.ForeignKey(
+        Template, null=True, blank=True, on_delete=models.CASCADE
+    )
+    bioseg_floating_parent_segment = DocumentReferenceField(
+        "inv.NetworkSegment", null=True, blank=True
+    )
     # Integration with external NRI systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
@@ -154,3 +163,21 @@ class AdministrativeDomain(NOCModel):
     @property
     def has_children(self):
         return True if AdministrativeDomain.objects.filter(parent=self.id) else False
+
+    def get_bioseg_floating_name(self, object) -> Optional[str]:
+        if self.bioseg_floating_name_template:
+            return self.bioseg_floating_name_template.render_body(object=object)
+        if self.parent:
+            return self.parent.get_bioseg_floating_name(object)
+        return None
+
+    def get_bioseg_floating_parent_segment(self) -> Optional["NetworkSegment"]:
+        if self.bioseg_floating_parent_segment:
+            return self.bioseg_floating_parent_segment
+        if self.parent:
+            return self.parent.get_bioseg_floating_parent_segment()
+        return None
+
+
+if TYPE_CHECKING:
+    from noc.inv.models.networksegment import NetworkSegment  # noqa

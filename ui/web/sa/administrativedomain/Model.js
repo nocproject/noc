@@ -48,6 +48,24 @@ Ext.define("NOC.sa.administrativedomain.Model", {
             persist: false
         },
         {
+            name: "bioseg_floating_name_template",
+            type: "string"
+        },
+        {
+            name: "bioseg_floating_name_template__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "bioseg_floating_parent_segment",
+            type: "string"
+        },
+        {
+            name: "bioseg_floating_parent_segment__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "remote_system",
             type: "string"
         },

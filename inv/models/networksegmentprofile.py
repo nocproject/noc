@@ -25,6 +25,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.style import Style
+from noc.main.models.template import Template
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
@@ -195,6 +196,9 @@ class NetworkSegmentProfile(Document):
     bio_collision_policy = ListField(EmbeddedDocumentField(BioCollisionPolicy))
     # Target segment profile on calcification
     calcified_profile = PlainReferenceField("inv.NetworkSegmentProfile")
+    # Target segment name template on calcification
+    # Applied to calcified profile
+    calcified_name_template = ForeignKeyField(Template)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

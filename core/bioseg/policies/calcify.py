@@ -5,7 +5,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Any, Dict, List
+
 # NOC modules
+from noc.inv.models.link import Link
+from noc.inv.models.interface import Interface
+from noc.core.text import alnum_key
 from .base import BaseBioSegPolicy
 
 
@@ -41,9 +47,30 @@ class CalcifyBioSegPolicy(BaseBioSegPolicy):
         self.logger.info("Calcified with profile '%s'" % self.attacker.profile.calcified_profile)
         # Change segment profile to calcified one
         self.attacker.profile = self.attacker.profile.calcified_profile
+        # Change segment name when necessary
+        if self.attacker.profile.calcified_name_template:
+            name = self.attacker.profile.calcified_name_template.render_body(
+                **self.get_template_context()
+            )
+            self.logger.info("Changed name to '%s'", name)
+            self.attacker.name = name
         # Attach to target as child
         self.attacker.parent = self.target
         self.attacker.save()
         # Schedule uplink rebuilding
         self.refresh_topology(self.attacker)
         return "calcify"
+
+    def get_template_context(self) -> Dict[str, Any]:
+        local_interfaces: List[Interface] = []
+        remote_interfaces: List[Interface] = []
+        for link in Link.objects.filter(linked_segment=self.attacker.id):
+            for iface in link.interfaces:
+                if iface.managed_object.segment.id == self.attacker.id:
+                    local_interfaces += [iface]
+                else:
+                    remote_interfaces += [iface]
+        return {
+            "interfaces": list(sorted(local_interfaces, key=lambda x: alnum_key(x.name))),
+            "parent_interfaces": list(sorted(remote_interfaces, key=lambda x: alnum_key(x.name))),
+        }
