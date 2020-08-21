@@ -1,0 +1,18 @@
+config: |
+  !
+  username admin password encrypted DESIshelmebegelme= privilege 15
+  username guest password encrypted DESIshelmebegelme== privilege 1
+  username 135 password encrypted DESIshelmebegelme=== privilege 15
+  username operator password encrypted DESIshelmebegelme==== privilege 15
+
+  !
+  no logging console
+result:
+  - ['system', 'user', 'admin', 'authentication', 'encrypted-password', 'D E S I s h e l m e b e g e l m e =', {'replace': True}]
+  - ['system', 'user', 'admin', 'class', 'level-15']
+  - ['system', 'user', 'guest', 'authentication', 'encrypted-password', 'D E S I s h e l m e b e g e l m e = =', {'replace': True}]
+  - ['system', 'user', 'guest', 'class', 'level-1']
+  - ['system', 'user', '135', 'authentication', 'encrypted-password', 'D E S I s h e l m e b e g e l m e = = =', {'replace': True}]
+  - ['system', 'user', '135', 'class', 'level-15']
+  - ['system', 'user', 'operator', 'authentication', 'encrypted-password', 'D E S I s h e l m e b e g e l m e = = = =', {'replace': True}]
+  - ['system', 'user', 'operator', 'class', 'level-15']

@@ -1,0 +1,6 @@
+config: |
+  !
+  clock time source ntp
+  !
+result:
+  - ['system', 'clock', 'source', 'ntp', {'replace': True}]

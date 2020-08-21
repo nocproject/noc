@@ -1,0 +1,7 @@
+config: |
+  !
+  hostname "mes24xx hostname"
+  !
+  no logging console
+result:
+  - ["system", "hostname", "mes24xx hostname", {"replace": True}]

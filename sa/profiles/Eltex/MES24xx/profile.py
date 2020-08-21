@@ -34,6 +34,14 @@ class Profile(BaseProfile):
         re.compile(br"\r"),
     ]
 
+    config_normalizer = "MES24xxNormalizer"
+
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {"end_of_context": "!", "string_quote": '"'}
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", False),
+    ]
+
     INTERFACE_TYPES = {
         "gi": "physical",  # gigabitethernet
         "fa": "physical",  # fastethernet
