@@ -1,0 +1,7 @@
+config: |
+  !
+  sntp
+    set sntp unicast-server ipv4 1.1.1.1
+  !
+result:
+  - ['protocols', 'ntp', '1.1.1.1', 'address', '1.1.1.1', {'replace': True}]
