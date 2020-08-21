@@ -1,0 +1,17 @@
+config: |
+  !
+  interface vlan 1
+  !
+  interface vlan 2
+    ip address  192.168.0.2 255.255.255.0
+  !
+  interface gigabitethernet 0/1
+  !
+  interface gigabitethernet 0/2
+  !
+result:
+  - ['interfaces', 'Vl 1']
+  - ['interfaces', 'Vl 2']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Vl 2', 'unit', 'Vl 2', 'inet', 'address', '192.168.0.2/24']
+  - ['interfaces', 'Gi 0/1']
+  - ['interfaces', 'Gi 0/2']

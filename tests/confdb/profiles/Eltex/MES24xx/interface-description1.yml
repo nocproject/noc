@@ -1,0 +1,21 @@
+config: |
+  !
+  interface vlan 1
+    description "-- Vlan [1] --"
+  !
+  interface vlan 2
+     description "-- Descr $#%&^*~±§#@+=% --"
+  !
+  interface gigabitethernet 0/1
+    description "-- Descr [$#%&^*] {~±§#@+=%}$$;:|/ --"
+  !
+  interface gigabitethernet 0/2
+  !
+result:
+  - ['interfaces', 'Vl 1']
+  - ['interfaces', 'Vl 1', 'description', '-- Vlan [1] --', {'replace': True}]
+  - ['interfaces', 'Vl 2']
+  - ['interfaces', 'Vl 2', 'description', '-- Descr $#%&^*~±§#@+=% --', {'replace': True}]
+  - ['interfaces', 'Gi 0/1']
+  - ['interfaces', 'Gi 0/1', 'description', '-- Descr [$#%&^*] {~±§#@+=%}$$;:|/ --', {'replace': True}]
+  - ['interfaces', 'Gi 0/2']

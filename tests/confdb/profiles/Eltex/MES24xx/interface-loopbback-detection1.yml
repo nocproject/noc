@@ -1,0 +1,19 @@
+config: |
+  !
+  interface vlan 2
+  !
+  interface gigabitethernet 0/1
+    loopback-detection enable
+  !
+  interface gigabitethernet 0/2
+    loopback-detection enable
+  !
+  interface gigabitethernet 0/3
+  !
+result:
+  - ['interfaces', 'Vl 2']
+  - ['interfaces', 'Gi 0/1']
+  - ['protocols', 'loop-detect', 'interface', 'Gi 0/1']
+  - ['interfaces', 'Gi 0/2']
+  - ['protocols', 'loop-detect', 'interface', 'Gi 0/2']
+  - ['interfaces', 'Gi 0/3']
