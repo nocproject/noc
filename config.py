@@ -114,16 +114,22 @@ class Config(BaseConfig):
         alarmheat_tooltip_limit = IntParameter(default=5)
 
     class chwriter(ConfigSection):
-        batch_size = IntParameter(default=50000)
-        records_buffer = IntParameter(default=1000000)
-        batch_delay_ms = IntParameter(default=10000)
-        channel_expire_interval = SecondsParameter(default="5M")
-        suspend_timeout_ms = IntParameter(default=3000)
+        batch_size = IntParameter(default=50000, help="Size of one portion from queue")
+        records_buffer = IntParameter(default=1000000, help="Own buffer of messages from queue")
+        batch_delay_ms = IntParameter(default=10000, help="Send every period time")
+        channel_expire_interval = SecondsParameter(
+            default="5M", help="Close channel when no messages in this time"
+        )
+        suspend_timeout_ms = IntParameter(
+            default=3000, help="How much time to sleep before continue"
+        )
         # Topic to listen
-        topic = StringParameter(default="chwriter")
+        topic = StringParameter(default="chwriter", help="Topic in queue to listen to")
         # <address:port> of ClickHouse server to write
         write_to = StringParameter()
-        max_in_flight = IntParameter(default=10)
+        max_in_flight = IntParameter(
+            default=10, help="How many parts read simultaneously from queue"
+        )
 
     class classifier(ConfigSection):
         lookup_handler = HandlerParameter(default="noc.services.classifier.rulelookup.RuleLookup")
