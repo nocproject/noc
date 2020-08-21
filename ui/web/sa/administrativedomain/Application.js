@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.administrativedomain application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.administrativedomain.Application");
@@ -13,6 +13,8 @@ Ext.define("NOC.sa.administrativedomain.Application", {
         "NOC.core.combotree.ComboTree",
         "NOC.sa.administrativedomain.Model",
         "NOC.main.pool.LookupField",
+        "NOC.main.template.LookupField",
+        "NOC.inv.networksegment.TreeCombo",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.administrativedomain.Model",
@@ -75,6 +77,29 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             xtype: "main.pool.LookupField",
             fieldLabel: __("Pool"),
             allowBlank: true
+        },
+        {
+            xtype: "fieldset",
+            layout: "hbox",
+            title: __("Biosegmentation"),
+            defaults: {
+                padding: 4,
+                labelAlign: "right"
+            },
+            items: [
+                {
+                    name: "bioseg_floating_name_template",
+                    xtype: "main.template.LookupField",
+                    fieldLabel: __("Floating Name Template"),
+                    allowBlank: true
+                },
+                {
+                    name: "bioseg_floating_parent_segment",
+                    xtype: "inv.networksegment.TreeCombo",
+                    fieldLabel: __("Floating Parent Segment"),
+                    allowBlank: true
+                }
+            ]
         },
         {
             xtype: "fieldset",

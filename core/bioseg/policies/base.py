@@ -12,6 +12,7 @@ from django.db import connection
 
 # NOC modules
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.topology.segment import update_uplinks
 
@@ -97,6 +98,10 @@ class BaseBioSegPolicy(object):
         # Adjust power caches
         self.set_power(src, 0)
         self.set_power(dst, dst_pwr + dp)
+        # Update link segment information
+        Link._get_collection().update_many(
+            {"linked_segments": src.id}, {"$pull": {"linked_segments": src.id}}
+        )
         # Eliminate source segment when possible
         self.destroy_segment(src)
         # Force topology rebuild if moved to persistent segment

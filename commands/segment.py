@@ -59,7 +59,12 @@ class Command(BaseCommand):
             self.print("@@@ Splitting %s (%s)" % (seg.name, seg_id))
             objects = list(ManagedObject.objects.filter(is_managed=True, segment=seg_id))
             for mo in objects:
-                new_segment = NetworkSegment(name="Bubble for %s" % mo.name, profile=p)
+                new_segment = NetworkSegment(
+                    name=mo.administrative_domain.get_bioseg_floating_name(mo)
+                    or "Bubble for %s" % mo.name,
+                    profile=p,
+                    parent=mo.administrative_domain.get_bioseg_floating_parent_segment(),
+                )
                 new_segment.save()
                 self.print("  Moving '%s' to segment '%s'" % (mo.name, new_segment.name))
                 mo.segment = new_segment

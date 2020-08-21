@@ -61,6 +61,7 @@ class VLANTranslation(EmbeddedDocument):
 @bi_sync
 @on_delete_check(
     check=[
+        ("sa.AdministrativeDomain", "bioseg_floating_parent_segment"),
         ("sa.ManagedObject", "segment"),
         ("inv.NetworkSegment", "parent"),
         ("vc.VLAN", "segment"),

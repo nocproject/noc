@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegmentprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegmentprofile.Model");
@@ -107,6 +107,14 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
         },
         {
             name: "calcified_profile__label",
+            type: "string"
+        },
+        {
+            name: "calcified_name_template",
+            type: "string"
+        },
+        {
+            name: "calcified_name_template__label",
             type: "string"
         },
         {

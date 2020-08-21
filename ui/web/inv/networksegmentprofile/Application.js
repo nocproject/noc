@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegmentprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegmentprofile.Application");
@@ -12,6 +12,7 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
         "NOC.inv.networksegmentprofile.Model",
         "NOC.inv.networksegmentprofile.LookupField",
         "NOC.main.style.LookupField",
+        "NOC.main.template.LookupField",
         "NOC.vc.vlanprofile.LookupField",
         "Ext.ux.form.GridField"
     ],
@@ -287,6 +288,12 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                             name: "calcified_profile",
                             xtype: "inv.networksegmentprofile.LookupField",
                             fieldLabel: __("Calcified Profile"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "calcified_name_template",
+                            xtype: "main.template.LookupField",
+                            fieldLabel: __("Calcified Name Template"),
                             allowBlank: true
                         }
                     ]
