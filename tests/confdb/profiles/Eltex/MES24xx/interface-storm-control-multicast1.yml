@@ -1,0 +1,17 @@
+config: |
+  !
+  interface vlan 1
+  !
+  interface vlan 2
+  !
+  interface gigabitethernet 0/1
+    storm-control multicast level kbps 4992
+  !
+  interface gigabitethernet 0/2
+  !
+result:
+  - ['interfaces', 'Vl 1']
+  - ['interfaces', 'Vl 2']
+  - ['interfaces', 'Gi 0/1']
+  - ['interfaces', 'Gi 0/1', 'storm-control', 'multicast', 'level', 4992.0, {'replace': True}]
+  - ['interfaces', 'Gi 0/2']

@@ -31,6 +31,19 @@ def iter_test_paths():
             yield os.path.join(*path)
 
 
+class MockProfile(object):
+    def __init__(self, profile_cls):
+        self.profile = profile_cls()
+
+    def get_profile(self):
+        return self.profile
+
+
+class MockManagedObject(object):
+    def __init__(self, profile):
+        self.profile = MockProfile(profile)
+
+
 @pytest.mark.parametrize("path", list(iter_test_paths()))
 def test_profile(path):
     # Open YAML
@@ -47,14 +60,15 @@ def test_profile(path):
     profile_name = ".".join(path.split(os.sep)[:2])
     profile = profile_loader.get_profile(profile_name)
     assert profile, "Invalid profile '%s'" % profile_name
-    # @todo: Create mock ManagedObject
+    # Create mock object
+    mo = MockManagedObject(profile=profile)
     # Setup tokenizer
-    tokenizer_name, tokenizer_conf = profile.get_config_tokenizer(None)
+    tokenizer_name, tokenizer_conf = profile.get_config_tokenizer(mo)
     tokenizer_cls = tokenizer_loader.get_class(tokenizer_name)
     assert tokenizer_cls, "Tokenizer not found"
     tokenizer = tokenizer_cls(test["config"], **tokenizer_conf)
     # Setup normalizer
-    normalizer_name, normalizer_conf = profile.get_config_normalizer(None)
+    normalizer_name, normalizer_conf = profile.get_config_normalizer(mo)
     if not normalizer_name.startswith("noc."):
         normalizer_name = "noc.sa.profiles.%s.confdb.normalizer.%s" % (
             profile.name,
@@ -62,7 +76,7 @@ def test_profile(path):
         )
     normalizer_cls = get_handler(normalizer_name)
     assert normalizer_cls, "Normalizer not found"
-    normalizer = normalizer_cls(None, tokenizer, **normalizer_conf)
+    normalizer = normalizer_cls(mo, tokenizer, **normalizer_conf)
     # Check result
     result = list(normalizer)
     expected = [tuple(x) for x in test["result"]]
