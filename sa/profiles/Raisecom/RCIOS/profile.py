@@ -2,7 +2,7 @@
 # Vendor: Raisecom
 # OS:     RCIOS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,6 +21,12 @@ class Profile(BaseProfile):
     command_exit = "exit"
     pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
     pattern_more = [(r"^--More-- \(\d+% of \d+ bytes\)", "r")]
+
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "!",
+    }
+    config_normalizer = "RCIOSNormalizer"
 
     INTERFACE_TYPES = {
         "3g": "tunnel",
