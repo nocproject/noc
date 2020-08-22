@@ -1,0 +1,6 @@
+config: |
+  !
+  hostname host-name
+  !
+result:
+  - ['system', 'hostname', 'host-name', {'replace': True}]

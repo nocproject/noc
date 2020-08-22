@@ -1,0 +1,6 @@
+config: |
+  !
+  ip ssh server
+  !
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'protocols', 'ssh']

@@ -1,0 +1,5 @@
+config: |
+  no spanning-tree
+  !
+result:
+  - ['hints', 'protocols', 'spanning-tree', 'status', False, {'replace': True}]

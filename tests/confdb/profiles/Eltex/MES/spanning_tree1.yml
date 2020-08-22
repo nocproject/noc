@@ -1,0 +1,5 @@
+config: |
+  spanning-tree priority 8192
+  !
+result:
+  - ['protocols', 'spanning-tree', 'priority', 8192, {'replace': True}]

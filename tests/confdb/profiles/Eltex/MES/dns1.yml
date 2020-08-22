@@ -1,0 +1,8 @@
+config: |
+  !
+  ip domain name company.ru
+  ip name-server  192.168.0.1
+  !
+result:
+  - ['protocols', 'dns', 'search', 'company.ru']
+  - ['protocols', 'dns', 'name-server', '192.168.0.1']

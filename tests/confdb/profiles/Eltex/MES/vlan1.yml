@@ -1,0 +1,25 @@
+config: |
+  !
+  vlan database
+   vlan 2,5,101-106
+   vlan 2250-2255,2586-2588
+  exit
+  !
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 5]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 101]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 102]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 103]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 104]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 105]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 106]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2250]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2251]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2252]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2253]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2254]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2255]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2586]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2587]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2588]
