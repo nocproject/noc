@@ -9,6 +9,7 @@
 import datetime
 from collections import defaultdict
 from functools import reduce
+import re
 
 # Third-party modules
 from django.http import HttpResponse
@@ -71,6 +72,8 @@ class ExtModelApplication(ExtApplication):
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
     file_fields_mask = None
+
+    rx_oper_splitter = re.compile(r"^(?P<field>\S+)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -259,6 +262,19 @@ class ExtModelApplication(ExtApplication):
 
     def cleaned_query(self, q):
         nq = {}
+        q = q.copy()
+        # Extract IN
+        # extjs not working with same parameter name in query
+        for p in list(q.keys()):
+            if p.endswith(self.in_param):
+                match = self.rx_oper_splitter.match(p)
+                if match:
+                    field = self.rx_oper_splitter.match(p).group("field") + self.in_param
+                    if field not in q:
+                        q[field] = "%s" % (q[p])
+                    else:
+                        q[field] += ",%s" % (q[p])
+                    del q[p]
         for p in q:
             if p.endswith("__exists"):
                 v = BooleanParameter().clean(q[p])
@@ -312,6 +328,8 @@ class ExtModelApplication(ExtApplication):
                 except self.fk_fields[np].DoesNotExist:
                     nq[np] = 0  # False search
                 continue
+            elif np in self.clean_fields and self.in_param in p:
+                v = ListOfParameter(self.clean_fields[np]).clean(v)
             elif np in self.clean_fields:  # @todo: Check for valid lookup types
                 v = self.clean_fields[np].clean(v)
                 # Write back

@@ -125,9 +125,6 @@ Ext.define("NOC.inv.map.MapPanel", {
                     xtype: "component",
                     autoScroll: true,
                     layout: "fit",
-                    style: {
-                        background: "#ecf0f1"
-                    }
                 }
             ]
         });

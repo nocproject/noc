@@ -216,12 +216,13 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
-                    xtype: "noc.core.combotree",
-                    restUrl: "/sa/administrativedomain/",
+                    xtype: "fm.alarm.tagfield",
+                    url: "/sa/administrativedomain/lookup/",
+                    isTree: true,
                     fieldLabel: __("Adm. Domain"),
                     name: "administrative_domain",
                     bind: {
-                        selection: "{activeFilter.administrative_domain}"
+                        selected: "{activeFilter.administrative_domain}"
                     }
                 },
                 {
