@@ -174,6 +174,10 @@ class AlarmApplication(ExtApplication):
             if q["administrative_domain"] != "_root_":
                 q["adm_path"] = int(q["administrative_domain"])
             q.pop("administrative_domain")
+        if "administrative_domain__in" in q:
+            if "_root_" not in q["administrative_domain__in"]:
+                q["adm_path__in"] = q["administrative_domain__in"]
+            q.pop("administrative_domain__in")
         if "segment" in q:
             if q["segment"] != "_root_":
                 q["segment_path"] = bson.ObjectId(q["segment"])

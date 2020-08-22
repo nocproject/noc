@@ -30,9 +30,6 @@ Ext.define('NOC.inv.map.MiniMap', {
             width: w,
             model: mapPanel.graph,
             gridSize: 1,
-            background: {
-                color: '#ecf0f1'
-            },
             interactive: false
         });
         this.miniPaper.on('blank:pointerdown', function(evt, x, y) {

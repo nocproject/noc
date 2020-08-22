@@ -188,10 +188,6 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 expanded: true,
                 children: []
             },
-            // ToDo make variable for theme
-            bodyStyle: {
-                background: "#ecf0f1"
-            },
             tbar: [
                 searchField
             ],
@@ -240,18 +236,15 @@ Ext.define("NOC.core.combotree.ComboTree", {
     doFilter: function() {
         var me = this, parentNode = me.getParentNode();
         if(parentNode) {
-            parentNode.removeAll();
-            if(me.searchField.getValue()) {
-                parentNode.appendChild(me.cache.filter(
-                    function(node) {
-                        return node.data[me.displayField].toLowerCase()
-                        .indexOf(me.searchField.getValue().toLowerCase()) !== -1;
-                    }
-                ));
-            } else {
-                parentNode.appendChild(me.cache);
-                parentNode.expand();
-            }
+            me.treePicker.getStore().filterBy(function(record) {
+                if(record.parentNode.id !== me.currentLeaf) {
+                    return true;
+                }
+                if(!me.searchField.getValue()) {
+                    return true;
+                }
+                return record.get(me.displayField).toLowerCase().indexOf(me.searchField.getValue().toLowerCase()) !== -1;
+            })
         }
     },
     // event handlers
