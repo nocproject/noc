@@ -1,0 +1,7 @@
+config: |
+  !
+  username admin password encrypted DESishelmebegelme= privilege 15
+  !
+result:
+  - ['system', 'user', 'admin', 'authentication', 'encrypted-password', 'D E S i s h e l m e b e g e l m e =', {'replace': True}]
+  - ['system', 'user', 'admin', 'class', 'level-15']
