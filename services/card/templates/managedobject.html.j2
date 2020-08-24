@@ -5,6 +5,18 @@
         width: 100%;
         height: 1px;
     }
+    .metric-header .fa {
+        transition: .3s transform ease-in-out;
+    }
+    .metric-header .collapsed .fa {
+        transform: rotate(90deg);
+    }
+
+    .row-bordered:after {
+        content: "";
+        display: block;
+        border-bottom: 1px solid #c0c0c0;
+    }
 </style>
 <div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger', 'unmanaged': 'default'}[current_state] }}">
     <div class="panel-heading">
@@ -227,32 +239,43 @@
             {% endif %}
             {% if metrics %}
             <div class="row">
-                <div class="col-sm-1">
+                <div class="col-se-1">
                     <b>{{ _("Metrics") }}</b>
                 </div>
                 <div class="col-sm-10">
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                            <th>{{ _("Name") }}</th>
-                            <th>{{ _("Value") }}</th>
-                        </thead>
-                        <tbody>
-                            {% for m in metrics %}
-                            <tr>
-                                <td>{{ m }}</td>
-                                {% if  metrics[m]["type"] != "bool" %}
-                                    {% if metrics[m]["type"] == "C" %}
-                                        <td>{{ metrics[m]["value"] }}<sup>o</sup>{{ metrics[m]["type"] }} </td>
-                                    {% else %}
-                                        <td>{{ metrics[m]["value"] }}{{ metrics[m]["type"] }} </td>
-                                    {% endif %}
-                                {% else %}
-                                    <td> {{ metrics[m]["value"] }} </td>
-                                {% endif %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="panel-group">
+                        {% for m in metrics %}
+                        <div class="panel" style="width: 50%">
+                            <div class="panel-heading metric-header{%- if m.isdanger %} bg-danger{% endif %}"
+                                 style="padding: 0;">
+                                <a data-toggle="collapse" {% if not m.collapsed %} class="collapsed" {% endif %} href="#metric-{{ loop.index }}">
+                                    <i class="fa fa-chevron-down pull-right"></i>
+                                    {{ m.name }}
+                                </a>
+                            </div>
+                            <div id="metric-{{ loop.index }}" class="panel-collapse collapse {% if m.collapsed %} in {% endif %}">
+                                <div class="panel-body">
+                                    {% for v in m.value %}
+                                    <div class="row row-bordered {% if v.threshold %} bg-danger{% endif %}">
+                                        <div class="col-sm-7 col-sm-offset-1">
+                                            {{ v.name }}
+                                        </div>
+                                        {% if v.type != "bool" %}
+                                            {% if v.type == "C" %}
+                                                <div class="col-sm-4">{{ v.value }}<sup>o</sup>{{ v.type }}</div>
+                                            {% else %}
+                                                <div class="col-sm-4">{{ v.value }}{{ v.type }}</div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="col-sm-4">{{ v.value }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div> <!-- row-->
             <div class="line"></div>
