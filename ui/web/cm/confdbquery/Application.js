@@ -33,7 +33,7 @@ Ext.define("NOC.cm.confdbquery.Application", {
                 {
                     text: __("Name"),
                     dataIndex: "name",
-                    width: 150
+                    width: 350
                 }
             ],
 
@@ -44,7 +44,7 @@ Ext.define("NOC.cm.confdbquery.Application", {
                     fieldLabel: __("Name"),
                     labelAlign: "top",
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "large"
                 },
                 {
                     name: "uuid",
