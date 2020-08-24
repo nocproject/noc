@@ -14,7 +14,6 @@ Ext.define("NOC.sa.administrativedomain.Application", {
         "NOC.sa.administrativedomain.Model",
         "NOC.main.pool.LookupField",
         "NOC.main.template.LookupField",
-        "NOC.inv.networksegment.TreeCombo",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.administrativedomain.Model",
@@ -94,8 +93,9 @@ Ext.define("NOC.sa.administrativedomain.Application", {
                     allowBlank: true
                 },
                 {
+                    xtype: "noc.core.combotree",
+                    restUrl: "/inv/networksegment/",
                     name: "bioseg_floating_parent_segment",
-                    xtype: "inv.networksegment.TreeCombo",
                     fieldLabel: __("Floating Parent Segment"),
                     allowBlank: true
                 }

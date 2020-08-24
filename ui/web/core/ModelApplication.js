@@ -1042,6 +1042,10 @@ Ext.define("NOC.core.ModelApplication", {
                 // WARNING: Will skip other inline editors
                 continue;
             }
+            if(!Ext.isFunction(field.getModelData)){
+                // Skip fields without data, e.g. FieldSet
+                continue;
+            }
             data = field.getModelData();
             if(Ext.isObject(data)) {
                 name = field.getName();
