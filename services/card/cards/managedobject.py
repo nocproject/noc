@@ -31,6 +31,7 @@ from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.text import alnum_key, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
+from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
 from noc.pm.models.metrictype import MetricType
@@ -55,9 +56,32 @@ class ManagedObjectCard(BaseCard):
 
     # get data function
     def get_data(self):
+
+        intervals = (
+            ("y", 31557617),  # 60 * 60 * 24 * 7 * 52
+            ("w", 604800),  # 60 * 60 * 24 * 7
+            ("d", 86400),  # 60 * 60 * 24
+            ("h", 3600),  # 60 * 60
+            ("m", 60),
+            ("s", 1),
+        )
+
+        def display_time(seconds):
+            result = []
+
+            for name, count in intervals:
+                value = seconds // count
+                if value:
+                    seconds -= value * count
+                    if value == 1:
+                        name = name.rstrip("s")
+                    result.append("{}{}".format(value, name))
+            return ", ".join(result[:-1])
+
         def sortdict(dct):
+            kys = sorted(dct.keys())
             res = OrderedDict()
-            for x in sorted(dct):
+            for x in kys:
                 for k, v in dct.items():
                     if k == x:
                         res[k] = v
@@ -189,14 +213,48 @@ class ManagedObjectCard(BaseCard):
         objects_metrics, last_time = get_objects_metrics(mo[0])
         objects_metrics = objects_metrics.get(mo[0])
 
-        meta = {}
+        m_tp = {}
+        if mo[0].object_profile.metrics:
+            for mt in mo[0].object_profile.metrics:
+                if mt.get("threshold_profile"):
+                    threshold_profile = ThresholdProfile.get_by_id(mt.get("threshold_profile"))
+                    m_tp[MetricType.get_by_id(mt.get("metric_type")).name] = threshold_profile
+        data = {}
+        meta = []
         metric_type_name = dict(MetricType.objects.filter().scalar("name", "measure"))
         metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
         if objects_metrics:
             for path, mres in objects_metrics.items():
+                t_v = False
                 for key in mres:
-                    metric_name = "%s | %s" % (key, path) if any(path.split("|")) else key
-                    meta[metric_name] = {"type": metric_type_name[key], "value": mres[key]}
+                    m_path = path if any(path.split("|")) else key
+                    m_path = " | ".join(kk.strip() for kk in m_path.split("|"))
+                    if m_tp.get(key):
+                        t_v = self.get_threshold_config(m_tp.get(key), int(mres[key]))
+                    val = {
+                        "name": m_path,
+                        "type": "" if m_path == "Object | SysUptime" else metric_type_name[key],
+                        "value": display_time(int(mres[key]))
+                        if m_path == "Object | SysUptime"
+                        else mres[key],
+                        "threshold": t_v,
+                    }
+                    if data.get(key):
+                        data[key] += [val]
+                    else:
+                        data[key] = [val]
+
+        data = sortdict(data)
+        for k, d in data.items():
+            collapsed = False
+            if len(d) == 1:
+                collapsed = True
+            for dd in d:
+                isdanger = False
+                if dd["threshold"]:
+                    isdanger = True
+                    collapsed = True
+            meta.append({"name": k, "value": d, "collapsed": collapsed, "isdanger": isdanger})
 
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
             load_in = "-"
@@ -364,7 +422,7 @@ class ManagedObjectCard(BaseCard):
             "links": links,
             "alarms": alarm_list,
             "interfaces": interfaces,
-            "metrics": sortdict(meta),
+            "metrics": meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
             "inventory": self.flatten_inventory(inv),

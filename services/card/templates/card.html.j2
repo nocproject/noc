@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="{{ hashed("/ui/pkg/bootstrap/css/bootstrap.min.css") }}">
     <!-- Optional theme -->
     <link rel="stylesheet" href="{{ hashed("/ui/pkg/bootstrap/css/bootstrap-theme.min.css") }}">
-    <!-- Latest compiled and minified JavaScript -->
-    <!--<script src="/ui/pkg/bootstrap/bootstrap/3.3.6/js/bootstrap.min.js"></script>-->
+    <!-- Fonts -->
     <link rel="stylesheet" href="{{ hashed("/ui/pkg/fontawesome/css/font-awesome.min.css") }}">
+    <!-- Latest compiled and minified JavaScript -->
     <script src="{{ hashed("/ui/pkg/jquery/jquery.min.js") }}"></script>
+    <script type="text/javascript" src="{{ hashed("/ui/pkg/bootstrap/js/bootstrap.min.js") }}"></script>
     {% if card_js -%}
         {% for js in card_js -%}
             <script src="{{ hashed(js) }}"></script>
