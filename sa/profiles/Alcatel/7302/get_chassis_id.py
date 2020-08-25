@@ -45,6 +45,8 @@ class Script(BaseScript):
             "1.3.6.1.4.1.637.61.1.9.22.4.0",
         ]:
             mac = self.snmp.get(oid, display_hints={oid: render_mac})
+            if not mac:
+                raise NotImplementedError
             macs.add(MAC(mac))
         # Filter and convert macs
         r = [
