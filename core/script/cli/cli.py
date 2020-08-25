@@ -192,6 +192,8 @@ class CLI(BaseCLI):
                 raise self.timeout_exception_cls()
             if not r:
                 self.logger.debug("Connection reset")
+                # For socket close on device we close it on system
+                self.close_stream()
                 await self.on_failure(r, None, error_cls=CLIConnectionReset)
             if r == self.SYNTAX_ERROR_CODE:
                 metrics["cli_syntax_errors", ("proto", self.name)] += 1
