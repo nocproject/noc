@@ -291,11 +291,11 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
 
             # find uplinks
             if cmap[-1] > 15:
-                for l in Link.object_links(mm):
+                for link1 in Link.object_links(mm):
                     local_interfaces = []
                     remote_interfaces = []
                     remote_objects = set()
-                    for ifs in l.interfaces:
+                    for ifs in link1.interfaces:
                         if ifs.managed_object.id == mm.id:
                             local_interfaces += [ifs]
                         else:
@@ -309,7 +309,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                             role = "downlink"
                         links += [
                             {
-                                "id": l.id,
+                                "id": link1.id,
                                 "role": role,
                                 "local_interface": local_interfaces,
                                 "remote_object": ro,
