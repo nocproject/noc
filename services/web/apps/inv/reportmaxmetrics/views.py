@@ -290,32 +290,33 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             links = []
 
             # find uplinks
-            for l in Link.object_links(mm):
-                local_interfaces = []
-                remote_interfaces = []
-                remote_objects = set()
-                for ifs in l.interfaces:
-                    if ifs.managed_object.id == mm.id:
-                        local_interfaces += [ifs]
-                    else:
-                        remote_interfaces += [ifs]
-                        remote_objects.add(ifs.managed_object)
-                if len(remote_objects) == 1:
-                    ro = remote_objects.pop()
-                    if ro.id in uplinks:
-                        role = "uplink"
-                    else:
-                        role = "downlink"
-                    links += [
-                        {
-                            "id": l.id,
-                            "role": role,
-                            "local_interface": local_interfaces,
-                            "remote_object": ro,
-                            "remote_interface": remote_interfaces,
-                            "remote_status": "up" if ro.get_status() else "down",
-                        }
-                    ]
+            if cmap[-1] > 15:
+                for link1 in Link.object_links(mm):
+                    local_interfaces = []
+                    remote_interfaces = []
+                    remote_objects = set()
+                    for ifs in link1.interfaces:
+                        if ifs.managed_object.id == mm.id:
+                            local_interfaces += [ifs]
+                        else:
+                            remote_interfaces += [ifs]
+                            remote_objects.add(ifs.managed_object)
+                    if len(remote_objects) == 1:
+                        ro = remote_objects.pop()
+                        if ro.id in uplinks:
+                            role = "uplink"
+                        else:
+                            role = "downlink"
+                        links += [
+                            {
+                                "id": link1.id,
+                                "role": role,
+                                "local_interface": local_interfaces,
+                                "remote_object": ro,
+                                "remote_interface": remote_interfaces,
+                                "remote_status": "up" if ro.get_status() else "down",
+                            }
+                        ]
 
             for i in ifaces_metrics[mm]:
                 if not exclude_zero:
