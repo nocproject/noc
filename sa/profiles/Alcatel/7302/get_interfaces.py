@@ -65,6 +65,7 @@ class Script(BaseScript):
     PROCCESSED_TYPE = {
         6: {"type": "physical"},  # ethernetCsmacd
         24: {"type": "loopback", "prefix": "sw-loopback"},  # softwareLoopback
+        238: {"type": "physical"},  # aluELP (adsl2plus)
         249: {"type": "physical"},  # aluELP (xdsl-line)
     }
 

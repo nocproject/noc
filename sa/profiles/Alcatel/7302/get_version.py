@@ -48,6 +48,7 @@ class Script(BaseScript):
         "ASPS-A": "",  # ETSI splitter shelf with backplane
         "ASPS-C": "",  # ETSI splitter shelf without backplane
         "EREM-A": "7330",  # 7330 FTTN Remote expansion Module, REM-XD
+        "OLTS-M": "7342",
         # "NFXS-A": "",
     }
 
