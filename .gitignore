@@ -18,7 +18,6 @@ local/*
 !/.dockerignore*
 !/.gitlab-ci.yml
 !/.flake8
-!/.pylintrc
 !/.coveragerc
 !/.prettierrc
 !/scripts/build/
