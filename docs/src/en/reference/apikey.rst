@@ -20,6 +20,9 @@ Usage
 Client *MUST* set `Private-Token` HTTP Request header and set it
 with proper *Key* in order to get access to protected API
 
+Example: `curl  -s -D - -k -H 'Private-Token: 12345'  https://noc_url/api/datastream/managedobject` ,
+where 12345 is an API token key.
+
 Roles
 -----
 
@@ -62,7 +65,7 @@ NBI API
 
 +-----------------------+----------------------------------------------------------------+
 | API:Role              | Description                                                    |
-+===========================+============================================================+
++=======================+================================================================+
 | `nbi:config`          | :ref:`NBI config API <api-nbi-config>` access                  |
 +-----------------------+----------------------------------------------------------------+
 | `nbi:configrevisions` | :ref:`NBI configrevisions API <api-nbi-configrevisions>` access|
@@ -77,6 +80,24 @@ NBI API
 +-----------------------+----------------------------------------------------------------+
 | `nbi:telemetry`       | :ref:`NBI telemetry API <api-nbi-telemetry>` access            |
 +-----------------------+----------------------------------------------------------------+
+
+.. _reference-apikey-web-interface:
+
+Web interface example
+---------------------
+
+You should fill `Name` and `API key` as required fields.
+Also in `API` rows should be `nbi`  or `datastream`. In `Role` row should be a role from tables above or `*` (asterisk)
+
+.. image:: /images/apikey_edit_api.png
+
+You can fill the ACL section or may leave it empty.
+Prefix field should be in a IP/net way.
+
+.. image:: /images/apikey_edit_api_acl.png
+
+Also there is an opportunity to allow requests to API only from whitelist IPs.
+You can find this option in Tower, in `nbi`/`datastream` service respectively.
 
 .. _reference-apikey-best-practices:
 
