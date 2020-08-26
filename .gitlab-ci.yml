@@ -219,7 +219,7 @@ build:Docs:
       then
         cd docs/
         python3 ./scripts/build-auto-include.py
-        sphinx-build -a -E -b html src/en ../build/docs/en
+        sphinx-build -j auto -a -E -b html src/en ../build/docs/en
         python3 ./scripts/build-go.py ../build/docs/en/objects.inv
       else
         echo "No doc changes to build"
@@ -242,7 +242,7 @@ build:Master Docs:
     - set -x
     - cd docs/
     - python3 ./scripts/build-auto-include.py
-    - NOC_SRC_PATH=../../.. sphinx-build -a -E -b html src/en ../build/docs/en
+    - sphinx-build -j auto -a -E -b html src/en ../build/docs/en
     - python3 ./scripts/build-go.py ../build/docs/en/objects.inv
   tags:
     - docker
