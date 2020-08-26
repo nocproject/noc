@@ -64,7 +64,7 @@
     {
       "intervalFactor": 1,
       "query": "SELECT \n\t$timeSeries as t,\n\tavg(errors_out) as `Error Out` \nFROM \n\t$table \nWHERE \n\tmanaged_object = $bi_id \n\tand path[4]=toString('{{interface.port.name}}') \n\tand $timeFilter \nGROUP BY t ORDER BY t",
-      "refId": "A",
+      "refId": "B",
       "resultFormat": "time_series",
       "database": "noc",
       "tableLoading": false,

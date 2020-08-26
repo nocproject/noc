@@ -130,7 +130,7 @@
           "datetimeLoading": false,
           "intervalFactor": 1,
           "query": "SELECT $timeSeries as t, avg(usage) as `Cpu | Usage`FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
-          "refId": "A",
+          "refId": "B",
           "resultFormat": "time_series",
           "table": "cpu",
           "tableLoading": false
@@ -214,7 +214,7 @@
           "datetimeLoading": false,
           "intervalFactor": 1,
           "query": "SELECT $timeSeries as t, avg(usage) `Memory | Usage` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
-          "refId": "A",
+          "refId": "C",
           "resultFormat": "time_series",
           "table": "memory",
           "tableLoading": false
