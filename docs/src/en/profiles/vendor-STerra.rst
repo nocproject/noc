@@ -1,8 +1,8 @@
 .. _profiles-vendor-STerra:
 
-=====
+======
 STerra
-=====
+======
 
 .. toctree::
     :titlesonly:

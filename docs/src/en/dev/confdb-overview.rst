@@ -51,7 +51,7 @@ to the right and may be reused.
 
 ConfDB pipeline stages
 ----------------------
-Config processing pipeline and stages are repesented on chart below
+Config processing pipeline and stages are represented on chart below
 
 .. mermaid::
 
@@ -67,7 +67,7 @@ Config processing pipeline and stages are repesented on chart below
 * :ref:`Fetching<dev-confdb-fetching>`
 * :ref:`Storing<dev-confdb-storage>`
 * :ref:`Tokenizer<dev-confdb-tokenizer>`
-* :ref:`Normalizer<dev-confdv-normalizer>`
+* :ref:`Normalizer<dev-confdb-normalizer>`
 * Applicator
 * ConfDB engine
 * ConfDB queries
