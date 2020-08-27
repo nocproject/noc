@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Alarm heatmap
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,9 @@ import geojson
 # NOC modules
 from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
+from noc.sa.models.useraccess import UserAccess
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.maintenance.models.maintenance import Maintenance
@@ -65,41 +67,48 @@ class AlarmHeatCard(BaseCard):
         north = float(self.handler.get_argument("n"))
         south = float(self.handler.get_argument("s"))
         ms = int(self.handler.get_argument("maintenance"))
-        active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
+        active_layers = [
+            l_r for l_r in self.get_pop_layers() if l_r.min_zoom <= zoom <= l_r.max_zoom
+        ]
         alarms = []
+        res = {}
         services = {}
         subscribers = {}
         t_data = defaultdict(list)
-        if self.current_user.is_superuser:
-            qs = ActiveAlarm.objects.all()
-        else:
-            qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
+        mos = ManagedObject.objects.filter(is_managed=True).values("id", "name", "x", "y")
+        if not self.current_user.is_superuser:
+            mos = mos.filter(administrative_domain__in=UserAccess.get_domains(self.current_user))
+        for mo in mos:
+            res[mo.pop("id")] = mo
+        mos_id = list(res.keys())
         if ms == 0:
-            # Filter out equipment under maintenance
-            qs = qs.filter(managed_object__nin=Maintenance.currently_affected())
-        for a in qs.only("id", "managed_object", "direct_subscribers", "direct_services"):
+            mos_id = list(set(list(res.keys())) - set(Maintenance.currently_affected()))
+        for a in ActiveAlarm._get_collection().find(
+            {"managed_object": {"$in": mos_id, "$exists": True}},
+            {"_id": 1, "managed_object": 1, "direct_subscribers": 1, "direct_services": 1},
+        ):
             s_sub, s_service = {}, {}
-            if a.direct_subscribers:
-                s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
-            if a.direct_services:
-                s_service = SummaryItem.items_to_dict(a.direct_services)
-            mo = a.managed_object
+            if a.get("direct_subscribers"):
+                s_sub = {dsub["profile"]: dsub["summary"] for dsub in a["direct_subscribers"]}
+            if a.get("direct_services"):
+                s_service = {dserv["profile"]: dserv["summary"] for dserv in a["direct_services"]}
+            mo = res.get(a["managed_object"])
             if not mo:
                 continue
-            if mo.x and mo.y:
+            if mo["x"] and mo["y"]:
                 w = ServiceSummary.get_weight({"subscriber": s_sub, "service": s_service})
                 # @todo: Should we add the object's weight to summary?
                 # @todo: Check west/south hemisphere
-                if active_layers and west <= mo.x <= east and south <= mo.y <= north:
-                    t_data[mo.x, mo.y] += [(mo, w)]
+                if active_layers and west <= mo["x"] <= east and south <= mo["y"] <= north:
+                    t_data[mo["x"], mo["y"]] += [(mo, w)]
             else:
                 w = 0
             alarms += [
                 {
-                    "alarm_id": str(a.id),
-                    "managed_object": mo.name,
-                    "x": mo.x,
-                    "y": mo.y,
+                    "alarm_id": str(a.get("_id")),
+                    "managed_object": mo["name"],
+                    "x": mo["x"],
+                    "y": mo["y"],
                     "w": max(w, 1),
                 }
             ]
@@ -118,7 +127,7 @@ class AlarmHeatCard(BaseCard):
             for d in ObjectConnection._get_collection().find(
                 {
                     "type": "pop_link",
-                    "layer": {"$in": [l.id for l in active_layers]},
+                    "layer": {"$in": [a_l.id for a_l in active_layers]},
                     "line": {"$geoIntersects": {"$geometry": bbox}},
                 },
                 {"_id": 0, "connection": 1, "line": 1},
@@ -136,11 +145,11 @@ class AlarmHeatCard(BaseCard):
             # Create points
             points = []
             for x, y in o_data:
-                mos = {}
+                data = {}
                 for mo, w in o_data[x, y]:
-                    if mo not in mos:
-                        mos[mo] = w
-                mos = sorted(mos, key=lambda z: mos[z], reverse=True)[: self.TOOLTIP_LIMIT]
+                    if mo not in data:
+                        data[mo] = w
+                data = sorted(data, key=lambda z: data[z], reverse=True)[: self.TOOLTIP_LIMIT]
                 points += [
                     geojson.Feature(
                         geometry=geojson.Point(coordinates=[x, y]),
