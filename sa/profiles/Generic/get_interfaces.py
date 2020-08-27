@@ -83,6 +83,12 @@ class Script(BaseScript):
             if not pvid:
                 # if pvid is 0
                 continue
+            elif not is_vlan(pvid):
+                # on Alcatel DSLAM it 16777217
+                self.logger.warning(
+                    "Bad value for untagged vlan.Skipping.. oid %s: vlan %s", oid, pvid
+                )
+                continue
             o = int(oid.split(".")[-1])
             result[pid_ifindex_mappings[o]]["untagged_vlan"] = pvid
         for oid, ports_mask in self.snmp.getnext(
