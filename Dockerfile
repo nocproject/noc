@@ -39,6 +39,8 @@ RUN\
     && /usr/bin/pip3 install --upgrade pip wheel \
     && (/usr/bin/get-noc-requirements activator dev test cython | /usr/bin/pip3 install -r /dev/stdin )\
     && /usr/bin/cythonize -i /opt/noc/speedup/*.pyx \
+    && mkdir /opt/nocspeedup \
+    && cp /opt/noc/speedup/*.so /opt/nocspeedup \
     && /usr/bin/pip3 uninstall -y Cython \
     && rm /requirements.txt \
     && apk del .build-dependencies \

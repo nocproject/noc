@@ -8,10 +8,6 @@
 # Third-party modules
 import cachetools
 
-# NOC modules
-# Activate custom module loaders
-import noc.core.importer  # noqa
-
 _CCACHE = {}  # handler -> object cache
 
 
