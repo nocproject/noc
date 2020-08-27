@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Qtech.BFC-PBIC-S.get_interfaces
+# Qtech.BFC_PBIC_S.get_interfaces
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details

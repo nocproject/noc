@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Qtech.BFC-PBIC-S.get_metrics
+# Qtech.BFC_PBIC_S.get_metrics
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
@@ -10,7 +10,7 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metr
 
 
 class Script(GetMetricsScript):
-    name = "Qtech.BFC-PBIC-S.get_metrics"
+    name = "Qtech.BFC_PBIC_S.get_metrics"
 
     @metrics(["Interface | Status | Admin"], volatile=False, access="S")  # SNMP version
     def get_interface_admin_status(self, metrics):
