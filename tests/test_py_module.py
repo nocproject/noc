@@ -103,5 +103,7 @@ def test_module_empty_docstrings(module):
 def test_init(path):
     with open(path) as f:
         data = f.read()
+    if "TESTS: ALLOW_NON_EMPTY_INIT" in data:
+        return  # exclusion
     n = compile(data, path, "exec", ast.PyCF_ONLY_AST)
     assert bool(n.body) or not bool(data), "__init__.py must be empty"
