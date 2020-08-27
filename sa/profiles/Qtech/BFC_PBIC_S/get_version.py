@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.BFC-PBIC-S.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # NOC modules
@@ -24,5 +24,8 @@ class Script(BaseScript):
             version = "%s%s" % (o[1], o[2])
         else:
             version = "None"
-        result = {"vendor": "Qtech", "version": version, "platform": platform}
+        vendor = "Qtech"
+        if "KUB" in platform:
+            vendor = "Interkross"
+        result = {"vendor": vendor, "version": version, "platform": platform}
         return result
