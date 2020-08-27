@@ -54,6 +54,22 @@ class ManagedObjectCard(BaseCard):
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
 
+    def get_threshold_config(self, threshold_profile, w_value):
+        """
+        :param threshold_profile:
+        :type threshold_profile: ThresholdProfile
+        :param w_value: Window value
+        :type w_value: int
+        :return:
+        :rtype:
+        """
+        for threshold in threshold_profile.thresholds:
+            if threshold.is_open_match(w_value):
+                return True
+            if threshold.is_clear_match(w_value):
+                return False
+        return False
+
     # get data function
     def get_data(self):
 
@@ -159,16 +175,16 @@ class ManagedObjectCard(BaseCard):
         else:
             redundancy = "N"
         links = []
-        for l in Link.object_links(self.object):
+        for _link in Link.object_links(self.object):
             local_interfaces = []
             remote_interfaces = []
             remote_objects = set()
-            for i in l.interfaces:
-                if i.managed_object.id == self.object.id:
-                    local_interfaces += [i]
+            for iface in _link.interfaces:
+                if iface.managed_object.id == self.object.id:
+                    local_interfaces += [iface]
                 else:
-                    remote_interfaces += [i]
-                    remote_objects.add(i.managed_object)
+                    remote_interfaces += [iface]
+                    remote_objects.add(iface.managed_object)
             if len(remote_objects) == 1:
                 ro = remote_objects.pop()
                 if ro.id in uplinks:
@@ -177,7 +193,7 @@ class ManagedObjectCard(BaseCard):
                     role = "downlink"
                 links += [
                     {
-                        "id": l.id,
+                        "id": _link.id,
                         "role": role,
                         "local_interface": sorted(
                             local_interfaces, key=lambda x: alnum_key(x.name)
