@@ -12,6 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.core.snmp.render import render_mac
 
 
 class Script(BaseScript):
@@ -38,13 +39,17 @@ class Script(BaseScript):
         try:
             platform = self.snmp.get("1.2.840.10036.3.1.2.1.3.5")
             version = self.snmp.get("1.2.840.10036.3.1.2.1.4.5")
-            serial = self.snmp.get("1.2.840.10036.2.1.1.1.5")
+            serial = self.snmp.get(
+                "1.2.840.10036.2.1.1.1.5", display_hints={"1.2.840.10036.2.1.1.1.5": render_mac}
+            )
         except self.snmp.SNMPError as e:
             # NO_SUCH_NAME
             if e.code == 2:
                 platform = self.snmp.get("1.2.840.10036.3.1.2.1.3.8")
                 version = self.snmp.get("1.2.840.10036.3.1.2.1.4.8")
-                serial = self.snmp.get("1.2.840.10036.2.1.1.1.8")
+                serial = self.snmp.get(
+                    "1.2.840.10036.2.1.1.1.8", display_hints={"1.2.840.10036.2.1.1.1.5": render_mac}
+                )
         except self.snmp.TimeOutError:
             raise self.UnexpectedResultError
 
