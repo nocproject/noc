@@ -26,6 +26,6 @@ class Script(BaseScript):
             version = "None"
         vendor = "Qtech"
         if "KUB" in platform:
-            vendor = "Interkross"
+            vendor = "Ttronics"
         result = {"vendor": vendor, "version": version, "platform": platform}
         return result
