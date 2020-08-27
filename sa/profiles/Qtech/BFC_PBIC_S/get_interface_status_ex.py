@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.BFC_PBIC_S.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,12 +18,20 @@ class Script(BaseScript):
 
     def execute_snmp(self, interfaces=None):
         result = []
-        for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_repetitions=3, cached=True):
+        for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True):
             name = v[1]
-            status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % name)
-            if status == 0:
-                admin_status = True
-                oper_status = True
+            admin_status = False
+            oper_status = False
+            descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % name)
+            if descr in [0, 3, 9, 10]:
+                status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % name)
+                invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % name)
+                if invert == 0 and status == 0:
+                    admin_status = True
+                    oper_status = True
+                elif invert == 1 and status == 1:
+                    admin_status = True
+                    oper_status = True
             else:
                 admin_status = False
                 oper_status = False
