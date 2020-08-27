@@ -69,6 +69,7 @@ Ext.define("NOC.fm.alarm.view.grids.TreePicker", {
                 Ext.clone(this.scope.getStore()),
                 {
                     autoLoad: true,
+                    pageSize: 500,
                     proxy: {
                         extraParams: {parent: ""}
                     },
