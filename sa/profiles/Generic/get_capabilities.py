@@ -375,7 +375,7 @@ class Script(BaseScript):
                     if self.check_snmp_getnext(oid, version=snmp_version):
                         caps[cap] = True
                 x = self.get_enterprise_id(version=snmp_version)
-                if x:
+                if x and len(x.split(".")) > 6:
                     caps["SNMP | OID | EnterpriseID"] = int(x.split(".")[6])
             else:
                 caps["SNMP"] = False
