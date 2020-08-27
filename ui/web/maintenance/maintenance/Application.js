@@ -195,8 +195,8 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                     xtype: "combo",
                     fieldLabel: __("Status"),
                     store: [
-                        ["true", __("Active")],
-                        ["false", __("Completed")]
+                        ["false", __("Active")],
+                        ["true", __("Completed")]
                     ],
                     triggerAction: "all",
                     editable: false,
