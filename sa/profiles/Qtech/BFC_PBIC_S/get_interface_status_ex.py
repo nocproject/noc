@@ -43,13 +43,17 @@ class Script(BaseScript):
                 if status > 0:
                     admin_status = True
                     oper_status = True
-            result += [{"interface": name, "admin_status": admin_status, "oper_status": oper_status}]
-        result += [{
-            "interface": "eth0",
-            "admin_status": True,
-            "oper_status": True,
-            "full_duplex": True,
-            "in_speed": 10000,
-            "out_speed": 10000,
-        }]
+            result += [
+                {"interface": name, "admin_status": admin_status, "oper_status": oper_status}
+            ]
+        result += [
+            {
+                "interface": "eth0",
+                "admin_status": True,
+                "oper_status": True,
+                "full_duplex": True,
+                "in_speed": 10000,
+                "out_speed": 10000,
+            }
+        ]
         return result

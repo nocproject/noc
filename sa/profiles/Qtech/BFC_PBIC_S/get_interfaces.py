@@ -22,7 +22,7 @@ class Script(BaseScript):
         3: "Вход датчика вибрации/удара",
         4: "Вход по сопротивлению",
         9: "Вход сигнала ИБП (Батарея разряжена)",
-        10: "Вход сигнала ИБП (Питание от сети)"
+        10: "Вход сигнала ИБП (Питание от сети)",
     }
 
     def execute_snmp(self):
@@ -33,15 +33,17 @@ class Script(BaseScript):
         if temp != -104:
             t_as = True
             t_os = True
-        interfaces += [{
-            "type": "physical",
-            "name": "TempSensor 1",
-            "admin_status": t_as,
-            "oper_status": t_os,
-            "snmp_ifindex": 21,
-            "description": "Выносной датчик температуры 1",
-            "subinterfaces": [],
-        }]
+        interfaces += [
+            {
+                "type": "physical",
+                "name": "TempSensor 1",
+                "admin_status": t_as,
+                "oper_status": t_os,
+                "snmp_ifindex": 21,
+                "description": "Выносной датчик температуры 1",
+                "subinterfaces": [],
+            }
+        ]
         for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True):
             name = v[1]
             admin_status = False
@@ -60,23 +62,27 @@ class Script(BaseScript):
                 if status > 0:
                     admin_status = True
                     oper_status = True
-            interfaces += [{
-                "type": "physical",
-                "name": name,
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "snmp_ifindex": name,
-                "description": self.PORT_TYPE.get(descr),
-                "subinterfaces": [],
-            }]
+            interfaces += [
+                {
+                    "type": "physical",
+                    "name": name,
+                    "admin_status": admin_status,
+                    "oper_status": oper_status,
+                    "snmp_ifindex": name,
+                    "description": self.PORT_TYPE.get(descr),
+                    "subinterfaces": [],
+                }
+            ]
         mac = self.snmp.get("1.3.6.1.3.55.1.2.2.0")
-        interfaces += [{
-            "type": "physical",
-            "name": "eth0",
-            "admin_status": True,
-            "oper_status": True,
-            "mac": mac,
-            "snmp_ifindex": 100,
-            "subinterfaces": [],
-        }]
+        interfaces += [
+            {
+                "type": "physical",
+                "name": "eth0",
+                "admin_status": True,
+                "oper_status": True,
+                "mac": mac,
+                "snmp_ifindex": 100,
+                "subinterfaces": [],
+            }
+        ]
         return [{"interfaces": interfaces}]

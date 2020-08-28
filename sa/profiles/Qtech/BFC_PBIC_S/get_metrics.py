@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
-from noc.core.text import parse_table
+from core.script.metrics import scale
 
 
 class Script(GetMetricsScript):
@@ -30,12 +30,13 @@ class Script(GetMetricsScript):
                     value = 1
             if len(metric.ifindex) == 2:
                 ifindes = list(str(metric.ifindex))
-                temp = self.snmp.get("1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True)
+                temp = self.snmp.get(
+                    "1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True
+                )
                 if temp != -104:
                     value = 1
             self.set_metric(
-                id=("Interface | Status | Admin", metric.path),
-                value=value,
+                id=("Interface | Status | Admin", metric.path), value=value,
             )
 
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
@@ -44,6 +45,13 @@ class Script(GetMetricsScript):
             ifindes = list(str(metric.ifindex))
             temp = self.snmp.get("1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True)
             self.set_metric(
-                id=("Environment | Temperature", metric.path),
-                value=temp,
+                id=("Environment | Temperature", metric.path), value=temp,
+            )
+
+    @metrics(["Environment | Voltage"], volatile=False, access="S")  # SNMP version
+    def get_voltage(self, metrics):
+        for metric in metrics:
+            value = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % metric.ifindex)
+            self.set_metric(
+                id=("Environment | Voltage", metric.path), value=value, scale=scale(0.001)
             )
