@@ -159,11 +159,11 @@ class ManagedObjectCard(BaseCard):
         macs = []
         o_macs = DiscoveryID.macs_for_object(self.object)
         if o_macs:
-            for f, l in o_macs:
-                if f == l:
+            for f, ll in o_macs:
+                if f == ll:
                     macs += [f]
                 else:
-                    macs += ["%s - %s" % (f, l)]
+                    macs += ["%s - %s" % (f, ll)]
 
         # Links
         uplinks = set(self.object.data.uplinks)
