@@ -28,6 +28,11 @@ class Script(GetMetricsScript):
             else:
                 if status > 0:
                     value = 1
+            if len(metric.ifindex) == 2:
+                ifindes = list(str(metric.ifindex))
+                temp = self.snmp.get("1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True)
+                if temp != -104:
+                    value = 1
             self.set_metric(
                 id=("Interface | Status | Admin", metric.path),
                 value=value,
@@ -38,8 +43,7 @@ class Script(GetMetricsScript):
         for metric in metrics:
             ifindes = list(str(metric.ifindex))
             temp = self.snmp.get("1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True)
-            if temp != -104:
-                self.set_metric(
-                    id=("Environment | Temperature", metric.path),
-                    value=temp,
-                )
+            self.set_metric(
+                id=("Environment | Temperature", metric.path),
+                value=temp,
+            )
