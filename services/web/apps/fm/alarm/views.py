@@ -406,12 +406,12 @@ class AlarmApplication(ExtApplication):
         if alarm.log:
             d["log"] = [
                 {
-                    "timestamp": self.to_json(l.timestamp),
-                    "from_status": l.from_status,
-                    "to_status": l.to_status,
-                    "message": l.message,
+                    "timestamp": self.to_json(ll.timestamp),
+                    "from_status": ll.from_status,
+                    "to_status": ll.to_status,
+                    "message": ll.message,
                 }
-                for l in alarm.log
+                for ll in alarm.log
             ]
         # Events
         events = []
