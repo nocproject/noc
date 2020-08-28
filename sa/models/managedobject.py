@@ -781,8 +781,8 @@ class ManagedObject(NOCModel):
             # Refresh links
             from noc.inv.models.link import Link
 
-            for l in Link.object_links(self):
-                l.save()
+            for ll in Link.object_links(self):
+                ll.save()
         # Handle became unmanaged
         if (
             not self.initial_data["id"] is None
