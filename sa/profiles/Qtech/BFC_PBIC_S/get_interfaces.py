@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Qtech.BFC_PBIC_S.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,11 +22,26 @@ class Script(BaseScript):
         3: "Вход датчика вибрации/удара",
         4: "Вход по сопротивлению",
         9: "Вход сигнала ИБП (Батарея разряжена)",
-        10: "Вход сигнала ИБП (Питание от сети)",
+        10: "Вход сигнала ИБП (Питание от сети)"
     }
 
     def execute_snmp(self):
         interfaces = []
+        temp = self.snmp.get("1.3.6.1.3.55.1.2.1.0", cached=True)
+        t_as = False
+        t_os = False
+        if temp != -104:
+            t_as = True
+            t_os = True
+        interfaces += [{
+            "type": "physical",
+            "name": "TempSensor 1",
+            "admin_status": t_as,
+            "oper_status": t_os,
+            "snmp_ifindex": 21,
+            "description": "Выносной датчик температуры 1",
+            "subinterfaces": [],
+        }]
         for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True):
             name = v[1]
             admin_status = False
@@ -42,47 +57,26 @@ class Script(BaseScript):
                     admin_status = True
                     oper_status = True
             else:
-                admin_status = False
-                oper_status = False
-            iface = {
+                if status > 0:
+                    admin_status = True
+                    oper_status = True
+            interfaces += [{
                 "type": "physical",
                 "name": name,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "snmp_ifindex": name,
                 "description": self.PORT_TYPE.get(descr),
-                "subinterfaces": [
-                    {
-                        "name": name,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "snmp_ifindex": name,
-                    }
-                ],
-            }
-            interfaces += [iface]
-        ip = self.credentials.get("address", "")
-        ip = ip + "/" + str(32)
-        ip_list = [ip]
+                "subinterfaces": [],
+            }]
         mac = self.snmp.get("1.3.6.1.3.55.1.2.2.0")
-        iface = {
+        interfaces += [{
             "type": "physical",
             "name": "eth0",
             "admin_status": True,
             "oper_status": True,
             "mac": mac,
-            "snmp_ifindex": 10,
-            "subinterfaces": [
-                {
-                    "name": "eth0",
-                    "admin_status": True,
-                    "oper_status": True,
-                    "mac": mac,
-                    "ipv4_addresses": ip_list,
-                    "snmp_ifindex": 10,
-                    "enabled_afi": ["BRIDGE", "IPv4"],
-                }
-            ],
-        }
-        interfaces += [iface]
+            "snmp_ifindex": 100,
+            "subinterfaces": [],
+        }]
         return [{"interfaces": interfaces}]

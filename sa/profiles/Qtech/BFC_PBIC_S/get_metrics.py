@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.core.text import parse_table
 
 
 class Script(GetMetricsScript):
@@ -27,7 +28,18 @@ class Script(GetMetricsScript):
             else:
                 if status > 0:
                     value = 1
-
             self.set_metric(
-                id=("Interface | Status | Admin", metric.path), value=value,
+                id=("Interface | Status | Admin", metric.path),
+                value=value,
             )
+
+    @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
+    def get_temperature(self, metrics):
+        for metric in metrics:
+            ifindes = list(str(metric.ifindex))
+            temp = self.snmp.get("1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True)
+            if temp != -104:
+                self.set_metric(
+                    id=("Environment | Temperature", metric.path),
+                    value=temp,
+                )
