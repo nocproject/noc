@@ -27,6 +27,7 @@ class BaseRemoteSystem(object):
         "administrativedomain",
         "authprofile",
         "ttsystem",
+        "project",
         "managedobject",
         "link",
         "subscriberprofile",
@@ -67,28 +68,28 @@ class BaseRemoteSystem(object):
         # Build chain
         chain = self.get_loader_chain()
         # Add & Modify
-        for l in chain:
-            if loaders and l.name not in loaders:
-                l.load_mappings()
+        for ll in chain:
+            if loaders and ll.name not in loaders:
+                ll.load_mappings()
                 continue
-            l.load()
-            l.save_state()
+            ll.load()
+            ll.save_state()
         # Remove in reverse order
-        for l in reversed(list(chain)):
-            l.purge()
+        for ll in reversed(list(chain)):
+            ll.purge()
 
     def check(self, out):
         chain = self.get_loader_chain()
         # Check
         summary = []
         n_errors = 0
-        for l in chain:
-            n = l.check(chain)
+        for ll in chain:
+            n = ll.check(chain)
             if n:
                 ss = "%d errors" % n
             else:
                 ss = "OK"
-            summary += ["%s.%s: %s" % (self.name, l.name, ss)]
+            summary += ["%s.%s: %s" % (self.name, ll.name, ss)]
             n_errors += n
         if summary:
             out.write("Summary:\n")
