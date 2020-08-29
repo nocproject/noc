@@ -43,6 +43,24 @@ Ext.define("NOC.project.project.Model", {
         {
             name: "shape_overlay_form",
             type: "string"
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string",
+            persist: false
         }
     ]
 });
