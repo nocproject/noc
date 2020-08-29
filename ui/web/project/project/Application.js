@@ -12,7 +12,8 @@ Ext.define("NOC.project.project.Application", {
         "NOC.project.project.Model",
         "NOC.main.glyph.LookupField",
         "NOC.main.ref.soposition.LookupField",
-        "NOC.main.ref.soform.LookupField"
+        "NOC.main.ref.soform.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.project.project.Model",
     search: true,
@@ -90,6 +91,37 @@ Ext.define("NOC.project.project.Application", {
                             xtype: "main.ref.soform.LookupField",
                             fieldLabel: __("Form"),
                             allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "displayfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
                         }
                     ]
                 }

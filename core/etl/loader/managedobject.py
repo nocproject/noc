@@ -46,6 +46,7 @@ class ManagedObjectLoader(BaseLoader):
         "tt_system",
         "tt_queue",
         "tt_system_id",
+        "project",
     ]
 
     mapped_fields = {
@@ -57,6 +58,7 @@ class ManagedObjectLoader(BaseLoader):
         "tt_system": "ttsystem",
         "static_client_groups": "resourcegroup",
         "static_service_groups": "resourcegroup",
+        "project": "project",
     }
 
     def __init__(self, *args, **kwargs):

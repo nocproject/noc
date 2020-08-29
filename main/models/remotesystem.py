@@ -70,6 +70,7 @@ class EnvItem(EmbeddedDocument):
         ("wf.State", "remote_system"),
         ("wf.Transition", "remote_system"),
         ("wf.Workflow", "remote_system"),
+        ("project.Project", "remote_system"),
     ]
 )
 class RemoteSystem(Document):
@@ -96,6 +97,7 @@ class RemoteSystem(Document):
     enable_subscriberprofile = BooleanField()
     enable_resourcegroup = BooleanField()
     enable_ttsystem = BooleanField()
+    enable_project = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
