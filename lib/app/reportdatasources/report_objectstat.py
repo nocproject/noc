@@ -61,7 +61,7 @@ class AttributeIsolator(IsolatorClass):
     def OP_ATTR_MAP(self):
         return {
             "2": {"1": False, "2": True},
-            "7": {
+            "9": {
                 "1": str(Profile.get_generic_profile_id()),
                 "2": str(Profile.get_generic_profile_id()),
                 "ne": ["2"],
