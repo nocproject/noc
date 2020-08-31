@@ -38,8 +38,8 @@ class ReportFilterApplication(SimpleReport):
         columns, columns_desr = [], []
 
         r_map = [
-            (_("All polling"), "2is1.6is1.7a2"),  # "Is Managed, object type defined"
-            (_("0"), "2is1.6is1.7a2.3hs0"),  # "Has 0 Links w type defined"
+            (_("All polling"), "2is1.6is1.9a2"),  # "Is Managed, object type defined"
+            (_("0"), "2is1.6is1.9a2.3hs0"),  # "Has 0 Links w type defined"
             (_("1"), "2is1.6is1.3hs2"),  # "Has 1 links"
             (_("2"), "2is1.6is1.3hs3"),  # "Has 2 links"
             (_("More 3"), "2is1.6is1.3hs4"),  # "Has more 3 links"
