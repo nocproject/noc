@@ -51,7 +51,7 @@ class Script(BaseScript):
                 "interface": "eth0",
                 "admin_status": True,
                 "oper_status": True,
-                "full_duplex": True,
+                "full_duplex": False,
                 "in_speed": 10000,
                 "out_speed": 10000,
             }
