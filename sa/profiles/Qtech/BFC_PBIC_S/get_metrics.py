@@ -16,6 +16,8 @@ class Script(GetMetricsScript):
     @metrics(["Interface | Status | Admin"], volatile=False, access="S")  # SNMP version
     def get_interface_admin_status(self, metrics):
         for metric in metrics:
+            if metric.ifindex == 100:
+                continue
             value = 0
             descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % metric.ifindex)
             status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % metric.ifindex)
