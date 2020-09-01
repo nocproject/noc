@@ -28,10 +28,10 @@ class Script(GetMetricsScript):
             else:
                 if status > 0:
                     value = 1
-            if len(metric.ifindex) == 2:
-                ifindes = list(str(metric.ifindex))
+            if len(str(metric.ifindex)) == 2:
+                ifindex = list(str(metric.ifindex))
                 temp = self.snmp.get(
-                    "1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True
+                    "1.3.6.1.3.55.1.%s.%s.0" % (ifindex[0], ifindex[1]), cached=True
                 )
                 if temp != -104:
                     value = 1
@@ -42,8 +42,8 @@ class Script(GetMetricsScript):
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
     def get_temperature(self, metrics):
         for metric in metrics:
-            ifindes = list(str(metric.ifindex))
-            temp = self.snmp.get("1.3.6.1.3.55.1.%s.%s.0" % (ifindes[0], ifindes[1]), cached=True)
+            ifindex = list(str(metric.ifindex))
+            temp = self.snmp.get("1.3.6.1.3.55.1.%s.%s.0" % (ifindex[0], ifindex[1]), cached=True)
             self.set_metric(
                 id=("Environment | Temperature", metric.path), value=temp,
             )
