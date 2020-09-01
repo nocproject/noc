@@ -28,17 +28,15 @@ class Script(BaseScript):
     def execute_snmp(self):
         interfaces = []
         temp = self.snmp.get("1.3.6.1.3.55.1.2.1.0", cached=True)
-        t_as = False
-        t_os = False
+        t_st = False
         if temp != -104:
-            t_as = True
-            t_os = True
+            t_st = True
         interfaces += [
             {
                 "type": "physical",
                 "name": "TempSensor 1",
-                "admin_status": t_as,
-                "oper_status": t_os,
+                "admin_status": t_st,
+                "oper_status": t_st,
                 "snmp_ifindex": 21,
                 "description": "Выносной датчик температуры 1",
                 "subinterfaces": [],
@@ -46,28 +44,24 @@ class Script(BaseScript):
         ]
         for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True):
             name = v[1]
-            admin_status = False
-            oper_status = False
+            s_status = False
             descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % name)
             if descr in [0, 3, 9, 10]:
                 status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % name)
                 invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % name)
                 if invert == 0 and status == 0:
-                    admin_status = True
-                    oper_status = True
+                    s_status = True
                 elif invert == 1 and status == 1:
-                    admin_status = True
-                    oper_status = True
+                    s_status = True
             else:
                 if status > 0:
-                    admin_status = True
-                    oper_status = True
+                    s_status = True
             interfaces += [
                 {
                     "type": "physical",
                     "name": name,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
+                    "admin_status": s_status,
+                    "oper_status": s_status,
                     "snmp_ifindex": name,
                     "description": self.PORT_TYPE.get(descr),
                     "subinterfaces": [],
