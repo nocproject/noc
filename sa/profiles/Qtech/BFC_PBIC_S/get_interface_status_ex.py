@@ -37,9 +37,7 @@ class Script(BaseScript):
             else:
                 if status > 0:
                     s_status = True
-            result += [
-                {"interface": name, "admin_status": s_status, "oper_status": s_status}
-            ]
+            result += [{"interface": name, "admin_status": s_status, "oper_status": s_status}]
         result += [
             {
                 "interface": "eth0",
