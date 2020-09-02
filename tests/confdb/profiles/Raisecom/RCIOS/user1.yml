@@ -1,0 +1,4 @@
+config: |
+  user administrator admin local secret DESIshelmebegelme authorized-table tmadmin   1
+result:
+  - ['system', 'user', 'admin', 'authentication', 'encrypted-password', 'DESIshelmebegelme', {'replace': True}]
