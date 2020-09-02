@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,21 @@ class Script(BaseScript):
     name = "ZTE.ZXA10.get_inventory"
     interface = IGetInventory
 
-    type = {"PRWGS": "PWR", "SCXN": "MAINBOARD", "GUSQ": "LINECARD", "VDWVD": "LINECARD"}
+    type = {
+        "PRWGS": "PWR",
+        "PRWH": "PRW",
+        "SCXN": "MAINBOARD",
+        "SCTM": "MAINBOARD",
+        "SCXM": "MAINBOARD",
+        "SCXL": "MAINBOARD",
+        "SMXA": "MAINBOARD",
+        "GUSQ": "LINECARD",
+        "GTGHK": "LINECARD",
+        "GTGOG": "LINECARD",
+        "HUVQ": "LINECARD",
+        "VDWVD": "LINECARD",
+    }
+
     rx_platform = re.compile(r"^\d+\s+(?P<platform>\S+)MBRack\s+.+\n", re.MULTILINE)
     rx_card = re.compile(
         r"^Real-Type\s+:\s+(?P<type>\S+)\s+Serial-Number\s+:(?P<serial>.*)\n", re.MULTILINE

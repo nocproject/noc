@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ class Script(BaseScript):
             cmd += " %s" % MAC(mac).to_cisco()
         r = []
         for match in self.rx_mac.finditer(self.cli(cmd)):
+            if match.group("type") == "N/A":
+                continue
             r += [
                 {
                     "vlan_id": match.group("vlan_id"),
