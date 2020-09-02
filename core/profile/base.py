@@ -331,6 +331,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         "noc.core.confdb.applicator.ntp.DefaultNTPVersionApplicator",
         "noc.core.confdb.applicator.systemaaaservicelocal.DefaultSystemAAAServiceLocalApplicator",
         "noc.core.confdb.applicator.systemaaaorder.DefaultSystemAAAOrderApplicator",
+        "noc.core.confdb.applicator.systemuserclass.DefaultUserClassApplicator",
         # Finally apply meta
         "noc.core.confdb.applicator.meta.MetaApplicator",
     ]

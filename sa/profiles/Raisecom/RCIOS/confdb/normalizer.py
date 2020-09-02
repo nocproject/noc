@@ -17,8 +17,7 @@ class RCIOSNormalizer(BaseNormalizer):
 
     @match("user", ANY, ANY, "local", "secret", ANY, "authorized-table", ANY, ANY)
     def normalize_username_access_level(self, tokens):
-        yield self.make_user_encrypted_password(username=tokens[2], password=" ".join(tokens[5]))
-        yield self.make_user_class(username=tokens[2])
+        yield self.make_user_encrypted_password(username=tokens[2], password=tokens[5])
 
     @match("interface", ANY)
     def normalize_interface(self, tokens):
