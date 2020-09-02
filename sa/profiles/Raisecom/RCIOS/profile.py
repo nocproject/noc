@@ -26,6 +26,11 @@ class Profile(BaseProfile):
     config_tokenizer_settings = {
         "line_comment": "!",
     }
+
+    confdb_defaults = [
+        ("hints", "system", "user", "defaults", "class", "level-15"),
+    ]
+
     config_normalizer = "RCIOSNormalizer"
 
     INTERFACE_TYPES = {

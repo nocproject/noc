@@ -1,0 +1,43 @@
+config: |
+  !
+  interface vlan1
+  !
+  !
+  interface vlan2
+  !
+  !
+  interface vlan4094
+  !
+  !
+  interface 3gppp
+  !
+  !
+  interface eth1
+  !
+  !
+  interface eth2
+  !
+  !
+  interface eth3
+  !
+  !
+  interface eth4
+  !
+  !
+  interface shdsl
+  !
+  !
+  interface sit0
+  !
+  !
+result:
+  - ['interfaces', 'vlan1']
+  - ['interfaces', 'vlan2']
+  - ['interfaces', 'vlan4094']
+  - ['interfaces', '3gppp']
+  - ['interfaces', 'eth1']
+  - ['interfaces', 'eth2']
+  - ['interfaces', 'eth3']
+  - ['interfaces', 'eth4']
+  - ['interfaces', 'shdsl']
+  - ['interfaces', 'sit0']
