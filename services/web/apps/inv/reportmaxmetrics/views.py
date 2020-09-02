@@ -7,29 +7,31 @@
 
 # Python modules
 import datetime
-from collections import defaultdict, namedtuple
-from typing import Iterable
+from collections import defaultdict
+from collections import namedtuple
 import csv
 from io import BytesIO
 
 # Third-party modules
 import xlsxwriter
 from django.http import HttpResponse
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
-from noc.core.clickhouse.connect import connection as ch_connection
-from noc.core.clickhouse.error import ClickhouseError
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.link import Link
+from noc.lib.app.reportdatasources.report_metrics import ReportInterfaceMetrics
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.app.reportdatasources.report_container import ReportContainerData
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
+from noc.core.comp import smart_text
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.objectdata import ObjectData
+from noc.core.mongo.connection import get_db
 from noc.core.translation import ugettext as _
 
 
@@ -96,72 +98,66 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
         enable_autowidth=False,
         **kwargs,
     ):
-        # get maximum metrics for the period
-        def get_interface_metrics(managed_objects, from_date, to_date):
-            if not isinstance(managed_objects, Iterable):
-                managed_objects = [managed_objects]
-            bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
-
-            from_date = from_date.replace(microsecond=0)
-            to_date = to_date.replace(microsecond=0)
-            SQL = """SELECT managed_object, path[4] as iface,
-                             dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path))) AS iface_description,
-                             dictGetString('interfaceattributes', 'profile', (managed_object, arrayStringConcat(path))) as profile,
-                             dictGetUInt64('interfaceattributes','in_speed' , (managed_object, arrayStringConcat(path))) AS iface_speed, divide(max(load_in),1048576) as load_in_max,
-                             divide(max(load_out),1048576) as load_out_max, argMax(ts,load_in) as max_load_in_time,
-                             argMax(ts,load_out) as max_load_out_time, divide(avg(load_in),1048576) as avg_load_in,
-                             divide(avg(load_out),1048576) as avg_load_out
-                    FROM interface
-                    WHERE
-                      ts >= toDateTime('%s')
-                      AND ts <= toDateTime('%s')
-                      AND managed_object IN (%s)
-                    GROUP BY managed_object, path
-                    """ % (
-                # from_date.date().isoformat(),
-                # to_date.date().isoformat(),
-                from_date.isoformat(sep=" "),
-                to_date.isoformat(sep=" "),
-                ", ".join(bi_map),
+        def load(mo_ids):
+            # match = {"links.mo": {"$in": mo_ids}}
+            match = {"int.managed_object": {"$in": mo_ids}}
+            group = {
+                "_id": "$_id",
+                "links": {
+                    "$push": {
+                        "iface_n": "$int.name",
+                        # "iface_id": "$int._id",
+                        # "iface_descr": "$int.description",
+                        # "iface_speed": "$int.in_speed",
+                        # "dis_method": "$discovery_method",
+                        # "last_seen": "$last_seen",
+                        "mo": "$int.managed_object",
+                        "linked_obj": "$linked_objects",
+                    }
+                },
+            }
+            value = (
+                get_db()["noc.links"]
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .aggregate(
+                    [
+                        {"$unwind": "$interfaces"},
+                        {
+                            "$lookup": {
+                                "from": "noc.interfaces",
+                                "localField": "interfaces",
+                                "foreignField": "_id",
+                                "as": "int",
+                            }
+                        },
+                        {"$match": match},
+                        {"$group": group},
+                    ],
+                    allowDiskUse=True,
+                )
             )
-            ch = ch_connection()
-            metric_map = defaultdict(dict)
-            try:
-                for (
-                    mo_bi_id,
-                    iface,
-                    iface_description,
-                    profile,
-                    iface_speed,
-                    load_in_max,
-                    load_out_max,
-                    max_load_in_time,
-                    max_load_out_time,
-                    avg_load_in,
-                    avg_load_out,
-                ) in ch.execute(post=SQL):
-                    mo = bi_map.get(mo_bi_id)
-                    if mo:
-                        metric_map[mo][iface] = {
-                            "max_load_in": float(load_in_max),
-                            "max_load_out": float(load_out_max),
-                            "max_load_in_time": max_load_in_time,
-                            "max_load_out_time": max_load_out_time,
-                            "avg_load_in": float(avg_load_in),
-                            "avg_load_out": float(avg_load_out),
-                            "description": iface_description,
-                            "profile": profile,
-                            "bandwidth": iface_speed,
-                        }
-            except ClickhouseError:
-                pass
-            return metric_map
+
+            res = defaultdict(dict)
+
+            for v in value:
+                if v["_id"]:
+                    for vv in v["links"]:
+                        if len(vv["linked_obj"]) == 2:
+                            mo = vv["mo"][0]
+                            iface = vv["iface_n"]
+                            for i in vv["linked_obj"]:
+                                if mo != i:
+                                    res[mo][i] = iface[0]
+            return res
 
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
 
+        def str_to_float(str):
+            return float("{0:.3f}".format(float(str)))
+
         cols = [
-            "id",
+            "object_id",
             "object_name",
             "object_address",
             "object_platform",
@@ -262,6 +258,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
 
         mo_attrs = namedtuple("MOATTRs", [c for c in cols if c.startswith("object")])
+
         containers_address = {}
         if "object_container" in columns_filter:
             containers_address = ReportContainerData(set(mos.values_list("id", flat=True)))
@@ -269,85 +266,118 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
 
         moss = {}
         for row in mos.values_list(
-            "id", "name", "address", "platform", "administrative_domain__name", "segment", "id"
+            "bi_id", "name", "address", "platform", "administrative_domain__name", "segment", "id"
         ):
             moss[row[0]] = mo_attrs(
                 *[
+                    row[6],
                     row[1],
                     row[2],
-                    str(Platform.get_by_id(row[3]) if row[3] else ""),
+                    smart_text(Platform.get_by_id(row[3]) if row[3] else ""),
                     row[4],
-                    str(NetworkSegment.get_by_id(row[5])) if row[5] else "",
+                    smart_text(NetworkSegment.get_by_id(row[5])) if row[5] else "",
                     containers_address.get(row[6], "") if containers_address and row[6] else "",
                 ]
             )
-        # get maximum metrics
-        ifaces_metrics = get_interface_metrics(mos, from_date, to_date)
 
-        for mm in ifaces_metrics:
-            mo_id = moss[int(mm.id)]
-            uplinks = set(mm.data.uplinks)
-            links = []
+        report_metric = ReportInterfaceMetrics(
+            tuple(sorted(moss)), from_date, to_date, columns=None
+        )
+        report_metric.SELECT_QUERY_MAP = {
+            (0, "managed_object", "id"): "managed_object",
+            (1, "path", "iface_name"): "arrayStringConcat(path)",
+            (
+                2,
+                "",
+                "iface_description",
+            ): "dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path)))",
+            (
+                3,
+                "",
+                "profile",
+            ): "dictGetString('interfaceattributes', 'profile', (managed_object, arrayStringConcat(path)))",
+            (
+                4,
+                "speed",
+                "iface_speed",
+            ): "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', (managed_object, arrayStringConcat(path))), max(speed))",
+            (5, "load_in_max", "load_in_max"): "divide(max(load_in),1048576)",
+            (6, "load_out_max", "load_out_max"): "divide(max(load_out),1048576)",
+            (7, "max_load_in_time", "max_load_in_time"): "argMax(ts,load_in)",
+            (8, "max_load_out_time", "max_load_out_time"): "argMax(ts,load_out)",
+            (9, "avg_load_in", "avg_load_in"): "divide(avg(load_in),1048576)",
+            (10, "avg_load_out", "avg_load_out"): "divide(avg(load_out),1048576)",
+        }
+        ifaces_metrics = defaultdict(dict)
 
-            # find uplinks
-            if cmap[-1] > 15:
-                for l in Link.object_links(mm):
-                    local_interfaces = []
-                    remote_interfaces = []
-                    remote_objects = set()
-                    for ifs in l.interfaces:
-                        if ifs.managed_object.id == mm.id:
-                            local_interfaces += [ifs]
-                        else:
-                            remote_interfaces += [ifs]
-                            remote_objects.add(ifs.managed_object)
-                    if len(remote_objects) == 1:
-                        ro = remote_objects.pop()
-                        if ro.id in uplinks:
-                            role = "uplink"
-                        else:
-                            role = "downlink"
-                        links += [
-                            {
-                                "id": l.id,
-                                "role": role,
-                                "local_interface": local_interfaces,
-                                "remote_object": ro,
-                                "remote_interface": remote_interfaces,
-                                "remote_status": "up" if ro.get_status() else "down",
-                            }
-                        ]
+        for row in report_metric.do_query():
+            ifaces_metrics[row[0]][row[1]] = {
+                "description": row[2],
+                "profile": row[3],
+                "bandwidth": row[4],
+                "max_load_in": str_to_float(row[5]),
+                "max_load_out": str_to_float(row[6]),
+                "max_load_in_time": row[7],
+                "max_load_out_time": row[8],
+                "avg_load_in": str_to_float(row[9]),
+                "avg_load_out": str_to_float(row[10]),
+            }
 
-            for i in ifaces_metrics[mm]:
+        # find uplinks
+        links = {}
+        if cmap[-1] > 15:
+            mos_id = list(mos.values_list("id", flat=True))
+            uplinks = {obj: [] for obj in mos_id}
+            for d in ObjectData._get_collection().find(
+                {"_id": {"$in": mos_id}}, {"_id": 1, "uplinks": 1}
+            ):
+                uplinks[d["_id"]] = d.get("uplinks", [])
+            # print(datetime.datetime.now(), " get_uplinks")
+            rld = load(mos_id)
+            # print(datetime.datetime.now(), " get_links")
+
+            for mo in uplinks:
+                for uplink in uplinks[mo]:
+                    if mo in links:
+                        links[mo] += [rld[mo][uplink]]
+                    else:
+                        links[mo] = [rld[mo][uplink]]
+
+        for mo_bi in ifaces_metrics:
+            mo_id = moss[int(mo_bi)]
+            mo_ids = getattr(mo_id, "object_id")
+
+            for i in ifaces_metrics[mo_bi]:
                 if not exclude_zero:
                     if (
-                        ifaces_metrics[mm][i]["max_load_in"] == 0
-                        and ifaces_metrics[mm][i]["max_load_out"] == 0
+                        ifaces_metrics[mo_bi][i]["max_load_in"] == 0
+                        and ifaces_metrics[mo_bi][i]["max_load_out"] == 0
                     ):
                         continue
                 if description:
-                    if description not in ifaces_metrics[mm][i]["description"]:
+                    if description not in ifaces_metrics[mo_bi][i]["description"]:
                         continue
                 if interface_profile:
-                    if interface_profile.name not in ifaces_metrics[mm][i]["profile"]:
+                    if interface_profile.name not in ifaces_metrics[mo_bi][i]["profile"]:
                         continue
+
                 row2 = [
-                    str(mm.id),
-                    mm.name,
-                    mm.address,
+                    mo_ids,
+                    getattr(mo_id, "object_name"),
+                    getattr(mo_id, "object_address"),
                     getattr(mo_id, "object_platform"),
                     getattr(mo_id, "object_adm_domain"),
                     getattr(mo_id, "object_segment"),
                     getattr(mo_id, "object_container"),
                     i,
-                    ifaces_metrics[mm][i]["description"],
-                    ifaces_metrics[mm][i]["bandwidth"],
-                    ifaces_metrics[mm][i]["max_load_in"],
-                    ifaces_metrics[mm][i]["max_load_in_time"],
-                    ifaces_metrics[mm][i]["max_load_out"],
-                    ifaces_metrics[mm][i]["max_load_out_time"],
-                    ifaces_metrics[mm][i]["avg_load_in"],
-                    ifaces_metrics[mm][i]["avg_load_out"],
+                    ifaces_metrics[mo_bi][i]["description"],
+                    ifaces_metrics[mo_bi][i]["bandwidth"],
+                    ifaces_metrics[mo_bi][i]["max_load_in"],
+                    ifaces_metrics[mo_bi][i]["max_load_in_time"],
+                    ifaces_metrics[mo_bi][i]["max_load_out"],
+                    ifaces_metrics[mo_bi][i]["max_load_out_time"],
+                    ifaces_metrics[mo_bi][i]["avg_load_in"],
+                    ifaces_metrics[mo_bi][i]["avg_load_out"],
                     "",
                     "",
                     "",
@@ -358,23 +388,24 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                     "",
                     "",
                 ]
+
                 ss = True
-                for link in links:
-                    if link["role"] == "uplink":
-                        ifname_uplink = link["local_interface"][0].name
-                        if ifname_uplink in ifaces_metrics[mm]:
+                if mo_ids in links:
+                    for ifname_uplink in links[mo_ids]:
+                        if ifname_uplink in ifaces_metrics[mo_bi]:
                             row2[16] = ifname_uplink
-                            row2[17] = link["local_interface"][0].description
-                            row2[22] = ifaces_metrics[mm][ifname_uplink]["avg_load_in"]
-                            row2[23] = ifaces_metrics[mm][ifname_uplink]["avg_load_out"]
-                            row2[18] = ifaces_metrics[mm][ifname_uplink]["max_load_in"]
-                            row2[20] = ifaces_metrics[mm][ifname_uplink]["max_load_out"]
-                            row2[19] = ifaces_metrics[mm][ifname_uplink]["max_load_in_time"]
-                            row2[21] = ifaces_metrics[mm][ifname_uplink]["max_load_out_time"]
+                            row2[17] = ifaces_metrics[mo_bi][ifname_uplink]["description"]
+                            row2[22] = ifaces_metrics[mo_bi][ifname_uplink]["avg_load_in"]
+                            row2[23] = ifaces_metrics[mo_bi][ifname_uplink]["avg_load_out"]
+                            row2[18] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_in"]
+                            row2[20] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_out"]
+                            row2[19] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_in_time"]
+                            row2[21] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_out_time"]
                             r += [translate_row(row2, cmap)]
                             ss = False
                 if ss:
                     r += [translate_row(row2, cmap)]
+
         filename = "metrics_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
