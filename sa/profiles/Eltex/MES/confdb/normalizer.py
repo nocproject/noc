@@ -288,3 +288,17 @@ class MESNormalizer(BaseNormalizer):
     @match("ip", "domain", "name", ANY)
     def normalize_dns_name_server_search_suffix(self, tokens):
         yield self.make_protocols_dns_search_suffix(suffix=tokens[-1])
+
+    @match("aaa", "authentication", "login", "authorization", ANY, REST)
+    def normalize_aaa_service_order(self, tokens):
+        for item in tokens[5:]:
+            service = "passwd" if item == "line" else item
+            yield self.make_aaa_service_order(name=service)
+
+    @match("encrypted", "tacacs-server", "host", IP_ADDRESS, "key", ANY)
+    def normalize_aaa_tacacs_address(self, tokens):
+        yield self.make_aaa_service_type(name="tacacs", type="tacacs+")
+        yield self.make_aaa_service_address(name="tacacs", ip=tokens[3])
+        yield self.make_aaa_service_address_tacacs_secret(
+            name="tacacs", ip=tokens[3], secret=tokens[-1]
+        )

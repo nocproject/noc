@@ -164,3 +164,28 @@ class JunOSNormalizer(BaseNormalizer):
     @match("system", "domain-search", ANY)
     def normalize_dns_name_server_search_suffix(self, tokens):
         yield self.make_protocols_dns_search_suffix(suffix=tokens[2])
+
+    @match("system", "tacplus-server")
+    def normalize_tacacs_type(self, tokens):
+        yield self.make_aaa_service_type(name="tacacs", type="tacacs+")
+
+    @match("system", "authentication-order", ANY)
+    def normalize_aaa_service_order(self, tokens):
+        service = "tacacs" if tokens[-1] == "tacplus" else tokens[-1]
+        yield self.make_aaa_service_order(name=service)
+
+    @match("system", "tacplus-server", IP_ADDRESS)
+    def normalize_aaa_tacacs_address(self, tokens):
+        yield self.make_aaa_service_address(name="tacacs", ip=tokens[-1])
+
+    @match("system", "tacplus-server", IP_ADDRESS, "source-address", IP_ADDRESS)
+    def normalize_aaa_tacacs_source_address(self, tokens):
+        yield self.make_aaa_service_address_source(
+            name="tacacs", ip=tokens[2], source_ip=tokens[-1]
+        )
+
+    @match("system", "tacplus-server", IP_ADDRESS, "secret", ANY)
+    def normalize_aaa_tacacs_secret(self, tokens):
+        yield self.make_aaa_service_address_tacacs_secret(
+            name="tacacs", ip=tokens[2], secret=tokens[-1].strip('"')
+        )

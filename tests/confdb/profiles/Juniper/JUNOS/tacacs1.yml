@@ -1,0 +1,17 @@
+config: |
+  system {
+      authentication-order [ password tacplus ];
+      tacplus-server {
+          192.168.0.1 {
+              secret "$9$SECRET"; ## SECRET-DATA
+              source-address 192.168.1.1;
+          }
+      }
+  }
+result:
+  - ['system', 'aaa', 'service', 'order', 'password']
+  - ['system', 'aaa', 'service', 'order', 'tacacs']
+  - ['system', 'aaa', 'service', 'tacacs', 'type', 'tacacs+', {'replace': True}]
+  - ['system', 'aaa', 'service', 'tacacs', 'address', '192.168.0.1']
+  - ['system', 'aaa', 'service', 'tacacs', 'address', '192.168.0.1', 'tacacs+', 'secret', '$9$SECRET']
+  - ['system', 'aaa', 'service', 'tacacs', 'address', '192.168.0.1', 'source', '192.168.1.1']
