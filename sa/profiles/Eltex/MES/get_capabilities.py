@@ -108,6 +108,9 @@ class Script(BaseScript):
         :return:
         """
         r = []
+        mode = self.snmp.get(mib["RADLAN-STACK-MIB::rlStackUnitMode", 0])
+        if mode == 1:
+            return []
         for oid, stack_num in self.snmp.getnext(
             mib["RADLAN-STACK-MIB::rlStackActiveUnitIdAfterReset"]
         ):
