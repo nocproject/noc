@@ -18,7 +18,15 @@ class Script(BaseScript):
     interface = IGetInterfaces
     TIMEOUT = 240
 
-    type = {"GUSQ": "gei_", "VDWVD": "vdsl_", "SCXN": "gei_", "PRWGS": ""}
+    type = {
+        "GUSQ": "gei_",
+        "HUVQ": "gei_",
+        "GTGHK": "gpon-olt_",
+        "GTGOG": "gpon-onu_",
+        "VDWVD": "vdsl_",
+        "SCXN": "gei_",
+        "PRWGS": "",
+    }
     rx_iface = re.compile(
         r"^(?P<ifname>\S+) is (?P<admin_status>activate|deactivate|down|administratively down|up),\s*"
         r"line protocol is (?P<oper_status>down|up).+\n"
@@ -26,7 +34,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_vlan = re.compile(
-        r"^(?P<mode>access=0|trunk\>0|hybrid\>=0)\s+(?P<pvid>\d+).+\n"
+        r"^(?P<mode>access=0|trunk\>0|hybrid\>=0|accessUn)\s+(?P<pvid>\d+).+\n"
         r"^UntaggedVlan:\s*\n"
         r"(^(?P<untagged>\d+)\s*\n)?"
         r"^TaggedVlan:\s*\n"
@@ -54,13 +62,44 @@ class Script(BaseScript):
     def execute_cli(self):
         interfaces = []
         ports = self.profile.fill_ports(self)
+        # Get portchannels
+        portchannel_members = {}
+        for pc in self.scripts.get_portchannel():
+            i = self.profile.convert_interface_name(pc["interface"])
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
+            interfaces += [
+                {
+                    "name": pc["interface"],
+                    "type": "aggregated",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "subinterfaces": [
+                        {
+                            "name": pc["interface"],
+                            "admin_status": True,
+                            "oper_status": True,
+                            "enabled_afi": ["BRIDGE"],
+                        }
+                    ],
+                }
+            ]
         for p in ports:
             if int(p["port"]) < 1 or p["realtype"] == "":
                 continue
             prefix = self.type[p["realtype"]]
+            if prefix == "gpon-onu_":
+                continue
             for i in range(int(p["port"])):
                 ifname = "%s%s/%s/%s" % (prefix, p["shelf"], p["slot"], str(i + 1))
-                v = self.cli("show interface %s" % ifname)
+                try:
+                    v = self.cli("show interface %s" % ifname)
+                except self.CLISyntaxError:
+                    # In some card we has both gei_ and xgei_ interfaces
+                    if prefix == "gei_":
+                        ifname = "xgei_%s/%s/%s" % (p["shelf"], p["slot"], str(i + 1))
+                        v = self.cli("show interface %s" % ifname)
                 match = self.rx_iface.search(v)
                 admin_status = bool(match.group("admin_status") == "up")
                 oper_status = bool(match.group("oper_status") == "up")
@@ -74,7 +113,7 @@ class Script(BaseScript):
                 }
                 if descr not in ["none", "none."]:
                     iface["description"] = descr
-                if prefix == "gei_":
+                if prefix in ["gei_", "gpon-olt_"]:
                     v = self.cli("show vlan port %s" % ifname)
                     match = self.rx_vlan.search(v)
                     sub = {
@@ -88,6 +127,10 @@ class Script(BaseScript):
                     if match.group("tagged"):
                         sub["tagged_vlans"] = self.expand_rangelist(match.group("tagged"))
                     iface["subinterfaces"] += [sub]
+                    if ifname in portchannel_members:
+                        ai, is_lacp = portchannel_members[ifname]
+                        iface["aggregated_interface"] = ai
+                        iface["enabled_protocols"] = ["LACP"]
                 if prefix == "vdsl_":
                     for match in self.rx_pvc.finditer(v):
                         sub = {
