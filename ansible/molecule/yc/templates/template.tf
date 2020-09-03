@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    yandex = {
+      source = "terraform-providers/yandex"
+    }
+  }
+}
+
 provider "yandex" {
   token     = "{{ molecule_yml.driver.token }}"
   cloud_id  = "{{ molecule_yml.driver.cloud_id }}"
