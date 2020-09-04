@@ -45,6 +45,7 @@
       - zlib-devel
       - bzip2
       - cmake
+      - openssl-devel
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
