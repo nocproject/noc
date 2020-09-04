@@ -30,7 +30,7 @@ class Profile(BaseProfile):
 
     rx_interface_name = re.compile(r"^\d+$")
 
-    PORT_TYPE = {
+    LITE_PORT_TYPE = {
         5: "Цифровой вход",
         6: "Реле",
         8: "Внутренний датчик температуры",
@@ -39,20 +39,14 @@ class Profile(BaseProfile):
         27: "Вход сигнала Счетчика",
     }
 
-    IFACE_NAME = {5: "input", 6: "relay", 8: "tempIn", 9: "tempOut", 13: "ups", 27: "elMeter"}
+    LIGHT_PORT_TYPE = {
+        5: "Цифровой вход",
+        6: "Реле",
+        9: "Датчик температуры 1",
+        10: "Датчик температуры 2",
+        13: "Вход сигнала ИБП",
+        16: "Вход сигнала Счетчика",
+    }
 
-    def convert_interface_name(self, s):
-        """
-        >>> Profile().convert_interface_name("5")
-        'temp1'
-        """
-        match = self.rx_interface_name.match(s)
-        if not match:
-            return s
-        else:
-            return self.IFACE_NAME.get(int(s))
-
-    def check_oid(self):
-        if self.is_lite:
-            return 103
-        return 102
+    LITE_IFACE_NAME = {5: "input", 6: "relay", 8: "tempIn", 9: "tempOut", 13: "ups", 27: "elMeter"}
+    LIGHT_IFACE_NAME = {5: "input", 6: "relay", 8: "temp1", 9: "temp2", 16: "elMeter"}

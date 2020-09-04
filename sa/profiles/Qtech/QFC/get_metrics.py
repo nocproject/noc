@@ -29,9 +29,9 @@ class Script(GetMetricsScript):
             )
             if metric.ifindex in [5, 6, 13] and status == 1:
                 value = 1
-            elif metric.ifindex in [8, 9] and status != -1000:
+            elif metric.ifindex in [8, 9, 10] and status != -1000:
                 value = 1
-            elif metric.ifindex == 27 and status > 0:
+            elif metric.ifindex in [16, 27] and status > 0:
                 value = 1
             self.set_metric(
                 id=("Interface | Status | Admin", metric.path), value=value,
@@ -50,7 +50,10 @@ class Script(GetMetricsScript):
     @metrics(["Environment | Voltage"], volatile=False, access="S")  # SNMP version
     def get_voltage(self, metrics):
         for metric in metrics:
-            value = self.snmp.get("1.3.6.1.4.1.27514.%s.0.19.0" % self.check_oid())
+            if self.is_lite:
+                value = self.snmp.get("1.3.6.1.4.1.27514.103.0.19")
+            else:
+                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.8")
             self.set_metric(
                 id=("Environment | Voltage", metric.path), value=value, scale=scale(0.1)
             )

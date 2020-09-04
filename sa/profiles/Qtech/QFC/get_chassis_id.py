@@ -15,12 +15,10 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def check_oid(self):
-        if self.is_lite:
-            return 103
-        return 102
-
     def execute_snmp(self):
-        base = self.snmp.get("1.3.6.1.4.1.27514.%s.0.4.0" % self.check_oid())
+        if self.is_lite:
+            base = self.snmp.get("1.3.6.1.4.1.27514.103.0.4.0")
+        else:
+            base = self.snmp.get("1.3.6.1.4.1.27514.102.0.4.0")
         if base:
             return [{"first_chassis_mac": base, "last_chassis_mac": base}]

@@ -1,0 +1,17 @@
+{
+  "$metric": "Object | SysUptime",
+  "$type": "match",
+  "$match": [
+    {
+      "$match": "is_lite",
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.27514.103.0.12.0",
+      "type": "gauge",
+    },
+    {
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.27514.102.0.15.0",
+      "type": "gauge",
+    }
+  ]
+}

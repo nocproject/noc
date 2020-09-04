@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QFC.get_uptime
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,16 +22,16 @@ class Script(BaseScript):
 
     def check_oid(self):
         if self.is_lite:
-            return 103
-        return 102
+            return "103.0.12.0"
+        return "102.0.15.0"
 
     def execute(self):
         if self.has_snmp():
             try:
-                su = self.snmp.get("1.3.6.1.4.1.27514.%s.0.12.0" % self.self.check_oid())
+                su = self.snmp.get("1.3.6.1.4.1.27514.%s.0.12.0" % self.check_oid())
                 # DES-1210-28/ME/B3 fw 10.04.B020 return 'VLAN-1002'
                 if is_float(su):
-                    return float(su) / 100.0
+                    return float(su)
             except (self.snmp.TimeOutError, self.snmp.SNMPError):
                 pass
         return None
