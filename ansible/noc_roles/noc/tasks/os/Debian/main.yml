@@ -54,6 +54,7 @@
       - zlib1g-dev
       - patch
       - bzip2
+      - cmake
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
