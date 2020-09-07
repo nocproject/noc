@@ -28,3 +28,6 @@ class Script(BaseScript):
                 except (self.snmp.TimeOutError, SNMPError):
                     pass
         return False
+
+    def execute_platform_snmp(self, caps):
+        caps["Sensor | Controller"] = True
