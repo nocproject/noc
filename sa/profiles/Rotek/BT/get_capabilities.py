@@ -14,5 +14,4 @@ class Script(BaseScript):
     cache = True
 
     def execute_platform_snmp(self, caps):
-        if self.match_version(platform__regex="BT.*"):
-            caps["Sensor | Controller"] = True
+        caps["Sensor | Controller"] = True
