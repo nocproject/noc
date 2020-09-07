@@ -20,13 +20,12 @@ class Script(BaseScript):
     def execute_snmp(self, interfaces=None):
         result = []
         try:
-            for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1"):
-                ifindex = v[1]
-                name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
-                a_status = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
-                o_status = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
-                result += [{"interface": name, "admin_status": a_status, "oper_status": o_status}]
-        except self.snmp.TimeOutError:
+            ifindex = self.snmp.get("1.3.6.1.2.1.2.2.1.1.1")
+            name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
+            a_status = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
+            o_status = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
+            result += [{"interface": name, "admin_status": a_status, "oper_status": o_status}]
+        except Exception:
             result += [{"interface": "st", "admin_status": True, "oper_status": True}]
         for index in self.profile.PORT_TYPE.keys():
             s_status = 0
@@ -39,6 +38,12 @@ class Script(BaseScript):
                 s_status = 1
             elif index == 9 and int(status) == 0:
                 s_status = 1
-            result += [{"interface": name, "admin_status": s_status, "oper_status": s_status}]
+            result += [
+                {
+                    "interface": self.profile.IFACE_NAME.get(index),
+                    "admin_status": s_status,
+                    "oper_status": s_status,
+                }
+            ]
 
         return result

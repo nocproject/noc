@@ -14,33 +14,32 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Rotek.BT.get_interfaces"
     interface = IGetInterfaces
-    cache = True
 
     def execute_snmp(self):
         interfaces = []
-
         try:
-            for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
-                ifindex = v[1]
-                name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
-                mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
-                a_status = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
-                o_status = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
-                interfaces += [
-                    {
-                        "type": "physical",
-                        "name": name,
-                        "mac": mac,
-                        "admin_status": True if a_status == 7 else False,
-                        "oper_status": True if o_status == 1 else False,
-                        "subinterfaces": [],
-                    }
-                ]
-        except self.snmp.TimeOutError:
+            ifindex = self.snmp.get("1.3.6.1.2.1.2.2.1.1.1")
+            name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
+            mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
+            a_status = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
+            o_status = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
+            interfaces += [
+                {
+                    "type": "physical",
+                    "name": name,
+                    "mac": mac,
+                    "admin_status": True if a_status == 7 else False,
+                    "oper_status": True if o_status == 1 else False,
+                    "subinterfaces": [],
+                }
+            ]
+        except Exception:
+            mac = self.scripts.get_chassis_id()[0].get("first_chassis_mac")
             interfaces += [
                 {
                     "type": "physical",
                     "name": "st",
+                    "mac": mac if mac else None,
                     "admin_status": True,
                     "oper_status": True,
                     "subinterfaces": [],

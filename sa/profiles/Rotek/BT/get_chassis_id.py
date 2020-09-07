@@ -19,7 +19,7 @@ class Script(BaseScript):
     name = "Rotek.BT.get_chassis_id"
     cache = True
     interface = IGetChassisID
-    rx_mac = re.compile(r"MAC(?:\S+:|:)\s(?P<mac>\S+)<", re.MULTILINE)
+    rx_mac = re.compile(rb"MAC(?:\S+:|:)\s(?P<mac>\S+)<", re.MULTILINE)
 
     SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
 
