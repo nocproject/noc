@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Qtech.BFC-PBIC-S.get_interfaces
+# Qtech.BFC_PBIC_S.get_interfaces
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -17,52 +17,77 @@ class Script(BaseScript):
 
     def execute_snmp(self):
         interfaces = []
-        for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_repetitions=3, cached=True):
-            name = v[1]
-            status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % name)
-            if status == 0:
-                admin_status = True
-                oper_status = True
-            else:
-                admin_status = False
-                oper_status = False
-            iface = {
+        temp = self.snmp.get("1.3.6.1.3.55.1.2.1.0", cached=True)
+        t_st = False
+        if -55 < temp < 600:
+            t_st = True
+        interfaces += [
+            {
                 "type": "physical",
-                "name": name,
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "snmp_ifindex": name,
-                "subinterfaces": [
-                    {
-                        "name": name,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "snmp_ifindex": name,
-                    }
-                ],
+                "name": 21,
+                "admin_status": t_st,
+                "oper_status": t_st,
+                "snmp_ifindex": 21,
+                "description": "Выносной датчик температуры",
+                "subinterfaces": [],
             }
-            interfaces += [iface]
-        ip = self.credentials.get("address", "")
-        ip = ip + "/" + str(32)
-        ip_list = [ip]
-        iface = {
-            "type": "physical",
-            "name": "eth0",
-            "admin_status": True,
-            "oper_status": True,
-            "mac": self.snmp.get("1.3.6.1.3.55.1.2.2.0"),
-            "snmp_ifindex": 10,
-            "subinterfaces": [
+        ]
+        for oid, value in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True):
+            s_status = False
+            battery = False
+            descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % value)
+            status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % value)
+            invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % value)
+            if descr in [0, 3]:
+                if invert == 0 and status == 0:
+                    s_status = True
+                elif invert == 1 and status == 1:
+                    s_status = True
+            elif descr in [9, 10]:
+                if descr == 9:
+                    if invert == 0 and status == 0:
+                        s_status = True
+                        battery = True
+                    elif invert == 1 and status == 1:
+                        s_status = True
+                        battery = True
+                    elif invert == 0 and status == 1:
+                        s_status = True
+                        battery = True
+                    elif invert == 1 and status == 0:
+                        s_status = True
+                        battery = True
+                if descr == 10:
+                    if battery and invert == 0 and status == 0:
+                        s_status = True
+                    elif battery and invert == 1 and status == 1:
+                        s_status = True
+            else:
+                if status > 0:
+                    s_status = True
+            interfaces += [
                 {
-                    "name": "eth0",
-                    "admin_status": True,
-                    "oper_status": True,
-                    "mac": self.snmp.get("1.3.6.1.3.55.1.2.2.0"),
-                    "ipv4_addresses": ip_list,
-                    "snmp_ifindex": 10,
-                    "enabled_afi": ["BRIDGE", "IPv4"],
+                    "type": "physical",
+                    "name": "%s/%s" % (descr, value) if descr == 0 else descr,
+                    "admin_status": s_status,
+                    "oper_status": s_status,
+                    "snmp_ifindex": value,
+                    "description": "%s %s" % (self.profile.PORT_TYPE.get(descr), value)
+                    if descr == 0
+                    else self.profile.PORT_TYPE.get(descr),
+                    "subinterfaces": [],
                 }
-            ],
-        }
-        interfaces += [iface]
+            ]
+        mac = self.snmp.get("1.3.6.1.3.55.1.2.2.0")
+        interfaces += [
+            {
+                "type": "physical",
+                "name": "eth0",
+                "admin_status": True,
+                "oper_status": True,
+                "mac": mac,
+                "snmp_ifindex": 100,
+                "subinterfaces": [],
+            }
+        ]
         return [{"interfaces": interfaces}]
