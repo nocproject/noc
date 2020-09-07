@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ElectronR.KO01M.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # NOC modules
@@ -17,14 +17,13 @@ class Script(BaseScript):
     keep_cli_session = False
 
     def execute_snmp(self):
-        # Try SNMP first
-        platform = self.snmp.get("1.3.6.1.2.1.1.1.0").strip().replace(" ", ".")
+        platform = self.snmp.get("1.3.6.1.2.1.1.1.0").split()[1]
         sn = self.snmp.get("1.3.6.1.4.1.35419.1.1.1.0")
         version = self.snmp.get("1.3.6.1.4.1.35419.1.1.2.0")
         result = {
-            "vendor": "ElectronR",
+            "vendor": "Electron",
             "version": version,
-            "platform": platform,
+            "platform": platform.strip(),
             "attributes": {"Serial Number": sn},
         }
         return result
