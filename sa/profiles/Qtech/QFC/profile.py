@@ -49,5 +49,13 @@ class Profile(BaseProfile):
         16: "Вход сигнала Счетчика",
     }
 
-    LITE_IFACE_NAME = {5: "input", 6: "output", 7: "v220", 8: "tempIn", 9: "tempOut", 13: "ups", 27: "elMeter"}
+    LITE_IFACE_NAME = {
+        5: "input",
+        6: "output",
+        7: "v220",
+        8: "tempIn",
+        9: "tempOut",
+        13: "ups",
+        27: "elMeter",
+    }
     LIGHT_IFACE_NAME = {5: "input", 6: "output", 8: "temp1", 9: "temp2", 16: "elMeter"}
