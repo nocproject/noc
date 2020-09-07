@@ -97,7 +97,7 @@ class Script(GetMetricsScript):
                 status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % metric.ifindex)
                 invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % metric.ifindex)
                 for oid, key in self.snmp.getnext(
-                        "1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True
+                    "1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True
                 ):
                     b_descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % key)
                     if b_descr == 9:
