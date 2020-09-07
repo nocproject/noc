@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Qtech.BFC-PBIC-S.get_chassis_id
+# Qtech.BFC_PBIC_S.get_chassis_id
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
