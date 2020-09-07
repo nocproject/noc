@@ -13,10 +13,24 @@ from core.script.metrics import scale
 class Script(GetMetricsScript):
     name = "Qtech.BFC_PBIC_S.get_metrics"
 
+    def get_battery(self):
+        for oid, key in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True):
+            b_descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % key)
+            if b_descr == 9:
+                b_status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % key)
+                b_invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % key)
+                if b_invert == 0 and b_status == 0:
+                    return True
+                elif b_invert == 1 and b_status == 1:
+                    return True
+                elif b_invert == 0 and b_status == 1:
+                    return True
+                elif b_invert == 1 and b_status == 0:
+                    return True
+
     @metrics(["Environment | Sensor Status"], volatile=False, access="S")  # SNMP version
     def get_interface_admin_status(self, metrics):
         for metric in metrics:
-            battery = False
             if metric.ifindex == 100:
                 continue
             value = 0
@@ -39,21 +53,7 @@ class Script(GetMetricsScript):
                     elif invert == 1 and status == 0:
                         value = 1
                 if descr == 10:
-                    for oid, key in self.snmp.getnext(
-                        "1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True
-                    ):
-                        b_descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % key)
-                        if b_descr == 9:
-                            b_status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % key)
-                            b_invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % key)
-                            if b_invert == 0 and b_status == 0:
-                                battery = True
-                            elif b_invert == 1 and b_status == 1:
-                                battery = True
-                            elif b_invert == 0 and b_status == 1:
-                                battery = True
-                            elif b_invert == 1 and b_status == 0:
-                                battery = True
+                    battery = self.get_battery()
                     if battery and invert == 0 and status == 0:
                         value = 1
                     elif battery and invert == 1 and status == 1:
@@ -91,26 +91,11 @@ class Script(GetMetricsScript):
     def get_power_input_status(self, metrics):
         for metric in metrics:
             value = 0
-            battery = False
             descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % metric.ifindex)
             if descr == 10:
                 status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % metric.ifindex)
                 invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % metric.ifindex)
-                for oid, key in self.snmp.getnext(
-                    "1.3.6.1.3.55.1.3.1.1", max_retries=3, cached=True
-                ):
-                    b_descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % key)
-                    if b_descr == 9:
-                        b_status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % key)
-                        b_invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % key)
-                        if b_invert == 0 and b_status == 0:
-                            battery = True
-                        elif b_invert == 1 and b_status == 1:
-                            battery = True
-                        elif b_invert == 0 and b_status == 1:
-                            battery = True
-                        elif b_invert == 1 and b_status == 0:
-                            battery = True
+                battery = self.get_battery()
                 if battery and invert == 0 and status == 0:
                     value = 1
                 elif battery and invert == 1 and status == 1:
