@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Rotek.BT.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,61 +16,56 @@ class Script(BaseScript):
     interface = IGetInterfaces
     cache = True
 
-    def execute(self):
+    def execute_snmp(self):
         interfaces = []
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
-                    ifindex = v[1]
-                    name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
-                    mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
-                    a_status = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
-                    o_status = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
-                    if a_status == 7:
-                        admin_status = True
-                    else:
-                        admin_status = False
-                    if o_status == 1:
-                        oper_status = True
-                    else:
-                        oper_status = False
-                    # print repr("%s\n" % admin_status)
-                    interfaces += [
-                        {
-                            "type": "physical",
-                            "name": name,
-                            "mac": mac,
-                            "admin_status": admin_status,
-                            "oper_status": oper_status,
-                            "subinterfaces": [
-                                {
-                                    "name": name,
-                                    "mac": mac,
-                                    "snmp_ifindex": ifindex,
-                                    "admin_status": admin_status,
-                                    "oper_status": oper_status,
-                                    "enabled_afi": ["BRIDGE"],
-                                }
-                            ],
-                        }
-                    ]
-            except self.snmp.TimeOutError:
-                pass
-        interfaces += [
-            {
-                "type": "physical",
-                "name": "st",
-                "admin_status": True,
-                "oper_status": True,
-                "subinterfaces": [
+
+        try:
+            for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
+                ifindex = v[1]
+                name = self.snmp.get(mib["IF-MIB::ifDescr", ifindex])
+                mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
+                a_status = self.snmp.get(mib["IF-MIB::ifAdminStatus", ifindex])
+                o_status = self.snmp.get(mib["IF-MIB::ifOperStatus", ifindex])
+                interfaces += [
                     {
-                        "name": "st",
-                        "admin_status": True,
-                        "oper_status": True,
-                        "enabled_afi": ["BRIDGE"],
+                        "type": "physical",
+                        "name": name,
+                        "mac": mac,
+                        "admin_status": True if a_status == 7 else False,
+                        "oper_status": True if o_status == 1 else False,
+                        "subinterfaces": [],
                     }
-                ],
-            }
-        ]
+                ]
+        except self.snmp.TimeOutError:
+            interfaces += [
+                {
+                    "type": "physical",
+                    "name": "st",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "subinterfaces": [],
+                }
+            ]
+
+        for index in self.profile.PORT_TYPE.keys():
+            s_status = 0
+            status = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % index)
+            if index == 1 and int(status) == 0:
+                s_status = 1
+            elif index == 2 and float(status) != -1000:
+                s_status = 1
+            elif index == 5 and float(status) > 0:
+                s_status = 1
+            interfaces += [
+                {
+                    "type": "physical",
+                    "name": self.profile.IFACE_NAME.get(index),
+                    "admin_status": s_status,
+                    "oper_status": s_status,
+                    "snmp_ifindex": index,
+                    "description": self.profile.PORT_TYPE.get(index),
+                    "subinterfaces": [],
+                }
+            ]
+
         return [{"interfaces": interfaces}]
