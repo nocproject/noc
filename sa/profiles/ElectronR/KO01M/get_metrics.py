@@ -20,7 +20,7 @@ class Script(GetMetricsScript):
                 continue
             elif metric.ifindex == 140:
                 temp = self.snmp.get("1.3.6.1.4.1.35419.20.1.140.0", cached=True)
-                if temp != -104:
+                if -55 < temp < 600:
                     value = 1
             elif metric.ifindex == 160:
                 impulse = self.snmp.get("1.3.6.1.4.1.35419.20.1.160.0", cached=True)
