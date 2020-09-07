@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ElectronR.KO01M.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,3 +19,6 @@ class Script(BaseScript):
         Check SNMP response to GETNEXT/BULK
         """
         return False
+
+    def execute_platform_snmp(self, caps):
+        caps["Sensor | Controller"] = True
