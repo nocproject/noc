@@ -12,11 +12,13 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metr
 class Script(GetMetricsScript):
     name = "ElectronR.KO01M.get_metrics"
 
-    @metrics(["Interface | Status | Admin"], volatile=False, access="S")  # SNMP version
-    def get_interface_admin_status(self, metrics):
+    @metrics(["Environment | Sensor Status"], volatile=False, access="S")  # SNMP version
+    def get_sensor_status(self, metrics):
         for metric in metrics:
             value = 0
-            if metric.ifindex == 140:
+            if metric.ifindex == 100:
+                continue
+            elif metric.ifindex == 140:
                 temp = self.snmp.get("1.3.6.1.4.1.35419.20.1.140.0", cached=True)
                 if temp != -104:
                     value = 1
@@ -26,9 +28,8 @@ class Script(GetMetricsScript):
                     value = 1
             else:
                 value = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % metric.ifindex)
-                print(value)
             self.set_metric(
-                id=("Interface | Status | Admin", metric.path), value=value,
+                id=("Environment | Sensor Status", metric.path), value=value,
             )
 
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
