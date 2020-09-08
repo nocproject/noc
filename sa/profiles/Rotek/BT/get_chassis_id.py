@@ -19,9 +19,9 @@ class Script(BaseScript):
     name = "Rotek.BT.get_chassis_id"
     cache = True
     interface = IGetChassisID
-    rx_mac = re.compile(r"MAC(?:\S+:|:)\s(?P<mac>\S+)<", re.MULTILINE)
+    rx_mac = re.compile(rb"MAC(?:\S+:|:)\s(?P<mac>\S+)<", re.MULTILINE)
 
-    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 1]}
+    SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
 
     always_prefer = "S"
 
@@ -30,7 +30,10 @@ class Script(BaseScript):
         get = "http://" + self.credentials.get("address", "") + "/"
         code, header, body = fetch_sync(get, allow_proxy=False, eof_mark=b"</html>")
         if 200 <= code <= 299:
-            match = self.rx_mac.search(body)
-            if match:
-                mac = (match.group("mac")).strip()
-                return [{"first_chassis_mac": mac, "last_chassis_mac": mac}]
+            try:
+                match = self.rx_mac.search(body)
+                if match:
+                    mac = (match.group("mac")).strip()
+                    return [{"first_chassis_mac": mac, "last_chassis_mac": mac}]
+            except ValueError:
+                pass
