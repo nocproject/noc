@@ -53,7 +53,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Temperature", metric.path),
                         value=value,
-                        scale=scale(0.1),
+                        scale=scale(0.1, 2),
                     )
 
     @metrics(["Environment | Voltage"], volatile=False, access="S")  # SNMP version
@@ -62,7 +62,7 @@ class Script(GetMetricsScript):
             if self.is_lite:
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.24.0")
                 self.set_metric(
-                    id=("Environment | Voltage", metric.path), value=value, scale=scale(0.1)
+                    id=("Environment | Voltage", metric.path), value=value, scale=scale(0.1, 2)
                 )
 
     @metrics(["Environment | Electric Current"], volatile=False, access="S")  # SNMP version
