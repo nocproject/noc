@@ -53,9 +53,9 @@ class Script(BaseScript):
                 s_status = 1
             elif index == 2 and (-55 < float(status) < 600):
                 s_status = 1
-            elif index in [3, 5] and float(status) > 0:
+            elif index in [4, 6] and float(status) > 0:
                 s_status = 1
-            elif index == 9 and int(status) == 0:
+            elif index == 9 and int(status) != 2:
                 s_status = 1
             interfaces += [
                 {
