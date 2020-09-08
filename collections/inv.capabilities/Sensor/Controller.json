@@ -1,0 +1,8 @@
+{
+    "name": "Sensor | Controller",
+    "$collection": "inv.capabilities",
+    "uuid": "c7eabc32-1ff9-479f-95ba-c99b2a511a1a",
+    "description": "Sensor Controller",
+    "type": "bool",
+    "card_template": null
+}
