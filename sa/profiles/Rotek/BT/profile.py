@@ -2,7 +2,7 @@
 # Vendor: Rotek
 # OS:     BT
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,3 +16,13 @@ class Profile(BaseProfile):
     snmp_metrics_get_chunk = 2
     # Timeout for snmp GET request
     snmp_metrics_get_timeout = 3
+
+    PORT_TYPE = {
+        1: "Порт датчика двери",
+        2: "Порт датчика температуры",
+        4: "Порт нагрузки",
+        6: "Порт АКБ",
+        9: "Порт мониторинга напряжения сети",
+    }
+
+    IFACE_NAME = {1: "door", 2: "temperature", 4: "load", 6: "ups", 9: "v220"}
