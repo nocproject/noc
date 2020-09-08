@@ -1,0 +1,13 @@
+{
+    "name": "Qtech | QFC | PBIC-LITE V.3 name",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "eca9c55d-5f25-4dfe-b528-17f7c04c6c3d",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "1.3.6.1.4.1.27514.103.0.1",
+    "match_method": "contains",
+    "value": "QFC-PBIC-LITE",
+    "action": "match",
+    "profile__name": "Qtech.QFC"
+}
