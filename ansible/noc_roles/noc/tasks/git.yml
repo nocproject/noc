@@ -38,6 +38,15 @@
   changed_when: "'Already up-to-date.' not in git_pill_status.stdout"
   when: noc_env_type == 'dev'
 
+- name: Fetch tags force
+  command: "git fetch {{ noc_repo }} --tags --force --prune"
+  args:
+    chdir: "{{ noc_root }}"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - get_source
+
 - name: Pull NOC
   git:
     repo: "{{ noc_repo }}"
