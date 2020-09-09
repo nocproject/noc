@@ -1,0 +1,8 @@
+{
+    "name": "Enterasys",
+    "uuid": "b3d14f1d-5af7-4cd0-a0a0-6d838b2a446f",
+    "full_name": "Enterasys Networks, Inc.",
+    "code": ["ENTERASYS"],
+    "site": "https://en.wikipedia.org/wiki/Enterasys_Networks",
+    "$collection": "inv.vendors"
+}
