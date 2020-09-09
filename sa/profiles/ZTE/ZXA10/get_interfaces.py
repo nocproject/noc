@@ -25,6 +25,10 @@ class Script(BaseScript):
         "GTGOG": "gpon-onu_",
         "VDWVD": "vdsl_",
         "SCXN": "gei_",
+        "SCTM": "gei_",
+        "SCXM": "gei_",
+        "SCXL": "gei_",
+        "SMXA": "gei_",
         "PRWGS": "",
     }
     rx_iface = re.compile(
@@ -159,7 +163,7 @@ class Script(BaseScript):
                         "admin_status": admin_status,
                         "oper_status": oper_status,
                         "enabled_afi": ["IPv4"],
-                        "ip_addreses": [match.group("ip")],
+                        "ipv4_addresses": [match.group("ip")],
                         "mtu": match.group("mtu"),
                     }
                 ],
