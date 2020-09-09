@@ -1,0 +1,10 @@
+{
+    "name": "Environment | Battery | Capacity | Level",
+    "$collection": "pm.metrictypes",
+    "uuid": "8e56d688-7d19-4793-8327-b6cefc6c0f98",
+    "scope__name": "Environment",
+    "field_name": "battery_capacity_level",
+    "field_type": "UInt8",
+    "description": "Metric Battery Level (%)",
+    "measure": "%"
+}

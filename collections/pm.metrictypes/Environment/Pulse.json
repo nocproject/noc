@@ -1,0 +1,10 @@
+{
+    "name": "Environment | Pulse",
+    "$collection": "pm.metrictypes",
+    "uuid": "111539b0-def7-4b83-bb01-12b9e478f081",
+    "scope__name": "Environment",
+    "field_name": "pulse",
+    "field_type": "UInt32",
+    "description": "Metric for pulse output. The number of impulses since switching on.",
+    "measure": " "
+}
