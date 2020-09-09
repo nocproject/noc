@@ -2,7 +2,7 @@
 # Various metric converting functions
 # to use in get_metrics scripts
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -77,19 +77,30 @@ def invert0(x):
     return 0 if x > 0 else 1
 
 
-def scale(n):
+def scale(n, float_round=None):
     """
     High-order function to scale result to arbitrary value.
 
     f = scale(10)
     f(5) -> 50
+    if float_round
+    f = scale(0.1, 2)
+    f(10) -> 10.2
 
-    :param x: Scaling factor
+    :param n: Scaling factor
+    :param float_round: Number of decimal places
     :return: Callable, performing scaling
+    :return: If float_round, return round value
     """
 
     def inner(v):
         return v * n
+
+    def inner_round(v):
+        return round(v * n, float_round)
+
+    if float_round is not None:
+        return inner_round
 
     return inner
 
