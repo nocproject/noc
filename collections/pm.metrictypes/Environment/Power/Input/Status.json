@@ -1,0 +1,10 @@
+{
+    "name": "Environment | Power | Input | Status",
+    "$collection": "pm.metrictypes",
+    "uuid": "35f36d6b-1406-47ed-a57a-7c7f95264969",
+    "scope__name": "Environment",
+    "field_name": "power_input_status",
+    "field_type": "Int8",
+    "description": "Power input status",
+    "measure": " "
+}
