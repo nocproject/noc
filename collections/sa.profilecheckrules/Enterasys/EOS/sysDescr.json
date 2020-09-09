@@ -1,0 +1,13 @@
+{
+    "name": "Enterasys | EOS | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "0546f8eb-586f-4f7d-910a-96ed80b94c3d",
+    "description": "Examples:\nsysDescr.0 = STRING: Enterasys Networks, Inc. C3G124-48 Rev 06.61.11.0006",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Enterasys Networks, Inc.",
+    "action": "match",
+    "profile__name": "Enterasys.EOS"
+}
