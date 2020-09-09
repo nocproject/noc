@@ -15,17 +15,17 @@ class Script(GetMetricsScript):
     @metrics(["Environment | Sensor Status"], volatile=False, access="S")  # SNMP version
     def get_sensor_status(self, metrics):
         for metric in metrics:
-            value = 0
+            value = 1
             if metric.ifindex == 100:
                 continue
             elif metric.ifindex == 140:
                 temp = self.snmp.get("1.3.6.1.4.1.35419.20.1.140.0", cached=True)
                 if -55 < temp < 600:
-                    value = 1
+                    value = 0
             elif metric.ifindex == 160:
                 impulse = self.snmp.get("1.3.6.1.4.1.35419.20.1.160.0", cached=True)
                 if impulse != 0:
-                    value = 1
+                    value = 0
             else:
                 value = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % metric.ifindex)
             self.set_metric(
