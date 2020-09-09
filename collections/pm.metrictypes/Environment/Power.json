@@ -1,0 +1,10 @@
+{
+    "name": "Environment | Power",
+    "$collection": "pm.metrictypes",
+    "uuid": "43b5d14f-0c2d-493e-8ae4-9405f5757a67",
+    "scope__name": "Environment",
+    "field_name": "power_consume",
+    "field_type": "UInt16",
+    "description": "Metric for device Consume Power (W)",
+    "measure": "W"
+}
