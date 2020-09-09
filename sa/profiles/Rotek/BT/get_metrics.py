@@ -17,16 +17,16 @@ class Script(GetMetricsScript):
         for metric in metrics:
             if "st" in metric.path[3]:
                 continue
-            value = 0
+            value = 1
             status = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
             if metric.ifindex == 1 and int(status) == 0:
-                value = 1
+                value = 0
             elif metric.ifindex == 2 and (-55 < float(status) < 600):
-                value = 1
+                value = 0
             elif metric.ifindex in [4, 6] and float(status) > 0:
-                value = 1
+                value = 0
             elif metric.ifindex == 9 and int(status) != 2:
-                value = 1
+                value = 0
             self.set_metric(
                 id=("Environment | Sensor Status", metric.path), value=value,
             )
