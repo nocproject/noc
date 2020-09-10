@@ -17,7 +17,7 @@ import pytest
 @cachetools.cached({})
 def all_vendors():
     r = []
-    for path in glob.glob("sa/profiles/*"):
+    for path in glob.glob("sa/profiles/[!_]*"):
         vendor = path.split(os.sep)[-1]
         if vendor == "Generic" or ".py" in vendor:
             continue
