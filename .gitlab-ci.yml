@@ -260,11 +260,11 @@ build:Release Image:
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     # registry.getnoc.com/noc/noc/code:stable
-    - docker build --target code -t $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG -f .docker/Dockerfile .
+    - docker build --target code -t $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG -f Dockerfile .
     # registry.getnoc.com/noc/noc/dev:stable
-    - docker build --target dev -t $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG -f .docker/Dockerfile .
+    - docker build --target dev -t $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG -f Dockerfile .
     # registry.getnoc.com/noc/noc/static:stable
-    - docker build --target static -t $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG -f .docker/Dockerfile .
+    - docker build --target static -t $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG -f Dockerfile .
     - docker push $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG 
     - docker push $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG 
     - docker push $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG

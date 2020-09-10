@@ -75,7 +75,7 @@ pojson==0.6; extra == "dev"
 # Login LDAP
 ldap3==2.6.1; extra == "login-ldap"
 # Login PAM
-pam==0.1.4; extra == "login-pam"
+python-pam==1.8.4; extra == "login-pam"
 # Login RADIUS
 pyrad==2.0; extra == "login-radius"
 # Standalone node with supervisor
