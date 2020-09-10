@@ -89,7 +89,7 @@ class PredicateTransformer(ast.NodeTransformer):
     def visit_BoolOp(self, node, _input=None):
         def get_and_call_chain(chain):
             if len(chain) == 1:
-                return self.visit_Call(chain[0])
+                return self.visit_Call(chain[0], _input=_input)
             return self.visit_Call(chain[0], get_and_call_chain(chain[1:]))
 
         def get_or_call_chain(chain):
