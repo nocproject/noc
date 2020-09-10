@@ -55,7 +55,8 @@ services:
   pytests:
     build:
       context: ../
-      dockerfile: .docker/Dockerfile.build
+      dockerfile: Dockerfile
+      target: code
     restart: "no"
     working_dir: /opt/noc
     depends_on:
