@@ -20,8 +20,6 @@ class Script(BaseScript):
     interface = IGetInterfaces
     TIMEOUT = 360
 
-    SNMP_NAME_TABLE = "IF-MIB::ifName"
-
     rx_conf_iface = re.compile(r"interface (?P<iftype>\S+) (?P<ifname>\S+)")
     rx_iface = re.compile(
         r"^(?P<interface>\S+)\s+is\s+(?P<oper_status>Up|Down), "
