@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):
@@ -50,4 +51,9 @@ class Script(BaseScript):
         if self.has_pptp():
             caps["BRAS | PPTP"] = True
         if self.has_pppoe():
+            caps["BRAS | PPPoE"] = True
+
+    def execute_platform_snmp(self, caps):
+        pppoe = self.snmp.get("1.3.6.1.4.1.4874.2.2.18.1.5.11.0")
+        if is_int(pppoe) and int(pppoe) > 0:
             caps["BRAS | PPPoE"] = True

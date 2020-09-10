@@ -2,7 +2,7 @@
 # Vendor: Juniper
 # OS:     JUNOSe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,6 +32,18 @@ class Profile(BaseProfile):
         r"^(\.+)\n",
     ]
     rogue_chars = [b"\r", b"\x00", b"\x0d"]
+
+    INTERFACE_TYPES = {
+        "gi": "physical",  # gigabitethernet
+        "ge": "physical",  # gigabitethernet
+        "fa": "physical",  # fastethernet
+        "ex": "physical",  # extreme-ethernet
+        "vl": "SVI",  # vlan
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get((name[:2]).lower())
 
     @classmethod
     def cmp_version(cls, v1, v2):
@@ -74,8 +86,8 @@ class Profile(BaseProfile):
     def get_interfaces_list(self, script):
         r = []
         v = script.cli("show hardware")
-        for l in v.split("\n"):
-            match = self.rx_adapter.search(l)
+        for hardware in v.split("\n"):
+            match = self.rx_adapter.search(hardware)
             if match:
                 if match.group("name") == "10GE PR IOA":
                     r += ["TenGigabitEthernet%s/0" % match.group("slot")]
