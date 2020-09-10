@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# <describe module here>
+# Test profile docs
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,12 @@ def all_vendors():
     r = []
     for path in glob.glob("sa/profiles/*"):
         vendor = path.split(os.sep)[-1]
-        if vendor == "Generic" or ".py" in vendor:
+        if (
+            vendor == "Generic"
+            or ".py" in vendor
+            or vendor.startswith(".")
+            or vendor.startswith("_")
+        ):
             continue
         r += [vendor]
     return r
