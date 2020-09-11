@@ -34,11 +34,11 @@ class Script(GetMetricsScript):
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
     def get_temperature(self, metrics):
         for metric in metrics:
-
-            value = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
-            self.set_metric(
-                id=("Environment | Temperature", metric.path), value=value,
-            )
+            if "temp" in metric.path[3]:
+                value = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
+                self.set_metric(
+                    id=("Environment | Temperature", metric.path), value=value,
+                )
 
     @metrics(["Environment | Voltage"], volatile=False, access="S")  # SNMP version
     def get_voltage(self, metrics):
@@ -52,7 +52,7 @@ class Script(GetMetricsScript):
     def get_power_input_status(self, metrics):
         for metric in metrics:
             value = 1
-            res = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
-            if res in [1, 2, 3]:
+            res = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.9.0")
+            if res not in [1, 2, 3]:
                 value = 0
             self.set_metric(id=("Environment | Power | Input | Status", metric.path), value=value)
