@@ -94,9 +94,8 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
                 success: function(response) {
                     var data = Ext.decode(response.responseText);
                     if(data.sound) {
-                        if(!this.sounds[data.sound]) {
-                            this.sounds[data.sound] = new Audio(data.sound);
-                        }
+                        Ext.applyIf(this, {sounds: {}});
+                        this.sounds[data.sound] = new Audio(data.sound);
                         this.sounds[data.sound].volume = data.volume || 1.0;
                         this.sounds[data.sound].play();
                     }
