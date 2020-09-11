@@ -168,12 +168,18 @@ class Maintenance(Document):
                 break
             affected |= r
 
-        # @todo: Calculate affected objects considering topology
-        affected = [{"object": o} for o in sorted(affected)]
         # Calculate affected administrative_domain
         affected_ad = list(
-            set(o.object.administrative_domain.id for o in self.direct_objects if o.object)
+            set(
+                ManagedObject.objects.filter(id__in=list(affected)).values_list(
+                    "administrative_domain__id", flat=True
+                )
+            )
         )
+
+        # @todo: Calculate affected objects considering topology
+        affected = [{"object": o} for o in sorted(affected)]
+
         Maintenance._get_collection().update(
             {"_id": self.id},
             {"$set": {"affected_objects": affected, "administrative_domain": affected_ad}},
