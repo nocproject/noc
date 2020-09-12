@@ -41,7 +41,15 @@ retry_lock = threading.Lock()
 next_retry = datetime.datetime.now()
 
 
-def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *args, **kwargs):
+def escalate(
+    alarm_id,
+    escalation_id,
+    escalation_delay,
+    login="correlator",
+    timestamp_policy="a",
+    *args,
+    **kwargs,
+):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
@@ -198,7 +206,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, login="correlator", *arg
                                     subject=subject,
                                     body=body,
                                     login=login,
-                                    timestamp=alarm.timestamp,
+                                    timestamp=alarm.timestamp if timestamp_policy == "a" else None,
                                 )
                             except TemporaryTTError as e:
                                 metrics["escalation_tt_retry"] += 1
