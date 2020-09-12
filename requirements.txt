@@ -40,7 +40,7 @@ http-parser==0.9.0
 jsonschema==2.4.0
 manhole==1.6.0
 markerlib==0.6.0
-mistune==0.5
+mistune==0.8.1
 mongoengine==0.20.0
 networkx==2.4
 numpy==1.18.3
