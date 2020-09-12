@@ -50,6 +50,10 @@ Ext.define("NOC.fm.ttsystem.Model", {
         {
             name: "telemetry_sample",
             type: "int"
+        },
+        {
+            name: "alarm_consequence_policy",
+            type: "string"
         }
     ]
 });
