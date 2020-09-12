@@ -14,7 +14,7 @@ import codecs
 from io import StringIO
 
 # Third-party modules
-import ujson
+import orjson
 from typing import Optional
 
 # NOC modules
@@ -44,7 +44,7 @@ class Beef(object):
     @classmethod
     def from_json(cls, data):
         if isinstance(data, str):
-            data = ujson.loads(data)
+            data = orjson.loads(data)
         version = data.get("version", "1")
         decoder = "decode_v%s" % version
         beef = Beef()
@@ -177,7 +177,7 @@ class Beef(object):
         :param path: Beef path
         :return: Compressed, Uncompressed sizes
         """
-        data = ujson.dumps(self.get_data())
+        data = smart_text(orjson.dumps(self.get_data()))
         usize = len(data)
         dir_path = os.path.dirname(path)
         if path.endswith(".gz"):

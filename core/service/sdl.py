@@ -7,7 +7,7 @@
 
 # Third-party modules
 import tornado.web
-import ujson
+import orjson
 
 
 class SDLRequestHandler(tornado.web.RequestHandler):
@@ -16,4 +16,4 @@ class SDLRequestHandler(tornado.web.RequestHandler):
 
     def get(self):
         self.set_header("Content-Type", "text/javascript")
-        self.write("var SDL = %s;" % ujson.dumps(self.sdl))
+        self.write(b"var SDL = %s;" % orjson.dumps(self.sdl))

@@ -7,7 +7,7 @@
 
 # Third-party modules
 import tornado.web
-import ujson
+import orjson
 
 # NOC modules
 from .auth import AuthRequestHandler
@@ -21,6 +21,6 @@ class IsLoggedRequestHandler(tornado.web.RequestHandler):
         user = self.get_secure_cookie(AuthRequestHandler.USER_COOKIE)
         self.set_status(200, "OK")
         if user:
-            self.write(ujson.dumps(True))
+            self.write(orjson.dumps(True))
             return
-        self.write(ujson.dumps(False))
+        self.write(orjson.dumps(False))

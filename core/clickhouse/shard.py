@@ -10,11 +10,12 @@ import random
 from collections import defaultdict
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from noc.core.service.pub import pub
+from noc.core.comp import smart_text
 
 
 class BaseSharder(object):
@@ -37,7 +38,10 @@ class BaseSharder(object):
             data = self.records[topic]
             while data:
                 chunk, data = data[: self.chunk], data[self.chunk :]
-                yield topic, "%s\n%s" % (self.table, "\n".join(ujson.dumps(s) for s in chunk))
+                yield topic, "%s\n%s" % (
+                    self.table,
+                    smart_text(b"\n".join(orjson.dumps(s) for s in chunk)),
+                )
         self.records = defaultdict(list)
 
     def pub(self):

@@ -12,12 +12,11 @@ import itertools
 import gzip
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.config import config
 from noc.core.fileutils import make_persistent
-from noc.core.comp import smart_bytes
 
 
 class Stream(object):
@@ -50,7 +49,7 @@ class Stream(object):
             )
             self.out = gzip.open(self.out_path, "wb")
             self.chunk_size = 0
-        self.out.write(smart_bytes(ujson.dumps(self.model.to_json(date=date, **kwargs))))
+        self.out.write(orjson.dumps(self.model.to_json(date=date, **kwargs)))
         self.out.write(b"\n")
         self.chunk_size += 1
         if self.chunk_size == self.CHUNK_SIZE:

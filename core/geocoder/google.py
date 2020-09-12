@@ -9,7 +9,7 @@
 from urllib.parse import quote as urllib_quote
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -45,7 +45,7 @@ class GoogleGeocoder(BaseGeocoder):
         if code != 200:
             raise GeoCoderError("%s: %s" % (code, response))
         try:
-            r = ujson.loads(response)
+            r = orjson.loads(response)
         except ValueError:
             raise GeoCoderError("Cannot decode result")
         if r["status"] != "OK":

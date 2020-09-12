@@ -14,7 +14,7 @@ import asyncio
 import threading
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -24,6 +24,7 @@ from noc.config import config
 from noc.core.span import Span, get_current_span
 from noc.core.ioloop.util import run_sync
 from .error import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +33,11 @@ CONNECT_TIMEOUT = config.rpc.async_connect_timeout
 # Total request time
 REQUEST_TIMEOUT = config.rpc.async_request_timeout
 
-# WARNING: later ujson versions are not thread-safe when dealing with floating numbers deserealization,
-# so we obliged to lock all RPC deserializations until the better time. i.e:
-# * ujson will became thread-safe once again
-# * ujson will be replaced with proper library
-_ujson_crash_lock = threading.Lock()
+# WARNING: later ujson versions are not thread-safe when dealing with floating numbers # deserealization,
+# so we need the time to prove orjson is thread-safe and
+# to remove the lock
+# @todo: Check and remove the lock
+_orjson_crash_lock = threading.Lock()
 
 
 class RPCProxy(object):
@@ -116,7 +117,7 @@ class RPCProxy(object):
             is_notify = "_notify" in kwargs
             if not is_notify:
                 msg["id"] = tid
-            body = ujson.dumps(msg)
+            body = smart_text(orjson.dumps(msg))
             # Get services
             response = None
             for t in self._service.iter_rpc_retry_timeout():
@@ -135,8 +136,8 @@ class RPCProxy(object):
             if response:
                 if not is_notify:
                     try:
-                        with _ujson_crash_lock:
-                            result = ujson.loads(response)
+                        with _orjson_crash_lock:
+                            result = orjson.loads(response)
                     except ValueError as e:
                         raise RPCHTTPError("Cannot decode json: %s" % e)
                     if result.get("error"):

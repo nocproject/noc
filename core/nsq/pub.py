@@ -12,7 +12,7 @@ import random
 import asyncio
 
 # Third-party modules
-import ujson
+import orjson
 from typing import List, Any
 
 # NOC modules
@@ -20,7 +20,7 @@ from noc.core.http.client import fetch_sync, fetch
 from noc.core.dcs.loader import get_dcs
 from noc.config import config
 from noc.core.perf import metrics
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 from .error import NSQPubError
 
 nsqd_http_service_param = config.nsqd.__dict__["http_addresses"]
@@ -36,7 +36,7 @@ def nsq_pub(topic, message):
     :return:
     """
     if not isinstance(message, str):
-        message = ujson.dumps(message)
+        message = smart_text(orjson.dumps(message))
     # Resolve NSQd or wait
     si = config.nsqd.http_addresses[0]
     # Post message
@@ -59,7 +59,7 @@ def mpub_encode(messages: List[Any]) -> bytes:
         yield struct.pack("!i", len(messages))
         for msg in messages:
             if not isinstance(msg, str):
-                msg = ujson.dumps(msg)
+                msg = smart_text(orjson.dumps(msg))
             if isinstance(msg, str):
                 msg = smart_bytes(msg)
             yield struct.pack("!i", len(msg))

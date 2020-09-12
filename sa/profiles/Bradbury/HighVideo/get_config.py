@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
+from noc.core.comp import smart_text
 
 
 class Script(BaseScript):
@@ -24,4 +25,4 @@ class Script(BaseScript):
         result = {}
         for section in self.SECTIONS:
             result[section] = self.http.post("/upload/", data=section, json=True, use_basic=True)
-        return ujson.dumps(result, indent=2)
+        return smart_text(orjson.dumps(result, option=orjson.OPT_INDENT_2))

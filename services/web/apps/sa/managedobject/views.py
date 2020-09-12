@@ -11,7 +11,7 @@ import zlib
 
 # Third-party modules
 from django.http import HttpResponse
-import ujson
+import orjson
 from mongoengine.queryset import Q as MQ
 
 # NOC modules
@@ -350,7 +350,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        r = ujson.loads(request.body).get("names", [])
+        r = orjson.loads(request.body).get("names", [])
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
@@ -366,7 +366,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        r = ujson.loads(request.body).get("names", [])
+        r = orjson.loads(request.body).get("names", [])
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
@@ -527,7 +527,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=int(id))
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        d = ujson.loads(request.body)
+        d = orjson.loads(request.body)
         if "id" in d:
             i = self.get_object_or_404(Interface, id=d["id"])
             if i.managed_object.id != o.id:
@@ -580,7 +580,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o.description = "Wiping! Do not touch!"
         o.save()
         call_later("noc.sa.wipe.managedobject.wipe", o=o.id)
-        return HttpResponse(ujson.dumps({"status": True}), status=self.DELETED)
+        return HttpResponse(orjson.dumps({"status": True}), status=self.DELETED)
 
     @view(
         url=r"^actions/run_discovery/$",
@@ -694,7 +694,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r = list(cdb.query(query))
             result = {"status": True, "result": r}
             if dump:
-                result["confdb"] = ujson.loads(cdb.dump("json"))
+                result["confdb"] = orjson.loads(cdb.dump("json"))
         except SyntaxError as e:
             result = {"status": False, "error": str(e)}
         return result
@@ -804,7 +804,7 @@ class ManagedObjectApplication(ExtModelApplication):
         a = self.get_object_or_404(Action, name=action)
         # @todo: Check access
         if request.body:
-            args = ujson.loads(request.body)
+            args = orjson.loads(request.body)
         else:
             args = {}
         return self.submit_slow_op(request, execute, o, a, args)

@@ -17,7 +17,7 @@ import traceback
 import uuid
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -311,7 +311,7 @@ def error_report(reverse=config.traceback.reverse, logger=logger):
                 "traceback": r,
             }
             try:
-                safe_rewrite(path, ujson.dumps(c))
+                safe_rewrite(path, orjson.dumps(c))
                 if CP_SET_UID:
                     os.chown(path, CP_SET_UID, -1)
                 logger.error("Writing CP report to %s", path)

@@ -12,10 +12,11 @@ from configparser import RawConfigParser
 
 # Third-party modules
 import requests
-import ujson
+import orjson
 
 # Python modules
 from noc.core.version import version
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +120,7 @@ class CPClient(object):
         auth = None
         if self.account_name and self.account_password:
             auth = (self.account_name, self.account_password)
-        r = ujson.dumps(r)
+        r = smart_text(orjson.dumps(r))
         logger.debug("JSON-RPC REQUEST: %s", r)
         try:
             req = requests.post(self.cp_url + service, data=r, auth=auth, verify=True)

@@ -13,7 +13,7 @@ import logging
 from collections import defaultdict
 
 # Third-party modules
-import ujson
+import orjson
 import bson
 import bson.errors
 import pymongo
@@ -23,7 +23,7 @@ from typing import Optional, Dict, Any, List, Union, Iterable, Tuple, Callable
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.mongo.connection import get_db
-from noc.core.comp import smart_bytes
+from noc.core.comp import smart_text
 from noc.models import get_model
 
 logger = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ class DataStream(object):
 
     @staticmethod
     def get_hash(data) -> str:
-        return hashlib.sha256(smart_bytes(ujson.dumps(data))).hexdigest()[: DataStream.HASH_LEN]
+        return hashlib.sha256(orjson.dumps(data)).hexdigest()[: DataStream.HASH_LEN]
 
     @classmethod
     def bulk_update(cls, objects: List[Union[id, str, bson.ObjectId]]) -> None:
@@ -197,7 +197,13 @@ class DataStream(object):
         metrics["ds_%s_changed" % m_name] += 1
         change_id = bson.ObjectId()
         data["change_id"] = str(change_id)
-        op = {"$set": {cls.F_CHANGEID: change_id, cls.F_HASH: hash, cls.F_DATA: ujson.dumps(data)}}
+        op = {
+            "$set": {
+                cls.F_CHANGEID: change_id,
+                cls.F_HASH: hash,
+                cls.F_DATA: smart_text(orjson.dumps(data)),
+            }
+        }
         if meta:
             op["$set"][cls.F_META] = meta
         elif "$deleted" not in data:
@@ -383,7 +389,7 @@ class DataStream(object):
             return ""
         if isinstance(s, datetime.datetime):
             return s.isoformat()
-        return s.encode("utf-8")
+        return smart_text(s)
 
     @classmethod
     def _parse_filter(cls, expr):

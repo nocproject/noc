@@ -12,7 +12,7 @@ import asyncio
 # Third-party modules
 import tornado.web
 import tornado.gen
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.error import NOCError
@@ -42,7 +42,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
         sample = 1 if span_ctx and span_id else 0
         # Parse JSON
         try:
-            req = ujson.loads(self.request.body)
+            req = orjson.loads(self.request.body)
         except ValueError as e:
             self.api_error(e)
             return
@@ -92,11 +92,11 @@ class APIRequestHandler(tornado.web.RequestHandler):
                     self.set_status(307, "Redirect")
                     self.set_header("Location", result.location)
                     self.write(
-                        ujson.dumps({"id": id, "method": result.method, "params": result.params})
+                        orjson.dumps({"id": id, "method": result.method, "params": result.params})
                     )
                 else:
                     # Dump output
-                    self.write(ujson.dumps({"id": id, "error": None, "result": result}))
+                    self.write(orjson.dumps({"id": id, "error": None, "result": result}))
             except NOCError as e:
                 span.set_error_from_exc(e, e.code)
                 self.api_error("Failed: %s" % e, id=id, code=e.code)
@@ -112,7 +112,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 rsp["id"] = id
             if code:
                 rsp["code"] = code
-            self.write(ujson.dumps(rsp))
+            self.write(orjson.dumps(rsp))
 
 
 class API(object):

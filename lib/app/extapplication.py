@@ -12,7 +12,7 @@ import os
 # Third-party modules
 from django.http import HttpResponse
 from django.db.models.query import QuerySet
-import ujson
+import orjson
 
 # NOC modules
 from noc.main.models.favorites import Favorites
@@ -93,7 +93,7 @@ class ExtApplication(Application):
         return HasPerm("%s:%s:launch" % (m, a))
 
     def deserialize(self, data):
-        return ujson.loads(data)
+        return orjson.loads(data)
 
     def deserialize_form(self, request):
         return {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
@@ -101,7 +101,9 @@ class ExtApplication(Application):
     def response(self, content="", status=200):
         if not isinstance(content, str):
             return HttpResponse(
-                ujson.dumps(content), content_type="text/json; charset=utf-8", status=status
+                orjson.dumps(content, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS),
+                content_type="text/json; charset=utf-8",
+                status=status,
             )
         else:
             return HttpResponse(content, content_type="text/plain; charset=utf-8", status=status)
@@ -142,7 +144,7 @@ class ExtApplication(Application):
         # Todo: Fix
         if request.method == "POST":
             if self.site.is_json(request.META.get("CONTENT_TYPE")):
-                q = ujson.loads(request.body)
+                q = orjson.loads(request.body)
             else:
                 q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
         else:

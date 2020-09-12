@@ -21,7 +21,7 @@ from typing import Optional, Dict, Tuple, Callable, Any, TypeVar, NoReturn
 
 # Third-party modules
 import setproctitle
-import ujson
+import orjson
 
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
@@ -43,6 +43,7 @@ from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from .rpc import RPCProxy
 from .loader import set_service
+from noc.core.comp import smart_text
 
 T = TypeVar("T")
 
@@ -555,7 +556,7 @@ class BaseService(object):
         def call_json_handler(message):
             metrics[metric_in] += 1
             try:
-                data = ujson.loads(message.body)
+                data = orjson.loads(message.body)
             except ValueError as e:
                 metrics[metric_decode_fail] += 1
                 self.logger.debug("Cannot decode JSON message: %s", e)
@@ -786,7 +787,7 @@ class BaseService(object):
             r = [table]
             limit -= len(table) + 1
             for m in metrics[start:]:
-                jm = ujson.dumps(m)
+                jm = smart_text(orjson.dumps(m))
                 js = len(jm) + 1
                 if limit < js:
                     break

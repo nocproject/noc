@@ -20,7 +20,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidde
 from django.urls import path, re_path, include, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
-import ujson
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -159,7 +159,7 @@ class Site(object):
                         else:
                             if self.is_json(request.META.get("CONTENT_TYPE")):
                                 try:
-                                    g = ujson.loads(request.body)
+                                    g = orjson.loads(request.body)
                                 except ValueError as e:
                                     logger.error("Unable to decode JSON: %s", e)
                                     errors = "Unable to decode JSON: %s" % e
@@ -176,7 +176,7 @@ class Site(object):
                             app_logger.error("ERROR: %s", errors)
                         # Return error response
                         ext_format = "__format=ext" in request.META["QUERY_STRING"].split("&")
-                        r = ujson.dumps({"status": False, "errors": errors})
+                        r = orjson.dumps({"status": False, "errors": errors})
                         status = 200 if ext_format else 400  # OK or BAD_REQUEST
                         return HttpResponse(
                             r, status=status, content_type="text/json; charset=utf-8"
@@ -187,7 +187,7 @@ class Site(object):
                     if request.method in ("POST", "PUT"):
                         ct = request.META.get("CONTENT_TYPE")
                         if ct and ("text/json" in ct or "application/json" in ct):
-                            a = ujson.loads(request.body)
+                            a = orjson.loads(request.body)
                         else:
                             a = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
                     elif request.method == "GET":
@@ -225,7 +225,12 @@ class Site(object):
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
-                    r = HttpResponse(ujson.dumps(r), content_type="text/json; charset=utf-8")
+                    r = HttpResponse(
+                        orjson.dumps(
+                            r, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS
+                        ),
+                        content_type="text/json; charset=utf-8",
+                    )
                 except Exception:
                     error_report(logger=app_logger)
                     r = HttpResponse(error_report(), status=500)

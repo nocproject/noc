@@ -10,7 +10,7 @@ from collections import defaultdict
 from time import perf_counter
 
 # Third-party modules
-import ujson
+import orjson
 from typing import Tuple, Optional, Dict, List, Iterable, DefaultDict, Any
 
 # NOC modules
@@ -111,12 +111,12 @@ class PathAPI(NBIAPI):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")
-            self.write(ujson.dumps(result))
+            self.write(orjson.dumps(result))
 
     def handler(self) -> Tuple[int, Dict]:
         # Decode request
         try:
-            req = ujson.loads(self.request.body)
+            req = orjson.loads(self.request.body)
         except ValueError:
             return 400, {"status": False, "error": "Cannot decode JSON"}
         # Validate

@@ -9,7 +9,7 @@
 from urllib.parse import quote as urllib_quote
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from .base import BaseGeocoder, GeoCoderResult
@@ -43,7 +43,7 @@ class YandexGeocoder(BaseGeocoder):
         elif code != 200:
             raise GeoCoderError("%s: %s" % (code, response))
         try:
-            r = ujson.loads(response)
+            r = orjson.loads(response)
         except ValueError:
             raise GeoCoderError("Cannot decode result")
         results = self.get_path(r, "response.GeoObjectCollection.featureMember") or []

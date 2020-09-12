@@ -26,12 +26,13 @@ from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.service import Service
 from noc.core.text import alnum_key
+from noc.core.comp import smart_text
 
 
 def qs(s):
     if not s:
         return ""
-    return s.encode("utf-8")
+    return smart_text(s)
 
 
 class ManagedObjectDataStream(DataStream):

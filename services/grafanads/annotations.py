@@ -12,7 +12,7 @@ from time import mktime
 
 # Third-party modules
 import tornado.web
-import ujson
+import orjson
 import dateutil.parser
 from dateutil import tz
 
@@ -29,7 +29,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
 
     async def post(self, *args, **kwargs):
         try:
-            req = ujson.loads(self.request.body)
+            req = orjson.loads(self.request.body)
         except ValueError:
             raise tornado.web.HTTPError(400, "Bad request")
         #
@@ -56,7 +56,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
         # Get alarms
         r += self.get_alarms(mo, f, t, annotation)
         r = sorted(r, key=operator.itemgetter("time"))
-        return ujson.dumps(r)
+        return orjson.dumps(r)
 
     def get_alarms(self, mo, f, t, annotation):
         r = []

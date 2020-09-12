@@ -11,7 +11,7 @@ from urllib.parse import urlencode, urlsplit, parse_qs, urlunsplit
 
 # Third-party modules
 from nsq.reader import Reader as BaseReader, _utf8_params
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.http.client import fetch
@@ -53,7 +53,7 @@ class Reader(BaseReader):
             return
         # Decode response
         try:
-            lookup_data = ujson.loads(body)
+            lookup_data = orjson.loads(body)
         except ValueError as e:
             metrics["error", ("type", "nsqlookupd_invalid_json")] += 1
             logger.warning("[%s] lookupd %s failed to parse JSON: %s", self.name, lookupd_url, e)

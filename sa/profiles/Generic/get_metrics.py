@@ -14,7 +14,7 @@ import operator
 from collections import defaultdict
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.script.base import BaseScript, BaseScriptMetaclass
@@ -200,7 +200,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         with open(path) as f:
             data = f.read()
         try:
-            data = ujson.loads(data)
+            data = orjson.loads(data)
         except ValueError as e:
             raise ValueError("Failed to parse file '%s': %s" % (path, e))
         if not isinstance(data, dict):

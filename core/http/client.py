@@ -20,7 +20,7 @@ import random
 
 # Third-party modules
 import cachetools
-import ujson
+import orjson
 from typing import Optional, List, Tuple, Any, Dict
 
 # NOC modules
@@ -228,7 +228,7 @@ async def fetch(
         body = body or ""
         content_type = "application/binary"
         if not isinstance(body, (str, bytes)):
-            body = ujson.dumps(body)
+            body = smart_text(orjson.dumps(body))
             content_type = "text/json"
         body = smart_bytes(body)  # Here and below body is binary
         h = {"Host": str(u.netloc), "Connection": "close", "User-Agent": DEFAULT_USER_AGENT}

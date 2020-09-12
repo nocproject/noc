@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.service.apiaccess import authenticated
@@ -25,7 +25,7 @@ class ConfigRevisionsAPI(NBIAPI):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")
-            self.write(ujson.dumps(result))
+            self.write(orjson.dumps(result))
 
     def handler(self, object_id):
         mo = ManagedObject.get_by_id(int(object_id))

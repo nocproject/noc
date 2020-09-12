@@ -19,7 +19,7 @@ import operator
 from base64 import b85decode
 
 # Third-party modules
-import ujson
+import orjson
 import bson
 from mongoengine.fields import ListField, EmbeddedDocumentField, BinaryField
 from mongoengine.errors import NotUniqueError
@@ -112,7 +112,7 @@ class Collection(object):
         # Get state from database
         cs = coll.find_one({"_id": self.name})
         if cs:
-            return ujson.loads(zlib.decompress(smart_bytes(cs["state"])))
+            return orjson.loads(zlib.decompress(smart_bytes(cs["state"])))
         # Fallback to legacy local
         lpath = self.get_legacy_state_path()
         state = {}
@@ -133,7 +133,7 @@ class Collection(object):
         coll = self.get_state_collection()
         coll.update_one(
             {"_id": self.name},
-            {"$set": {"state": bson.Binary(zlib.compress(smart_bytes(ujson.dumps(state))))}},
+            {"$set": {"state": bson.Binary(zlib.compress(orjson.dumps(state)))}},
             upsert=True,
         )
         # Remove legacy state
@@ -197,7 +197,7 @@ class Collection(object):
                     with open(fp) as f:
                         data = f.read()
                     try:
-                        jdata = ujson.loads(data)
+                        jdata = orjson.loads(data)
                     except ValueError as e:
                         raise ValueError("Error load %s: %s" % (fp, e))
                     if "uuid" not in jdata:

@@ -10,7 +10,7 @@ import datetime
 
 # Third-party modules
 import pytest
-import ujson
+import orjson
 from fs import open_fs
 
 # NOC modules
@@ -43,7 +43,7 @@ def iter_json_loader(urls):
         with open_fs(url) as fs:
             for path in fs.walk.files(filter=["*.json"]):
                 with fs.open(path) as f:
-                    data = ujson.loads(f.read())
+                    data = orjson.loads(f.read())
                 if not isinstance(data, list):
                     data = [data]
                 for i in data:
