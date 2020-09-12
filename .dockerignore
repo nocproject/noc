@@ -1,4 +1,9 @@
+.cache/
 .git/
 .docker/
+.mypy_cache/
+.pytest_cache/
+build/
 docs/
 tests/
+var/
