@@ -8,7 +8,7 @@
 # Third-party modules
 import pytest
 from fs import open_fs
-import ujson
+import orjson
 from django.db import models
 
 # NOC modules
@@ -22,7 +22,7 @@ def iter_data():
         with open_fs(url) as fs:
             for path in sorted(fs.walk.files(filter=["*.json"])):
                 with fs.open(path) as f:
-                    data = ujson.loads(f.read())
+                    data = orjson.loads(f.read())
                 if not isinstance(data, list):
                     data = [data]
                 for i in data:

@@ -12,7 +12,7 @@ import bz2
 # Third-party modules
 import pytest
 from fs import open_fs
-import ujson
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -57,7 +57,7 @@ def beef_test(request):
 
 def test_beef(beef_test):
     fs, path = beef_test
-    test = ujson.loads(bz2.decompress(fs.readbytes(path)))
+    test = orjson.loads(bz2.decompress(fs.readbytes(path)))
     service = ServiceStub(pool="default")
     # Load script
     script = test["script"]

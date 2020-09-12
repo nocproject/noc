@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ./noc crashinfo
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ import stat
 import re
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 ts = os.stat(path)[stat.ST_MTIME]
                 t = datetime.datetime.fromtimestamp(ts)
                 with open(path) as f:
-                    data = ujson.load(f)
+                    data = orjson.loads(f.read())
                 service = data["process"]
                 if service.startswith("services/") and service.endswith("/service.py"):
                     service = service[9:-11]
@@ -82,9 +82,16 @@ class Command(BaseCommand):
                 ]
         fs = "%s %36s  %19s  %-29s %-s\n"
         self.stdout.write(fs % ("N", "UUID", "Time", "Service", "Exception"))
-        for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):
+        for line in sorted(fl, key=operator.itemgetter("time"), reverse=True):
             self.stdout.write(
-                fs % (l["status"], l["uuid"], l["time"].isoformat(), l["service"], l["exception"])
+                fs
+                % (
+                    line["status"],
+                    line["uuid"],
+                    line["time"].isoformat(),
+                    line["service"],
+                    line["exception"],
+                )
             )
 
     def handle_view(self, view_uuids, *args, **options):
@@ -97,7 +104,7 @@ class Command(BaseCommand):
                 else:
                     continue
             with open(path) as f:
-                data = ujson.load(f)
+                data = orjson.loads(f.read())
             self.stdout.write(data["traceback"])
             self.stdout.write("\n\n")
 

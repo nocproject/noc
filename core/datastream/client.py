@@ -10,7 +10,7 @@ import asyncio
 import logging
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.http.client import fetch, ERR_READ_TIMEOUT, ERR_TIMEOUT
@@ -84,7 +84,7 @@ class DataStreamClient(object):
                 raise NOCError(code=ERR_DS_BAD_CODE, msg="Invalid response code %s" % code)
             # Parse response
             try:
-                data = ujson.loads(data)
+                data = orjson.loads(data)
             except ValueError as e:
                 logger.info("Cannot parse response: %s", e)
                 raise NOCError(code=ERR_DS_PARSE_ERROR, msg="Cannot parse response: %s" % e)

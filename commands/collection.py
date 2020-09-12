@@ -10,7 +10,7 @@ import os
 import argparse
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -96,7 +96,7 @@ class Command(BaseCommand):
             if not os.path.isfile(fp):
                 self.die("File not found: %s" % fp)
             with open(fp) as f:
-                data = ujson.load(f)
+                data = orjson.loads(f.read())
             try:
                 Collection.install(data)
                 if load:

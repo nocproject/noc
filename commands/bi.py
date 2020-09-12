@@ -13,7 +13,7 @@ import time
 from pymongo.errors import OperationFailure
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -176,7 +176,7 @@ class Command(BaseCommand):
             path = os.path.join(self.data_prefix, fn)
             # Read data
             with gzip.open(path, "rb") as f:
-                data = [ujson.loads(line) for line in f.read().splitlines() if line]
+                data = [orjson.loads(line) for line in f.read().splitlines() if line]
             table = fn.split("-", 1)[0]
             sharder = Sharder(table)
             sharder.feed(data)

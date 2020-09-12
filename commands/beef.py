@@ -15,7 +15,7 @@ import codecs
 # Third-party modules
 import uuid
 import yaml
-import ujson
+import orjson
 from fs import open_fs
 
 # NOC modules
@@ -490,7 +490,7 @@ class Command(BaseCommand):
                 "input": {},
                 "result": result,
             }
-            data = bz2.compress(ujson.dumps(tc))
+            data = bz2.compress(orjson.dumps(tc))
             #
             rn = os.path.join(test_path, "%04d.%s.json.bz2" % (n, test["script"]))
             self.print("[%04d] Writing %s" % (n, rn))
@@ -642,7 +642,7 @@ class Command(BaseCommand):
 
         def parse_json(j):
             try:
-                return ujson.loads(j)
+                return orjson.loads(j)
             except ValueError as e:
                 self.die("Failed to parse JSON: %s" % e)
 

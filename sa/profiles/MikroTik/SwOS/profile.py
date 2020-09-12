@@ -7,7 +7,7 @@
 
 # Python modules
 import re
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -30,7 +30,7 @@ class Profile(BaseProfile):
         return pass3
 
     def parseBrokenJson(self, brokenJson):
-        return ujson.loads(self.fixBrokenJson(brokenJson))
+        return orjson.loads(self.fixBrokenJson(brokenJson))
 
     def parseHexInt16(self, hex):
         result = int(hex, 16)

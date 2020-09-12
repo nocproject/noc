@@ -8,7 +8,7 @@
 # Third-party modules
 import string
 import tornado.web
-import ujson
+import orjson
 
 if hasattr(string, "maketrans"):
     TR = string.maketrans('.-"', "___")
@@ -40,4 +40,4 @@ class MonRequestHandler(tornado.web.RequestHandler):
                 metric_name = key.lower()
             cleared_name = str(metric_name).translate(TR)
             response[cleared_name] = mdata[key]
-        self.write(ujson.dumps(response))
+        self.write(orjson.dumps(response))

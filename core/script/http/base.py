@@ -9,7 +9,7 @@
 from http.cookies import SimpleCookie
 
 # Third-party modules
-import ujson
+import orjson
 from typing import Optional
 
 # NOC modules
@@ -105,7 +105,7 @@ class HTTP(object):
         self._process_cookies(headers)
         if json:
             try:
-                result = ujson.loads(result)
+                result = orjson.loads(result)
             except ValueError as e:
                 raise HTTPError("Failed to decode JSON: %s" % e)
         elif not raw_result:
@@ -173,7 +173,7 @@ class HTTP(object):
         self._process_cookies(headers)
         if json:
             try:
-                return ujson.loads(result)
+                return orjson.loads(result)
             except ValueError as e:
                 raise HTTPError(msg="Failed to decode JSON: %s" % e)
         elif not raw_result:

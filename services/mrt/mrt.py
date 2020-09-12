@@ -11,7 +11,7 @@ import logging
 import asyncio
 
 # Third-party modules
-import ujson
+import orjson
 
 # Python modules
 from noc.core.service.authhandler import AuthRequestHandler
@@ -23,6 +23,7 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.debug import error_report
 from noc.core.error import ERR_UNKNOWN
 from noc.config import config
+from noc.core.comp import smart_text
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 class MRTRequestHandler(AuthRequestHandler):
     async def write_chunk(self, obj):
-        data = ujson.dumps(obj)
+        data = smart_text(orjson.dumps(obj))
         self.write("%s|%s" % (len(data), data))
         logger.debug("%s|%s" % (len(data), data))
         await self.flush()
@@ -81,7 +82,7 @@ class MRTRequestHandler(AuthRequestHandler):
         """
         metrics["mrt_requests"] += 1
         # Parse request
-        req = ujson.loads(self.request.body)
+        req = orjson.loads(self.request.body)
         # Disable nginx proxy buffering
         self.set_header("X-Accel-Buffering", "no")
         # Object ids

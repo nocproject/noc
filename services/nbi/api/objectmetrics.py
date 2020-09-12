@@ -9,7 +9,7 @@
 import operator
 
 # Third-party modules
-import ujson
+import orjson
 import dateutil.parser
 
 # NOC modules
@@ -59,12 +59,12 @@ class ObjectMetricsAPI(NBIAPI):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")
-            self.write(ujson.dumps(result))
+            self.write(orjson.dumps(result))
 
     def handler(self):
         # Decode request
         try:
-            req = ujson.loads(self.request.body)
+            req = orjson.loads(self.request.body)
         except ValueError:
             return 400, "Cannot decode JSON"
         # Validate

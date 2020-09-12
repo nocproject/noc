@@ -8,12 +8,13 @@
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.ip.models.address import Address
+from noc.core.comp import smart_text
 
 
 def qs(s):
     if not s:
         return ""
-    return s.encode("utf-8")
+    return smart_text(s)
 
 
 class AddressDataStream(DataStream):

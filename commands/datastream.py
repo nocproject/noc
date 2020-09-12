@@ -12,7 +12,7 @@ import itertools
 import logging
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -20,6 +20,7 @@ from noc.core.datastream.loader import loader
 from noc.core.mongo.connection import connect
 from noc.models import get_model
 from noc.models import is_document
+from noc.core.comp import smart_text
 
 BATCH_SIZE = 20000
 
@@ -96,7 +97,10 @@ class Command(BaseCommand):
         model_id = self.MODELS.get(datastream)
         if not model_id:
             self.die("Unsupported datastream")
-        model = get_model(model_id)
+        if isinstance(model_id, tuple):
+            model = tuple(get_model(mid) for mid in model_id)
+        else:
+            model = get_model(model_id)
         if not model:
             self.die("Invalid model")
         return model
@@ -167,8 +171,8 @@ class Command(BaseCommand):
             self.print(
                 "===[id: %s, change id: %s, time: %s]================" % (obj_id, change_id, gt)
             )
-            d = ujson.loads(data)
-            self.print(ujson.dumps(d, indent=2))
+            d = orjson.loads(data)
+            self.print(smart_text(orjson.dumps(d, option=orjson.OPT_INDENT_2)))
 
 
 if __name__ == "__main__":

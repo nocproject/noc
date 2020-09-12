@@ -10,12 +10,13 @@
 import logging
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.http.client import fetch_sync
 from noc.config import config
 from noc.core.perf import metrics
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ def pub(topic, data, raw=False):
     code, headers, body = fetch_sync(
         "%s?topic=%s" % (url, topic),
         method="POST",
-        body=data if raw else ujson.dumps(data),
+        body=data if raw else smart_text(orjson.dumps(data)),
         connect_timeout=config.nsqd.connect_timeout,
         request_timeout=config.nsqd.request_timeout,
     )

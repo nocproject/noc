@@ -9,7 +9,7 @@
 from operator import itemgetter
 
 # Third-party modules modules
-import ujson
+import orjson
 from django import forms
 from django.db.models import Q
 from noc.core.translation import ugettext as _
@@ -28,6 +28,7 @@ from noc.ip.models.vrfgroup import VRFGroup
 from noc.main.models.customfield import CustomField
 from noc.aaa.models.permission import Permission
 from noc.core.colors import get_colors
+from noc.core.comp import smart_text
 
 
 class IPAMApplication(ExtApplication):
@@ -248,8 +249,8 @@ class IPAMApplication(ExtApplication):
                 for e in entering:
                     slots[r_slots[e]] = e
                 r[2] = slots[:]
-                for l in leaving:
-                    slots[r_slots[l]] = None
+                for lv in leaving:
+                    slots[r_slots[lv]] = None
             # Assign slots to addresses
             c = [None] * max_slots
             rrs = rs[:]
@@ -279,7 +280,7 @@ class IPAMApplication(ExtApplication):
                     if rrs:
                         cr = rrs.pop(0)
                 spot += [(None if a is None else a.address, c, a in special_addr)]
-            spot = ujson.dumps(spot)
+            spot = smart_text(orjson.dumps(spot))
         else:
             spot = None
         can_ping = spot is not None and len([a for a in addresses if a.managed_object]) > 0

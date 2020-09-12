@@ -14,7 +14,7 @@ import time
 import argparse
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -104,7 +104,7 @@ class Command(BaseCommand):
 
     def update_mib(self, mib, data, version=None):
         # Deserialize
-        d = ujson.loads(data)
+        d = orjson.loads(data)
         # Update timestamp
         mib.last_updated = self.decode_date(d["last_updated"])
         # Update version
@@ -118,7 +118,7 @@ class Command(BaseCommand):
 
     def create_mib(self, data):
         # Deserialize
-        d = ujson.loads(data)
+        d = orjson.loads(data)
         # Create MIB
         mib = MIB(
             name=d["name"],

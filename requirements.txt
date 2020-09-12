@@ -44,6 +44,7 @@ mistune==0.5
 mongoengine==0.20.0
 networkx==2.4
 numpy==1.18.3
+orjson==3.3.1
 progressbar2==3.51.0
 psycopg2==2.8.5
 pymongo==3.11.0
@@ -57,7 +58,6 @@ requests==2.20.0
 setproctitle==1.1.10
 tornadis==0.8.1
 tornado==6.0.4
-ujson-x==1.37
 yappi==1.2.5
 # Activator requirements
 ssh2-python==0.18.0.post1; extra == "activator"

@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.topology.path import get_shortest_path
+from noc.core.comp import smart_text
 
 
 class PathCard(BaseCard):
@@ -39,4 +40,4 @@ class PathCard(BaseCard):
                 path += [{"x": mo.x, "y": mo.y, "objects": [{"id": mo.id, "name": mo.name}]}]
             else:
                 path[-1]["objects"] += [{"id": mo.id, "name": mo.name}]
-        return {"mo1": mo1, "mo2": mo2, "path": ujson.dumps(path)}
+        return {"mo1": mo1, "mo2": mo2, "path": smart_text(orjson.dumps(path))}

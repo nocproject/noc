@@ -14,7 +14,7 @@ from collections import defaultdict
 
 # Third-party modules
 import bson
-import ujson
+import orjson
 import uuid
 from mongoengine.queryset import Q
 import cachetools
@@ -301,7 +301,7 @@ class BIAPI(API):
         """
         d = self._get_dashboard(id)
         if d:
-            return ujson.loads(zlib.decompress(smart_bytes(d.config)))
+            return orjson.loads(zlib.decompress(smart_bytes(d.config)))
         else:
             metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
@@ -327,7 +327,7 @@ class BIAPI(API):
             d = Dashboard(id=str(bson.ObjectId()), owner=self.handler.current_user)
         d.format = config.get("format", 1)
         config["id"] = str(d.id)
-        d.config = zlib.compress(smart_bytes(ujson.dumps(config)))
+        d.config = zlib.compress(orjson.dumps(config))
         d.changed = datetime.datetime.now()
         d.title = config.get("title")  # @todo: Generate title
         d.description = config.get("description")

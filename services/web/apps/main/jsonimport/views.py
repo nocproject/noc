@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -32,7 +32,7 @@ class JSONImportApplication(ExtApplication):
     )
     def api_import(self, request, json):
         try:
-            jdata = ujson.loads(json)
+            jdata = orjson.loads(json)
         except Exception as e:
             return {"status": False, "error": "Invalid JSON: %s" % e}
         try:

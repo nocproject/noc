@@ -11,7 +11,7 @@ import threading
 
 # Third-party modules
 import pytest
-import ujson
+import orjson
 import bson
 
 # NOC modules
@@ -94,7 +94,7 @@ def test_datastream_update(ds_index):
     assert "hash" in doc
     assert "data" in doc
     assert "change_id" in doc
-    data = ujson.loads(doc["data"])
+    data = orjson.loads(doc["data"])
     assert "id" in data
     assert "name" in data
     assert data["name"] == "Item #%s" % ds_index

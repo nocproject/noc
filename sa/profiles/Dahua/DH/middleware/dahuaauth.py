@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import ujson
+import orjson
 import hashlib
 import codecs
 
@@ -94,7 +94,7 @@ class DahuaAuthMiddeware(BaseMiddleware):
             allow_proxy=False,
             validate_cert=False,
         )
-        r = ujson.loads(result)
+        r = orjson.loads(result)
         session = r["session"]
         self.http.set_session_id(session)
         password = self.get_auth(r["params"])

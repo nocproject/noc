@@ -9,7 +9,7 @@
 from urllib.parse import quote as urllib_quote
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from .base import BaseGeocoder, GeoCoderResult
@@ -30,7 +30,7 @@ class OSMNominatimGeocoder(BaseGeocoder):
         if code != 200:
             raise GeoCoderError("%s: %s" % (code, response))
         try:
-            r = ujson.loads(response)
+            r = orjson.loads(response)
         except ValueError:
             raise GeoCoderError("Cannot decode result")
         return GeoCoderResult(exact=False, query=query, path=[], lon=r[0]["lon"], lat=r[0]["lat"])

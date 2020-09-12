@@ -15,7 +15,7 @@ import contextlib
 import gzip
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -166,7 +166,7 @@ class Command(BaseCommand):
             # Serialize and write
             path = kwargs.get("output") + mib.name + ".json.gz"
             with self.open_output(path) as f:
-                f(smart_bytes(ujson.dumps(data)))
+                f(orjson.dumps(data))
 
     def handle_make_cmib(self, mib_name, *args, **kwargs):
         def has_worth_hint(syntax):

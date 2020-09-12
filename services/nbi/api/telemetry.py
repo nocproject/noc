@@ -9,7 +9,7 @@
 from collections import defaultdict
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.service.apiaccess import authenticated
@@ -51,12 +51,12 @@ class TelemetryAPI(NBIAPI):
         if isinstance(result, str):
             self.write(result)
         else:
-            self.write(ujson.dumps(result))
+            self.write(orjson.dumps(result))
 
     def handler(self):
         # Decode request
         try:
-            req = ujson.loads(self.request.body)
+            req = orjson.loads(self.request.body)
         except ValueError:
             return 400, "Cannot decode JSON"
         # Validate

@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from .base import BaseMarshaller
+from noc.core.comp import smart_text
 
 
 class JSONMarshaller(BaseMarshaller):
@@ -24,4 +25,4 @@ class JSONMarshaller(BaseMarshaller):
                 r["children"] = children
             return r
 
-        return ujson.dumps([get_node(x) for x in node.iter_nodes()])
+        return smart_text(orjson.dumps([get_node(x) for x in node.iter_nodes()]))

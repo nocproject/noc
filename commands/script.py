@@ -14,7 +14,7 @@ import re
 
 # Third-party modules
 from fs import open_fs
-import ujson
+import orjson
 import yaml
 import codecs
 import uuid
@@ -225,7 +225,7 @@ class Command(BaseCommand):
 
         def parse_json(j):
             try:
-                return ujson.loads(j)
+                return orjson.loads(j)
             except ValueError as e:
                 self.die("Failed to parse JSON: %s" % e)
 
@@ -417,7 +417,7 @@ class VersionStub(object):
 class JSONObject(object):
     def __init__(self, path):
         with open(path) as f:
-            data = ujson.load(f)
+            data = orjson.loads(f.read())
         self.scheme = {"telnet": TELNET, "ssh": SSH, "http": HTTP, "https": HTTPS}.get(
             data.get("scheme", "telnet"), TELNET
         )

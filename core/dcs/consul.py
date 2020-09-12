@@ -8,7 +8,7 @@
 # Python modules
 import random
 import time
-import ujson
+import orjson
 import uuid
 from urllib.parse import unquote
 import asyncio
@@ -21,6 +21,7 @@ from noc.config import config
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.comp import smart_text
 from .base import DCSBase, ResolverBase
 
 ConsulRepearableCodes = {500, 598, 599}
@@ -411,7 +412,7 @@ class ConsulDCS(DCSBase):
                 if e["Key"] == manifest_path:
                     cas = e["ModifyIndex"]
                     # @todo: Handle errors
-                    manifest = ujson.loads(e["Value"])
+                    manifest = orjson.loads(e["Value"])
                 else:
                     if "Session" in e:
                         seen_sessions.add(e["Session"])
@@ -445,7 +446,11 @@ class ConsulDCS(DCSBase):
             try:
                 r = await self.consul.kv.put(
                     key=manifest_path,
-                    value=ujson.dumps({"Limit": total_slots, "Holders": holders}, indent=2),
+                    value=smart_text(
+                        orjson.dumps(
+                            {"Limit": total_slots, "Holders": holders}, option=orjson.OPT_INDENT_2
+                        )
+                    ),
                     cas=cas,
                 )
             except ConsulRepeatableErrors as e:

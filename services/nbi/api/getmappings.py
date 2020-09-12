@@ -9,7 +9,7 @@
 import operator
 
 # Third-party modules
-import ujson
+import orjson
 
 # NOC modules
 from noc.core.service.apiaccess import authenticated
@@ -53,7 +53,7 @@ class GetMappingsAPI(NBIAPI):
     def do_post(self):
         # Decode request
         try:
-            req = ujson.loads(self.request.body)
+            req = orjson.loads(self.request.body)
         except ValueError:
             return 400, self.error_msg("Cannot decode JSON")
         # Validate
@@ -95,7 +95,7 @@ class GetMappingsAPI(NBIAPI):
             self.write(result)
         else:
             self.set_header("Content-Type", "text/json")
-            self.write(ujson.dumps(result))
+            self.write(orjson.dumps(result))
 
     @staticmethod
     def error_msg(msg):

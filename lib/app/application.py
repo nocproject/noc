@@ -28,7 +28,7 @@ from django import forms
 from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
 from django.http import Http404
-import ujson
+import orjson
 import jinja2
 
 # NOC modules
@@ -257,7 +257,7 @@ class Application(object, metaclass=ApplicationBase):
         if "noc_user" in request.COOKIES:
             session_id = request.COOKIES["noc_user"].rsplit("|", 1)[-1]
             key = "msg-%s" % session_id
-            cache.set(key, ujson.dumps([message]), ttl=30, version=1)
+            cache.set(key, smart_text(orjson.dumps([message])), ttl=30, version=1)
 
     def get_template_path(self, template):
         """
@@ -348,7 +348,11 @@ class Application(object, metaclass=ApplicationBase):
         """
         Create serialized JSON-encoded response
         """
-        return HttpResponse(ujson.dumps(obj), content_type="text/json", status=status)
+        return HttpResponse(
+            orjson.dumps(obj, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS),
+            content_type="text/json",
+            status=status,
+        )
 
     def render_success(self, request, subject=None, text=None):
         """
