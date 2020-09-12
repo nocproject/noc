@@ -115,7 +115,7 @@ class AlarmEscalation(Document):
         return list(AlarmEscalation.objects.filter(alarm_classes__alarm_class=alarm_class))
 
     @classmethod
-    def watch_escalations(cls, alarm):
+    def watch_escalations(cls, alarm, timestamp_policy="a"):
         now = datetime.datetime.now()
         for esc in cls.get_class_escalations(alarm.alarm_class):
             for e_item in esc.escalations:
@@ -148,6 +148,7 @@ class AlarmEscalation(Document):
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
                     escalation_delay=e_item.delay,
+                    timestamp_policy=timestamp_policy,
                 )
                 if e_item.stop_processing:
                     break

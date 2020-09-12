@@ -56,6 +56,16 @@ class TTSystem(Document):
     max_threads = IntField(default=10)
     # Telemetry settings
     telemetry_sample = IntField(default=0)
+    # Escalation Policy settings
+    alarm_consequence_policy = StringField(
+        required=True,
+        choices=[
+            ("D", "Disable"),
+            ("a", "Escalate with alarm timestamp"),
+            ("c", "Escalate with current timestamp"),
+        ],
+        default="a",
+    )
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
@@ -79,6 +89,28 @@ class TTSystem(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return TTSystem.objects.filter(name=name).first()
+
+    def save(self, *args, **kwargs):
+        from noc.core.cache.base import cache
+        from noc.sa.models.managedobject import ManagedObject, MANAGEDOBJECT_CACHE_VERSION
+
+        invalidate_mo_cache = (
+            not hasattr(self, "_changed_fields")
+            or "alarm_consequence_policy" in self._changed_fields
+        )
+
+        # After save changed_fields will be empty
+        super().save(*args, **kwargs)
+
+        # Invalidate ManagedObject cache
+        if invalidate_mo_cache:
+            deleted_cache_keys = [
+                "managedobject-id-%s" % mo_id
+                for mo_id in ManagedObject.objects.filter(tt_system=self.id).values_list(
+                    "id", flat=True
+                )
+            ]
+            cache.delete_many(deleted_cache_keys, version=MANAGEDOBJECT_CACHE_VERSION)
 
     def get_system(self):
         """
