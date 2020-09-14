@@ -240,7 +240,7 @@ class Command(BaseCommand):
     def handle_clean(self, options, events):
         before = options.get("before")
         if before:
-            datetime.datetime.strptime(before, "%Y-%m-%d")
+            before = datetime.datetime.strptime(before, "%Y-%m-%d")
         else:
             self.print("Before is not set, use default")
             before = datetime.datetime.now() - DEFAULT_CLEAN
