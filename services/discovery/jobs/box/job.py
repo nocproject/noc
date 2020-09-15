@@ -50,6 +50,7 @@ from .address import AddressCheck
 from .segmentation import SegmentationCheck
 from ..periodic.cpestatus import CPEStatusCheck
 from .ifdesc import IfDescCheck
+from ..periodic.alarms import AlarmsCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -130,6 +131,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             CPECheck(self).run()
         if self.object.object_profile.enable_box_discovery_cpestatus:
             CPEStatusCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_alarms:
+            AlarmsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_mac:
             MACCheck(self).run()
         if VPNCheck.is_enabled_for_object(self.object):
