@@ -16,6 +16,7 @@ from ..box.resolver import ResolverCheck
 from .uptime import UptimeCheck
 from .interfacestatus import InterfaceStatusCheck
 from .mac import MACCheck
+from .alarms import AlarmsCheck
 from .metrics import MetricsCheck
 from .cpestatus import CPEStatusCheck
 
@@ -50,6 +51,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             InterfaceStatusCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_cpestatus:
             CPEStatusCheck(self).run()
+        if self.object.object_profile.enable_periodic_discovery_alarms:
+            AlarmsCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_mac:
             MACCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_metrics:
