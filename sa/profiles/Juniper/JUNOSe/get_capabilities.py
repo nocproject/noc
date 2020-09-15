@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,8 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
 class Script(BaseScript):
     name = "Juniper.JUNOSe.get_capabilities"
+
+    CHECK_SNMP_GET = {"BRAS | PPPoE": "1.3.6.1.4.1.4874.2.2.18.1.5.11.0"}
 
     @false_on_cli_error
     def has_oam_cli(self):

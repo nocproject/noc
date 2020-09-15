@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_interfases
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -190,8 +190,8 @@ class Script(BaseScript):
 
     def execute_cli(self, interface=None):
         v = self.cli("show running-configuration | include interface")
-        for l in v.split("\n"):
-            match = self.rx_conf_iface.match(l)
+        for link in v.split("\n"):
+            match = self.rx_conf_iface.match(link)
             if match:
                 iface = match.group("iftype") + " " + match.group("ifname")
                 if iface not in self.logical_interfaces:
