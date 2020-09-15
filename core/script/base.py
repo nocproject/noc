@@ -182,6 +182,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.snmp = self.root.snmp
         elif self.is_beefed:
             self.snmp = BeefSNMP(self)
+            self.credentials["snmp_ro"] = "public"  # For core.snmp.base check
         else:
             self.snmp = SNMP(self)
         if self.parent:
@@ -217,6 +218,14 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.logger.debug("Filling get_version cache with %s", version)
             s = name.split(".")
             self.set_cache("%s.%s.get_version" % (s[0], s[1]), {}, version)
+        if (
+            self.is_beefed
+            and not parent
+            and not name.endswith(".get_capabilities")
+            and not name.endswith(".get_version")
+        ):
+            self.capabilities = self.scripts.get_capabilities()
+            self.logger.info("Filling capabilities with %s", self.capabilities)
         # Fill matchers
         if not self.name.endswith(".get_version"):
             self.apply_matchers()
@@ -804,8 +813,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         def format_result(result):
             if list_re:
                 x = []
-                for l in result.splitlines():
-                    match = list_re.match(l.strip())
+                for line in result.splitlines():
+                    match = list_re.match(line.strip())
                     if match:
                         x += [match.groupdict()]
                 return x
