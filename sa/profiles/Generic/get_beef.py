@@ -112,9 +112,9 @@ class Script(BaseScript):
                     }
                 elif ans["type"] == "snmp-getnext":
                     for oid, value in self.snmp.getnext(
-                        ans["value"], raw_varbinds=True, max_retries=2
+                        ans["value"], raw_varbinds=True, max_retries=2, timeout=20
                     ):
-                        yield {"oid": str(oid), "value": self.encode_mib(value).strip()}
+                        yield {"oid": smart_text(oid), "value": self.encode_mib(value).strip()}
             except SNMPError:
                 continue
 
