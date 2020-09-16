@@ -27,8 +27,9 @@ class Script(BaseScript):
         re.DOTALL | re.IGNORECASE,
     )
     rx_range2 = re.compile(
-        r"^\s+Base address\s+(?P<mac>\S+)\s*\n" r"^\s+Count\s+(?P<count>\d+)", re.MULTILINE
+        r"^\s+Base address\s+(?P<mac>\S+)\s*\n^\s+Count\s+(?P<count>\d+)", re.MULTILINE
     )
+    rx_lldp = re.compile(r"^\s+Chassis ID\s+:\s+(?P<mac>\S+)\s*\n", re.MULTILINE)
 
     def execute_cli(self):
         v = self.cli("show chassis mac-addresses")
@@ -46,4 +47,10 @@ class Script(BaseScript):
             base = match.group("mac")
             count = int(match.group("count"))
             return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
+        # Found in ex4550-32f JUNOS 15.1R7-S7.1
+        # Chassic ID MAC somehow differs from `Public base address`
+        v = self.cli("show lldp local-information", cached=True)
+        match = self.rx_lldp.search(v)
+        if match:
+            macs += [[match.group("mac"), match.group("mac")]]
         return [{"first_chassis_mac": f, "last_chassis_mac": t} for f, t in macs]
