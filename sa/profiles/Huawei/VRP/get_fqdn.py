@@ -19,8 +19,8 @@ class Script(BaseScript):
 
     always_prefer = "S"
 
-    rx_hostname = re.compile(r"^sysname\s+(?P<hostname>\S+)", re.MULTILINE)
-    rx_hostname_lldp = re.compile(r"^System name\s+:\s*(?P<hostname>\S+)", re.MULTILINE)
+    rx_hostname = re.compile(r"^\s*sysname\s+(?P<hostname>\S+)", re.MULTILINE)
+    rx_hostname_lldp = re.compile(r"^\s*System name\s+:\s*(?P<hostname>\S+)", re.MULTILINE)
     rx_domain_name = re.compile(r"^ip domain[ \-]name\s+(?P<domain>\S+)", re.MULTILINE)
 
     def execute_cli(self):

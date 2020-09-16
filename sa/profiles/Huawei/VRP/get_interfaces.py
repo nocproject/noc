@@ -100,14 +100,29 @@ class Script(BaseScript):
     )
 
     rx_port_allow_vlan = re.compile(r"(?P<iface>\S+)\s+(?:trunking)\s+(?:\d)\s+(?P<vlans>\S+)")
+    rx_port_port_vlan = re.compile(
+        r"(?P<iface>\S+)\s+(?:trunking|hybrid|trunk|access)\s+(?:\d+)\s+(?P<vlans>.+)"
+    )
 
     def parse_displ_port_allow_vlan(self):
+        # Used on CX200 series
         try:
             v = self.cli("display port allow-vlan")
         except self.CLISyntaxError:
             v = ""
         for iface, vlan in self.rx_port_allow_vlan.findall(v):
             yield iface, ranges_to_list(vlan)
+
+    def parse_displ_port_vlan(self):
+        # Used on Quidwai series switches
+        try:
+            v = self.cli("display port vlan")
+        except self.CLISyntaxError:
+            v = ""
+        for iface, vlan in self.rx_port_port_vlan.findall(v):
+            if not vlan.strip("- "):
+                continue
+            yield iface, ranges_to_list(vlan, " ")
 
     def get_switchport_cli(self) -> DefaultDict[str, Dict[str, Union[int, list, None]]]:
         result = defaultdict(lambda: {"untagged": None, "tagged": []})
@@ -164,6 +179,10 @@ class Script(BaseScript):
                         result[ifname][key] = vid
                     else:
                         result[ifname][key] += [vid]
+        if not result and self.is_quidway_S5xxx:
+            self.logger.debug("Empty result. Use display port vlan")
+            for iface, vlans in self.parse_displ_port_vlan():
+                result[self.profile.convert_interface_name(iface)]["tagged"] += vlans
         if not result:
             self.logger.debug("Empty result. Use display port allow-vlan")
             for iface, vlans in self.parse_displ_port_allow_vlan():
@@ -183,12 +202,12 @@ class Script(BaseScript):
             max_retries=self.get_getnext_retires(),
             timeout=self.get_snmp_timeout(),
         ):
+            pid_ifindex_mappings[port_num] = ifindex
             if not pvid:
                 # Avoid zero-value untagged
                 # Found on ME60-X8 5.160 (V600R008C10SPC300)
                 continue
             result[ifindex]["untagged_vlan"] = pvid
-            pid_ifindex_mappings[port_num] = ifindex
 
         for oid, vlans_bank in self.snmp.getnext(
             mib["HUAWEI-L2IF-MIB::hwL2IfTrunkPortTable"],
@@ -216,6 +235,10 @@ class Script(BaseScript):
         return result
 
     def get_ospfint(self):
+        if not (
+            self.has_capability("Network | OSFP | v2") or self.has_capability("Network | OSFP | v3")
+        ):
+            return []
         try:
             v = self.cli("display ospf interface all")
         except self.CLISyntaxError:
@@ -228,6 +251,8 @@ class Script(BaseScript):
         return ospfs
 
     def get_ndpint(self):
+        if not (self.has_capability("Huawei | NDP")):
+            return []
         try:
             v = self.cli("display ndp", cached=True)
         except self.CLISyntaxError:
@@ -249,16 +274,16 @@ class Script(BaseScript):
 
     def get_stpint(self):
         try:
-            v = self.cli("display stp brief")
+            v = self.cli("display stp brief", cached=True)
         except self.CLISyntaxError:
             return {}
         if "Protocol Status    :disabled" in v:
             return {}
         stp = []
-        for l in v.splitlines():
-            if not l:
+        for line in v.splitlines():
+            if not line:
                 continue
-            stp += [l.split()[1]]
+            stp += [line.split()[1]]
         if stp:
             stp.pop(0)
         return stp
@@ -309,13 +334,13 @@ class Script(BaseScript):
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
-        for l in self.cli("display ip interface").splitlines():
-            match = self.rx_dis_ip_int.search(l)
+        for line in self.cli("display ip interface").splitlines():
+            match = self.rx_dis_ip_int.search(line)
             if match:
                 c_iface = self.profile.convert_interface_name(match.group("interface"))
                 continue
             # Primary ip
-            match = self.rx_ip.search(l)
+            match = self.rx_ip.search(line)
             if not match:
                 continue
             ip = match.group("ip")

@@ -19,10 +19,12 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
-    rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\s*\.(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
+    rx_mac1 = re.compile(
+        r"(CIST Bridge|Bridge ID)\s+:\d+\s*\.(?P<id>\S+)", re.IGNORECASE | re.MULTILINE
+    )
 
     def execute_cli(self):
-        v = self.cli("display stp")
+        v = self.cli("display stp", cached=True)
         match = self.rx_mac.search(v)
         if match:
             mac = match.group("id")
