@@ -90,7 +90,6 @@ def get_objects_metrics(managed_objects):
             SQL = SQL % ("", "")
         try:
             for result in ch.execute(post=SQL):
-                print(result)
                 if table in path_table:
                     mo_bi_id, ts, path = result[:3]
                     result = result[3:]
@@ -112,16 +111,20 @@ def get_objects_metrics(managed_objects):
     return metric_map, last_ts
 
 
-def get_interface_metrics(managed_objects):
+def get_interface_metrics(managed_objects, meric_map=None):
     from noc.sa.models.managedobject import ManagedObject
 
     # mo = self.object
-    meric_map = {
-        "load_in": "Interface | Load | In",
-        "load_out": "Interface | Load | Out",
-        "errors_in": "Interface | Errors | In",
-        "errors_out": "Interface | Errors | Out",
-    }
+    if not meric_map:
+        meric_map = {
+            "table_name": "interface",
+            "map": {
+                "load_in": "Interface | Load | In",
+                "load_out": "Interface | Load | Out",
+                "errors_in": "Interface | Errors | In",
+                "errors_out": "Interface | Errors | Out",
+            },
+        }
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
     bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
@@ -133,34 +136,35 @@ def get_interface_metrics(managed_objects):
     )
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)
-    SQL = """SELECT managed_object, path[4] as iface, argMax(ts, ts), argMax(load_in, ts), argMax(load_out, ts),
-    argMax(errors_in, ts), argMax(errors_out, ts)
-            FROM interface
+    SQL = """SELECT managed_object, argMax(ts, ts), path[4] as iface, %s
+            FROM %s
             WHERE
               date >= toDate('%s')
               AND ts >= toDateTime('%s')
               AND managed_object IN (%s)
             GROUP BY managed_object, iface
             """ % (
+        ", ".join(["argMax(%s, ts) as %s" % (f, f) for f in meric_map["map"].keys()]),
+        meric_map["table_name"],
         from_date.date().isoformat(),
         from_date.isoformat(sep=" "),
         ", ".join(bi_map),
     )
     ch = ch_connection()
-    mtable = []  # mo_id, mac, iface, ts
     metric_map = defaultdict(dict)
     last_ts = {}  # mo -> ts
+    metric_fields = list(meric_map["map"].keys())
     try:
-        for mo_bi_id, iface, ts, load_in, load_out, errors_in, errors_out in ch.execute(post=SQL):
+        for result in ch.execute(post=SQL):
+            mo_bi_id, ts, iface = result[:3]
+            res = dict(zip(metric_fields, result[3:]))
             mo = bi_map.get(mo_bi_id)
-            if mo:
-                mtable += [[mo, iface, ts, load_in, load_out]]
-                metric_map[mo][iface] = {
-                    meric_map["load_in"]: int(load_in),
-                    meric_map["load_out"]: int(load_out),
-                    meric_map["errors_in"]: int(errors_in),
-                    meric_map["errors_out"]: int(errors_out),
-                }
+            for field, value in res.items():
+                if mo not in metric_map:
+                    metric_map[mo] = defaultdict(dict)
+                metric_map[mo][iface][meric_map["map"].get(field)] = (
+                    float(value) if isinstance(float(value), float) else int(value)
+                )
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
     except ClickhouseError:
         pass

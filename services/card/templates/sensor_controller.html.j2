@@ -113,13 +113,16 @@
                     <!-- Redundancy-->
                     {{ {"R": _("Redundant"), "L": _("Lost redundancy"), "N": _("No redundancy") }[redundancy] }}
                 </div>
+            </div> <!-- row-->
+            <div class="line"></div>
+            <div class="row">
                 <div class="col-sm-2">
                     <b>{{ _("Administrative Domain") }}</b>
                 </div>
                 <div class="col-sm-3">
                     {{ object.administrative_domain.name }}
                 </div>
-            </div> <!-- row-->
+            </div> <!-- row -->
             <div class="line"></div>
             {% if object.time_pattern %}
             <div class="row">
@@ -167,119 +170,13 @@
                             {% if serial_number %}
                                 </br><b>Serial number:</b> {{ serial_number }}
                             {% endif %}
-                            </br><b>{{ _("Service Range") }}</b>&nbsp;&nbsp;N/A
+                            {% if macs %}
+                                </br><b>MAC:</b> {{ macs }} <br>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="row">
-                        <div class="col-sm-1">
-                            <b>{{ _("Service") }}</b>
-                            </br><b>{{ _("MAC") }}</b>
-                        </div>
-                        <div class="col-sm-5 col-sm-offset-3">
-                            <small>{{ service_summary | glyph_summary }}</small>
-                            </br><small>{{ macs }}</small>
-                        </div>
-                   </div>
-                </div>
             </div> <!-- row-->
-            <div class="line"></div>
-            {% if service_groups %}
-            <div class="row">
-                <div class="col-sm-1">
-                    <b>{{ _("Provides Resources") }}</b>
-                </div>
-                <div class="col-sm-11">
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                            <th>{{ _("Group") }}</th>
-                            <th>{{ _("Technology") }}</th>
-                            <th>{{ _("Type") }}</th>
-                        </thead>
-                        <tbody>
-                            {% for g in service_groups %}
-                            <tr>
-                                <td><a href="/api/card/view/resourcegroup/{{ g["id"] }}/">{{ g["name"] }}</a></td>
-                                <td><a href="/api/card/view/technology/{{ g["technology"]["id"] }}/">{{ g["technology"]["name"] }}</a></td>
-                                <td>{% if g["is_static"] %}{{ _("Static") }}{% else %}{{ _("Dynamic") }}{% endif %}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div> <!-- row-->
-            <div class="line"></div>
-            {% endif %}
-            {% if client_groups %}
-            <div class="row">
-                <div class="col-sm-1">
-                    <b>{{ _("Consumes Resources") }}</b>
-                </div>
-                <div class="col-sm-11">
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                            <th>{{ _("Group") }}</th>
-                            <th>{{ _("Technology") }}</th>
-                            <th>{{ _("Type") }}</th>
-                        </thead>
-                        <tbody>
-                            {% for g in client_groups %}
-                            <tr>
-                                <td><a href="/api/card/view/resourcegroup/{{ g["id"] }}/">{{ g["name"] }}</a></td>
-                                <td><a href="/api/card/view/technology/{{ g["technology"]["id"] }}/">{{ g["technology"]["name"] }}</a></td>
-                                <td>{% if g["is_static"] %}{{ _("Static") }}{% else %}{{ _("Dynamic") }}{% endif %}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div> <!-- row-->
-            <div class="line"></div>
-            {% endif %}
-            {% if metrics %}
-            <div class="row">
-                <div class="col-se-1">
-                    <b>{{ _("Metrics") }}</b>
-                </div>
-                <div class="col-sm-10">
-                    <div class="panel-group">
-                        {% for m in metrics %}
-                        <div class="panel" style="width: 50%">
-                            <div class="panel-heading metric-header{%- if m.isdanger %} bg-danger{% endif %}"
-                                 style="padding: 0;">
-                                <a data-toggle="collapse" {% if not m.collapsed %} class="collapsed" {% endif %} href="#metric-{{ loop.index }}">
-                                    <i class="fa fa-chevron-down pull-right"></i>
-                                    {{ m.name }}
-                                </a>
-                            </div>
-                            <div id="metric-{{ loop.index }}" class="panel-collapse collapse {% if m.collapsed %} in {% endif %}">
-                                <div class="panel-body">
-                                    {% for v in m.value %}
-                                    <div class="row row-bordered {% if v.threshold %} bg-danger{% endif %}">
-                                        <div class="col-sm-7 col-sm-offset-1">
-                                            {{ v.name }}
-                                        </div>
-                                        {% if v.type != "bool" %}
-                                            {% if v.type == "C" %}
-                                                <div class="col-sm-4">{{ v.value }}<sup>o</sup>{{ v.type }}</div>
-                                            {% else %}
-                                                <div class="col-sm-4">{{ v.value }}{{ v.type }}</div>
-                                            {% endif %}
-                                        {% else %}
-                                            <div class="col-sm-4">{{ v.value }}</div>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div> <!-- row-->
-            <div class="line"></div>
-            {% endif %}
             {% if links %}
             <div class="row">
                 <div class="col-sm-1">
@@ -358,7 +255,6 @@
                         <thead>
                             <th></th>
                             <th>{{ _("Timestamp") }}</th>
-                            <th>{{ _("Services") }}</th>
                             <th>{{ _("Duration") }}</th>
                             <th>{{ _("Object") }}</th>
                             <th>{{ _("IP") }}</th>
@@ -370,7 +266,6 @@
                             <tr>
                                 <td>{% if a.root_id and a.id == a.root_id %}<i class="fa fa-arrow-right"></i>{% endif %}</td>
                                 <td>{# {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * }} #}<a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp | timestamp }}</a></td>
-                                <td>{{ service_summary | glyph_summary }}</td>
                                 <td>{{ a.duration }}</td>
                                 <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object | managed_object_title }}</a></td>
                                 <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.address }}</a></td>
@@ -385,147 +280,129 @@
             <div class="line"></div>
             {% endif %}
         </div> <!-- container-fluid -->
-    </div> <!-- end panel-body -->
-    <div class="panel-footer">
+        </div> <!-- end panel-body -->
+        <div class="panel-body">
+            {% if metrics %}
+            <div class="row">
+                <div class="col-se-1">
+                    <b>{{ _("Object Metrics") }}</b>
+                </div>
+                <div class="col-sm-12">
+                    <div class="panel-group">
+                        {% for m in metrics %}
+                        <div class="panel" style="width: 50%">
+                            <div class="panel-heading metric-header{%- if m.isdanger %} bg-danger{% endif %}"
+                                 style="padding: 0;">
+                                <a data-toggle="collapse" {% if not m.collapsed %} class="collapsed" {% endif %} href="#metric-{{ loop.index }}">
+                                    <i class="fa fa-chevron-down pull-right"></i>
+                                    {{ m.name }}
+                                </a>
+                            </div>
+                            <div id="metric-{{ loop.index }}" class="panel-collapse collapse {% if m.collapsed %} in {% endif %}">
+                                <div class="panel-body">
+                                    {% for v in m.value %}
+                                    <div class="row row-bordered {% if v.threshold %} bg-danger{% endif %}">
+                                        <div class="col-sm-7 col-sm-offset-1">
+                                            {{ v.name }}
+                                        </div>
+                                        {% if v.type != "bool" %}
+                                            {% if v.type == "C" %}
+                                                <div class="col-sm-4">{{ v.value }}<sup>o</sup>{{ v.type }}</div>
+                                            {% else %}
+                                                <div class="col-sm-4">{{ v.value }}{{ v.type }}</div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="col-sm-4">{{ v.value }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div> <!-- row-->
+            <div class="line"></div>
+            {% endif %}
+        </div>
+        <div class="panel-body">
+            {% if sensors %}
+            <div class="row">
+                <div class="col-se-1">
+                    <b>{{ _("Sensors") }}</b>
+                </div>
+                <div class="col-sm-12">
+                    <div class="panel-group">
+                        {% for m in sensors %}
+                        <div class="panel" style="width: 50%">
+                            <div class="panel-heading metric-header{%- if m.isdanger %} bg-danger{% endif %}"
+                                 style="padding: 0;">
+                                <a data-toggle="collapse" href="#sensors-{{ loop.index }}">
+                                    <i class="fa fa-chevron-down pull-right"></i>
+                                    {{ m.name }}
+                                </a>
+                            </div>
+                            <div id="sensors-{{ loop.index }}" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    {% for v in m.value %}
+                                    <div class="row row-bordered {% if v.threshold %} bg-danger{% endif %}">
+                                        <div class="col-sm-7 col-sm-offset-1">
+                                            {{ v.name }}
+                                        </div>
+                                        {% if v.type != "bool" %}
+                                            {% if v.type == "C" %}
+                                                <div class="col-sm-4">{{ v.value }}<sup>o</sup>{{ v.type }}</div>
+                                            {% else %}
+                                                <div class="col-sm-4">{{ v.value }}{{ v.type }}</div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="col-sm-4">{{ v.value }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div> <!-- row-->
+            {% endif %}
+        </div>
+        <div class="panel-footer">
         {% if interfaces %}
-        <div class="row">
-            <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-12">
                 <table class="table table-condensed table-hover">
                     <thead>
                         <th class="col-sm-1">{{ _("Port") }}</th>
                         <th class="col-sm-1/12">{{ _("Admin") }}/<br/>{{ _("Oper") }}</th>
-                        <th class="col-sm-1/8">{{ _("Speed") }}/<br/>{{ _("Duplex") }}</th>
-                        <th class="col-sm-1/6">{{ _("Load In") }}</th>
-                        <th class="col-sm-1/6">{{ _("Load Out") }}</th>
-                        <th class="col-sm-1/6">{{ _("Errors In") }}</th>
-                        <th class="col-sm-1/6">{{ _("Errors Out") }}</th>
-                        <th class="col-sm-1/6">{{ _("MAC") }}</th>
-                        <th class="col-sm-2">{{ _("VLAN") }}</th>
-                        <th class="col-sm-1">{{ _("Profile") }}</th>
-                        <th class="col-sm-1/12">{{ _("Errors") }}</th>
-                        <th class="col-sm-1/12">{{ _("Status") }}</th>
+                        <th class="col-sm-1/12">{{ _("Profile") }}</th>
                         <th class="col-sm-1/12">{{ _("Description") }}</th>
                     </thead>
                     <tbody>
                         {% for i in interfaces %}
                         <tr>
                             <td>
-                            <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'iface', 'name': '{{i["name"]}}'}"><i class="fa fa-dashboard"></i> - {{i["name"]}} </a>
-                            <a href="/api/card/view/interfacepath/{{ i["id"] }}/" target="_"><i class="fa fa-road" title="{{ _("trace vpn") }}"></i></a>
+                            <i class="fa fa-dashboard"></i> - {{i["name"]}} </i>
                             </td>
                             <td{% if not i["oper_status"] %} class="danger"{% endif %}>
                                 {{ {True: "<i class='text-success fa fa-circle' title='Admin Up'></i>", False: "<i class='text-danger fa fa-circle' title='Admin Down'></i>"}[i["admin_status"]] }}&nbsp;
                                 {{ {True: "<i class='text-success fa fa-circle' title='Oper Up'></i>", False: "<i class='text-danger fa fa-circle' title='Oper Down'></i>"}[i["oper_status"]] }}
                             </td>
-                            <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["oper_status"] %}
-                                    <span class="small">{{ i["speed"] }}M/{{ {True: "Full", False: "Half"}[i.full_duplex] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["load_in"] %}
-                                    <span class="small">{{ i["load_in"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["load_out"] %}
-                                    <span class="small">{{ i["load_out"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["errors_in"] %}
-                                    <span class="small">{{ i["errors_in"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["errors_out"] %}
-                                    <span class="small">{{ i["errors_out"] }}</span>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="small">{{ i["mac"] }}</span>
-                                <a href="/api/card/view/interfacepath/{{ i["id"] }}/" target="_">TRACE</a>
-                            </td>
-                            <td>
-                                {% if i["untagged_vlan"] %}<span class="small">U: {{ i["untagged_vlan"] }}</span>{% endif %}
-                                {% if i["tagged_vlans"] %}<span class="small">T: {{ i["tagged_vlans"] }}</span>{% endif %}
-                            </td>
+
                             <td>
                                 <span class="small">{{ i["profile"] }}</span>
                             </td>
-                            {% if i["service"] %}
-                                <td></td> <!-- not implement -->
-                                <td>
-                                    <span class="small">{{ i["service"].logical_status | logical_status }}</small>
-                                    <span class="small">{{ i["service"].stage_name }}</small>
-                                    </span>
-                                </td>
-                            {% else %}
-                                <td colspan="2" class="text-center">-</td>
-                            {% endif %}
+
                             <td><span class="small">{{ i["description"] }}</span></td>
-                            {% if i["service"] %}
-                                <tr>
-                                    <td colspan="13" style="border-top: 0;">
-                                        <span><b>Services:</b></span>
-                                        <a href="/api/card/view/service/{{ i["service"].id }}/">{{ i["service"].order_id }}</a>:
-                                        {% if i["service"].subscriber %}
-                                            <span class="small">{{ i["service"].subscriber.name }}</span>
-                                        {% endif %}
-                                        {% if i["service"].address %}
-                                            <span class="small">{{ i["service"].address }}</span>
-                                        {% endif %}
-                                        {% if i["service_summary"] %}
-                                            <span class="small">{{ i["service_summary"] | glyph_summary(True) }}</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div> <!-- row -->
-        {% endif %}
-        {% if inventory %}
-        <div class="row">
-            <div class="col-sm-1">
-                <b>{{ _("Inventory") }}</b>
-            </div>
-            <div class="col-sm-10">
-                <table class="table table-condensed">
-                    <thead>
-                        <th>{{ _("Name") }}</th>
-                        <th>{{ _("Model") }}</th>
-                        <th>{{ _("Revision") }}</th>
-                        <th>{{ _("Serial") }}</th>
-                        <th>{{ _("Description") }}</th>
-                    </thead>
-                    <tbody>
-                        {% for i in inventory %}
-                        <tr>
-                            <td>{{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * i["level"]) }}{{ i["name"] }}</td>
-                            <td>{{ i["model"] }}</td>
-                            <td>{{ i["revision"] }}</td>
-                            <td>{{ i["serial"] }}</td>
-                            <td>{{ i["description"] }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
         {% endif %}
     </div>
 </div>
