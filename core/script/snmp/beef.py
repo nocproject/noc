@@ -146,4 +146,6 @@ class BeefSNMPSocket(object):
             r += [(oid, beef.get_mib_value(oid))]
             if len(r) >= max_repetitions:
                 break
+        if not r:
+            err_status = END_OID_TREE
         return err_status, err_index, r
