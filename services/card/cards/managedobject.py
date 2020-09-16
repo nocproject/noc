@@ -35,6 +35,7 @@ from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
 from noc.pm.models.metrictype import MetricType
+from noc.pm.models.metricscope import MetricScope
 from noc.core.perf import metrics
 
 
@@ -159,11 +160,11 @@ class ManagedObjectCard(BaseCard):
         macs = []
         o_macs = DiscoveryID.macs_for_object(self.object)
         if o_macs:
-            for f, ll in o_macs:
-                if f == ll:
+            for f, l in o_macs:
+                if f == l:
                     macs += [f]
                 else:
-                    macs += ["%s - %s" % (f, ll)]
+                    macs += ["%s - %s" % (f, l)]
 
         # Links
         uplinks = set(self.object.data.uplinks)
@@ -214,24 +215,35 @@ class ManagedObjectCard(BaseCard):
 
         # Interfaces
         interfaces = []
-        metrics_map = [
-            "Interface | Load | In",
-            "Interface | Load | Out",
-            "Interface | Errors | In",
-            "Interface | Errors | Out",
-        ]
 
         mo = ManagedObject.objects.filter(id=self.object.id)
+        mo = mo[0]
 
-        ifaces_metrics, last_ts = get_interface_metrics(mo[0])
-        ifaces_metrics = ifaces_metrics[mo[0]]
+        ifaces_metrics, last_ts = get_interface_metrics(mo)
+        ifaces_metrics = ifaces_metrics[mo]
 
-        objects_metrics, last_time = get_objects_metrics(mo[0])
-        objects_metrics = objects_metrics.get(mo[0])
+        objects_metrics, last_time = get_objects_metrics(mo)
+        objects_metrics = objects_metrics.get(mo)
+
+        # Sensors
+        sensors_metrics = None
+        s_metrics = None
+        sensors = {}
+        s_meta = []
+        STATUS = {"0": "OK", "1": "Alarm"}
+        meric_map = {}
+        if mo.get_caps().get("Sensor | Controller"):
+            for mc in MetricType.objects.filter(scope=MetricScope.objects.get(name="Environment")):
+                if meric_map:
+                    meric_map["map"].update({mc.field_name: mc.name})
+                else:
+                    meric_map = {"table_name": mc.scope.table_name, "map": {mc.field_name: mc.name}}
+            sensors_metrics, last_ts = get_interface_metrics(mo, meric_map)
+            sensors_metrics = sensors_metrics[mo]
 
         m_tp = {}
-        if mo[0].object_profile.metrics:
-            for mt in mo[0].object_profile.metrics:
+        if mo.object_profile.metrics:
+            for mt in mo.object_profile.metrics:
                 if mt.get("threshold_profile"):
                     threshold_profile = ThresholdProfile.get_by_id(mt.get("threshold_profile"))
                     m_tp[MetricType.get_by_id(mt.get("metric_type")).name] = threshold_profile
@@ -278,10 +290,9 @@ class ManagedObjectCard(BaseCard):
             errors_in = "-"
             errors_out = "-"
             iface_metrics = ifaces_metrics.get(str(i.name))
+
             if iface_metrics:
                 for key, value in iface_metrics.items():
-                    if key not in metrics_map:
-                        continue
                     metric_type = metric_type_name.get(key) or metric_type_field.get(key)
                     if key == "Interface | Load | In":
                         load_in = (
@@ -320,12 +331,41 @@ class ManagedObjectCard(BaseCard):
                     "description": i.description,
                 }
             ]
+            if sensors_metrics:
+                s_metrics = sensors_metrics.get(str(i.name))
+            if s_metrics:
+                sens_metrics = []
+                for i_metrics in i.profile.metrics:
+                    sens_metrics.append(i_metrics.metric_type.name)
+                for key, value in s_metrics.items():
+                    if key not in sens_metrics:
+                        continue
+                    val = {
+                        "name": key,
+                        "type": metric_type_name[key],
+                        "value": STATUS.get(value) if metric_type_name[key] == " " else value,
+                        "threshold": None,
+                    }
+                    if sensors.get(i.name):
+                        sensors[i.name] += [val]
+                    else:
+                        sensors[i.name] = [val]
 
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
                 si = si[0]
                 interfaces[-1]["untagged_vlan"] = si.untagged_vlan
                 interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
+
+        if sensors:
+            sensors = sortdict(sensors)
+            for k, d in sensors.items():
+                for dd in d:
+                    isdanger = False
+                    if dd["threshold"]:
+                        isdanger = True
+                s_meta.append({"name": k, "value": d, "isdanger": isdanger})
+
         interfaces = sorted(interfaces, key=lambda x: alnum_key(x["name"]))
         # Resource groups
         # Service groups (i.e. server)
@@ -439,6 +479,7 @@ class ManagedObjectCard(BaseCard):
             "alarms": alarm_list,
             "interfaces": interfaces,
             "metrics": meta,
+            "sensors": s_meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
             "inventory": self.flatten_inventory(inv),
