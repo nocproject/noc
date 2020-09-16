@@ -49,6 +49,7 @@ class ReportDiscoveryResult(BaseReportColumn):
         "udld",
         "ifdesc",
         "mac",
+        "xmac",
         "uptime",
         "segmentation",
         "interfacestatus",
