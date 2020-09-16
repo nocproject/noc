@@ -169,7 +169,12 @@ class Script(BaseScript):
         :rtype: list
         """
         self.logger.debug(
-            "Getting type. Slot: %s, Sub: %s, name: %s, part_no: %s", slot, sub, name, part_no
+            "Getting type. Slot: %s, Sub: %s, name: %s, part_no: %s, hints: %s",
+            slot,
+            sub,
+            name,
+            part_no,
+            slot_hints,
         )
         if part_no.startswith("LSB"):
             # Huawei S8500
@@ -217,7 +222,11 @@ class Script(BaseScript):
             return tp, slot, part_no
         elif self.is_cloud_engine and part_no.startswith("CE"):
             return "CHASSIS", slot, part_no
-        elif not name and slot_hints and (part_no.endswith("PWD") or part_no in ["PDC-350WC-B"]):
+        elif (
+            not name
+            and slot_hints
+            and (part_no.endswith("PWD") or part_no.endswith("PWA") or part_no in ["PDC-350WC-B"])
+        ):
             # 5XX chassis PWR card
             # Try detect slot number by display device, use for 53XX series
             card = [x for x in slot_hints["subcards"] if x["type"] == "PWR" or x["type"] == part_no]
@@ -240,12 +249,15 @@ class Script(BaseScript):
             return "FAN", 3, part_no
         # elif not sub and "FAN" in part_no:
         #    return "FAN", slot, None
+        elif not name and "stack interface card" in descr:
+            # On S5320-36C-EI-28S-AC: LS5D21X02S01,LS5D21X02T01,LS5D21VST000 cards
+            return "CARD", 1, part_no
         elif not name and part_no.endswith("TPC"):
             # Slot 2 - TPC
             return "CARD", 2, part_no
         elif not sub and "PWR" in part_no:
             return "PWR", slot, None
-        elif not name and "Chassis" in descr:
+        elif (not name or name == "Main_Board") and "Chassis" in descr:
             # 5XXX Series Cards
             # self.logger.debug("Huawei 5XXX series, slot 0 is CHASSIS TYPE")
             #
@@ -257,6 +269,9 @@ class Script(BaseScript):
             # self.logger.debug("Huawei 5XXX series, slot 0 is CHASSIS TYPE")
             # Slot 1 - Interface card
             #
+            if slot == 0 and slot_hints:
+                card = [x for x in slot_hints["subcards"] if x["type"] == part_no]
+                slot = card[0]["slot"]
             return "CARD", slot, part_no
         elif "Assembly Chassis" in descr:
             return "CHASSIS", slot, part_no
@@ -441,6 +456,7 @@ class Script(BaseScript):
         if self.is_s85xx:
             return self.part_parse_s8500()
         slot_num, device_slots = self.get_device_inventory()
+        self.logger.debug("'display device' slots hints: %s", device_slots)
         cmd = "display elabel"
         if self.is_cloud_engine:
             cmd = "display device elabel"
@@ -511,7 +527,9 @@ class Script(BaseScript):
             if item.mnf_date:
                 try:
                     mfg_date = parse_date(item.mnf_date)
-                    data["mfg_date"] = mfg_date.strftime("%Y-%m-%d")
+                    if mfg_date.year > 1980:
+                        # Check for "201�-��-�6" -> datetime.datetime(201, 6, 13, 0, 0)
+                        data["mfg_date"] = mfg_date.strftime("%Y-%m-%d")
                 except ValueError:
                     pass
             r += [data]
