@@ -42,10 +42,7 @@ class Script(BaseScript):
                 result += [{"vlan_id": vlan_id, "name": v.strip().rstrip(smart_text("\x00"))}]
                 tmp_vlan += [vlan_id]
         if result:
-            return sorted(
-                result,
-                cmp=lambda x, y: (x["vlan_id"] > y["vlan_id"]) - (x["vlan_id"] < y["vlan_id"]),
-            )
+            return sorted(result, key=lambda x: x["vlan_id"])
         else:
             raise self.NotSupportedError()
 
