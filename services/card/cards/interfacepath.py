@@ -33,6 +33,12 @@ from .base import BaseCard
 from noc.core.comp import smart_text
 
 
+def default(obj):
+    if isinstance(obj, set):
+        return list(obj)
+    raise TypeError
+
+
 class InterfacePathCard(BaseCard):
     name = "interfacepath"
     default_template_name = "interfacepath"
@@ -113,7 +119,9 @@ class InterfacePathCard(BaseCard):
 
     @classmethod
     def encode_query(cls, to_collect: Set[Tuple[int, int, str]]) -> str:
-        data = smart_text(codecs.encode(orjson.dumps(to_collect), "base64").replace(b"\n", b""))
+        data = smart_text(
+            codecs.encode(orjson.dumps(to_collect, default), "base64").replace(b"\n", b"")
+        )
         return cls.get_signature(data) + data
 
     @classmethod
