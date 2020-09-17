@@ -28,10 +28,10 @@ class Script(BaseScript):
     def execute(self):
         if self.has_snmp():
             try:
-                su = self.snmp.get("1.3.6.1.4.1.27514.%s.0.12.0" % self.check_oid())
+                su = self.snmp.get("1.3.6.1.4.1.27514.%s" % self.check_oid())
                 # DES-1210-28/ME/B3 fw 10.04.B020 return 'VLAN-1002'
                 if is_float(su):
-                    return float(su)
+                    return float(su) // 100.0
             except (self.snmp.TimeOutError, self.snmp.SNMPError):
                 pass
         return None

@@ -5,6 +5,6 @@
     "scope__name": "Environment",
     "field_name": "voltage",
     "field_type": "Float32",
-    "description": null,
+    "description": "The metric for the Voltage (V)",
     "measure": "V"
 }
