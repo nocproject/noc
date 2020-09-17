@@ -230,7 +230,7 @@ class ManagedObjectCard(BaseCard):
         s_metrics = None
         sensors = {}
         s_meta = []
-        STATUS = {"0": "OK", "1": "Alarm"}
+        STATUS = {0: "OK", 1: "Alarm"}
         meric_map = {}
         if mo.get_caps().get("Sensor | Controller"):
             for mc in MetricType.objects.filter(scope=MetricScope.objects.get(name="Environment")):
