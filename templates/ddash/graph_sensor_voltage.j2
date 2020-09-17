@@ -1,0 +1,104 @@
+{% macro sensors(sensor, lindex) -%}
+{
+  "title": "Voltage (V)",
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": {{lindex + 31300}},
+  "legend": {
+    "alignAsTable": true,
+    "avg": false,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "minSpan": 6,
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "repeat": "{{sensor.type}}",
+  "scopedVars": {
+    "{{sensor.type}}": {
+      "selected": true,
+      "text": "{{sensor.name}}({{sensor.descr}})",
+      "value": "{{sensor.name}}"
+    }
+  },
+  "seriesOverrides": [
+    {
+      "alias": "/.*/",
+      "color": "#E02F44"
+    }
+  ],
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "intervalFactor": 1,
+      "query": "SELECT t,  groupArray((sensor, Voltage)) AS groupArr FROM ( SELECT $timeSeries as t,  path[3] as sensor, avg(voltage) as Voltage FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{ sensor.name }}') and path[3]!='' and $timeFilter GROUP BY path[3], t ORDER BY t) GROUP BY t  ORDER BY t ASC",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "environment",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "format": "mamp",
+      "label": "",
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true,
+      "decimals": null
+    },
+    {
+      "logBase": 1,
+      "show": false,
+      "max": null,
+      "format": "short",
+      "min": null,
+      "label": null
+    }
+  ]
+}
+{%- endmacro %}
