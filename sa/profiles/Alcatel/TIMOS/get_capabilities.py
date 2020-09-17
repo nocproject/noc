@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# Alcatel.TIMOS.get_capabilities_ex
+# Alcatel.TIMOS.get_capabilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,9 @@ import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
+from noc.core.mib import mib
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):
@@ -34,6 +36,14 @@ class Script(BaseScript):
         """
         cmd = self.cli("show system lldp | match Admin")
         return self.rx_lldp.search(cmd) is not None
+
+    @false_on_snmp_error
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled
+        """
+        r = self.snmp.get(mib["LLDP-MIB::lldpLocChassisIdSubtype", 0])
+        return is_int(r) and r >= 1
 
     @false_on_cli_error
     def has_oam_cli(self):
@@ -63,3 +73,13 @@ class Script(BaseScript):
         """
         r = self.cli("show lag statistics")
         return r
+
+    @false_on_snmp_error
+    def has_lacp_snmp(self):
+        """
+        Check box has lacp enabled on Eltex
+        """
+        for oid, value in self.snmp.getnext(mib["IEEE8023-LAG-MIB::dot3adAggPortPartnerOperKey"]):
+            if value:
+                return True
+        return False
