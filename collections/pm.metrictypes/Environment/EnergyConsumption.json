@@ -1,0 +1,10 @@
+{
+    "name": "Environment | Energy Consumption",
+    "$collection": "pm.metrictypes",
+    "uuid": "ab8c524e-f4d7-4975-b8d6-ce57dc68bc6a",
+    "scope__name": "Environment",
+    "field_name": "energy_consumption",
+    "field_type": "Float32",
+    "description": "The metric for the Energy consumption (kWh)",
+    "measure": "kWh"
+}

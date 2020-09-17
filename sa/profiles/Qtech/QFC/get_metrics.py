@@ -34,7 +34,8 @@ class Script(GetMetricsScript):
             elif metric.ifindex in [16, 27] and status > 0:
                 value = 0
             self.set_metric(
-                id=("Environment | Sensor Status", metric.path), value=value,
+                id=("Environment | Sensor Status", metric.path),
+                value=value,
             )
 
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
@@ -45,15 +46,20 @@ class Script(GetMetricsScript):
                     "1.3.6.1.4.1.27514.%s.0.%s.0" % (self.check_oid(), metric.ifindex)
                 )
                 self.set_metric(
-                    id=("Environment | Temperature", metric.path), value=value,
+                    id=("Environment | Temperature", metric.path),
+                    path=["", "", metric.path[3], metric.path[3]],
+                    value=value,
+                    multi=True,
                 )
             if "ups" in metric.path[3]:
                 if self.is_lite:
                     value = self.snmp.get("1.3.6.1.4.1.27514.103.0.26.0")
                     self.set_metric(
                         id=("Environment | Temperature", metric.path),
+                        path=["", "", "battery", metric.path[3]],
                         value=value,
                         scale=scale(0.1, 2),
+                        multi=True,
                     )
 
     @metrics(["Environment | Voltage"], volatile=False, access="S")  # SNMP version
@@ -62,7 +68,11 @@ class Script(GetMetricsScript):
             if self.is_lite:
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.24.0")
                 self.set_metric(
-                    id=("Environment | Voltage", metric.path), value=value, scale=scale(0.1, 2)
+                    id=("Environment | Voltage", metric.path),
+                    path=["", "", "battery", metric.path[3]],
+                    value=value,
+                    scale=scale(0.1, 2),
+                    multi=True,
                 )
 
     @metrics(["Environment | Electric Current"], volatile=False, access="S")  # SNMP version
@@ -76,6 +86,19 @@ class Script(GetMetricsScript):
                 id=("Environment | Electric Current", metric.path), value=value, scale=scale(10)
             )
 
+    @metrics(["Environment | Energy Consumption"], volatile=False, access="S")  # SNMP version
+    def get_energy_cons(self, metrics):
+        for metric in metrics:
+            if self.is_lite:
+                value = self.snmp.get("1.3.6.1.4.1.27514.103.0.30.0")
+            else:
+                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.19")
+            self.set_metric(
+                id=("Environment | Energy Consumption", metric.path),
+                value=value,
+                scale=scale(0.01, 2),
+            )
+
     @metrics(["Environment | Power"], volatile=False, access="S")  # SNMP version
     def get_power(self, metrics):
         for metric in metrics:
@@ -84,21 +107,22 @@ class Script(GetMetricsScript):
             else:
                 value = self.snmp.get("1.3.6.1.4.1.27514.102.0.18")
             self.set_metric(
-                id=("Environment | Power", metric.path), value=value,
+                id=("Environment | Power", metric.path),
+                value=value,
             )
 
     @metrics(["Environment | Power | Input | Status"], volatile=False, access="S")  # SNMP version
     def get_power_input_status(self, metrics):
         for metric in metrics:
-            value = 0
+            value = 1
             if self.is_lite:
                 res = self.snmp.get("1.3.6.1.4.1.27514.103.0.18.0")
                 if res == 0:
-                    value = 1
+                    value = 0
             else:
                 res = self.snmp.get("1.3.6.1.4.1.27514.102.0.8")
                 if res != 0:
-                    value = 1
+                    value = 0
             self.set_metric(id=("Environment | Power | Input | Status", metric.path), value=value)
 
     @metrics(
@@ -109,5 +133,6 @@ class Script(GetMetricsScript):
             if self.is_lite:
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.25.0")
                 self.set_metric(
-                    id=("Environment | Battery | Capacity | Level", metric.path), value=value,
+                    id=("Environment | Battery | Capacity | Level", metric.path),
+                    value=value,
                 )
