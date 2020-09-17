@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  Alcatel.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.validators import is_int, is_ipv6
 
@@ -572,7 +572,7 @@ class Script(BaseScript):
 
         return fi
 
-    def execute(self):
+    def execute_cli(self):
         result = []
 
         fi = self.get_forwarding_instance()
