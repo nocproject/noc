@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.core.validators import is_float
 
 
 class Script(GetMetricsScript):
@@ -21,8 +22,9 @@ class Script(GetMetricsScript):
             status = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
             if metric.ifindex == 1 and int(status) == 0:
                 value = 0
-            elif metric.ifindex == 2 and (-55 < float(status) < 600):
-                value = 0
+            elif metric.ifindex == 2:
+                if is_float(status) and (-55 < float(status) < 600):
+                    value = 0
             elif metric.ifindex in [4, 6] and float(status) > 0:
                 value = 0
             elif metric.ifindex == 9 and int(status) != 2:
@@ -37,12 +39,13 @@ class Script(GetMetricsScript):
         for metric in metrics:
             if "temp" in metric.path[3]:
                 value = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
-                self.set_metric(
-                    id=("Environment | Temperature", metric.path),
-                    path=["", "", metric.path[3], metric.path[3]],
-                    value=value,
-                    multi=True,
-                )
+                if is_float(value):
+                    self.set_metric(
+                        id=("Environment | Temperature", metric.path),
+                        path=["", "", metric.path[3], metric.path[3]],
+                        value=value,
+                        multi=True,
+                    )
 
     @metrics(["Environment | Voltage"], volatile=False, access="S")  # SNMP version
     def get_voltage(self, metrics):
