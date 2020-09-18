@@ -17,6 +17,7 @@ from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
+from noc.core.validators import is_float
 
 
 def get_objects_metrics(managed_objects):
@@ -163,7 +164,7 @@ def get_interface_metrics(managed_objects, meric_map=None):
                 if mo not in metric_map:
                     metric_map[mo] = defaultdict(dict)
                 metric_map[mo][iface][meric_map["map"].get(field)] = (
-                    float(value) if isinstance(float(value), float) else int(value)
+                    float(value) if is_float(value) else int(value)
                 )
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
     except ClickhouseError:
