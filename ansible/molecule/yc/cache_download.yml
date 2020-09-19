@@ -46,9 +46,13 @@
 
 - name: download pip cache
   command: "/tmp/mc mirror {{ minio_bucket }}/pip {{ pip_cache_dir }} --overwrite"
+  ignore_errors: true
+  failed_when: false
 
 - name: download pkg cache
   command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{ pkg_cache_dir }} --overwrite"
+  ignore_errors: true
+  failed_when: false
 
 - name: gather some facts
   setup:
