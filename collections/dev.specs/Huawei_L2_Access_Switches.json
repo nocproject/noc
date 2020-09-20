@@ -201,12 +201,12 @@
         {
             "name": "get.chassis_id.snmp.1",
             "type": "snmp-get",
-            "value": "1.3.6.1.2.1.17.1.1"
+            "value": "1.3.6.1.2.1.17.1.1.0"
         },
         {
             "name": "get.chassis_id.snmp.2",
             "type": "snmp-get",
-            "value": "1.0.8802.1.1.2.1.3.2"
+            "value": "1.0.8802.1.1.2.1.3.2.0"
         },
         {
             "name": "get.fqdn.cli.1",
@@ -384,6 +384,11 @@
             "value": "1.3.6.1.4.1.2011.5.25.31.1.1.2"
         },
         {
+            "name": "get.inventory.snmp.3",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.5.25.19.1.8.5"
+        },
+        {
             "name": "get.cpu_usage.snmp",
             "type": "snmp-getnext",
             "value": "1.3.6.1.4.1.2011.6.3.4.1"
@@ -392,6 +397,11 @@
             "name": "get.memory_usage.snmp",
             "type": "snmp-getnext",
             "value": "1.3.6.1.4.1.2011.6.1.2.1"
+        },
+        {
+            "name": "get.cpu_memory.sysman.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.5.25.31.1.1.1"
         },
         {
             "name": "get.mpls_vrf.cli.1",
