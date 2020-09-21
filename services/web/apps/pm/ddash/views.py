@@ -23,20 +23,22 @@ class DynamicDashboardApplication(ExtApplication):
 
     @view(url=r"^$", method="GET", access="launch", api=True)
     def api_dashboard(self, request):
-        oid = request.GET.get("id")
-        mo = ManagedObject.get_by_id(oid)
+        dash_name = request.GET.get("dashboard")
         try:
             # if object Sensor Controller
+            oid = request.GET.get("id")
+            mo = ManagedObject.get_by_id(oid)
             if mo.get_caps().get("Sensor | Controller"):
-                dt = loader["sensor_controller"]
-            else:
-                dt = loader[request.GET.get("dashboard")]
+                dash_name = "sensor_controller"
+        except Exception:
+            pass
+        try:
+            dt = loader[dash_name]
         except Exception:
             self.logger.error("Exception when loading dashboard: %s", request.GET.get("dashboard"))
             return self.response_not_found("Dashboard not found")
         if not dt:
             return self.response_not_found("Dashboard not found")
-
         extra_vars = {}
         for v in request.GET:
             if v.startswith("var_"):

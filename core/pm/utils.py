@@ -143,7 +143,7 @@ def get_interface_metrics(managed_objects, meric_map=None):
               date >= toDate('%s')
               AND ts >= toDateTime('%s')
               AND managed_object IN (%s)
-            GROUP BY managed_object, iface
+            GROUP BY managed_object, path
             """ % (
         ", ".join(["argMax(%s, ts) as %s" % (f, f) for f in meric_map["map"].keys()]),
         meric_map["table_name"],
