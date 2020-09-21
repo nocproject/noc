@@ -317,6 +317,9 @@ class Config(BaseConfig):
         spring_edge_spacing = IntParameter(default=190)
         spring_iterations = IntParameter(default=50)
 
+    class liftbridge(ConfigSection):
+        addresses = ServiceParameter(service="liftbridge", wait=True, near=True, full_result=False)
+
     listen = StringParameter(default="auto:0")
 
     log_format = StringParameter(default="%(asctime)s [%(name)s] %(message)s")

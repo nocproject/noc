@@ -36,6 +36,7 @@ fs==2.4.11
 future==0.17.1
 geojson==2.5.0
 geopy==0.97
+grpcio==1.32.0
 http-parser==0.9.0
 jsonschema==2.4.0
 manhole==1.6.0
@@ -46,6 +47,7 @@ networkx==2.4
 numpy==1.18.3
 orjson==3.3.1
 progressbar2==3.51.0
+protobuf==3.13.0
 psycopg2==2.8.5
 pymongo==3.11.0
 pynsq==0.9.0

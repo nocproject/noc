@@ -10,8 +10,8 @@ from noc.core.datastream.client import DataStreamClient
 
 
 class SysologDataStreamClient(DataStreamClient):
-    def on_change(self, data):
-        self.service.update_source(data)
+    async def on_change(self, data):
+        await self.service.update_source(data)
 
-    def on_delete(self, data):
-        self.service.delete_source(data["id"])
+    async def on_delete(self, data):
+        await self.service.delete_source(data["id"])

@@ -7,8 +7,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 import asyncio
+from typing import Optional, Any, Dict
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -17,9 +21,8 @@ from noc.core.error import NOCError
 from noc.core.service.tornado import TornadoService
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
+from noc.services.trapcollector.sourceconfig import SourceConfig
 from noc.core.ioloop.timers import PeriodicCallback
-
-SourceConfig = namedtuple("SourceConfig", ["id", "addresses", "fm_pool"])
 
 
 class TrapCollectorService(TornadoService):
@@ -32,7 +35,7 @@ class TrapCollectorService(TornadoService):
         super().__init__()
         self.mappings_callback = None
         self.report_invalid_callback = None
-        self.source_configs = {}  # id -> SourceConfig
+        self.source_configs: Dict[str, SourceConfig] = {}  # id -> SourceConfig
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
 
@@ -54,26 +57,36 @@ class TrapCollectorService(TornadoService):
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
 
-    def lookup_config(self, address):
+    def lookup_config(self, address: str) -> Optional[SourceConfig]:
         """
         Returns object config for given address or None when
         unknown source
         """
         cfg = self.address_configs.get(address)
-        if not cfg:
-            # Register invalid event source
-            if self.address_configs:
-                self.invalid_sources[address] += 1
-                metrics["error", ("type", "object_not_found")] += 1
-            return None
-        return cfg
+        if cfg:
+            return cfg
+        # Register invalid event source
+        if self.address_configs:
+            self.invalid_sources[address] += 1
+            metrics["error", ("type", "object_not_found")] += 1
+        return None
 
-    def register_message(self, cfg, timestamp, data):
+    def register_message(self, cfg: SourceConfig, timestamp: int, data: Dict[str, Any]):
         """
         Spool message to be sent
         """
         metrics["events_out"] += 1
-        self.pub("events.%s" % cfg.fm_pool, {"ts": timestamp, "object": cfg.id, "data": data})
+        self.publish(
+            orjson.dumps(
+                {
+                    "ts": timestamp,
+                    "object": cfg.id,
+                    "data": data,
+                }
+            ),
+            stream=cfg.stream,
+            partition=cfg.partition,
+        )
 
     async def get_object_mappings(self):
         """
@@ -105,16 +118,22 @@ class TrapCollectorService(TornadoService):
         )
         self.invalid_sources = defaultdict(int)
 
-    def update_source(self, data):
+    async def update_source(self, data):
         # Get old config
         old_cfg = self.source_configs.get(data["id"])
         if old_cfg:
             old_addresses = set(old_cfg.addresses)
         else:
             old_addresses = set()
+        # Get pool and sharding information
+        fm_pool = data.get("fm_pool", None) or config.pool
+        num_partitions = await self.get_pool_partitions(fm_pool)
         # Build new config
         cfg = SourceConfig(
-            data["id"], tuple(data["addresses"]), data.get("fm_pool", None) or config.pool,
+            id=data["id"],
+            addresses=tuple(data["addresses"]),
+            stream="events.%s" % fm_pool,
+            partition=int(data["id"]) % num_partitions,
         )
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
@@ -128,7 +147,7 @@ class TrapCollectorService(TornadoService):
         # Update metrics
         metrics["sources_changed"] += 1
 
-    def delete_source(self, id):
+    async def delete_source(self, id):
         cfg = self.source_configs.get(id)
         if not cfg:
             return

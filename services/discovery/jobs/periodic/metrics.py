@@ -16,6 +16,7 @@ from collections import defaultdict
 # Third-party modules
 import cachetools
 from pymongo import ReadPreference
+import orjson
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -838,8 +839,7 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.error("Exception when send message %s", e)
         if result:
             return [raw_vars]
-        else:
-            return []
+        return []
 
     def raise_event(self, event_class, raw_vars=None):
         if not raw_vars:
@@ -848,3 +848,9 @@ class MetricsCheck(DiscoveryCheck):
         msg = {"ts": time.time(), "object": self.object.id, "data": data}
         self.logger.info("Pub Event: %s", msg)
         self.service.pub("events.%s" % self.object.pool.name, msg)
+        stream, partition = self.object.events_stream_and_partition
+        self.service.publish(
+            orjson.dumps(msg),
+            stream=stream,
+            partition=partition,
+        )
