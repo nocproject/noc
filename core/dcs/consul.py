@@ -12,6 +12,7 @@ import orjson
 import uuid
 from urllib.parse import unquote
 import asyncio
+from typing import Optional
 
 # Third-party modules
 import consul.base
@@ -361,6 +362,26 @@ class ConsulDCS(DCSBase):
                 except ConsulRepeatableErrors:
                     await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         self.logger.info("Lock acquired")
+
+    async def get_slot_limit(self, name) -> Optional[int]:
+        """
+        Return the current limit for given slot
+        :param name:
+        :return:
+        """
+        manifest_path = "%s/slots/%s/manifest" % (self.consul_prefix, name)
+        while True:
+            self.logger.info("Attempting to get slot")
+            # Non-blocking for a first time
+            # Block until change every next try
+            try:
+                _, cv = await self.consul.kv.get(key=manifest_path, index=0)
+                if not cv:
+                    return 0
+                return orjson.loads(cv["Value"]).get("Limit", 0)
+            except ConsulRepeatableErrors:
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                continue
 
     async def acquire_slot(self, name, limit):
         """

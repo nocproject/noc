@@ -35,6 +35,8 @@ class ProbeSetting(object):
         "bi_id",
         "task",
         "fm_pool",
+        "stream",
+        "partition",
     ]
 
     def __init__(
@@ -73,6 +75,19 @@ class ProbeSetting(object):
         self.task = None
         self.bi_id = bi_id
         self.fm_pool = fm_pool or config.pool
+        self.stream = None
+        self.partition = 0  # Set by set_partition
+        self.set_stream()
+
+    @staticmethod
+    def get_pool_stream(pool: str) -> str:
+        return "events.%s" % pool
+
+    def set_stream(self):
+        self.stream = self.get_pool_stream(self.fm_pool)
+
+    def set_partition(self, num_partitions: int) -> None:
+        self.partition = int(self.id) % num_partitions
 
     def update(
         self,
@@ -98,6 +113,7 @@ class ProbeSetting(object):
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
         self.fm_pool = fm_pool or config.pool
+        self.set_stream()
 
     def is_differ(self, data):
         return (

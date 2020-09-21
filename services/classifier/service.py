@@ -18,6 +18,7 @@ from time import perf_counter
 # Third-party modules
 import cachetools
 from bson import ObjectId
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -42,6 +43,7 @@ from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text
+from noc.core.liftbridge.message import Message
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -120,6 +122,9 @@ class ClassifierService(TornadoService):
         # Reporting
         self.last_ts = None
         self.stats = {}
+        #
+        self.slot_number = 0
+        self.total_slots = 0
 
     async def on_activate(self):
         """
@@ -132,7 +137,8 @@ class ClassifierService(TornadoService):
         self.load_suppression()
         self.load_link_action()
         self.load_handlers()
-        await self.subscribe("events.%s" % config.pool, "fmwriter", self.on_event)
+        self.slot_number, self.total_slots = await self.acquire_slot()
+        await self.subscribe_stream("events.%s" % config.pool, self.slot_number, self.on_event)
         report_callback = PeriodicCallback(self.report, 1000)
         report_callback.start()
 
@@ -692,12 +698,17 @@ class ClassifierService(TornadoService):
             event.do_not_dispose()
         return False
 
-    def on_event(self, message, ts=None, object=None, data=None, id=None, *args, **kwargs):
-        event_ts = datetime.datetime.fromtimestamp(ts)
+    async def on_event(self, msg: Message):
+        # Decode message
+        event = orjson.loads(msg.value)
+        object = event.get("object")
+        data = event.get("data")
+        # Process event
+        event_ts = datetime.datetime.fromtimestamp(event.get("ts"))
         # Generate or reuse existing object id
-        event_id = ObjectId(id)
-        # Calculate messate processing delay
-        lag = (time.time() - ts) * 1000
+        event_id = ObjectId(event.get("id"))
+        # Calculate message processing delay
+        lag = (time.time() - msg.timestamp) * 1000
         metrics["lag_us"] = int(lag * 1000)
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event_id, data, lag)
         metrics[CR_PROCESSED] += 1
@@ -706,7 +717,7 @@ class ClassifierService(TornadoService):
         if not mo:
             self.logger.info("[%s] Unknown managed object id %s. Skipping", event_id, object)
             metrics[CR_UOBJECT] += 1
-            return True
+            return
         self.logger.info("[%s|%s|%s] Managed object found", event_id, mo.name, mo.address)
         # Process event
         source = data.pop("source", "other")
@@ -722,7 +733,7 @@ class ClassifierService(TornadoService):
         if self.patternset.find_ignore_rule(event, data):
             self.logger.debug("Ignored event %s vars %s", event, data)
             metrics[CR_IGNORED] += 1
-            return True
+            return
         # Classify event
         try:
             self.classify_event(event, data)
@@ -731,9 +742,8 @@ class ClassifierService(TornadoService):
                 "[%s|%s|%s] Failed to process event: %s", event.id, mo.name, mo.address, e
             )
             metrics[CR_FAILED] += 1
-            return False
+            return
         self.logger.info("[%s|%s|%s] Event processed successfully", event.id, mo.name, mo.address)
-        return True
 
     async def report(self):
         t = perf_counter()

@@ -27,14 +27,14 @@ class DataStreamClient(object):
         self.name = name
         self.service = service
 
-    def on_change(self, data):
+    async def on_change(self, data):
         """
         Called on each item received through datastream
         :param data:
         :return:
         """
 
-    def on_delete(self, data):
+    async def on_delete(self, data):
         """
         Called on each deleted item received through datastream
         :param data:
@@ -91,9 +91,9 @@ class DataStreamClient(object):
             # Process result
             for item in data:
                 if "$deleted" in item:
-                    self.on_delete(item)
+                    await self.on_delete(item)
                 else:
-                    self.on_change(item)
+                    await self.on_change(item)
             # Continue from last change
             if "X-NOC-DataStream-Last-Change" in headers:
                 change_id = headers["X-NOC-DataStream-Last-Change"]

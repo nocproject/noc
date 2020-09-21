@@ -14,6 +14,7 @@ import re
 import operator
 from threading import Lock
 import datetime
+from typing import Tuple
 
 # Third-party modules
 from django.db.models import (
@@ -1738,6 +1739,16 @@ class ManagedObject(NOCModel):
             pass
         cache.delete("managedobject-id-%s" % self.id, version=MANAGEDOBJECT_CACHE_VERSION)
         cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
+
+    @property
+    def events_stream_and_partition(self) -> Tuple[str, int]:
+        """
+        Return publish stream and partition for events
+        :return: stream name, partition
+        """
+        # @todo: Calculate partition properly
+        pool = self.get_effective_fm_pool().name
+        return "events.%s" % pool, 0
 
 
 @on_save

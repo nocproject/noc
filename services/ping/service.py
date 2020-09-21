@@ -12,6 +12,10 @@ import time
 import datetime
 import os
 import asyncio
+from typing import Dict, Any
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -41,6 +45,9 @@ class PingService(TornadoService):
         self.is_throttled = False
         self.slot_number = 0
         self.total_slots = 0
+        self.ok_event = self.get_status_message(True)
+        self.failed_event = self.get_status_message(False)
+        self.pool_partitions: Dict[str, int] = {}
 
     async def on_activate(self):
         # Acquire slot
@@ -69,11 +76,12 @@ class PingService(TornadoService):
         r["throttled"] = self.is_throttled
         return r
 
-    def register_message(self, cfg, timestamp, data):
-        """
-        Spool message to be sent
-        """
-        self.pub("events.%s" % cfg.fm_pool, {"ts": timestamp, "object": cfg.id, "data": data})
+    async def get_pool_partitions(self, pool: str) -> int:
+        parts = self.pool_partitions.get(pool)
+        if not parts:
+            parts = await self.get_stream_partitions(ProbeSetting.get_pool_stream(pool))
+            self.pool_partitions[pool] = parts
+        return parts
 
     async def get_object_mappings(self):
         """
@@ -97,13 +105,13 @@ class PingService(TornadoService):
                 self.logger.info("Failed to get object mappings: %s", e)
                 await asyncio.sleep(1)
 
-    def update_probe(self, data):
+    async def update_probe(self, data):
         if data["id"] in self.probes:
-            self._change_probe(data)
+            await self._change_probe(data)
         else:
-            self._create_probe(data)
+            await self._create_probe(data)
 
-    def delete_probe(self, id):
+    async def delete_probe(self, id):
         if id not in self.probes:
             return
         ps = self.probes[id]
@@ -117,12 +125,13 @@ class PingService(TornadoService):
             metrics["down_objects"] -= 1
         metrics["ping_objects"] = len(self.probes)
 
-    def _create_probe(self, data):
+    async def _create_probe(self, data):
         """
         Create new ping probe
         """
         self.logger.info("Create probe: %s (%ds)", data["address"], data["interval"])
         ps = ProbeSetting(**data)
+        ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
         self.probes[data["id"]] = ps
         pt = PeriodicOffsetCallback(functools.partial(self.ping_check, ps), ps.interval * 1000)
         ps.task = pt
@@ -130,7 +139,7 @@ class PingService(TornadoService):
         metrics["ping_probe_create"] += 1
         metrics["ping_objects"] = len(self.probes)
 
-    def _change_probe(self, data):
+    async def _change_probe(self, data):
         self.logger.info("Update probe: %s (%ds)", data["address"], data["interval"])
         ps = self.probes[data["id"]]
         if ps.interval != data["interval"]:
@@ -140,9 +149,20 @@ class PingService(TornadoService):
             ps.address = data["address"]
         if ps.fm_pool != data["fm_pool"]:
             ps.fm_pool = data["fm_pool"]
+            ps.set_stream()
+            ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
         ps.update(**data)
         metrics["ping_probe_update"] += 1
         metrics["ping_objects"] = len(self.probes)
+
+    @classmethod
+    def get_status_message(cls, status: bool) -> Dict[str, Any]:
+        """
+        Construct status message event
+        :param status:
+        :return:
+        """
+        return {"source": "system", "$event": {"class": cls.PING_CLS[status], "vars": {}}}
 
     async def ping_check(self, ps):
         """
@@ -194,8 +214,12 @@ class PingService(TornadoService):
             self.logger.info("[%s] Changing status to %s%s", address, s, ts)
             ps.status = s
         if ps and not self.is_throttled and s != ps.sent_status:
-            self.register_message(
-                ps, t0, {"source": "system", "$event": {"class": self.PING_CLS[s], "vars": {}}}
+            self.publish(
+                orjson.dumps(
+                    {"ts": t0, "object": ps.id, "data": self.ok_event if s else self.failed_event}
+                ),
+                stream=ps.stream,
+                partition=ps.partition,
             )
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
