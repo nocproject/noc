@@ -1,9 +1,13 @@
 # ----------------------------------------------------------------------
 # Window Functions
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+import math
+import time
 
 # NOC modules
 from noc.core.handler import get_handler
@@ -211,3 +215,24 @@ def handler(window, config, *args, **kwargs):
     if not h:
         raise ValueError("Invalid handler %s" % config)
     return h(window)
+
+
+@window_function("exp_decay", "Exponential Decay")
+def exp_decay(window, config, current_time=None, *args, **kwargs):
+    """
+    Exponential decay.
+    :param window:
+    :param config: Exponential decay constant
+    :param current_time:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    if not window:
+        return 0.0
+    try:
+        neg_lambda = -float(config)
+    except ValueError:
+        raise ValueError("lambda must be float")
+    t = current_time or int(time.time())
+    return sum(value * math.exp(neg_lambda * (t - ts)) for ts, value in window)
