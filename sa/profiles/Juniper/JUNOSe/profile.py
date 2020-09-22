@@ -34,11 +34,17 @@ class Profile(BaseProfile):
     rogue_chars = [b"\r", b"\x00", b"\x0d"]
 
     INTERFACE_TYPES = {
-        "gi": "physical",  # gigabitethernet
-        "ge": "physical",  # gigabitethernet
-        "fa": "physical",  # fastethernet
-        "ex": "physical",  # extreme-ethernet
-        "vl": "SVI",  # vlan
+        "gi": "physical",
+        "ge": "physical",
+        "fa": "physical",
+        "fe": "physical",
+        "te": "physical",
+        "ex": "physical",
+        "xe": "physical",
+        "et": "physical",
+        "xle": "physical",
+        "fte": "physical",
+        "vl": "SVI",
     }
 
     @classmethod
