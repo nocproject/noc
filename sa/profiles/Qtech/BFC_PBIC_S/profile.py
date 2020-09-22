@@ -2,7 +2,7 @@
 # Vendor: Qtech
 # OS:     BFC_PBIC_S
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import re
 # NOC module
 from noc.core.profile.base import BaseProfile
 from noc.core.snmp.get import parse_get_response_strict
+from noc.core.validators import is_int
 
 
 class Profile(BaseProfile):
@@ -52,10 +53,12 @@ class Profile(BaseProfile):
         """
         >>> Profile().convert_interface_name("1")
         'load'
+        >>> Profile().convert_interface_name("0/1")
+        'load'
         """
         match = self.rx_discrete_name.findall(s)
-        if not self.rx_sensor_name.match(s):
-            return s
-        elif match:
-            return "%s %s" % (self.SENSOR_NAME.get(int(match[0])), match[1])
-        return self.SENSOR_NAME.get(int(s))
+        if match:
+            return "%s %s" % (self.SENSOR_NAME.get(int(s.split("/")[0])), s.split("/")[1])
+        elif is_int(s):
+            return self.SENSOR_NAME.get(int(s))
+        return s
