@@ -21,8 +21,10 @@ class Script(BaseScript):
     type = {
         "GUSQ": "gei_",
         "HUVQ": "gei_",
+        "GMRA": "gei-",
         "GTGHK": "gpon-olt_",
         "GTGOG": "gpon-onu_",
+        "GVGO": "gpon_olt-",
         "VDWVD": "vdsl_",
         "SCXN": "gei_",
         "SCTM": "gei_",
@@ -32,15 +34,17 @@ class Script(BaseScript):
         "PRWGS": "",
     }
     rx_iface = re.compile(
-        r"^(?P<ifname>\S+) is (?P<admin_status>activate|deactivate|down|administratively down|up),\s*"
+        r"^\s*(?P<ifname>\S+) (?:admin status )?is (?P<admin_status>activate|deactivate|down|administratively down|up),\s*"
         r"line protocol is (?P<oper_status>down|up).+\n"
-        r"^\s+Description is (?P<descr>.+)\n",
+        r"(^\s*(?:Description|Byname) is (?P<descr>.+)\n)?",
         re.MULTILINE,
     )
     rx_vlan = re.compile(
-        r"^(?P<mode>access=0|trunk\>0|hybrid\>=0|accessUn)\s+(?P<pvid>\d+).+\n"
+        r"^(?P<mode>access=0|trunk\>0|hybrid\>=0|accessUn|trunk|access|hybrid)\s+(?P<pvid>\d+|--).+\n"
+        r"(^\s*\n)?"
         r"^UntaggedVlan:\s*\n"
         r"(^(?P<untagged>\d+)\s*\n)?"
+        r"(^\s*\n)?"
         r"^TaggedVlan:\s*\n"
         r"(^(?P<tagged>[\d,]+)\s*\n)?",
         re.MULTILINE,
@@ -52,16 +56,19 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ip = re.compile(
-        r"^(?P<ifname>\S+)\s+AdminStatus is (?P<admin_status>up),\s+"
-        r"PhyStatus is (?:up),\s+line protocol is (?P<oper_status>up)\s*\n"
+        r"^(?P<ifname>\S+)\s+AdminStatus is (?P<admin_status>up|down),\s+"
+        r"PhyStatus is (?:up|down),\s+line protocol is (?P<oper_status>up|down)\s*.*\n"
         r"^\s+Internet address is (?P<ip>\S+)\s*\n"
         r"^\s+Broadcast address is .+\n"
-        r"^\s+IP MTU is (?P<mtu>\d+) bytes\s*\n",
+        r"(^\s+Address determined by .+\n)?"
+        r"(^\s+Load-sharing bandwidth .+\n)?"
+        r"^\s+IP MTU (?:is )?(?P<mtu>\d+) bytes\s*\n",
         re.MULTILINE,
     )
     rx_mac = re.compile(
         r"^\s+Description is (?P<descr>.+)\n^\s+MAC address is (?P<mac>\S+)\s*\n", re.MULTILINE
     )
+    rx_range = re.compile(r"^\s+<(?P<range>\d+(?:\-\d+)?)>", re.MULTILINE)
 
     def execute_cli(self):
         interfaces = []
@@ -96,18 +103,21 @@ class Script(BaseScript):
             if prefix == "gpon-onu_":
                 continue
             for i in range(int(p["port"])):
-                ifname = "%s%s/%s/%s" % (prefix, p["shelf"], p["slot"], str(i + 1))
+                port_num = "%s/%s/%s" % (p["shelf"], p["slot"], str(i + 1))
+                ifname = "%s%s" % (prefix, port_num)
                 try:
                     v = self.cli("show interface %s" % ifname)
                 except self.CLISyntaxError:
                     # In some card we has both gei_ and xgei_ interfaces
                     if prefix == "gei_":
-                        ifname = "xgei_%s/%s/%s" % (p["shelf"], p["slot"], str(i + 1))
+                        ifname = "xgei_%s" % port_num
+                        v = self.cli("show interface %s" % ifname)
+                    if prefix == "gei-":
+                        ifname = "xgei-%s" % port_num
                         v = self.cli("show interface %s" % ifname)
                 match = self.rx_iface.search(v)
-                admin_status = bool(match.group("admin_status") == "up")
+                admin_status = bool(match.group("admin_status") in ["up", "activate"])
                 oper_status = bool(match.group("oper_status") == "up")
-                descr = match.group("descr").strip()
                 iface = {
                     "name": ifname,
                     "type": "physical",
@@ -115,9 +125,11 @@ class Script(BaseScript):
                     "oper_status": oper_status,
                     "subinterfaces": [],
                 }
-                if descr not in ["none", "none."]:
-                    iface["description"] = descr
-                if prefix in ["gei_", "gpon-olt_"]:
+                if match.group("descr"):
+                    descr = match.group("descr").strip()
+                    if descr not in ["none", "none.", "null"]:
+                        iface["description"] = descr
+                if prefix in ["gei_", "gpon-olt_", "gei-"]:
                     v = self.cli("show vlan port %s" % ifname)
                     match = self.rx_vlan.search(v)
                     sub = {
@@ -135,6 +147,31 @@ class Script(BaseScript):
                         ai, is_lacp = portchannel_members[ifname]
                         iface["aggregated_interface"] = ai
                         iface["enabled_protocols"] = ["LACP"]
+                if prefix in ["gpon_olt-"] and admin_status is True:
+                    v = self.cli("show vlan port vport-%s.?" % port_num, command_submit=b"")
+                    match1 = self.rx_range.search(v)
+                    for dim1 in self.expand_rangelist(match1.group("range")):
+                        v = self.cli(
+                            "\x01\x0bshow vlan port vport-%s.%s:?" % (port_num, dim1),
+                            command_submit=b"",
+                        )
+                        match2 = self.rx_range.search(v)
+                        for dim2 in self.expand_rangelist(match2.group("range")):
+                            v = self.cli(
+                                "\x01\x0bshow vlan port vport-%s.%s:%s" % (port_num, dim1, dim2)
+                            )
+                            match3 = self.rx_vlan.search(v)
+                            sub = {
+                                "name": "vport-%s.%s:%s" % (port_num, dim1, dim2),
+                                "admin_status": admin_status,
+                                "oper_status": oper_status,
+                                "enabled_afi": ["BRIDGE"],
+                            }
+                            if match3.group("untagged"):
+                                sub["untagged_vlan"] = match3.group("untagged")
+                            if match3.group("tagged"):
+                                sub["tagged_vlans"] = self.expand_rangelist(match3.group("tagged"))
+                            iface["subinterfaces"] += [sub]
                 if prefix == "vdsl_":
                     for match in self.rx_pvc.finditer(v):
                         sub = {
@@ -168,10 +205,13 @@ class Script(BaseScript):
                     }
                 ],
             }
-            c = self.cli("show interface %s" % ifname)
-            match1 = self.rx_mac.search(c)
-            iface["mac"] = match1.group("mac")
-            iface["subinterfaces"][0]["mac"] = match1.group("mac")
+            try:
+                c = self.cli("show interface %s" % ifname)
+                match1 = self.rx_mac.search(c)
+                iface["mac"] = match1.group("mac")
+                iface["subinterfaces"][0]["mac"] = match1.group("mac")
+            except self.CLISyntaxError:
+                pass
             if ifname.startswith("vlan"):
                 iface["type"] = "SVI"
                 iface["subinterfaces"][0]["vlan_ids"] = [ifname[4:]]

@@ -34,6 +34,11 @@ class Profile(BaseProfile):
         r"(?P<cfgtype>\S+)\s+(?P<realtype>\S+|)\s+(?P<port>\d+)\s+"
         r"(?P<hardver>V?\S+|)\s+(?P<softver>V\S+|)\s+(?P<status>INSERVICE|OFFLINE|STANDBY|NOPOWER)"
     )
+    rx_card2 = re.compile(
+        r"(?P<shelf>\d+)\s+(?P<slot>\d+)\s+"
+        r"(?P<cfgtype>\S+)\s+(?P<realtype>\S+|)\s+(?P<port>\d+)\s+"
+        r"(?P<hardver>V?\S+|N/A|)\s+(?P<status>INSERVICE|OFFLINE|STANDBY|NOPOWER)"
+    )
 
     def fill_ports(self, script):
         r = []
@@ -42,4 +47,9 @@ class Profile(BaseProfile):
             match = self.rx_card.search(line)
             if match:
                 r += [match.groupdict()]
+        if not r:
+            for line in v.splitlines():
+                match = self.rx_card2.search(line)
+                if match:
+                    r += [match.groupdict()]
         return r

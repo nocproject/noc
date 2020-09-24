@@ -19,26 +19,35 @@ class Script(BaseScript):
 
     type = {
         "PRWGS": "PWR",
-        "PRWH": "PRW",
+        "PRWH": "PWR",
+        "PUMD": "PWR",
         "SCXN": "MAINBOARD",
         "SCTM": "MAINBOARD",
         "SCXM": "MAINBOARD",
         "SCXL": "MAINBOARD",
         "SMXA": "MAINBOARD",
+        "GMRA": "MAINBOARD",
         "GUSQ": "LINECARD",
         "GTGHK": "LINECARD",
         "GTGOG": "LINECARD",
         "HUVQ": "LINECARD",
         "VDWVD": "LINECARD",
+        "GVGO": "LINECARD",
+        "FUMO": "FAN",
+        "CVST": "unknown",
     }
-
     rx_platform = re.compile(r"^\d+\s+(?P<platform>\S+)MBRack\s+.+\n", re.MULTILINE)
     rx_card = re.compile(
         r"^Real-Type\s+:\s+(?P<type>\S+)\s+Serial-Number\s+:(?P<serial>.*)\n", re.MULTILINE
     )
-    rx_detail = re.compile(
-        r"^M-CODE\s+:\s+\S+\s+Hardware-VER\s+:\s+(?P<hardware>\S+)\s*\n", re.MULTILINE
+    rx_card2 = re.compile(
+        r"^CardName\s+:\s+(?P<type>\S+)\s*\n"
+        r"^Status\s+:\s+\S+\s*\n"
+        r"^Port-Number\s+:\s+\d+\s*\n"
+        r"^Serial-Number\s+:(?P<serial>.*)\n",
+        re.MULTILINE,
     )
+    rx_detail = re.compile(r"^Hardware-VER\s+:\s+(?P<hardware>\S+)\s*\n", re.MULTILINE)
 
     def execute_cli(self):
         v = self.scripts.get_version()
@@ -48,7 +57,9 @@ class Script(BaseScript):
             v = self.cli("show card shelfno %s slotno %s" % (p["shelf"], p["slot"]))
             match = self.rx_card.search(v)
             if not match:
-                continue
+                match = self.rx_card2.search(v)
+                if not match:
+                    continue
             i = {
                 "type": self.type[match.group("type")],
                 "number": p["slot"],
@@ -58,7 +69,7 @@ class Script(BaseScript):
             if match.group("serial").strip():
                 i["serial"] = match.group("serial").strip()
             match = self.rx_detail.search(v)
-            if match:
+            if match and match.group("hardware") != "N/A":
                 i["revision"] = match.group("hardware")
             r += [i]
         return r

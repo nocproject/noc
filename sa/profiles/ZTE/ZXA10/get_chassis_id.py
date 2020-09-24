@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,8 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(
-        r"^\s*inband mac: (?P<inmac>\S+)\s*\n" r"^\s*outband mac: (?P<outmac>\S+)\s*\n",
+        r"^\s*(?:out|in)band mac: (?P<inmac>\S+)\s*\n"
+        r"^\s*(?:outband|base) mac\s*: (?P<outmac>\S+)\s*\n",
         re.MULTILINE,
     )
 
