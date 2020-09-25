@@ -2,7 +2,7 @@
 # Vendor: Fortinet
 # OS:     FortiOS v4.X
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,5 +13,5 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Fortinet.Fortigate"
     pattern_more = "^--More--"
-    pattern_prompt = r"^\S+\ #"
+    pattern_prompt = r"^\S+\ [#\$]"
     command_more = " "
