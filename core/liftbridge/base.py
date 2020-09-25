@@ -236,7 +236,8 @@ class LiftBridgeClient(object):
         if partition:
             req.partition = partition
         if headers:
-            req.headers = headers
+            for h, v in headers.items():
+                req.headers[h] = v
         if ack_inbox:
             req.ackInbox = ack_inbox
         if correlation_id:
@@ -398,6 +399,7 @@ class LiftBridgeClient(object):
                         timestamp=msg.timestamp,
                         key=msg.key,
                         partition=msg.partition,
+                        headers=msg.headers,
                     )
                     msg = await call._read()
                 # Get core message to explain the result

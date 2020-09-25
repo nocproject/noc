@@ -7,6 +7,7 @@
 
 # Python modules
 import dataclasses
+from typing import Dict
 
 
 @dataclasses.dataclass
@@ -17,3 +18,4 @@ class Message(object):
     timestamp: int
     key: bytes
     partition: int
+    headers: Dict[str, bytes]
