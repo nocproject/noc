@@ -155,29 +155,38 @@ class LiftBridgeClient(object):
         await self.close()
         await self.connect()
 
-    async def fetch_metadata(self) -> Metadata:
-        r = await self.stub.FetchMetadata(FetchMetadataRequest())
-        return Metadata(
-            brokers=[Broker(id=b.id, host=b.host, port=b.port) for b in r.brokers],
-            metadata=[
-                StreamMetadata(
-                    name=m.name,
-                    subject=m.subject,
-                    partitions={
-                        p.id: PartitionMetadata(
-                            id=p.id,
-                            leader=p.leader,
-                            replicas=list(p.replicas),
-                            isr=list(p.isr),
-                            high_watermark=p.highWatermark,
-                            newest_offset=p.newestOffset,
-                        )
-                        for p in m.partitions.values()
-                    },
-                )
-                for m in r.metadata
-            ],
-        )
+    async def fetch_metadata(
+        self, stream: Optional[str] = None, wait_for_stream: bool = False
+    ) -> Metadata:
+        req = FetchMetadataRequest()
+        if stream:
+            req.streams.append(stream)
+        while True:
+            r = await self.stub.FetchMetadata(req)
+            if not r.metadata and wait_for_stream:
+                await asyncio.sleep(1)
+                continue
+            return Metadata(
+                brokers=[Broker(id=b.id, host=b.host, port=b.port) for b in r.brokers],
+                metadata=[
+                    StreamMetadata(
+                        name=m.name,
+                        subject=m.subject,
+                        partitions={
+                            p.id: PartitionMetadata(
+                                id=p.id,
+                                leader=p.leader,
+                                replicas=list(p.replicas),
+                                isr=list(p.isr),
+                                high_watermark=p.highWatermark,
+                                newest_offset=p.newestOffset,
+                            )
+                            for p in m.partitions.values()
+                        },
+                    )
+                    for m in r.metadata
+                ],
+            )
 
     async def create_stream(
         self,
