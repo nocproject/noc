@@ -64,7 +64,7 @@ class CalcifyBioSegPolicy(BaseBioSegPolicy):
     def get_template_context(self) -> Dict[str, Any]:
         local_interfaces: List[Interface] = []
         remote_interfaces: List[Interface] = []
-        for link in Link.objects.filter(linked_segment=self.attacker.id):
+        for link in Link.objects.filter(linked_segments=self.attacker.id):
             for iface in link.interfaces:
                 if iface.managed_object.segment.id == self.attacker.id:
                     local_interfaces += [iface]
