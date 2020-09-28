@@ -17,6 +17,7 @@ class Script(BaseScript):
     name = "Alcatel.OS62xx.get_version"
     cache = True
     interface = IGetVersion
+    always_prefer = "S"
 
     rx_sys = re.compile(r"^System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
     rx_ser = re.compile(r"^System Serial Number:\s+(?P<serial>\S+)\n", re.MULTILINE)
