@@ -28,6 +28,7 @@ all:
           classifier_loglevel: info
           classifier_lookup_solution: noc.services.classifier.rulelookup.RuleLookup
           classifier_power: 2
+          classifier_backup_power: 2
           clickhouse_db: noc
           clickhouse_password: noc
           clickhouse_query_size: 262144

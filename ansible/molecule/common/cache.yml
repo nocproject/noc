@@ -17,5 +17,6 @@
 
         - name: upload pkg cache
           command: /tmp/mc mirror {{ pkg_cache_dir }} {{ minio_bucket }}/pkgs/ --overwrite
+          become: true
 
       when: use_cache
