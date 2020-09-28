@@ -19,7 +19,7 @@ SIPHASH_SEED = b"\x00" * 16
 hash_fmt = struct.Struct("!q")
 
 
-def hash_str(value):
+def hash_str(value) -> str:
     """
     Calculate integer hash of value
 
@@ -29,8 +29,8 @@ def hash_str(value):
     return siphash24(SIPHASH_SEED, smart_bytes(smart_text(value)))
 
 
-def hash_int(value):
-    return hash_fmt.unpack(hash_str(value))
+def hash_int(value) -> int:
+    return hash_fmt.unpack(hash_str(value))[0]
 
 
 def dict_hash_int(d: Dict[str, Any]) -> int:
