@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# NSN.TIMOS.get_capabilities_ex
+# NSN.TIMOS.get_capabilities
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
@@ -73,4 +73,3 @@ class Script(BaseScript):
         """
         r = self.cli("show lag statistics")
         return r
-
