@@ -67,85 +67,11 @@ class Script(BaseScript):
     rx_mtu = re.compile(r", MTU: (?P<mtu>\d+)")
     # IP-Header 172.17.1.6:172.17.1.1:47:df:64:0000000000000000
     rx_ppp_address = re.compile(r"IP-Header (?P<src>\S+?):(?P<dst>\S+?):(?P<proto>\d+)")
-    rx_ri = re.compile(
-        r"(?P<name>\S+?):\n"
-        r"(?:  Description: (?P<description>.+?)\n)?"
-        r"  Router ID: (?P<router_id>\S+)\n"
-        r"  Type: (?P<type>\S+)\s+\S*\s+State:\s+(?P<status>Active|Inactive)\s*\n"
-        r"  Interfaces:\n"
-        r"(?P<ifaces>(?:    \S+\n)*)"
-        r"(  Route-distinguisher: (?P<rd>\S+)\s*\n)?"
-        r"(  Vrf-import: \[(?P<vrf_import>.+)\]\s*\n)?"
-        r"(  Vrf-export: \[(?P<vrf_export>.+)\]\s*\n)?",
-        re.MULTILINE | re.IGNORECASE,
-    )
-    rx_vrf_target = re.compile(r"target:(?P<rd>\d+:\d+)")
-    type_map = {
-        "virtual-router": "ip",
-        "vrf": "VRF",
-        "vpls": "VPLS",
-        "l2vpn": "VLL",
-        "evpn": "EVPN",
-    }
 
     def filter_interface(self, ifindex, name, oper_status):
         if not self.profile.valid_interface_name(self, name):
             return False
         return True
-
-    def get_vrf(self):
-        c = self.cli(
-            'help apropos "instance" | match "^show route instance" ',
-            cached=True,
-            ignore_errors=True,
-        )
-        if "show route instance" not in c:
-            return []
-
-        vpns = []
-        v = self.cli("show route instance detail")
-        for match in self.rx_ri.finditer(v):
-            name = match.group("name")
-            rt = match.group("type").lower()
-            if name == "master" or name.startswith("__") or rt not in self.type_map:
-                continue
-            interfaces = [x.strip() for x in match.group("ifaces").splitlines()]
-            interfaces = [x for x in interfaces if x and not x.startswith("lsi.")]
-            vpn = {
-                "type": self.type_map[rt],
-                "virtual_router": match.group("router_id"),
-                "status": match.group("status").lower() == "active",
-                "name": name,
-                "rd": match.group("rd"),
-                "interfaces": interfaces,
-            }
-            description = match.group("description")
-            if description:
-                vpn["description"] = description.strip()
-            if match.group("vrf_import"):
-                vpn["rt_import"] = []
-                for rt_name in match.group("vrf_import").split(" "):
-                    rt_name = rt_name.strip()
-                    if rt_name == "":
-                        continue
-                    if rt_name.startswith("target:"):
-                        vpn["rt_import"] += [rt_name[7:]]
-                    c = self.cli("show policy %s" % rt_name)
-                    for rd in self.rx_vrf_target.finditer(c):
-                        vpn["rt_import"] += [rd.group("rd")]
-            if match.group("vrf_export"):
-                vpn["rt_export"] = []
-                for rt_name in match.group("vrf_export").split(" "):
-                    rt_name = rt_name.strip()
-                    if rt_name == "":
-                        continue
-                    if rt_name.startswith("target:"):
-                        vpn["rt_export"] += [rt_name[7:]]
-                    c = self.cli("show policy %s" % rt_name)
-                    for rd in self.rx_vrf_target.finditer(c):
-                        vpn["rt_export"] += [rd.group("rd")]
-            vpns += [vpn]
-        return vpns
 
     def execute_cli(self):
         untagged = {}
@@ -372,35 +298,20 @@ class Script(BaseScript):
             iface["subinterfaces"] = subs
             interfaces[name] = iface
             time.sleep(1)
-        # Process VRFs
-        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
-        imap = {}  # interface -> VRF
-        r = self.get_vrf()
-        for v in r:
-            vrfs[v["name"]] = {
-                "forwarding_instance": v["name"],
-                "virtual_router": v["virtual_router"],
-                "type": v["type"],
-                "vpn_id": v.get("vpn_id"),
-                "interfaces": [],
-            }
-            rd = v.get("rd")
-            if rd:
-                vrfs[v["name"]]["rd"] = rd
-            for i in v["interfaces"]:
-                imap[i] = v["name"]
+        # VRF and forwarding_instance proccessed
+        vrfs, vrf_if_map = self.get_mpls_vpn_mappings()
         for i in interfaces.keys():
             iface_vrf = "default"
             subs = interfaces[i]["subinterfaces"]
             interfaces[i]["subinterfaces"] = []
-            if i in imap:
-                iface_vrf = imap[i]
-                vrfs[imap[i]]["interfaces"] += [interfaces[i]]
+            if i in vrf_if_map:
+                iface_vrf = vrf_if_map[i]
+                vrfs[vrf_if_map[i]]["interfaces"] += [interfaces[i]]
             else:
                 vrfs["default"]["interfaces"] += [interfaces[i]]
             for s in subs:
-                if s["name"] in imap and imap[s["name"]] != iface_vrf:
-                    vrfs[imap[s["name"]]]["interfaces"] += [
+                if s["name"] in vrf_if_map and vrf_if_map[s["name"]] != iface_vrf:
+                    vrfs[vrf_if_map[s["name"]]]["interfaces"] += [
                         {
                             "name": s["name"],
                             "type": "other",

@@ -31,7 +31,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_vrf_target = re.compile(r"target:(?P<rd>\d+:\d+)")
-    type_map = {"vrf": "VRF", "vpls": "VPLS", "l2vpn": "VLL", "evpn": "EVPN"}
+    type_map = {"vrf": "vrf", "vpls": "vpls", "l2vpn": "vll", "evpn": "evpn"}
 
     def execute_cli(self, **kwargs):
         c = self.cli(
