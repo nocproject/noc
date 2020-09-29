@@ -38,6 +38,7 @@ class Script(BaseScript):
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+"
         r"protocol\s+is\s+(?P<oper_status>up|down)\s"
         r"(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*|, Autostate \S+)?\n"
+        r"(^\s+Hardware is .+\n)?"
         r"\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?"
         r"(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?"
         r"[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
@@ -77,12 +78,13 @@ class Script(BaseScript):
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
     rx_lldp = re.compile(
-        r"^(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?):.+Rx: (?P<rx_state>\S+)", re.MULTILINE | re.DOTALL
+        r"^(?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe)[^:]+?):.+Rx: (?P<rx_state>\S+)",
+        re.MULTILINE | re.DOTALL,
     )
     rx_gvtp = re.compile(r"VTP Operating Mode\s+: Off", re.MULTILINE)
-    rx_vtp = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+enabled", re.MULTILINE)
+    rx_vtp = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe)[^:]+?)\s+enabled", re.MULTILINE)
     rx_vtp1 = re.compile(
-        r"^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+",
+        r"^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe)[^:]+?)\s+",
         re.MULTILINE,
     )
     rx_oam = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
@@ -218,8 +220,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return {}
         r = {}
-        for l in c.split("\n"):
-            match = self.rx_ifindex.match(l.strip())
+        for line in c.split("\n"):
+            match = self.rx_ifindex.match(line.strip())
             if match:
                 r[match.group("interface")] = int(match.group("ifindex"))
         return r
@@ -230,8 +232,8 @@ class Script(BaseScript):
     def get_ubr_pvm(self):
         vlans = self.cli("show cable l2-vpn dot1q-vc-map")
         pvm = {}
-        for l in vlans.split("\n"):
-            match = self.rx_vlan_ubr.search(l)
+        for line in vlans.split("\n"):
+            match = self.rx_vlan_ubr.search(line)
             if match:
                 port = match.group("port")
                 vlan_id = int(match.group("vlan_id"))
@@ -365,16 +367,16 @@ class Script(BaseScript):
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
-        for l in self.cli("show ip interface").splitlines():
-            match = self.rx_sh_ip_int.search(l)
+        for line in self.cli("show ip interface").splitlines():
+            match = self.rx_sh_ip_int.search(line)
             if match:
                 c_iface = self.profile.convert_interface_name(match.group("interface").strip())
                 continue
             # Primary ip
-            match = self.rx_ip.search(l)
+            match = self.rx_ip.search(line)
             if not match:
                 # Secondary ip
-                match = self.rx_sec_ip.search(l)
+                match = self.rx_sec_ip.search(line)
                 if not match:
                     continue
             ip = match.group("ip")
@@ -386,8 +388,8 @@ class Script(BaseScript):
             v = self.cli("show ipv6 interface")
         except self.CLISyntaxError:
             v = ""
-        for l in v.splitlines():
-            match = self.rx_sh_ip_int.search(l)
+        for line in v.splitlines():
+            match = self.rx_sh_ip_int.search(line)
             if match:
                 iface = match.group("interface")
                 try:
@@ -398,7 +400,7 @@ class Script(BaseScript):
             if not c_iface:
                 continue  # Skip wierd interfaces
             # Primary ip
-            match = self.rx_ipv6.search(l)
+            match = self.rx_ipv6.search(line)
             if not match:
                 # Secondary ip?
                 continue
