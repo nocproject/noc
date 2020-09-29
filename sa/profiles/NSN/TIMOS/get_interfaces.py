@@ -271,7 +271,7 @@ class Script(BaseScript):
                 match_obj = self.re_int_desc_group.search(iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
-                    if not my_dict["mac"]:
+                    if not my_dict["mac"] and my_dict["mac"]=="":
                         del my_dict["mac"]
                     my_dict["type"] = "other"
                     my_dict["subinterfaces"] = []
