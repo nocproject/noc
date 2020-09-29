@@ -16,9 +16,18 @@ from noc.core.mac import MAC
 from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_ALIAS,
     LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_PORT_SUBTYPE_LOCAL,
     LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
 )
 from noc.core.comp import smart_text
 from noc.core.snmp.render import render_bin
@@ -68,10 +77,19 @@ class Script(BaseScript):
         fixedcaps = 0
         if caps == cls.NOT_SPECIFIED:
             return fixedcaps
-        for c in caps.split():
-            if c.startswith("(not"):
-                continue
-            fixedcaps |= cls.CAPS_MAP[c]
+        fixedcaps = lldp_caps_to_bits(
+            caps.split(),
+            {
+                "other": LLDP_CAP_OTHER,
+                "repeater": LLDP_CAP_REPEATER,
+                "bridge": LLDP_CAP_BRIDGE,
+                "wlanaccesspoint": LLDP_CAP_WLAN_ACCESS_POINT,
+                "router": LLDP_CAP_ROUTER,
+                "telephone": LLDP_CAP_TELEPHONE,
+                "cvlan": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                "station": LLDP_CAP_STATION_ONLY,
+            },
+        )
         return fixedcaps
 
     @staticmethod
