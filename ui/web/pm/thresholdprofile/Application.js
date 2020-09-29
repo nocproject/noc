@@ -9,6 +9,7 @@ console.debug("Defining NOC.pm.thresholdprofile.Application");
 Ext.define("NOC.pm.thresholdprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.pm.thresholdprofile.Model",
         "NOC.main.ref.windowfunction.LookupField",
         "NOC.core.ListFormField",
@@ -22,11 +23,26 @@ Ext.define("NOC.pm.thresholdprofile.Application", {
 
     initComponent: function() {
         var me = this;
+
+        // JSON Panel
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/pm/thresholdprofile/{id}/json/'),
+            previewName: new Ext.XTemplate('Threshold Profile: {name}')
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
         Ext.apply(me, {
             columns: [
                 {
                     text: "Name",
                     dataIndex: "name",
+                    flex: 1
+                },
+                {
+                    text: "Description",
+                    dataIndex: "description",
                     flex: 1
                 }
             ],
@@ -185,8 +201,24 @@ Ext.define("NOC.pm.thresholdprofile.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
         });
         me.callParent();
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
     }
 });
