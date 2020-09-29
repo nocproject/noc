@@ -43,6 +43,8 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
     ]
 
+    collators = ["noc.core.confdb.collator.ifpath.IfPathCollator"]
+
     matchers = {
         "is_has_lldp": {"platform": {"$regex": "ex|mx|qfx|acx|srx"}},
         "is_switch": {"platform": {"$regex": "ex|qfx"}},
