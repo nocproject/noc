@@ -13,6 +13,7 @@ import time
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.pm.models.metrictype import MetricType
+from noc.core.validators import is_float
 from noc.core.pm.utils import get_interface_metrics
 
 logger = logging.getLogger(__name__)
@@ -65,6 +66,7 @@ def handler(mo, event):
         event["interface"] = event["path"].split("|")[-1::][0].strip()
         if iface.description:
             event["description"] = str(iface.description)
+        event["profile"] = str(iface.profile.name)
         event["threshold_interval"] = th_interval(mo, event)
         event["ts_from_date"] = grafana_date()
         if "Load" in event["metric"]:
@@ -124,10 +126,11 @@ def handler(mo, event):
                     linked_object.remove(iface)
                     event["linked_object"] = linked_object[0].managed_object.name
                     event["linked_object_interface"] = linked_object[0].name
-
+        if is_float(event["value"]):
+            event["value"] = round(event["value"], 2)
         return event
     except Exception as e:
-        logger.info("Error: \n %s" % (event["path"].split("|")[-1::][0].strip(), e))
+        logger.info("Error: %s \n %s" % (e, event["path"].split("|")[-1::][0].strip()))
         return event
 
 
@@ -140,5 +143,5 @@ def handler_object(mo, event):
             event["name"] = res[-1::][0]
         return event
     except Exception as e:
-        logger.info("Error: \n %s" % (event["path"].split("|")[-1::][0].strip(), e))
+        logger.info("Error: %s \n %s" % (e, event["path"].split("|")[-1::][0].strip()))
         return event
