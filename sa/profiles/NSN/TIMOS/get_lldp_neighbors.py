@@ -57,41 +57,6 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.VERBOSE,
     )
 
-    CAPS_MAP = {
-        "other": 1,
-        "repeater": 2,
-        "bridge": 4,
-        "wlanaccesspoint": 8,
-        "router": 16,
-        "telephone": 32,
-        "docsis": 64,
-        "station": 128,
-        "cvlan": 0,
-    }
-
-    NOT_SPECIFIED = "(not specified)"
-
-    @classmethod
-    def fixcaps(cls, caps):
-        caps = caps.lower().strip()
-        fixedcaps = 0
-        if caps == cls.NOT_SPECIFIED:
-            return fixedcaps
-        fixedcaps = lldp_caps_to_bits(
-            caps.split(),
-            {
-                "other": LLDP_CAP_OTHER,
-                "repeater": LLDP_CAP_REPEATER,
-                "bridge": LLDP_CAP_BRIDGE,
-                "wlanaccesspoint": LLDP_CAP_WLAN_ACCESS_POINT,
-                "router": LLDP_CAP_ROUTER,
-                "telephone": LLDP_CAP_TELEPHONE,
-                "cvlan": LLDP_CAP_DOCSIS_CABLE_DEVICE,
-                "station": LLDP_CAP_STATION_ONLY,
-            },
-        )
-        return fixedcaps
-
     @staticmethod
     def fixport(port, port_type):
         # fix alcatel encode port like hex string
@@ -119,7 +84,19 @@ class Script(BaseScript):
         else:
             match_obj = self.rx_remote_info.search(v)
             pri = match_obj.groupdict()
-            pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
+            pri["remote_capabilities"] = lldp_caps_to_bits(
+                pri["remote_capabilities"].split(),
+                {
+                    "other": LLDP_CAP_OTHER,
+                    "repeater": LLDP_CAP_REPEATER,
+                    "bridge": LLDP_CAP_BRIDGE,
+                    "wlanaccesspoint": LLDP_CAP_WLAN_ACCESS_POINT,
+                    "router": LLDP_CAP_ROUTER,
+                    "telephone": LLDP_CAP_TELEPHONE,
+                    "cvlan": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                    "station": LLDP_CAP_STATION_ONLY,
+                },
+            )
             pri["remote_port"] = self.fixport(pri["remote_port"], pri["remote_port_subtype"])
             if "n/a" in pri["remote_system_name"]:
                 del pri["remote_system_name"]
