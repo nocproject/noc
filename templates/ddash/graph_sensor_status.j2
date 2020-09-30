@@ -10,7 +10,7 @@
         {{ comma() }}
         {
           "intervalFactor": 1,
-          "query": "SELECT $timeSeries as t, avg(sensor_status) as {{ sensor }} FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{sensor}}') and $timeFilter GROUP BY t ORDER BY t",
+          "query": "SELECT $timeSeries as t, avg(sensor_status) as \"{{ sensor }}\" FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{sensor}}') and $timeFilter GROUP BY t ORDER BY t",
           "resultFormat": "time_series",
           "database": "noc",
           "tableLoading": false,
