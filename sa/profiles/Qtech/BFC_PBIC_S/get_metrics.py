@@ -95,6 +95,18 @@ class Script(GetMetricsScript):
                 multi=True,
             )
 
+    @metrics(["Environment | Pulse"], volatile=False, access="S")  # SNMP version
+    def get_pulse(self, metrics):
+        for metric in metrics:
+            s_type = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % metric.ifindex)
+            if s_type == 2:
+                value = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % metric.ifindex)
+                self.set_metric(
+                    id=("Environment | Pulse", metric.path),
+                    path=["", "", "", metric.path[3]],
+                    value=value,
+                )
+
     @metrics(["Environment | Power | Input | Status"], volatile=False, access="S")  # SNMP version
     def get_power_input_status(self, metrics):
         for metric in metrics:
