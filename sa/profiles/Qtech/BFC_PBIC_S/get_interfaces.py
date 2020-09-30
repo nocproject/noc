@@ -68,11 +68,11 @@ class Script(BaseScript):
             interfaces += [
                 {
                     "type": "physical",
-                    "name": "%s/%s" % (descr, value) if descr == 0 else descr,
+                    "name": "%s/%s" % (descr, value + 1) if descr == 0 else descr,
                     "admin_status": s_status,
                     "oper_status": s_status,
                     "snmp_ifindex": value,
-                    "description": "%s %s" % (self.profile.PORT_TYPE.get(descr), value)
+                    "description": "%s %s" % (self.profile.PORT_TYPE.get(descr), value + 1)
                     if descr == 0
                     else self.profile.PORT_TYPE.get(descr),
                     "subinterfaces": [],

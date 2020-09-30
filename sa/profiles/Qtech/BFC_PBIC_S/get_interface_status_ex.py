@@ -60,7 +60,7 @@ class Script(BaseScript):
                     s_status = True
             result += [
                 {
-                    "interface": "%s/%s" % (descr, value) if descr == 0 else descr,
+                    "interface": "%s/%s" % (descr, value + 1) if descr == 0 else descr,
                     "admin_status": s_status,
                     "oper_status": s_status,
                 }
