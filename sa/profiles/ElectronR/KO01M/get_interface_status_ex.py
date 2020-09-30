@@ -22,12 +22,12 @@ class Script(BaseScript):
         t_st = False
         if temp != -104:
             t_st = True
-        result += [{"interface": "TempSensor 1", "admin_status": t_st, "oper_status": t_st}]
+        result += [{"interface": "Temperature", "admin_status": t_st, "oper_status": t_st}]
         impulse = self.snmp.get("1.3.6.1.4.1.35419.20.1.160.0", cached=True)
         i_st = False
         if impulse != 0:
             i_st = True
-        result += [{"interface": "ImpulseSensor 1", "admin_status": i_st, "oper_status": i_st}]
+        result += [{"interface": "Pulse", "admin_status": i_st, "oper_status": i_st}]
         for ifindex in index:
             status = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % ifindex)
             if status == 0:
