@@ -27,7 +27,9 @@ class Script(GetMetricsScript):
                 if impulse != 0:
                     value = 0
             else:
-                value = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % metric.ifindex)
+                res = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % metric.ifindex)
+                if res == 1:
+                    value = 0
             self.set_metric(
                 id=("Environment | Sensor Status", metric.path),
                 value=value,
@@ -70,8 +72,8 @@ class Script(GetMetricsScript):
     @metrics(["Environment | Power | Input | Status"], volatile=False, access="S")  # SNMP version
     def get_power_input_status(self, metrics):
         for metric in metrics:
-            value = self.snmp.get("1.3.6.1.4.1.35419.20.1.%s.0" % metric.ifindex, cached=True)
+            value = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % metric.ifindex, cached=True)
             self.set_metric(
                 id=("Environment | Power | Input | Status", metric.path),
-                value=value,
+                value=0 if value == 1 else 1,
             )
