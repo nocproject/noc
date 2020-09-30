@@ -1,0 +1,13 @@
+{
+    "name": "Ttronics | KUB_NANO sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "0086286f-51e7-4fd4-84e5-84e04236a676",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.51315.1",
+    "action": "match",
+    "profile__name": "Ttronics.KUB"
+}
