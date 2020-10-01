@@ -417,6 +417,7 @@ class LiftBridgeClient(object):
                     code is StatusCode.UNAVAILABLE
                     or code is StatusCode.FAILED_PRECONDITION
                     or code is StatusCode.NOT_FOUND
+                    or code is StatusCode.INTERNAL
                 ):
                     raise ErrorUnavailable()
                 raise ErrorChannelClosed(str(code))

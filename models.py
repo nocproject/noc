@@ -105,6 +105,7 @@ _MODELS = {
     "main.Glyph": "noc.main.models.glyph.Glyph",
     "main.Handler": "noc.main.models.handler.Handler",
     "main.Language": "noc.main.models.language.Language",
+    "main.MessageRoute": "noc.main.models.messageroute.MessageRoute",
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
     "main.NotificationGroupOther": "noc.main.models.notificationgroup.NotificationGroupOther",

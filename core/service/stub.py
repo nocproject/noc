@@ -10,11 +10,13 @@ import logging
 import threading
 from collections import defaultdict
 import asyncio
-from typing import Optional
+from typing import Optional, Dict
 
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.config import config
+from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.ioloop.util import run_sync
 from .rpc import RPCProxy
 
 
@@ -67,3 +69,19 @@ class ServiceStub(object):
 
     def register_metrics(self, table, data):
         self._metrics[table] += data
+
+    def publish(
+        self,
+        value: bytes,
+        stream: str,
+        partition: Optional[int] = None,
+        key: Optional[bytes] = None,
+        headers: Optional[Dict[str, bytes]] = None,
+    ):
+        async def wrap():
+            async with LiftBridgeClient() as client:
+                await client.publish(
+                    value=value, stream=stream, partition=partition, key=key, headers=headers
+                )
+
+        run_sync(wrap)

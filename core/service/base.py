@@ -17,7 +17,7 @@ import time
 import threading
 from time import perf_counter
 import asyncio
-from typing import Optional, Dict, Tuple, Callable, Any, TypeVar, NoReturn, Coroutine
+from typing import Optional, Dict, Tuple, Callable, Any, TypeVar, NoReturn, Awaitable
 
 # Third-party modules
 import setproctitle
@@ -41,6 +41,7 @@ from noc.core.nsq.error import NSQPubError
 from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
 from noc.core.liftbridge.error import LiftbridgeError
 from noc.core.liftbridge.queue import LiftBridgeQueue
+from noc.core.liftbridge.message import Message
 from noc.core.clickhouse.shard import ShardingFunction
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
@@ -550,7 +551,9 @@ class BaseService(object):
         for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
-    async def subscribe_stream(self, stream: str, partition: int, handler: Coroutine) -> None:
+    async def subscribe_stream(
+        self, stream: str, partition: int, handler: Callable[[Message], Awaitable[None]]
+    ) -> None:
         # @todo: Restart on failure
         self.logger.info("Subscribing %s:%s", stream, partition)
         try:
@@ -668,6 +671,7 @@ class BaseService(object):
         stream: str,
         partition: Optional[int] = None,
         key: Optional[bytes] = None,
+        headers: Optional[Dict[str, bytes]] = None,
     ):
         """
         Schedule publish request
@@ -675,12 +679,13 @@ class BaseService(object):
         :param stream:
         :param partition:
         :param key:
+        :param headers:
         :return:
         """
         if not self.publish_queue:
             self._init_publisher()
         req = LiftBridgeClient.get_publish_request(
-            value=value, stream=stream, partition=partition, key=key
+            value=value, stream=stream, partition=partition, key=key, headers=headers
         )
         self.publish_queue.put(req)
 

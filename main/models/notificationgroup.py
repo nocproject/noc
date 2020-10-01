@@ -10,6 +10,7 @@ import datetime
 import logging
 import operator
 from threading import Lock
+from typing import Tuple, Dict, Iterator
 
 # Third-party modules
 from django.db import models
@@ -22,6 +23,7 @@ from noc.settings import LANGUAGE_CODE
 from noc.core.timepattern import TimePatternList
 from noc.core.service.pub import pub
 from noc.core.model.decorator import on_delete_check
+from noc.core.comp import smart_bytes
 from .timepattern import TimePattern
 
 id_lock = Lock()
@@ -29,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 NOTIFICATION_TOPICS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
+MX_STREAMS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
 
 NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_TOPICS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
@@ -207,6 +210,14 @@ class NotificationGroup(NOCModel):
                 cls.get_effective_message(subject, lang[(method, params)]),
                 cls.get_effective_message(body, lang[(method, params)]),
             )
+
+    def iter_actions(self) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+        """
+        mx-compatible actions. Yields tuples of `stream`, `headers`
+        :return:
+        """
+        for method, param, _ in self.active_members:
+            yield MX_STREAMS[method], {"To": smart_bytes(param)}
 
 
 class NotificationGroupUser(NOCModel):

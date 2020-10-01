@@ -18,6 +18,10 @@ from noc.core.ioloop.util import run_sync
 
 
 class Command(BaseCommand):
+    STREAMS = [
+        # slot name, stream name
+        ("mx", "message")
+    ]
     POOLED_STREAMS = [
         # slot name, stream name
         ("classifier-%s", "events.%s")
@@ -25,11 +29,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         changed = False
-        # Get ligtbridge metadata
+        # Get liftbridge metadata
         meta = self.get_meta()
         rf = min(len(meta.brokers), 2)
         # Apply settings
-        for stream, partitions in self.iter_pool_limits():
+        for stream, partitions in self.iter_limits():
             self.print("Ensuring stream %s" % stream)
             changed |= self.apply_stream_settings(meta, stream, partitions, rf)
         if changed:
@@ -44,19 +48,26 @@ class Command(BaseCommand):
 
         return run_sync(get_meta)
 
-    def iter_pool_limits(self) -> Tuple[str, int]:
+    def iter_slot_streams(self) -> Tuple[str, str]:
+        # Common streams
+        for slot_name, stream_name in self.STREAMS:
+            yield slot_name, stream_name
+        # Pooled streams
+        connect()
+        for pool in Pool.objects.all():
+            for slot_mask, stream_mask in self.POOLED_STREAMS:
+                yield slot_mask % pool.name, stream_mask % pool.name
+
+    def iter_limits(self) -> Tuple[str, int]:
         async def get_slot_limits():
             nonlocal slot_name
             return await dcs.get_slot_limit(slot_name)
 
         dcs = get_dcs()
-        connect()
-        for pool in Pool.objects.all():
-            for slot_mask, stream_mask in self.POOLED_STREAMS:
-                slot_name = slot_mask % pool.name
-                n_partitions = run_sync(get_slot_limits)
-                if n_partitions:
-                    yield stream_mask % pool.name, n_partitions
+        for slot_name, stream_name in self.iter_slot_streams():
+            n_partitions = run_sync(get_slot_limits)
+            if n_partitions:
+                yield stream_name, n_partitions
 
     def apply_stream_settings(self, meta: Metadata, stream: str, partitions: int, rf: int) -> bool:
         def delete_stream(name: str):

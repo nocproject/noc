@@ -360,6 +360,10 @@ class Config(BaseConfig):
         pool_size = IntParameter(default=8)
         default_ttl = SecondsParameter(default="1d")
 
+    class message(ConfigSection):
+        enable_alarm = BooleanParameter(default=False)
+        enable_managedobject = BooleanParameter(default=False)
+
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
         db = StringParameter(default="noc")
