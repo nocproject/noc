@@ -1,10 +1,12 @@
 //---------------------------------------------------------------------
 // NOC.login application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.LoginView");
+
+__ = function(x) {return x}
 
 Ext.define('NOC.LoginView', {
     extend: 'Ext.window.Window'
@@ -88,14 +90,14 @@ Ext.define('NOC.LoginView', {
         }]
     }
     , onLoginClick: function() {
-        var params = Ext.encode({
-            jsonrpc: '2.0',
-            method: 'login',
-            params: [this.getViewModel().getData()]
+        var data = this.getViewModel().getData(),
+            params = Ext.encode({
+                user: data.user,
+                password: data.password
         });
         if(params !== undefined) {
             Ext.Ajax.request({
-                url: '/api/login/'
+                url: '/api/login/login'
                 , params: params
                 , method: 'POST'
                 , success: Ext.Function.pass(this.onLoginSuccess, this.onLoginFailure)
@@ -130,9 +132,9 @@ Ext.define('NOC.LoginView', {
     }
 
     , onLoginSuccess: function(failureFunc, response) {
-        var param, o = Ext.decode(response.responseText);
-        if(o.result === true) {
-            param = Ext.urlDecode(location.search);
+        var result = Ext.decode(response.responseText);
+        if(result.status === true) {
+            var param = Ext.urlDecode(location.search);
             if('uri' in param) {
                 if(location.hash) { // web app
                     document.location = '/' + location.hash;
@@ -144,12 +146,4 @@ Ext.define('NOC.LoginView', {
             failureFunc();
         }
     }
-
-// , afterRender: function(cmp) {
-//     if(cmp.hasOwnProperty('inputEl')) {
-//         cmp.inputEl.set({
-//             autocomplete: 'on'
-//         });
-//     }
-// }
 });
