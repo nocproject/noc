@@ -56,7 +56,7 @@ class BaseReportColumn(object):
     Column is dataseries: ((id1: value1), (id2: value2)) - id - index sorted by asc
     """
 
-    MAX_ITERATOR = 500000
+    MAX_ITERATOR = 800000
     name = None  # ColumnName
     fields = None  # RowFields List
     unknown_value = (None,)  # Fill this if empty value
