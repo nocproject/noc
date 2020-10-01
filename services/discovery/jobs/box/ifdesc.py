@@ -206,6 +206,9 @@ class IfDescCheck(TopologyDiscoveryCheck):
     ) -> Optional[Interface]:
         ifaces = self.get_object_interfaces(mo)
         if not ifaces:
+            if interface:
+                # Object has no interfaces but may allow to auto-create one
+                return self.maybe_create_interface(mo, interface)
             return None
         if interface:
             interface = self.get_remote_interface(mo, interface)
@@ -213,6 +216,8 @@ class IfDescCheck(TopologyDiscoveryCheck):
                 iface = ifaces.get(interface)
                 if iface:
                     return iface
+                # Target interface is not found, but object may allow to auto-create one
+                return self.maybe_create_interface(mo, interface)
         if ifindex:
             ifi = int(ifindex)
             matched = [x for x in ifaces.values() if x.ifindex == ifi]
@@ -229,3 +234,27 @@ class IfDescCheck(TopologyDiscoveryCheck):
         }
         self.if_cache[mo.id] = ifaces
         return ifaces
+
+    def maybe_create_interface(self, mo: ManagedObject, name: str) -> Optional[Interface]:
+        """
+        Auto-create remote interface, if possible
+
+        :param mo:
+        :param name:
+        :return:
+        """
+        if self.object.object_profile.ifdesc_symmetric:
+            return None  # Meaningless for symmetric ifdesc
+        if (
+            self.object.object_profile.enable_box_discovery_interface
+            or not mo.object_profile.enable_interface_autocreation
+        ):
+            return None  # Auto-creation is disabled
+        # Create interface
+        self.logger.info("Auto-creating interface %s:%s", mo.name, name)
+        iface = Interface(managed_object=mo, type="physical", name=name)
+        iface.save()
+        # Adjust cache
+        if mo.id in self.if_cache:
+            self.if_cache[mo.id][iface.name] = iface
+        return iface

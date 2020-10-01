@@ -875,6 +875,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "rca_downlink_merge_window",
             type: "integer",
             defaultValue: 120
+        },
+        {
+            name: "enable_interface_autocreation",
+            type: "boolean"
         }
     ]
 });

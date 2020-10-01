@@ -359,6 +359,8 @@ class ManagedObjectProfile(NOCModel):
     # Jinja2 tempplate for segment name
     # object and interface context variables are exist
     autosegmentation_segment_name = models.CharField(max_length=255, default="{{object.name}}")
+    # Auto-create interface to link
+    enable_interface_autocreation = models.BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)

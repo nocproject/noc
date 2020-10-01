@@ -836,8 +836,15 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryInterface.checked}"
                                             },
-                                            uiStyle: "medium",
-                                            colspan: 2
+                                            uiStyle: "medium"
+                                        },
+                                        {
+                                            name: "enable_interface_autocreation",
+                                            xtype: "checkbox",
+                                            boxLabel: __("Enable Autocreation"),
+                                            bind: {
+                                                disabled: "{enableBoxDiscoveryInterface.checked}"
+                                            }
                                         },
                                         {
                                             name: "enable_box_discovery_id",
