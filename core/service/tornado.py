@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import os
 from typing import List
 
 # Third-party modules
@@ -14,13 +15,14 @@ import tornado.netutil
 import tornado.httpserver
 
 # NOC modules
+from noc.config import config
+from noc.core.perf import metrics
 from .base import BaseService
 from .api import API, APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
 from .metrics import MetricsHandler
 from .health import HealthRequestHandler
-from .sdl import SDLRequestHandler
 from .ctl import CtlAPI
 
 
@@ -58,7 +60,6 @@ class TornadoService(BaseService):
         if self.api:
             handlers += [
                 ("^/api/%s/doc/$" % self.name, DocRequestHandler, {"service": self}),
-                ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl}),
             ]
         handlers += self.get_handlers()
         app = tornado.web.Application(handlers, **self.get_app_settings())
@@ -89,3 +90,37 @@ class TornadoService(BaseService):
         Returns a list of additional handlers
         """
         return []
+
+    def get_app_settings(self):
+        """
+        Returns tornado application settings
+        """
+        return {
+            "template_path": os.getcwd(),
+            "cookie_secret": config.secret_key,
+            "log_function": self.log_request,
+        }
+
+    def log_request(self, handler):
+        """
+        Custom HTTP Log request handler
+        :param handler:
+        :return:
+        """
+        status = handler.get_status()
+        method = handler.request.method
+        uri = handler.request.uri
+        remote_ip = handler.request.remote_ip
+        if status == 200 and uri == "/mon/" and method == "GET":
+            self.logger.debug("Monitoring request (%s)", remote_ip)
+            metrics["mon_requests"] += 1
+        elif (status == 200 or status == 429) and uri.startswith("/health/") and method == "GET":
+            pass
+        elif status == 200 and uri == ("/metrics") and method == "GET":
+            pass
+        else:
+            self.logger.info(
+                "%s %s (%s) %.2fms", method, uri, remote_ip, 1000.0 * handler.request.request_time()
+            )
+            metrics["http_requests", ("method", method.lower())] += 1
+            metrics["http_response", ("status", status)] += 1

@@ -342,8 +342,9 @@ class Config(BaseConfig):
         pam_service = StringParameter(default="noc")
         radius_secret = SecretParameter(default="noc")
         radius_server = StringParameter()
-        user_cookie_ttl = IntParameter(default=1)
         register_last_login = BooleanParameter(default=True)
+        jwt_cookie_name = StringParameter(default="noc_jwt")
+        jwt_algorithm = StringParameter(default="HS256", choices=["HS256", "HS384", "HS512"])
 
     class mailsender(ConfigSection):
         smtp_server = StringParameter()

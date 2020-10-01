@@ -5,17 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import string
-
 # Third-party modules
 import tornado.web
 from noc.config import config
 
-if hasattr(string, "maketrans"):
-    TR = string.maketrans('.-"', "___")
-else:
-    TR = str.maketrans('.-"', "___")
+TR = str.maketrans('.-"', "___")
 
 
 class MetricsHandler(tornado.web.RequestHandler):

@@ -138,7 +138,6 @@ class BaseService(object):
         self.address = None
         self.port = None
         self.is_active = False
-        self.close_callbacks = []
         # Can be initialized in subclasses
         self.scheduler = None
         # Depends on config
@@ -295,7 +294,7 @@ class BaseService(object):
         self.add_arguments(parser)
         options = parser.parse_args(sys.argv[1:])
         cmd_options = vars(options)
-        args = cmd_options.pop("args", ())
+        cmd_options.pop("args", ())
         # Bootstrap logging with --loglevel
         self.setup_logging(cmd_options["loglevel"])
         self.log_separator()
@@ -334,8 +333,6 @@ class BaseService(object):
         finally:
             if self.loop:
                 self.loop.create_task(self.deactivate())
-        for cb, args, kwargs in self.close_callbacks:
-            cb(*args, **kwargs)
         self.logger.warning("Service %s has been terminated", self.name)
 
     def get_event_loop(self) -> asyncio.BaseEventLoop:
@@ -378,16 +375,6 @@ class BaseService(object):
         addr = config.node
         port = int(port) + port_tracker
         return addr, port
-
-    def get_app_settings(self):
-        """
-        Returns tornado application settings
-        """
-        return {
-            "template_path": os.getcwd(),
-            "cookie_secret": config.secret_key,
-            "log_function": self.log_request,
-        }
 
     async def init_api(self):
         """
@@ -974,38 +961,11 @@ class BaseService(object):
         if spans:
             self.register_metrics("span", [span_to_dict(s) for s in spans])
 
-    def log_request(self, handler):
-        """
-        Custom HTTP Log request handler
-        :param handler:
-        :return:
-        """
-        status = handler.get_status()
-        method = handler.request.method
-        uri = handler.request.uri
-        remote_ip = handler.request.remote_ip
-        if status == 200 and uri == "/mon/" and method == "GET":
-            self.logger.debug("Monitoring request (%s)", remote_ip)
-            metrics["mon_requests"] += 1
-        elif (status == 200 or status == 429) and uri.startswith("/health/") and method == "GET":
-            pass
-        elif status == 200 and uri == ("/metrics") and method == "GET":
-            pass
-        else:
-            self.logger.info(
-                "%s %s (%s) %.2fms", method, uri, remote_ip, 1000.0 * handler.request.request_time()
-            )
-            metrics["http_requests", ("method", method.lower())] += 1
-            metrics["http_response", ("status", status)] += 1
-
     def get_leader_lock_name(self):
         if self.leader_lock_name:
             return self.leader_lock_name % {"pool": config.pool}
         else:
             return None
-
-    def add_close_callback(self, cb, *args, **kwargs):
-        self.close_callbacks += [(cb, args, kwargs)]
 
     def get_backend_weight(self):
         """
