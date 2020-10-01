@@ -23,8 +23,10 @@ from typing import Optional, Dict, Any, List, Union, Iterable, Tuple, Callable
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.mongo.connection import get_db
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
 from noc.models import get_model
+from noc.core.hash import hash_int
+from noc.core.mx import send_message, MX_CHANGE_ID
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +42,9 @@ class DataStream(object):
     """
 
     name = None
+
+    # Generate separate message
+    enable_message = False
 
     F_ID = "_id"
     F_CHANGEID = "change_id"
@@ -213,6 +218,10 @@ class DataStream(object):
         else:
             bulk += [pymongo.UpdateOne({cls.F_ID: obj_id}, op, upsert=True)]
         logger.info("[%s] Object has been changed", l_name)
+        if cls.enable_message:
+            # Build MX message
+            logger.info("[%s] Sending message", l_name)
+            cls.send_message(data, change_id)
         return True
 
     @classmethod
@@ -438,8 +447,7 @@ class DataStream(object):
         ids = [cls.clean_id(id1)] + [cls.clean_id(x) for x in args]
         if len(ids) == 1:
             return {cls.F_ID: ids[0]}
-        else:
-            return {cls.F_ID: {"$in": ids}}
+        return {cls.F_ID: {"$in": ids}}
 
     @classmethod
     def filter_shard(cls, instance, n_instances):
@@ -475,3 +483,34 @@ class DataStream(object):
             if f.get("name") == fmt:
                 return f.get("role") or None
         return None
+
+    @classmethod
+    def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
+        return None
+
+    @classmethod
+    def send_message(cls, data: Dict[str, Any], change_id: bson.ObjectId) -> None:
+        """
+        Send MX message
+
+        :param data:
+        :param change_id:
+        :return:
+        """
+        data["$changeid"] = str(change_id)
+        # Build headers
+        headers = {
+            MX_CHANGE_ID: smart_bytes(change_id),
+        }
+        additional_headers = cls.get_msg_headers(data)
+        if additional_headers:
+            headers.update(additional_headers)
+        # Schedule to send
+        send_message(
+            data,
+            message_type=cls.name,
+            headers=headers,
+            sharding_key=hash_int(data["id"]) & 0xFFFFFFFF,
+        )
+        # Cleanup
+        del data["$changeid"]

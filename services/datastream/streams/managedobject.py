@@ -8,12 +8,13 @@
 # Python modules
 from collections import defaultdict
 import operator
+from typing import Any, Optional, Dict, DefaultDict, List
 
 # Third-party modules
-from typing import DefaultDict, List
 from bson import ObjectId
 
 # NOC modules
+from noc.config import config
 from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
@@ -26,7 +27,8 @@ from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.service import Service
 from noc.core.text import alnum_key
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
+from noc.core.mx import MX_ADMINISTRATIVE_DOMAIN_ID, MX_PROFILE_ID
 
 
 def qs(s):
@@ -37,6 +39,7 @@ def qs(s):
 
 class ManagedObjectDataStream(DataStream):
     name = "managedobject"
+    enable_message = config.message.enable_managedobject
 
     clean_id = DataStream.clean_id_int
 
@@ -448,3 +451,10 @@ class ManagedObjectDataStream(DataStream):
     @classmethod
     def filter_client_group(cls, name):
         return {"%s.client_groups" % cls.F_META: name}
+
+    @classmethod
+    def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
+        return {
+            MX_ADMINISTRATIVE_DOMAIN_ID: smart_bytes(data["administrative_domain"]["id"]),
+            MX_PROFILE_ID: smart_bytes(data["object_profile"]["id"]),
+        }

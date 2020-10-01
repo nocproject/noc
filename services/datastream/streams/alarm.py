@@ -1,20 +1,27 @@
 # ----------------------------------------------------------------------
 # alarm datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Any, Optional, Dict
+
 # NOC modules
+from noc.config import config
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.core.datastream.base import DataStream
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.utils import get_alarm
+from noc.core.comp import smart_bytes
+from noc.core.mx import MX_PROFILE_ID
 
 
 class AlarmDataStream(DataStream):
     name = "alarm"
+    enable_message = config.message.enable_alarm
 
     clean_id = DataStream.clean_id_bson
 
@@ -143,3 +150,9 @@ class AlarmDataStream(DataStream):
             return {"%s.alarmclass" % cls.F_META: ids[0]}
         else:
             return {"%s.alarmclass" % cls.F_META: {"$in": ids}}
+
+    @classmethod
+    def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
+        return {
+            MX_PROFILE_ID: smart_bytes(data["managed_object"]["object_profile"]["id"]),
+        }

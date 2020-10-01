@@ -97,6 +97,11 @@ Ext.define("NOC.main.handler.Application", {
                     name: "allow_ifdesc",
                     xtype: "checkbox",
                     boxLabel: __("Allow IfDesc")
+                },
+                {
+                    name: "allow_mx_transmutation",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow MX Transmutation")
                 }
             ]
         });

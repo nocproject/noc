@@ -111,8 +111,15 @@ class Command(BaseCommand):
             async with LiftBridgeClient() as client:
                 async for msg in client.subscribe(stream=name, partition=partition, start_offset=0):
                     print(
-                        "# Subject: %s Partition: %s Offset: %s Timestamp: %s Key: %s"
-                        % (msg.subject, msg.partition, msg.offset, msg.timestamp, msg.key)
+                        "# Subject: %s Partition: %s Offset: %s Timestamp: %s Key: %s Headers: %s"
+                        % (
+                            msg.subject,
+                            msg.partition,
+                            msg.offset,
+                            msg.timestamp,
+                            msg.key,
+                            msg.headers,
+                        )
                     )
                     print(msg.value)
 
