@@ -103,7 +103,7 @@ all:
           login_power: 2
           login_radius_secret: null
           login_radius_server: null
-          login_session_ttl: 7
+          login_session_ttl: 7d
           mailsender_from_address: noc@example.com
           mailsender_helo_hostname: noc
           mailsender_loglevel: info

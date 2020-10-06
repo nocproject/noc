@@ -49,9 +49,9 @@ forms:
       label: "RADIUS Server"
       type: str
     session_ttl:
-      default: 7
+      default: 7d
       label: "Session TTL (days)"
-      type: int
+      type: str
 
 services:
   login:
