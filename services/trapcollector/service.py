@@ -38,6 +38,7 @@ class TrapCollectorService(TornadoService):
         self.source_configs: Dict[str, SourceConfig] = {}  # id -> SourceConfig
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
+        self.pool_partitions: Dict[str, int] = {}
 
     async def on_activate(self):
         # Listen sockets
@@ -56,6 +57,13 @@ class TrapCollectorService(TornadoService):
         self.report_invalid_callback.start()
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
+
+    async def get_pool_partitions(self, pool: str) -> int:
+        parts = self.pool_partitions.get(pool)
+        if not parts:
+            parts = await self.get_stream_partitions("events.%s" % pool)
+            self.pool_partitions[pool] = parts
+        return parts
 
     def lookup_config(self, address: str) -> Optional[SourceConfig]:
         """
