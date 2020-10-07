@@ -81,6 +81,7 @@ all:
           has_svc_memcached: true
           has_svc_mongod: true
           has_svc_mrt: true
+          has_svc_nats: true
           has_svc_nbi: true
           has_svc_nginx: true
           has_svc_noc: true
@@ -126,6 +127,9 @@ all:
           mrt_loglevel: info
           mrt_max_concurrency: 50
           mrt_power: 2
+          nats_cluster_user: noc
+          nats_cluster_password: noc
+          nats_loglevel: info
           nbi_loglevel: info
           nbi_power: 2
           nbi_whitelist_access: ""
@@ -988,6 +992,15 @@ all:
             noc-node-ubuntu16: {}
         svc-mrt-read: {}
     svc-mrt-exec:
+      hosts:
+        noc-node-ubuntu16: {}
+    svc-nats:
+      children:
+        cfg-nats-noc-node-ubuntu16:
+          hosts:
+            noc-node-ubuntu16: {}
+        svc-nats-read: {}
+    svc-nats-exec:
       hosts:
         noc-node-ubuntu16: {}
     svc-nbi:
