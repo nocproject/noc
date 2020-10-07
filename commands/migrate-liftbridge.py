@@ -34,6 +34,9 @@ class Command(BaseCommand):
         rf = min(len(meta.brokers), 2)
         # Apply settings
         for stream, partitions in self.iter_limits():
+            if not partitions:
+                self.print("Stream '%s' without partition. Skipping.." % partitions)
+                continue
             self.print("Ensuring stream %s" % stream)
             changed |= self.apply_stream_settings(meta, stream, partitions, rf)
         if changed:
