@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES24xx.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import re
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import parse_table
+from noc.core.validators import is_vlan
 
 
 class Script(BaseScript):
@@ -59,8 +60,10 @@ class Script(BaseScript):
                 elif ifname.startswith("Ex"):
                     sw_ifname = "extreme-ethernet %s" % ifname[2:]
                 c = self.cli("show interfaces switchport %s" % sw_ifname)
-                for i in parse_table(c):
+                for i in parse_table(c, footer="^Forbidden VLANs:"):
                     vlan_id = i[0]
+                    if not is_vlan(vlan_id):
+                        continue
                     if i[2] == "Untagged":
                         sub["untagged_vlan"] = vlan_id
                     else:
