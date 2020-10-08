@@ -62,3 +62,53 @@ class Profile(BaseProfile):
             else:
                 r += [mne % (prefix, max_len)]
         return "\n".join(["prefix-set %s" % name, ",\n".join(r), "end-set"])
+
+    INTERFACE_TYPES = {
+        "As": "physical",  # Async
+        "AT": "physical",  # ATM
+        "At": "physical",  # ATM
+        "Br": "physical",  # ISDN Basic Rate Interface
+        "BD": "physical",  # Bridge Domain Interface
+        "BV": "aggregated",  # BVI
+        "BE": "aggregated",  # Bundle
+        "Ca": "physical",  # Cable
+        "CD": "physical",  # CDMA Ix
+        "Ce": "physical",  # Cellular
+        "Em": "physical",  # Embedded Service Engine
+        "E1": "other",  # E1
+        "Et": "physical",  # Ethernet
+        "Fa": "physical",  # FastEthernet
+        "Fd": "physical",  # Fddi
+        "Fi": "physical",  # FiveGigabitEthernet
+        "Fo": "physical",  # FortyGigabitEthernet
+        "Gi": "physical",  # GigabitEthernet
+        "Gm": "physical",  # GMPLS
+        "Gr": "physical",  # Group-Async
+        "Lo": "loopback",  # Loopback
+        "In": "physical",  # Integrated-service-engine
+        "Mg": "management",  # Management interface
+        "MF": "aggregated",  # Multilink Frame Relay
+        "Mf": "aggregated",  # Multilink Frame Relay
+        "Mu": "aggregated",  # Multilink-group interface
+        "ND": "other",  # Netflow Data Exporter
+        "PO": "physical",  # Packet OC-3 Port Adapter
+        "Po": "aggregated",  # Port-channel/Portgroup
+        "SR": "physical",  # Spatial Reuse Protocol
+        "Sr": "physical",  # Spatial Reuse Protocol
+        "Se": "physical",  # Serial
+        "Sp": "physical",  # Special-Services-Engine
+        "St": "physical",  # StackSub-St, StackPort1
+        "Te": "physical",  # TenGigabitEthernet
+        "To": "physical",  # TokenRing
+        "Tu": "tunnel",  # Tunnel
+        "Tw": "physical",  # TwoGigabitEthernet or TwentyFiveGigE
+        "Vi": "template",  # Virtual-Template
+        "VL": "SVI",  # VLAN, found on C3500XL
+        "Vl": "SVI",  # Vlan
+        "Vo": "physical",  # Voice
+        "XT": "SVI",  # Extended Tag ATM
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2])
