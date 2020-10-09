@@ -1,0 +1,63 @@
+---
+- name: Get Liftbridge package checksum file
+  get_url:
+    url: "{{ liftbridge_checksum_file_url }}"
+    dest: "{{ liftbridge_temp_file_checksum }}"
+    validate_certs: "True"
+  delegate_to: 127.0.0.1
+  become: "False"
+  run_once: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+
+- name: Get Liftbridge package checksum
+  command: "grep {{ liftbridge_pkg }} {{ liftbridge_temp_file_checksum }}"
+  register: liftbridge_sha256
+  check_mode: "False"
+  delegate_to: 127.0.0.1
+  become: "False"
+  run_once: "True"
+  changed_when: "False"
+
+- name: Download Liftbridge
+  get_url:
+    url: "{{ liftbridge_tar_gz_url }}"
+    dest: "{{ liftbridge_temp_file }}"
+    checksum: "sha256:{{ liftbridge_sha256.stdout.split(' ')|first }}"
+    timeout: 42
+    validate_certs: "True"
+  delegate_to: 127.0.0.1
+  become: "False"
+  run_once: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+
+- name: create Liftbridge tmp dir
+  file:
+    dest: "{{ liftbridge_temp_unarchive }}"
+    state: directory
+  when: not ansible_check_mode
+
+- name: Unarchive Liftbridge and install binary
+  unarchive:
+    src: "{{ liftbridge_temp_file }}"
+    dest: "{{ liftbridge_temp_unarchive }}"
+    owner: "{{ liftbridge_user }}"
+    group: "{{ liftbridge_group }}"
+    mode: 0755
+    creates: "{{ liftbridge_temp_unarchive }}/liftbridge"
+  when: not ansible_check_mode
+  register: liftbridge_archive_extracted
+
+- name: Overwrite Liftbridge binary if needed
+  copy:
+    src: "{{ liftbridge_temp_unarchive }}/liftbridge"
+    dest: "{{ liftbridge_bin_path }}/liftbridge"
+    remote_src: "True"
+    mode: 0755
+  register: liftbridge_binary_updated
+  when:
+    - liftbridge_archive_extracted is changed
+    - not ansible_check_mode
+  notify:
+    - restart liftbridge

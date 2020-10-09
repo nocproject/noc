@@ -76,6 +76,7 @@ all:
           has_svc_goss: true
           has_svc_grafana: true
           has_svc_grafanads: true
+          has_svc_liftbridge: true
           has_svc_login: true
           has_svc_mailsender: true
           has_svc_memcached: true
@@ -956,6 +957,14 @@ all:
     svc-login-exec:
       hosts:
         noc_node_oel7: {}
+    svc-liftbridge:
+      children:
+        cfg-liftbridge-noc-node-oel7: {}
+      vars:
+        liftbridge_loglevel: info
+    svc-liftbridge-exec:
+      hosts:
+        noc-node-oel7: {}
     svc-mailsender:
       children:
         cfg-mailsender-noc_node_oel7:

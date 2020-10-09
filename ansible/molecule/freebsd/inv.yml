@@ -76,6 +76,7 @@ all:
           has_svc_selfmon: true
           has_svc_grafana: true
           has_svc_grafanads: true
+          has_svc_liftbridge: true
           has_svc_login: true
           has_svc_mailsender: true
           has_svc_memcached: true
@@ -945,6 +946,14 @@ all:
             noc-node-freebsd12: {}
         svc-grafanads-read: {}
     svc-grafanads-exec:
+      hosts:
+        noc-node-freebsd12: {}
+    svc-liftbridge:
+      children:
+        cfg-liftbridge-noc-node-freebsd12: {}
+      vars:
+        liftbridge_loglevel: info
+    svc-liftbridge-exec:
       hosts:
         noc-node-freebsd12: {}
     svc-login:

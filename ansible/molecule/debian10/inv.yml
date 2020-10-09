@@ -76,6 +76,7 @@ all:
           has_svc_goss: true
           has_svc_grafana: true
           has_svc_grafanads: true
+          has_svc_liftbridge: true
           has_svc_login: true
           has_svc_mailsender: true
           has_svc_memcached: true
@@ -954,6 +955,14 @@ all:
             noc-node-debian10: {}
         svc-login-read: {}
     svc-login-exec:
+      hosts:
+        noc-node-debian10: {}
+    svc-liftbridge:
+      children:
+        cfg-liftbridge-noc-node-debian10: {}
+      vars:
+        liftbridge_loglevel: info
+    svc-liftbridge-exec:
       hosts:
         noc-node-debian10: {}
     svc-mailsender:
