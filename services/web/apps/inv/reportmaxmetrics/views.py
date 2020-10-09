@@ -178,15 +178,19 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             "max_load_out_time",
             "avg_load_in",
             "avg_load_out",
+            "total_in",
+            "total_out",
             "uplink_iface_name",
             "uplink_iface_description",
+            "uplink_iface_speed",
             "uplink_max_load_in",
             "uplink_max_load_in_time",
             "uplink_max_load_out",
             "uplink_max_load_out_time",
             "uplink_avg_load_in",
             "uplink_avg_load_out",
-            "uplink_iface_speed",
+            "uplink_total_in",
+            "uplink_total_out",
         ]
 
         header_row = [
@@ -206,15 +210,19 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             _("MAX_LOAD_OUT_TIME"),
             _("AVG_LOAD_IN, Mbps"),
             _("AVG_LOAD_OUT, Mbps"),
+            _("TOTAL_IN, Mbyte"),
+            _("TOTAL_OUT, Mbyte"),
             _("UPLINK_IFACE_NAME"),
             _("UPLINK_IFACE_DESCRIPTION"),
+            _("UPLINK_IFACE_SPEED"),
             _("UPLINK_MAX_LOAD_IN, Mbps"),
             _("UPLINK_MAX_TIME_IN"),
             _("UPLINK_MAX_LOAD_OUT, Mbps"),
             _("UPLINK_MAX_TIME_OUT"),
             _("UPLINK_AVG_LOAD_IN, Mbps"),
             _("UPLINK_AVG_LOAD_OUT, Mbps"),
-            _("UPLINK_IFACE_SPEED"),
+            _("UPLINK_TOTAL_IN, Mbyte"),
+            _("UPLINK_TOTAL_OUT, Mbyte"),
         ]
 
         if columns:
@@ -239,6 +247,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             to_date = from_date + datetime.timedelta(days=1)
         else:
             to_date = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
+        diff = to_date - from_date
 
         # Load managed objects
         mos = ManagedObject.objects.filter(is_managed=True)
@@ -311,6 +320,10 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
         ifaces_metrics = defaultdict(dict)
 
         for row in report_metric.do_query():
+            avg_in = str_to_float(row[9])
+            avg_out = str_to_float(row[10])
+            total_in = avg_in * diff.total_seconds() / 8
+            total_out = avg_out * diff.total_seconds() / 8
             ifaces_metrics[row[0]][row[1]] = {
                 "description": row[2],
                 "profile": row[3],
@@ -319,22 +332,22 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                 "max_load_out": str_to_float(row[6]),
                 "max_load_in_time": row[7],
                 "max_load_out_time": row[8],
-                "avg_load_in": str_to_float(row[9]),
-                "avg_load_out": str_to_float(row[10]),
+                "avg_load_in": avg_in,
+                "avg_load_out": avg_out,
+                "total_in": float("{0:.1f}".format(total_in)),
+                "total_out": float("{0:.1f}".format(total_out)),
             }
 
         # find uplinks
         links = {}
-        if cmap[-1] > 15:
+        if cmap[-1] > 17:
             mos_id = list(mos.values_list("id", flat=True))
             uplinks = {obj: [] for obj in mos_id}
             for d in ObjectData._get_collection().find(
                 {"_id": {"$in": mos_id}}, {"_id": 1, "uplinks": 1}
             ):
                 uplinks[d["_id"]] = d.get("uplinks", [])
-            # print(datetime.datetime.now(), " get_uplinks")
             rld = load(mos_id)
-            # print(datetime.datetime.now(), " get_links")
 
             for mo in uplinks:
                 for uplink in uplinks[mo]:
@@ -378,6 +391,10 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                     ifaces_metrics[mo_bi][i]["max_load_out_time"],
                     ifaces_metrics[mo_bi][i]["avg_load_in"],
                     ifaces_metrics[mo_bi][i]["avg_load_out"],
+                    ifaces_metrics[mo_bi][i]["total_in"],
+                    ifaces_metrics[mo_bi][i]["total_out"],
+                    "",
+                    "",
                     "",
                     "",
                     "",
@@ -393,14 +410,17 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                 if mo_ids in links:
                     for ifname_uplink in links[mo_ids]:
                         if ifname_uplink in ifaces_metrics[mo_bi]:
-                            row2[16] = ifname_uplink
-                            row2[17] = ifaces_metrics[mo_bi][ifname_uplink]["description"]
-                            row2[22] = ifaces_metrics[mo_bi][ifname_uplink]["avg_load_in"]
-                            row2[23] = ifaces_metrics[mo_bi][ifname_uplink]["avg_load_out"]
-                            row2[18] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_in"]
-                            row2[20] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_out"]
-                            row2[19] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_in_time"]
-                            row2[21] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_out_time"]
+                            row2[18] = ifname_uplink
+                            row2[19] = ifaces_metrics[mo_bi][ifname_uplink]["description"]
+                            row2[20] = ifaces_metrics[mo_bi][ifname_uplink]["bandwidth"]
+                            row2[21] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_in"]
+                            row2[22] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_in_time"]
+                            row2[23] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_out"]
+                            row2[24] = ifaces_metrics[mo_bi][ifname_uplink]["max_load_out_time"]
+                            row2[25] = ifaces_metrics[mo_bi][ifname_uplink]["avg_load_in"]
+                            row2[26] = ifaces_metrics[mo_bi][ifname_uplink]["avg_load_out"]
+                            row2[27] = ifaces_metrics[mo_bi][ifname_uplink]["total_in"]
+                            row2[28] = ifaces_metrics[mo_bi][ifname_uplink]["total_out"]
                             r += [translate_row(row2, cmap)]
                             ss = False
                 if ss:
