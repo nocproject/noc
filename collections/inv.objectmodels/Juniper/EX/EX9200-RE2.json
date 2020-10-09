@@ -1,0 +1,56 @@
+{
+    "name": "Juniper | EX | EX9200-RE2",
+    "$collection": "inv.objectmodels",
+    "uuid": "4d62b4ac-01cb-46b1-87e0-e8b72cde1802",
+    "vendor__code": "JUNIPER",
+    "description": "Routing Engine for EX9200",
+    "tags": ["lc", "sup"],
+    "connections": [
+        {
+            "description": "Managemen Ethernet",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "AUX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 9200 RE"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["RE-S-EX9200-2X00x6"],
+            "order_part_no": ["EX9200-RE2"],
+            "part_no": ["750-063458"]
+        }
+    }
+}

@@ -15,6 +15,13 @@
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "description": "CPU",
+            "direction": "i",
+            "gender": "f",
+            "name": "cpu",
+            "type__name": "Juniper | MX | CPU"
+        },
+        {
             "description": "Port 0/0",
             "direction": "i",
             "gender": "f",
