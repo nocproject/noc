@@ -33,6 +33,11 @@ Ext.define("NOC.core.ReportControl", {
                                 width: 70
                             },
                             {
+                                text: __("CSV+ZIP"),
+                                value: "csv_zip",
+                                width: 70
+                            },
+                            {
                                 text: __("Excel"),
                                 value: "xlsx",
                                 pressed: true,
