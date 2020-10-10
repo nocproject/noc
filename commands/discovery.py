@@ -91,7 +91,7 @@ class Command(BaseCommand):
         mos = []
         for x in managed_objects:
             if job == "segment":
-                mos = [NetworkSegment.objects.get(name=x)]
+                mos += [NetworkSegment.objects.get(name=x)]
             else:
                 for mo in ManagedObjectSelector.get_objects_from_expression(x):
                     if mo not in mos:
