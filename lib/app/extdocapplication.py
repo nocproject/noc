@@ -71,7 +71,7 @@ class ExtDocApplication(ExtApplication):
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
 
-    rx_oper_splitter = re.compile(r"^(?P<field>\S+)(?P<f_num>\d+)__in")
+    rx_oper_splitter = re.compile(r"^(?P<field>\S+?)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
