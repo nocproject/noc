@@ -22,6 +22,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.core.profile.loader import GENERIC_PROFILE
+from noc.sa.models.objectstatus import ObjectStatus
 
 
 class ReportDiscoveryTopologyProblemApplication(SimpleReport):
@@ -40,10 +41,14 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 required=False,
                 queryset=ManagedObjectProfile.objects.order_by("name"),
             )
+            available_only = forms.BooleanField(
+                label=_("Managed Objects Profile"),
+                required=False,
+            )
 
         return ReportForm
 
-    def get_data(self, request, pool=None, obj_profile=None, **kwargs):
+    def get_data(self, request, pool=None, obj_profile=None, available_only=False, **kwargs):
         problems = {}  # id -> problem
 
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool)
@@ -57,6 +62,9 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             for mo in mos.values_list("id", "name", "address", "profile", "platform", "segment")
         }
         mos_set = set(mos)
+        if available_only:
+            statuses = ObjectStatus.get_statuses(list(mos_set))
+            mos_set = {mo for mo in mos_set if statuses.get(mo)}
         # Get all managed objects with generic profile
         for mo in mos:
             if mos[mo][2] == GENERIC_PROFILE:
