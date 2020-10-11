@@ -13,4 +13,4 @@ from noc.project.models.project import Project
 class ProjectLoader(BaseLoader):
     name = "project"
     model = Project
-    fields = ["code", "name", "description"]
+    fields = ["id", "name", "code", "description"]
