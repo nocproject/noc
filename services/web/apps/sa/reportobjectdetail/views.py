@@ -9,7 +9,9 @@
 import logging
 import datetime
 import csv
-from io import BytesIO
+from io import BytesIO, TextIOWrapper
+from zipfile import ZipFile, ZIP_DEFLATED
+from tempfile import TemporaryFile
 
 # Third-party modules
 import xlsxwriter
@@ -139,7 +141,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "is_managed": BooleanParameter(required=False),
             "avail_status": BooleanParameter(required=False),
             "columns": StringParameter(required=False),
-            "o_format": StringParameter(choices=["csv", "xlsx"]),
+            "o_format": StringParameter(choices=["csv", "csv_zip", "xlsx"]),
         },
     )
     def api_report(
@@ -290,12 +292,9 @@ class ReportObjectDetailApplication(ExtApplication):
         segment_lookup = {}
         # ccc = iter(ReportObjectCaps(mos_id))
         if "segment" in columns_filter:
-            # if segment save name=None, name remove from documents
             segment_lookup = {
                 str(n["_id"]): n["name"]
-                for n in NetworkSegment._get_collection().find(
-                    {"name": {"$exists": True}}, {"name": 1}
-                )
+                for n in NetworkSegment._get_collection().find({}, {"name": 1})
             }
         if "adm_path" in columns_filter:
             ad_path = ReportAdPath()
@@ -447,6 +446,20 @@ class ReportObjectDetailApplication(ExtApplication):
             response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
             writer = csv.writer(response, dialect="excel", delimiter=";", quotechar='"')
             writer.writerows(r)
+            return response
+        elif o_format == "csv_zip":
+            response = BytesIO()
+            f = TextIOWrapper(TemporaryFile(mode="w+b"), encoding="utf-8")
+            writer = csv.writer(f, dialect="excel", delimiter=";", quotechar='"')
+            writer.writerows(r)
+            f.seek(0)
+            with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
+                zf.writestr("%s.csv" % filename, f.read())
+                zf.filename = "%s.csv.zip" % filename
+            # response = HttpResponse(content_type="text/csv")
+            response.seek(0)
+            response = HttpResponse(response.getvalue(), content_type="application/zip")
+            response["Content-Disposition"] = 'attachment; filename="%s.csv.zip"' % filename
             return response
         elif o_format == "xlsx":
             response = BytesIO()
