@@ -351,10 +351,11 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
 
             for mo in uplinks:
                 for uplink in uplinks[mo]:
-                    if mo in links:
-                        links[mo] += [rld[mo][uplink]]
-                    else:
-                        links[mo] = [rld[mo][uplink]]
+                    if rld[mo]:
+                        if mo in links:
+                            links[mo] += [rld[mo][uplink]]
+                        else:
+                            links[mo] = [rld[mo][uplink]]
 
         for mo_bi in ifaces_metrics:
             mo_id = moss[int(mo_bi)]
