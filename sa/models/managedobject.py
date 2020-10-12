@@ -1733,7 +1733,7 @@ class ManagedObject(NOCModel):
 
     def _reset_caches(self):
         try:
-            del self._id_cache[self.id]
+            del self._id_cache["managedobject-id-%s" % self.id]
         except KeyError:
             pass
         cache.delete("managedobject-id-%s" % self.id, version=MANAGEDOBJECT_CACHE_VERSION)
