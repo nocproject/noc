@@ -11,7 +11,9 @@ import datetime
 import time
 from collections import namedtuple
 import csv
-from io import BytesIO
+from io import BytesIO, TextIOWrapper
+from zipfile import ZipFile, ZIP_DEFLATED
+from tempfile import TemporaryFile
 
 # Third-party modules
 import xlsxwriter
@@ -136,6 +138,8 @@ class ReportMetricsDetailApplication(ExtApplication):
             "load_in_p",
             "load_out",
             "load_out_p",
+            "octets_in_sum",
+            "octets_out_sum",
             "errors_in",
             "errors_in_sum",
             "errors_out",
@@ -164,10 +168,12 @@ class ReportMetricsDetailApplication(ExtApplication):
             "IFACE_NAME",
             "IFACE_DESCRIPTION",
             "IFACE_SPEED",
-            "LOAD_IN",
-            "LOAD_IN_P",
-            "LOAD_OUT",
-            "LOAD_OUT_P",
+            "LOAD_IN (bit/s)",
+            "LOAD_IN_P (%)",
+            "LOAD_OUT (bit/s)",
+            "LOAD_OUT_P (%)",
+            "OCTETS_IN_SUM (MB)",
+            "OCTETS_OUT_SUM (MB)",
             "ERRORS_IN",
             "ERRORS_IN_SUM",
             "ERRORS_OUT",
@@ -176,6 +182,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             "DISCARDS_IN_SUM",
             "DISCARDS_OUT",
             "DISCARDS_OUT_SUM",
+            "SLOT",
             "CPU_USAGE",
             "MEMORY_USAGE",
             "PING_RTT",
@@ -294,6 +301,16 @@ class ReportMetricsDetailApplication(ExtApplication):
                 "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
                 "(managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')",
             ),
+            "octets_in_sum": (
+                "load_in",
+                "octets_in_sum",
+                "round((sum(load_in * time_delta) / 8) / 1048576)",
+            ),
+            "octets_out_sum": (
+                "load_out",
+                "octets_out_sum",
+                "round((sum(load_out * time_delta) / 8) / 1048576)",
+            ),
             "errors_in": ("errors_in", "err_in", "quantile(0.90)(errors_in)"),
             "errors_in_sum": ("errors_in_delta", "err_in_d", "sum(errors_in_delta)"),
             "errors_out": ("errors_out", "err_out", "quantile(0.90)(errors_out)"),
@@ -381,6 +398,20 @@ class ReportMetricsDetailApplication(ExtApplication):
             response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
             writer = csv.writer(response, dialect="excel", delimiter=",", quoting=csv.QUOTE_MINIMAL)
             writer.writerows(r)
+            return response
+        elif o_format == "csv_zip":
+            response = BytesIO()
+            f = TextIOWrapper(TemporaryFile(mode="w+b"), encoding="utf-8")
+            writer = csv.writer(f, dialect="excel", delimiter=";", quotechar='"')
+            writer.writerows(r)
+            f.seek(0)
+            with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
+                zf.writestr("%s.csv" % filename, f.read())
+                zf.filename = "%s.csv.zip" % filename
+            # response = HttpResponse(content_type="text/csv")
+            response.seek(0)
+            response = HttpResponse(response.getvalue(), content_type="application/zip")
+            response["Content-Disposition"] = 'attachment; filename="%s.csv.zip"' % filename
             return response
         elif o_format == "xlsx":
             response = BytesIO()

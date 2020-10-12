@@ -30,6 +30,8 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["load_in_p", __("Load In (% Bandwith)"), false],
         ["load_out", __("Load Out (90% percentile)"), true],
         ["load_out_p", __("Load Out (% Bandwith)"), false],
+        ["octets_in_sum", __("Traffic In (Sum by period in MB)"), false],
+        ["octets_out_sum", __("Traffic Out (Sum by period in MB)"), false],
         ["errors_in", __("Errors In (packets/s)"), true],
         ["errors_out", __("Errors Out (packets/s)"), true],
         ["errors_in_sum", __("Errors In (Summary)"), false],
