@@ -63,7 +63,6 @@ class BaseTopology(object):
         """
         Load objects and links
         """
-        pass
 
     def get_role(self, mo):
         """
@@ -158,7 +157,7 @@ class BaseTopology(object):
         elif mo.object_profile.shape:
             # Use profile's shape
             return stencil_registry.get(mo.object_profile.shape)
-        return None
+        return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
 
     @staticmethod
     def get_object_stencil_overlays(mo: ManagedObject) -> List[ShapeOverlay]:
@@ -310,6 +309,4 @@ class BaseTopology(object):
             if ed["id"] in self.link_hints:
                 # Use existing hints
                 ed.update(self.link_hints)
-            else:
-                # @todo: Calculate new positions
-                pass
+            # @todo: Calculate new positions
