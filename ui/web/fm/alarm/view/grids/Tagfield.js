@@ -23,6 +23,7 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
     minChars: 2,
     pageSize: true,
     isTree: false,
+    pickerPosition: "left", // right | left
     store: {
         fields: ["id", "label"],
         pageSize: 25,
@@ -88,6 +89,11 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
             this.treePicker.height = Math.max(heightAbove, heightBelow) - 5;
             this.setEditable(false);
             position = this.getPosition();
+            if(this.pickerPosition === "left") {
+                position[0] = position[0] - this.getWidth();
+            } else if(this.pickerPosition === "right") {
+                position[0] = position[0] + this.getWidth();
+            }
             if(heightAbove > heightBelow) {
                 position[1] -= this.treePicker.height - this.getHeight();
             }
