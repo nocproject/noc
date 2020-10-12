@@ -143,3 +143,5 @@ class BaseBioSegPolicy(object):
         # Finally destroy segment
         self.logger.info("Deleting segment %s" % seg.name)
         seg.delete()
+        # Invalidate TTL cache
+        NetworkSegment._reset_caches(seg.id)

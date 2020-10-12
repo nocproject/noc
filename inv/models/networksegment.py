@@ -178,6 +178,15 @@ class NetworkSegment(Document):
     def get_by_bi_id(cls, id):
         return NetworkSegment.objects.filter(bi_id=id).first()
 
+    @classmethod
+    def _reset_caches(cls, id):
+        try:
+            del cls._id_cache[
+                str(id),  # Tuple
+            ]
+        except KeyError:
+            pass
+
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):
         """
