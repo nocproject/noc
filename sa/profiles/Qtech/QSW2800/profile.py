@@ -36,10 +36,9 @@ class Profile(BaseProfile):
     password_submit = "\r\n"
     command_submit = "\r"
     pattern_prompt = (
-        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" r"(?:\(config[^\)]*\))?#"
+        r"^(?P<hostname>[a-zA-Z0-9]\S{0,30})(?:\(sdiag\))?(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
     )
 
-    rx_ifname = re.compile(r"^(?P<number>\d+)$")
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}
     config_normalizer = "Qtech2800Normalizer"
@@ -73,16 +72,23 @@ class Profile(BaseProfile):
         b = [int(x) for x in v2.split("(")[0].split(".")]
         return (a > b) - (a < b)
 
+    rx_ifname = re.compile(r"^(?P<number>\d+)$")
+    rx_split_ifname = re.compile(r"^(Eth|Et)\s*(\d+(?:\/\d+)*)$")
+
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("Ethernet1/1")
         'Ethernet1/1'
+        >>> Profile().convert_interface_name("Eth5/0/19")
+        'Ethernet5/0/19'
         >>> Profile().convert_interface_name("1")
         'Ethernet1/1'
         """
         match = self.rx_ifname.match(s)
         if match:
             return "Ethernet1/%d" % int(match.group("number"))
+        elif self.rx_split_ifname.match(s):
+            return "Ethernet%s" % self.rx_split_ifname.match(s).group(1)
         else:
             return s
 
