@@ -82,12 +82,12 @@ class Script(BaseScript):
             try:
                 v = self.cli("display lldp neighbor-information")
             except self.CLISyntaxError:
-                raise self.NotSupportedError()
+                return []
         else:
             try:
                 v = self.cli("display lldp neighbor")
             except self.CLISyntaxError:
-                raise self.NotSupportedError
+                return []
         il = self.rx_iface_sep.split(v)[1:]
         if not il:
             il = self.rx_iface3_sep.split(v)[1:]
