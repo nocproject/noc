@@ -54,9 +54,9 @@ class Script(BaseScript):
     )
     rx_ver_snmp4_ne_me = re.compile(
         r"Huawei Versatile Routing Platform Software.*?"
-        r".+Version (?P<version>\S+)\s*(\(\S+\s+(?P<image>\S+)\))?.*?"
-        r"\s*(?P<platform>NetEngine\s+|MultiserviceEngine\s+\S+|HUAWEI\s*NE\S+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+        r".+Version (?P<version>\S+)\s*(\(\S+\s+\d*\s*(?P<image>\S+)\))?.*?"
+        r"\s*(?P<platform>NetEngine\s+(?:\d*\s\S+)?|MultiserviceEngine\s+\S+|HUAWEI\s*NE\S+)",
+        re.MULTILINE | re.DOTALL,  # Disable IGNORECASE because for it NE part NetEngine
     )
     rx_ver_snmp5 = re.compile(
         r"Huawei Versatile Routing Platform.*?"
@@ -93,6 +93,13 @@ class Script(BaseScript):
     rx_hw_extended_platform = re.compile(r"(?P<platform>\S+)[-,](CX|LS)\S+[-,].+")
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
     hw_series = {"S2300", "S5300", "S3328"}
+
+    def find_re(self, iter, s):
+        for re_num, r in enumerate(iter):
+            if r.search(s):
+                self.logger.debug("Match %d re", re_num)
+                return r
+        raise self.UnexpectedResultError()
 
     def fix_platform_name(self, platform):
         """
