@@ -123,19 +123,19 @@ Ext.define("NOC.inv.reportmaxmetrics.Application", {
             ["max_load_out_time", __("Maximum Load Out Time"), true],
             ["avg_load_in", __("AVG Load In"), true],
             ["avg_load_out", __("AVG Load Out"), true],
-            ["total_in", __("Total In"), true],
-            ["total_out", __("Total Out"), true],
-            ["uplink_iface_name", __("Uplink Interface Name"), true],
-            ["uplink_iface_description", __("Uplink Interface Description"), true],
+            ["total_in", __("Total In"), false],
+            ["total_out", __("Total Out"), false],
+            ["uplink_iface_name", __("Uplink Interface Name"), false],
+            ["uplink_iface_description", __("Uplink Interface Description"), false],
             ["uplink_iface_speed", __("Uplink Interface Speed"), false],
-            ["uplink_max_load_in", __("Uplink Maximum Load In"), true],
-            ["uplink_max_load_in_time", __("Uplink Maximum Load In Time"), true],
-            ["uplink_max_load_out", __("Uplink Maximum Load Out"), true],
-            ["uplink_max_load_out_time", __("Uplink Maximum Load Out Time"), true],
-            ["uplink_avg_load_in", __("Uplink AVG Load In"), true],
-            ["uplink_avg_load_out", __("Uplink AVG Load Out"), true],
-            ["uplink_total_in", __("Uplink Total In"), true],
-            ["uplink_total_out", __("Uplink Total Out"), true]
+            ["uplink_max_load_in", __("Uplink Maximum Load In"), false],
+            ["uplink_max_load_in_time", __("Uplink Maximum Load In Time"), false],
+            ["uplink_max_load_out", __("Uplink Maximum Load Out"), false],
+            ["uplink_max_load_out_time", __("Uplink Maximum Load Out Time"), false],
+            ["uplink_avg_load_in", __("Uplink AVG Load In"), false],
+            ["uplink_avg_load_out", __("Uplink AVG Load Out"), false],
+            ["uplink_total_in", __("Uplink Total In"), false],
+            ["uplink_total_out", __("Uplink Total Out"), false]
         ]
     }
 });
