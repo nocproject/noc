@@ -1,0 +1,56 @@
+---
+forms:
+  nginx:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Nginx <br/>
+      <strong>Long description</strong>: Primary web service.<br/>
+      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
+      <strong>docs</strong>: <a href=http://nginx.org/en/docs/http/ngx_http_upstream_module.html target=_blank>Nginx</a> <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    cert:
+      label: Certificates
+      description: Paste you cert
+      type: text
+      common: environment
+    cert_key:
+      label: Cerificate key
+      description: Paste your certificate key here
+      type: text
+      common: environment
+    http_redirect:
+      default: "True"
+      label: "Redirect http to https"
+      type: bool
+    json_logging:
+      default: "False"
+      label: "Use JSON logging"
+      type: bool
+    self_signed_cerificate:
+      default: "True"
+      label: "Self-signed certificate"
+      description: "Is provided certificate is trusted by nodes?"
+      type: bool
+    external_cert_management:
+      default: "False"
+      label: "Use external certificate management"
+      description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
+      type: bool
+      common: environment
+    permit_firewall:
+      default: True  # yamllint disable-line rule:truthy
+      label: "Permit https in firewall"
+      type: bool
+      description: "Open https in firewall. Works on Centos/Rhel only."
+services:
+  nginx:
+    level: system
+    category: external
+    port: 443
+    require_cert: "True"
+    depends:
+      - consul-template
+    required_assets:
+      - web
+      - card
+      - bi

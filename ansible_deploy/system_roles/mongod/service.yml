@@ -1,0 +1,30 @@
+---
+- name: Install and configure mongo
+  hosts: svc-mongod-exec
+  become: "True"
+  serial: 30%
+  any_errors_fatal: "True"
+  tags:
+    - mongod
+    - external
+  vars_files:
+    - "vars/{{ ansible_distribution }}.yml"
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  pre_tasks:
+    - name: set bootstrap state to single mongod
+      set_fact:
+        mongod_power: 'bootstrap'
+      when:
+        - mongod_power == 'server'
+        - groups['svc-mongod-exec'] | length == 1
+  roles:
+    - role: mongod
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: mongod
+  post_tasks:
+    - name: set mongod complete
+      set_fact:
+        mongod_complete: "True"

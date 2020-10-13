@@ -1,0 +1,57 @@
+---
+forms:
+  clickhouse:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: ClickHouse database <br/>
+      <strong>Long description</strong>: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.<br/>
+      <strong>Scale Recommendations</strong>: See docs<br/>
+      <strong>docs</strong>: <a href=https://clickhouse.yandex/docs/en/single/ target=_blank>ClickHouse</a> <br/>
+      <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
+    user:
+      default: noc
+      label: "RW user"
+      type: str
+      common: environment
+    password:
+      default: noc
+      label: "Password for user default"
+      type: str
+      description: "RW user password"
+      common: environment
+    ro_password:
+      label: "Password for user readonly"
+      description: "RO user password"
+      default: noc
+      type: str
+      common: environment
+    db:
+      default: noc
+      label: "DB name"
+      description: "Have to be 'noc' for now"
+      type: str
+      common: environment
+    query_size:
+      default: 262144
+      label: "Max query size"
+      type: int
+      common: environment
+    max_ast_elements:
+      default: 10000
+      label: "Max ast size"
+      type: int
+      common: environment
+      description: "Maximum number of elements in a query syntactic tree. Should be increased on lots of managed object"
+    timezone:
+      default: "Europe/Moscow"
+      label: "Timezone of server's node in zoneinfo format"
+      type: str
+services:
+  clickhouse:
+    level: system
+    category: external
+    port: 8123
+    depends:
+      - consul
+      - consul-template
+      - grafana

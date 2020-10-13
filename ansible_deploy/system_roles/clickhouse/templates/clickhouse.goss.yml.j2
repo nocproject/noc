@@ -1,0 +1,193 @@
+file:
+  {{ ch_etc_path }}/config.xml:
+    exists: true
+    mode: "0644"
+    owner: clickhouse
+    group: clickhouse
+    filetype: file
+    contains: []
+  {{ ch_etc_path }}/noc.xml:
+    exists: true
+    mode: "0644"
+    owner: clickhouse
+    group: clickhouse
+    filetype: file
+    contains: []
+  {{ ch_etc_path }}/users.xml:
+    exists: true
+    mode: "0640"
+    owner: clickhouse
+    group: clickhouse
+    filetype: file
+    contains: []
+  {{ ch_dictionaries_path }}/administrativedomain.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/alarmclass.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/cpe.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/container.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/interfaceattributes.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/interfacedescription.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/interfaceprofile.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/managedobject.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/networksegment.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/platform.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/pool.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/profile.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/state.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/vendor.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/version.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/subscriberprofile.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/serviceprofile.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_dictionaries_path }}/workflow.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  {{ ch_data_dir }}:
+    exists: true
+    mode: "0700"
+    owner: clickhouse
+    group: clickhouse
+    filetype: directory
+    contains: []
+package:
+{% if ansible_distribution in ['RedHat', 'CentOS', 'OracleLinux'] %}
+  clickhouse-server:
+{% elif ansible_distribution in ['Debian', 'Ubuntu'] %}
+  clickhouse-server-base:
+{% endif %}
+    installed: true
+service:
+  clickhouse-server:
+    enabled: true
+    running: true
+user:
+  clickhouse:
+    exists: true
+    groups:
+    - users
+    home: /home/clickhouse
+    shell: {{ fake_shell }}
+group:
+  clickhouse:
+    exists: true
+{% if noc_env_type == 'prod' %}
+mount:
+  /var/lib/clickhouse:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    filesystem: xfs
+{% endif %}
+http:
+  http://127.0.0.1:8123:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body:
+    - Ok.

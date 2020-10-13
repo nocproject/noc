@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+template {
+  source = "{{ source }}"
+  destination = "{{ destination }}"
+  perms = 0644
+  create_dest_dirs = false
+{% if command %}
+  command = "{{ command }}"
+  command_timeout = "{{ command_timeout }}"
+{% endif %}
+  backup = false
+  wait {
+    min = "2s"
+    max = "60s"
+  }
+}

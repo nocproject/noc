@@ -1,0 +1,66 @@
+---
+- name: create consul-template directory structure
+  file:
+    state: directory
+    path: "{{ item }}"
+  with_items:
+    - "{{ consul_template_config_dir }}"
+    - "{{ consul_template_templates_dir }}"
+
+- name: include install
+  import_tasks: "install.yml"
+  when:
+    - ansible_distribution != 'FreeBSD'
+
+- name: include install
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  when:
+    - ansible_distribution == 'FreeBSD'
+  tags:
+    - requirements
+    - config
+
+- name: consul-template config file
+  template:
+    src: "{{ consul_template_config_file_template }}"
+    dest: "{{ consul_template_config_dir }}/{{ consul_template_config_file }}"
+    mode: 0755
+  notify:
+    - reload consul-template
+  tags:
+    - config
+
+- name: copy consul-template systemd service configuration
+  template:
+    src: consul-template.service.j2
+    dest: /etc/systemd/system/consul-template.service
+    mode: 0755
+  when: "'Linux' in ansible_system"
+  notify:
+    - reload systemd
+    - restart consul-template
+  tags:
+    - config
+
+- name: start consul-template service
+  service:
+    name: consul-template
+    enabled: "True"
+    state: started
+
+- name: Install consul-template monitoring
+  include_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: consul-template
+    monitoring_service_tags: ""
+    monitoring_service_port: ""
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: "True"
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: consul-template
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

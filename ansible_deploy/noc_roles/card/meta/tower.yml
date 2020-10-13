@@ -1,0 +1,55 @@
+---
+forms:
+  card:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Card service <br/>
+      <strong>Long description</strong>: Responsible for an alternative web interface - cards. They are ReadOnly pages showing information on network equipment, segments, and accidents.<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/card/ target=_blank>Card</a><br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
+    power:
+      default: 2
+      label: "Instances"
+      type: int
+      max: 24
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+    language:
+      default: "en"
+      label: "Translation language"
+      type: list
+      options:
+        - "en"
+        - "ru"
+        - "pt_BR"
+
+services:
+  card:
+    level: global
+    category: internal
+    supervisord:
+      command: "./services/card/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 100
+      priority: 300
+      startretries: 999
+      stopwaitsecs: 1
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    required_assets:
+      - card
+      - web
+    depends:
+      - noc
+      - nginx

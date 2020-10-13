@@ -1,0 +1,55 @@
+---
+forms:
+  activator:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Activator service <br/>
+      <strong>Long description</strong>: Responsible for the collecting and processing data from network equipment.<br/>
+      <strong>Scale Recommendations</strong>: At least two per core on node. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/activator/ target=_blank>Activator</a><br/>
+      <strong>Placement constraint</strong>: On separate node<br/>
+    power:
+      default: 2
+      label: "Instances"
+      type: int
+      max: 64
+      min: 0
+      required: "True"
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+    script_threads:
+      default: 20
+      label: "Script threads"
+      type: int
+      required: "True"
+    tos:
+      default: 0
+      label: "IP ToS mark"
+      type: int
+      required: "True"
+
+services:
+  activator:
+    category: internal
+    depends:
+      - noc
+      - sae
+      - discovery
+    level: pool
+    supervisord:
+      command: "{{ activator_command }}"
+      oom_score_adj: 300
+      process_name: "%(program_name)s-%(process_num)02d"
+      startretries: 999
+      stdout_logfile_backups: 3
+      stdout_logfile_maxbytes: 10MB
+      stopwaitsecs: 3

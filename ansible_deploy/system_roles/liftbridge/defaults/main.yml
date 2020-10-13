@@ -1,0 +1,49 @@
+---
+
+cluster_config: ""
+nats_servers: ""
+nats_connect_port: 4222
+nats_srv_list: "{% for n in groups[ 'svc-nats-exec' ] %}nats://{{ hostvars[n].ansible_host }}:{{ nats_connect_port }} {% endfor %}"
+
+## Config
+config:
+  host: "{{ ansible_host }}"
+  data:
+    dir: "{{ liftbridge_data_path }}"
+  logging:
+    level: "{{ liftbridge_loglevel }}"
+    raft: true
+  streams:
+    compact.enabled: true
+    retention.max:
+      age: 24h
+  clustering: "{{ cluster_config }}"
+  nats.servers: "{{ nats_servers }}"
+
+liftbridge_isr_count: 1
+
+## Package
+liftbridge_version: "1.2.0"
+liftbridge_tar_gz_url: "https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz"
+liftbridge_checksum_file_url: "https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/checksums.txt"
+liftbridge_temp_file_checksum: "{{ tower_dist_dir }}/{{ liftbridge_version }}.checksums.txt"
+liftbridge_temp_file: "{{ tower_dist_dir }}/{{ liftbridge_pkg }}"
+liftbridge_temp_unarchive: "/tmp/liftbridge/{{ liftbridge_version }}"
+liftbridge_pkg: "liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz"
+
+## Paths
+liftbridge_data: "/var/liftbridge"
+liftbridge_bin_path: "/bin"
+liftbridge_data_path: "/var/lib/liftbridge"
+liftbridge_log_path: "/var/log/liftbridge"
+liftbridge_run_path: "/var/run/liftbridge"
+liftbridge_pid_path: "{{ liftbridge_run_path }}/liftbridge.pid"
+liftbridge_home: "/home/{{ liftbridge_user }}"
+liftbridge_config_path: "{{ etc_prefix }}/liftbridge"
+
+## System user and group
+liftbridge_user: "liftbridge"
+liftbridge_group: "bin"
+
+## Defaults
+liftbridge_loglevel: info

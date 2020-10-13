@@ -1,0 +1,17 @@
+---
+- name: Make datasources file
+  copy:
+    dest: "{{ grafana_provisioning_dir }}/datasources/{{ grafana_datasource.name }}.yml"
+    content: |
+      apiVersion: 1
+      datasources:
+      - {{ grafana_datasource | to_nice_yaml| indent(2, False) }}
+    backup: "False"
+  register: ds_result
+  when: has_svc_grafana is defined
+
+- name: restart grafana
+  service:
+    name: "{{ grafana_system_service }}"
+    state: restarted
+  when: ds_result is changed

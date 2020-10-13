@@ -1,0 +1,25 @@
+---
+- name: reload systemd
+  become: "True"
+  systemd:
+    name: nats-server
+    daemon_reload: "True"
+
+- name: restart nats
+  become: "True"
+  service:
+    name: nats-server
+    state: restarted
+
+- name: reload nats
+  become: "True"
+  service:
+    name: nats-server
+    state: reloaded
+
+- name: start nats
+  become: "True"
+  service:
+    name: nats-server
+    enabled: "True"
+    state: started

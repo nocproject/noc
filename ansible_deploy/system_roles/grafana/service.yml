@@ -1,0 +1,22 @@
+---
+- name: Install and configure grafana
+  hosts: svc-grafana-exec
+  become: "True"
+  serial: 50%
+  any_errors_fatal: "True"
+  tags:
+    - grafana
+    - external
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
+    - role: grafana
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: grafana
+  post_tasks:
+    - name: set grafana complete
+      set_fact:
+        grafana_complete: "True"

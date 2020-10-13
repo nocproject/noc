@@ -1,0 +1,30 @@
+---
+- name: Add Grafana repository
+  yum_repository:
+    name: grafana
+    description: Grafana repository
+    baseurl: https://packages.grafana.com/oss/rpm
+    gpgcheck: "True"
+    gpgkey: https://packages.grafana.com/gpg.key
+    enabled: "True"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install Grafana
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+    allow_downgrade: "True"
+  vars:
+    packages:
+      - "grafana-{{ grafana_version }}"
+      - open-sans-fonts
+  tags:
+    - requirements
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"

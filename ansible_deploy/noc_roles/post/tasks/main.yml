@@ -1,0 +1,38 @@
+# Post-deployment tasks
+---
+- name: check if noc running
+  command: "{{ noc_root }}/noc ctl status"
+  check_mode: "False"
+  changed_when: "False"
+  register: noc_ctl_status
+  when: tower_serial_restart_noc
+
+- name: Reread config
+  command: "{{ noc_root }}/noc ctl reread"
+  register: noc_ctl_reread
+  when:
+    - tower_serial_restart_noc
+    - "'RUNNING' in noc_ctl_status.stdout"
+
+- name: Serial NOC restart
+  command: "{{ noc_root }}/noc ctl serialrestart all"
+  when: tower_serial_restart_noc
+  changed_when: "False"
+
+- name: Restart NOC node
+  service:
+    name: "{{ noc_system_service }}"
+    state: restarted
+    sleep: 3
+    enabled: "True"
+  changed_when: "True"
+  when:
+    - tower_stop_noc
+    - not tower_serial_restart_noc
+
+- name: notify deploy finished
+  run_once: "True"
+  include_role:
+    name: deploy_notifications
+    tasks_from: stop
+  when: has_deploy_notificator is defined

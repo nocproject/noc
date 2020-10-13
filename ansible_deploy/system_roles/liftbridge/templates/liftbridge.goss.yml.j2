@@ -1,0 +1,15 @@
+file:
+  {{ liftbridge_config_path }}/liftbridge.yml:
+    exists: true
+    mode: "0644"
+    owner: {{ liftbridge_user }}
+    group: {{ liftbridge_group }}
+    filetype: file
+    contains: []
+service:
+  liftbridge:
+    enabled: true
+    running: true
+process:
+  liftbridge:
+    running: true

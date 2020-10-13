@@ -1,0 +1,25 @@
+---
+forms:
+  liftbridge:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Liftbridge stream service <br/>
+      <strong>Long description</strong>: Liftbridge provides lightweight, fault-tolerant message streams by implementing a durable stream augmentation for the NATS messaging system
+      <strong>Scale Recommendations</strong>: At least one per system, or 3 like cluster. <br/>
+      <strong>docs</strong>: <a href=https://liftbridge.io/docs/configuration.html target=_blank>Liftbridge docs</a> <br/>
+      <strong>Placement constraint</strong>: On node with Nats <br/>
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - debug
+        - info
+        - warn
+        - error
+
+services:
+  liftbridge:
+    level: system
+    category: external
+    port: 9292

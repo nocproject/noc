@@ -1,0 +1,70 @@
+---
+forms:
+  login:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>:Login service <br/>
+      <strong>Long description</strong>: Internal auth service. Acts as internal api endpoint to auth every web request to NOC web. Can authentificate via LDAP and internal database <br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/login/ target=_blank>Login</a><br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
+    power:
+      default: 2
+      label: "Instances"
+      type: int
+      max: 24
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+    language:
+      default: "en"
+      label: "Translation language"
+      type: list
+      options:
+        - "en"
+        - "ru"
+        - "pt_BR"
+    methods:
+      default: local
+      label: "Authentication methods"
+      description: "can be multiple. local,ldap,pam,radius. separate methods with comma"
+      type: str
+    pam_service:
+      default: noc
+      label: "PAM Service"
+      type: str
+    radius_secret:
+      label: "RADIUS Secret"
+      type: str
+    radius_server:
+      label: "RADIUS Server"
+      type: str
+    session_ttl:
+      default: 7d
+      label: "Session TTL (days)"
+      type: str
+
+services:
+  login:
+    level: global
+    category: internal
+    supervisord:
+      command: "./services/login/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 10
+      priority: 40
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 5
+    depends:
+      - noc

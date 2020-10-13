@@ -1,0 +1,36 @@
+---
+- name: Tune sysctl.conf for node
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: "True"
+  with_items:
+    - { name: 'net.ipv4.ip_local_port_range', value: '20024 65000'}
+  tags:
+    - config
+  when: "'Linux' in ansible_system"
+
+- name: Register supervisord's version 1/2
+  slurp:
+    src: "{{ noc_root }}/requirements{{ '/node' if not single_req.stat.exists else '' }}.txt"
+  register: node_req
+  tags:
+    - config
+
+- name: Register supervisord's version 2/2
+  set_fact:
+    sup_ver: "{{ node_req['content'] | b64decode | regex_search('supervisor==(\\d+.\\d+.\\d+)', '\\1') | first }}"
+  tags:
+    - config
+
+- name: patch supervisord for oomkiller
+  patch:
+    basedir: "{{ noc_root }}"
+    src: "oom_score_adj_v{{ sup_ver }}.patch"
+  tags:
+    - config
+  when:
+    - "'Linux' in ansible_system"
+    - "'prod' in noc_env_type"
+    - noc_python_interpreter is search "python"

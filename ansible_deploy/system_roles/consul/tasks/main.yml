@@ -1,0 +1,127 @@
+---
+# File: main.yml - Main tasks for Consul
+
+- name: make servers group
+  changed_when: "False"
+  add_host:
+    group: svc-consul-server
+    host: "{{ item }}"
+  with_items: "{{ groups['svc-consul-exec'] }}"
+  when: "'bootstrap' in hostvars[item]['consul_power'] or 'server' in hostvars[item]['consul_power']"
+  tags:
+    - config
+
+# Add user
+- name: Add Consul user
+  user:
+    name: "{{ consul_user }}"
+    comment: "Consul user"
+    group: "{{ consul_group }}"
+    system: "True"
+    home: "{{ consul_home }}"
+    shell: "/bin/sh"
+  tags:
+    - config
+
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+    - config
+
+- name: Check bootstrapped state
+  stat:
+    path: "{{ consul_config_path }}/.consul_bootstrapped"
+  register: bootstrap_marker
+  when: consul_power == 'bootstrap'
+  ignore_errors: "True"
+  tags: always
+
+- name: Include dir settings
+  import_tasks: dirs.yml
+  tags:
+    - config
+
+- name: Install consul python bindings
+  import_tasks: control.yml
+  tags:
+    - requirements
+
+- name: Install OS packages and consul - remotely
+  import_tasks: install.yml
+  tags:
+    - requirements
+
+- name: Consul config
+  import_tasks: config.yml
+  tags:
+    - config
+
+- name: ACL config
+  include_tasks: acl.yml
+  when: consul_acl_enable
+  tags:
+    - config
+
+- name: Start Consul
+  service:
+    name: consul
+    state: started
+    enabled: "True"
+
+- block:
+    - name: Consul HTTP API reachable? wait for port 8500 for 60 seconds
+      wait_for:
+        delay: 15
+        port: 8500
+        timeout: 60
+
+    - name: Create bootstrapped marker
+      file:
+        dest: "{{ consul_config_path }}/.consul_bootstrapped"
+        state: touch
+  when:
+    - consul_power == 'bootstrap'
+    - not bootstrap_marker.stat.exists
+
+- name: Install consul monitoring
+  include_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: consul
+    monitoring_service_tags: ""
+    monitoring_service_port: 8500
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: "True"
+    monitoring_service_procstat_type: pid_file
+    monitoring_service_procstat_value: "{{ consul_pid_path }}"
+    monitoring_config:
+      address: "consul:8500"
+      token: "{{ consul_token }}"
+      datacentre: "{{ consul_datacenter }}"
+  when:
+    - consul_power == 'bootstrap'
+    - has_svc_monitoring is defined
+  tags:
+    - monitoring
+
+- name: Install postgres monitoring
+  include_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: consul
+    monitoring_service_tags: ""
+    monitoring_service_port: 8500
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: "True"
+    monitoring_service_procstat_type: pid_file
+    monitoring_service_procstat_value: "{{ consul_pid_path }}"
+  when:
+    - consul_power != 'bootstrap'
+    - has_svc_monitoring is defined
+  tags:
+    - monitoring

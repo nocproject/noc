@@ -1,0 +1,34 @@
+//---------------------------------------------------------------------
+// NOC dynamic dashboard
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2016 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+'use strict';
+
+var window, document, ARGS, $, jQuery, moment, kbn;
+
+return function(callback) {
+    // Build arguments
+    var args = {
+        dashboard: ARGS.dashboard,
+        extra_template: ARGS.extra_template,
+        id: ARGS.id
+    };
+    if (!_.isUndefined(ARGS.ifaces)) {
+       args["var_ifaces"] = ARGS.ifaces;
+    };
+    if (!_.isUndefined(ARGS.var_1)) {
+       args["var_1"] = ARGS.var_1;
+    };
+    if (!_.isUndefined(ARGS.var_2)) {
+       args["var_2"] = ARGS.var_2;
+    };
+    // Get dashboard configuration
+    $.ajax({
+        method: "GET",
+        url: "https://{{ noc_web_host }}/pm/ddash/?" + $.param(args)
+    }).done(function(result) {
+        callback(result);
+    });
+}

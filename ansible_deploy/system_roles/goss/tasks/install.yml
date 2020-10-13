@@ -1,0 +1,31 @@
+---
+- name: Get goss release
+  get_url:
+    url: "{{ goss_download_url }}"
+    dest: "{{ goss_temp_file }}"
+    validate_certs: "True"
+  delegate_to: 127.0.0.1
+  become: "False"
+  run_once: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+  retries: 3
+  delay: 2
+
+- name: create goss dirs
+  file:
+    dest: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ goss_conf }}"
+    - "{{ goss_conf_dir }}"
+    - "{{ goss_path }}"
+  when: not ansible_check_mode
+
+- name: Overwrite goss binary if needed
+  copy:
+    src: "{{ goss_temp_file }}"
+    dest: "{{ goss_bin_path }}"
+    mode: 0755
+  when:
+    - not ansible_check_mode

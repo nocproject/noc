@@ -1,0 +1,11 @@
+---
+- name: reload clickhouse-server
+  become: "False"
+  debug:
+    msg: Clickhouse configuration was changed. hope it will reload it automaticaly
+
+- name: restart clickhouse-server
+  become: "True"
+  service:
+    name: "{{ clickhouse_service_name }}"
+    state: restarted

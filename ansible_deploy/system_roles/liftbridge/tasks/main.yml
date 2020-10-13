@@ -1,0 +1,72 @@
+---
+# File: main.yml - Main tasks for Liftbridge
+
+# Add user
+- name: Add Liftbridge user
+  user:
+    name: "{{ liftbridge_user }}"
+    comment: "Liftbridge user"
+    group: "{{ liftbridge_group }}"
+    system: "True"
+    home: "{{ liftbridge_home }}"
+    shell: "/bin/sh"
+  tags:
+    - config
+
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+    - config
+
+- name: Include dir settings
+  import_tasks: dirs.yml
+  tags:
+    - config
+
+- name: Install OS packages and liftridge
+  import_tasks: install.yml
+  tags:
+    - requirements
+
+- name: Liftbridge config
+  import_tasks: config.yml
+  tags:
+    - config
+
+- name: Start Liftbridge
+  service:
+    name: liftbridge
+    state: started
+    enabled: "True"
+
+- name: Place liftbridge consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: liftbridge
+    consul_service_tags: ""
+    consul_service_port: "9292"
+    consul_service_check_type: "tcp"
+    consul_service_check_value: "{{ ansible_host }}:9292"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: "False"
+
+- name: Install liftbridge monitoring
+  include_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: liftbridge
+    monitoring_service_tags: ""
+    monitoring_service_port: "9292"
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: "True"
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: liftbridge
+    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"]  # noqa 204
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

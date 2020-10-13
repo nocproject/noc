@@ -1,0 +1,54 @@
+---
+forms:
+  syslogcollector:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Syslog listener service<br/>
+      <strong>Long description</strong>: Listen for syslog events from network equipment and adds them to nsqd queue<br/>
+      <strong>Scale Recommendations</strong>: One per pool. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/syslogcollector/ target=_blank>Syslogcollector</a><br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 1
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+    listen_syslog:
+      default: "0.0.0.0:514"
+      label: "Listen SYSLOG"
+      type: str
+    permit_firewall:
+      default: True  # yamllint disable-line rule:truthy
+      label: "Permit syslog port in firewall"
+      type: bool
+      description: "Open suslog port in firewall. Works on Centos/Rhel only."
+
+services:
+  syslogcollector:
+    level: pool
+    category: internal
+    supervisord:
+      command: "./services/syslogcollector/service.py"
+      process_name: "%(program_name)s"
+      oom_score_adj: 50
+      priority: 200
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+      user: root
+    depends:
+      - noc
+      - datastream

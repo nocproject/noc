@@ -1,0 +1,50 @@
+---
+- name: Install packages for web
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: "requirements/web.txt"
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+    CFLAGS: "{{ pip_cflags | default('') }}"
+    LDFLAGS: "{{ pip_ldflags | default('') }}"
+  when:
+    - not single_req.stat.exists
+  tags:
+    - requirements
+
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Install assets
+  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
+  with_items: "{{ required_assets }}"
+  retries: 5
+  delay: 2
+  until: s is succeeded
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+    NOC_CONFIG: "{{ config_order }}"
+  tags:
+    - requirements
+
+- name: "Install NOC theme"
+  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/theme-noc.json"
+  args:
+    chdir: "{{ noc_root }}"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    NOC_CONFIG: "{{config_order}}"
+  when:
+    - web_theme is defined
+    - web_theme == 'noc'
+  tags:
+    - requirements
