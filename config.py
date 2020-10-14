@@ -301,6 +301,17 @@ class Config(BaseConfig):
 
     instance = IntParameter(default=0)
 
+    class kafkasender(ConfigSection):
+        bootstrap_servers = StringParameter()
+        username = StringParameter()
+        password = SecretParameter()
+        sasl_mechanism = StringParameter(
+            choices=["PLAIN", "GSSAPI", "SCRAM-SHA-256", "SCRAM-SHA-512"], default="PLAIN"
+        )
+        security_protocol = StringParameter(
+            choices=["PLAINTEXT", "SASL_PLAINTEXT", "SSL", "SASL_SSL"], default="PLAINTEXT"
+        )
+
     language = StringParameter(default="en")
     language_code = StringParameter(default="en")
 

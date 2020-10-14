@@ -20,7 +20,8 @@ from noc.core.ioloop.util import run_sync
 class Command(BaseCommand):
     STREAMS = [
         # slot name, stream name
-        ("mx", "message")
+        ("mx", "message"),
+        ("kafkasender", "kafkasender"),
     ]
     POOLED_STREAMS = [
         # slot name, stream name
