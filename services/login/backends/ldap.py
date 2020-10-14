@@ -16,7 +16,7 @@ from .base import BaseAuthBackend
 
 
 class LdapBackend(BaseAuthBackend):
-    def authenticate(self, user=None, password=None, **kwargs):
+    def authenticate(self, user: str = None, password: str = None, **kwargs) -> str:
         # Validate username
         if not self.check_user(user):
             self.logger.error("Invalid username: %s", user)
@@ -177,7 +177,10 @@ class LdapBackend(BaseAuthBackend):
         user_search_dn = ldap_domain.get_user_search_dn()
         self.logger.debug("User search from %s: %s", user_search_dn, usf)
         connection.search(
-            user_search_dn, usf, ldap3.SUBTREE, attributes=ldap_domain.get_user_search_attributes(),
+            user_search_dn,
+            usf,
+            ldap3.SUBTREE,
+            attributes=ldap_domain.get_user_search_attributes(),
         )
         if not connection.entries:
             self.logger.info("Cannot find user %s", user)

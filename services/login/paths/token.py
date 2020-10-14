@@ -59,8 +59,10 @@ async def token(
     else:
         raise HTTPException(detail="Invalid grant type", status_code=HTTPStatus.BAD_REQUEST)
     # Authenticate
-    if auth_req and authenticate(auth_req):
-        return get_token_response(auth_req["user"])
+    if auth_req:
+        user = authenticate(auth_req)
+        if user:
+            return get_token_response(user)
     raise HTTPException(detail="Access denied", status_code=HTTPStatus.BAD_REQUEST)
 
 

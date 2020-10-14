@@ -35,9 +35,9 @@ def iter_methods():
         yield m.strip()
 
 
-def authenticate(credentials: Dict[str, Any]) -> bool:
+def authenticate(credentials: Dict[str, Any]) -> Optional[str]:
     """
-    Authenticate user. Returns True when user is authenticated
+    Authenticate user. Returns username when user is authenticated
     """
     c = credentials.copy()
     for f in HIDDEN_FIELDS:
@@ -66,9 +66,9 @@ def authenticate(credentials: Dict[str, Any]) -> bool:
             u = User.get_by_username(user)
             if u:
                 u.register_login()
-        return True
+        return user
     logger.error("Login failed for %s: %s", c, le)
-    return False
+    return None
 
 
 def get_jwt_token(user: str, expire: Optional[int] = None, audience: Optional[str] = None) -> str:

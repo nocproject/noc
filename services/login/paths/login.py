@@ -20,8 +20,9 @@ router = APIRouter()
 @router.post("/api/login/login", response_model=StatusResponse, tags=["login", "ext-ui"])
 async def login(request: Request, creds: LoginRequest):
     auth_req = {"user": creds.user, "password": creds.password, "ip": request.client.host}
-    if authenticate(auth_req):
+    user = authenticate(auth_req)
+    if user:
         response = ORJSONResponse({"status": True})
-        set_jwt_cookie(response, creds.user)
+        set_jwt_cookie(response, user)
         return response
     return StatusResponse(status=False, message="Authentication failed")

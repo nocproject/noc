@@ -20,7 +20,7 @@ class BaseAuthBackend(object):
     def __init__(self):
         self.logger = logger
 
-    def authenticate(self, **kwargs):
+    def authenticate(self, **kwargs) -> str:
         """
         Authenticate user using given credentials.
         Raise LoginError when failed
