@@ -12,7 +12,7 @@ from .base import BaseAuthBackend
 
 
 class LocalBackend(BaseAuthBackend):
-    def authenticate(self, user=None, password=None, **kwargs):
+    def authenticate(self, user: str = None, password: str = None, **kwargs) -> str:
         try:
             user = User.objects.get(username=user)
         except User.DoesNotExist:

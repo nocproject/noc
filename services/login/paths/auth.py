@@ -133,7 +133,8 @@ async def auth_authorization_basic(request: Request, data: str) -> ORJSONRespons
         return ORJSONResponse({"status": False}, status_code=401)
     user, password = auth_data.split(":", 1)
     credentials = {"user": user, "password": password, "ip": remote_ip}
-    if authenticate(credentials):
+    user = authenticate(credentials)
+    if user:
         response = ORJSONResponse({"status": True}, status_code=200, headers={"Remote-User": user})
         set_jwt_cookie(response, user)
         return response

@@ -14,7 +14,7 @@ from .base import BaseAuthBackend
 
 
 class PAMBackend(BaseAuthBackend):
-    def authenticate(self, user=None, password=None, **kwargs):
+    def authenticate(self, user: str = None, password: str = None, **kwargs) -> str:
         p = pam.pam()
         r = p.authenticate(user, password, service=config.login.pam_service)
         if not r:

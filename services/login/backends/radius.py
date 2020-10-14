@@ -18,7 +18,7 @@ from .base import BaseAuthBackend
 class RADIUSBackend(BaseAuthBackend):
     RADIUS_DICT = Dictionary("services/login/backends/radius.dict")
 
-    def authenticate(self, user=None, password=None, **kwargs):
+    def authenticate(self, user: str = None, password: str = None, **kwargs) -> str:
         radius_server = config.login.radius_server
         radius_secret = config.login.radius_secret
 
