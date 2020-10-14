@@ -13,6 +13,7 @@
 # * prod-tools
 # * supervisor
 # * testing
+# * sender-kafka
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
@@ -97,3 +98,5 @@ pytest-assume==2.2.1; extra == "testing"
 pytest-dependency==0.5.1; extra == "testing"
 # Cython
 Cython==0.29.20; extra == "cython"
+# Kafka
+aiokafka==0.6.0; extra == "sender-kafka"
