@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 3400 PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "680dd068-b105-41ab-9c77-172fe25a7a36",
+    "description": "Juniper EX3400 PSU Slot (Power module)",
+    "c_group": [],
+    "genders": "mf"
+}
