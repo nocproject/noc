@@ -10,7 +10,7 @@
 import orjson
 
 # NOC modules
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.core.mx import MX_STREAM
 from noc.config import config
 from noc.core.liftbridge.message import Message
@@ -20,7 +20,7 @@ from noc.services.mx.router.action import DROP
 from noc.core.perf import metrics
 
 
-class MXService(TornadoService):
+class MXService(FastAPIService):
     name = "mx"
     use_mongo = True
 
