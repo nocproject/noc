@@ -33,15 +33,16 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             {
                 name: "source",
                 xtype: "radiogroup",
-                columns: 3,
+                columns: 4,
                 vertical: false,
                 fieldLabel: __("Alarms source"),
                 allowBlank: false,
-                width: 500,
+                width: 600,
                 items: [
                     {boxLabel: __("Active Alarms"), inputValue: 'active', checked: true},
                     {boxLabel: __("Archived Alarms"), inputValue: 'archive'},
-                    {boxLabel: __("Both"), inputValue: 'both'}]
+                    {boxLabel: __("Both"), inputValue: 'both'},
+                    {boxLabel: __("Long Alarm Archive (more 3 months)"), inputValue: 'long_archive'}]
             },
             {
                 name: "from_date",
