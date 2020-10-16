@@ -69,12 +69,12 @@
     {
       "collapse": false,
       "editable": false,
-      "height": "200px",
+      "height": "190px",
       "showTitle": true,
       "internal_comment": "info_row",
       "title": "$device $ip $vendor $platform",
       "panels": [
-              {% include "panel_device.j2" with context -%}
+              {% include "panel_controller.j2" with context -%}
               {%if sensor_types %}
                   ,
                   {% for sensor in sensor_types -%}
@@ -84,6 +84,10 @@
                       {% endif %}
                       {% if "power_input_status" in sensor.metrics %}
                             {% from "panel_power_input_status.j2" import sensors -%}
+                            {{sensors(sensor, loop.index)}},
+                      {% endif %}
+                      {% if "pulse" in sensor.metrics %}
+                            {% from "panel_pulse.j2" import sensors -%}
                             {{sensors(sensor, loop.index)}},
                       {% endif %}
                   {%- endfor %}
@@ -108,6 +112,9 @@
             ,
                 {% set comma = joiner(",") -%}
                 {% for sensor in sensor_types -%}
+                    {% if "pulse" in sensor.metrics or "sensor_status" in sensor.metrics or "power_input_status" in sensor.metrics%}
+
+                    {% else %}
                         {{ comma() }}
                         {
                           "collapse": false,
@@ -125,10 +132,6 @@
                                     {% from "graph_sensor_temperature.j2" import sensors -%}
                                   {{sensors(sensor, loop.index)}},
                                 {% endif %}
-                                {% if "pulse" in sensor.metrics %}
-                                    {% from "graph_sensor_pulse.j2" import sensors -%}
-                                  {{sensors(sensor, loop.index)}},
-                                {% endif %}
                                 {% if "power" in sensor.metrics %}
                                     {% from "graph_sensor_power.j2" import sensors -%}
                                   {{sensors(sensor, loop.index)}},
@@ -143,6 +146,7 @@
                                 {% endif %}
                           ]
                         }
+                     {% endif %}
                 {%- endfor %}
             {% endif %}
             {% if object_metrics %}
@@ -150,7 +154,7 @@
                 {
                   "collapse": false,
                   "editable": false,
-                  "height": "200px",
+                  "height": "250px",
                   "showTitle": true,
                   "internal_comment": "object_metrics",
                   "title": "Objects metrics",
@@ -164,30 +168,5 @@
 
                 }
             {% endif %}
-            {%if port_types %}
-            ,
-                {% set comma = joiner(",") -%}
-                {% for port in port_types -%}
-                    {{ comma() }}
-                    {
-                      "collapse": true,
-                      "editable": false,
-                      "height": "200px",
-                      "showTitle": true,
-                      "title": "Profile: {{port.name}}",
-                      "internal_comment": "port_row",
-                      "panels": [
-                        {% from "graph_interface_load.j2" import interface -%}
-
-                        {{interface(port, loop.index)}}
-                      ]
-                    }
-                {%- endfor %}
-            {% endif %}
-            {% if port_types %}
-                ,
-                    {% include "row_errors.j2" with context -%}
-            {% endif %}
-
   ]
 }

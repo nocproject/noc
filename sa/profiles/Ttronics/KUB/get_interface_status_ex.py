@@ -24,12 +24,11 @@ class Script(BaseScript):
                 "1.3.6.1.4.1.51315.1.%s.0" % self.profile.SENSORS_TYPE.get(sensor), cached=True
             )
             s_status = False
-            descr = self.profile.PORT_TYPE.get(s_type)
             if status == 0:
                 s_status = True
             result += [
                 {
-                    "interface": "%s/%s" % (s_type, sensor - 2) if s_type in [0, 1, 2] else descr,
+                    "interface": "%s/%s" % (s_type, sensor - 2) if s_type in [0, 1, 2] else s_type,
                     "admin_status": s_status,
                     "oper_status": s_status,
                 }
