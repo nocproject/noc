@@ -1,12 +1,13 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+from collections import defaultdict
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -16,6 +17,7 @@ from noc.core.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
     LLDP_PORT_SUBTYPE_NAME,
@@ -61,6 +63,7 @@ class Script(BaseScript):
     chassis_types = {
         "MAC address (4)": LLDP_CHASSIS_SUBTYPE_MAC,
         "Network address (5); Address type: IPv4 (1)": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+        "Locally assigned (7)": LLDP_CHASSIS_SUBTYPE_LOCAL,
     }
     port_types = {
         "MAC address (3)": LLDP_PORT_SUBTYPE_MAC,
@@ -69,7 +72,7 @@ class Script(BaseScript):
     }
 
     def execute(self):
-        r = []
+        r = defaultdict(list)  # local_iface -> neighbors
         # Try SNMP first
 
         # Fallback to CLI
@@ -100,7 +103,6 @@ class Script(BaseScript):
                 # Actually local(7)
                 remote_port_subtype = LLDP_PORT_SUBTYPE_LOCAL
 
-            i = {"local_interface": local_interface, "neighbors": []}
             n = {
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
@@ -109,8 +111,10 @@ class Script(BaseScript):
             }
             if is_ipv4(n["remote_chassis_id"]) or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
-            else:
+            elif is_mac(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_MAC
+            else:
+                n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_LOCAL
             try:
                 c = self.cli("show lldp ports %s neighbors detailed" % local_interface)
                 match = self.rx_lldp_detail.search(c)
@@ -137,9 +141,7 @@ class Script(BaseScript):
                     ]
             except self.CLISyntaxError:
                 pass
-
-            i["neighbors"].append(n)
-            r.append(i)
+            r[local_interface].append(n)
         # Try EDP Second
         try:
             lldp = self.cli("show edp ports all")
@@ -168,7 +170,6 @@ class Script(BaseScript):
                 # Actually local(7)
                 remote_port_subtype = LLDP_PORT_SUBTYPE_LOCAL
 
-            i = {"local_interface": local_interface, "neighbors": []}
             n = {
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
@@ -179,10 +180,9 @@ class Script(BaseScript):
                 n["remote_system_name"] = remote_system_name
             if is_ipv4(n["remote_chassis_id"]) or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
-            else:
+            elif is_mac(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_MAC
-
-            i["neighbors"].append(n)
-            r.append(i)
-
-        return r
+            else:
+                n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_LOCAL
+            r[local_interface].append(n)
+        return [{"local_interface": x, "neighbors": r[x]} for x in r]
