@@ -10,10 +10,12 @@ import datetime
 import csv
 import xlsxwriter
 import bson
-from io import BytesIO
+from io import BytesIO, TextIOWrapper
+from zipfile import ZipFile, ZIP_DEFLATED
+from tempfile import TemporaryFile
 
 # Third-party modules
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.db import connection
 from pymongo import ReadPreference
 
@@ -39,6 +41,21 @@ from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+
+LONG_ARCHIVE_QUERY = """SELECT
+  alarm_id,
+  dictGetString('managedobject', 'id', managed_object) as sova_id,
+  dictGetString('objectprofile', 'name', object_profile) as op,
+  dictGetString('vendor', 'name', vendor) as vendor,
+  dictGetString('platform', 'name', platform) as platform,
+  dictGetString('version', 'name', version) as version, ts,  close_ts,
+  dictGetString('managedobject', 'location_address', managed_object) as location,
+  '' as OO,  dictGetString('pool', 'name', pool) as pool,
+  dictGetString('administrativedomain', 'name', administrative_domain) as adm_domain,
+  dictGetString('managedobject', 'name', managed_object) as mo_name,
+  IPv4NumToString(ip) as ip,
+  escalation_tt,  duration,  severity %s FROM alarms
+  WHERE date >= '%s' AND date < '%s' AND alarm_class = %d AND root == ''"""
 
 
 def get_column_width(name):
@@ -137,7 +154,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             "alarm_class": StringParameter(required=False),
             "subscribers": StringParameter(required=False),
             "columns": StringParameter(required=False),
-            "o_format": StringParameter(choices=["csv", "xlsx"]),
+            "o_format": StringParameter(choices=["csv", "csv_zip", "xlsx"]),
         },
     )
     def api_report(
@@ -411,13 +428,13 @@ class ReportAlarmDetailApplication(ExtApplication):
                                 a.get("escalation_tt"),
                                 a.get("escalation_ts"),
                                 ", ".join(
-                                    l
-                                    for l in (
+                                    ll
+                                    for ll in (
                                         loc.location(moss[a["managed_object"]][5])
                                         if moss[a["managed_object"]][5] is not None
                                         else ""
                                     )
-                                    if l
+                                    if ll
                                 ),
                                 container_lookup[a["managed_object"]].get("text", "")
                                 if container_lookup
@@ -512,13 +529,13 @@ class ReportAlarmDetailApplication(ExtApplication):
                                 a.get("escalation_tt"),
                                 a.get("escalation_ts"),
                                 ", ".join(
-                                    l
-                                    for l in (
+                                    ll
+                                    for ll in (
                                         loc.location(moss[a["managed_object"]][5])
                                         if moss[a["managed_object"]][5] is not None
                                         else ""
                                     )
-                                    if l
+                                    if ll
                                 ),
                                 container_lookup[a["managed_object"]].get("text", "")
                                 if container_lookup
@@ -530,12 +547,78 @@ class ReportAlarmDetailApplication(ExtApplication):
                         cmap,
                     )
                 ]
+        if source in ["long_archive"]:
+            o_format = "csv_zip"
+            columns = [
+                "ALARM_ID",
+                "MO_ID",
+                "OBJECT_PROFILE",
+                "VENDOR",
+                "PLATFORM",
+                "VERSION",
+                "OPEN_TIMESTAMP",
+                "CLOSE_TIMESTAMP",
+                "LOCATION",
+                "",
+                "POOL",
+                "ADM_DOMAIN",
+                "MO_NAME",
+                "IP",
+                "ESCALATION_TT",
+                "DURATION",
+                "SEVERITY",
+                "REBOOTS",
+            ]
+            from noc.core.clickhouse.connect import connection
 
+            ch = connection()
+            fd = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+            td = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
+            if td - fd > datetime.timedelta(days=390):
+                return HttpResponseBadRequest(
+                    _(
+                        "Report more than 1 year not allowed. If nedeed - request it from Administrator"
+                    )
+                )
+            ac = AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed")
+            subs = ", ".join(
+                "subscribers.summary[indexOf(subscribers.profile, '%s')] as `%s`"
+                % (sp.bi_id, sp.name)
+                for sp in SubscriberProfile.objects.filter().order_by("name")
+            )
+            if subs:
+                columns += [sp.name for sp in SubscriberProfile.objects.filter().order_by("name")]
+            r = ch.execute(
+                LONG_ARCHIVE_QUERY
+                % (
+                    ", %s" % subs if subs else "",
+                    fd.date().isoformat(),
+                    td.date().isoformat(),
+                    ac.bi_id,
+                )
+            )
+
+        filename = "alarms.csv"
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = 'attachment; filename="alarms.csv"'
+            response["Content-Disposition"] = 'attachment; filename="%s"' % filename
             writer = csv.writer(response)
             writer.writerows(r)
+            return response
+        elif o_format == "csv_zip":
+            response = BytesIO()
+            f = TextIOWrapper(TemporaryFile(mode="w+b"), encoding="utf-8")
+            writer = csv.writer(f, dialect="excel", delimiter=";", quotechar='"')
+            writer.writerow(columns)
+            writer.writerows(r)
+            f.seek(0)
+            with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
+                zf.writestr(filename, f.read())
+                zf.filename = "%s.zip" % filename
+            # response = HttpResponse(content_type="text/csv")
+            response.seek(0)
+            response = HttpResponse(response.getvalue(), content_type="application/zip")
+            response["Content-Disposition"] = 'attachment; filename="%s.zip"' % filename
             return response
         elif o_format == "xlsx":
             response = BytesIO()
