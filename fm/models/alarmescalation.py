@@ -135,7 +135,15 @@ class AlarmEscalation(Document):
                     continue
                 logger.debug("[%s] Watch for %s after %s seconds", alarm.id, esc.name, e_item.delay)
                 et = alarm.timestamp + datetime.timedelta(seconds=e_item.delay)
-                if et > now:
+                if timestamp_policy == "c":
+                    # If escalation with current timestamp - shift consequence after main escalation
+                    delay = max((et - now).total_seconds(), 120) if et > now else 120
+                    logger.info(
+                        "[%s] Watch escalation with create new timestamp policy, after %s seconds",
+                        alarm.id,
+                        delay,
+                    )
+                elif et > now:
                     delay = (et - now).total_seconds()
                 else:
                     delay = None
