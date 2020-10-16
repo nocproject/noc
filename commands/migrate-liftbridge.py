@@ -89,7 +89,6 @@ class Command(BaseCommand):
                         name=name,
                         partitions=n_partitions,
                         replication_factor=replication_factor,
-                        init_offsets=True,
                     )
 
             run_sync(wrapper)
@@ -121,6 +120,7 @@ class Command(BaseCommand):
                         )
                         n_msg[partition] = 0
                         # Get current offset
+                        # @todo: fetch_partition_metadata
                         current_offset = await client.get_stored_offset(stream, partitions)
                         newest_offset = stream_meta.partitions[partition].newest_offset or 0
                         if current_offset >= newest_offset:

@@ -26,10 +26,13 @@ from noc.core.validators import is_ipv4
 from .api_pb2_grpc import APIStub
 from .api_pb2 import (
     FetchMetadataRequest,
+    FetchPartitionMetadataRequest,
     CreateStreamRequest,
     DeleteStreamRequest,
     PublishRequest,
     SubscribeRequest,
+    FetchCursorRequest,
+    SetCursorRequest,
     AckPolicy as _AckPolicy,
     StartPosition as _StartPosition,
     Ack,
@@ -70,6 +73,7 @@ class PartitionMetadata(object):
     isr: List[str]
     high_watermark: int
     newest_offset: int
+    paused: bool
 
 
 @dataclass
@@ -101,33 +105,6 @@ class LiftBridgeClient(object):
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
-
-    @staticmethod
-    def get_offset_stream(stream: str) -> str:
-        """
-        Returns name for offset stream
-        :param stream:
-        :return:
-        """
-        return "__offset.%s" % stream
-
-    @classmethod
-    def encode_offset(cls, value: int) -> bytes:
-        """
-        Encode offset value to bytes stream
-        :param value:
-        :return:
-        """
-        return cls._offset_struct.pack(value)
-
-    @classmethod
-    def decode_offset(cls, value: bytes) -> int:
-        """
-        Encode offset value to bytes stream
-        :param value:
-        :return:
-        """
-        return cls._offset_struct.unpack(value)[0]
 
     async def connect(self) -> None:
         while True:
@@ -180,12 +157,34 @@ class LiftBridgeClient(object):
                                 isr=list(p.isr),
                                 high_watermark=p.highWatermark,
                                 newest_offset=p.newestOffset,
+                                paused=p.paused,
                             )
                             for p in m.partitions.values()
                         },
                     )
                     for m in r.metadata
                 ],
+            )
+
+    async def fetch_partition_metadata(
+        self, stream: str, partition: int, wait_for_stream: bool = False
+    ) -> PartitionMetadata:
+        while True:
+            r = await self.stub.FetchPartitionMetadata(
+                FetchPartitionMetadataRequest(stream=stream, partition=partition)
+            )
+            if not r.metadata and wait_for_stream:
+                await asyncio.sleep(1)
+                continue
+            p = r.metadata
+            return PartitionMetadata(
+                id=p.id,
+                leader=p.leader,
+                replicas=list(p.replicas),
+                isr=list(p.isr),
+                high_watermark=p.highWatermark,
+                newest_offset=p.newestOffset,
+                paused=p.paused,
             )
 
     async def create_stream(
@@ -196,7 +195,6 @@ class LiftBridgeClient(object):
         replication_factor: int = 1,
         partitions: int = 1,
         enable_compact: bool = False,
-        init_offsets: bool = False,
     ):
         with rpc_error():
             req = CreateStreamRequest(
@@ -209,18 +207,6 @@ class LiftBridgeClient(object):
             if enable_compact:
                 req.CompactEnabled.value = True
             await self.stub.CreateStream(req)
-            if init_offsets:
-                # Create additional stream to store offsets
-                await self.create_stream(
-                    subject=self.get_offset_stream(subject),
-                    name=self.get_offset_stream(name),
-                    replication_factor=replication_factor,
-                    partitions=partitions,
-                    enable_compact=True,
-                )
-                # Initialize with starting offset
-                for i in range(partitions):
-                    await self.commit_offset(stream=name, partition=i, offset=-1)
 
     async def delete_stream(self, name: str) -> None:
         with rpc_error():
@@ -322,6 +308,7 @@ class LiftBridgeClient(object):
         start_offset: Optional[int] = None,
         start_timestamp: Optional[int] = None,
         resume: bool = False,
+        cursor_id: Optional[str] = None,
         timeout: Optional[int] = None,
         allow_isr: bool = False,
     ) -> AsyncIterable[Message]:
@@ -341,6 +328,8 @@ class LiftBridgeClient(object):
             req.startPosition = StartPosition.TIMESTAMP
             req.startTimestamp = start_timestamp
         elif start_position == StartPosition.RESUME:
+            if not cursor_id:
+                raise ValueError("cursor_id must be set for StartPosition.RESUME")
             logger.debug("Getting stored offset for stream '%s'" % stream)
             req.startPosition = StartPosition.OFFSET
             logger.debug("Resuming from offset %d", req.startOffset)
@@ -349,7 +338,9 @@ class LiftBridgeClient(object):
         last_offset: Optional[int] = None
         while True:
             try:
-                async for msg in self._subscribe(req, restore_position=to_restore_position):
+                async for msg in self._subscribe(
+                    req, restore_position=to_restore_position, cursor_id=cursor_id
+                ):
                     yield msg
                     last_offset = msg.offset
             except ErrorUnavailable as e:
@@ -362,7 +353,7 @@ class LiftBridgeClient(object):
                     req.startOffset = last_offset + 1
 
     async def _subscribe(
-        self, req: SubscribeRequest, restore_position: bool = False
+        self, req: SubscribeRequest, restore_position: bool = False, cursor_id: Optional[str] = None
     ) -> AsyncIterable[Message]:
         with rpc_error():
             logging.debug("[%s:%s] Resolving partition node", req.stream, req.partition)
@@ -376,8 +367,8 @@ class LiftBridgeClient(object):
                 logger.debug("Subscribing stream '%s'", req.stream)
                 stub = APIStub(channel)
                 if restore_position:
-                    req.startOffset = await self.get_stored_offset(
-                        req.stream, partition=req.partition
+                    req.startOffset = await self.fetch_cursor(
+                        stream=req.stream, partition=req.partition, cursor_id=cursor_id
                     )
                 if req.startOffset:
                     logger.debug("Resuming from position %d", req.startOffset)
@@ -479,33 +470,18 @@ class LiftBridgeClient(object):
                 logger.debug("Retrying")
                 await asyncio.sleep(1)
 
-    async def commit_offset(self, stream: str, partition: int, offset: int) -> None:
-        """
-        Store last processed position of the stream
-        :param stream:
-        :param partition:
-        :param offset:
-        :return:
-        """
-        logger.debug("[%s:%s] Committing offset %d", stream, partition, offset)
-        await self.publish(
-            stream=self.get_offset_stream(stream),
-            value=self.encode_offset(offset + 1),
-            partition=partition,
-            key=self._offset_key,
+    async def fetch_cursor(self, stream: str, partition: int, cursor_id: str) -> int:
+        r = await self.stub.FetchCursor(
+            FetchCursorRequest(stream=stream, partition=partition, cursorId=cursor_id)
         )
+        return r.offset or 0
 
-    async def get_stored_offset(self, stream: str, partition: int) -> int:
-        """
-        Fetch stored offset for the stream
-        :param stream:
-        :param partition:
-        :return:
-        """
-        async for msg in self.subscribe(
-            self.get_offset_stream(stream), partition=partition, start_position=StartPosition.LATEST
-        ):
-            return self.decode_offset(msg.value)
+    async def set_cursor(self, stream: str, partition: int, cursor_id: str, offset: int) -> None:
+        await self.stub.SetCursor(
+            SetCursorRequest(
+                stream=stream, partition=partition, cursorId=cursor_id, offset=offset + 1
+            )
+        )
 
     @staticmethod
     async def wait_for_channel_ready(channel):

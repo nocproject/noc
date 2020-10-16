@@ -560,13 +560,18 @@ class BaseService(object):
             async with LiftBridgeClient() as client:
                 self.active_subscribers += 1
                 async for msg in client.subscribe(
-                    stream=stream, partition=partition, start_position=StartPosition.RESUME
+                    stream=stream,
+                    partition=partition,
+                    start_position=StartPosition.RESUME,
+                    cursor_id=self.name,
                 ):
                     try:
                         await handler(msg)
                     except Exception as e:
                         self.logger.error("Failed to process message: %s", e)
-                    await client.commit_offset(stream, partition, msg.offset)
+                    await client.set_cursor(
+                        stream=stream, partition=partition, cursor_id=self.name, offset=msg.offset
+                    )
                     if self.subscriber_shutdown_waiter:
                         break
         finally:
