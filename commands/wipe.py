@@ -114,11 +114,11 @@ class Command(BaseCommand):
 
     def get_user(self, u_id):
         """
-            Get User by id or name
-            :param u_id: Object's id or name
-            :return: ManagedObject
-            :rtype: ManagedObject
-            """
+        Get User by id or name
+        :param u_id: Object's id or name
+        :return: ManagedObject
+        :rtype: ManagedObject
+        """
         from noc.aaa.models.user import User
 
         # Try to get object by id
@@ -143,13 +143,17 @@ class Command(BaseCommand):
         from noc.main.models.notificationgroup import NotificationGroupUser
         from noc.main.models.audittrail import AuditTrail
         from noc.aaa.models.usercontact import UserContact
+        from noc.aaa.models.permission import Permission
         from noc.main.models.userstate import UserState
+        from noc.main.models.favorites import Favorites
         from noc.sa.models.useraccess import UserAccess
         from noc.fm.models.activealarm import ActiveAlarm
         from noc.ip.models.prefixaccess import PrefixAccess
         from noc.ip.models.prefixbookmark import PrefixBookmark
         from noc.kb.models.kbentrypreviewlog import KBEntryPreviewLog
+        from noc.kb.models.kbentryhistory import KBEntryHistory
         from noc.kb.models.kbuserbookmark import KBUserBookmark
+        from django.contrib.admin.models import LogEntry
 
         # Clean UserState
         with self.log("Cleaning user preferences"):
@@ -166,6 +170,9 @@ class Command(BaseCommand):
         # Clean user access
         with self.log("Cleaning management object access"):
             UserAccess.objects.filter(user=o).delete()
+        # Clean user permission
+        with self.log("Cleaning permission access"):
+            Permission.objects.filter(users=o).delete()
         # Unsubscribe from alarms
         with self.log("Unsubscribing from alarms"):
             for a in ActiveAlarm.objects.filter(subscribers=o.id):
@@ -177,12 +184,21 @@ class Command(BaseCommand):
         # Clean Prefix Bookmarks
         with self.log("Cleaning prefix bookmarks"):
             PrefixBookmark.objects.filter(user=o).delete()
+        # Clean Favorites Bookmarks
+        with self.log("Cleaning favorites bookmarks"):
+            Favorites.objects.filter(user=o).delete()
         # Clean KB Preview log
         with self.log("Cleaning KB preview log"):
             KBEntryPreviewLog.objects.filter(user=o).delete()
         # Clean KB User Bookmarks
         with self.log("Cleaning KB user bookmarks"):
             KBUserBookmark.objects.filter(user=o).delete()
+        # Clean KB Entry History
+        with self.log("Cleaning KB user history"):
+            KBEntryHistory.objects.filter(user=o).delete()
+        # Clean Django admin log
+        with self.log("Cleaning Django Admin log"):
+            LogEntry.objects.filter(user=o).delete()
         # Finally delete user
         with self.log("Deleting user"):
             o.delete()
