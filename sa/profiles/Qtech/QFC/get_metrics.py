@@ -8,6 +8,7 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from core.script.metrics import scale
+from noc.core.validators import is_float, is_int
 
 
 class Script(GetMetricsScript):
@@ -24,15 +25,24 @@ class Script(GetMetricsScript):
             if metric.ifindex == 100:
                 continue
             value = 1
-            status = self.snmp.get(
-                "1.3.6.1.4.1.27514.%s.0.%s.0" % (self.check_oid(), metric.ifindex)
-            )
-            if metric.ifindex in [5, 6, 7, 13] and status == 1:
-                value = 0
-            elif metric.ifindex in [8, 9, 10] and -55 < status < 600:
-                value = 0
-            elif metric.ifindex in [16, 27] and status > 0:
-                value = 0
+            if self.is_lite:
+                status = self.snmp.get("1.3.6.1.4.1.27514.103.0.%s.0" % metric.ifindex)
+                if metric.ifindex in [5, 6, 7, 13] and status == 1:
+                    value = 0
+                elif metric.ifindex in [8, 9] and -55 < status < 600:
+                    value = 0
+                elif metric.ifindex in [27] and status > 0:
+                    value = 0
+            else:
+                status = self.snmp.get("1.3.6.1.4.1.27514.102.0.%s.0" % metric.ifindex)
+                if metric.ifindex in [5, 6, 13] and status == 1:
+                    value = 0
+                elif metric.ifindex in [8] and status > 0:
+                    value = 0
+                elif metric.ifindex in [9, 10] and -55 < status < 600:
+                    value = 0
+                elif metric.ifindex in [16] and status > 0:
+                    value = 0
             self.set_metric(
                 id=("Environment | Sensor Status", metric.path),
                 value=value,
@@ -82,9 +92,10 @@ class Script(GetMetricsScript):
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.28.0")
             else:
                 value = self.snmp.get("1.3.6.1.4.1.27514.102.0.17")
-            self.set_metric(
-                id=("Environment | Electric Current", metric.path), value=value, scale=scale(10)
-            )
+            if is_float(value) or is_int(value):
+                self.set_metric(
+                    id=("Environment | Electric Current", metric.path), value=value, scale=scale(10)
+                )
 
     @metrics(["Environment | Energy Consumption"], volatile=False, access="S")  # SNMP version
     def get_energy_cons(self, metrics):
@@ -106,23 +117,28 @@ class Script(GetMetricsScript):
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.29.0")
             else:
                 value = self.snmp.get("1.3.6.1.4.1.27514.102.0.18")
-            self.set_metric(
-                id=("Environment | Power", metric.path),
-                value=value,
-            )
+            if value:
+                self.set_metric(
+                    id=("Environment | Power", metric.path),
+                    value=value,
+                )
 
     @metrics(["Environment | Power | Input | Status"], volatile=False, access="S")  # SNMP version
     def get_power_input_status(self, metrics):
         for metric in metrics:
             value = 1
             if self.is_lite:
-                res = self.snmp.get("1.3.6.1.4.1.27514.103.0.18.0")
-                if res == 0:
-                    value = 0
+                if "ups" in metric.path[3]:
+                    value = self.snmp.get("1.3.6.1.4.1.27514.103.0.18.0")
+                elif "220" in metric.path[3]:
+                    res = self.snmp.get("1.3.6.1.4.1.27514.103.0.7.0")
+                    if res == 1:
+                        value = 0
             else:
-                res = self.snmp.get("1.3.6.1.4.1.27514.102.0.8")
-                if res != 0:
-                    value = 0
+                if "220" in metric.path[3]:
+                    res = self.snmp.get("1.3.6.1.4.1.27514.102.0.8")
+                    if res != 0:
+                        value = 0
             self.set_metric(id=("Environment | Power | Input | Status", metric.path), value=value)
 
     @metrics(
