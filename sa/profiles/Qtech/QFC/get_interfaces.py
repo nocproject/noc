@@ -40,6 +40,7 @@ class Script(BaseScript):
             mac = self.snmp.get("1.3.6.1.4.1.27514.103.0.4.0")
         else:
             for ifindex in self.profile.LIGHT_PORT_TYPE.keys():
+                print(ifindex)
                 s_status = 0
                 status = self.snmp.get("1.3.6.1.4.1.27514.102.0.%s" % ifindex)
                 if ifindex in [5, 6] and status == 1:
