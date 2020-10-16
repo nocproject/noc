@@ -23,7 +23,7 @@ config:
 liftbridge_isr_count: 1
 
 ## Package
-liftbridge_version: "1.2.0"
+liftbridge_version: "1.3.0"
 liftbridge_tar_gz_url: "https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz"
 liftbridge_checksum_file_url: "https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/checksums.txt"
 liftbridge_temp_file_checksum: "{{ tower_dist_dir }}/{{ liftbridge_version }}.checksums.txt"
