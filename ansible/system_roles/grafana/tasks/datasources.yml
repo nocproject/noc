@@ -8,7 +8,6 @@
       - {{ grafana_datasource | to_nice_yaml| indent(2, False) }}
     backup: "False"
   register: ds_result
-  when: has_svc_grafana is defined
 
 - name: restart grafana
   service:
