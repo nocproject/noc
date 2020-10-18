@@ -12,6 +12,7 @@ from typing import Optional, List, Tuple, Dict
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.inv.models.ifdescpatterns import IfDescPatterns
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.main.models.handler import Handler
 from noc.sa.models.managedobject import ManagedObject
 
@@ -131,7 +132,9 @@ class IfDescCheck(TopologyDiscoveryCheck):
     def resolve_via_patterns(
         self, patterns: IfDescPatterns, iface: Interface
     ) -> Optional[Interface]:
-        self.logger.debug("[%s] Checking patterns %s", iface.name, patterns.name)
+        self.logger.debug(
+            "[%s] Checking patterns %s for '%s'", iface.name, patterns.name, iface.description
+        )
         for matches in patterns.iter_match(iface.description):
             self.logger.debug("Matches %s", matches)
             obj_ref = {n: matches[n] for n in matches if n in self.OBJ_REF_NAMES}
@@ -141,17 +144,20 @@ class IfDescCheck(TopologyDiscoveryCheck):
                     ", ".join(self.OBJ_REF_NAMES),
                 )
                 continue
-            ro = self.resolve_object_via_patterns(iface.managed_object, **obj_ref)
+            ro, ifdescrtoken = self.resolve_object_via_patterns(iface.managed_object, **obj_ref)
             if not ro:
                 self.logger.debug("Object cannot be resolved. Skipping")
                 continue
             iface_ref = {n: matches[n] for n in matches if n in self.IFACE_REF_NAMES}
-            if not obj_ref:
+            if patterns.resolve_remote_port_by_object and ifdescrtoken:
+                iface_ref["ifdescrtoken"] = ifdescrtoken
+            if not iface_ref:
                 self.logger.debug(
                     "No interface reference extracted. At least one of the %s must be present",
                     ", ".join(self.IFACE_REF_NAMES),
                 )
                 continue
+            self.logger.debug("Resolve interface via patterns %s", iface_ref)
             ri = self.resolve_interface_via_patterns(ro, **iface_ref)
             if not ri:
                 self.logger.debug("Interface cannot be resolved. Skipping")
@@ -160,11 +166,11 @@ class IfDescCheck(TopologyDiscoveryCheck):
 
     def resolve_object_via_patterns(
         self,
-        mo: ManagedObject,
+        lmo: ManagedObject,
         name: Optional[str] = None,
         address: Optional[str] = None,
         hostname: Optional[str] = None,
-    ) -> Optional[ManagedObject]:
+    ) -> Tuple[Optional[ManagedObject], Optional[str]]:
         def get_nearest_object(objects: List[ManagedObject]) -> Optional[ManagedObject]:
             # Prefer same pool
             left = [x for x in objects if x.pool.id == mo.pool.id]
@@ -180,7 +186,7 @@ class IfDescCheck(TopologyDiscoveryCheck):
             # Full name match
             mo = ManagedObject.objects.filter(name=name).first()
             if mo:
-                return mo
+                return mo, lmo.name
             # Partial name match
             if "#" not in name:
                 mos = ManagedObject.objects.filter(name__startswith=name + "#")[
@@ -188,21 +194,26 @@ class IfDescCheck(TopologyDiscoveryCheck):
                 ]
                 mo = get_nearest_object(mos)
                 if mo:
-                    return mo
+                    return mo, lmo.name
         if address:
             # Address match
             mos = ManagedObject.objects.filter(address=address)[: self.MAX_MO_CANDIDATES]
             mo = get_nearest_object(mos)
             if mo:
-                return mo
+                return mo, lmo.address
         if hostname:
+            did = DiscoveryID.objects.filter(object=lmo).first()
             mo = self.get_neighbor_by_hostname(hostname)
             if mo:
-                return mo
-        return None
+                return mo, did.hostname if did else ""
+        return None, None
 
     def resolve_interface_via_patterns(
-        self, mo: ManagedObject, interface: Optional[str] = None, ifindex: Optional[str] = None
+        self,
+        mo: ManagedObject,
+        interface: Optional[str] = None,
+        ifindex: Optional[str] = None,
+        ifdescrtoken: Optional[str] = None,
     ) -> Optional[Interface]:
         ifaces = self.get_object_interfaces(mo)
         if not ifaces:
@@ -223,6 +234,18 @@ class IfDescCheck(TopologyDiscoveryCheck):
             matched = [x for x in ifaces.values() if x.ifindex == ifi]
             if len(matched) == 1:
                 return matched[0]
+        if ifdescrtoken:
+            # Get interface by token
+            ifaces = list(
+                Interface.objects.filter(
+                    managed_object=mo.id, type="physical", description__icontains=ifdescrtoken
+                )
+            )
+            if len(ifaces) == 1:
+                return ifaces[0]
+            self.logger.warning(
+                "Not found interface by token '%s' (found %d)", ifdescrtoken, len(ifaces)
+            )
         return None
 
     def get_object_interfaces(self, mo: ManagedObject) -> Dict[str, Interface]:
