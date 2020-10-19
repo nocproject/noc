@@ -133,6 +133,15 @@ class Command(BaseCommand):
         except User.DoesNotExist:
             return None
 
+    @staticmethod
+    def clean_django_log_entry(user):
+        # Third-party modules
+        from django.db import connection as pg_connect
+
+        cursor = pg_connect.cursor()
+        query = "DELETE FROM django_admin_log WHERE user_id = %d" % user.id
+        cursor.execute(query)
+
     def wipe_user(self, o):
         """
         Wipe User
@@ -153,7 +162,6 @@ class Command(BaseCommand):
         from noc.kb.models.kbentrypreviewlog import KBEntryPreviewLog
         from noc.kb.models.kbentryhistory import KBEntryHistory
         from noc.kb.models.kbuserbookmark import KBUserBookmark
-        from django.contrib.admin.models import LogEntry
 
         # Clean UserState
         with self.log("Cleaning user preferences"):
@@ -198,7 +206,7 @@ class Command(BaseCommand):
             KBEntryHistory.objects.filter(user=o).delete()
         # Clean Django admin log
         with self.log("Cleaning Django Admin log"):
-            LogEntry.objects.filter(user=o).delete()
+            self.clean_django_log_entry(user=o)
         # Finally delete user
         with self.log("Deleting user"):
             o.delete()
