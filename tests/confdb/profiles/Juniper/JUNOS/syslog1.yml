@@ -1,0 +1,11 @@
+config: |
+  system {
+    syslog {
+        host 192.0.2.1 {
+            source-address 198.51.100.1;
+        }
+  }
+result:
+  - ['protocols', 'syslog', 'syslog-server', '192.0.2.1']
+  - ['protocols', 'syslog', 'syslog-server', '192.0.2.1', 'source', '198.51.100.1']
+
