@@ -13,7 +13,6 @@ from typing import Optional, Dict, List, AsyncIterable, Tuple, Iterator
 import random
 import asyncio
 import socket
-import struct
 
 # Third-party modules
 from grpc.aio import insecure_channel
@@ -26,6 +25,7 @@ from noc.core.validators import is_ipv4
 from .api_pb2_grpc import APIStub
 from .api_pb2 import (
     FetchMetadataRequest,
+    FetchMetadataResponse,
     FetchPartitionMetadataRequest,
     CreateStreamRequest,
     DeleteStreamRequest,
@@ -89,17 +89,19 @@ class Metadata(object):
     metadata: List[StreamMetadata]
 
 
-class LiftBridgeClient(object):
-    _offset_struct = struct.Struct("!Q")
-    _offset_key = b"1"
+CURSOR_STREAM = "__cursors"
 
-    # @todo: Resilient RPC
-    # @todo: Dedicated sub channel
-    def __init__(self):
+
+class GRPCChannel(object):
+    def __init__(self, broker: str):
+        self.broker = broker
         self.channel = None
         self.stub = None
 
-    async def __aenter__(self) -> "LiftBridgeClient":
+    def __getattr__(self, item):
+        return getattr(self.stub, item)
+
+    async def __aenter__(self):
         await self.connect()
         return self
 
@@ -107,30 +109,188 @@ class LiftBridgeClient(object):
         await self.close()
 
     async def connect(self) -> None:
+        self.channel = insecure_channel(self.broker)
         while True:
-            svc = random.choice(config.liftbridge.addresses)
-            logger.debug("Connecting %s:%s", svc.host, svc.port)
-            self.channel = insecure_channel("%s:%s" % (svc.host, svc.port))
-            logger.debug("Waiting for channel")
+            logger.debug("[%s] Connecting", self.broker)
             try:
-                await self.wait_for_channel_ready(self.channel)
+                await self.wait_for_channel_ready()
             except ErrorUnavailable as e:
-                logger.debug("Failed to connect: %s", e)
+                logger.debug("[%s] Failed to connect: %s", self.broker, e)
                 await asyncio.sleep(1)
                 continue
-            logger.debug("Channel is ready")
+            logger.debug("[%s] Channel is ready", self.broker)
             self.stub = APIStub(self.channel)
-            break
+            return
 
     async def close(self) -> None:
-        logger.debug("Closing channel")
+        if not self.channel:
+            return
+        logger.debug("[%s] Closing channel", self.broker)
         await self.channel.close()
         self.channel = None
         self.stub = None
 
-    async def reconnect(self) -> None:
+    async def wait_for_channel_ready(self):
+        """
+        Wait until channel became ready or raise ErrorUnavailable
+
+        :param channel:
+        :return:
+        """
+        while True:
+            state = self.channel.get_state(try_to_connect=True)
+            if state == ChannelConnectivity.READY:
+                return
+            if (
+                state == ChannelConnectivity.TRANSIENT_FAILURE
+                or state == ChannelConnectivity.SHUTDOWN
+            ):
+                raise ErrorUnavailable("Unavailable: %s" % state)
+            await self.channel.wait_for_state_change(state)
+
+    @property
+    def is_connected(self) -> bool:
+        return self.stub is not None
+
+
+class LiftBridgeClient(object):
+    def __init__(self):
+        self.channels: Dict[str, GRPCChannel] = {}  # broker -> GRPCChannel
+        self.open_brokers: List[str] = []
+        self.leaders: Dict[Tuple[str, int], str] = {}  # (stream, partition) -> broker
+        self.isrs: Dict[Tuple[str, int], List[str]] = {}  # (stream, partition) -> [broker, ...]
+
+    async def close_channel(self, broker):
+        """
+        Close broker channel
+        :param broker:
+        :return:
+        """
+        ch = self.channels[broker]
+        await ch.close()
+        del self.channels[broker]
+        self.open_brokers = list(self.channels)
+
+    async def close(self):
+        """
+        Close all open channels
+        :return:
+        """
+        for broker in list(self.channels):
+            await self.close_channel(broker)
+
+    async def __aenter__(self) -> "LiftBridgeClient":
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
-        await self.connect()
+
+    async def get_channel(self, broker: Optional[str] = None) -> GRPCChannel:
+        """
+        Get GRPC channel for a broker. Use random broker from seed if broker is not set
+        :param broker:
+        :return:
+        """
+        if not broker:
+            if self.channels:
+                # Use random existing channel
+                broker = random.choice(self.open_brokers)
+            else:
+                # Use random broker from seed
+                svc = random.choice(config.liftbridge.addresses)
+                broker = "%s:%s" % (svc.host, svc.port)
+        channel = self.channels.get(broker)
+        if not channel:
+            channel = GRPCChannel(broker)
+            await channel.connect()
+            self.channels[broker] = channel
+            self.open_brokers = list(self.channels)
+        return channel
+
+    async def get_leader(self, stream: str, partition: int) -> str:
+        """
+        Get leader broker for partition
+        :param stream:
+        :param partition:
+        :return:
+        """
+        if not self.leaders:
+            await self.__refresh_leaders()
+        p_id = (stream, partition)
+        while True:
+            leader = self.leaders.get(p_id)
+            if leader:
+                return leader
+            logger.debug("Leader for %s:%s is not available still. Waiting", stream, partition)
+            await asyncio.sleep(1)
+            await self.__refresh_leaders()
+
+    async def get_leader_channel(self, stream: str, partition: int) -> GRPCChannel:
+        """
+        Get GRPCChannel for partition leader
+        :param stream:
+        :param partition:
+        :return:
+        """
+        broker = await self.get_leader(stream, partition)
+        return await self.get_channel(broker)
+
+    async def __update_topology(self, r: FetchMetadataResponse) -> None:
+        """
+        Update partition leaders information from FetchMetadata response
+        :param r:
+        :return:
+        """
+
+        async def resolve(host: str):
+            if is_ipv4(host):
+                return host
+            # Resolve from cache
+            addrs = r_cache.get(host)
+            if not addrs:
+                # Resolve hostname
+                try:
+                    addr_info = await asyncio.get_running_loop().getaddrinfo(
+                        host, None, proto=socket.IPPROTO_TCP
+                    )
+                    addrs = [x[4][0] for x in addr_info if x[0] == socket.AF_INET]
+                    r_cache[host] = addrs
+                except socket.gaierror as e:
+                    raise ErrorNotFound("Cannot resolve broker address '%s'" % b.host) from e
+            return random.choice(addrs)
+
+        # Resolver cache
+        r_cache: Dict[str, List[str]] = {}
+        # Resolve brokers
+        brokers: Dict[str, str] = {}  # id -> host:port
+        for b in r.brokers:
+            host = await resolve(b.host)
+            brokers[b.id] = "%s:%s" % (host, b.port)
+        # Update leaders
+        self.leaders = {}
+        for m in r.metadata:
+            for p in m.partitions.values():
+                if not p.leader:
+                    logger.debug("%s:%s has no leader still", m.name, p.id)
+                leader = brokers.get(p.leader)
+                if not leader:
+                    logger.error("%s:%s uses unknown leader broker %s", m.name, p.id, p.leader)
+                    continue
+                self.leaders[m.name, p.id] = leader
+                self.isrs[m.name, p.id] = []
+                for isr in p.isr:
+                    broker = brokers.get(isr)
+                    if not broker:
+                        logger.error("%s:%s uses unknown isr broker %s", m.name, p.id, isr)
+                        continue
+                    self.isrs[m.name, p.id] += [broker]
+        # Close channels for a left brokers
+        for broker in set(self.channels) - set(brokers.values()):
+            logger.debug("[%s] Closing left broker", broker)
+            await self.close_channel(broker)
+
+    async def __refresh_leaders(self):
+        await self.fetch_metadata(wait_for_stream=True)
 
     async def fetch_metadata(
         self, stream: Optional[str] = None, wait_for_stream: bool = False
@@ -139,10 +299,12 @@ class LiftBridgeClient(object):
         if stream:
             req.streams.append(stream)
         while True:
-            r = await self.stub.FetchMetadata(req)
+            channel = await self.get_channel()
+            r = await channel.FetchMetadata(req)
             if not r.metadata and wait_for_stream:
                 await asyncio.sleep(1)
                 continue
+            await self.__update_topology(r)
             return Metadata(
                 brokers=[Broker(id=b.id, host=b.host, port=b.port) for b in r.brokers],
                 metadata=[
@@ -170,7 +332,8 @@ class LiftBridgeClient(object):
         self, stream: str, partition: int, wait_for_stream: bool = False
     ) -> PartitionMetadata:
         while True:
-            r = await self.stub.FetchPartitionMetadata(
+            channel = await self.get_leader_channel(stream, partition)
+            r = await channel.FetchPartitionMetadata(
                 FetchPartitionMetadataRequest(stream=stream, partition=partition)
             )
             if not r.metadata and wait_for_stream:
@@ -206,11 +369,13 @@ class LiftBridgeClient(object):
             )
             if enable_compact:
                 req.CompactEnabled.value = True
-            await self.stub.CreateStream(req)
+            channel = await self.get_channel()
+            await channel.CreateStream(req)
 
     async def delete_stream(self, name: str) -> None:
         with rpc_error():
-            await self.stub.DeleteStream(DeleteStreamRequest(name=name))
+            channel = await self.get_channel()
+            await channel.DeleteStream(DeleteStreamRequest(name=name))
 
     @staticmethod
     def get_publish_request(
@@ -249,29 +414,31 @@ class LiftBridgeClient(object):
 
         # Publish
         while True:
+            channel = await self.get_channel()
             try:
                 with rpc_error():
-                    await self.stub.Publish(req)
+                    await channel.Publish(req)
                     break
             except ErrorUnavailable:
+                await self.close_channel(channel.broker)
                 logger.info("Loosing connection to current cluster member. Trying to reconnect")
                 await asyncio.sleep(1)
-                await self.reconnect()
             except ErrorNotFound as e:
                 if wait_for_stream:
+                    await self.close_channel(channel.broker)
                     logger.info(
                         "Stream '%s' is not available yet. Maybe election in progress. "
                         "Trying to reconnect",
                         req.stream,
                     )
                     await asyncio.sleep(1)
-                    await self.reconnect()
                 else:
-                    raise ErrorNotFound(str(e))  # Reraise
+                    raise ErrorNotFound(str(e)) from e  # Reraise
 
     async def publish_async(self, iter_req: Iterator[PublishRequest]) -> AsyncIterable[Ack]:
         with rpc_error():
-            async for req in self.stub.PublishAsync(iter_req):
+            channel = await self.get_channel()
+            async for req in channel.PublishAsync(iter_req):
                 yield req
 
     async def publish(
@@ -355,24 +522,24 @@ class LiftBridgeClient(object):
     async def _subscribe(
         self, req: SubscribeRequest, restore_position: bool = False, cursor_id: Optional[str] = None
     ) -> AsyncIterable[Message]:
+        allow_isr = bool(req.readISRReplica)
         with rpc_error():
-            logging.debug("[%s:%s] Resolving partition node", req.stream, req.partition)
-            host, port = await self.resolve_subscription_source(
-                req.stream, partition=req.partition, allow_isr=bool(req.readISRReplica)
-            )
-            logger.debug("Connecting %s:%s", host, port)
-            # Open separate channel for subscription
-            async with insecure_channel("%s:%s" % (host, port)) as channel:
-                await self.wait_for_channel_ready(channel)
-                logger.debug("Subscribing stream '%s'", req.stream)
-                stub = APIStub(channel)
-                if restore_position:
+            broker: Optional[str] = None
+            if allow_isr:
+                isrs = self.isrs.get((req.stream, req.partition))
+                if isrs:
+                    broker = random.choice(isrs)
+            if not broker:
+                broker = await self.get_leader(req.stream, req.partition)
+            async with GRPCChannel(broker) as channel:
+                logger.debug("[%s] Subscribing stream '%s'", broker, req.stream)
+                if restore_position and cursor_id:
                     req.startOffset = await self.fetch_cursor(
                         stream=req.stream, partition=req.partition, cursor_id=cursor_id
                     )
                 if req.startOffset:
-                    logger.debug("Resuming from position %d", req.startOffset)
-                call = stub.Subscribe(req)
+                    logger.debug("[%s] Resuming from position %d", broker, req.startOffset)
+                call = channel.Subscribe(req)
                 # NB: We cannot use `async for msg in call` construction
                 # Due to liftbridge protocol specific:
                 # --- CUT ---
@@ -388,7 +555,7 @@ class LiftBridgeClient(object):
                 # Should be EOF, error otherwise
                 if msg is not EOF:
                     raise ErrorChannelClosed()
-                logger.debug("Stream is ready, waiting for messages")
+                logger.debug("[%s] Stream is ready, waiting for messages", broker)
                 # Next, process all other messages
                 msg = await call._read()
                 while msg:
@@ -413,92 +580,21 @@ class LiftBridgeClient(object):
                     raise ErrorUnavailable()
                 raise ErrorChannelClosed(str(code))
 
-    async def resolve_subscription_source(
-        self, stream: str, partition: Optional[int] = None, allow_isr: bool = False
-    ) -> Tuple[str, int]:
-        """
-        Returns (host, port) of active node to be subscribed to.
-        Connect to partition leader when `allow_isr` is False,
-        or to random partition node, when True.
-
-        :param stream: Stream name
-        :param partition: Partition number
-        :param allow_isr: True, if allowed to connect to random node
-        :return: (host, port)
-        """
-
-        async def _resolve_broker(b_id: str) -> Tuple[str, int]:
-            logger.debug("Resolving broker %s", b_id)
-            for broker in meta.brokers:
-                if broker.id != b_id:
-                    continue
-                if not is_ipv4(broker.host):
-                    # Resolve hostname
-                    try:
-                        addr_info = await asyncio.get_running_loop().getaddrinfo(
-                            broker.host, None, proto=socket.IPPROTO_TCP
-                        )
-                        addrs = [x[4][0] for x in addr_info if x[0] == socket.AF_INET]
-                        return random.choice(addrs), broker.port
-                    except socket.gaierror:
-                        raise ErrorNotFound("Cannot resolve broker address '%s'" % broker.host)
-
-                return broker.host, broker.port
-            raise ErrorNotFound("Broker not found")
-
-        # Request cluster topology
-        while True:
-            while True:
-                meta = await self.fetch_metadata()
-                if not meta.metadata:
-                    # No streams, election in progress, wait for a while
-                    logger.info("Waiting for election")
-                    await asyncio.sleep(1)
-                    continue
-                s_data = [m for m in meta.metadata if m.name == stream]
-                if not s_data:
-                    raise ErrorNotFound("Stream not found")
-                break
-            p_data = s_data[0].partitions.get(partition or 0)
-            if not p_data:
-                raise ErrorNotFound("Partition not found")
-            broker = p_data.leader if not allow_isr else random.choice(p_data.isr)
-            try:
-                return await _resolve_broker(broker)
-            except ErrorNotFound as e:
-                logger.debug("Failed to resolve broker '%s': %s", broker, e)
-                logger.debug("Retrying")
-                await asyncio.sleep(1)
-
     async def fetch_cursor(self, stream: str, partition: int, cursor_id: str) -> int:
-        r = await self.stub.FetchCursor(
+        channel = await self.get_leader_channel(CURSOR_STREAM, 0)
+        r = await channel.FetchCursor(
             FetchCursorRequest(stream=stream, partition=partition, cursorId=cursor_id)
         )
-        return r.offset or 0
+        v = r.offset or 0
+        logger.debug(
+            "Fetching cursor %s for %s:%s: current value is %s", cursor_id, stream, partition, v
+        )
+        return v
 
     async def set_cursor(self, stream: str, partition: int, cursor_id: str, offset: int) -> None:
-        await self.stub.SetCursor(
+        channel = await self.get_leader_channel(CURSOR_STREAM, 0)
+        await channel.SetCursor(
             SetCursorRequest(
                 stream=stream, partition=partition, cursorId=cursor_id, offset=offset + 1
             )
         )
-
-    @staticmethod
-    async def wait_for_channel_ready(channel):
-        """
-        Wait until channel became ready or raise ErrorUnavailable
-
-        :param channel:
-        :return:
-        """
-
-        while True:
-            state = channel.get_state(try_to_connect=True)
-            if state == ChannelConnectivity.READY:
-                return
-            if (
-                state == ChannelConnectivity.TRANSIENT_FAILURE
-                or state == ChannelConnectivity.SHUTDOWN
-            ):
-                raise ErrorUnavailable("Unavailable: %s" % state)
-            await channel.wait_for_state_change(state)
