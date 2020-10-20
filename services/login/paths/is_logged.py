@@ -33,6 +33,7 @@ async def is_logged(jwt_cookie: Optional[str] = Cookie(None, alias=config.login.
                 jwt_cookie,
                 smart_text(orjson.dumps(config.secret_key)),
                 algorithms=[config.login.jwt_algorithm],
+                audience="auth",
             )
             result = isinstance(token, dict) and "sub" in token
         except JWTError:
