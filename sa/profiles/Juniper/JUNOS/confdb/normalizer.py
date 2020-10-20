@@ -189,3 +189,11 @@ class JunOSNormalizer(BaseNormalizer):
         yield self.make_aaa_service_address_tacacs_secret(
             name="tacacs", ip=tokens[2], secret=tokens[-1].strip('"')
         )
+
+    @match("system", "syslog", "host", IP_ADDRESS)
+    def normalize_protocols_syslog_server(self, tokens):
+        yield self.make_protocols_syslog_server(ip=tokens[3])
+
+    @match("system", "syslog", "host", IP_ADDRESS, "source-address", IP_ADDRESS)
+    def normalize_protocols_syslog_server_source(self, tokens):
+        yield self.make_protocols_syslog_server_source(ip=tokens[3], source_ip=tokens[5])
