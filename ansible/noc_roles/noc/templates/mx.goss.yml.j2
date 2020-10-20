@@ -1,0 +1,7 @@
+command:
+  {{ noc_root }}/noc ctl status |grep mx:
+    exit-status: 0
+    stdout:
+    - /mx:.+RUNNING/
+    stderr: []
+    timeout: 10000

@@ -82,6 +82,7 @@ all:
           has_svc_memcached: true
           has_svc_mongod: true
           has_svc_mrt: true
+          has_svc_mx: true
           has_svc_nats: true
           has_svc_nbi: true
           has_svc_nginx: true
@@ -583,6 +584,27 @@ all:
               pool: null
             - config:
                 loglevel: info
+                max_concurrency: 1
+                power: 1
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                level: global
+                supervisord:
+                  command: ./services/mx/service.py
+                  oom_score_adj: 100
+                  priority: 110
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 10MB
+                  stopwaitsecs: 3
+              name: mx
+              pool: null
+            - config:
+                loglevel: info
                 power: 2
               config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
               environment:
@@ -1001,6 +1023,15 @@ all:
             noc-node-ubuntu18: {}
         svc-mrt-read: {}
     svc-mrt-exec:
+      hosts:
+        noc-node-ubuntu18: {}
+    svc-mx:
+      children:
+        cfg-mx-noc-node-ubuntu18:
+          hosts:
+            noc-node-ubuntu18: {}
+        svc-mx-read: {}
+    svc-mx-exec:
       hosts:
         noc-node-ubuntu18: {}
     svc-nats:
