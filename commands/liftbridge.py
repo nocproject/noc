@@ -54,13 +54,13 @@ class Command(BaseCommand):
         subscribe_parser.add_argument("--cursor", type=str, default="")
         subscribe_parser.add_argument("--start-offset", type=int, default=0)
         subscribe_parser.add_argument("--start-ts", type=self.valid_date, default=0)
-        # create-cursor
-        set_cursor_parser = subparsers.add_parser("create-cursor")
+        # set-cursor
+        set_cursor_parser = subparsers.add_parser("set-cursor")
         set_cursor_parser.add_argument("--name")
         set_cursor_parser.add_argument("--stream")
         set_cursor_parser.add_argument("--partition", type=int, default=0)
         set_cursor_parser.add_argument("--offset", type=int, default=0)
-        # create-cursor
+        # fetch-cursor
         fetch_cursor_parser = subparsers.add_parser("fetch-cursor")
         fetch_cursor_parser.add_argument("--name")
         fetch_cursor_parser.add_argument("--stream")
@@ -75,7 +75,7 @@ class Command(BaseCommand):
         # benchmark-subscriber
         benchmark_subscriber_parser = subparsers.add_parser("benchmark-subscriber")
         benchmark_subscriber_parser.add_argument("--name")
-        benchmark_subscriber_parser.add_argument("--commit-offset", action="store_true")
+        benchmark_subscriber_parser.add_argument("--cursor")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
@@ -258,7 +258,7 @@ class Command(BaseCommand):
             print("batch")
             run_sync(batch_publisher)
 
-    def handle_benchmark_subscriber(self, name: str, commit_offset: bool = False, *args, **kwargs):
+    def handle_benchmark_subscriber(self, name: str, cursor: Optional[str] = None, *args, **kwargs):
         async def subscriber():
             async with LiftBridgeClient() as client:
                 report_interval = 1.0
@@ -278,9 +278,9 @@ class Command(BaseCommand):
                         t0 = t
                         last_msg = total_msg
                         last_size = total_size
-                    if commit_offset:
+                    if cursor:
                         await client.set_cursor(
-                            stream=name, partition=0, cursor_id="bench", offset=msg.offset
+                            stream=name, partition=0, cursor_id=cursor, offset=msg.offset
                         )
 
         run_sync(subscriber)
