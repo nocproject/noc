@@ -84,6 +84,7 @@ class Profile(BaseProfile):
         "Gi": "physical",  # GigabitEthernet
         "Gm": "physical",  # GMPLS
         "Gr": "physical",  # Group-Async
+        "Hu": "physical",  # HundredGigabitEthernet
         "Lo": "loopback",  # Loopback
         "In": "physical",  # Integrated-service-engine
         "Mg": "management",  # Management interface
