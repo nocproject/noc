@@ -66,7 +66,7 @@ class LookupModule(LookupBase):
     GLOBS = frozenset(["?", "*", "["])
 
     def run(self, terms, variables=None, **kwargs):
-
+        """Look for files with glob"""
         ret = []
         for term in terms:
 

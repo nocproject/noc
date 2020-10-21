@@ -10,6 +10,7 @@ from ansible.plugins.lookup import LookupBase
 
 class LookupModule(LookupBase):
     def run(self, terms, inject=None, **kwargs):
+        """Generate consul keyfile"""
         ret = []
 
         # this can happen if the variable contains a string, strictly not desired for lookup

@@ -8,6 +8,7 @@ from shlex import split
 
 
 def read_var(name):
+    """Reads variable with name"""
     args = ["sysrc", "-n", "-i", name]
     process = Popen(args, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
@@ -22,6 +23,7 @@ def read_var(name):
 
 
 def write_var(name, value):
+    """Write variable with name and value"""
     binding = name + "=" + value
     args = ["sysrc", "-n", binding]
     process = Popen(args, stdout=PIPE, stderr=PIPE)
@@ -37,6 +39,7 @@ def write_var(name, value):
 
 
 def assert_var(name, should):
+    """Check if variable have value called 'should'"""
     actual = read_var(name)
     if actual != should:
         print(dumps({"failed": True, "msg": "failed assertion. " + name + " != " + should}))

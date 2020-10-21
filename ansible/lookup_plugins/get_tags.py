@@ -6,6 +6,7 @@ from ansible.plugins.lookup import LookupBase
 
 class LookupModule(LookupBase):
     def run(self, terms="", **kwargs):
+        """Get tags"""
         tag = cli.get_opt("tags")
         if tag:
             tags = cli.get_opt("tags")

@@ -145,7 +145,7 @@ from ansible.module_utils.basic import AnsibleModule
 
 
 def execute(module):
-
+    """ Execute module """
     state = module.params.get("state")
 
     if state == "acquire" or state == "release":
@@ -157,7 +157,7 @@ def execute(module):
 
 
 def lock(module, state):
-
+    """ Lock module with state"""
     consul_api = get_consul_api(module)
 
     session = module.params.get("session")
@@ -192,7 +192,7 @@ def lock(module, state):
 
 
 def add_value(module):
-
+    """ Add value to module """
     consul_api = get_consul_api(module)
 
     key = module.params.get("key")
@@ -229,6 +229,7 @@ def remove_value(module):
 
 
 def get_consul_api(module, token=None):
+    """Get info from api"""
     return consul.Consul(
         host=module.params.get("host"),
         port=module.params.get("port"),
@@ -239,6 +240,7 @@ def get_consul_api(module, token=None):
 
 
 def test_dependencies(module):
+    """Test for dependencies"""
     if not python_consul_installed:
         module.fail_json(
             msg="python-consul required for this module. "
@@ -247,7 +249,7 @@ def test_dependencies(module):
 
 
 def main():
-
+    """Main function"""
     argument_spec = dict(
         cas=dict(required=False),
         flags=dict(required=False),
