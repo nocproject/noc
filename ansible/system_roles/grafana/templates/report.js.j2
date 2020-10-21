@@ -1,0 +1,725 @@
+//---------------------------------------------------------------------
+// NOC dynamic dashboard
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2017 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+
+'use strict';
+
+// accessible variables in this scope
+var window, document, ARGS, $, jQuery, moment, kbn;
+
+// Setup some variables
+var dashboard;
+
+// All url parameters are available via the ARGS object
+var ARGS;
+
+// Intialize a skeleton with nothing but a rows array and service object
+dashboard = {
+    rows: [],
+};
+
+// Set a title
+dashboard.title = 'For Metrics Report';
+
+// Set default time
+// time can be overriden in the url using from/to parameters, but this is
+// handled automatically in grafana core during dashboard initialization
+
+
+var rows = 1;
+var title = 'Report';
+var bi_id = null;
+var obj = null;
+var iface = null;
+var f_d = 'now-24h';
+var t_d = 'now';
+
+if (!_.isUndefined(ARGS.rows)) {
+    rows = parseInt(ARGS.rows, 1);
+}
+
+if (!_.isUndefined(ARGS.title)) {
+    title = ARGS.title;
+}
+
+if (!_.isUndefined(ARGS.biid)) {
+    bi_id = ARGS.biid;
+}
+
+if (!_.isUndefined(ARGS.obj)) {
+    obj = ARGS.obj;
+}
+
+if (!_.isUndefined(ARGS.iface)) {
+    iface = ARGS.iface;
+}
+
+if (!_.isUndefined(ARGS.f_d)) {
+    f_d = ARGS.f_d;
+}
+
+if (!_.isUndefined(ARGS.t_d)) {
+    t_d = ARGS.t_d;
+}
+
+for (var i = 'interface'; i == title; i++) {
+
+    dashboard.templating = {
+        enable: true,
+        list: [
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + obj + "",
+                    "value": "" + obj + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "object",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + iface + "",
+                    "value": "" + iface + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "" + title + "",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+                        {
+                "allValue": null,
+                "current": {
+                    "text": "" + bi_id + "",
+                    "value": "" + bi_id + ""
+                },
+                "hide": 2,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "bi_id",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+        ]
+    },
+
+        dashboard.rows.push({
+                title: 'Chart',
+                height: '300px',
+                panels: [
+                    {
+                        title: "" + title + "",
+                        type: 'graph',
+                        aliasColors: {},
+                        bars: false,
+                        dashLength: 10,
+                        dashes: false,
+                        fill: 1,
+                        hideTimeOverride: false,
+                        id: 1,
+                        legend: {
+                            alignAsTable: true,
+                            avg: true,
+                            current: true,
+                            hideEmpty: false,
+                            hideZero: false,
+                            max: true,
+                            min: true,
+                            rightSide: false,
+                            show: true,
+                            total: false,
+                            values: true
+                        },
+                        lines: true,
+                        linewidth: 2,
+                        links: [],
+                        nullPointMode: null,
+                        percentage: false,
+                        pointradius: 5,
+                        points: false,
+                        renderer: "flot",
+                        repeat: null,
+                        seriesOverrides: [],
+                        spaceLength: 10,
+                        span: 12,
+                        stack: false,
+                        steppedLine: false,
+                        "targets": [
+                            {
+                          "refId": "A",
+                          "resultFormat": "time_series",
+                          "intervalFactor": 1,
+                          "query": "SELECT $timeSeries as t, avg(load_in) as Input, avg(load_out) as Output FROM $table WHERE managed_object = $bi_id and path[4]=toString('$interface') and $timeFilter GROUP BY t ORDER BY t",
+                          "database": "noc",
+                          "tableLoading": false,
+                          "table": "interface",
+                          "dateLoading": false,
+                          "datetimeLoading": false,
+                          "dateColDataType": "date",
+                          "dateTimeColDataType": "ts"
+                            }
+                        ],
+                        "yaxes": [
+                            {
+                                "format": "bps",
+                                "label": "bits/sec",
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            },
+                            {
+                                "format": "decbytes",
+                                "label": null,
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": false
+                            }
+                        ],
+                        "seriesOverrides": [
+                            {
+                              "alias": "Input",
+                              "transform": "negative-Y"
+                            },
+                            {
+                              "alias": "Oper status",
+                              "fill": 0,
+                              "yaxis": 2
+                            },
+                            {
+                              "alias": "Admin status",
+                              "fill": 0,
+                              "yaxis": 2
+                            }
+                        ],
+                        tooltip: {
+                            shared: true
+                        }
+                    }
+                ]
+            }
+        )
+    dashboard.time = {
+        from: "" + f_d + "",
+        to: "" + t_d + ""
+    };
+    ;
+}
+
+for (var i = 'cpu'; i == title; i++) {
+
+    dashboard.templating = {
+        enable: true,
+        list: [
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + obj + "",
+                    "value": "" + obj + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "object",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + bi_id + "",
+                    "value": "" + bi_id + ""
+                },
+                "hide": 2,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "bi_id",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+
+        ]
+    },
+
+        dashboard.rows.push({
+                title: 'Chart',
+                height: '300px',
+                panels: [
+                    {
+                        title: "" + title + "",
+                        type: 'graph',
+                        aliasColors: {},
+                        bars: false,
+                        dashLength: 10,
+                        dashes: false,
+                        fill: 1,
+                        hideTimeOverride: false,
+                        id: 1,
+                        legend: {
+                            alignAsTable: true,
+                            avg: true,
+                            current: true,
+                            hideEmpty: false,
+                            hideZero: false,
+                            max: true,
+                            min: true,
+                            rightSide: false,
+                            show: true,
+                            total: false,
+                            values: true
+                        },
+                        lines: true,
+                        linewidth: 2,
+                        links: [],
+                        nullPointMode: null,
+                        percentage: false,
+                        pointradius: 5,
+                        points: false,
+                        renderer: "flot",
+                        repeat: null,
+                        seriesOverrides: [],
+                        spaceLength: 10,
+                        span: 12,
+                        stack: false,
+                        steppedLine: false,
+                        "targets": [
+                            {
+                              "refId": "A",
+                              "resultFormat": "time_series",
+                              "intervalFactor": 1,
+                              "query": "SELECT $timeSeries as t, avg(usage) as `Cpu | Usage`FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+                              "database": "noc",
+                              "tableLoading": false,
+                              "table": "cpu",
+                              "dateLoading": false,
+                              "datetimeLoading": false,
+                              "dateColDataType": "date",
+                              "dateTimeColDataType": "ts"
+                            },
+                            {
+                              "refId": "B",
+                              "resultFormat": "time_series",
+                              "intervalFactor": 1,
+                              "query": "SELECT $timeSeries as t, avg(usage) `Memory | Usage` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+                              "database": "noc",
+                              "tableLoading": false,
+                              "table": "memory",
+                              "dateLoading": false,
+                              "datetimeLoading": false,
+                              "dateColDataType": "date",
+                              "dateTimeColDataType": "ts"
+                            }
+                        ],
+                        "yaxes": [
+                            {
+                                "format": "percent",
+                                "label": "percent",
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            },
+                            {
+                                "format": "decbytes",
+                                "label": null,
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": false
+                            }
+                        ],
+
+                        seriesOverrides: [
+                            {}
+                        ],
+                        tooltip: {
+                            shared: true
+                        }
+                    }
+                ]
+            }
+        )
+    dashboard.time = {
+        from: "" + f_d + "",
+        to: "" + t_d + ""
+    };
+    ;
+}
+
+for (var i = 'ping'; i == title; i++) {
+
+    dashboard.templating = {
+        enable: true,
+        list: [
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + obj + "",
+                    "value": "" + obj + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "object",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + bi_id + "",
+                    "value": "" + bi_id + ""
+                },
+                "hide": 2,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "bi_id",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+
+        ]
+    },
+
+        dashboard.rows.push({
+                title: 'Chart',
+                height: '300px',
+                panels: [
+                    {
+                        title: "" + title + "",
+                        type: 'graph',
+                        aliasColors: {},
+                        bars: false,
+                        dashLength: 10,
+                        dashes: false,
+                        fill: 1,
+                        hideTimeOverride: false,
+                        id: 1,
+                        legend: {
+                            alignAsTable: true,
+                            avg: true,
+                            current: true,
+                            hideEmpty: false,
+                            hideZero: false,
+                            max: true,
+                            min: true,
+                            rightSide: false,
+                            show: true,
+                            total: false,
+                            values: true
+                        },
+                        lines: true,
+                        linewidth: 2,
+                        links: [],
+                        nullPointMode: null,
+                        percentage: false,
+                        pointradius: 5,
+                        points: false,
+                        renderer: "flot",
+                        repeat: null,
+                        seriesOverrides: [],
+                        spaceLength: 10,
+                        span: 12,
+                        stack: false,
+                        steppedLine: false,
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "resultFormat": "time_series",
+                                "formattedQuery": "<font color=\"darkorange\">SELECT</font> <font color=\"darkcyan\">$timeSeries</font> <font color=\"darkorange\">as</font> t, <font color=\"navajowhite\">avg</font>(rtt) <font color=\"lightgreen\">`Ping | RTT`</font>,  <font color=\"navajowhite\">avg</font>(attempts) <font color=\"lightgreen\">`Ping | Attempts`</font> <font color=\"darkorange\">FROM</font> <font color=\"darkcyan\">$table</font> <font color=\"darkorange\">WHERE</font> managed_object<font color=\"yellow\">=</font><font color=\"darkcyan\">$bi_id</font> <font color=\"yellow\">and</font> <font color=\"darkcyan\">$timeFilter</font> <font color=\"darkorange\">GROUP BY</font> t <font color=\"darkorange\">ORDER BY</font> t",
+                                "intervalFactor": 1,
+                                "query": "SELECT $timeSeries as t, avg(rtt) `Ping | RTT`,  avg(attempts) `Ping | Attempts` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+                                "database": "noc",
+                                "tableLoading": false,
+                                "table": "ping",
+                                "dateLoading": false,
+                                "datetimeLoading": false,
+                                "dateColDataType": "date",
+                                "dateTimeColDataType": "ts"
+                            }
+                        ],
+                        "y-axis": true,
+                        "yaxes": [
+                            {
+                                "format": "µs",
+                                "label": "ms",
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            },
+                            {
+                              "format": "short",
+                              "label": null,
+                              "logBase": 1,
+                              "max": "5",
+                              "min": null,
+                              "show": true
+                            }
+                        ],
+                        "seriesOverrides": [
+                            {
+                              "alias": "Ping | Attempts",
+                              "yaxis": 2
+                            }
+                        ],
+                        "aliasColors": {
+                            "Ping | Attempts": "#BF1B00"
+                        },
+                        tooltip: {
+                            shared: true
+                        }
+                    }
+                ]
+            }
+        )
+    dashboard.time = {
+        from: "" + f_d + "",
+        to: "" + t_d + ""
+    };
+    ;
+}
+
+for (var i = 'errors'; i == title; i++) {
+
+    dashboard.templating = {
+        enable: true,
+        list: [
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + obj + "",
+                    "value": "" + obj + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "object",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + iface + "",
+                    "value": "" + iface + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "interface",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + bi_id + "",
+                    "value": "" + bi_id + ""
+                },
+                "hide": 2,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "bi_id",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+
+        ]
+    },
+
+        dashboard.rows.push({
+                title: 'Chart',
+                height: '300px',
+                panels: [
+                    {
+                        title: "" + title + "",
+                        type: 'graph',
+                        aliasColors: {},
+                        bars: false,
+                        dashLength: 10,
+                        dashes: false,
+                        fill: 1,
+                        hideTimeOverride: false,
+                        id: 1,
+                        legend: {
+                            alignAsTable: true,
+                            avg: true,
+                            current: true,
+                            hideEmpty: false,
+                            hideZero: false,
+                            max: true,
+                            min: true,
+                            rightSide: false,
+                            show: true,
+                            total: false,
+                            values: true
+                        },
+                        lines: true,
+                        linewidth: 2,
+                        links: [],
+                        nullPointMode: null,
+                        percentage: false,
+                        pointradius: 5,
+                        points: false,
+                        renderer: "flot",
+                        repeat: null,
+                        seriesOverrides: [],
+                        spaceLength: 10,
+                        span: 12,
+                        stack: false,
+                        steppedLine: false,
+                        "targets": [
+                            {
+                                "refId": "A",
+                                "resultFormat": "time_series",
+                                "intervalFactor": 1,
+                                "query": "SELECT $timeSeries as t, avg(discards_in) as Input, avg(discards_out) as Output FROM $table WHERE managed_object = $bi_id and path[4]=toString('$interface') and $timeFilter GROUP BY t ORDER BY t",
+                                "database": "noc",
+                                "tableLoading": false,
+                                "table": "interface",
+                                "dateLoading": false,
+                                "datetimeLoading": false,
+                                "dateColDataType": "date",
+                                "dateTimeColDataType": "ts"
+                            },
+                            {
+                                "refId": "B",
+                                "resultFormat": "time_series",
+                                "intervalFactor": 1,
+                                "query": "SELECT $timeSeries as t, avg(errors_in) as Input, avg(errors_out) as Output FROM $table WHERE managed_object = $bi_id and path[4]=toString('$interface') and $timeFilter GROUP BY t ORDER BY t",
+                                "database": "noc",
+                                "tableLoading": false,
+                                "table": "interface",
+                                "dateLoading": false,
+                                "datetimeLoading": false,
+                                "dateColDataType": "date",
+                                "dateTimeColDataType": "ts"
+                            }
+                        ],
+                        "yaxes": [
+                            {
+                              "logBase": 1,
+                              "show": true,
+                              "max": null,
+                              "format": "short",
+                              "min": null,
+                              "label": null
+                            },
+                            {
+                              "logBase": 1,
+                              "show": true,
+                              "max": null,
+                              "format": "short",
+                              "min": null,
+                              "label": null
+                            }
+                        ],
+                        seriesOverrides: [
+                            {}
+                        ],
+                        tooltip: {
+                            shared: true
+                        }
+                    }
+                ]
+            }
+        )
+    dashboard.time = {
+        from: "" + f_d + "",
+        to: "" + t_d + ""
+    };
+    ;
+}
+
+return dashboard;

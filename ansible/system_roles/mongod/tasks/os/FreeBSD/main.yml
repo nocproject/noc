@@ -1,0 +1,16 @@
+---
+- name: Install MongoDB
+  pkgng:
+    name: "mongodb{{ mongod_version|replace('.','') }}"
+    state: present
+  tags:
+    - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
+
+- name: Add newsyslog rules
+  template:
+    src: "os/FreeBSD/mongo.conf"
+    dest: "/usr/local/etc/newsyslog.conf.d/mongo.conf"

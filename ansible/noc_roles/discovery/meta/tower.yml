@@ -1,0 +1,53 @@
+---
+forms:
+  discovery:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Discovery service <br/>
+      <strong>Long description</strong>: Primary SAE service. Launches tasks on activators, parses results writes to databases. <br/>
+      <strong>Scale Recommendations</strong>:  At least two per pool. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/discovery/ target=_blank>Discovery</a><br/>
+      <strong>Placement constraint</strong>: High cpu/memory usage.<br/>
+    power:
+      default: 2
+      label: "Instances"
+      type: int
+      max: 64
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+    backup_power:
+      default: 1
+      label: "Additional Instances"
+      type: int
+      max: 64
+      min: 0
+    max_threads:
+      default: 10
+      label: "Discovery threads"
+      type: int
+
+services:
+  discovery:
+    level: pool
+    category: internal
+    supervisord:
+      command: "./services/discovery/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 500
+      priority: 100
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc

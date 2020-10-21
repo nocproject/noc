@@ -1,0 +1,101 @@
+---
+- name: Add PostgreSQL repository OEL
+  yum:
+    name: "{{ rpm_path }}"
+    state: present
+  vars:
+    rpm_path: https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat-repo-latest.noarch.rpm
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add epel repo
+  yum_repository:
+    name: ol7_optional_latest
+    state: present
+    description: "Oracle Linux $releasever Optional Latest ($basearch)"
+    enabled: "True"
+    baseurl: https://yum.oracle.com/repo/OracleLinux/OL7/optional/latest/$basearch/
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+    gpgcheck: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Add optional repo
+  yum_repository:
+    name: ol7_developer_EPEL
+    state: present
+    description: "Oracle Linux $releasever Development Packages ($basearch)"
+    enabled: "True"
+    baseurl: https://yum.oracle.com/repo/OracleLinux/OL7/developer_EPEL/$basearch/
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+    gpgcheck: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install OEL system packages 2/2
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+  vars:
+    packages:
+      - git
+      - patch
+      - python-virtualenv
+      - gcc
+      - postgresql{{ postgres_version|replace(".","") }}
+      - postgresql{{ postgres_version|replace(".","") }}-devel
+      - libffi
+      - libffi-devel
+      - libmemcached
+      - zlib-devel
+      - bzip2
+      - cmake
+      - openssl-devel
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install OEL system packages 2/2
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - jemalloc
+      - libmemcached-devel
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+
+- name: Install OEL system packages for python3
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - python3
+      - python3-devel
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - noc_python_interpreter == 'python3'
+
+- name: Install supervisord init script
+  template:
+    src: "noc.service.j2"
+    dest: "/etc/systemd/system/{{ noc_system_service }}.service"
+    mode: "a+r"
+  notify: reload systemd

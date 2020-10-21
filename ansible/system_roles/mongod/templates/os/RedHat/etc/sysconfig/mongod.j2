@@ -1,0 +1,5 @@
+CONFIGFILE="{{ mongo_conf }}"
+OPTIONS=" -f $CONFIGFILE"
+PIDFILEPATH={{ mongo_pid }}
+chown {{ mongo_user }} {{ mongo_dir }}/mongo.key
+chmod 0400 {{ mongo_dir }}/mongo.key

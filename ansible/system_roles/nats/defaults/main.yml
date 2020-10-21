@@ -1,0 +1,29 @@
+---
+## Nats-server
+nats_client_port: 4222
+nats_cluster_port: 4248
+
+## System user and group
+nats_user: "nats"
+nats_group: "bin"
+
+## Paths
+nats_data: "/var/nats"
+nats_bin_path: "/bin"
+nats_data_path: "/var/lib/nats"
+nats_log_path: "/var/log/nats"
+nats_run_path: "/var/run/nats"
+nats_pid_path: "{{ nats_run_path }}/nats.pid"
+nats_home: "/home/{{ nats_user }}"
+nats_config_path: "{{ etc_prefix }}/nats"
+
+## Package
+
+nats_version: "2.1.8"
+nats_zip_url: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/{{ nats_pkg }}"
+nats_checksum_file_url: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/SHA256SUMS"
+nats_temp_file_checksum: "{{ tower_dist_dir }}/{{ nats_version }}.SHA256SUMS"
+nats_temp_file: "{{ tower_dist_dir }}/{{ nats_pkg }}"
+nats_temp_unarchive: "/tmp/nats/{{ nats_version }}"
+nats_arch_folder_name: "nats-server-v{{ nats_version }}-linux-amd64"
+nats_pkg: "nats-server-v{{ nats_version }}-linux-amd64.zip"

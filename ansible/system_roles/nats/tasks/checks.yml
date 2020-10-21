@@ -1,0 +1,21 @@
+---
+- block:
+    - name: init check vars
+      set_fact:
+        nats_servers_count: 0
+
+    - name: count servers
+      set_fact:
+        nats_servers_count: "{{ nats_servers_count | int + 1 }}"
+      with_items: "{{ groups['svc-nats-exec'] }}"
+
+    - name: Ensure nats setup max server count
+      fail:
+        msg: |
+          Nats servers have to be set up on 1, 3 or 5 nodes. Less is better. Current count is {{ consul_servers_count }}
+      when: nats_servers_count | int not in [1,3,5]
+
+  when:
+    - has_svc_nats is defined
+  tags:
+    - checks

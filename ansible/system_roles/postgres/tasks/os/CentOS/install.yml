@@ -1,0 +1,29 @@
+---
+- name: Add PostgreSQL repository Centos
+  yum:
+    name: "{{ rpm_path }}"
+    state: present
+  vars:
+    rpm_path: https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat-repo-latest.noarch.rpm
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: "Install PostgreSQL"
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+  vars:
+    packages:
+      - postgresql{{ postgres_version|replace(".","") }}-server
+      - postgresql{{ postgres_version|replace(".","") }}-contrib
+      - postgresql{{ postgres_version|replace(".","") }}-plpython
+      - python-psycopg2
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements

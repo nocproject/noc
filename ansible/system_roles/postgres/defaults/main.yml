@@ -1,0 +1,23 @@
+---
+postgres_max_clients: 301
+postgresql_conf_path: "{{ postgresql_conf_prefix }}/postgresql.conf"
+postgresql_hba_path: "{{ postgresql_conf_prefix }}/pg_hba.conf"
+#Memtune
+kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
+kernel_shmmax: "{{ kernel_shmall|int() * 4096 }}"
+postgres_listen_port: 5432
+
+
+postgres_path: /usr/bin/postgres
+postgres_system_service: postgresql
+postgres_user: postgres
+postgres_superuser: postgres
+postgres_version: 9.6
+postgres_replicator_password: noc
+postgres_superuser_password: noc
+postgres_noc_db: noc
+postgres_noc_user: noc
+postgres_noc_password:
+postgres_become_user: "True"
+
+postgres_listen_address: "{{ ansible_host }}"

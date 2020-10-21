@@ -1,0 +1,106 @@
+file:
+  /etc/consul/config.json:
+    exists: true
+    mode: "0644"
+    owner: consul
+    group: bin
+    filetype: file
+    contains: []
+  /var/consul:
+    exists: true
+    mode: "0755"
+    owner: consul
+    group: bin
+    filetype: directory
+    contains: []
+port:
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
+  tcp:8300:
+    listening: true
+    ip:
+    - {{ consul_bind_address }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
+  tcp:8301:
+    listening: true
+    ip:
+    - {{ consul_bind_address }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
+  tcp:8302:
+    listening: true
+    ip:
+    - {{ consul_bind_address }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
+  tcp6:8500:
+    listening: true
+    ip:
+    - '::'
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
+  tcp6:8600:
+    listening: true
+    ip:
+    - '::'
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
+  udp:8301:
+    listening: true
+    ip:
+    - {{ consul_bind_address }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
+  udp:8302:
+    listening: true
+    ip:
+    - {{ consul_bind_address }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
+  udp6:8600:
+    listening: true
+    ip:
+    - '::'
+{% endif %}
+service:
+  consul:
+    enabled: true
+    running: true
+user:
+  consul:
+    exists: true
+    groups:
+    - bin
+    home: /home/consul
+    shell: /bin/sh
+command:
+  consul info:
+    exit-status: 0
+    stdout:
+    - version = {{ consul_version }}
+{% if consul_power == 'bootstrap' %}
+    - 'consul:'
+    - bootstrap = true
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
+    - /leader_addr = .+:8300/
+{% endif %}
+    stderr: []
+    timeout: 10000
+  consul validate {{ consul_config_path }} {{ consul_configd_path }}:
+    exit-status: 0
+    stdout:
+    - Configuration is valid!
+    stderr: []
+    timeout: 10000
+
+process:
+  consul:
+    running: true
+http:
+  http://127.0.0.1:8500:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body: []

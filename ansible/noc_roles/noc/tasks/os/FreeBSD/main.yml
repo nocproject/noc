@@ -1,0 +1,27 @@
+---
+- name: Install FreeBSD system packages
+  pkgng:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - postgresql{{ postgres_version|replace(".","") }}-client
+      - python
+      - py37-virtualenv
+      - curl
+      - libffi
+      - libmemcached
+      - git
+      - zstd
+  tags:
+    - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
+
+- name: Install supervisord init script
+  template:
+    src: "os/FreeBSD/etc/rc.d/noc.j2"
+    dest: "/usr/local/etc/rc.d/{{ noc_system_service }}"
+    mode: "a+rx"

@@ -1,0 +1,59 @@
+---
+- name: Setting hostname in rc.conf
+  become: "True"
+  lineinfile:
+    dest: /etc/rc.conf
+    regexp: "^hostname="
+    line: "hostname=\"{{ ansible_nodename }}\""
+  tags:
+    - config
+
+- name: Force upgrade catalog
+  become: "True"
+  command: pkg update -f
+  environment:
+    IGNORE_OSVERSION: "yes"
+  when:
+    - molecule_yml is defined
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
+
+- name: Install FreeBSD system packages
+  pkgng:
+    name: "{{ packages }}"
+    state: present
+  become: "True"
+  vars:
+    packages:
+      - ca_root_nss
+      - sudo
+      - curl
+      - unzip
+      - gtar
+  tags:
+    - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
+
+- name: Update hostname
+  become: "True"
+  hostname:
+    name: "{{ inventory_hostname }}"
+  tags:
+    - config
+
+- name: create dirs
+  become: "True"
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: root
+    group: wheel
+    mode: 0755
+  with_items:
+    - "{{ etc_prefix }}/newsyslog.conf.d"
+    - "{{ etc_prefix }}/rc.d"

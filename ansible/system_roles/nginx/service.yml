@@ -1,0 +1,24 @@
+---
+- name: Install and configure nginx
+  hosts: svc-nginx-exec
+  serial: 50%
+  become: "True"
+  tags:
+    - nginx
+    - web
+    - external
+  any_errors_fatal: "True"
+  vars_files:
+    - "vars/{{ ansible_distribution }}.yml"
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
+    - role: nginx
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: nginx
+  post_tasks:
+    - name: set nginx complete
+      set_fact:
+        nginx_complete: "True"

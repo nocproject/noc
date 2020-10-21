@@ -1,0 +1,24 @@
+---
+- name: Consul tasks
+  hosts: svc-consul-exec
+  become: "True"
+  any_errors_fatal: "False"
+  serial: 50%
+  gather_facts: "True"
+  tags:
+    - consul
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+    - "vars/{{ ansible_distribution }}.yml"
+  roles:
+    - role: consul
+      when: consul_complete is not defined
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: consul
+  post_tasks:
+    - name: set consul complete
+      set_fact:
+        consul_complete: "True"

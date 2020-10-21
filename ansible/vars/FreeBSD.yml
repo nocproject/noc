@@ -1,0 +1,68 @@
+# FreeBSD settings
+---
+activator_command: "/bin/sh -c 'exec cpuset -l $((%(process_num)d %% $(sysctl -n hw.ncpu))) ./services/activator/service.py'"
+
+noc_py3_ver: "3.7"
+
+etc_prefix: /usr/local/etc
+
+noc_var_lib: /var/db/noc
+noc_reports_dir: "{{ noc_var_lib }}/reports"
+noc_crashinfo_dir: "{{ noc_var_lib }}/var/cp/crashinfo/new"
+bi_export_dir: "{{ noc_var_lib }}/bi"
+
+clickhouse_service_name: clickhouse
+ch_log_dir: /var/log/clickhouse-server
+ch_data_dir: /var/db/clickhouse
+ch_run_dir: /var/run/clickhouse
+
+consul_bin_path: /usr/local/bin
+consul_template_bin_path: /usr/local/bin
+consul_template_group: wheel
+
+grafana_home: /usr/local/share/grafana
+grafana_system_service: grafana
+grafana_dashboard_dir: /var/db/grafana/dashboards
+grafana_plugins_dir: /var/db/grafana/plugins
+grafana_provisioning_dir: /var/db/grafana/provisioning
+grafana_ini: "{{ etc_prefix }}/grafana.conf"
+
+mongo_arbiter_pid: " "
+mongo_log_path: /var/db/mongodb/mongod.log
+mongo_pid: /var/db/mongodb/mongod.lock
+mongo_path: /usr/local/bin/mongo
+mongod_path: /usr/local/bin/mongod
+
+nginx_conf_path: /usr/local/etc/nginx/nginx.conf
+nginx_conf_upstream_path: /usr/local/etc/nginx/upstream.conf
+nginx_log_dir: /var/log/nginx
+nginx_path: /usr/local/sbin/nginx
+nginx_ssl_cert_path: /usr/local/etc/nginx/ssl/noc.crt
+nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
+nginx_reload_command: "service nginx reload"
+nginx_user: www
+
+nsd_log_dir: /var/log/nsq
+nsq_root: /usr/local/nsq
+
+pgbouncer_user: pgbouncer
+pgbouncer_path_pid: /var/run/pgbouncer
+
+postgres_bin_dir: /usr/local/bin
+postgres_path: /usr/local/bin/postgres
+postgres_home: /var/db/postgres
+postgres_version: "11"
+postgres_data_dir: '{{ postgres_home }}/data{{ postgres_version|replace(".","") }}'
+postgresql_conf_prefix: '{{ postgres_home }}/data{{ postgres_version|replace(".","") }}'
+postgres_superuser: postgres
+postgres_proccess: postgres
+
+tower_path: /usr/local/tower
+
+nsqd_reload_command: "service nsqd restart"
+nsqadmin_reload_command: "service nsqadmin restart"
+
+pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -Wno-return-type -I/usr/local/include"
+pip_ldflags: "-L/usr/local/lib"
+
+fake_shell: /sbin/nologin

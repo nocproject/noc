@@ -1,0 +1,80 @@
+file:
+  /etc/mongod.conf:
+    exists: true
+    mode: "0644"
+    owner: {{ mongo_user }}
+    group: root
+    filetype: file
+    contains: []
+  /etc/mongod/mongo.key:
+    exists: true
+    mode: "0400"
+    owner: {{ mongo_user }}
+    group: root
+    filetype: file
+    contains: []
+  {{ mongo_db_path }}:
+    exists: true
+    mode: "0750"
+    owner: {{ mongo_user }}
+    group: {{ mongo_user }}
+    filetype: directory
+    contains: []
+  {{ mongo_db_path }}/index:
+    exists: true
+    mode: "0700"
+    owner: {{ mongo_user }}
+    group: {{ mongo_user }}
+    filetype: directory
+    contains: []
+  {{ mongo_db_path }}/journal:
+    exists: true
+    mode: "0700"
+    owner: {{ mongo_user }}
+    group: {{ mongo_user }}
+    filetype: directory
+    contains: []
+port:
+  tcp:27017:
+    listening: true
+    ip:
+    - 127.0.0.1
+    - {{ mongo_listen_addr }}
+service:
+  mongod:
+    enabled: true
+    running: true
+user:
+  {{ mongo_user }}:
+    exists: true
+    home: {{ mongo_db_path }}
+    groups:
+    - {{ mongo_user }}
+    shell: {{ fake_shell }}
+group:
+  {{ mongo_user }}:
+    exists: true
+process:
+  mongod:
+    running: true
+{% if noc_env_type == 'prod' %}
+mount:
+  {{ mongo_db_path }}:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    filesystem: xfs
+  {{ mongo_db_path }}/index:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    filesystem: xfs
+  {{ mongo_db_path }}/journal:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    filesystem: xfs
+{% endif %}

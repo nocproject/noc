@@ -1,0 +1,22 @@
+---
+forms:
+  consul-template:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Config Manager based on Consul KV <br/>
+      <strong>Long description</strong>: Gets data from Consul and renders nginx and some other service configs and reload them if needed
+      <strong>Scale Recommendations</strong>: Will be placed on each node.<br/>
+      <strong>docs</strong>: <a href=https://github.com/hashicorp/consul-template target=_blank>Consul</a> <br/>
+      <strong>Placement constraint</strong>: On nodes with nginx, Clickhouse, NSQd <br/>
+    use_dedup:
+      label: "Use dedup"
+      type: bool
+      default: "False"
+      description: "Useful start from 20 nodes"
+      common: environment
+services:
+  consul-template:
+    level: system
+    category: external
+    depends:
+      - consul

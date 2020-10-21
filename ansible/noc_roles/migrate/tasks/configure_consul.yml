@@ -1,0 +1,44 @@
+---
+# have to be in migrate role because it's run once by default. and not in free strategy
+
+- name: call consul to setup discovery
+  run_once: "True"
+  include_role:
+    name: consul
+    tasks_from: service_config_update
+  vars:
+    consul_service_key: "noc/slots/discovery-{{ item }}/manifest"
+    consul_service_internal_key: "Limit"
+    consul_service_value: "{{ hostvars | json_query(\"*.noc_services[] | [?name=='discovery'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}"  # noqa 204
+    consul_service_token: None
+  with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
+  tags:
+    - discovery
+
+- name: call consul to setup ping
+  run_once: "True"
+  include_role:
+    name: consul
+    tasks_from: service_config_update
+  vars:
+    consul_service_key: "noc/slots/ping-{{ item }}/manifest"
+    consul_service_internal_key: "Limit"
+    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='ping'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}"  # noqa 204
+    consul_service_token: None
+  with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
+  tags:
+    - ping
+
+- name: call consul to setup classifier
+  run_once: "True"
+  include_role:
+    name: consul
+    tasks_from: service_config_update
+  vars:
+    consul_service_key: "noc/slots/classifier-{{ item }}/manifest"
+    consul_service_internal_key: "Limit"
+    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='classifier'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}"  # noqa 204
+    consul_service_token: None
+  with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
+  tags:
+    - classifier

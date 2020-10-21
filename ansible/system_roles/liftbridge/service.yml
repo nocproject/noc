@@ -1,0 +1,24 @@
+---
+- name: Liftbridge tasks
+  hosts: svc-liftbridge-exec
+  become: "True"
+  any_errors_fatal: "False"
+  serial: 50%
+  gather_facts: "True"
+  tags:
+    - liftbridge
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+    - "vars/{{ ansible_distribution }}.yml"
+  roles:
+    - role: liftbridge
+      when: liftbridge_complete is not defined
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: liftbridge
+  post_tasks:
+    - name: set liftbridge complete
+      set_fact:
+        liftbridge_complete: "True"

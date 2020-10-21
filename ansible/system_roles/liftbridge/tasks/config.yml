@@ -1,0 +1,31 @@
+---
+# File: config.yml - Liftbridge configuration tasks
+
+- name: Combine variables for config in cluster
+  set_fact:
+    cluster_config:
+      server.id: "{{ inventory_hostname }}"
+      raft.bootstrap.peers: "{{ groups['svc-liftbridge-exec'] }}"
+      min.insync.replicas: 2
+    nats_servers: "{{ nats_srv_list.split() }}"
+  when: groups['svc-liftbridge-exec'] | length > 1
+
+- name: Combine variables for config
+  set_fact:
+    cluster_config:
+      server.id: "{{ inventory_hostname }}"
+      raft.bootstrap.seed: true
+    nats_servers: "{{ nats_srv_list.split() }}"
+  when: groups['svc-liftbridge-exec'] | length == 1
+
+- name: Place liftbridge config
+  copy:
+    content: "{{ config | to_nice_yaml }}"
+    dest: "{{ liftbridge_config_path }}/liftbridge.yml"
+    owner: "{{ liftbridge_user }}"
+    group: "{{ liftbridge_group }}"
+  no_log: "{{ tower_show_secrets }}"
+  notify:
+    - restart liftbridge
+  tags:
+    - config

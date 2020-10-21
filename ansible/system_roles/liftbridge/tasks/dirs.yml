@@ -1,0 +1,14 @@
+---
+# File: dirs.yml - Directory settings
+
+- name: Create directories
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: "{{ liftbridge_user }}"
+    group: "{{ liftbridge_group }}"
+  with_items:
+    - "{{ liftbridge_config_path }}"
+    - "{{ liftbridge_data_path }}"
+    - "{{ liftbridge_log_path }}"
+    - "{{ liftbridge_run_path }}"

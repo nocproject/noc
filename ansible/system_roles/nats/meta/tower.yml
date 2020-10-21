@@ -1,0 +1,31 @@
+---
+forms:
+  nats:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Nats messaging system <br/>
+      <strong>Long description</strong>: NATS is a messaging platform that functions like a central nervous system <br/>
+      <strong>Scale Recommendations</strong>: At least one per system, or 3 like cluster. <br/>
+      <strong>docs</strong>: <a href=https://docs.nats.io/nats-server/configuration target=_blank>Nats docs</a> <br/>
+      <strong>Placement constraint</strong>: On node with Liftbridge <br/>
+    cluster_user:
+      default: noc
+      label: user for replication
+      type: str
+    cluster_password:
+      default: noc
+      label: password for replication
+      type: str
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - debug
+        - info
+
+services:
+  nats:
+    level: system
+    category: external
+    port: 4222
