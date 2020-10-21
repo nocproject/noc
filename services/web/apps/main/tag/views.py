@@ -20,6 +20,7 @@ class TagApplication(ExtDocApplication):
     # menu = [_("Setup"), _("Tag")]
     model = Tag
     query_fields = ["tag"]
+    default_ordering = ["tag"]
 
     @view(url="^ac_lookup/", method=["GET"], access=True)
     def api_ac_lookup(self, request):
@@ -30,10 +31,10 @@ class TagApplication(ExtDocApplication):
         """
         query = request.GET.get("__query")
         if query:
-            tags = Tag.objects.filter(tag__icontains=query)
+            tags = Tag.objects.filter(tag__icontains=query).order_by("tag")
         else:
             # If not query - return all
-            tags = Tag.objects.filter()
+            tags = Tag.objects.filter().order_by("tag")
         return {
             "data": [{"id": t.tag, "label": t.tag} for t in tags],
             "total": tags.count(),
