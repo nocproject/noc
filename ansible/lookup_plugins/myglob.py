@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 DOCUMENTATION:
     author:
         - Michael DeHaan <michael.dehaan@gmail.com>
@@ -48,9 +48,10 @@ RETURN:
             - list of files matched
         type: list
         element_type: string
-'''
+"""
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 import os
@@ -62,7 +63,7 @@ from ansible.module_utils._text import to_bytes, to_text
 
 class LookupModule(LookupBase):
 
-    GLOBS = frozenset(['?', '*', '['])
+    GLOBS = frozenset(["?", "*", "["])
 
     def run(self, terms, variables=None, **kwargs):
 
@@ -77,12 +78,21 @@ class LookupModule(LookupBase):
                     min_spot = x
 
             if min_spot == len(term):
-                dwimmed_path = self.find_file_in_search_path(variables, 'files', term)
+                dwimmed_path = self.find_file_in_search_path(variables, "files", term)
                 ret.append(dwimmed_path)
             else:
                 term_root = term[:min_spot]
-                dwimmed_path = self.find_file_in_search_path(variables, 'files', os.path.dirname(term_root))
-                globbed = glob.glob(to_bytes(os.path.join(dwimmed_path, os.path.basename(term_root)) + term[min_spot:], errors='surrogate_or_strict'))
-                ret.extend(to_text(g, errors='surrogate_or_strict') for g in globbed if os.path.isfile(g))
+                dwimmed_path = self.find_file_in_search_path(
+                    variables, "files", os.path.dirname(term_root)
+                )
+                globbed = glob.glob(
+                    to_bytes(
+                        os.path.join(dwimmed_path, os.path.basename(term_root)) + term[min_spot:],
+                        errors="surrogate_or_strict",
+                    )
+                )
+                ret.extend(
+                    to_text(g, errors="surrogate_or_strict") for g in globbed if os.path.isfile(g)
+                )
 
         return ret
