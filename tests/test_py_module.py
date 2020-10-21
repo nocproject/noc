@@ -79,7 +79,7 @@ def test_import(module):
         m = __import__(module, {}, {}, "*")
         assert m
     except ImportError as e:
-        if module in ALLOW_XFAIL:
+        if module in ALLOW_XFAIL or module.startswith("noc.ansible."):
             pytest.xfail(str(e))
         else:
             pytest.fail(str(e))
