@@ -46,7 +46,8 @@ def assert_var(name, should):
 
 
 args_file = argv[1]
-args_data = file(args_file).read()
+with open(args_file) as f:
+    args_data = f.read()
 args = split(args_data)
 changed = False
 changes = {}
