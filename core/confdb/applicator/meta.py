@@ -9,6 +9,8 @@
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.script.scheme import PROTOCOLS
 from noc.core.matcher import match
 from .base import BaseApplicator
@@ -27,6 +29,10 @@ class MetaApplicator(BaseApplicator):
         """
         # meta id
         yield "meta", "id", str(self.object.id)
+        # meta name
+        yield "meta", "name", str(self.object.name)
+        # meta description
+        yield "meta", "description", str(self.object.description or "")
         # meta profile
         yield "meta", "profile", self.object.profile.name
         # meta vendor
@@ -45,9 +51,29 @@ class MetaApplicator(BaseApplicator):
         # meta segment
         yield "meta", "segment", "id", str(self.object.segment.id)
         yield "meta", "segment", "name", self.object.segment.name
+        # meta administrative domain
+        for ad in AdministrativeDomain.objects.filter(
+            id__in=self.object.administrative_domain.get_path()
+        ):
+            yield "meta", "administrative-domains", ad.name, "id", str(ad.id)
         # meta management
         yield "meta", "management", "address", self.object.address
         yield "meta", "management", "protocol", PROTOCOLS[self.object.scheme]
+        yield "meta", "management", "pool", str(self.object.pool.name)
+        if self.object.vrf:
+            yield "meta", "management", "vrf", "id", str(self.object.vrf.id)
+            yield "meta", "management", "vrf", "name", str(self.object.vrf.name)
+        # Client groups
+        if self.object.static_client_groups or self.object.static_service_groups:
+            for group in ResourceGroup.objects.filter(
+                id__in=self.object.static_client_groups + self.object.static_service_groups
+            ):
+                if str(group.id) in self.object.static_client_groups:
+                    yield "meta", "client-groups", group.name, "id", str(group.id)
+                    yield "meta", "client-groups", group.name, "technology", group.technology.name
+                else:
+                    yield "meta", "service-groups", group.name, "id", str(group.id)
+                    yield "meta", "service-groups", group.name, "technology", group.technology.name
         # meta tags
         if self.object.tags:
             for tag in self.object.tags:
