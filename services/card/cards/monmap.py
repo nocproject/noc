@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MonMap
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -79,21 +79,7 @@ class MonMapCard(BaseCard):
         return list(Layer.objects.filter(code__startswith="pop_"))
 
     def get_ajax_data(self, **kwargs):
-        def update_dict(d, s):
-            for k in s:
-                if k in d:
-                    d[k] -= s[k]
-                else:
-                    d[k] = s[k]
-
         object_id = self.handler.get_argument("object_id")
-        # zoom = int(self.handler.get_argument("z"))
-        # west = float(self.handler.get_argument("w"))
-        # east = float(self.handler.get_argument("e"))
-        # north = float(self.handler.get_argument("n"))
-        # south = float(self.handler.get_argument("s"))
-        # ms = int(self.handler.get_argument("maintenance"))
-        # active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
         if self.current_user.is_superuser:
             moss = ManagedObject.objects.filter(is_managed=True)
         else:
@@ -103,11 +89,6 @@ class MonMapCard(BaseCard):
         objects = []
         objects_status = {"error": [], "warning": [], "good": [], "maintenance": []}
         sss = {"error": {}, "warning": {}, "good": {}, "maintenance": {}}
-        # s_def = {
-        #     "service": {},
-        #     "subscriber": {},
-        #     "interface": {}
-        # }
         services = defaultdict(list)
         try:
             object_root = Object.objects.filter(id=object_id).first()
@@ -134,10 +115,16 @@ class MonMapCard(BaseCard):
             services_map = self.get_objects_summary_met(mo_ids)
         # Getting containers name and coordinates
         containers = {
-            str(o["_id"]): (o["name"], o["data"])
-            for o in Object.objects.filter(data__geopoint__exists=True, id__in=con,)
+            str(o["_id"]): (
+                o["name"],
+                {
+                    "%s.%s" % (item["interface"], item["attr"]): item["value"]
+                    for item in o.get("data", [])
+                },
+            )
+            for o in Object.objects.filter(data__match={"interface": "geopoint"}, id__in=con)
             .read_preference(ReadPreference.SECONDARY_PREFERRED)
-            .fields(id=1, name=1, data__geopoint__x=1, data__geopoint__y=1, data__address__text=1)
+            .fields(id=1, name=1, data=1)
             .as_pymongo()
         }
         # Main Loop. Get ManagedObject group by container
@@ -145,11 +132,9 @@ class MonMapCard(BaseCard):
             moss.values_list("id", "name", "container").order_by("container"), key=lambda o: o[2]
         ):
             name, data = containers.get(container, ("", {"geopoint": {}}))
-            x = data["geopoint"].get("x")
-            y = data["geopoint"].get("y")
-            address = ""
-            if "address" in data:
-                address = data["address"].get("text", "")
+            x = data.get("geopoint.x")
+            y = data.get("geopoint.y")
+            address = data.get("address.text", "")
             ss = {"objects": [], "total": 0, "error": 0, "warning": 0, "good": 0, "maintenance": 0}
             for mo_id, mo_name, container in mol:
                 # Status by alarm severity
@@ -162,7 +147,6 @@ class MonMapCard(BaseCard):
                 elif alarms.get(mo_id, 0) > 2000:
                     status = "error"
                 objects_status[status] += [mo_id]
-                # update_dict(sss[status], s_service["service"])
                 ss[status] += 1
                 ss["total"] += 1
                 services_ss = [
@@ -199,27 +183,14 @@ class MonMapCard(BaseCard):
                 )
             else:
                 m_services, m_subscribers = ServiceSummary.get_direct_summary(objects_status[r])
-            # update_dict(s_services["service"], m["serivce"])
-            # if not object_root and r == "good":
-            #     for s in s_services["service"]:
-            #         if s in m["service"]:
-            #             s_services["service"][s] -= m["service"][s]
-            #     m = s_services
             profiles |= set(m_services)
             sss[r] = m_services
-
         for r in sorted(sss, key=lambda k: ("error", "warning", "good", "maintenance").index(k)):
-            # for p in sss[r]:
             for p in profiles:
                 services[p] += [(r, sss[r].get(p, None))]
         return {
             "objects": objects,
-            "summary": self.f_glyph_summary(
-                {
-                    "service": services
-                    # "subscriber": subscribers
-                }
-            ),
+            "summary": self.f_glyph_summary({"service": services}),
         }
 
     @staticmethod

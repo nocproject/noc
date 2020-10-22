@@ -12,14 +12,15 @@ import base64
 from threading import Lock
 import operator
 import re
+from typing import Optional, List, Dict, Set, Tuple, Iterable, Any, Union
 
 # Third-party modules
 import cachetools
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel, ConnectionRule
+from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.modelmapping import ModelMapping
@@ -41,19 +42,23 @@ class AssetCheck(DiscoveryCheck):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.unknown_part_no = {}  # part_no -> list of variants
-        self.pn_description = {}  # part_no -> Description
-        self.vendors = {}  # code -> Vendor instance
-        self.objects = []  # [(type, object, context, serial)]
-        self.to_disconnect = (
-            set()
-        )  # Save processed connection. [(in_connection, object, out_connection), ... ]
-        self.rule = defaultdict(list)  # Connection rule. type -> [rule1, ruleN]
+        self.unknown_part_no: Dict[str, Set[str]] = {}  # part_no -> list of variants
+        self.pn_description: Dict[str, str] = {}  # part_no -> Description
+        self.vendors: Dict[str, Vendor] = {}  # code -> Vendor instance
+        self.objects: List[
+            Tuple[str, Union[Object, str], Dict[str, Union[int, str]], Optional[str]]
+        ] = []  # [(type, object, context, serial)]
+        self.to_disconnect: Set[
+            Tuple[Object, str, Object, str]
+        ] = set()  # Save processed connection. [(in_connection, object, out_connection), ... ]
+        self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
+            list
+        )  # Connection rule. type -> [rule1, ruleN]
         self.rule_context = {}
-        self.ctx = {}
-        self.stack_member = {}  # object -> stack member numbers
-        self.managed = set()  # Object ids
-        self.unk_model = {}  # name -> model
+        self.ctx: Dict[str, Union[int, str]] = {}
+        self.stack_member: Dict["Object", str] = {}  # object -> stack member numbers
+        self.managed: Set[str] = set()  # Object ids
+        self.unk_model: Dict[str, ObjectModel] = {}  # name -> model
         self.lost_and_found = self.get_lost_and_found(self.object)
 
     def handler(self):
@@ -85,15 +90,15 @@ class AssetCheck(DiscoveryCheck):
 
     def submit(
         self,
-        type,
-        part_no,
-        number=None,
-        builtin=False,
-        vendor=None,
-        revision=None,
-        serial=None,
-        mfg_date=None,
-        description=None,
+        type: str,
+        part_no: List[str],
+        number: Optional[str] = None,
+        builtin: bool = False,
+        vendor: Optional[str] = None,
+        revision: Optional[str] = None,
+        serial: Optional[str] = None,
+        mfg_date: Optional[str] = None,
+        description: Optional[str] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -181,15 +186,17 @@ class AssetCheck(DiscoveryCheck):
                 if scope:
                     self.set_context(scope, number)
         # Find existing object or create new
-        o = Object.objects.filter(model=m.id, data__asset__serial=serial).first()
+        o: Optional["Object"] = Object.objects.filter(
+            model=m.id, data__match={"interface": "asset", "attr": "serial", "value": serial}
+        ).first()
         if not o:
             # Create new object
             self.logger.info("Creating new object. model='%s', serial='%s'", m.name, serial)
-            data = {"asset": {"serial": serial}}
+            data = [ObjectAttr(scope="", interface="asset", attr="serial", value=serial)]
             if revision:
-                data["asset"]["revision"] = revision
+                data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
             if mfg_date:
-                data["asset"]["mfg_date"] = mfg_date
+                data += [ObjectAttr(scope="", interface="asset", attr="mfg_date", value=mfg_date)]
             if self.object.container:
                 container = self.object.container.id
             else:
@@ -263,7 +270,7 @@ class AssetCheck(DiscoveryCheck):
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
 
-    def prepare_context(self, type, number):
+    def prepare_context(self, type: str, number: Optional[str]):
         self.set_context("N", number)
         if type and type in self.rule_context:
             scope, reset_scopes = self.rule_context[type]
@@ -272,7 +279,7 @@ class AssetCheck(DiscoveryCheck):
             if reset_scopes:
                 self.reset_context(reset_scopes)
 
-    def update_name(self, object):
+    def update_name(self, object: Object):
         n = self.get_name(object, self.object)
         if n and n != object.name:
             object.name = n
@@ -285,7 +292,9 @@ class AssetCheck(DiscoveryCheck):
                 op="CHANGE",
             )
 
-    def iter_object(self, i, scope, value, target_type, fwd):
+    def iter_object(
+        self, i: int, scope: str, value: int, target_type: str, fwd: bool
+    ) -> Iterable[Tuple[str, Union[Object, str], Dict[str, Union[int, str]]]]:
         # Search backwards
         if not fwd:
             for j in range(i - 1, -1, -1):
@@ -305,7 +314,7 @@ class AssetCheck(DiscoveryCheck):
                 else:
                     return
 
-    def expand_context(self, s, ctx):
+    def expand_context(self, s: str, ctx: Dict[str, int]) -> str:
         """
         Replace values in context
         """
@@ -374,7 +383,7 @@ class AssetCheck(DiscoveryCheck):
                 if found:
                     break
 
-    def connect_p2p(self, o1, c1, o2, c2):
+    def connect_p2p(self, o1: Object, c1: str, o2: Object, c2: str):
         """
         Create P2P connection o1:c1 - o2:c2
         """
@@ -400,7 +409,7 @@ class AssetCheck(DiscoveryCheck):
         except ConnectionError as e:
             self.logger.error("Failed to connect: %s", e)
 
-    def connect_twinax(self, o1, c1, o2, c2):
+    def connect_twinax(self, o1: Object, c1: str, o2: Object, c2: str):
         """
         Connect twinax object o1 and virtual connection c1 to o2:c2
         """
@@ -458,7 +467,9 @@ class AssetCheck(DiscoveryCheck):
                     "Unknown part number for %s: %s (%s)", platform, ", ".join(pns), description
                 )
 
-    def register_unknown_part_no(self, vendor, part_no, descripton):
+    def register_unknown_part_no(
+        self, vendor: "Vendor", part_no: Union[List[str], str], descripton: Optional[str]
+    ):
         """
         Register missed part number
         """
@@ -471,7 +482,7 @@ class AssetCheck(DiscoveryCheck):
                 self.unknown_part_no[p].add(pp)
             UnknownModel.mark_unknown(vendor.code[0], self.object, p, descripton)
 
-    def get_unknown_part_no(self):
+    def get_unknown_part_no(self) -> List[List[str]]:
         """
         Get list of missed part number variants
         """
@@ -482,7 +493,7 @@ class AssetCheck(DiscoveryCheck):
                 r += [n]
         return r
 
-    def get_vendor(self, v):
+    def get_vendor(self, v: Optional[str]) -> Optional["Vendor"]:
         """
         Get vendor instance or None
         """
@@ -506,7 +517,7 @@ class AssetCheck(DiscoveryCheck):
             self.vendors[v] = None
             return None
 
-    def set_rule(self, rule):
+    def set_rule(self, rule: "ConnectionRule"):
         self.logger.debug("Setting connection rule '%s'", rule.name)
         # Compile context mappings
         self.rule_context = {}
@@ -517,7 +528,7 @@ class AssetCheck(DiscoveryCheck):
         for r in rule.rules:
             self.rule[r.match_type] += [r]
 
-    def set_context(self, name, value):
+    def set_context(self, name: str, value: Optional[str]):
         self.ctx[name] = value
         n = "N%s" % name
         if n not in self.ctx:
@@ -526,7 +537,7 @@ class AssetCheck(DiscoveryCheck):
             self.ctx[n] += 1
         self.logger.debug("Set context %s = %s -> %s", name, value, str_dict(self.ctx))
 
-    def reset_context(self, names):
+    def reset_context(self, names: List[str]):
         for n in names:
             if n in self.ctx:
                 del self.ctx[n]
@@ -540,7 +551,13 @@ class AssetCheck(DiscoveryCheck):
         Get all objects managed by managed object
         """
         self.managed = set(
-            Object.objects.filter(data__management__managed_object=self.object.id).values_list("id")
+            Object.objects.filter(
+                data__match={
+                    "interface": "management",
+                    "attr": "managed_object",
+                    "value": self.object.id,
+                }
+            ).values_list("id")
         )
 
     def check_management(self):
@@ -560,7 +577,9 @@ class AssetCheck(DiscoveryCheck):
                     op="CHANGE",
                 )
 
-    def resolve_object(self, name, m_c, t_object, t_c, serial):
+    def resolve_object(
+        self, name: str, m_c: str, t_object: Object, t_c: str, serial: str
+    ) -> Optional["Object"]:
         """
         Resolve object type
         """
@@ -613,7 +632,11 @@ class AssetCheck(DiscoveryCheck):
             container = self.object.container.id
         else:
             container = self.lost_and_found
-        o = Object(model=model, data={"asset": {"serial": serial}}, container=container)
+        o = Object(
+            model=model,
+            data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)],
+            container=container,
+        )
         o.save()
         o.log(
             "Created by asset_discovery",
@@ -623,7 +646,9 @@ class AssetCheck(DiscoveryCheck):
         )
         return o
 
-    def get_model_map(self, vendor, part_no, serial):
+    def get_model_map(
+        self, vendor: str, part_no: Union[List[str], str], serial: Optional[str]
+    ) -> Optional["ObjectModel"]:
         """
         Try to resolve using model map
         """
@@ -639,7 +664,7 @@ class AssetCheck(DiscoveryCheck):
                 continue
             if mm.from_serial and mm.to_serial:
                 if mm.from_serial <= serial and serial <= mm.to_serial:
-                    return True
+                    return mm.model
             else:
                 self.logger.debug("Mapping %s %s %s to %s", vendor, part_no, serial, mm.model.name)
                 return mm.model
@@ -656,7 +681,7 @@ class AssetCheck(DiscoveryCheck):
             return None
         return lf.id
 
-    def generate_serial(self, model, number):
+    def generate_serial(self, model: ObjectModel, number: Optional[str]) -> str:
         """
         Generate virtual serial number
         """
@@ -667,7 +692,7 @@ class AssetCheck(DiscoveryCheck):
         return "NOC%s" % smart_text(base64.b32encode(h.digest())[:7])
 
     @staticmethod
-    def get_name(obj, managed_object=None):
+    def get_name(obj: Object, managed_object: Optional[Any] = None) -> str:
         """
         Generate discovered object's name
         """
@@ -685,7 +710,7 @@ class AssetCheck(DiscoveryCheck):
             self.logger.info("Disconnect: %s:%s ->X<- %s:%s", o1, c1, c2, o2)
             self.disconnect_p2p(o1, c1, c2, o2)
 
-    def disconnect_p2p(self, o1, c1, c2, o2):
+    def disconnect_p2p(self, o1: "Object", c1: str, c2: str, o2: "Object"):
         """
         Disconnect P2P connection o1:c1 - o2:c2
         """
@@ -708,7 +733,7 @@ class AssetCheck(DiscoveryCheck):
         except ConnectionError as e:
             self.logger.error("Failed to disconnect: %s", e)
 
-    def clean_serial(self, model, number, serial):
+    def clean_serial(self, model: "ObjectModel", number: Optional[str], serial: Optional[str]):
         # Empty value
         if not serial or serial == "None":
             new_serial = self.generate_serial(model, number)

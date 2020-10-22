@@ -9,6 +9,7 @@
 import os
 from threading import Lock
 import operator
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -114,9 +115,20 @@ class ModelInterface(Document):
     uuid = UUIDField(binary=True)
 
     _id_cache = cachetools.TTLCache(1000, 10)
+    _name_cache = cachetools.TTLCache(1000, 10)
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id) -> Optional["ModelInterface"]:
+        return ModelInterface.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name: str) -> Optional["ModelInterface"]:
+        return ModelInterface.objects.filter(name=name).first()
 
     def get_attr(self, name):
         for a in self.attrs:

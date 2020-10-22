@@ -64,7 +64,13 @@ class LinkedPoP(object):
                 {"_id": {"$in": list(r_ifaces)}}, {"_id": 0, "managed_object": 1}
             )
         )
-        for o in Object.objects.filter(data__management__managed_object__in=r_mos):
+        for o in Object.objects.filter(
+            data__match={
+                "interface": "management",
+                "attr": "managed_object",
+                "value__in": list(r_mos),
+            }
+        ):
             pop = o.get_pop()
             if pop:
                 linked.add(pop)

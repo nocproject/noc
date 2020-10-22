@@ -29,7 +29,9 @@ class Command(BaseCommand):
     def handle_find_serial(self, serials):
         connect()
         for serial in serials:
-            for obj in Object.objects.filter(data__asset__serial=serial):
+            for obj in Object.objects.filter(
+                data__match={"interface": "asset", "attr": "serial", "value": serial}
+            ):
                 self.print("@@@ Serial %s" % serial)
                 self.dump_object(obj)
 

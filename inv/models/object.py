@@ -10,16 +10,17 @@ import datetime
 import operator
 from threading import Lock
 from collections import namedtuple
+from typing import Optional, Any, Dict, Union, List, Set
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
-    DictField,
     ListField,
     PointField,
     LongField,
     EmbeddedDocumentField,
+    DynamicField,
 )
 from mongoengine import signals
 import cachetools
@@ -59,6 +60,18 @@ class ObjectConnectionData(EmbeddedDocument):
         return self.name
 
 
+class ObjectAttr(EmbeddedDocument):
+    interface = StringField()
+    attr = StringField()
+    value = DynamicField()
+    scope = StringField()
+
+    def __str__(self):
+        if self.scope:
+            return "%s.%s@%s = %s" % (self.interface, self.attr, self.scope, self.value)
+        return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+
 @bi_sync
 @on_save
 @datastream
@@ -82,14 +95,13 @@ class Object(Document):
             "data",
             "container",
             ("name", "container"),
-            ("model", "data.asset.serial"),
-            "data.management.managed_object",
+            ("data.interface", "data.attr", "data.value"),
         ],
     }
 
     name = StringField()
     model = PlainReferenceField(ObjectModel)
-    data = DictField()
+    data = ListField(EmbeddedDocumentField(ObjectAttr))
     container = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
     # Map
@@ -112,12 +124,12 @@ class Object(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["Object"]:
         return Object.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["Object"]:
         return Object.objects.filter(bi_id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -143,37 +155,35 @@ class Object(Document):
     def set_point(self):
         from noc.gis.map import map
 
+        # Reset previous data
         self.layer = None
         self.point = None
-        geo = self.data.get("geopoint")
-        if not geo:
-            return
+        # Get points
+        x, y, srid = self.get_data_tuple("geopoint", ("x", "y", "srid"))
+        if x is None or y is None:
+            return  # No point data
+        # Get layer
         layer_code = self.model.get_data("geopoint", "layer")
         if not layer_code:
             return
         layer = Layer.get_by_code(layer_code)
         if not layer:
             return
-        x = geo.get("x")
-        y = geo.get("y")
-        srid = geo.get("srid")
-        if x and y:
-            self.layer = layer
-            self.point = map.get_db_point(x, y, srid=srid)
+        # Update actual data
+        self.layer = layer
+        self.point = map.get_db_point(x, y, srid=srid)
 
     def on_save(self):
         def get_coordless_objects(o):
             r = {str(o.id)}
             for co in Object.objects.filter(container=o.id):
-                g = co.data.get("geopoint")
-                if g and g.get("x") and g.get("y"):
-                    continue
-                else:
+                cx, cy = co.get_data_tuple("geopoint", ("x", "y"))
+                if cx is None and cy is None:
                     r |= get_coordless_objects(co)
             return r
 
-        geo = self.data.get("geopoint")
-        if geo and geo.get("x") and geo.get("y"):
+        x, y = self.get_data_tuple("geopoint", ("x", "y"))
+        if x is not None and y is not None:
             # Rebuild connection layers
             for ct in self.REBUILD_CONNECTIONS:
                 for c, _, _ in self.get_genderless_connections(ct):
@@ -184,7 +194,7 @@ class Object(Document):
             mos = get_coordless_objects(self)
             if mos:
                 ManagedObject.objects.filter(container__in=mos).update(
-                    x=geo.get("x"), y=geo.get("y"), default_zoom=self.layer.default_zoom
+                    x=x, y=y, default_zoom=self.layer.default_zoom
                 )
         if self._created:
             if self.container:
@@ -213,7 +223,7 @@ class Object(Document):
                     new_pop.update_pop_links()
 
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
-    def get_path(self):
+    def get_path(self) -> List[str]:
         """
         Returns list of parent segment ids
         :return:
@@ -222,36 +232,131 @@ class Object(Document):
             return self.container.get_path() + [self.id]
         return [self.id]
 
-    def get_data(self, interface, key):
+    def get_data(self, interface: str, key: str, scope: Optional[str] = None) -> Any:
         attr = ModelInterface.get_interface_attr(interface, key)
         if attr.is_const:
             # Lookup model
             return self.model.get_data(interface, key)
-        else:
-            v = self.data.get(interface, {})
-            return v.get(key)
+        for item in self.data:
+            if item.interface == interface and item.attr == key:
+                if not scope or item.scope == scope:
+                    return item.value
+        return None
 
-    def set_data(self, interface, key, value):
+    def get_data_dict(
+        self, interface: str, keys: Iterable, scope: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Get multiple keys from single interface. Returns dict with values for every given key.
+        If key is missed, return None value
+
+        :param interface:
+        :param keys: Iterable contains key names
+        :param scope:
+        :return:
+        """
+        kset = set(keys)
+        r = {k: None for k in kset}
+        for item in self.data:
+            if item.interface == interface and item.attr in kset:
+                if not scope or item.scope == scope:
+                    r[item.attr] = item.value
+        return r
+
+    def get_data_tuple(
+        self, interface: str, keys: Union[List, Tuple], scope: Optional[str] = None
+    ) -> Tuple[Any, ...]:
+        """
+        Get multiple keys from single interface. Returns tuple with values for every given key.
+        If key is missed, return None value
+
+        :param interface:
+        :param keys: List or tuple with key names
+        :param scope:
+        :return:
+        """
+        r = self.get_data_dict(interface, keys, scope)
+        return tuple(r.get(k) for k in keys)
+
+    def get_effective_data(self) -> List[ObjectAttr]:
+        """
+        Return effective object data, including the model's defaults
+        :return:
+        """
+        seen: Set[Tuple[str, str, str]] = set()  # (interface, attr, scope
+        r: List[ObjectAttr] = []
+        # Object attributes
+        for item in self.data:
+            k = (item.interface, item.attr, item.scope or "")
+            if k in seen:
+                continue
+            r += [item]
+            seen.add(k)
+        # Model attributes
+        for i in self.model.data:
+            for a in self.model.data[i]:
+                k = (i, a, "")
+                if k in seen:
+                    continue
+                r += [ObjectAttr(interface=i, attr=a, scope="", value=self.model.data[i][a])]
+                seen.add(k)
+        # Sort according to interface
+        sorting_keys: Dict[str, str] = {}
+        for ni, i in enumerate(sorted(set(x[0] for x in seen))):
+            mi = ModelInterface.get_by_name(i)
+            if not mi:
+                continue
+            for na, a in enumerate(mi.attrs):
+                sorting_keys["%s.%s" % (i, a.name)] = "%06d.%06d" % (ni, na)
+        # Return sorted result
+        return list(
+            sorted(
+                r,
+                key=lambda oa: "%s.%s"
+                % (sorting_keys.get("%s.%s" % (oa.interface, oa.attr), "999999.999999"), oa.scope),
+            )
+        )
+
+    def set_data(self, interface: str, key: str, value: Any, scope: Optional[str] = None) -> None:
         attr = ModelInterface.get_interface_attr(interface, key)
         if attr.is_const:
             raise ModelDataError("Cannot set read-only value")
         value = attr._clean(value)
-        # @todo: Check interface restrictions
-        if interface not in self.data:
-            self.data[interface] = {}
-        self.data[interface][key] = value
+        for item in self.data:
+            if item.interface == interface and item.attr == key:
+                if not scope or item.scope == scope:
+                    item.value = value
+                    break
+        else:
+            # Insert new item
+            self.data += [
+                ObjectAttr(interface=interface, attr=attr.name, value=value, scope=scope or "")
+            ]
 
-    def reset_data(self, interface, key):
-        attr = ModelInterface.get_interface_attr(interface, key)
-        if attr.is_const:
+    def reset_data(
+        self, interface: str, key: Union[str, Iterable], scope: Optional[str] = None
+    ) -> None:
+        if isinstance(key, str):
+            kset = {key}
+        else:
+            kset = set(key)
+        v = [ModelInterface.get_interface_attr(interface, k).is_const for k in kset]
+        if any(v):
             raise ModelDataError("Cannot reset read-only value")
-        if interface in self.data and key in self.data[interface]:
-            del self.data[interface][key]
+        self.data += [
+            item
+            for item in self.data
+            if item.interface != interface
+            or (scope and item.scope != scope)
+            or item.attr not in kset
+        ]
 
     def has_connection(self, name):
         return self.model.has_connection(name)
 
-    def get_p2p_connection(self, name):
+    def get_p2p_connection(
+        self, name: str
+    ) -> Tuple[Optional["ObjectConnection"], Optional["Object"], Optional[str]]:
         """
         Get neighbor for p2p connection (s and mf types)
         Returns connection, remote object, remote connection or
@@ -267,7 +372,9 @@ class Object(Document):
         # Strange things happen
         return None, None, None
 
-    def get_genderless_connections(self, name):
+    def get_genderless_connections(
+        self, name: str
+    ) -> List[Tuple["ObjectConnection", "Object", str]]:
         r = []
         for c in ObjectConnection.objects.filter(
             __raw__={"connection": {"$elemMatch": {"object": self.id, "name": name}}}
@@ -277,7 +384,7 @@ class Object(Document):
                     r += [[c, x.object, x.name]]
         return r
 
-    def disconnect_p2p(self, name):
+    def disconnect_p2p(self, name: str):
         """
         Remove connection *name*
         """
@@ -286,7 +393,14 @@ class Object(Document):
             self.log("'%s' disconnected" % name, system="CORE", op="DISCONNECT")
             c.delete()
 
-    def connect_p2p(self, name, remote_object, remote_name, data, reconnect=False):
+    def connect_p2p(
+        self,
+        name: str,
+        remote_object: "Object",
+        remote_name: str,
+        data: Dict[str, Any],
+        reconnect: bool = False,
+    ) -> Optional["ObjectConnection"]:
         lc = self.model.get_model_connection(name)
         if lc is None:
             raise ConnectionError("Local connection not found: %s" % name)
@@ -320,7 +434,7 @@ class Object(Document):
                 if reconnect:
                     if r_object.id == remote_object.id and r_name == remote_name:
                         # Same connection exists
-                        n_data = deep_merge(ec.data, data)
+                        n_data = deep_merge(ec.data, data)  # Merge ObjectConnection
                         if n_data != ec.data:
                             # Update data
                             ec.data = n_data
@@ -348,7 +462,13 @@ class Object(Document):
         return c
 
     def connect_genderless(
-        self, name, remote_object, remote_name, data=None, type=None, layer=None
+        self,
+        name: str,
+        remote_object: "Object",
+        remote_name: str,
+        data: Dict[str, Any] = None,
+        type: Optional[str] = None,
+        layer: Optional[Layer] = None,
     ):
         """
         Connect two genderless connections
@@ -388,7 +508,7 @@ class Object(Document):
             "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
 
-    def put_into(self, container):
+    def put_into(self, container: "Object"):
         """
         Put object into container
         """
@@ -403,14 +523,12 @@ class Object(Document):
         # Connect to parent
         self.container = container.id if container else None
         # Reset previous rack position
-        if self.data.get("rackmount"):
-            for k in ("position", "side", "shift"):
-                if k in self.data["rackmount"]:
-                    del self.data["rackmount"][k]
+        self.reset_data("rackmount", ("position", "side", "shift"))
+        #
         self.save()
         self.log("Insert into %s" % (container or "Root"), system="CORE", op="INSERT")
 
-    def get_content(self):
+    def get_content(self) -> "Object":
         """
         Returns all items directly put into container
         """
@@ -421,7 +539,7 @@ class Object(Document):
             return ro.get_local_name_path() + [rn]
         return []
 
-    def get_name_path(self):
+    def get_name_path(self) -> List[str]:
         """
         Return list of container names
         """
@@ -458,7 +576,7 @@ class Object(Document):
     def get_log(self):
         return ObjectLog.objects.filter(object=self.id).order_by("ts")
 
-    def get_lost_and_found(self):
+    def get_lost_and_found(self) -> Optional["Object"]:
         m = ObjectModel.get_by_name("Lost&Found")
         c = self.container
         while c:
@@ -483,7 +601,7 @@ class Object(Document):
             else:
                 o.put_into(target)
 
-    def iter_connections(self, direction):
+    def iter_connections(self, direction: Optional[str]) -> Iterable[Tuple[str, "Object", str]]:
         """
         Yields connections of specified direction as tuples of
         (name, remote_object, remote_name)
@@ -546,7 +664,7 @@ class Object(Document):
                 c.connection = left
                 c.save()
 
-    def get_pop(self):
+    def get_pop(self) -> Optional["Object"]:
         """
         Find enclosing PoP
         :returns: PoP instance or None
@@ -558,7 +676,7 @@ class Object(Document):
             c = c.container
         return None
 
-    def get_coordinates_zoom(self):
+    def get_coordinates_zoom(self) -> Tuple[Optional[float], Optional[float], Optional[int]]:
         """
         Get managed object's coordinates
         # @todo: Speedup?
@@ -567,8 +685,7 @@ class Object(Document):
         c = self
         while c:
             if c.point and c.layer:
-                x = c.get_data("geopoint", "x")
-                y = c.get_data("geopoint", "y")
+                x, y = c.get_data_tuple("geopoint", ("x", "y"))
                 zoom = c.layer.default_zoom or 11
                 return x, y, zoom
             if c.container:
@@ -587,10 +704,12 @@ class Object(Document):
         """
         if hasattr(mo, "id"):
             mo = mo.id
-        return cls.objects.filter(data__management__managed_object=mo)
+        return cls.objects.filter(
+            data__match={"interface": "management", "attr": "managed_object", "value": mo}
+        )
 
     @classmethod
-    def get_by_path(cls, path, hints=None):
+    def get_by_path(cls, path: List[str], hints=None) -> Optional["Object"]:
         """
         Get object by given path.
         :param path: List of names following to path
@@ -608,7 +727,7 @@ class Object(Document):
                     return Object.get_by_id(h)
         return current
 
-    def update_pop_links(self, delay=20):
+    def update_pop_links(self, delay: int = 20):
         call_later("noc.inv.util.pop_links.update_pop_links", delay, pop_id=self.id)
 
     @classmethod
@@ -620,7 +739,7 @@ class Object(Document):
         if "container" in values and values["container"]:
             document._cache_container = values["container"]
 
-    def get_address_text(self):
+    def get_address_text(self) -> Optional[str]:
         """
         Return first found address.text value upwards the path
         :return: Address text or None
@@ -636,7 +755,7 @@ class Object(Document):
                 break
         return None
 
-    def get_object_serials(self, chassis_only=True):
+    def get_object_serials(self, chassis_only: bool = True) -> List[str]:
         """
         Gettint object serialNumber
         :param chassis_only: With serial numbers inner objects

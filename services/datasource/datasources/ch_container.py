@@ -26,11 +26,13 @@ class CHContainerDataSource(BaseDataSource):
             {"_id": 1, "bi_id": 1, "name": 1, "container": 1, "data.address.text": 1},
             no_cursor_timeout=True,
         ):
-            data = obj.get("data", {})
+            address = [
+                a for a in obj["data"] if a and a["interface"] == "address" and a["attr"] == "text"
+            ]
             yield (
                 obj["bi_id"],
                 obj["_id"],
                 obj.get("name", ""),
                 bi_hash(obj["container"]) if obj.get("container") else "",
-                data["address"].get("text", "") if data and "address" in data else "",
+                address[0] if address else "",
             )
