@@ -58,7 +58,7 @@ def get_py_modules_list():
         if path.startswith(".") or not path.endswith(".py"):
             continue
         parts = path.split(os.sep)
-        if parts[0] == "tests" or path == "setup.py" or "tests" in parts:
+        if parts[0] == "tests" or path == "setup.py" or "tests" in parts or parts[0] == "ansible":
             continue
         fn = parts[-1]
         if fn.startswith("."):
@@ -79,7 +79,7 @@ def test_import(module):
         m = __import__(module, {}, {}, "*")
         assert m
     except ImportError as e:
-        if module in ALLOW_XFAIL or module.startswith("noc.ansible."):
+        if module in ALLOW_XFAIL or module.startswith("ansible."):
             pytest.xfail(str(e))
         else:
             pytest.fail(str(e))
