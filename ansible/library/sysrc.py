@@ -15,7 +15,7 @@ def read_var(name):
     rc = process.returncode
 
     if rc != 0 or stderr != "":
-        print(dumps({"failed": True, "msg": "failed to read variable named " + name}))
+        print(dumps({"failed": True, "msg": "failed to read variable named %s" % name}))
         exit(1)
     else:
         stdout = stdout[:-1]
@@ -24,14 +24,14 @@ def read_var(name):
 
 def write_var(name, value):
     """Write variable with name and value"""
-    binding = name + "=" + value
+    binding = "%s=%s" % (name, value)
     args = ["sysrc", "-n", binding]
     process = Popen(args, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     rc = process.returncode
 
     if rc != 0 or stderr != "":
-        print(dumps({"failed": True, "msg": "failed to write variable " + binding}))
+        print(dumps({"failed": True, "msg": "failed to write variable %s" % binding}))
         exit(1)
     else:
         stdout = stdout[:-1]
@@ -41,41 +41,41 @@ def write_var(name, value):
 def assert_var(name, should):
     """Check if variable have value called 'should'"""
     actual = read_var(name)
-    if actual != should:
-        print(dumps({"failed": True, "msg": "failed assertion. " + name + " != " + should}))
-        exit(1)
-    else:
+    if actual == should:
         return should
+    print(dumps({"failed": True, "msg": "failed assertion. %s != %s" % (name, should)}))
+    exit(1)
 
 
-args_file = argv[1]
-with open(args_file) as f:
-    args_data = f.read()
-args = split(args_data)
-changed = False
-changes = {}
-defined = {}
+if __name__ == "__main__":
+    args_file = argv[1]
+    with open(args_file) as f:
+        args_data = f.read()
+    args = split(args_data)
+    changed = False
+    changes = {}
+    defined = {}
 
-for arg in args:
-    if "=" in arg:
-        (name, new_value) = arg.split("=")
+    for arg in args:
+        if "=" not in arg:
+            continue
+        name, new_value = arg.split("=")
         defined[name] = new_value
         old_value = read_var(name)
+        if old_value == new_value:
+            continue
+        changed = True
+        changes[name] = new_value
+        write_var(name, new_value)
+        assert_var(name, new_value)
 
-        if old_value != new_value:
-            changed = True
-            changes[name] = new_value
-
-            write_var(name, new_value)
-            assert_var(name, new_value)
-
-print(
-    dumps(
-        {
-            "changed": changed,
-            "defined": defined,
-            "changes": changes,
-        }
+    print(
+        dumps(
+            {
+                "changed": changed,
+                "defined": defined,
+                "changes": changes,
+            }
+        )
     )
-)
-exit(0)
+    exit(0)
