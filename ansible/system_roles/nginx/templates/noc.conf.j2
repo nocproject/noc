@@ -1,0 +1,286 @@
+#jinja2: lstrip_blocks: True
+{% if ansible_distribution == "FreeBSD" %}
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+{% endif %}
+
+include upstream.conf;
+
+{% if nginx_json_logging | bool%}
+log_format noc_format '{ "@timestamp": "$time_iso8601", '
+                         '"@fields": { '
+                         '"remote_addr": "$remote_addr", '
+                         '"remote_user": "$remote_user", '
+                         '"body_bytes_sent": "$body_bytes_sent", '
+                         '"request_time": "$request_time", '
+                         '"status": "$status", '
+                         '"request": "$request", '
+                         '"request_method": "$request_method", '
+                         '"http_referrer": "$http_referer", '
+                         '"request_time": "$request_time", '
+                         '"upstream_addr": "$upstream_addr",'
+                         '"upstream_response_time": "$upstream_response_time", '
+                         '"http_user_agent": "$http_user_agent" } }';
+{% else %}
+log_format noc_format '$remote_addr - $remote_user [$time_local] '
+    '"$request" $status $body_bytes_sent '
+    '"$http_referer" "$http_user_agent" '
+    '$upstream_addr '
+    '$request_time $upstream_response_time $pipe';
+
+{% endif %}
+
+{% if nginx_http_redirect | bool%}
+server {
+    listen 80;
+    server_name {{ noc_web_host or ansible_nodename }};
+    location / {
+        return 301 https://{{ noc_web_host }}$request_uri;
+    }
+}
+{% endif %}
+
+server {
+    listen 443 default_server ssl http2 reuseport;
+    server_name {{ noc_web_host or ansible_nodename }};
+    ssl_certificate {{ nginx_ssl_cert_path }};
+    ssl_certificate_key {{ nginx_ssl_key_path }};
+    add_header X-Content-Type-Options nosniff;
+    add_header X-Backend-Server $upstream_addr always;
+    add_header X-Front-Server $hostname always;
+
+
+    client_max_body_size 32m;
+
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 3;
+    gzip_types text/json;
+    gzip_types text/css;
+    gzip_types text/x-js;
+    gzip_types text/javascript;
+    gzip_types application/x-javascript;
+    gzip_types application/json;
+    gzip_types application/javascript;
+
+    proxy_set_header Remote-User $user;
+    proxy_set_header Remote-Groups $groups;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Scheme $scheme;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_read_timeout 900;
+
+    access_log  {{ nginx_log_dir }}/noc.access.log noc_format;
+    error_log  {{ nginx_log_dir }}/noc.error.log;
+
+    location @error401 {
+        return 302 /api/login/index.html?uri=$request_uri;
+    }
+
+    location /ng_stats {
+        stub_status;
+{% for host in groups["svc-nginx-exec"] %}
+    {% for ip in hostvars[host].ansible_all_ipv4_addresses %}
+        allow {{ ip }};
+    {% endfor %}
+{% endfor %}
+{% if keepalived_nginx_virtual_ip is defined and keepalived_nginx_virtual_ip %}
+        allow {{ keepalived_nginx_virtual_ip }};
+{% endif %}
+        deny all;
+        access_log off;
+    }
+
+{% if 'svc-login-exec' in groups and groups['svc-login-exec'] | length > 0 %}
+    # Login service api
+    location /api/auth/ {
+        internal;
+        proxy_pass http://login;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Original-URI $request_uri;
+        proxy_set_header Content-Length '0';
+        error_page 401 = @error401;
+    }
+
+    # Login service api
+    location /api/login/ {
+        proxy_pass http://login;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Original-URI $request_uri;
+        error_page 401 = @error401;
+    }
+{% endif %}
+
+{% if 'svc-card-exec' in groups and groups['svc-card-exec'] | length > 0 %}
+    # Card service api
+    location /api/card/ {
+        proxy_pass http://card;
+        auth_request /api/auth/auth/;
+        auth_request_set $user $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
+    }
+{% endif %}
+
+{% if 'svc-mrt-exec' in groups and groups['svc-mrt-exec'] | length > 0 %}
+    # mrt service api
+    location /api/mrt/ {
+        proxy_pass http://mrt;
+        auth_request /api/auth/auth/;
+        auth_request_set $user $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
+    }
+{% endif %}
+
+{% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
+    # bi service api
+    location /api/bi/ {
+        proxy_pass http://bi;
+        auth_request /api/auth/auth/;
+        auth_request_set $user $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
+    }
+
+    location /ui/bi2/ {
+        alias {{ noc_root }}/ui/bi2/;
+        try_files $uri /index.html =404;
+    }
+{% endif %}
+
+{% if 'svc-grafanads-exec' in groups and groups['svc-grafanads-exec'] | length > 0 %}
+
+    # grafanads service api
+    location /api/grafanads/ {
+        proxy_pass http://grafanads;
+        auth_request /api/auth/auth/;
+        auth_request_set $user $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
+    }
+{% endif %}
+
+{% if 'svc-datastream-exec' in groups and groups['svc-datastream-exec'] | length > 0 %}
+
+    # datastream service api
+    location /api/datastream/ {
+        proxy_pass http://datastream;
+        auth_request /api/auth/auth/;
+        include allow_ip_datastream.conf;
+        auth_request_set $apiaccess $upstream_http_x_noc_api_access;
+        proxy_set_header Remote-User $user;
+        proxy_set_header Remote-Groups $groups;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-NOC-API-Access $apiaccess;
+    }
+{% endif %}
+
+{% if 'svc-nbi-exec' in groups and groups['svc-nbi-exec'] | length > 0 %}
+
+    # nbi service api
+    location /api/nbi/ {
+        proxy_pass http://nbi;
+        auth_request /api/auth/auth/;
+        include allow_ip_nbi.conf;
+        auth_request_set $apiaccess $upstream_http_x_noc_api_access;
+        proxy_set_header Remote-User $user;
+        proxy_set_header Remote-Groups $groups;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-NOC-API-Access $apiaccess;
+    }
+{% endif %}
+
+    # Legacy django media
+    location ^~ /media/ {
+        alias {{ noc_root }}/lib/python/site-packages/django/contrib/admin/static/;
+        expires max;
+        add_header Cache-Control public;
+        add_header Pragma public;
+        error_page 401 = @error401;
+    }
+
+    # Legacy static resources
+    location ^~ /static/ {
+        alias {{ noc_root }}/static/;
+        add_header Cache-Control public;
+        add_header Pragma public;
+        expires 1M;
+    }
+
+    # UI files
+    location ^~ /ui/ {
+        alias {{ noc_root }}/ui/;
+        add_header Cache-Control public;
+        add_header Pragma public;
+        expires 1w;
+        error_page 401 = @error401;
+    }
+
+{% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
+    location /ui/bi/editor/ {
+        alias {{ noc_root }}/ui/bi/;
+        try_files $uri /index.html =404;
+        add_header Cache-Control public;
+        add_header Pragma public;
+        expires 1w;
+        error_page 401 = @error401;
+    }
+{% endif %}
+
+{% if 'svc-grafana-exec' in groups and groups['svc-grafana-exec'] | length > 0 %}
+    location /ui/grafana {
+        proxy_pass http://grafana;
+        auth_request /api/auth/auth/;
+        rewrite  ^/ui/grafana/(.*)  /$1 break;
+        auth_request_set $user $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-User $user;
+        proxy_set_header Remote-Groups $groups;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Authorization "";
+        error_page 401 = @error401;
+    }
+{% endif %}
+
+    location / {
+        rewrite ^/$ /main/desktop/;
+        proxy_pass http://noc-web;
+        auth_request /api/auth/auth/;
+
+        auth_request_set $user $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        error_page 401 = @error401;
+    }
+}
+{% if ansible_distribution == "FreeBSD" %}
+}
+{% endif %}

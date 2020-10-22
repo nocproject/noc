@@ -1,0 +1,63 @@
+# Pre-deployment tasks
+---
+- name: Display ansible_connection type
+  debug:
+    var: ansible_connection
+    verbosity: 8
+  tags:
+    - always
+
+- name: import additional facts
+  import_tasks: "facts.yml"
+  tags:
+    - always
+    - env_checks
+
+- name: Display all variables/facts known for a host
+  debug:
+    var: hostvars[inventory_hostname]
+    verbosity: 3
+  tags:
+    - always
+
+- block:
+    - name: "Include OS-specific tasks"
+      include_tasks: "os/{{ ansible_distribution }}/main.yml"
+      tags:
+        - config
+        - always
+  become: "True"
+
+- name: notify deploy started
+  run_once: "True"
+  include_role:
+    name: deploy_notifications
+    tasks_from: start
+  when: has_deploy_notificator is defined
+
+- name: Stop NOC node
+  service:
+    name: "{{ noc_system_service }}"
+    state: stopped
+  become: "True"
+  failed_when: "False"
+  changed_when: "False"
+  when: tower_stop_noc
+
+- name: Setup hostname
+  hostname: name="{{ inventory_hostname }}"
+  when: "'Linux' in ansible_system"
+  become: "True"
+  register: hname
+  tags:
+    - config
+
+- name: update hosts file
+  blockinfile:
+    path: "/etc/hosts"
+    block: "{{ lookup('template', './hosts.j2') }}"
+    marker: "# {mark} NOC Ansible Managed block"
+  become: "True"
+  tags:
+    - config
+    - fill_hosts

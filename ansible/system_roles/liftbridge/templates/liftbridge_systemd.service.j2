@@ -1,0 +1,30 @@
+### BEGIN INIT INFO
+# Provides:          liftbridge
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Liftbridge service
+# Description:       Liftbridge service of messaging
+### END INIT INFO
+
+[Unit]
+Description=Liftbridge service
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User={{ liftbridge_user }}
+Group={{ liftbridge_group }}
+PIDFile={{ liftbridge_pid_path }}
+PermissionsStartOnly=true
+ExecStart={{ liftbridge_bin_path }}/liftbridge \
+    --config={{ liftbridge_config_path }}/liftbridge.yml
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+KillSignal=SIGTERM
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target

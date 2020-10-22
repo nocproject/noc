@@ -1,0 +1,5 @@
+---
+galaxy_info:
+  author: Grig Gheorghiu & Aleksey Shirokih
+  description: Ansible role for installing and configuring consul-template
+  license: Apache

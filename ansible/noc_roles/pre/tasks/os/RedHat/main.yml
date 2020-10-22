@@ -1,0 +1,49 @@
+---
+- name: Set proxy for yum
+  lineinfile:
+    dest: /etc/yum.conf
+    regexp: "^proxy=.*"
+    line: "proxy={{ http_proxy }}"
+  when:
+    - http_proxy is defined
+    - http_proxy | length
+  become: "True"
+  tags:
+    - config
+
+- name: Disable selinux
+  become: "True"
+  selinux:
+    policy: targeted
+    state: disabled
+
+- name: register rhel instances
+  become: "True"
+  include_role:
+    name: rhel-register
+  when:
+    - has_svc_rhel_register is defined
+    - has_svc_rhel_register
+    - rhel_register_rhel_subscription_password
+    - rhel_register_rhel_subscription_username
+
+- name: Install Rhel system packages pre
+  become: "True"
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+  vars:
+    packages:
+      - unzip
+      - ca-certificates
+      - gcc-c++
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- include_tasks: "firewall.yml"
+  tags:
+    - firewall

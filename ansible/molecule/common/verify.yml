@@ -1,0 +1,42 @@
+---
+# This is an example playbook to execute goss tests.
+# Tests need distributed to the appropriate ansible host/groups
+# prior to execution by `goss validate`.
+#
+# The goss ansible module is installed with molecule.  The ANSIBLE_LIBRARY
+# path is updated appropriately on `molecule verify`.
+
+# Details about ansible module:
+#  - https://github.com/indusbox/goss-ansible
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+    goss_version: v0.3.11
+    goss_arch: amd64
+    goss_dst: /opt/goss_{{ goss_version }}/goss
+    goss_test_directory: /etc/goss/goss.d
+    goss_format: documentation
+  tasks:
+
+    - name: sleep for 120 secs to noc finish start
+      become: false
+      pause:
+        seconds: 120
+
+    - name: Register test files
+      shell: "ls {{ goss_test_directory }}/*.yml"
+      register: test_files
+
+    - name: Execute Goss tests
+      command: "{{ goss_dst }} -g {{ item }} validate --format {{ goss_format }}"
+      become: true
+      register: test_results
+      with_items: "{{ test_files.stdout_lines }}"
+
+    - name: Fail when tests fail
+      fail:
+        msg: "Goss failed to validate"
+      when: item.rc != 0
+      with_items: "{{ test_results.results }}"

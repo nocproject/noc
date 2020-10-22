@@ -180,9 +180,11 @@ class TestSuite(object):
                 return
             kind = [x for x in self.labels if x.startswith("kind::")]
             for label in kind:
-                assert label == "kind::bug", (
-                    "'%s' cannot be used with '%s'.\n Use only with 'kind::bug'"
-                    % (self.BACKPORT, label)
+                assert (
+                    label == "kind::bug"
+                ), "'%s' cannot be used with '%s'.\n Use only with 'kind::bug'" % (
+                    self.BACKPORT,
+                    label,
                 )
 
     def check_required_scoped_labels(self):
@@ -221,6 +223,7 @@ class TestSuite(object):
                     assert label not in self.labels, "'%s' label must not be set." % label
 
         file_parts = [f.split(os.sep) for f in self.files]
+        test_affected("ansible", lambda x: x[0] == "ansible")
         test_affected("core", lambda x: x[0] == "core")
         test_affected("confdb", lambda x: x[:3] == ["core", "confdb", "syntax"])
         test_affected("documentation", lambda x: x[0] == "docs")

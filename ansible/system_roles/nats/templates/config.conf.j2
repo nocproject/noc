@@ -1,0 +1,32 @@
+host: {{ ansible_host }}
+port: {{ nats_client_port }}
+{% if has_svc_monitoring is defined %}
+http_port: 4300
+{% endif %}
+
+server_name: {{ inventory_hostname }}
+logtime: true
+#log_file: {{ nats_log_path }}/nats.log
+{% if nats_loglevel is defined and nats_loglevel == "debug" %}
+debug: true
+{% endif %}
+syslog: true
+pid_file: {{ nats_pid_path }}
+#port_file_dir: {{ nats_data_path }}
+
+cluster: {
+    host: {{ ansible_host }}
+    port: {{ nats_cluster_port }}
+
+  authorization {
+    user: {{ nats_cluster_user }}
+    password: {{ nats_cluster_password }}
+    timeout: 0.5
+  }
+
+  routes = [
+{% for node in groups['svc-nats-exec'] %}
+    nats-route://{{ nats_cluster_user }}:{{ nats_cluster_password }}@{{ hostvars[node].ansible_host }}:{{ nats_cluster_port }}
+{% endfor %}
+  ]
+}

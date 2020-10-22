@@ -1,0 +1,36 @@
+---
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+# Goss support is pretty limited
+# see https://github.com/aelsabbahy/goss/issues/26
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    goss_version: v0.3.11
+    goss_arch: amd64
+    goss_dst: /usr/local/bin/goss
+    goss_test_directory: /usr/local/etc/goss/goss.d
+    goss_format: documentation
+  tasks:
+
+    - name: Register test files
+      shell: "ls {{ goss_test_directory }}/*.yml"
+      register: test_files
+      when:
+        - has_svc_goss is defined
+
+    - name: Execute Goss tests
+      command: "{{ goss_dst }} -g {{ item }} validate"
+      register: test_results
+      with_items: "{{ test_files.stdout_lines }}"
+      ignore_errors: true
+      failed_when: false
+      when:
+        - has_svc_goss is defined

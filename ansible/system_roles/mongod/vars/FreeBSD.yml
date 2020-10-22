@@ -1,0 +1,5 @@
+# FreeBSD settings
+---
+mongo_user: mongodb  # ????? have to be fixed
+mongo_db_path: /var/db/mongodb
+mongo_conf: /usr/local/etc/mongodb.conf

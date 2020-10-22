@@ -1,0 +1,63 @@
+---
+- name: Get Nats package checksum file
+  get_url:
+    url: "{{ nats_checksum_file_url }}"
+    dest: "{{ nats_temp_file_checksum }}"
+    validate_certs: "True"
+  delegate_to: 127.0.0.1
+  become: "False"
+  run_once: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+
+- name: Get Nats package checksum
+  command: "grep {{ nats_pkg }} {{ nats_temp_file_checksum }}"
+  register: nats_sha256
+  check_mode: "False"
+  delegate_to: 127.0.0.1
+  become: "False"
+  run_once: "True"
+  changed_when: "False"
+
+- name: Download Nats
+  get_url:
+    url: "{{ nats_zip_url }}"
+    dest: "{{ nats_temp_file }}"
+    checksum: "sha256:{{ nats_sha256.stdout.split(' ')|first }}"
+    timeout: 42
+    validate_certs: "True"
+  delegate_to: 127.0.0.1
+  become: "False"
+  run_once: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+
+- name: create Nats tmp dir
+  file:
+    dest: "{{ nats_temp_unarchive }}"
+    state: directory
+  when: not ansible_check_mode
+
+- name: Unarchive Nats and install binary
+  unarchive:
+    src: "{{ nats_temp_file }}"
+    dest: "{{ nats_temp_unarchive }}"
+    owner: "{{ nats_user }}"
+    group: "{{ nats_group }}"
+    mode: 0755
+    creates: "{{ nats_temp_unarchive }}/nats"
+  when: not ansible_check_mode
+  register: nats_archive_extracted
+
+- name: Overwrite Nats binary if needed
+  copy:
+    src: "{{ nats_temp_unarchive }}/{{ nats_arch_folder_name }}/nats-server"
+    dest: "{{ nats_bin_path }}/nats-server"
+    remote_src: "True"
+    mode: 0755
+  register: nats_binary_updated
+  when:
+    - nats_archive_extracted is changed
+    - not ansible_check_mode
+  notify:
+    - restart nats

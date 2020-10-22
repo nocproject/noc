@@ -1,0 +1,77 @@
+---
+- name: Add PostgreSQL repository Centos
+  yum:
+    name: "{{ rpm_path }}"
+    state: present
+  vars:
+    rpm_path: https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat-repo-latest.noarch.rpm
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install CentOS system packages 1/2
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+  become: "True"
+  vars:
+    packages:
+      - epel-release
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install CentOS system packages 2/2
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+  vars:
+    packages:
+      - git
+      - patch
+      - python-virtualenv
+      - gcc
+      - postgresql{{ postgres_version|replace(".","") }}
+      - postgresql-devel
+      - postgresql{{ postgres_version|replace(".","") }}-devel
+      - libffi
+      - libffi-devel
+      - libmemcached
+      - libmemcached-devel
+      - zlib-devel
+      - jemalloc
+      - bzip2
+      - cmake
+      - openssl-devel
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install CentOS system packages for python3
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - python3
+      - python3-devel
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - noc_python_interpreter == 'python3'
+
+- name: Install supervisord init script
+  template:
+    src: "noc.service.j2"
+    dest: "/etc/systemd/system/{{ noc_system_service }}.service"
+    mode: "a+r"
+  notify: reload systemd

@@ -1,0 +1,23 @@
+---
+file:
+  /etc/sudoers:
+    exists: true
+    mode: "0440"
+    contains:
+    - '!/^Defaults requiretty/'
+{% if molecule_yml is not defined %}
+    - '/^{{ ansible_user }}.+ALL=\(ALL\) NOPASSWD: ALL/'
+  /home/{{ ansible_user }}/.ssh/authorized_keys:
+    exists: true
+    mode: "0400"
+    owner: {{ ansible_user }}
+    group: {{ ansible_user }}
+    filetype: file
+    contains:
+    - "/ssh-rsa .+/"
+{% endif %}
+user:
+  {{ ansible_user }}:
+    exists: true
+    home: /home/{{ ansible_user }}
+    shell: /bin/bash

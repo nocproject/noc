@@ -1,0 +1,12 @@
+---
+- name: reload systemd
+  become: "True"
+  systemd:
+    name: nginx
+    daemon_reload: "True"
+
+- name: reload nginx
+  become: "True"
+  service:
+    name: "{{ nginx_system_service }}"
+    state: reloaded

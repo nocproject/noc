@@ -1,0 +1,35 @@
+---
+- name: Install Clickhouse
+  pkgng:
+    name: "clickhouse"
+    state: present
+  tags:
+    - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
+
+- name: check if timezone is selected
+  stat:
+    path: /etc/localtime
+  register: tzfile
+
+- name: set tz if not already set
+  file:
+    src: /usr/share/zoneinfo/Etc/UTC
+    dest: /etc/localtime
+    state: link
+  when:
+    - not tzfile.stat.exists
+
+- name: Create ch directories
+  file:
+    path: "{{ item }}"
+    state: "directory"
+    mode: 0755
+    group: clickhouse
+    owner: clickhouse
+    recurse: "True"
+  with_items:
+    - "{{ ch_run_dir }}"

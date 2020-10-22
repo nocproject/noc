@@ -1,0 +1,43 @@
+---
+- name: "Install PostgreSQL 1/2"
+  pkgng:
+    name: 'postgresql{{ postgres_version|replace(".","") }}-server'
+    state: present
+  tags:
+    - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
+
+- name: "Install PostgreSQL 2/2"
+  pkgng:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - 'py37-psycopg2'
+      - 'postgresql{{ postgres_version|replace(".","") }}-contrib'
+  tags:
+    - requirements
+  register: freebsd_pkg_result
+  retries: 4
+  delay: 2
+  until: freebsd_pkg_result is succeeded
+
+- name: Enable postgres system service
+  service:
+    name: "{{ postgres_system_service }}"
+    enabled: "True"
+
+- name: PostgreSQL init db
+  command: service postgresql initdb
+  args:
+    creates: "{{ postgresql_hba_path }}"
+
+- name: Starting PostgreSQL service
+  # This avoid this message:
+  # pg_ctl: could not read file "/usr/local/pgsql/data/postmaster.opts"
+  command: service postgresql start
+  args:
+    creates: '{{ postgres_data_dir }}/postmaster.opts'

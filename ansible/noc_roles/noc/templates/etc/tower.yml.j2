@@ -1,0 +1,36 @@
+#jinja2: lstrip_blocks: True
+installation_name: {{ noc_installation_name }}
+{% if web_language is defined %}
+language: {{ web_language }}
+language_code: {{ web_language }}
+{% endif %}
+
+pg:
+  db: {{ postgres_noc_db }}
+  password: {{ postgres_noc_password }}
+  user: {{ postgres_noc_user }}
+
+mongo:
+  db: {{ mongod_db }}
+  password: {{ mongod_password }}
+  rs: {{ mongod_rs }}
+  user: {{ mongod_user }}
+
+clickhouse:
+  rw_user: {{ clickhouse_user }}
+  rw_password: {{ clickhouse_password }}
+  ro_password: {{ clickhouse_ro_password }}
+
+{% if custom_path is defined %}
+path:
+  custom_path: {{ custom_path }}
+{% endif %}
+
+{% for service in noc_services %}
+    {%- if not service.pool %}
+        {%- if service.config %}
+{{ service.name }}:
+{{ service.config |  to_nice_yaml | indent(2, true) }}
+        {%- endif %}
+    {%- endif %}
+{% endfor %}

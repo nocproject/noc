@@ -1,0 +1,74 @@
+---
+# File: main.yml - Main tasks for NATS-Server
+
+# Add user
+- name: Add Nats user
+  user:
+    name: "{{ nats_user }}"
+    comment: "Nats user"
+    group: "{{ nats_group }}"
+    system: "True"
+    home: "{{ nats_home }}"
+    shell: "/bin/sh"
+  tags:
+    - config
+
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+    - config
+
+- name: Include dir settings
+  import_tasks: dirs.yml
+  tags:
+    - config
+
+- name: Install OS packages and Nats
+  import_tasks: install.yml
+  tags:
+    - requirements
+
+- name: Nats config
+  import_tasks: config.yml
+  tags:
+    - config
+
+- name: Start Nats
+  service:
+    name: nats-server
+    state: started
+    enabled: "True"
+
+- name: place Nats consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: nats
+    consul_service_tags: ""
+    consul_service_port: "{{ nats_client_port }}"
+    consul_service_check_type: "http"
+    consul_service_check_value: "http://{{ ansible_host }}:4300/routez"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: "False"
+
+- name: Install Nats monitoring
+  include_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: nats
+    monitoring_service_tags: ""
+    monitoring_service_port: "{{ nats_client_port }}"
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: "True"
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: nats-server
+    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"]  # noqa 204
+    monitoring_config:
+      server: "http://{{ ansible_nodename }}:4300"
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

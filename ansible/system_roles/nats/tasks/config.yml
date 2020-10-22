@@ -1,0 +1,31 @@
+---
+# File: config.yml - Nats configuration tasks
+
+- name: Combine variables for config in cluster
+  set_fact:
+    cluster_config:
+      server.id: "{{ inventory_hostname }}"
+      raft.bootstrap: "{{ groups['svc-nats-exec'] }}"
+    nats_servers: "{{ groups['svc-nats-exec'] }}"
+  when: groups['svc-nats-exec'] | length > 1
+
+- name: Combine variables for config
+  set_fact:
+    cluster_config:
+      server.id: "{{ inventory_hostname }}"
+      raft.bootstrap.seed: true
+    nats_servers: "{{ groups['svc-nats-exec'] }}"
+  when: groups['svc-nats-exec'] | length == 1
+
+- name: Place nats config
+  template:
+    src: config.conf.j2
+    dest: "{{ nats_config_path }}/nats-server.conf"
+    owner: "{{ nats_user }}"
+    group: "{{ nats_group }}"
+    mode: '0600'
+  no_log: "{{ tower_show_secrets }}"
+  notify:
+    - restart nats
+  tags:
+    - config

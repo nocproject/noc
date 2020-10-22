@@ -1,0 +1,64 @@
+---
+- name: search for postgres master
+  changed_when: "False"
+  add_host:
+    name: "{{ inventory_hostname }}"
+    groups: svc-postgres-master
+  when:
+    - '"master" in postgres_power'
+    - "'svc-postgres-master' not in groups"
+  tags:
+    - config
+
+- name: set postgres master fact
+  changed_when: "False"
+  set_fact:
+    postgres_master: "{{ postgres_listen_address }}"
+    postgres_master_node: "{{ groups['svc-postgres-master'][0] }}"
+    postgres_listen_port: "{{ postgres_listen_port }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: "True"
+  with_items: "{{ groups['all'] }}"
+  tags:
+    - config
+
+- include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+
+- name: Setting pg_hba.conf
+  lineinfile:
+    dest: "{{ postgresql_hba_path }}"
+    line: "host    all             all             0.0.0.0/0            md5"
+    mode: "0600"
+    owner: "{{ postgres_user }}"
+  notify: reload postgres
+  tags:
+    - config
+
+- name: Including postgres.conf
+  lineinfile:
+    dest: "{{ postgresql_conf_path }}"
+    line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
+    owner: "{{ postgres_user }}"
+    mode: "0600"
+  notify: restart postgres
+  tags:
+    - config
+
+- name: Setting config
+  template:
+    src: "postgres.conf.j2"
+    dest: "{{ postgresql_conf_prefix }}/noc.conf"
+  notify: restart postgres
+  tags:
+    - config
+
+- name: Enable postgres system service
+  service:
+    name: "{{ postgres_system_service }}"
+    enabled: "True"
+    state: started
+
+- name: lanuch various roles
+  import_tasks: utils.yml

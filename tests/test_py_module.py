@@ -35,6 +35,15 @@ ALLOW_XFAIL = {
 }
 
 
+def _allow_xfail(module: str) -> bool:
+    """
+    Allow module to be xfail due to import errors
+    :param module: Module name
+    :return:
+    """
+    return module in ALLOW_XFAIL or module.startswith("noc.ansible.")
+
+
 @cachetools.cached(cache={})
 def get_files():
     def _get_files():
@@ -58,7 +67,7 @@ def get_py_modules_list():
         if path.startswith(".") or not path.endswith(".py"):
             continue
         parts = path.split(os.sep)
-        if parts[0] == "tests" or path == "setup.py" or "tests" in parts:
+        if parts[0] == "tests" or path == "setup.py" or "tests" in parts or parts[0] == "ansible":
             continue
         fn = parts[-1]
         if fn.startswith("."):
@@ -79,7 +88,7 @@ def test_import(module):
         m = __import__(module, {}, {}, "*")
         assert m
     except ImportError as e:
-        if module in ALLOW_XFAIL:
+        if _allow_xfail(module):
             pytest.xfail(str(e))
         else:
             pytest.fail(str(e))
@@ -90,10 +99,9 @@ def test_module_empty_docstrings(module):
     try:
         m = __import__(module, {}, {}, "*")
         if m.__doc__ is not None and not m.__doc__.strip():
-            # assert m.__doc__.strip(), "Module-level docstring must not be empty"
             pytest.xfail("Module-level docstring must not be empty")
     except ImportError as e:
-        if module in ALLOW_XFAIL:
+        if _allow_xfail(module):
             pytest.xfail(str(e))
         else:
             pytest.fail(str(e))

@@ -1,0 +1,168 @@
+---
+- name: make servers group
+  changed_when: "False"
+  add_host:
+    group: svc-mongo-primary
+    host: "{{ item }}"
+  with_items: "{{ groups['svc-mongod-exec'] }}"
+  when: "'bootstrap' in hostvars[item]['mongod_power']"
+
+- name: Create mongod user
+  user:
+    name: "{{ mongo_user }}"
+    shell: "{{ fake_shell }}"
+    system: "True"
+    home: "{{ mongo_db_path }}"
+
+- name: Creating mongodb directories
+  file:
+    path: "{{ item }}"
+    state: "directory"
+    mode: 0755
+  with_items:
+    - "{{ mongo_dir }}"
+
+- name: Setting mongod config
+  template:
+    src: mongod.conf.j2
+    dest: "{{ mongo_conf }}"
+    owner: "{{ mongo_user }}"
+    mode: "0644"
+  notify: restart mongod
+  tags:
+    - config
+
+- name: Setting mongod-arbiter config
+  template:
+    src: mongod-arbiter.conf.j2
+    dest: "{{ mongo_dir }}/mongod-arbiter.conf"
+    owner: "{{ mongo_user }}"
+    mode: "0644"
+  notify: restart mongod-arbiter
+  when: "has_svc_mongod_arbiter | default(False)"
+  tags:
+    - config
+
+- name: Generating mongo key file
+  template:
+    src: "mongo.key.j2"
+    dest: "{{ mongo_dir }}/mongo.key"
+    owner: "{{ mongo_user }}"
+    mode: "0400"
+  no_log: "{{ tower_show_secrets }}"
+
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+
+- name: Install MongoDB logrotated config
+  template:
+    src: "etc/logrotate.d/mongod.conf.j2"
+    dest: "/etc/logrotate.d/mongod.conf"
+  when:
+    - "'Linux' in ansible_system"
+    - "'file' in mongod_logging_destination"
+  tags:
+    - config
+
+- name: Enable MongoDB system service
+  service:
+    name: "{{ mongod_system_service }}"
+    enabled: "True"
+    state: started
+
+- name: Create MongoDB arbiter directory
+  file:
+    path: "{{ noc_root }}/var/db/mongo-arbiter"
+    owner: "{{ mongo_user }}"
+    group: "{{ mongo_user }}"
+    mode: 0700
+    state: directory
+  when: "mongod_power == 'arbiter'"
+
+- name: Install MongoDB arbiter logrotated config
+  template:
+    src: "etc/logrotate.d/mongod-arbiter.conf.j2"
+    dest: "/etc/logrotate.d/mongod-arbiter.conf"
+  when:
+    - "mongod_power == 'arbiter'"
+    - "'Linux' in ansible_system"
+  tags:
+    - config
+
+- name: Install shell.js
+  template:
+    src: shell.js.j2
+    dest: "{{ mongo_dir }}/shell.js"
+    owner: "{{ mongo_user }}"
+  no_log: "{{ tower_show_secrets }}"
+  tags:
+    - config
+
+- name: Enable MongoDB arbiter system service
+  service:
+    name: "{{ mongod_arbiter_system_service }}"
+    enabled: "True"
+    state: started
+  when:
+    - "mongod_power == 'arbiter'"
+
+- name: include master settings
+  include_tasks: "master.yml"
+  when: "mongod_power == 'bootstrap'"
+  tags:
+    - rs_init
+
+- name: rs_reinit
+  include_tasks: "rs_update.yml"
+  args:
+    apply:
+      delegate_to: "{{ groups['svc-mongo-primary'][0] }}"
+  when:
+    - "mongod_power != 'bootstrap'"
+    - mongo_master_init_done is defined
+  tags:
+    - rs_init
+
+- name: place mongod consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: mongo
+    consul_service_tags: ""
+    consul_service_port: 27017
+    consul_service_check_type: "script"
+    consul_service_check_value: "mongodb.sh"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: "False"
+    consul_service_check_script: mongodb.sh.j2
+
+- name: Install mongo monitoring
+  include_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: mongodb
+    monitoring_service_tags: ""
+    monitoring_service_port: 27017
+    monitoring_service_address: "{{ mongo_listen_addr }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: "True"
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: mongod
+    monitoring_config:
+      gather_perdb_stats: "true"
+      servers: ["mongodb://{{ noc_mongo_admin_user }}:{{ mongod_password }}@{{ mongo_listen_addr }}:27017/admin"]
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring
+
+- name: set correct permissions for mongodir
+  file:
+    state: directory
+    path: "{{ mongo_db_path }}"
+    owner: "{{ mongo_user }}"
+    group: "{{ mongo_user }}"
+    mode: 0750

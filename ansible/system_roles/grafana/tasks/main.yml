@@ -1,0 +1,83 @@
+---
+- include_tasks: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Create Grafana config
+  template:
+    src: grafana.ini
+    dest: "{{ grafana_ini }}"
+    owner: "root"
+    group: "grafana"
+    mode: "0640"
+  notify: restart grafana
+  no_log: "{{ tower_show_secrets }}"
+  tags:
+    - config
+    - requirements
+
+- name: create grafana users
+  include_role:
+    name: postgres
+    tasks_from: users
+    apply:
+      delegate_to: "{{ postgres_master_node }}"
+  vars:
+    db_name: "{{ grafana_pg_db }}"
+    db_password: "{{ grafana_pg_password }}"
+    db_user: "{{ grafana_pg_user }}"
+  tags:
+    - postgres
+
+- name: create Grafana dir
+  file:
+    path: "{{ item }}"
+    mode: 0755
+    state: directory
+    group: grafana
+    owner: grafana
+  with_items:
+    - "{{ grafana_dashboard_dir }}"
+    - "{{ grafana_plugins_dir }}"
+    - "{{ grafana_provisioning_dir }}"
+    - "{{ grafana_provisioning_dir }}/datasources"
+
+- name: add plugins
+  import_tasks: plugins.yml
+
+- name: add dashboards
+  import_tasks: dashboards.yml
+
+- name: Start Grafana service
+  service:
+    name: "{{ grafana_system_service }}"
+    enabled: "True"
+    state: started
+
+- name: place consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: grafana
+    consul_service_tags: ""
+    consul_service_port: "{{ grafana_http_port }}"
+    consul_service_check_type: "http"
+    consul_service_check_value: "http://localhost:{{ grafana_http_port }}/api/health"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: "False"
+
+- name: Install grafana monitoring
+  include_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: grafana
+    monitoring_service_tags: ""
+    monitoring_service_port: "{{ grafana_http_port }}"
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: "True"
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: grafana-server
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

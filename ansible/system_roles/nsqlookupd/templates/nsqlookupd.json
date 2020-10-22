@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "nsqlookupd",
+    "tags": [ ],
+    "port": 4160,
+    "enableTagOverride": false,
+    "check": {
+      "tcp": "127.0.0.1:4160",
+      "interval": "10s"
+    }
+  }
+}
