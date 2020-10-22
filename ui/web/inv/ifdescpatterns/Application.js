@@ -45,6 +45,17 @@ Ext.define("NOC.inv.ifdescpatterns.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "resolve_remote_port_by_object",
+                    xtype: "checkbox",
+                    fieldLabel: __("Use object as Port Token"),
+                    allowBlank: true,
+                    renderer: NOC.render.Bool,
+                    tooltip: __('If checked discvoery try find port by object_id (Hostname, Address, Name) contains in description'),
+                    listeners: {
+                        render: me.addTooltip
+                    }
+                },
+                {
                     name: "patterns",
                     xtype: "gridfield",
                     fieldLabel: __("Patterns"),

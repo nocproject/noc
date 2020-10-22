@@ -48,6 +48,7 @@ class IfDescPatterns(Document):
     }
     name = StringField(unique=True)
     description = StringField()
+    resolve_remote_port_by_object = BooleanField(default=False)
     patterns = ListField(EmbeddedDocumentField(IfDescPatternRule))
 
     _id_cache = cachetools.TTLCache(100, ttl=60)

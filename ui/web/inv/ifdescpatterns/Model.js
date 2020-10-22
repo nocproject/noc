@@ -24,6 +24,10 @@ Ext.define("NOC.inv.ifdescpatterns.Model", {
             type: "string"
         },
         {
+            name: "resolve_remote_port_by_object",
+            type: "boolean"
+        },
+        {
             name: "patterns",
             type: "auto"
         }
