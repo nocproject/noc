@@ -77,7 +77,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             "filter_default": BooleanParameter(required=False),
             "columns": StringParameter(required=False),
             "description": StringParameter(required=False),
-            "o_format": StringParameter(choices=["csv", "xlsx"]),
+            "o_format": StringParameter(choices=["csv", "csv_zip", "xlsx"]),
         },
     )
     def api_report(

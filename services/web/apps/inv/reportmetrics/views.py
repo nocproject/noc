@@ -89,7 +89,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             "exclude_zero": BooleanParameter(required=False),
             "filter_default": BooleanParameter(required=False),
             "columns": StringParameter(required=False),
-            "o_format": StringParameter(choices=["csv", "xlsx"]),
+            "o_format": StringParameter(choices=["csv", "csv_zip", "xlsx"]),
         },
     )
     def api_report(
