@@ -5,11 +5,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Dict, Tuple, Optional
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
-from noc.lib.utils import deep_merge
 from noc.sa.interfaces.base import StringParameter, UnicodeParameter
 from .base import InvPlugin
 
@@ -44,7 +46,7 @@ class DataPlugin(InvPlugin):
             },
         )
 
-    def get_data(self, request, o):
+    def get_data(self, request, o: Object):
         data = []
         for k, v, d, is_const in [
             ("Name", " | ".join(o.get_name_path()), "Inventory name", False),
@@ -61,6 +63,7 @@ class DataPlugin(InvPlugin):
                 "required": True,
                 "is_const": is_const,
                 "choices": None,
+                "scope": "",
             }
             if k == "Model":
                 for rg in self.RGROUPS:
@@ -71,20 +74,26 @@ class DataPlugin(InvPlugin):
                         r["choices"] = [[str(x.id), x.name] for x in g]
                         break
             data += [r]
-        d = deep_merge(o.model.data, o.data)
-        for i in d:
-            mi = ModelInterface.objects.filter(name=i).first()
+        # Build result
+        mi_values: Dict[str, Dict[str, Tuple[Optional[str], str]]] = {}
+        for item in o.get_effective_data():
+            if item.interface not in mi_values:
+                mi_values[item.interface] = {}
+            mi_values[item.interface][item.attr] = (item.value, item.scope)
+        for i in mi_values:
+            mi = ModelInterface.get_by_name(i)
             if not mi:
                 continue
             for a in mi.attrs:
-                v = d[i].get(a.name)
-                if v is None and a.is_const:
+                value, scope = mi_values[i].get(a.name, (None, ""))
+                if value is None and a.is_const:
                     continue
                 data += [
                     {
                         "interface": i,
                         "name": a.name,
-                        "value": v,
+                        "scope": scope,
+                        "value": value,
                         "type": a.type,
                         "description": a.description,
                         "required": a.required,

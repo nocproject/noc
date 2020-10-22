@@ -11,7 +11,7 @@ from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
+from noc.inv.models.object import Object, ObjectAttr
 from noc.sa.interfaces.base import (
     StringParameter,
     FloatParameter,
@@ -82,30 +82,26 @@ class MapPlugin(InvPlugin):
     def get_data(self, request, o):
         layers = [
             {
-                "name": l.name,
-                "code": l.code,
-                "min_zoom": l.min_zoom,
-                "max_zoom": l.max_zoom,
-                "stroke_color": "#%06x" % l.stroke_color,
-                "fill_color": "#%06x" % l.fill_color,
-                "stroke_width": l.stroke_width,
-                "point_radius": l.point_radius,
-                "show_labels": l.show_labels,
-                "stroke_dashstyle": l.stroke_dashstyle,
-                "point_graphic": l.point_graphic,
-                "is_visible": LayerUserSettings.is_visible_by_user(request.user, l),
+                "name": layer.name,
+                "code": layer.code,
+                "min_zoom": layer.min_zoom,
+                "max_zoom": layer.max_zoom,
+                "stroke_color": "#%06x" % layer.stroke_color,
+                "fill_color": "#%06x" % layer.fill_color,
+                "stroke_width": layer.stroke_width,
+                "point_radius": layer.point_radius,
+                "show_labels": layer.show_labels,
+                "stroke_dashstyle": layer.stroke_dashstyle,
+                "point_graphic": layer.point_graphic,
+                "is_visible": LayerUserSettings.is_visible_by_user(request.user, layer),
             }
-            for l in Layer.objects.order_by("zindex")
+            for layer in Layer.objects.order_by("zindex")
         ]
-        srid = o.get_data("geopoint", "srid")
-        x = o.get_data("geopoint", "x")
-        y = o.get_data("geopoint", "y")
+        srid, x, y = o.get_data_tuple("geopoint", ("srid", "x", "y"))
         if x is None or y is None or not srid:
             p = self.get_parent(o)
             if p:
-                srid = p.get_data("geopoint", "srid")
-                x = p.get_data("geopoint", "x")
-                y = p.get_data("geopoint", "y")
+                srid, x, y = p.get_data_tuple("geopoint", ("srid", "x", "y"))
         # @todo: Coordinates transform
         # Feed result
         return {
@@ -177,7 +173,9 @@ class MapPlugin(InvPlugin):
 
         d = {}
         # All models with geopoint interface
-        for mt in ObjectModel.objects.filter(data__geopoint__layer__exists=True):
+        for mt in ObjectModel.objects.filter(
+            data__match={"interface": "geopoint", "attr": "layer"}
+        ):
             parts = mt.name.split(" | ")
             m = d
             for p in parts[:-1]:
@@ -220,7 +218,11 @@ class MapPlugin(InvPlugin):
             name=name,
             model=model,
             container=container,
-            data={"geopoint": {"srid": srid, "x": x, "y": y}},
+            data=[
+                ObjectAttr(scope="", interface="geopoint", attr="srid", value=srid),
+                ObjectAttr(scope="", interface="geopoint", attr="x", value=x),
+                ObjectAttr(scope="", interface="geopoint", attr="y", value=y),
+            ],
         )
         o.save()
         return {"id": str(o.id)}

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.inv LAG Panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.plugins.data.DataPanel");
@@ -43,6 +43,10 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                         {
                             text: __("Description"),
                             dataIndex: "description"
+                        },
+                        {
+                            scope: __("Scope"),
+                            dataIndex: "scope"
                         },
                         {
                             text: __("Type"),

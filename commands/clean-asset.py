@@ -24,7 +24,9 @@ class Command(BaseCommand):
                 clean.add(obj.id)
 
     def clean_managed_object(self, object):
-        for o in Object.objects.filter(data__management__managed_object=object.id):
+        for o in Object.objects.filter(
+            data__match={"interface": "management", "attr": "managed_object", "value": object.id}
+        ):
             self.clean_obj(o)
 
     def clean_obj(self, obj):
