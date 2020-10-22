@@ -89,6 +89,7 @@ all:
           has_svc_noc: true
           has_svc_nsqd: true
           has_svc_nsqlookupd: true
+          has_svc_kafkasender: true
           has_svc_pgbouncer: true
           has_svc_ping: true
           has_svc_postgres: true
@@ -624,6 +625,26 @@ all:
               name: nbi
               pool: null
             - config:
+                loglevel: info
+                power: 1
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                level: global
+                supervisord:
+                  command: ./services/kafkasender/service.py
+                  oom_score_adj: 100
+                  priority: 110
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 10MB
+                  stopwaitsecs: 3
+              name: kafkasender
+              pool: null
+            - config:
                 backup_power: 1
                 loglevel: info
                 power: 4
@@ -1094,6 +1115,15 @@ all:
           hosts:
             noc-node-ubuntu16: {}
     svc-nsqlookupd-exec:
+      hosts:
+        noc-node-ubuntu16: {}
+    svc-kafkasender:
+      children:
+        cfg-kafkasender-noc-node-ubuntu16:
+          hosts:
+            noc-node-ubuntu16: {}
+        svc-kafkasender-read: {}
+    svc-kafkasender-exec:
       hosts:
         noc-node-ubuntu16: {}
     svc-pgbouncer:
