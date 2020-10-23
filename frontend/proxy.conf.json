@@ -1,0 +1,12 @@
+{
+  "/api/login/revoke": {
+    "target": "https://mini:32777",
+    "logLevel": "debug",
+    "secure": false
+  },
+  "/api/login/token": {
+    "target": "https://mini:32777",
+    "logLevel": "debug",
+    "secure": false
+  }
+}

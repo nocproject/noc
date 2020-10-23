@@ -1,0 +1,64 @@
+import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+
+import { AuthFacade } from './auth.facade';
+import { LoginFormComponent } from './components';
+import { ForbiddenPageComponent, LoginPageComponent, UnauthorizedPageComponent } from './containers';
+import { AuthEffects } from './effects';
+import * as fromAuth from './reducers';
+import { AuthConfigService, ConfigurationProvider, OAuth2SecurityService, StorageService } from './services';
+import { _window, WINDOW } from './utils/window.reference';
+
+export * from './auth.facade';
+export * from './models/public';
+export * from './services/public';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    StoreModule.forFeature(fromAuth.AUTH_FEATURE_KEY, fromAuth.reducers),
+    EffectsModule.forFeature([AuthEffects]),
+    RouterModule.forChild([
+      { path: 'login', component: LoginPageComponent },
+      { path: 'unauthorized', component: UnauthorizedPageComponent },
+      { path: 'forbidden', component: ForbiddenPageComponent }
+    ])
+  ],
+  declarations: [
+    LoginPageComponent,
+    LoginFormComponent,
+    ForbiddenPageComponent,
+    UnauthorizedPageComponent
+  ]
+})
+export class AuthModule {
+  constructor(@Optional() @SkipSelf() parentModule?: AuthModule) {
+    if (parentModule) {
+      throw new Error(
+        'AuthModule is already loaded. Import it in the AppModule only'
+      );
+    }
+  }
+
+  static forRoot(): ModuleWithProviders<AuthModule> {
+    return {
+      ngModule: AuthModule,
+      providers: [
+        AuthConfigService,
+        AuthFacade,
+        ConfigurationProvider,
+        OAuth2SecurityService,
+        StorageService,
+        { provide: WINDOW, useFactory: _window, deps: [] }
+      ]
+    };
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@noc/log",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^10.1.4"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  }
+}
