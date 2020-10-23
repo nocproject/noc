@@ -313,6 +313,9 @@ build_frontend:
     key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
       - node_modules/
+  rules:
+    changes:
+      - frontend/**/*
 
 build:rust:
   stage: Build
