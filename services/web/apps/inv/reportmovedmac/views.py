@@ -9,6 +9,10 @@
 import logging
 import datetime
 import csv
+import ast
+import re
+import bisect
+from operator import itemgetter
 from io import BytesIO, TextIOWrapper
 from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
@@ -60,10 +64,27 @@ MAC_MOVED_QUERY = """SELECT
    dictGetString('managedobject', 'name', managed_object),
    dictGetString('managedobject', 'address', managed_object),
    dictGetString('managedobject', 'adm_domain_name', managed_object),
-   arrayStringConcat(groupUniqArray(interface), ';') as ifaces
+   groupUniqArray((interface, toUnixTimestamp(ts))) as ifaces,
+   groupUniqArray(interface) as migrate_ifaces,
+   uniqExact(interface)
    FROM mac
-   WHERE %s and date >= '%s' and date < '%s' group by mac, managed_object having uniqExact(interface) > 1
+   WHERE %s and date >= '%s' and date < '%s' group by  mac, managed_object, vlan having uniqExact(interface) > 1
     """
+
+
+def get_interface(ifaces: str):
+    r = list(sorted(ast.literal_eval(ifaces), key=itemgetter(1)))
+    iface_from, iface_to = r[0][0], r[-1][0]
+    if iface_from == iface_to:
+        iface_from, iface_to = (
+            r[bisect.bisect_left(r, (r[-1][0], 0)) - 1][0],
+            r[-1][0],
+        )
+    # iface_from, iface_to = ast.literal_eval(migrate_ifaces)
+    return iface_from, iface_to, r[bisect.bisect_left(r, (iface_to, 0))]
+
+
+rx_port_num = re.compile(r"\d+$")
 
 
 class ReportMovedMacApplication(ExtApplication):
@@ -136,23 +157,31 @@ class ReportMovedMacApplication(ExtApplication):
             return [row[i] for i in cmap]
 
         cols = [
-            "vendor_mac",
-            "mac",
             "object_name",
             "object_address",
             "object_adm_domain",
-            "ifaces",
-            # "iface_description",
+            "event_type",
+            "vendor_mac",
+            "mac",
+            "migrate_ts",
+            "from_iface_name",
+            "from_iface_down",
+            "to_iface_name",
+            "to_iface_down",
         ]
 
         header_row = [
-            "VENDOR_MAC",
-            "MAC",
             "OBJECT_NAME",
             "OBJECT_ADDRESS",
             "OBJECT_ADM_DOMAIN",
-            "IFACE_NAME",
-            # "IFACE_DESCRIPTION",
+            "EVENT_TYPE",
+            "VENDOR_MAC",
+            "MAC",
+            "MIGRATE_TS",
+            "FROM_IFACE_NAME",
+            "FROM_IFACE_DOWN",
+            "TO_IFACE_NAME",
+            "TO_IFACE_DOWN",
         ]
 
         if columns:
@@ -193,22 +222,39 @@ class ReportMovedMacApplication(ExtApplication):
             iface_filter = "is_uni = 1"
 
         ch = connection()
-        for mo, mac, mo_name, mo_address, mo_adm_domain, ifaces in ch.execute(
+        for (
+            mo,
+            mac,
+            mo_name,
+            mo_address,
+            mo_adm_domain,
+            ifaces,
+            migrate_ifaces,
+            migrate_count,
+        ) in ch.execute(
             MAC_MOVED_QUERY
             % (iface_filter, from_date.date().isoformat(), to_date.date().isoformat())
         ):
             if int(mo) not in mos_id:
                 continue
+            iface_from, iface_to, migrate = get_interface(ifaces)
+            event_type = _("Migrate")
+            if rx_port_num.search(iface_from).group() == rx_port_num.search(iface_to).group():
+                event_type = _("Migrate (Device Changed)")
             r += [
                 translate_row(
                     [
-                        MACVendor.get_vendor(mac),
-                        mac,
                         mo_name,
                         mo_address,
                         mo_adm_domain,
-                        ifaces,
-                        "",
+                        event_type,
+                        MACVendor.get_vendor(mac),
+                        mac,
+                        datetime.datetime.fromtimestamp(migrate[1]).isoformat(sep=" "),  # TS
+                        iface_from,
+                        "--",
+                        iface_to,
+                        "--",
                     ],
                     cmap,
                 )
