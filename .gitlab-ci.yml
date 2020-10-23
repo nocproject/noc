@@ -296,7 +296,7 @@ build:web:
       - dist/ui/pkg/web.debug
 
 build_frontend:
-  stage: build
+  stage: Build
   image: node:14.14-alpine
   script:
     - cd frontend
