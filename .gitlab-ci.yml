@@ -300,7 +300,7 @@ build_frontend:
   image: node:14.14-alpine
   script:
     - cd frontend
-    - yarn i
+    - yarn install
     - nx build desktop --with-deps
     - ls -al .
   tags:
