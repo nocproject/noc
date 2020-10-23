@@ -217,6 +217,20 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                             fieldLabel: __("Collision Policy"),
                             columns: [
                                 {
+                                    text: __("Min Attacker Lvl"),
+                                    dataIndex: "min_attacker_level",
+                                    editor: {
+                                        xtype: "numberfield"
+                                    }
+                                },
+                                {
+                                    text: __("Max Attacker Lvl"),
+                                    dataIndex: "max_attacker_level",
+                                    editor: {
+                                        xtype: "numberfield"
+                                    }
+                                },
+                                {
                                     text: __("Match Type"),
                                     dataIndex: "match_type",
                                     width: 100,
@@ -261,9 +275,31 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                                     })
                                 },
                                 {
+                                    text: __("Segment power function"),
+                                    dataIndex: "power_function",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["AVG", __("Average level")],
+                                            ["SUM", __("Summary level")],
+                                            ["MAX", __("Max level")],
+                                            ["MIN", __( "Min level")],
+                                            ["DIFF", __("Diff level")]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "AVG": __("Average level"),
+                                        "SUM": __("Summary level"),
+                                        "MAX": __("Max level"),
+                                        "MIN": __("Min level"),
+                                        "DIFF": __("Diff level")
+                                    })
+                                },
+                                {
                                     text: __("Policy"),
                                     dataIndex: "policy",
-                                    flex: 1,
+                                    width: 100,
                                     editor: {
                                         xtype: "combobox",
                                         store: [
@@ -281,14 +317,17 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                                         "feed": __("Feed"),
                                         "calcify": __("Calcify")
                                     })
+                                },
+                                {
+                                    text: __("Calcified Profile"),
+                                    dataIndex: "calcified_profile",
+                                    width: 200,
+                                    editor: {
+                                        xtype: "inv.networksegmentprofile.LookupField"
+                                    },
+                                    renderer: NOC.render.Lookup("calcified_profile")
                                 }
                             ]
-                        },
-                        {
-                            name: "calcified_profile",
-                            xtype: "inv.networksegmentprofile.LookupField",
-                            fieldLabel: __("Calcified Profile"),
-                            allowBlank: true
                         },
                         {
                             name: "calcified_name_template",
