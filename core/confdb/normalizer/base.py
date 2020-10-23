@@ -12,7 +12,7 @@ from functools import partial
 from typing import List
 
 # NOC modules
-from noc.core.ip import IPv4
+from noc.core.ip import IP, IPv4, IPv6
 from ..syntax.patterns import ANY, REST, BOOL, Token, BasePattern
 from ..syntax.base import SYNTAX
 
@@ -180,7 +180,7 @@ class BaseNormalizerMetaclass(type):
             r += [str(kw)]
         body = "def %s(self, %s):\n    return %s" % (sdef.gen, ", ".join(args), ", ".join(r))
         ctx = {}
-        exec(body, {"BOOL": BOOL}, ctx)
+        exec(body, {"BOOL": BOOL, "IPv4": IPv4, "IPv6": IPv6, "IP": IP}, ctx)
         setattr(ncls, sdef.gen, ctx[sdef.gen])
 
 

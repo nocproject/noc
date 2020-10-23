@@ -10,7 +10,14 @@ import orjson
 
 # NOC modules
 from .base import BaseMarshaller
+from noc.core.ip import IP
 from noc.core.comp import smart_text
+
+
+def default(obj):
+    if isinstance(obj, IP):
+        return str(obj)
+    raise TypeError
 
 
 class JSONMarshaller(BaseMarshaller):
@@ -25,4 +32,4 @@ class JSONMarshaller(BaseMarshaller):
                 r["children"] = children
             return r
 
-        return smart_text(orjson.dumps([get_node(x) for x in node.iter_nodes()]))
+        return smart_text(orjson.dumps([get_node(x) for x in node.iter_nodes()], default=default))

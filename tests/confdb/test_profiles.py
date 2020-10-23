@@ -11,14 +11,18 @@ import os
 # Third-party modules
 import pytest
 import yaml
+import re
 
 # NOC modules
+from noc.core.ip import IP
 from noc.core.handler import get_handler
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 
 
 PREFIX = ("tests", "confdb", "profiles")
+
+rx_ipv4_class = re.compile(r"IPv4\(\d+\.\d+\.\d+\.\d+\)")
 
 
 def iter_test_paths():
@@ -44,12 +48,24 @@ class MockManagedObject(object):
         self.profile = MockProfile(profile)
 
 
+def create_ip(loader, node):
+    value = loader.construct_scalar(node)
+    return IP.prefix(value)
+
+
+class Loader(yaml.SafeLoader):
+    pass
+
+
+yaml.add_constructor("!IP", create_ip, Loader)
+
+
 @pytest.mark.parametrize("path", list(iter_test_paths()))
 def test_profile(path):
     # Open YAML
     full_path = PREFIX + (path,)
     with open(os.path.join(*full_path)) as f:
-        test = yaml.safe_load(f.read())
+        test = yaml.load(f.read(), Loader)
     # Check test format
     assert "config" in test, "Test must have 'config' section"
     assert test["config"], "Config section must be non-empty"

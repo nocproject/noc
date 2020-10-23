@@ -9,5 +9,5 @@ config: |
 result:
   - ["protocols", "dns", "search", "google.com"]
   - ["protocols", "dns", "search", "google.ru"]
-  - ["protocols", "dns", "name-server", "8.8.8.8"]
-  - ["protocols", "dns", "name-server", "1.1.1.1"]
+  - ["protocols", "dns", "name-server", !IP 8.8.8.8]
+  - ["protocols", "dns", "name-server", !IP 1.1.1.1]

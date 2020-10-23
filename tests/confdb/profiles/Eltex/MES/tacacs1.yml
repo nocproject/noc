@@ -8,6 +8,6 @@ result:
   - ['system', 'aaa', 'service', 'order', 'tacacs']
   - ['system', 'aaa', 'service', 'order', 'passwd']
   - ['system', 'aaa', 'service', 'tacacs', 'type', 'tacacs+', {'replace': True}]
-  - ['system', 'aaa', 'service', 'tacacs', 'address', '192.168.0.1']
-  - ['system', 'aaa', 'service', 'tacacs', 'address', '192.168.0.1', 'tacacs+', 'secret', '3DESKEY=']
+  - ['system', 'aaa', 'service', 'tacacs', 'address', !IP 192.168.0.1]
+  - ['system', 'aaa', 'service', 'tacacs', 'address', !IP 192.168.0.1, 'tacacs+', 'secret', '3DESKEY=']
 
