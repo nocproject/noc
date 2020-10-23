@@ -301,6 +301,7 @@ build_frontend:
   script:
     - cd frontend
     - yarn install
+    - ls -al node_modules
     - nx build desktop --with-deps
     - ls -al .
   tags:
