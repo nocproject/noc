@@ -6,6 +6,6 @@ config: |
         }
   }
 result:
-  - ['protocols', 'syslog', 'syslog-server', '192.0.2.1']
-  - ['protocols', 'syslog', 'syslog-server', '192.0.2.1', 'source', '198.51.100.1']
+  - ['protocols', 'syslog', 'syslog-server', !IP 192.0.2.1]
+  - ['protocols', 'syslog', 'syslog-server', !IP 192.0.2.1, 'source', !IP 198.51.100.1]
 

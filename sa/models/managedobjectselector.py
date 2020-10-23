@@ -24,7 +24,7 @@ from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.pool import Pool
-from noc.main.models.prefixtable import PrefixTable
+from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
 from noc.core.model.fields import TagsField
 from noc.core.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.core.model.sql import SQL
@@ -421,6 +421,75 @@ class ManagedObjectSelector(NOCModel):
                 o = ManagedObject.objects.get(q)
                 objects.add(o)
         return list(objects)
+
+    @property
+    def get_confdb_query(self) -> str:
+        query = []
+        if self.sources.count():
+            for s in self.sources.all():
+                query += ["(%s)" % s.get_confdb_query]
+            if self.source_combine_method == "A":
+                return " and ".join(query)
+            else:
+                return " or ".join(query)
+
+        if self.filter_id:
+            query += ["Match%r" % (("meta", "id", str(self.filter_id)),)]
+        if self.filter_name:
+            query += ["Match('meta', 'name', name) and Re('%s', name)" % self.filter_name]
+        if self.filter_managed:
+            pass
+        if self.filter_pool:
+            query += ["Match%r" % (("meta", "management", "pool", self.filter_pool.name),)]
+        if self.filter_profile:
+            query += ["Match%r" % (("meta", "profile", self.filter_profile.name),)]
+        if self.filter_vendor:
+            query += ["Match%r" % (("meta", "vendor", self.filter_vendor.name),)]
+        if self.filter_platform:
+            query += ["Match%r" % (("meta", "platform", self.filter_platform.name),)]
+        if self.filter_version:
+            query += ["Match%r" % (("meta", "version", self.filter_version.version),)]
+        if self.filter_object_profile:
+            query += [
+                "Match%r" % (("meta", "object-profile", "id", str(self.filter_object_profile.id)),)
+            ]
+        if self.filter_address:
+            query += [
+                "Match('meta', 'management', 'address', address) and Re('%s', address)"
+                % self.filter_address
+            ]
+        if self.filter_prefix:
+            query += [
+                "( %s )"
+                % " or ".join(
+                    "Match('meta', 'management', 'address', address) and MatchPrefix('%s', address)"
+                    % ptp.prefix
+                    for ptp in PrefixTablePrefix.objects.filter(table=self.filter_prefix)
+                )
+            ]
+        if self.filter_administrative_domain:
+            query += [
+                "Match%r"
+                % (("meta", "administrative-domains", self.filter_administrative_domain.name),)
+            ]
+        if self.filter_vrf:
+            query += ["Match%r" % (("meta", "management", "vrf", "id", str(self.filter_vrf.id)),)]
+        if self.filter_vc_domain:
+            pass
+        if self.filter_service_group:
+            query += ["Match%r" % (("meta", "service-groups", self.filter_service_group.name),)]
+        if self.filter_client_group:
+            query += ["Match%r" % (("meta", "client-groups", self.filter_client_group.name),)]
+        if self.filter_tt_system:
+            pass
+        if self.filter_description:
+            query += [
+                "Match('meta', 'description', description) and Re('%s', description)"
+                % self.filter_description
+            ]
+        if self.filter_tags:
+            query += ["Match%r" % (("meta", "tags", self.filter_tags),)]
+        return " and ".join(query)
 
 
 class ManagedObjectSelectorByAttribute(NOCModel):

@@ -10,6 +10,7 @@ import pytest
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.ip import IPv4
 
 CONF1 = [
     ["hostname", "test"],
@@ -32,7 +33,7 @@ RESULT1 = [
         "0",
         "inet",
         "address",
-        "10.0.0.1/24",
+        IPv4("10.0.0.1/24"),
     ),
 ]
 

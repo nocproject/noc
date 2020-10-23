@@ -14,6 +14,7 @@ from collections import defaultdict
 
 # NOC modules
 from noc.core.vlan import has_vlan, optimize_filter
+from noc.core.ip import IP
 from .transformer import PredicateTransformer
 from .var import Var
 from ..db.base import ConfDB
@@ -466,6 +467,25 @@ class Engine(object):
             if not vlan:
                 continue
             if has_vlan(vf, vlan):
+                yield ctx
+
+    @visitor("xx")
+    def fn_MatchPrefix(self, _input, prefix, address):
+        """
+        Check `address` is within prefix
+        :param _input:
+        :param prefix:
+        :param address:
+        :return:
+        """
+        for ctx in _input:
+            prefix = self.resolve_var(ctx, prefix)
+            if not prefix:
+                continue
+            address = self.resolve_var(ctx, address)
+            if not address:
+                continue
+            if address in IP.prefix(str(prefix)):
                 yield ctx
 
     @visitor("x")

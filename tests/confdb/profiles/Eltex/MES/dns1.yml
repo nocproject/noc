@@ -5,4 +5,4 @@ config: |
   !
 result:
   - ['protocols', 'dns', 'search', 'company.ru']
-  - ['protocols', 'dns', 'name-server', '192.168.0.1']
+  - ['protocols', 'dns', 'name-server', !IP 192.168.0.1]
