@@ -317,7 +317,7 @@ build_frontend:
       - node_modules/
   rules:
     - changes:
-      - frontend/**/*
+        - frontend/**/*
 
 build:rust:
   stage: Build
