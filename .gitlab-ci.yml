@@ -295,6 +295,25 @@ build:web:
       - dist/ui/pkg/web
       - dist/ui/pkg/web.debug
 
+build_frontend:
+  stage: build
+  image: node:14.14-alpine
+  script:
+    - cd frontend
+    - yarn i
+    - nx build desktop --with-deps
+    - ls -al .
+  tags:
+    - docker
+#  artifacts:
+#    paths:
+#      - dist/
+#    expire_in: 15 min
+  cache:
+    key: "$CI_BUILD_REF_NAME"
+#    paths:
+#      - node_modules/
+
 build:rust:
   stage: Build
   image: rust:1.41
