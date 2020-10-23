@@ -85,12 +85,18 @@ Ext.define("NOC.inv.reportmovedmac.Application", {
             },
         ],
         storeData: [
-            ["vendor_mac", __("Vendor MAC"), true],
-            ["mac", __("MAC"), true],
             ["object_name", __("Object Name"), true],
             ["object_address", __("Object  Address"), true],
             ["object_adm_domain", __("Object Adm. Domain"), true],
-            ["ifaces", __("Moved interfaces"), true],
+            ["event_type", __("Event Type (Migrate/Duplicate)"), true],
+            ["vendor_mac", __("Vendor MAC"), true],
+            ["mac", __("MAC"), true],
+            ["migrate_ts", __("MAC"), true],
+            ["from_iface_name", __("From Interface Name"), true],
+            ["from_iface_down", __("From Interface Down"), true],
+            ["to_iface_name", __("To Interface Name"), true],
+            ["to_iface_down", __("To Interface Down"), true],
         ]
     }
 });
+
