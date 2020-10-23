@@ -316,7 +316,7 @@ build_frontend:
     paths:
       - node_modules/
   rules:
-    changes:
+    - changes:
       - frontend/**/*
 
 build:rust:
