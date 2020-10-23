@@ -310,9 +310,9 @@ build_frontend:
 #      - dist/
 #    expire_in: 15 min
   cache:
-    key: "$CI_BUILD_REF_NAME"
-#    paths:
-#      - node_modules/
+    key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
 
 build:rust:
   stage: Build
