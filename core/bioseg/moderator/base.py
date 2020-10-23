@@ -12,8 +12,8 @@ from typing import Optional, Tuple, Type
 # NOC modules
 from noc.inv.models.biosegtrial import BioSegTrial
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.networksegmentprofile import BioCollisionPolicy
 from noc.sa.models.managedobject import ManagedObject
-from ..policies.base import BaseBioSegPolicy
 from ..policies.loader import loader
 
 logger = logging.getLogger(__name__)
@@ -118,21 +118,27 @@ def moderate(
     :param target_object:
     :return: outcome, error, fatal
     """
-    attacker_policy = get_collision_policy(
+    attacker_c_policy = get_collision_policy(
         attacker,
         target.profile.is_persistent,
         attacker_object=attacker_object,
         target_object=target_object,
     )
+    if not attacker_c_policy:
+        return None, "Not matched rule", True
+    attacker_policy = loader.get_class(attacker_c_policy.policy)
     if not attacker_policy:
         return None, "Cannot determine attacker policy", True
     logger.info("Attacker policy is %s" % attacker_policy.name)
-    target_policy = get_collision_policy(
+    target_c_policy = get_collision_policy(
         target,
         attacker.profile.is_persistent,
         attacker_object=attacker_object,
         target_object=target_object,
     )
+    if not target_c_policy:
+        return None, "Not matched rule", True
+    target_policy = loader.get_class(target_c_policy.policy)
     if not target_policy:
         return None, "Cannot determine target policy", False
     logger.info("Target policy is %s" % target_policy.name)
@@ -142,8 +148,20 @@ def moderate(
     if not effective_policy:
         return None, "Unknown policy '%s'" % effective_policy_name, False
     logger.info("Effective policy is %s" % effective_policy.name)
+    # Get settings
+    if effective_policy_name == attacker_c_policy.policy:
+        cp, power_funcs = attacker_c_policy.calcified_profile, attacker_c_policy.power_function
+    else:
+        cp, power_funcs = target_c_policy.calcified_profile, target_c_policy.power_function
+    logger.info("Effectived settings is: %s:%s", cp, power_funcs)
     # Do trial
-    outcome = effective_policy(attacker, target, logger=logger).trial()
+    outcome = effective_policy(
+        attacker,
+        target,
+        logger=logger,
+        calcified_profile=cp,
+        segment_power_function=power_funcs,
+    ).trial()
     return outcome, None, False
 
 
@@ -152,10 +170,16 @@ def get_collision_policy(
     is_persistent: bool,
     attacker_object: Optional[ManagedObject] = None,
     target_object: Optional[ManagedObject] = None,
-) -> Optional[Type[BaseBioSegPolicy]]:
+) -> Optional[Type[BioCollisionPolicy]]:
     attacker_level = attacker_object.object_profile.level if attacker_object else None
     target_level = target_object.object_profile.level if target_object else None
     for cp in seg.profile.bio_collision_policy:
+        logger.debug(
+            "Check policy rule: %s, result: %s, policy: %s",
+            cp,
+            cp.check(is_persistent, attacker_level, target_level),
+            cp.policy,
+        )
         if cp.check(is_persistent, attacker_level, target_level):
-            return loader.get_class(cp.policy)
+            return cp
     return None

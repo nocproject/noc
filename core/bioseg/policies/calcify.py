@@ -38,20 +38,21 @@ class CalcifyBioSegPolicy(BaseBioSegPolicy):
 
     def trial(self) -> str:
         self.logger.info("Applying %s policy", self.name)
-        if not self.attacker.profile.calcified_profile:
+        if not self.calcified_profile:
             self.logger.info("Cannot calcify without calcified profile")
             raise ValueError("Cannot calcify without calcified profile")
-        if not self.attacker.profile.calcified_profile.is_persistent:
+        if not self.calcified_profile.is_persistent:
             self.logger.info("Calcified profile must be persistent")
             raise ValueError("Calcified profile must be persistent")
-        self.logger.info("Calcified with profile '%s'" % self.attacker.profile.calcified_profile)
+        self.logger.info("Calcified with profile '%s'" % self.calcified_profile)
         # Change segment profile to calcified one
-        self.attacker.profile = self.attacker.profile.calcified_profile
+        self.attacker.profile = self.calcified_profile
         # Change segment name when necessary
         if self.attacker.profile.calcified_name_template:
             name = self.attacker.profile.calcified_name_template.render_body(
                 **self.get_template_context()
             )
+            # @todo Duplicate segment name
             self.logger.info("Changed name to '%s'", name)
             self.attacker.name = name
         # Attach to target as child

@@ -84,11 +84,25 @@ class UplinkPolicySettings(EmbeddedDocument):
 
 
 class BioCollisionPolicy(EmbeddedDocument):
+    # Minmal attacker level for apply rule
+    min_attacker_level = IntField(min_value=0, max_value=100, default=0)
+    # Max attacker level for apply rule
+    max_attacker_level = IntField(min_value=0, max_value=100, default=0)
     # Type of segment to match: persistent, floating, all
     match_type = StringField(choices=[("p", "Persistent"), ("f", "Float"), ("*", "All")])
     # Neighbor level comparison (only with require_link)
     match_level = StringField(
         choices=[(x, x) for x in ("-", "<", "<=", "==", ">=", ">", "*")], default="-"
+    )
+    power_function = StringField(
+        choices=[
+            ("AVG", "Average level"),
+            ("SUM", "Summary level"),
+            ("MAX", "Max level"),
+            ("MIN", "Minimal"),
+            ("DIFF", "Diff level"),
+        ],
+        default="SUM",
     )
     # Proposed policy
     policy = StringField(
@@ -101,6 +115,8 @@ class BioCollisionPolicy(EmbeddedDocument):
         ],
         default="keep",
     )
+    # Target segment profile on calcification
+    calcified_profile = PlainReferenceField("inv.NetworkSegmentProfile")
 
     def __str__(self):
         return "%s %s -> %s" % (self.match_type, self.match_level, self.policy)
@@ -111,6 +127,11 @@ class BioCollisionPolicy(EmbeddedDocument):
         attacker_level: Optional[int] = None,
         target_level: Optional[int] = None,
     ):
+        if (self.min_attacker_level and attacker_level < self.min_attacker_level) or (
+            self.max_attacker_level and attacker_level > self.max_attacker_level
+        ):
+            # Rule is not applicable
+            return None
         return self.check_type(persistent) and self.check_level(attacker_level, target_level)
 
     def check_type(self, persistent: bool) -> bool:
@@ -194,8 +215,6 @@ class NetworkSegmentProfile(Document):
     is_persistent = BooleanField(default=True)
     # Biosegmentation collision policy
     bio_collision_policy = ListField(EmbeddedDocumentField(BioCollisionPolicy))
-    # Target segment profile on calcification
-    calcified_profile = PlainReferenceField("inv.NetworkSegmentProfile")
     # Target segment name template on calcification
     # Applied to calcified profile
     calcified_name_template = ForeignKeyField(Template)
