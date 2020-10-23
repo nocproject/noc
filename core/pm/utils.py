@@ -10,6 +10,7 @@ import datetime
 from collections import defaultdict
 from typing import Iterable
 import itertools
+import ast
 
 # NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -137,7 +138,7 @@ def get_interface_metrics(managed_objects, meric_map=None):
     )
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)
-    SQL = """SELECT managed_object, argMax(ts, ts), path[4] as iface, %s
+    SQL = """SELECT managed_object, argMax(ts, ts), path as iface, %s
             FROM %s
             WHERE
               date >= toDate('%s')
@@ -157,9 +158,13 @@ def get_interface_metrics(managed_objects, meric_map=None):
     metric_fields = list(meric_map["map"].keys())
     try:
         for result in ch.execute(post=SQL):
-            mo_bi_id, ts, iface = result[:3]
+            mo_bi_id, ts, path = result[:3]
+            path = ast.literal_eval(path)
+            t_iface, iface = path[2], path[3]
             res = dict(zip(metric_fields, result[3:]))
             mo = bi_map.get(mo_bi_id)
+            if not t_iface and metric_map[mo].get(iface):
+                continue
             for field, value in res.items():
                 if mo not in metric_map:
                     metric_map[mo] = defaultdict(dict)
