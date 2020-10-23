@@ -765,7 +765,7 @@ class ManagedObject(NOCModel):
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
         #
-        cache.delete("managedobject-id-%s" % self.id, version=MANAGEDOBJECT_CACHE_VERSION)
+        self._reset_caches()
         cache.delete_many(deleted_cache_keys)
         # Rebuild segment access
         if self.initial_data["id"] is None:
