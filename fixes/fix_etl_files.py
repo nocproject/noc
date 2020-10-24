@@ -50,6 +50,9 @@ def ensure_format(path: str) -> None:
         if path.endswith(ext) or (path.endswith(".csv") and not ext):
             src_ext = ext
             break
+    if src_ext == dst_comp.ext:
+        print("[%s] Already compressed. Skipping" % path)
+        return
     src_comp = ext_map[src_ext]
     dst_path = path[: -len(src_ext) if src_ext else None] + dst_comp.ext
     print("Repacking %s -> %s" % (path, dst_path))
