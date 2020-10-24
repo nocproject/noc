@@ -13,14 +13,16 @@ import itertools
 import io
 from time import perf_counter
 import contextlib
-from typing import Any, List
+from typing import Any, List, Iterable, Type, Union, Tuple
 import dataclasses
+import operator
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.etl.compression import compressor
+from ..models.base import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +45,12 @@ class BaseExtractor(object):
     name = None
     PREFIX = config.path.etl_import
     REPORT_INTERVAL = 1000
+    # Type of model
+    model: Type[BaseModel]
     # List of rows to be used as constant data
-    data = []
+    data: List[BaseModel] = []
     # Suppress deduplication message
-    suppress_deduplication_log = False
+    suppress_deduplication_log: bool = False
 
     def __init__(self, system):
         self.system = system
@@ -56,17 +60,19 @@ class BaseExtractor(object):
         self.fatal_problems: List[Problem] = []
         self.quality_problems: List[Problem] = []
 
-    def register_quality_problem(self, line: int, p_class: str, message: str, row: List[Any]):
+    def register_quality_problem(
+        self, line: int, p_class: str, message: str, row: List[Any]
+    ) -> None:
         self.quality_problems += [
             Problem(line=line + 1, is_rej=False, p_class=p_class, message=message, row=row)
         ]
 
-    def register_fatal_problem(self, line: int, p_class: str, message: str, row: List[Any]):
+    def register_fatal_problem(self, line: int, p_class: str, message: str, row: List[Any]) -> None:
         self.fatal_problems += [
             Problem(line=line + 1, is_rej=True, p_class=p_class, message=message, row=row)
         ]
 
-    def ensure_import_dir(self):
+    def ensure_import_dir(self) -> None:
         """
         Ensure import directory is exists
         :return:
@@ -78,7 +84,7 @@ class BaseExtractor(object):
 
     def get_new_state(self) -> io.TextIOWrapper:
         self.ensure_import_dir()
-        path = os.path.join(self.import_dir, "import.csv") + compressor.ext
+        path = compressor.get_path(os.path.join(self.import_dir, "import.jsonl"))
         self.logger.info("Writing to %s", path)
         return compressor(path, "w").open()
 
@@ -100,7 +106,7 @@ class BaseExtractor(object):
 
     def get_problem_file(self) -> io.TextIOWrapper:
         self.ensure_import_dir()
-        path = os.path.join(self.import_dir, "import.csv.rej") + compressor.ext
+        path = compressor.get_path(os.path.join(self.import_dir, "import.csv.rej"))
         self.logger.info("Writing to %s", path)
         return compressor(path, "w").open()
 
@@ -120,7 +126,7 @@ class BaseExtractor(object):
         finally:
             f.close()
 
-    def iter_data(self):
+    def iter_data(self) -> Iterable[Union[BaseModel, Tuple[Any, ...]]]:
         yield from self.data
 
     def filter(self, row):
@@ -138,35 +144,41 @@ class BaseExtractor(object):
             else:
                 return str(s)
 
+        def get_model(raw) -> BaseModel:
+            if isinstance(raw, BaseModel):
+                return raw
+            return self.model.from_iter(q(x) for x in row)
+
         # Fetch data
         self.logger.info("Extracting %s from %s", self.name, self.system.name)
         t0 = perf_counter()
-        data = []
+        data: List[BaseModel] = []
         n = 0
         seen = set()
         for row in self.iter_data():
             if not self.filter(row):
                 continue
             row = self.clean(row)
-            if row[0] in seen:
+            # Do not use get_model(self.clean(row)), to zip_longest broken row
+            row = get_model(row)
+            if row.id in seen:
                 if not self.suppress_deduplication_log:
                     self.logger.error("Duplicated row truncated: %r", row)
                 continue
-            else:
-                seen.add(row[0])
-            data += [[q(x) for x in row]]
+            seen.add(row.id)
+            data += [row]
             n += 1
             if n % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", n)
         dt = perf_counter() - t0
         speed = n / dt
         self.logger.info("%d records extracted in %.2fs (%d records/s)", n, dt, speed)
-        # Sort
-        data.sort()
         # Write
         with self.with_new_state() as f:
-            writer = csv.writer(f)
-            writer.writerows(data)
+            for n, item in enumerate(sorted(data, key=operator.attrgetter("id"))):
+                if n:
+                    f.write("\n")
+                f.write(item.json(exclude_defaults=True, exclude_unset=True))
         if self.fatal_problems or self.quality_problems:
             self.logger.warning(
                 "Detect problems on extracting, fatal: %d, quality: %d",

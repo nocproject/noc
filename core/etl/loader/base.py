@@ -13,8 +13,8 @@ import csv
 import time
 import shutil
 import functools
-from itertools import zip_longest
-from io import StringIO
+from io import StringIO, TextIOWrapper
+from typing import Any, Optional, Iterable, Tuple, List, Dict
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -22,6 +22,7 @@ from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.etl.compression import compressor
+from ..models.base import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +34,11 @@ class BaseLoader(object):
         import/
             <system name>/
                 <loader name>/
-                    import.csv[.ext]  -- state to load, must have .ext extension
+                    import.jsonl[.ext]  -- state to load, must have .ext extension
                                          according to selected compressor
                     mappings.csv -- ID mappings
                     archive/
-                        import-YYYY-MM-DD-HH-MM-SS.csv.ext -- imported state
+                        import-YYYY-MM-DD-HH-MM-SS.jsonl.ext -- imported state
 
     Import file format: CSV, unix end of lines, UTF-8, comma-separated
     First column - record id in the terms of connected system,
@@ -55,19 +56,19 @@ class BaseLoader(object):
     """
 
     # Loader name
-    name = None
-    # Loader model
+    name: str
+    # Loader model (Database)
     model = None
+    # Data model
+    data_model: BaseModel
     # Mapped fields
     mapped_fields = {}
-
-    fields = []
 
     # List of tags to add to the created records
     tags = []
 
     rx_archive = re.compile(
-        r"^import-\d{4}(?:-\d{2}){5}.csv%s$" % compressor.ext.replace(".", r"\.")
+        r"^import-\d{4}(?:-\d{2}){5}.jsonl%s$" % compressor.ext.replace(".", r"\.")
     )
 
     # Discard records which cannot be dereferenced
@@ -94,9 +95,11 @@ class BaseLoader(object):
         self.c_change = 0
         self.c_delete = 0
         # Build clean map
-        self.clean_map = {n: self.clean_str for n in self.fields}  # field name -> clean function
-        self.pending_deletes = []  # (id, string)
-        self.reffered_errors = []  # (id, string)
+        self.clean_map = {
+            n: self.clean_str for n in self.data_model.__fields__
+        }  # field name -> clean function
+        self.pending_deletes: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
+        self.reffered_errors: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
         if self.is_document:
             import mongoengine.errors
 
@@ -122,6 +125,7 @@ class BaseLoader(object):
             self.unique_field = unique_fields[0]
         else:
             self.unique_field = None
+        self.has_remote_system: bool = hasattr(self.model, "remote_system")
 
     @property
     def is_document(self):
@@ -148,36 +152,19 @@ class BaseLoader(object):
                 self.mappings[self.clean_str(k)] = v
         self.logger.info("%d mappings restored", len(self.mappings))
 
-    @staticmethod
-    def iter_cleaned(g):
-        """
-        Clean rows from unreadable characters
-        :param g: Iterator yielding lines
-        :return:
-        """
-        for line in g:
-            yield line.replace("\x00", "")
-
-    def get_new_state(self):
+    def get_new_state(self) -> Optional[TextIOWrapper]:
         """
         Returns file object of new state, or None when not present
         """
         # Try import.csv
-        path = os.path.join(self.import_dir, "import.csv")
-        if os.path.isfile(path):
-            logger.info("Loading from %s", path)
-            self.new_state_path = path
-            return open(path, "r")
-        # Try import.csv.<ext>
-        path += compressor.ext
-        if os.path.isfile(path):
-            logger.info("Loading from %s", path)
-            self.new_state_path = path
-            return self.iter_cleaned(compressor(path, "r").open())
-        # No data to import
-        return None
+        path = compressor.get_path(os.path.join(self.import_dir, "import.jsonl"))
+        if not os.path.isfile(path):
+            return None
+        logger.info("Loading from %s", path)
+        self.new_state_path = path
+        return compressor(path, "r").open()
 
-    def get_current_state(self):
+    def get_current_state(self) -> TextIOWrapper:
         """
         Returns file object of current state or None
         """
@@ -193,14 +180,28 @@ class BaseLoader(object):
             fn = list(sorted(f for f in os.listdir(self.archive_dir) if self.rx_archive.match(f)))
         else:
             fn = []
-        if fn:
-            path = os.path.join(self.archive_dir, fn[-1])
-            logger.info("Current state from %s", path)
-            return self.iter_cleaned(compressor(path, "r").open())
-        # No current state
-        return StringIO("")
+        if not fn:
+            return StringIO("")
+        path = os.path.join(self.archive_dir, fn[-1])
+        logger.info("Current state from %s", path)
+        return compressor(path, "r").open()
 
-    def diff(self, old, new):
+    def iter_jsonl(
+        self, f: TextIOWrapper, data_model: Optional[BaseModel] = None
+    ) -> Iterable[BaseModel]:
+        """
+        Iterate over JSONl stream and yield model instances
+        :param f:
+        :param data_model:
+        :return:
+        """
+        dm = data_model or self.data_model
+        for line in f:
+            yield dm.parse_raw(line)
+
+    def diff(
+        self, old: Iterable[BaseModel], new: Iterable[BaseModel]
+    ) -> Iterable[Tuple[Optional[BaseModel], Optional[BaseModel]]]:
         """
         Compare old and new CSV files and yield pair of matches
         * old, new -- when changed
@@ -226,13 +227,13 @@ class BaseLoader(object):
                 yield o, None
                 o = getnext(old)
             else:
-                if n[0] == o[0]:
+                if n.id == o.id:
                     # Changed
                     if n != o:
                         yield o, n
                     n = getnext(new)
                     o = getnext(old)
-                elif n[0] < o[0]:
+                elif n.id < o.id:
                     # Added
                     yield None, n
                     n = getnext(new)
@@ -251,8 +252,8 @@ class BaseLoader(object):
             self.logger.info("No new state, skipping")
             self.load_mappings()
             return
-        current_state = csv.reader(self.get_current_state())
-        new_state = csv.reader(ns)
+        current_state = self.iter_jsonl(self.get_current_state())
+        new_state = self.iter_jsonl(ns)
         deferred_add = []
         deferred_change = []
         for o, n in self.diff(current_state, new_state):
@@ -302,12 +303,15 @@ class BaseLoader(object):
             if rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
 
-    def find_object(self, v):
+    def find_object(self, v: Dict[str, Any]) -> Optional[Any]:
         """
         Find object by remote system/remote id
         :param v:
         :return:
         """
+        self.logger.debug("Find object: %s", v)
+        if not self.has_remote_system:
+            return None
         if not v.get("remote_system") or not v.get("remote_id"):
             self.logger.warning("RS or RID not found")
             return None
@@ -323,6 +327,7 @@ class BaseLoader(object):
                 return list(r)[-1]
             raise self.model.MultipleObjectsReturned
         except self.model.DoesNotExist:
+            self.logger.debug("Object not found")
             return None
 
     def create_object(self, v):
@@ -353,7 +358,7 @@ class BaseLoader(object):
             o.save()
         return o
 
-    def change_object(self, object_id, v):
+    def change_object(self, object_id: str, v: Dict[str, Any]):
         """
         Change object with attributes
         """
@@ -380,19 +385,16 @@ class BaseLoader(object):
         o.save()
         return o
 
-    def on_add(self, row):
+    def on_add(self, item: BaseModel) -> None:
         """
         Create new record
         """
-        self.logger.debug("Add: %s", ";".join(row))
-        v = self.clean(row)
+        self.logger.debug("Add: %s", item.json())
+        v = self.clean(item)
         # @todo: Check record is already exists
-        if self.fields[0] in v:
-            del v[self.fields[0]]
-        if hasattr(self.model, "remote_system"):
-            o = self.find_object(v)
-        else:
-            o = None
+        if "id" in v:
+            del v["id"]
+        o = self.find_object(v)
         if o:
             self.c_change += 1
             # Lost&found object with same remote_id
@@ -404,35 +406,36 @@ class BaseLoader(object):
                 if getattr(o, fn) != nv:
                     vv[fn] = nv
             self.change_object(o.id, vv)
-            # Restore mappings
-            self.set_mappings(row[0], o.id)
         else:
             self.c_add += 1
             o = self.create_object(v)
-            self.set_mappings(row[0], o.id)
+        self.set_mappings(item.id, o.id)
 
-    def on_change(self, o, n):
+    def on_change(self, o: BaseModel, n: BaseModel):
         """
         Create change record
         """
-        self.logger.debug("Change: %s", ";".join(n))
+        self.logger.debug("Change: %s", n.json())
         self.c_change += 1
-        v = self.clean(n)
-        vv = {"remote_system": v["remote_system"], "remote_id": v["remote_id"]}
-        for fn, (ov, nv) in zip(self.fields[1:], zip_longest(o[1:], n[1:])):
-            if ov != nv:
-                self.logger.debug("   %s: %s -> %s", fn, ov, nv)
-                vv[fn] = v[fn]
-        if n[0] in self.mappings:
-            self.change_object(self.mappings[n[0]], vv)
+        nv = self.clean(n)
+        changes = {"remote_system": nv["remote_system"], "remote_id": nv["remote_id"]}
+        ov = self.clean(o)
+        for fn in self.data_model.__fields__:
+            if fn == "id":
+                continue
+            if ov[fn] != nv[fn]:
+                self.logger.debug("   %s: %s -> %s", fn, ov[fn], nv[fn])
+            changes[fn] = nv[fn]
+        if n.id in self.mappings:
+            self.change_object(self.mappings[n.id], changes)
         else:
-            self.logger.error("Cannot map id '%s'. Skipping.", n[0])
+            self.logger.error("Cannot map id '%s'. Skipping.", n.id)
 
-    def on_delete(self, row):
+    def on_delete(self, item: BaseModel):
         """
         Delete record
         """
-        self.pending_deletes += [(row[0], ";".join(row))]
+        self.pending_deletes += [(item.id, item)]
 
     def purge(self):
         """
@@ -444,7 +447,7 @@ class BaseLoader(object):
             try:
                 obj = self.model.objects.get(pk=self.mappings[r_id])
                 obj.delete()
-            except ValueError as e:  # Reffered Error
+            except ValueError as e:  # Referred Error
                 self.logger.error("%s", str(e))
                 self.reffered_errors += [(r_id, msg)]
             except self.model.DoesNotExist:
@@ -460,11 +463,13 @@ class BaseLoader(object):
         self.logger.info(
             "Summary: %d new, %d changed, %d removed", self.c_add, self.c_change, self.c_delete
         )
-        self.logger.info("Error delete by reffered: %s", "\n".join(self.reffered_errors))
+        self.logger.info(
+            "Error delete by referred: %s", "\n".join(b.json() for _, b in self.reffered_errors)
+        )
         t = time.localtime()
         archive_path = os.path.join(
             self.archive_dir,
-            "import-%04d-%02d-%02d-%02d-%02d-%02d.csv%s" % (tuple(t[:6]) + (compressor.ext,)),
+            compressor.get_path("import-%04d-%02d-%02d-%02d-%02d-%02d.jsonl" % tuple(t[:6])),
         )
         self.logger.info("Moving %s to %s", self.new_state_path, archive_path)
         if self.new_state_path.endswith(compressor.ext):
@@ -480,17 +485,17 @@ class BaseLoader(object):
         mdata = "\n".join("%s,%s" % (k, self.mappings[k]) for k in sorted(self.mappings))
         safe_rewrite(self.mappings_path, mdata)
 
-    def clean(self, row):
+    def clean(self, item: BaseModel) -> Dict[str, Any]:
         """
         Cleanup row and return a dict of field name -> value
         """
-        r = {k: self.clean_map[k](v) for k, v in zip(self.fields, row)}
+        r = {k: self.clean_map.get(k, self.clean_str)(v) for k, v in item.dict().items()}
         # Fill integration fields
         r["remote_system"] = self.system.remote_system
-        r["remote_id"] = self.clean_str(row[0])
+        r["remote_id"] = self.clean_str(item.id)
         return r
 
-    def clean_str(self, value):
+    def clean_str(self, value) -> Optional[str]:
         if value:
             if isinstance(value, str):
                 return smart_text(value)
@@ -513,7 +518,7 @@ class BaseLoader(object):
                 raise self.Deferred
         return value
 
-    def clean_bool(self, value):
+    def clean_bool(self, value: str) -> Optional[bool]:
         if value == "":
             return None
         try:
@@ -631,15 +636,15 @@ class BaseLoader(object):
         if not required_fields and not unique_fields:
             self.logger.info("Nothing to check, skipping")
             return 0
+        self.logger.debug("[%s] Required fields: %s", self.model, required_fields)
+        self.logger.debug("[%s] Unique fields: %s", self.model, unique_fields)
+        self.logger.debug("[%s] Mapped fields: %s", self.model, self.mapped_fields)
         # Prepare data
         ns = self.get_new_state()
         if not ns:
             self.logger.info("No new state, skipping")
             return 0
-        new_state = csv.reader(ns)
-        r_index = set(self.fields.index(f) for f in required_fields if f in self.fields)
-        u_index = set(self.fields.index(f) for f in unique_fields if f not in self.ignore_unique)
-        m_index = set(self.fields.index(f) for f in self.mapped_fields)
+        new_state = self.iter_jsonl(ns)
         uv = set()
         m_data = {}  # field_number -> set of mapped ids
         # Load mapped ids
@@ -648,48 +653,53 @@ class BaseLoader(object):
             ls = line.get_new_state()
             if not ls:
                 ls = line.get_current_state()
-            ms = csv.reader(ls)
-            m_data[self.fields.index(f)] = set(row[0] for row in ms)
+            ms = self.iter_jsonl(ls, data_model=line.data_model)
+            m_data[self.data_model.__fields__[f].name] = set(row.id for row in ms)
         # Process data
         n_errors = 0
         for row in new_state:
+            row = row.dict()
             lr = len(row)
             # Check required fields
-            for i in r_index:
-                if not row[i]:
+            for f in required_fields:
+                if f not in self.data_model.__fields__:
+                    continue
+                if f not in row:
                     self.logger.error(
-                        "ERROR: Required field #%d(%s) is missed in row: %s",
-                        i,
-                        self.fields[i],
-                        ",".join(row),
+                        "ERROR: Required field #(%s) is missed in row: %s",
+                        f,
+                        # self.fields[i],
+                        row,
                     )
                     n_errors += 1
                     continue
             # Check unique fields
-            for i in u_index:
-                v = row[i]
-                if (i, v) in uv:
+            for f in unique_fields:
+                if f in self.ignore_unique:
+                    continue
+                v = row[f]
+                if v in uv:
                     self.logger.error(
-                        "ERROR: Field #%d(%s) value is not unique: %s",
-                        i,
-                        self.fields[i],
-                        ",".join(row),
+                        "ERROR: Field #(%s) value is not unique: %s",
+                        f,
+                        # self.fields[i],
+                        row,
                     )
                     n_errors += 1
                 else:
-                    uv.add((i, v))
+                    uv.add(v)
             # Check mapped fields
-            for i in m_index:
+            for i, f in enumerate(self.mapped_fields):
                 if i >= lr:
                     continue
-                v = row[i]
-                if v and v not in m_data[i]:
+                v = row[f]
+                if v and v not in m_data[f]:
                     self.logger.error(
                         "ERROR: Field #%d(%s) == '%s' refers to non-existent record: %s",
                         i,
-                        self.fields[i],
-                        row[i],
-                        ",".join(row),
+                        f,
+                        row[f],
+                        row,
                     )
                     n_errors += 1
         if n_errors:
@@ -700,14 +710,14 @@ class BaseLoader(object):
 
     def check_diff(self):
         def dump(cmd, row):
-            print("%s %s" % (cmd, ",".join(row)))
+            print("%s %s" % (cmd, row.json()))
 
         print("--- %s.%s" % (self.chain.system.name, self.name))
         ns = self.get_new_state()
         if not ns:
             return
-        current_state = csv.reader(self.get_current_state())
-        new_state = csv.reader(ns)
+        current_state = self.iter_jsonl(self.get_current_state())
+        new_state = self.iter_jsonl(ns)
         for o, n in self.diff(current_state, new_state):
             if o is None and n:
                 dump("+", n)
@@ -722,8 +732,8 @@ class BaseLoader(object):
         ns = self.get_new_state()
         if not ns:
             return i, u, d
-        current_state = csv.reader(self.get_current_state())
-        new_state = csv.reader(ns)
+        current_state = self.iter_jsonl(self.get_current_state())
+        new_state = self.iter_jsonl(ns)
         for o, n in self.diff(current_state, new_state):
             if o is None and n:
                 i += 1

@@ -7,6 +7,7 @@
 
 # NOC modules
 from .base import BaseLoader
+from ..models.service import ServiceModel
 from noc.sa.models.service import Service
 
 
@@ -17,6 +18,7 @@ class ServiceLoader(BaseLoader):
 
     name = "service"
     model = Service
+    data_model = ServiceModel
     fields = [
         "id",
         "parent",

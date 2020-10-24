@@ -7,10 +7,12 @@
 
 # NOC modules
 from .base import BaseLoader
+from ..models.ttsystem import TTSystemModel
 from noc.fm.models.ttsystem import TTSystem
 
 
 class TTMapLoader(BaseLoader):
     name = "ttsystem"
     model = TTSystem
+    data_model = TTSystemModel
     fields = ["id", "name", "handler", "connection", "description"]

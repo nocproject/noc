@@ -34,3 +34,14 @@ class BaseCompressor(object):
 
     def close(self) -> None:
         raise NotImplementedError
+
+    @classmethod
+    def get_path(cls, path: str) -> str:
+        """
+        Convert path and add extension when needed
+        :param path:
+        :return:
+        """
+        if cls.ext:
+            return path + cls.ext
+        return path

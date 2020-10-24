@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Fix ETL file/compression format
+# Fix ETL format to JSONL
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
@@ -7,14 +7,12 @@
 
 # Python modules
 import os
+import csv
 
 # NOC modules
-from noc.core.compressor.loader import loader
+from noc.core.compressor.loader import loader as comp_loader
+from noc.core.etl.models.loader import loader as model_loader
 from noc.config import config
-
-ext_map = {
-    cc.ext: cc for cc in (loader[c] for c in loader.iter_classes()) if cc and cc.ext is not None
-}
 
 
 def fix():
@@ -40,22 +38,31 @@ def fix():
                 ensure_format(os.path.join(arch_root, f))
 
 
-def ensure_format(path: str) -> None:
-    dst_comp = loader[config.etl.compression]
-    if path.endswith(dst_comp.ext) and (path.endswith(".csv") and not dst_comp.ext):
-        print("[%s] Already compressed" % path)
-        return  # Already compressed
-    src_ext = ""
-    for ext in ext_map:
-        if path.endswith(ext) or (path.endswith(".csv") and not ext):
-            src_ext = ext
-            break
-    if src_ext == dst_comp.ext:
-        print("[%s] Already compressed. Skipping" % path)
-        return
-    src_comp = ext_map[src_ext]
-    dst_path = path[: -len(src_ext) if src_ext else None] + dst_comp.ext
-    print("Repacking %s -> %s" % (path, dst_path))
-    with src_comp(path, "r") as src, dst_comp(dst_path, "w") as dst:
-        dst.write(src.read())
+def ensure_format(path):
+    comp = comp_loader[config.etl.compression]
+    if comp.ext:
+        if not path.endswith(comp.ext):
+            return
+        s_path = path[: -len(comp.ext)]
+    else:
+        s_path = path
+    if not s_path.endswith(".csv"):
+        return  # Already completed
+    parts = os.path.dirname(path).split(os.sep)
+    if parts[-1] == "archive":
+        name = parts[-2]
+    else:
+        name = parts[-1]
+    model = model_loader[name]
+    new_path = comp.get_path("%s.jsonl" % s_path[:-4])
+    with comp(path).open() as f:
+        reader = csv.reader(f)
+        next(reader)  # Skip headers
+        with comp(new_path, "w").open() as ff:
+            for n, row in enumerate(reader):
+                data = model.from_iter(row)
+                if n:
+                    ff.write("\n%s" % data.json(exclude_defaults=True, exclude_unset=True))
+                else:
+                    ff.write(data.json(exclude_defaults=True, exclude_unset=True))
     os.unlink(path)

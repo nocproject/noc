@@ -7,6 +7,7 @@
 
 # NOC modules
 from .base import BaseLoader
+from ..models.admdiv import AdmDivModel
 from noc.gis.models.division import Division
 
 
@@ -17,6 +18,7 @@ class AdmDivLoader(BaseLoader):
 
     name = "admdiv"
     model = Division
+    data_model = AdmDivModel
     fields = ["id", "parent", "name", "short_name"]
 
     mapped_fields = {"parent": "admdiv"}
