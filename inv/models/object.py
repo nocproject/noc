@@ -134,20 +134,12 @@ class Object(Document):
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
-            if (
-                self.data
-                and "management" in self.data
-                and self.data["management"].get("managed_object")
-            ):
-                yield "managedobject", self.data["management"]["managed_object"]
+            if self.data and self.get_data("management", "managed_object"):
+                yield "managedobject", self.get_data("management", "managed_object")
             else:
                 for _, o, _ in self.iter_outer_connections():
-                    if (
-                        o.data
-                        and "management" in o.data
-                        and o.data["management"].get("managed_object")
-                    ):
-                        yield "managedobject", o.data["management"]["managed_object"]
+                    if o.data and o.get_data("management", "managed_object"):
+                        yield "managedobject", o.get_data("management", "managed_object")
 
     def clean(self):
         self.set_point()
