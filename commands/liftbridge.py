@@ -181,13 +181,7 @@ class Command(BaseCommand):
         run_sync(subscribe)
 
     def handle_set_cursor(
-        self,
-        name: str,
-        stream: str,
-        partition: int = 0,
-        offset: int = 0,
-        *args,
-        **kwargs,
+        self, name: str, stream: str, partition: int = 0, offset: int = 0, *args, **kwargs
     ):
         async def set_cursor():
             async with LiftBridgeClient() as client:

@@ -11,8 +11,5 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    """
-    """
-
     name = "APC.AOS.get_interfaces"
     interface = IGetInterfaces

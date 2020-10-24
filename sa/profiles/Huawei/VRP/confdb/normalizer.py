@@ -143,7 +143,7 @@ class VRPNormalizer(BaseNormalizer):
         elif "." in if_name:
             if_name, _ = if_name.split(".", 1)
         yield self.make_unit_description(
-            interface=if_name, unit=unit_name, description=" ".join(tokens[3:]),
+            interface=if_name, unit=unit_name, description=" ".join(tokens[3:])
         )
 
     @match("interface", ANY, "port-security", "max-mac-num", ANY)

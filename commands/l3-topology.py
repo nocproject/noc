@@ -27,7 +27,6 @@ class Command(BaseCommand):
     LAYOUT = ["neato", "cicro", "sfdp", "dot", "twopi"]
 
     def add_arguments(self, parser):
-
         parser.add_argument(
             "--afi", dest="afi", action="store", default="4", help="AFI (ipv4/ipv6)"
         ),

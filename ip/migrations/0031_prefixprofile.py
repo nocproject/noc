@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Prefix.profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     depends_on = [("wf", "0001_default_wf")]
 
     def migrate(self):

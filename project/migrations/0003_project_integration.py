@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # project integration
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Migration(BaseMigration):
             DocumentReferenceField("self", null=True, blank=True),
         )
         self.db.add_column(
-            "project_project", "remote_id", models.CharField(max_length=64, null=True, blank=True),
+            "project_project", "remote_id", models.CharField(max_length=64, null=True, blank=True)
         )
         self.db.add_column(
             "project_project", "bi_id", models.BigIntegerField(null=True, blank=True)

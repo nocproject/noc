@@ -10,7 +10,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     NAME = "default"
 
     def migrate(self):

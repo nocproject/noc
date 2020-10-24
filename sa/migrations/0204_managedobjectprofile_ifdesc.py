@@ -31,5 +31,5 @@ class Migration(BaseMigration):
             DocumentReferenceField("main.Handler", null=True, blank=True),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "ifdesc_symmetric", models.BooleanField(default=False),
+            "sa_managedobjectprofile", "ifdesc_symmetric", models.BooleanField(default=False)
         )

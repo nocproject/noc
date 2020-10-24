@@ -73,14 +73,13 @@ def in_lookup(seq, model=None):
     s3 = " NOT" if ("$not" in seq) or ("$NOT" in seq) else ""
     # check int
     m = []
-    for l in seq[1]:
-        if isinstance(l, int) or l.isdigit():
-            m += [int(l)]
+    for item in seq[1]:
+        if isinstance(item, int) or item.isdigit():
+            m += [int(item)]
             continue
     if len(seq[1]) == 1:
         return "%s%s IN %s" % (seq[0]["$field"], s3, m[0])
-    else:
-        return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(m))
+    return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(m))
 
 
 def f_ternary_if(seq, model=None):
@@ -151,7 +150,6 @@ def f_selector(seq, model=None):
 
 
 def f_quantile(seq):
-
     return "quantile(%f)(%s)" % seq
 
 

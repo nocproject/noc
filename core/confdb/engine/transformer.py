@@ -80,7 +80,7 @@ class PredicateTransformer(ast.NodeTransformer):
         fn = getattr(self.engine, attr_name)
         return ast.Call(
             func=ast.Attribute(
-                value=ast.Name(id="self", ctx=ast.Load()), attr=attr_name, ctx=ast.Load(),
+                value=ast.Name(id="self", ctx=ast.Load()), attr=attr_name, ctx=ast.Load()
             ),
             args=[_input] + self.visit_args(fn, node.args),
             keywords=[ast.keyword(arg=k.arg, value=self.wrap_expr(k.value)) for k in node.keywords],

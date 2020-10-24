@@ -41,7 +41,7 @@ class AlarmsCheck(DiscoveryCheck):
         system_alarms = {
             str(a.raw_vars["id"]): a
             for a in ActiveEvent.objects.filter(
-                managed_object__in=mos_id, source="other", raw_vars__id__exists=True,
+                managed_object__in=mos_id, source="other", raw_vars__id__exists=True
             )
         }
         # Search objcet alarms in system events, if objcet alarms not in system events, create!

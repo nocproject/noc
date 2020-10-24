@@ -16,9 +16,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    """
-    """
-
     name = "InfiNet.WANFlexX.get_interfaces"
     interface = IGetInterfaces
     cache = True

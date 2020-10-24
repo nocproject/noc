@@ -52,7 +52,7 @@ class BaseScriptMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         n._execute_chain = sorted(
-            (v for v in attrs.values() if hasattr(v, "_seq")), key=operator.attrgetter("_seq"),
+            (v for v in attrs.values() if hasattr(v, "_seq")), key=operator.attrgetter("_seq")
         )
         return n
 

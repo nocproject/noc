@@ -12,9 +12,6 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    """
-    """
-
     name = "SecurityCode.Kontinent.get_chassis_id"
     interface = IGetChassisID
 

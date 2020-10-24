@@ -66,18 +66,16 @@ class Script(BaseScript):
                 ]
 
             # Bridge: brX, vnetX, virbrX, vifX.X, vethX(XEN), xenbr0, tapX, xapiX, ovs-system
-            if match.group("name")[:4] in [
-                "vnet",
-                "virb",
-                "veth",
-                "xenb",
-                "xapi",
-                "ovs-",
-            ] or match.group("name")[:2] in ["br", "vi", "ta"]:
+            if_name = match.group("name")
+            if if_name[:4] in ("vnet", "virb", "veth", "xenb", "xapi", "ovs-") or if_name[:2] in (
+                "br",
+                "vi",
+                "ta",
+            ):
                 typeif = "physical"
                 interfaces += [
                     {
-                        "name": match.group("name"),
+                        "name": if_name,
                         "type": typeif,
                         "mac": match.group("mac"),
                         "subinterfaces": [],
@@ -85,7 +83,7 @@ class Script(BaseScript):
                 ]
 
             # only:  eth0-N, enpXsX, emX,
-            if match.group("name")[:2] in ["et", "en", "em", "pe"]:
+            if if_name[:2] in ["et", "en", "em", "pe"]:
                 typeif = "physical"
                 # 2: eth0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc mq master bond0 state UP qlen 1000
                 # slave interface in bonding
@@ -95,7 +93,7 @@ class Script(BaseScript):
                         # print slaveif.group("master"), "ddddddddddddddddddd"
                         interfaces += [
                             {
-                                "name": match.group("name"),
+                                "name": if_name,
                                 "type": typeif,
                                 "mac": match.group("mac"),
                                 "subinterfaces": [],
@@ -105,7 +103,7 @@ class Script(BaseScript):
                 else:
                     interfaces += [
                         {
-                            "name": match.group("name"),
+                            "name": if_name,
                             "type": typeif,
                             "mac": match.group("mac"),
                             "subinterfaces": [],

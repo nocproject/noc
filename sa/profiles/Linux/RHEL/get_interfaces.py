@@ -45,63 +45,51 @@ class Script(BaseScript):
         r"    link\/ether (?P<mac>\S+) brd",
         re.IGNORECASE | re.DOTALL,
     )
+    PHY_NAMES2 = {"br", "vi", "ta"}
+    PHY_NAMES_SL2 = {"et", "en", "em", "pe"}
+    PHY_NAMES4 = {"vnet", "virb", "veth", "xenb", "xapi", "ovs-"}
 
     def execute(self, interface=None):
-
         interfaces = []
         # Ethernet ports
-        ifcfg = ""
         ifcfg = self.cli("ip link", cached=True)
-
         for match in self.rx_iface.finditer(ifcfg):
-            # print match.group("status")
-            # print match.group("name")
-            typeif = "other"
-
+            if_name = match.group("name")
             # bonding interface: bondX
             if "MASTER" in match.group("status"):
                 typeif = "aggregated"
-
                 interfaces += [
                     {
-                        "name": match.group("name"),
+                        "name": if_name,
                         "type": typeif,
                         "mac": match.group("mac"),
-                        "subinterfaces": [{"name": match.group("name"), "enabled_afi": ["BRIDGE"]}],
+                        "subinterfaces": [{"name": if_name, "enabled_afi": ["BRIDGE"]}],
                     }
                 ]
 
             # Bridge: brX, vnetX, virbrX, vifX.X, vethX(XEN), xenbr0, tapX, xapiX, ovs-system
-            if match.group("name")[:4] in [
-                "vnet",
-                "virb",
-                "veth",
-                "xenb",
-                "xapi",
-                "ovs-",
-            ] or match.group("name")[:2] in ["br", "vi", "ta"]:
+            if if_name[:4] in self.PHY_NAMES4 or if_name[:2] in self.PHY_NAMES2:
                 typeif = "physical"
                 interfaces += [
                     {
-                        "name": match.group("name"),
+                        "name": if_name,
                         "type": typeif,
                         "mac": match.group("mac"),
                         "subinterfaces": [],
                     }
                 ]
-
             # only:  eth0-N, enpXsX, emX,
-            if match.group("name")[:2] in ["et", "en", "em", "pe"]:
+            if if_name[:2] in self.PHY_NAMES_SL2:
                 typeif = "physical"
                 # 2: eth0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc mq master bond0 state UP qlen 1000
                 # slave interface in bonding
                 if "SLAVE" in match.group("status"):
-                    ifmaster = self.cli("ip link show " + match.group("name"), cached=True)
+                    ifmaster = self.cli("ip link show %s" % if_name, cached=True)
                     for slaveif in self.rx_master.finditer(ifmaster):
                         # print slaveif.group("master"), "ddddddddddddddddddd"
                         interfaces += [
                             {
-                                "name": match.group("name"),
+                                "name": if_name,
                                 "type": typeif,
                                 "mac": match.group("mac"),
                                 "subinterfaces": [],
@@ -111,11 +99,10 @@ class Script(BaseScript):
                 else:
                     interfaces += [
                         {
-                            "name": match.group("name"),
+                            "name": if_name,
                             "type": typeif,
                             "mac": match.group("mac"),
                             "subinterfaces": [],
                         }
                     ]
-
         return [{"interfaces": interfaces}]

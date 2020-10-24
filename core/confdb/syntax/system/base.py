@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ConfDB system syntax
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -130,7 +130,7 @@ SYSTEM_SYNTAX = DEF(
         SYSTEM_AAA_SYNTAX,
         DEF(
             "security",
-            [DEF("certificate", [DEF(ANY, name="name", gen="make_system_security_certificate")]),],
+            [DEF("certificate", [DEF(ANY, name="name", gen="make_system_security_certificate")])],
         ),
     ],
 )

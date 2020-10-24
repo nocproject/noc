@@ -16,14 +16,14 @@ class SlotRule(OIDRule):
 
     def iter_oids(self, script, metric):
         """
-                SlotNumber
-                2 for ERX-3xx models
-                6 for ERX-7xx models
-                13 for ERX-14xx models
-                16 for E320 models
-                :param metrics:
-                :return:
-                """
+        SlotNumber
+        2 for ERX-3xx models
+        6 for ERX-7xx models
+        13 for ERX-14xx models
+        16 for E320 models
+        :param metrics:
+        :return:
+        """
         juniSystemSlotLevel = [1]
         juniSystemSlotNumber = list(range(0, 17))
         i = 0

@@ -90,9 +90,7 @@ class Command(BaseCommand):
     def check_direction(self, c, directions):
         if (c.direction) and (c.direction in directions):
             return
-        self.e(
-            c, "'%s' must have direction %s (has '%s')" % (c.type.name, directions, c.direction),
-        )
+        self.e(c, "'%s' must have direction %s (has '%s')" % (c.type.name, directions, c.direction))
 
     def check_ct_db9(self, c):
         self.check_direction(c, ["s"])
@@ -141,7 +139,7 @@ class Command(BaseCommand):
             )
         elif any("100BASELX" in s for s in c.protocols):
             self.check_protocols(
-                c, [">100BASELX-1310", "<100BASELX-1310", ">100BASELX-1550", "<100BASELX-1550"],
+                c, [">100BASELX-1310", "<100BASELX-1310", ">100BASELX-1550", "<100BASELX-1550"]
             )
         elif any("1000BASEZX" in s for s in c.protocols):
             self.check_protocols(

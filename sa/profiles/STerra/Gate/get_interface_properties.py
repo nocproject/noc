@@ -10,9 +10,6 @@ from noc.sa.profiles.Generic.get_interface_properties import Script as BaseScrip
 
 
 class Script(BaseScript):
-    """
-    """
-
     name = "STerra.Gate.get_interface_properties"
 
     SNMP_NAME_TABLE = "IF-MIB::ifName"

@@ -43,7 +43,6 @@ class Command(BaseCommand):
     help = "Import data from rancid"
 
     def add_arguments(self, parser):
-
         parser.add_argument(
             parser.add_argument(
                 "--routerdb", action="append", dest="routerdb", help="Path to the router.db"

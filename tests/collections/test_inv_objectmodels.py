@@ -110,7 +110,7 @@ CONNECTION_CHECKLIST = {
             "ADSLoPOTS",
         ],
     },
-    "Electrical | SFF-8470": {"directions": "s", "protocols": ["10GBASECX4"],},
+    "Electrical | SFF-8470": {"directions": "s", "protocols": ["10GBASECX4"]},
     "Electrical | CXP": {
         "directions": "s",
         "protocols": [
@@ -136,16 +136,16 @@ CONNECTION_CHECKLIST = {
         "directions": "s",
         "protocols": [">220VAC", "<220VAC", ">110VAC", "<110VAC"],
     },
-    "Transceiver | GBIC": {"directions": ["i", "o"], "protocols": ["TransEth100M", "TransEth1G"],},
+    "Transceiver | GBIC": {"directions": ["i", "o"], "protocols": ["TransEth100M", "TransEth1G"]},
     "Transceiver | SFP": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth100M", "TransEth1G", "GPON", "OC3/STM1", "OC48/STM16",],
+        "protocols": ["TransEth100M", "TransEth1G", "GPON", "OC3/STM1", "OC48/STM16"],
     },
     "Transceiver | SFP | Cisco": {
         "directions": ["i", "o"],
         "protocols": ["TransEth100M", "TransEth1G", "GPON"],
     },
-    "Transceiver | SFP+": {"directions": ["i", "o"], "protocols": ["TransEth1G", "TransEth10G"],},
+    "Transceiver | SFP+": {"directions": ["i", "o"], "protocols": ["TransEth1G", "TransEth10G"]},
     "Transceiver | SFP+ | Cisco": {
         "directions": ["i", "o"],
         "protocols": ["TransEth1G", "TransEth10G"],
@@ -162,13 +162,13 @@ CONNECTION_CHECKLIST = {
         "directions": ["i", "o"],
         "protocols": ["TransEth10G", "TransEth40G", "TransEth100G"],
     },
-    "Transceiver | XFP": {"directions": ["i", "o"], "protocols": ["TransEth10G", "OC192/STM64"],},
+    "Transceiver | XFP": {"directions": ["i", "o"], "protocols": ["TransEth10G", "OC192/STM64"]},
     "Transceiver | XFP | Cisco": {
         "directions": ["i", "o"],
         "protocols": ["TransEth10G", "OC192/STM64"],
     },
-    "Transceiver | XENPAK | Cisco": {"directions": ["i", "o"], "protocols": ["TransEth10G"],},
-    "Transceiver | X2 | Cisco": {"directions": ["i", "o"], "protocols": ["TransEth10G"],},
+    "Transceiver | XENPAK | Cisco": {"directions": ["i", "o"], "protocols": ["TransEth10G"]},
+    "Transceiver | X2 | Cisco": {"directions": ["i", "o"], "protocols": ["TransEth10G"]},
     "Transceiver | CFP": {
         "directions": ["i", "o"],
         "protocols": ["TransEth40G", "TransEth100G", "OC768/STM256"],

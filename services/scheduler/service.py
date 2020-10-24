@@ -20,7 +20,7 @@ class SchedulerService(TornadoService):
 
     async def on_activate(self):
         self.scheduler = Scheduler(
-            "scheduler", reset_running=True, max_threads=config.scheduler.max_threads,
+            "scheduler", reset_running=True, max_threads=config.scheduler.max_threads
         )
         self.scheduler.run()
 

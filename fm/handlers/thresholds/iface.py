@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 
 def humanize_speed(speed, type_speed):
-
     d_speed = {
         "bit/s": [(1000000000, "Gbit/s"), (1000000, "Mbit/s"), (1000, "kbit/s")],
         "kbit/s": [(1000000, "Gbit/s"), (1000, "Mbit/s")],

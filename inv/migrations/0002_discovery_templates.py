@@ -35,7 +35,6 @@ ADDRESS_COLLISION_REPORT_BODY = """{{ count }} address collisions found
 
 
 class Migration(BaseMigration):
-
     depends_on = [("main", "0037_template")]
 
     def migrate(self):

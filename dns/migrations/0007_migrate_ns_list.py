@@ -11,7 +11,6 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-
         for p_id, zl in self.db.execute("SELECT id,zone_ns_list FROM dns_dnszoneprofile"):
             for n in [x.strip() for x in zl.split(",")]:
                 if not self.db.execute("SELECT COUNT(*) FROM dns_dnsserver WHERE name=%s", [n])[0][

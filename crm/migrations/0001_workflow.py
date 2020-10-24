@@ -13,7 +13,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     depends_on = [("wf", "0001_default_wf")]
 
     def migrate(self):

@@ -164,10 +164,6 @@ class ReportSubscription(Document):
 
 
 class ReportJob(Job):
-    """
-
-    """
-
     name = "daily"
     HOUR = 1  # @todo: Configurable
 

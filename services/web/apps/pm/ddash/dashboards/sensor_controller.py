@@ -125,7 +125,6 @@ class SensorControllerDashboard(JinjaDashboard):
         }
 
     def get_context(self):
-
         return {
             "port_types": self.object_data["port_types"],
             "sensor_types": self.object_data["sensor_types"],

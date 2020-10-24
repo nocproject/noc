@@ -56,7 +56,7 @@ class Script(BaseScript):
             "vendor": "Qtech",
             "platform": platform,
             "version": version,
-            "attributes": {"Boot PROM": bootprom, "HW version": hardware, "Serial Number": serial,},
+            "attributes": {"Boot PROM": bootprom, "HW version": hardware, "Serial Number": serial},
         }
 
     def execute_cli(self, **kwargs):

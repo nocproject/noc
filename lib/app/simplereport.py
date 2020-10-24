@@ -376,7 +376,7 @@ class TableColumn(ReportNode):
             if f < limit:
                 return ("%8.2f%s" % (f / divider, suffix)).strip()
         limit, divider, suffix = SIZE_DATA[-1]
-        return ("%8.2%s" % (f / divider, suffix)).strip()
+        return ("%8.2f%s" % (f / divider, suffix)).strip()
 
     def f_numeric(self, f):
         """
@@ -435,11 +435,11 @@ class TableColumn(ReportNode):
         """
         return self.f_numeric(f) + "%"
 
-    def f_pprint(self, l):
+    def f_pprint(self, f):
         """
         Returns a pretty-printed object
         """
-        return SafeString("<pre>%s</pre>" % pprint.pformat(l))
+        return SafeString("<pre>%s</pre>" % pprint.pformat(f))
 
     def f_tags(self, f):
         """
@@ -450,17 +450,17 @@ class TableColumn(ReportNode):
         except Exception:
             return ""
 
-    def ft_sum(self, l):
+    def ft_sum(self, f):
         """
         Returns a sum of not-null elements
         """
-        return reduce(lambda x, y: x + y, [decimal.Decimal(str(z)) for z in l if z], 0)
+        return reduce(lambda x, y: x + y, [decimal.Decimal(str(z)) for z in f if z], 0)
 
-    def ft_count(self, l):
+    def ft_count(self, f):
         """
         Returns a count of not-null elements
         """
-        return len([x for x in l if x])
+        return len([x for x in f if x])
 
 
 class SectionRow(object):

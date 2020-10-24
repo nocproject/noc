@@ -24,12 +24,12 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobjectprofile",
             "shape_overlay_position",
-            models.CharField("S.O. Position", max_length=2, null=True, blank=True,),
+            models.CharField("S.O. Position", max_length=2, null=True, blank=True),
         )
         self.db.add_column(
             "sa_managedobjectprofile",
             "shape_overlay_form",
-            models.CharField("S.O. Form", max_length=1, null=True, blank=True,),
+            models.CharField("S.O. Form", max_length=1, null=True, blank=True),
         )
         # ManagedObject
         self.db.add_column(
@@ -40,10 +40,10 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobject",
             "shape_overlay_position",
-            models.CharField("S.O. Position", max_length=2, null=True, blank=True,),
+            models.CharField("S.O. Position", max_length=2, null=True, blank=True),
         )
         self.db.add_column(
             "sa_managedobject",
             "shape_overlay_form",
-            models.CharField("S.O. Form", max_length=1, null=True, blank=True,),
+            models.CharField("S.O. Form", max_length=1, null=True, blank=True),
         )

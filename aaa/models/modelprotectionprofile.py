@@ -72,9 +72,7 @@ class ModelProtectionProfile(Document):
     def __str__(self):
         return self.name
 
-    def save(
-        self, *args, **kwargs,
-    ):
+    def save(self, *args, **kwargs):
         if "field_access" in getattr(self, "_changed_fields", []):
             # Check unique
             processed = set()
