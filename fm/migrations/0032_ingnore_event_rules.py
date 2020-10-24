@@ -14,7 +14,6 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-
         # Adding model 'IgnoreEvents'
         self.db.create_table(
             "fm_ignoreeventrules",

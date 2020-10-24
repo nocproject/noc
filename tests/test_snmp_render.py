@@ -37,7 +37,7 @@ DEFAULT_OID = "1.3.6"
             b"\xd0\xb2\xd0\xbe\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81",
             "вопрос",
         ),
-        (get_text_renderer("cp1251"), None, b"\xe2\xee\xef\xf0\xee\xf1", "вопрос",),
+        (get_text_renderer("cp1251"), None, b"\xe2\xee\xef\xf0\xee\xf1", "вопрос"),
         # render_empty
         (render_empty, None, b"", ""),
         (render_empty, None, b"123", ""),

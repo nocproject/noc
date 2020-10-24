@@ -120,8 +120,6 @@ class BERDecoder(object):
         return v
 
     def parse_real(self, msg: bytes) -> float:
-        """
-        """
         if not msg:
             return 0.0
         f = msg[0]

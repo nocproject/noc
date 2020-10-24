@@ -169,7 +169,7 @@ class Script(BaseScript):
         if "::" in oid:
             oid = mib[oid]
         for oid, v in self.snmp.getnext(
-            oid, max_repetitions=40, display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_bin,}
+            oid, max_repetitions=40, display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_bin}
         ):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
@@ -214,8 +214,8 @@ class Script(BaseScript):
         ip_ifaces = self.get_ip_ifaces()
 
         r = []
-        for l in ifaces:
-            iface = ifaces[l]
+        for line in ifaces:
+            iface = ifaces[line]
             if last_ifname and iface["interface"] not in last_ifname:
                 continue
             if iface.get("type") is not None:
@@ -234,14 +234,14 @@ class Script(BaseScript):
                 "type": i_type,
                 "admin_status": iface.get("admin_status", False),
                 "oper_status": iface.get("oper_status", False),
-                "snmp_ifindex": l,
+                "snmp_ifindex": line,
                 "subinterfaces": [
                     {
                         "name": iface["interface"],
                         "enabled_afi": ["BRIDGE"],
                         "admin_status": iface.get("admin_status", False),
                         "oper_status": iface.get("oper_status", False),
-                        "snmp_ifindex": l,
+                        "snmp_ifindex": line,
                     }
                 ],
             }
@@ -252,8 +252,8 @@ class Script(BaseScript):
             if description:
                 i["description"] = description
                 i["subinterfaces"][0]["description"] = description
-            if l in ip_ifaces:
-                i["subinterfaces"][0]["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]
+            if line in ip_ifaces:
+                i["subinterfaces"][0]["ipv4_addresses"] = [IPv4(*ip_ifaces[line])]
                 i["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
             if iface.get("mac_address") is not None:
                 i["mac"] = MAC(iface["mac_address"])

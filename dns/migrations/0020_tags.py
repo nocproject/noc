@@ -13,7 +13,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     TAG_MODELS = ["dns_dnszone", "dns_dnszonerecord"]
 
     def migrate(self):

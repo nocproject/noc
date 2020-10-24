@@ -14,9 +14,6 @@ from noc.core.text import parse_kv
 
 
 class Script(BaseScript):
-    """
-    """
-
     name = "APC.AOS.get_chassis_id"
     interface = IGetChassisID
 

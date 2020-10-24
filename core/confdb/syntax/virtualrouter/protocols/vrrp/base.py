@@ -74,7 +74,7 @@ VRRP_SYNTAX = DEF(
                             "preempt",
                             [
                                 DEF(
-                                    "enabled", [DEF(BOOL, name="enabled", gen="make_vrrp_preempt")],
+                                    "enabled", [DEF(BOOL, name="enabled", gen="make_vrrp_preempt")]
                                 ),
                                 DEF(
                                     "timer",

@@ -14,8 +14,8 @@ from bson import ObjectId
 
 def get_event(event_id):
     """
-        Get event by event_id
-        """
+    Get event by event_id
+    """
     for ec in (ActiveEvent, ArchivedEvent, FailedEvent):
         e = ec.objects.filter(id=event_id).first()
         if e:
@@ -25,8 +25,8 @@ def get_event(event_id):
 
 def get_alarm(alarm_id) -> Union["ActiveAlarm", "ArchivedAlarm"]:
     """
-        Get alarm by alarm_id
-        """
+    Get alarm by alarm_id
+    """
     for ac in (ActiveAlarm, ArchivedAlarm):
         a = ac.objects.filter(id=alarm_id).first()
         if a:

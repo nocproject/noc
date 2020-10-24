@@ -11,7 +11,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     TAG_MODELS = ["cm_objectnotify"]
 
     def migrate(self):

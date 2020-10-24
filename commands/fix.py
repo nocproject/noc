@@ -16,7 +16,6 @@ from noc.config import config
 
 
 class Command(BaseCommand):
-
     FIX_DIRS = config.get_customized_paths("fixes")
 
     def add_arguments(self, parser):

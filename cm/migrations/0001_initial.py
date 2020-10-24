@@ -14,7 +14,6 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-
         # Model 'ObjectCategory'
         self.db.create_table(
             "cm_objectcategory",

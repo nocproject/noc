@@ -14,7 +14,6 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-
         # Mock Models
         MIB = self.db.mock_model(model_name="MIB", db_table="fm_mib")
 

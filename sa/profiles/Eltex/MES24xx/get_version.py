@@ -44,7 +44,7 @@ class Script(BaseScript):
             "vendor": "Eltex",
             "platform": platform,
             "version": ver,
-            "attributes": {"Serial Number": serial, "HW version": hw_ver,},
+            "attributes": {"Serial Number": serial, "HW version": hw_ver},
         }
         return r
 

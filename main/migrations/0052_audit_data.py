@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Migrate audit trail
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,6 @@ logger = logging.getLogger("migration")
 
 
 class Migration(BaseMigration):
-
     rx_field = re.compile("^[a-zA-Z0-9_]+$")
 
     def migrate(self):
@@ -38,19 +37,19 @@ class Migration(BaseMigration):
 
         def iteritems(s, sep):
             last = None
-            for l in s.splitlines():
-                if sep not in l:
+            for line in s.splitlines():
+                if sep not in line:
                     if last is not None:
-                        last += "\n" + l
+                        last += "\n" + line
                 elif last:
-                    k = l.split(sep)[0]
+                    k = line.split(sep)[0]
                     if self.rx_field.match(k):
                         yield last.split(sep, 1)
-                        last = l
+                        last = line
                     else:
-                        last += "\n" + l
+                        last += "\n" + line
                 else:
-                    last = l
+                    last = line
             if last:
                 yield last.split(sep, 1)
 

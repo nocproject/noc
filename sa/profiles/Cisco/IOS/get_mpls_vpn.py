@@ -122,10 +122,10 @@ class Script(BaseScript):
         vrf_block = defaultdict(list)
         block = None
         tab = 100
-        for l in v.splitlines():
+        for line in v.splitlines():
             # VRF VPN_VRF1 (VRF Id = 00); default RD 65501:4579033191; default VPNID <not set>
             # VRF VPN_VRF1; default RD 65501:4579033191; default VPNID <not set>
-            if self.rx_vrf.match(l):
+            if self.rx_vrf.match(line):
                 if vrf and rd:
                     vpns += [
                         {
@@ -156,22 +156,22 @@ class Script(BaseScript):
                             ":".join(lll.split(":")[1:])
                             for lll in vrf_block["import vpn route-target communities"]
                         ]
-                vrf, rd, = self.rx_vrf.match(l).group("vrf"), self.rx_vrf.match(l).group("rd")
+                vrf, rd = self.rx_vrf.match(line).group("vrf"), self.rx_vrf.match(line).group("rd")
                 # interfaces, vrf_export, vrf_import
                 vrf_block = {
                     "interfaces:": [],
                     "export vpn route-target communities": [],
                     "import vpn route-target communities": [],
                 }
-            elif l.lower().strip() in vrf_block:
-                block = l.lower().strip()
-                tab = l.count("  ")
-            elif not l.strip():
+            elif line.lower().strip() in vrf_block:
+                block = line.lower().strip()
+                tab = line.count("  ")
+            elif not line.strip():
                 tab = 100
                 block = None
-            elif block is not None and l.count("  ") and l.count("  ") > tab:
-                vrf_block[block] += l.split()
-            elif block is not None and l.count("  ") and l.count("  ") == tab:
+            elif block is not None and line.count("  ") and line.count("  ") > tab:
+                vrf_block[block] += line.split()
+            elif block is not None and line.count("  ") and line.count("  ") == tab:
                 s = []
                 for ll in vrf_block[block]:
                     s += [lll.strip() for lll in ll.split() if lll.strip()]
@@ -216,8 +216,8 @@ class Script(BaseScript):
     def execute_vrf(self, **kwargs):
         vpns = []
         v = self.cli("show ip vrf")
-        for l in v.splitlines():
-            match = self.rx_line.match(l)
+        for line in v.splitlines():
+            match = self.rx_line.match(line)
             if match:
                 iface = match.group("iface").strip()
                 if iface:
@@ -240,7 +240,7 @@ class Script(BaseScript):
                     vpn["rd"] = rd
                 vpns += [vpn]
             elif vpns:
-                match = self.rx_cont.match(l)
+                match = self.rx_cont.match(line)
                 if match:
                     iface = match.group("iface")
                     interfaces = [iface]

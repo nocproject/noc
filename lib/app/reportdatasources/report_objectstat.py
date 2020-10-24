@@ -156,7 +156,7 @@ class CapabilitiesIsolator(IsolatorClass):
             ObjectCapabilities.objects.filter(
                 m_Q(
                     caps__capability__in=[
-                        cp.id for cp in Capability.objects.filter(name__startswith="Network |",)
+                        cp.id for cp in Capability.objects.filter(name__startswith="Network |")
                     ]
                 )
             )

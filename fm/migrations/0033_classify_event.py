@@ -10,7 +10,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     CREATE_CLASSIFY_EVENT = """
     CREATE OR REPLACE
     FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])

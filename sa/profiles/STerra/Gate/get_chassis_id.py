@@ -12,9 +12,6 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    """
-    """
-
     name = "STerra.Gate.get_chassis_id"
     interface = IGetChassisID
 

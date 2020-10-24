@@ -30,15 +30,15 @@ class Script(BaseScript):
             "version": match.group("version"),
             "attributes": {},
         }
-        for oid, name in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"],):
+        for oid, name in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
             if name:
                 r["attributes"]["Serial Number"] = name
                 break
-        for oid, name in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalHardwareRev"],):
+        for oid, name in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalHardwareRev"]):
             if name:
                 r["attributes"]["HW version"] = name
                 break
-        for oid, name in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalFirmwareRev"],):
+        for oid, name in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalFirmwareRev"]):
             if name:
                 r["attributes"]["Boot PROM"] = name
                 break

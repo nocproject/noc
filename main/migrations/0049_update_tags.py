@@ -10,7 +10,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     depends_on = [
         ("dns", "0034_finish_tag_migration"),
         ("ip", "0024_finish_tag_migration"),

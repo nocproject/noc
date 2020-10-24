@@ -16,7 +16,6 @@ class Migration(BaseMigration):
     depends_on = [("peer", "0001_initial")]
 
     def migrate(self):
-
         # Model 'VRFGroup'
         self.db.create_table(
             "ip_vrfgroup",

@@ -13,7 +13,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     depends_on = [("main", "0004_language")]
 
     def migrate(self):

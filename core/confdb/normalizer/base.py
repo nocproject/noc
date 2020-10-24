@@ -296,7 +296,7 @@ class BaseNormalizer(object, metaclass=BaseNormalizerMetaclass):
         Mark the part of tree to be rebased to new location
 
         Usage:
-        yield self.rebase(src, dst):
+        yield self.rebase(src, dst)
 
         :param src: Source path
         :param dst: Destination path

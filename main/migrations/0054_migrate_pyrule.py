@@ -10,7 +10,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     PMAP = [
         ("drop_event", "IEventTrigger"),
         ("get_single_result", "IReduceTask"),

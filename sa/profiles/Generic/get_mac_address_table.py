@@ -92,7 +92,7 @@ class Script(BaseScript):
             if vlan_id != "0" and not is_vlan(vlan_id):
                 # Found vlan `4155` on Eltex MES-3124F fw 2.5.48.6
                 self.logger.error(
-                    "Invalid vlan number %s, for MAC: %s, Port: %s", vlan_id, mac, mac_port[r_oid],
+                    "Invalid vlan number %s, for MAC: %s, Port: %s", vlan_id, mac, mac_port[r_oid]
                 )
                 continue
             r += [
