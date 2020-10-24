@@ -7,6 +7,7 @@
 
 # NOC modules
 from .base import BaseLoader
+from ..models.subscriberprofile import SubscriberProfileModel
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.wf.models.workflow import Workflow
 
@@ -20,6 +21,7 @@ class SubscriberProfileLoader(BaseLoader):
 
     name = "subscriberprofile"
     model = SubscriberProfile
+    data_model = SubscriberProfileModel
     fields = ["id", "name", "description", "workflow"]
 
     def clean(self, row):

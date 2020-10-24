@@ -7,6 +7,7 @@
 
 # NOC modules
 from .base import BaseLoader
+from ..models.subscriber import SubscriberModel
 from noc.crm.models.subscriber import Subscriber
 
 
@@ -17,6 +18,7 @@ class SubscriberLoader(BaseLoader):
 
     name = "subscriber"
     model = Subscriber
+    data_model = SubscriberModel
     fields = [
         "id",
         "name",

@@ -1,25 +1,29 @@
 # ----------------------------------------------------------------------
-# Auth Profile Loader
+# AuthProfileModel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # NOC modules
-from .base import BaseLoader
-from ..models.authprofile import AuthProfileModel
-from noc.sa.models.authprofile import AuthProfile
+from .base import BaseModel
 
 
-class AuthProfileLoader(BaseLoader):
-    """
-    Managed Object Profile loader
-    """
+class AuthProfileModel(BaseModel):
+    id: str
+    name: str
+    description: Optional[str]
+    type: str
+    user: Optional[str]
+    password: Optional[str]
+    super_password: Optional[str]
+    snmp_ro: Optional[str]
+    snmp_rw: Optional[str]
 
-    name = "authprofile"
-    model = AuthProfile
-    data_model = AuthProfileModel
-    fields = [
+    _csv_fields = [
         "id",
         "name",
         "description",

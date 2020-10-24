@@ -7,6 +7,7 @@
 
 # NOC modules
 from .base import BaseLoader
+from ..models.networksegmentprofile import NetworkSegmentProfileModel
 from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 
 
@@ -17,4 +18,5 @@ class NetworkSegmentProfileLoader(BaseLoader):
 
     name = "networksegmentprofile"
     model = NetworkSegmentProfile
+    data_model = NetworkSegmentProfileModel
     fields = ["id", "name"]

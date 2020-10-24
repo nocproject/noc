@@ -9,6 +9,7 @@
 from .base import BaseLoader
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
+from ..models.networksegment import NetworkSegmentModel
 
 
 class NetworkSegmentLoader(BaseLoader):
@@ -18,6 +19,7 @@ class NetworkSegmentLoader(BaseLoader):
 
     name = "networksegment"
     model = NetworkSegment
+    data_model = NetworkSegmentModel
     fields = ["id", "parent", "name", "sibling", "profile"]
 
     mapped_fields = {

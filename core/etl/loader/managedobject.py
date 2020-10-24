@@ -10,6 +10,7 @@ from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from .base import BaseLoader
+from ..models.managedobject import ManagedObjectModel
 from noc.core.validators import is_ipv4
 
 
@@ -20,6 +21,7 @@ class ManagedObjectLoader(BaseLoader):
 
     name = "managedobject"
     model = ManagedObject
+    data_model = ManagedObjectModel
     fields = [
         "id",
         "name",
