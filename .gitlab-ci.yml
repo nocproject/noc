@@ -351,7 +351,5 @@ gemnasium-python-dependency_scanning:
       when: never
     - if: $CI_COMMIT_BRANCH &&
           $GITLAB_FEATURES =~ /\bdependency_scanning\b/
-      exists:
-        - requirements.txt
       changes:
         - requirements.txt
