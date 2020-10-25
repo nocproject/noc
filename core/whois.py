@@ -22,11 +22,16 @@ from noc.core.mongo.connection import connect
 
 logger = logging.getLogger(__name__)
 
+IGNORED_LINES = {" " * 16}  # 16 - default tab, Add after find:
+# 'descr:          Honest,',
+# '                ',
+# '                299 Broadway',
+
 
 class WhoisCacheLoader(object):
     RIPE_AS_SET_MEMBERS = "https://ftp.ripe.net/ripe/dbase/split/ripe.db.as-set.gz"
     RIPE_ROUTE_ORIGIN = "https://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz"
-    ARIN = "https://ftp.arin.net/pub/rr/arin.db"
+    ARIN = "https://ftp.arin.net/pub/rr/arin.db.gz"
     RADB = "ftp://ftp.radb.net/radb/dbase/radb.db.gz"
 
     to_cache = [ARIN, RADB]
@@ -68,6 +73,8 @@ class WhoisCacheLoader(object):
         obj = {}
         last = None
         for line in f:
+            if line in IGNORED_LINES:
+                continue
             line = line.strip()
             if line.startswith("#"):
                 continue
