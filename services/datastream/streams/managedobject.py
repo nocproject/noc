@@ -25,6 +25,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.object import Object
 from noc.sa.models.service import Service
 from noc.core.text import alnum_key
 from noc.core.comp import smart_text, smart_bytes
@@ -48,7 +49,7 @@ class ManagedObjectDataStream(DataStream):
         mo = ManagedObject.objects.filter(id=id)[:1]
         if not mo:
             raise KeyError()
-        mo = mo[0]
+        mo: ManagedObject = mo[0]
         r = {
             "id": str(id),
             "$version": 1,
@@ -84,13 +85,13 @@ class ManagedObjectDataStream(DataStream):
             r["pool"] = mo.pool.name
 
     @staticmethod
-    def _apply_remote_system(mo, r):
+    def _apply_remote_system(mo: ManagedObject, r):
         if mo.remote_system:
             r["remote_system"] = {"id": str(mo.remote_system.id), "name": qs(mo.remote_system.name)}
             r["remote_id"] = mo.remote_id
 
     @staticmethod
-    def _apply_version(mo, r):
+    def _apply_version(mo: ManagedObject, r):
         if mo.vendor:
             r["vendor"] = qs(mo.vendor.name)
             if mo.platform:
@@ -99,7 +100,7 @@ class ManagedObjectDataStream(DataStream):
             r["version"] = qs(mo.version.version)
 
     @staticmethod
-    def _apply_segment(mo, r):
+    def _apply_segment(mo: ManagedObject, r):
         if not mo.segment:
             return
         r["segment"] = {"id": str(mo.segment.id), "name": qs(mo.segment.name)}
@@ -111,7 +112,7 @@ class ManagedObjectDataStream(DataStream):
             r["segment"]["remote_id"] = mo.segment.remote_id
 
     @staticmethod
-    def _apply_administrative_domain(mo, r):
+    def _apply_administrative_domain(mo: ManagedObject, r):
         if not mo.administrative_domain:
             return
         r["administrative_domain"] = {
@@ -126,7 +127,7 @@ class ManagedObjectDataStream(DataStream):
             r["administrative_domain"]["remote_id"] = mo.administrative_domain.remote_id
 
     @staticmethod
-    def _apply_object_profile(mo, r):
+    def _apply_object_profile(mo: ManagedObject, r):
         # Object profile
         r["object_profile"] = {
             "id": str(mo.object_profile.id),
@@ -146,7 +147,7 @@ class ManagedObjectDataStream(DataStream):
             r["object_profile"]["remote_id"] = mo.object_profile.remote_id
 
     @staticmethod
-    def _apply_caps(mo, r):
+    def _apply_caps(mo: ManagedObject, r):
         # Get caps
         cdata = ObjectCapabilities.get_capabilities(mo)
         if not cdata:
@@ -157,7 +158,7 @@ class ManagedObjectDataStream(DataStream):
         r["capabilities"] = caps
 
     @staticmethod
-    def _apply_forwarding_instances(mo, r):
+    def _apply_forwarding_instances(mo: ManagedObject, r):
         instances = list(
             sorted(
                 ForwardingInstance._get_collection().find({"managed_object": mo.id}),
@@ -192,7 +193,7 @@ class ManagedObjectDataStream(DataStream):
         r["forwarding_instances"] = result
 
     @staticmethod
-    def _apply_interfaces(mo, r):
+    def _apply_interfaces(mo: ManagedObject, r):
         # id -> (object id, name)
         ifcache = {}
         # Get interfaces
@@ -317,8 +318,8 @@ class ManagedObjectDataStream(DataStream):
         return {"id": str(profile.id), "name": qs(profile.name)}
 
     @staticmethod
-    def _apply_chassis_id(mo, r):
-        di = DiscoveryID.objects.filter(object=mo.id).first()
+    def _apply_chassis_id(mo: ManagedObject, r):
+        di: DiscoveryID = DiscoveryID.objects.filter(object=mo.id).first()
         if not di:
             return
         rr = {}
@@ -334,7 +335,7 @@ class ManagedObjectDataStream(DataStream):
             r["chassis_id"] = rr
 
     @staticmethod
-    def _apply_resource_groups(mo, r):
+    def _apply_resource_groups(mo: ManagedObject, r):
         if mo.effective_service_groups:
             r["service_groups"] = ManagedObjectDataStream._get_resource_groups(
                 mo.effective_service_groups, mo.static_service_groups
@@ -362,14 +363,22 @@ class ManagedObjectDataStream(DataStream):
         return r
 
     @staticmethod
-    def _apply_asset(mo, r):
+    def _apply_asset(mo: ManagedObject, r):
         asset = [ManagedObjectDataStream._get_asset(o) for o in mo.get_inventory()]
         if not asset:
             return
         r["asset"] = asset
 
     @staticmethod
-    def _get_asset(o):
+    def _get_asset(o: Object):
+        def get_asset_data(data):
+            rd = {}
+            for d in data:
+                if d.interface not in rd:
+                    rd[d.interface] = {}
+                rd[d.interface][d.attr] = d.value
+            return rd
+
         rev = o.get_data("asset", "revision")
         if rev == "None":
             rev = ""
@@ -383,7 +392,7 @@ class ManagedObjectDataStream(DataStream):
             },
             "serial": o.get_data("asset", "serial") or "",
             "revision": rev,
-            "data": o.data or {},
+            "data": get_asset_data(o.data),
             "slots": [],
         }
         if_map = {c.name: c.interface_name for c in o.connections if c.interface_name}
@@ -412,7 +421,7 @@ class ManagedObjectDataStream(DataStream):
         return r
 
     @staticmethod
-    def _apply_config(mo, r):
+    def _apply_config(mo: ManagedObject, r):
         rev = mo.config.get_last_revision()
         if not rev:
             return
@@ -441,15 +450,15 @@ class ManagedObjectDataStream(DataStream):
         }
 
     @classmethod
-    def filter_pool(cls, name):
+    def filter_pool(cls, name: str):
         return {"%s.pool" % cls.F_META: name}
 
     @classmethod
-    def filter_service_group(cls, name):
+    def filter_service_group(cls, name: str):
         return {"%s.service_groups" % cls.F_META: name}
 
     @classmethod
-    def filter_client_group(cls, name):
+    def filter_client_group(cls, name: str):
         return {"%s.client_groups" % cls.F_META: name}
 
     @classmethod
