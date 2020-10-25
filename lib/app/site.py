@@ -27,6 +27,7 @@ from noc.config import config
 from noc.core.debug import error_report
 from noc.core.comp import smart_bytes
 from noc.core.comp import smart_text
+from noc.core.jsonutils import orjson_defaults
 
 logger = logging.getLogger(__name__)
 
@@ -227,7 +228,9 @@ class Site(object):
                 try:
                     r = HttpResponse(
                         orjson.dumps(
-                            r, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS
+                            r,
+                            option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS,
+                            default=orjson_defaults,
                         ),
                         content_type="text/json; charset=utf-8",
                     )
