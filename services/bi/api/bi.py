@@ -49,6 +49,8 @@ I_VALID = DictListParameter(
     }
 )
 
+DEFAULT_USER = "NOC"
+
 ds_lock = threading.Lock()
 model_lock = threading.Lock()
 
@@ -247,9 +249,11 @@ class BIAPI(API):
         """
         user = self.handler.current_user
         groups = user.groups.values_list("id", flat=True)
-        aq = Q(owner=user.id) | Q(access__user=user.id) | Q(access__group__in=groups)
+        aq = (
+            Q(owner=user.id) | Q(owner=None) | Q(access__user=user.id) | Q(access__group__in=groups)
+        )
         if user.is_superuser:
-            aq = Q(owner__exists=True)
+            aq = Q()
         if query and "query" in query:
             aq &= Q(title__icontains=query["query"])
         if query and "version" in query:
@@ -261,7 +265,7 @@ class BIAPI(API):
                 "title": str(d.title),
                 "description": str(d.description),
                 "tags": str(d.tags),
-                "owner": d.owner.username,
+                "owner": d.owner.username if d.owner else DEFAULT_USER,
                 "created": d.created.isoformat(),
                 "changed": d.changed.isoformat(),
             }
@@ -279,7 +283,7 @@ class BIAPI(API):
         d = Dashboard.objects.filter(id=id).first()
         if not d:
             return None
-        if d.owner == user or user.is_superuser:
+        if d.owner == DEFAULT_USER or d.owner == user or user.is_superuser:
             return d
         # @todo: Filter by groups
         for i in d.access:
@@ -301,7 +305,12 @@ class BIAPI(API):
         """
         d = self._get_dashboard(id)
         if d:
-            return orjson.loads(zlib.decompress(smart_bytes(d.config)))
+            config = orjson.loads(zlib.decompress(smart_bytes(d.config)))
+            config["id"] = str(d.id)
+            config["title"] = d.title
+            config["owner"] = d.owner.username if d.owner else DEFAULT_USER
+            config["description"] = d.description
+            return config
         else:
             metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
