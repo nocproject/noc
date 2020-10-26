@@ -38,6 +38,16 @@ def fix():
                 ensure_format(os.path.join(arch_root, f))
 
 
+def iter_cleaned(g):
+    """
+    Clean rows from unreadable characters
+    :param g: Iterator yielding lines
+    :return:
+    """
+    for line in g:
+        yield line.replace("\x00", "")
+
+
 def ensure_format(path):
     comp = comp_loader[config.etl.compression]
     if comp.ext:
@@ -56,7 +66,7 @@ def ensure_format(path):
     model = model_loader[name]
     new_path = comp.get_path("%s.jsonl" % s_path[:-4])
     with comp(path).open() as f:
-        reader = csv.reader(f)
+        reader = csv.reader(iter_cleaned(f))
         next(reader)  # Skip headers
         with comp(new_path, "w").open() as ff:
             for n, row in enumerate(reader):
