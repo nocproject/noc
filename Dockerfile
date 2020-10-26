@@ -21,7 +21,7 @@ RUN \
     libmemcached11 \
     libpq-dev \
     $BUILD_PACKAGES \
-    && (./scripts/build/get-noc-requirements.py activator classifier cache-memcached cache-redis login-ldap login-pam login-radius prod-tools cython testing sender-kafka | pip3 install -r /dev/stdin )\
+    && (python ./scripts/build/get-noc-requirements.py activator classifier cache-memcached cache-redis login-ldap login-pam login-radius prod-tools cython testing sender-kafka | pip3 install -r /dev/stdin )\
     && python3 ./scripts/deploy/install-packages requirements/web.json \
     && python3 ./scripts/deploy/install-packages requirements/card.json \
     && python3 ./scripts/deploy/install-packages requirements/bi.json \
@@ -50,7 +50,7 @@ RUN \
     apt update && apt-get install -y --no-install-recommends \
     snmp \
     vim \
-    && (./scripts/build/get-noc-requirements.py dev | pip3 install -r /dev/stdin )\
+    && (python ./scripts/build/get-noc-requirements.py dev | pip3 install -r /dev/stdin )\
     && rm -rf /var/lib/apt/lists/*
 
 FROM nginx:alpine AS static
