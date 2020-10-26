@@ -10,7 +10,9 @@ import datetime
 from collections import defaultdict
 from collections import namedtuple
 import csv
-from io import BytesIO
+from io import BytesIO, TextIOWrapper
+from zipfile import ZipFile, ZIP_DEFLATED
+from tempfile import TemporaryFile
 
 # Third-party modules
 import xlsxwriter
@@ -309,7 +311,7 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                 4,
                 "speed",
                 "iface_speed",
-            ): "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', (managed_object, arrayStringConcat(path))), max(speed))",
+            ): "dictGetUInt64('interfaceattributes', 'in_speed', (managed_object, arrayStringConcat(path)))",
             (5, "load_in_max", "load_in_max"): "divide(max(load_in),1048576)",
             (6, "load_out_max", "load_out_max"): "divide(max(load_out),1048576)",
             (7, "max_load_in_time", "max_load_in_time"): "argMax(ts,load_in)",
@@ -433,6 +435,20 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
             response["Content-Disposition"] = 'attachment; filename="%s.csv"' % filename
             writer = csv.writer(response, dialect="excel", delimiter=",", quoting=csv.QUOTE_MINIMAL)
             writer.writerows(r)
+            return response
+        elif o_format == "csv_zip":
+            response = BytesIO()
+            f = TextIOWrapper(TemporaryFile(mode="w+b"), encoding="utf-8")
+            writer = csv.writer(f, dialect="excel", delimiter=";", quotechar='"')
+            writer.writerows(r)
+            f.seek(0)
+            with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
+                zf.writestr("%s.csv" % filename, f.read())
+                zf.filename = "%s.csv.zip" % filename
+            # response = HttpResponse(content_type="text/csv")
+            response.seek(0)
+            response = HttpResponse(response.getvalue(), content_type="application/zip")
+            response["Content-Disposition"] = 'attachment; filename="%s.csv.zip"' % filename
             return response
         elif o_format == "xlsx":
             response = BytesIO()
