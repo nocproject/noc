@@ -304,10 +304,10 @@ build_frontend:
     - ./node_modules/.bin/nx build desktop --with-deps
   tags:
     - docker
-#  artifacts:
-#    paths:
-#      - dist/
-#    expire_in: 15 min
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 day
   cache:
     key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
