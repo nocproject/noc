@@ -197,7 +197,7 @@ class BaseLoader(object):
         """
         dm = data_model or self.data_model
         for line in f:
-            yield dm.parse_raw(line)
+            yield dm.parse_raw(line.replace("\\r", ""))
 
     def diff(
         self, old: Iterable[BaseModel], new: Iterable[BaseModel]

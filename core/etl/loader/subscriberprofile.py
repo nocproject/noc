@@ -26,7 +26,7 @@ class SubscriberProfileLoader(BaseLoader):
 
     def clean(self, row):
         d = super().clean(row)
-        if "workflow" in d:
+        if "workflow" in d and d["workflow"]:
             d["workflow"] = Workflow.objects.get(name=d["workflow"])
         else:
             d["workflow"] = Workflow.objects.get(name=DEFAULT_WOKFLOW_NAME)
