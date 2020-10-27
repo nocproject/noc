@@ -1,5 +1,4 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { APP_BASE_HREF } from '@angular/common';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { StoreModule } from '@ngrx/store';
@@ -59,7 +58,6 @@ export function configureAuth(authConfigService: AuthConfigService) {
   ],
   providers: [
     AuthConfigService,
-    { provide: APP_BASE_HREF, useValue: environment.production ? '/frontend/' : '/' },
     {
       provide: APP_INITIALIZER,
       useFactory: configureAuth,
