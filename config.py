@@ -330,6 +330,7 @@ class Config(BaseConfig):
 
     class liftbridge(ConfigSection):
         addresses = ServiceParameter(service="liftbridge", wait=True, near=True, full_result=False)
+        max_message_size = IntParameter(default=-1, help="Max message size for GRPC client")
 
     listen = StringParameter(default="auto:0")
 

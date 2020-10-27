@@ -109,7 +109,13 @@ class GRPCChannel(object):
         await self.close()
 
     async def connect(self) -> None:
-        self.channel = insecure_channel(self.broker)
+        self.channel = insecure_channel(
+            self.broker,
+            options=[
+                ("grpc.max_send_message_length", config.liftbridge.max_message_size),
+                ("grpc.max_receive_message_length", config.liftbridge.max_message_size),
+            ],
+        )
         while True:
             logger.debug("[%s] Connecting", self.broker)
             try:
