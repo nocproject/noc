@@ -301,7 +301,7 @@ build_frontend:
   script:
     - cd frontend
     - yarn install
-    - ./node_modules/.bin/nx build desktop --with-deps
+    - yarn build
   tags:
     - docker
   artifacts:
