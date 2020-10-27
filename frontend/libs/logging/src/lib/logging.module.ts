@@ -14,13 +14,15 @@ export class LoggingModule {
   }
 
   static forRoot(config: LogConfigService): ModuleWithProviders<LoggingModule> {
+    function factory() {
+      return new LoggingService(config);
+    }
+
     return {
       ngModule: LoggingModule,
       providers: [
         {
-          provide: LoggingService, useFactory: () => {
-            return new LoggingService(config);
-          }
+          provide: LoggingService, useFactory: factory
         }
       ]
     }
