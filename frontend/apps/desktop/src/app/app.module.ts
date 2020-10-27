@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { APP_BASE_HREF } from '@angular/common';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { StoreModule } from '@ngrx/store';
@@ -14,13 +15,13 @@ import { AppRoutingModule } from './app-routing.module';
 export function configureAuth(authConfigService: AuthConfigService) {
   return () =>
     authConfigService.withConfig({
-      forbiddenRoute: '/forbidden',
-      postLoginRoute: '/',
-      renewTimeBeforeTokenExpiresInSeconds: 20,
-      silentRenew: true,
-      unauthorizedRoute: '/unauthorized',
-      tokenEndpoint: '/api/login/token',
-      revokeEndpoint:  '/api/login/revoke'
+        forbiddenRoute: '/forbidden',
+        postLoginRoute: '/',
+        renewTimeBeforeTokenExpiresInSeconds: 20,
+        silentRenew: true,
+        unauthorizedRoute: '/unauthorized',
+        tokenEndpoint: '/api/login/token',
+        revokeEndpoint: '/api/login/revoke'
       }
     );
 }
@@ -58,6 +59,7 @@ export function configureAuth(authConfigService: AuthConfigService) {
   ],
   providers: [
     AuthConfigService,
+    { provide: APP_BASE_HREF, useValue: environment.production ? '/frontend/' : '/' },
     {
       provide: APP_INITIALIZER,
       useFactory: configureAuth,
