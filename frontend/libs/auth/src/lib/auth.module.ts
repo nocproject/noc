@@ -12,12 +12,20 @@ import { LoginFormComponent } from './components';
 import { ForbiddenPageComponent, LoginPageComponent, UnauthorizedPageComponent } from './containers';
 import { AuthEffects } from './effects';
 import * as fromAuth from './reducers';
-import { AuthConfigService, ConfigurationProvider, OAuth2SecurityService, StorageService } from './services';
-import { _window, WINDOW } from './utils/window.reference';
+import {
+  AuthConfigService,
+  ConfigurationProvider,
+  OAuth2SecurityService,
+  StorageService
+} from './services';
+import { STORAGE, WINDOW } from './utils';
+import { _localStorage } from './utils/storage.reference';
+import { _window } from './utils/window.reference';
 
 export * from './auth.facade';
 export * from './models/public';
 export * from './services/public';
+export { WINDOW } from './utils';
 
 @NgModule({
   imports: [
@@ -57,6 +65,7 @@ export class AuthModule {
         ConfigurationProvider,
         OAuth2SecurityService,
         StorageService,
+        { provide: STORAGE, useFactory: _localStorage, deps: [] },
         { provide: WINDOW, useFactory: _window, deps: [] }
       ]
     };

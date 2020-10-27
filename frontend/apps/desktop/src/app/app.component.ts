@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { AuthFacade, StorageService } from '@noc/auth';
+import { AuthFacade, StorageService, WINDOW } from '@noc/auth';
 import { LoggingService } from '@noc/log';
 
 @Component({
@@ -21,6 +21,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     @Inject(LOCALE_ID) protected locale: string,
+    @Inject(WINDOW) private window: any,
     private loggerService: LoggingService,
     private storageService: StorageService,
     private authFacade: AuthFacade,
@@ -35,8 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(isAuthenticated => {
         this.loggerService.logDebug(`is authenticated ${isAuthenticated}`);
         if (!isAuthenticated) {
-          if ('/login' !== window.location.pathname) {
-            this.storageService.set('redirect', window.location.pathname);
+          if ('/login' !== this.window.location.pathname) {
+            this.storageService.set('redirect', this.window.location.pathname);
             this.loggerService.logDebug('Save redirect url : ' + this.storageService.get('redirect'));
             this.router.navigate(['/login']).then(this.navigateHandler('login page'));
           }

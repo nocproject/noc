@@ -1,15 +1,12 @@
-import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 
 import { StorageKeys, TokensStored } from '../models';
-
-export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
-  factory: () => localStorage
-});
+import { STORAGE } from '../utils';
 
 @Injectable()
 export class StorageService {
   constructor(
-    @Inject(BROWSER_STORAGE) private storage: Storage
+    @Inject(STORAGE) private storage: Storage
   ) {
   }
 
