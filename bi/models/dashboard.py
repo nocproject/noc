@@ -169,7 +169,6 @@ class Dashboard(Document):
                 "description": self.description,
                 "format": self.format,
                 "config": smart_text(b85encode(self.config)),
-                "owner__username": "admin",
                 "created": self.created.isoformat(),
                 "changed": self.changed.isoformat(),
                 "access": [],
