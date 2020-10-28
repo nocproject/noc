@@ -34,10 +34,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authFacade
       .checkAuth()
       .subscribe(isAuthenticated => {
+        const base = this.window['_app_base'] || '/';
+        const pathname = '/' + this.window.location.pathname.replace(base, '');
         this.loggerService.logDebug(`is authenticated ${isAuthenticated}`);
         if (!isAuthenticated) {
-          if ('/login' !== this.window.location.pathname) {
-            this.storageService.set('redirect', this.window.location.pathname);
+          if ('/login' !== pathname) {
+            this.storageService.set('redirect', pathname);
             this.loggerService.logDebug('Save redirect url : ' + this.storageService.get('redirect'));
             this.router.navigate(['/login']).then(this.navigateHandler('login page'));
           }

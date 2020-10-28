@@ -40,7 +40,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "baseHref": "/frontend/",
+              "baseHref": "/frontend",
               "budgets": [
                 {
                   "type": "initial",
