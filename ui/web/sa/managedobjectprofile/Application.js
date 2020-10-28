@@ -349,6 +349,22 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     listeners: {
                                         render: me.addTooltip
                                     }
+                                },
+                                {
+                                    name: "snmp_rate_limit",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("SNMP Rate limit"),
+                                    labelWidth: 220,
+                                    tooltip: __(
+                                        'Limit SNMP (Query per second).'
+                                    ),
+                                    uiStyle: "small",
+                                    allowBlank: true,
+                                    minValue: 0,
+                                    maxValue: 99,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
                             ],
                             listeners: {

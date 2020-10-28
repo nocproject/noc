@@ -213,6 +213,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: null
         },
         {
+            name: "snmp_rate_limit",
+            type: "int",
+            defaultValue: 0
+        },
+        {
             name: "vc_domain",
             type: "int"
         },

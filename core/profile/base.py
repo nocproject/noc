@@ -291,6 +291,9 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     # _ResponseParser for customized SNMP response processing.
     # Broken SNMP implementations are urged to use `parse_get_response_strict`
     snmp_response_parser: Optional[_ResponseParser] = None
+    # matcher_name -> snmp rate limit
+    # for default get_snmp_rate_limit() implementation
+    snmp_rate_limit: Dict[str, Optional[float]] = {}
     # Allow CLI sessions by default
     enable_cli_session = True
     # True - Send multiline command at once
@@ -862,3 +865,15 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
                 else:
                     raise ValueError("Invalid rogue char expression: %r" % rc)
         return chain
+
+    def get_snmp_rate_limit(self, script) -> Optional[float]:
+        if not self.snmp_rate_limit:
+            return None
+        limits = [
+            v
+            for k, v in self.snmp_rate_limit.items()
+            if v is not None and getattr(script, k, False)
+        ]
+        if limits:
+            return min(limits)
+        return None

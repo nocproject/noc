@@ -583,6 +583,8 @@ class ManagedObjectProfile(NOCModel):
     # xRCA settings
     enable_rca_downlink_merge = models.BooleanField(default=False)
     rca_downlink_merge_window = models.IntegerField(default=120)
+    # Limits
+    snmp_rate_limit = models.IntegerField(default=0)
     #
     metrics = PickledField(blank=True)
     #
@@ -678,6 +680,7 @@ class ManagedObjectProfile(NOCModel):
             or (self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy)
             or (self.initial_data["beef_storage"] != self.beef_storage)
             or (self.initial_data["beef_path_template"] != self.beef_path_template)
+            or (self.initial_data["snmp_rate_limit"] != self.snmp_rate_limit)
         )
 
         if box_changed or periodic_changed:

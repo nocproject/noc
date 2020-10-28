@@ -56,6 +56,7 @@ class ActivatorAPI(API):
             * snmp_version (optional) - Use SNMP version (None, v2c)
             * snmp_ro (optional) - Use SNMP R/O community
             * path (optional) - unstructured path
+            * snmp_rate_limit (optional) - limit of outgoing snmp requests (float, in requests per second)
         :param capabilities: Dict of discovered capabilities
         :param version: Dict of discovered version
         :param timeout: Script timeout, in seconds

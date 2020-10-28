@@ -879,6 +879,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_interface_autocreation",
             type: "boolean"
+        },
+        {
+            name: "snmp_rate_limit",
+            type: "int",
+            defaultValue: 0
         }
     ]
 });

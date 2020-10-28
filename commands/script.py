@@ -63,6 +63,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "--access-preference", dest="access_preference", help="Alter access method preference"
         )
+        parser.add_argument(
+            "--snmp-rate-limit",
+            type=int,
+            default=0,
+            dest="snmp_rate_limit",
+            help="Set SNMP Rate-limit setting",
+        )
         parser.add_argument("--update-spec", help="Append all issued commands to spec")
         parser.add_argument(
             "-o", dest="beef_output", type=smart_text, help="Save script output to beef"
@@ -82,6 +89,7 @@ class Command(BaseCommand):
         yaml_o,
         use_snmp,
         access_preference,
+        snmp_rate_limit,
         update_spec,
         beef_output,
         *args,
@@ -110,6 +118,8 @@ class Command(BaseCommand):
                 del caps["SNMP"]
         if access_preference:
             credentials["access_preference"] = access_preference
+        if snmp_rate_limit:
+            credentials["snmp_rate_limit"] = snmp_rate_limit
         # Get version info
         if obj.version:
             version = {
@@ -187,6 +197,7 @@ class Command(BaseCommand):
             "path": obj.remote_path,
             "raise_privileges": obj.to_raise_privileges,
             "access_preference": obj.get_access_preference(),
+            "snmp_rate_limit": obj.snmp_rate_limit or None,
         }
         if creds.snmp_ro:
             credentials["snmp_version"] = "v2c"
@@ -429,6 +440,7 @@ class JSONObject(object):
         self.remote_path = self.creds.get("path")
         self.to_raise_privileges = data.get("raise_privileges", True)
         self.access_preference = data.get("access_preference", "CS")
+        self.snmp_rate_limit = int(data.get("snmp_rate_limit", 0))
         self.pool = PoolStub("default")
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
@@ -442,7 +454,14 @@ class JSONObject(object):
         return Credentials(
             **{
                 k: self.creds.get(k)
-                for k in ("user", "password", "super_password", "snmp_ro", "snmp_rw")
+                for k in (
+                    "user",
+                    "password",
+                    "super_password",
+                    "snmp_ro",
+                    "snmp_rw",
+                    "snmp_rate_limit",
+                )
             }
         )
 
