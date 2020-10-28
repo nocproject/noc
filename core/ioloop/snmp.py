@@ -34,6 +34,7 @@ from noc.core.snmp.error import (
 )
 from noc.core.ioloop.udp import UDPSocket, UDPSocketContext
 from noc.core.comp import smart_text
+from noc.core.ratelimit.asyncio import AsyncRateLimit
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 logger = logging.getLogger(__name__)
@@ -60,6 +61,7 @@ async def snmp_get(
     raw_varbinds=False,
     display_hints=None,
     response_parser: Optional[_ResponseParser] = None,
+    rate_limit: Optional[AsyncRateLimit] = None,
 ):
     """
     Perform SNMP get request and returns Future to be used
@@ -77,6 +79,8 @@ async def snmp_get(
     parser = _get_parser(response_parser, raw_varbinds)
     # Send GET PDU
     pdu = get_pdu(community=community, oids=oids, version=version)
+    if rate_limit:
+        await rate_limit.wait()
     with UDPSocketContext(udp_socket, tos=tos) as sock:
         try:
             data, addr = await asyncio.wait_for(
@@ -177,6 +181,7 @@ async def snmp_count(
     max_repetitions=BULK_MAX_REPETITIONS,
     tos=None,
     udp_socket: Optional[UDPSocket] = None,
+    rate_limit: Optional[AsyncRateLimit] = None,
 ):
     """
     Perform SNMP get request and returns Future to be used
@@ -193,6 +198,8 @@ async def snmp_count(
     result = 0
     with UDPSocketContext(udp_socket, tos=tos) as sock:
         while True:
+            if rate_limit:
+                await rate_limit.wait()
             # Get PDU
             if bulk:
                 pdu = getbulk_pdu(community, oid, max_repetitions=max_repetitions, version=version)
@@ -252,6 +259,7 @@ async def snmp_getnext(
     raw_varbinds: bool = False,
     display_hints: Optional[Dict[str, Optional[Callable[[str, bytes], Union[str, bytes]]]]] = None,
     response_parser: Optional[_ResponseParser] = None,
+    rate_limit: Optional[AsyncRateLimit] = None,
 ):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
@@ -271,6 +279,8 @@ async def snmp_getnext(
         first_oid = None
         last_oid = None
         while True:
+            if rate_limit:
+                await rate_limit.wait()
             # Get PDU
             if bulk:
                 pdu = getbulk_pdu(
@@ -350,6 +360,7 @@ async def snmp_set(
     timeout=10,
     tos=None,
     udp_socket=None,
+    rate_limit: Optional[AsyncRateLimit] = None,
 ):
     """
     Perform SNMP set request and returns Future to be used
@@ -358,6 +369,8 @@ async def snmp_set(
     logger.debug("[%s] SNMP SET %s", address, varbinds)
     # Send GET PDU
     pdu = set_pdu(community=community, varbinds=varbinds, version=version)
+    if rate_limit:
+        await rate_limit.wait()
     # Wait for result
     with UDPSocketContext(udp_socket, tos=tos) as sock:
         try:

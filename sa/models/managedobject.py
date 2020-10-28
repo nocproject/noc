@@ -90,11 +90,11 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 24
-CREDENTIAL_CACHE_VERSION = 2
+MANAGEDOBJECT_CACHE_VERSION = 25
+CREDENTIAL_CACHE_VERSION = 3
 
 Credentials = namedtuple(
-    "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw"]
+    "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
 )
 
 id_lock = Lock()
@@ -212,6 +212,7 @@ class ManagedObject(NOCModel):
     trap_community = CharField("Trap Community", blank=True, null=True, max_length=64)
     snmp_ro = CharField("RO Community", blank=True, null=True, max_length=64)
     snmp_rw = CharField("RW Community", blank=True, null=True, max_length=64)
+    snmp_rate_limit = IntegerField(default=0)
     access_preference = CharField(
         "CLI Privilege Policy",
         max_length=8,
@@ -737,6 +738,7 @@ class ManagedObject(NOCModel):
             or "access_preference" in self.changed_fields
             or "cli_privilege_policy" in self.changed_fields
             or "remote_path" in self.changed_fields
+            or "snmp_rate_limit" in self.changed_fields
         ):
             cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
         # Rebuild paths
@@ -1221,7 +1223,7 @@ class ManagedObject(NOCModel):
                     yield problem
 
     @property
-    def credentials(self):
+    def credentials(self) -> Credentials:
         """
         Get effective credentials
         """
@@ -1232,6 +1234,7 @@ class ManagedObject(NOCModel):
                 super_password=self.auth_profile.super_password,
                 snmp_ro=self.auth_profile.snmp_ro or self.snmp_ro,
                 snmp_rw=self.auth_profile.snmp_rw or self.snmp_rw,
+                snmp_rate_limit=self.get_effective_snmp_rate_limit(),
             )
         else:
             return Credentials(
@@ -1240,6 +1243,7 @@ class ManagedObject(NOCModel):
                 super_password=self.super_password,
                 snmp_ro=self.snmp_ro,
                 snmp_rw=self.snmp_rw,
+                snmp_rate_limit=self.get_effective_snmp_rate_limit(),
             )
 
     @property
@@ -1735,6 +1739,15 @@ class ManagedObject(NOCModel):
         if self.fm_pool:
             return self.fm_pool
         return self.pool
+
+    def get_effective_snmp_rate_limit(self) -> int:
+        """
+        Calculate effective SNMP rate limit
+        :return:
+        """
+        if self.snmp_rate_limit > 0:
+            return self.snmp_rate_limit
+        return self.object_profile.snmp_rate_limit
 
     def _reset_caches(self):
         try:

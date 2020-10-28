@@ -26,7 +26,7 @@ from noc.config import config
 from noc.core.perf import metrics
 
 # Increase whenever new field added or removed
-CREDENTIALS_CACHE_VERSION = 2
+CREDENTIALS_CACHE_VERSION = 3
 
 
 class SAEAPI(API):
@@ -46,7 +46,8 @@ class SAEAPI(API):
             mo.auth_profile_id,
             ap.user, ap.password, ap.super_password,
             ap.snmp_ro, ap.snmp_rw,
-            mo.cli_privilege_policy, mop.cli_privilege_policy,
+            mo.cli_privilege_policy, mo.snmp_rate_limit,
+            mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
             (
@@ -173,7 +174,9 @@ class SAEAPI(API):
             ap_snmp_ro,
             ap_snmp_rw,
             privilege_policy,
+            snmp_rate_limit,
             p_privilege_policy,
+            p_snmp_rate_limit,
             access_preference,
             p_access_preference,
             beef_storage_id,
@@ -199,6 +202,8 @@ class SAEAPI(API):
             raise_privileges = False
         if access_preference == "P":
             access_preference = p_access_preference
+        if not snmp_rate_limit:
+            snmp_rate_limit = p_snmp_rate_limit
         # Build credentials
         credentials = {
             "name": name,
@@ -209,6 +214,7 @@ class SAEAPI(API):
             "path": remote_path,
             "raise_privileges": raise_privileges,
             "access_preference": access_preference,
+            "snmp_rate_limit": snmp_rate_limit,
         }
         if snmp_ro:
             credentials["snmp_ro"] = snmp_ro

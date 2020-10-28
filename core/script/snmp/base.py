@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Optional
 import weakref
 
 # NOC modules
@@ -21,6 +22,7 @@ from noc.core.error import (
     ERR_SNMP_BAD_COMMUNITY,
 )
 from noc.core.ioloop.util import run_sync
+from noc.core.ratelimit.asyncio import AsyncRateLimit
 
 
 class SNMP(object):
@@ -36,7 +38,7 @@ class SNMP(object):
 
     SNMPError = SNMPError
 
-    def __init__(self, script):
+    def __init__(self, script, rate: Optional[float] = None):
         self._script = weakref.ref(script)
         self.logger = PrefixLoggerAdapter(script.logger, self.name)
         self.timeouts_limit = 0
@@ -44,6 +46,7 @@ class SNMP(object):
         self.socket = None
         self.display_hints = None
         self.snmp_version = None
+        self.rate_limit: Optional[AsyncRateLimit] = AsyncRateLimit(rate) if rate else None
 
     @property
     def script(self):
@@ -111,6 +114,7 @@ class SNMP(object):
                     raw_varbinds=raw_varbinds,
                     display_hints=display_hints,
                     response_parser=self.script.profile.get_snmp_response_parser(self.script),
+                    rate_limit=self.rate_limit,
                 )
                 self.timeouts = self.timeouts_limit
                 return r
@@ -146,6 +150,7 @@ class SNMP(object):
                     community=str(self.script.credentials["snmp_rw"]),
                     tos=self.script.tos,
                     udp_socket=self.get_socket(),
+                    rate_limit=self.rate_limit,
                 )
                 return r
             except SNMPError as e:
@@ -182,6 +187,7 @@ class SNMP(object):
                     tos=self.script.tos,
                     udp_socket=self.get_socket(),
                     version=version,
+                    rate_limit=self.rate_limit,
                 )
                 return r
             except SNMPError as e:
@@ -228,6 +234,7 @@ class SNMP(object):
                     raw_varbinds=raw_varbinds,
                     display_hints=display_hints,
                     response_parser=self.script.profile.get_snmp_response_parser(self.script),
+                    rate_limit=self.rate_limit,
                 )
                 return r
             except SNMPError as e:

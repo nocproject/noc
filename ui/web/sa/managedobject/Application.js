@@ -712,6 +712,22 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     groupEdit: true
                                 },
                                 {
+                                    name: "snmp_rate_limit",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("SNMP Rate limit"),
+                                    tooltip: __(
+                                        'Limit SNMP (Query per second).'
+                                    ),
+                                    allowBlank: true,
+                                    hideTrigger: true,
+                                    minValue: 0,
+                                    maxValue: 99,
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
                                     name: "time_pattern",
                                     xtype: "main.timepattern.LookupField",
                                     fieldLabel: __("Time Pattern"),
