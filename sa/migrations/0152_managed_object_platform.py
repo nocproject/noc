@@ -43,14 +43,17 @@ class Migration(BaseMigration):
         """
         )
         platforms = set()  # vendor, platform
+        platforms_uniq = set()  # Uniq platform name
         versions = set()  # profile, version
         for profile, vendor, platform, version in data:
-            platform = platform.strip() if platform else None
-            vendor = vendor.strip() if vendor else None
+            platform = platform.strip() if platform and platform != "None" else None
+            vendor = vendor.strip() if vendor and vendor != "None" else None
             if not platform or not vendor:
                 continue
-            platforms.add((vendor, platform))
+            if platform not in platforms_uniq:
+                platforms.add((vendor, platform))
             versions.add((profile, vendor, version))
+            platforms_uniq.add(platform)
         # Create platforms
         for vendor, platform in platforms:
             u = uuid.uuid4()
@@ -109,10 +112,13 @@ class Migration(BaseMigration):
             models.CharField("Software Image", max_length=255, null=True, blank=True),
         )
         #
+        platforms_uniq = set()  # Uniq platform name
         for profile, vendor, platform, version in data:
-            platform = platform.strip() if platform else None
-            vendor = vendor.strip() if vendor else None
+            platform = platform.strip() if platform and platform != "None" else None
+            vendor = vendor.strip() if vendor and vendor != "None" else None
             if not platform or not vendor:
+                continue
+            if (vendor, platform) not in pmap:
                 continue
             self.db.execute(
                 """
