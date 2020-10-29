@@ -8,11 +8,12 @@
 # Python modules
 import datetime
 from collections import defaultdict
-from typing import Iterable
+from typing import Iterable, Union, Tuple, Dict, Optional, DefaultDict, Any, List
 import itertools
 import ast
 
 # NOC modules
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
@@ -21,13 +22,15 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.validators import is_float
 
 
-def get_objects_metrics(managed_objects):
-    from noc.sa.models.managedobject import ManagedObject
-
+def get_objects_metrics(
+    managed_objects: Union[Iterable, int]
+) -> Tuple[
+    Dict["ManagedObject", Dict[str, Dict[str, int]]], Dict["ManagedObject", datetime.datetime]
+]:
     """
 
     :param managed_objects:
-    :return:
+    :return: Dictionary ManagedObject -> Path -> MetricName -> value
     """
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
@@ -47,17 +50,17 @@ def get_objects_metrics(managed_objects):
     object_profiles = set(
         mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map))
     )
-    msd = {}
+    msd: Dict[str, str] = {}  # Map ScopeID -> TableName
     path_table = set()
     for ms in MetricScope.objects.filter():
         msd[ms.id] = ms.table_name
         if ms.path:
             path_table.add(ms.table_name)
-    mts = {
+    mts: Dict[str, Tuple[str, str, str]] = {
         str(mt.id): (msd[mt.scope.id], mt.field_name, mt.name) for mt in MetricType.objects.all()
-    }
+    }  # Map Metric Type ID -> table_name, column_name, MetricType Name
     mmm = set()
-    op_fields_map = defaultdict(list)
+    op_fields_map: DefaultDict[str, List[str]] = defaultdict(list)
     for op in ManagedObjectProfile.objects.filter(id__in=object_profiles):
         if not op.metrics:
             continue
@@ -68,7 +71,7 @@ def get_objects_metrics(managed_objects):
     ch = ch_connection()
     mtable = []  # mo_id, mac, iface, ts
     metric_map = {}
-    last_ts = {}  # mo -> ts
+    last_ts: Dict["ManagedObject", datetime.datetime] = {}  # mo -> ts
 
     for table, fields in itertools.groupby(sorted(mmm, key=lambda x: x[0]), key=lambda x: x[0]):
         fields = list(fields)
@@ -113,8 +116,18 @@ def get_objects_metrics(managed_objects):
     return metric_map, last_ts
 
 
-def get_interface_metrics(managed_objects, meric_map=None):
-    from noc.sa.models.managedobject import ManagedObject
+def get_interface_metrics(
+    managed_objects: Union[Iterable, int], meric_map: Optional[Dict[str, Any]] = None
+) -> Tuple[
+    Dict["ManagedObject", Dict[str, Dict[str, Union[float, int]]]],
+    Dict["ManagedObject", datetime.datetime],
+]:
+    """
+
+    :param managed_objects: ManagedObject list or bi_id list
+    :param meric_map: For customization getting metrics
+    :return: Dictionary ManagedObject -> Path -> MetricName -> value
+    """
 
     # mo = self.object
     if not meric_map:
@@ -129,8 +142,10 @@ def get_interface_metrics(managed_objects, meric_map=None):
         }
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
-    bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
-    query_interval = (
+    bi_map: Dict[str, "ManagedObject"] = {
+        str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects
+    }
+    query_interval: float = (
         ManagedObjectProfile.get_max_metrics_interval(
             set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map)))
         )
@@ -153,8 +168,10 @@ def get_interface_metrics(managed_objects, meric_map=None):
         ", ".join(bi_map),
     )
     ch = ch_connection()
-    metric_map = defaultdict(dict)
-    last_ts = {}  # mo -> ts
+    metric_map: DefaultDict["ManagedObject", Dict[str, Dict[str, Union[int, float]]]] = defaultdict(
+        dict
+    )
+    last_ts: Dict["ManagedObject", datetime.datetime] = {}  # mo -> ts
     metric_fields = list(meric_map["map"].keys())
     try:
         for result in ch.execute(post=SQL):
@@ -165,9 +182,8 @@ def get_interface_metrics(managed_objects, meric_map=None):
             mo = bi_map.get(mo_bi_id)
             if not t_iface and metric_map[mo].get(iface):
                 continue
+            metric_map[mo][iface] = defaultdict(dict)
             for field, value in res.items():
-                if mo not in metric_map:
-                    metric_map[mo] = defaultdict(dict)
                 metric_map[mo][iface][meric_map["map"].get(field)] = (
                     float(value) if is_float(value) else int(value)
                 )
