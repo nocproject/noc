@@ -13,3 +13,5 @@ class Script(BaseScript):
     name = "Eltex.MES.get_interface_properties"
 
     MAX_GETNEXT_RETIRES = 0
+
+    MAX_REPETITIONS = 20
