@@ -14,11 +14,13 @@ from noc.core.model.fields import DocumentReferenceField
 
 OLD_VENDOR_MAP = {
     "Alcatel-Lucent": "ALU",
+    "Alcatel": "ALU",
     "Arista Networks": "ARISTA",
     "Edge-Core": "EDGECORE",
     "Cisco Networks": "CISCO",
     "D-Link": "DLINK",
     "Extreme Networks": "EXTREME",
+    "Extreme": "EXTREME",
     "f5 Networks": "F5",
     "Force10 Networks": "FORCE10",
     "Huawei Technologies Co.": "HUAWEI",
@@ -29,6 +31,8 @@ OLD_VENDOR_MAP = {
     "ZTE": "ZTE",
     "ZyXEL": "ZYXEL",
 }
+
+DUPLICATE_VENDOR_MAP = {"EXTREME NETWORKS": "Extreme", "ALCATEL": "ALU"}
 
 
 class Migration(BaseMigration):
@@ -65,7 +69,7 @@ class Migration(BaseMigration):
         for v in vendors:
             u = uuid.uuid4()
             vc = v.upper()
-            if vc in inventory_vendors:
+            if vc in inventory_vendors or vc in DUPLICATE_VENDOR_MAP:
                 continue
             pcoll.update_one(
                 {"code": vc},
@@ -84,6 +88,8 @@ class Migration(BaseMigration):
         )
         # Migrate profile data
         for v in vendors:
+            if v.upper() in DUPLICATE_VENDOR_MAP:
+                v = DUPLICATE_VENDOR_MAP[v.upper()]
             self.db.execute(
                 """
                 UPDATE sa_managedobject
