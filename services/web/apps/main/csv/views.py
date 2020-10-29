@@ -127,13 +127,13 @@ class CSVApplication(Application):
                         "\n".join(forbidden_ip),
                     )
                 else:
-                    new_csv_file = request.FILES["file"]
+                    new_csv_file = StringIO(request.FILES["file"].read().decode())
                     check_msg = ""
                 return new_csv_file, check_msg
 
             if form.is_valid():
                 if request.user.is_superuser:
-                    csv_file = request.FILES["file"]
+                    csv_file = StringIO(request.FILES["file"].read().decode())
                     resp_msg = ""
                 else:
                     csv_file, resp_msg = import_check_perms()
