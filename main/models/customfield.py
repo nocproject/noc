@@ -289,7 +289,7 @@ class CustomField(NOCModel):
                 if f.is_table:
                     django_signals.class_prepared.connect(cls.on_new_model)
                 else:
-                    mongoengine.signals.class_prepared.connect(cls.on_new_document)
+                    mongoengine.signals.pre_init.connect(cls.on_new_document)
                 cls._cfields[f.table] = [f]
             else:
                 cls._cfields[f.table] += [f]
