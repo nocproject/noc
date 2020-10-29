@@ -66,7 +66,7 @@ typing-extensions==3.7.4.3; python_version < '2.8'
 uvicorn==0.11.8
 yappi==1.2.5
 # Activator requirements
-ssh2-python==0.18.0.post1; extra == "activator"
+ssh2-python==0.23.0; extra == "activator"
 # Classifier
 bitarray==0.8.1; extra == "classifier"
 # Cache-Redis
