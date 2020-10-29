@@ -36,19 +36,18 @@ demjson==2.2.4
 fs==2.4.11
 geojson==2.5.0
 geopy==0.97
-grpcio==1.32.0
+grpcio==1.33.2
 http-parser==0.9.0
-jsonschema==2.4.0
 manhole==1.6.0
 markerlib==0.6.0
 mongoengine==0.20.0
 networkx==2.4
 numpy==1.18.3
-orjson==3.3.1
+orjson==3.4.1
 progressbar2==3.53.1
 protobuf==3.13.0
 psycopg2==2.8.6
-pydantic==1.6.1
+pydantic==1.7.1
 pymongo==3.11.0
 pynsq==0.9.0
 pyproj==2.6.0
@@ -63,15 +62,15 @@ setproctitle==1.1.10
 starlette==0.13.8
 tornado==6.0.4
 typing-extensions==3.7.4.3; python_version < '2.8'
-uvicorn==0.11.8
-yappi==1.2.5
+uvicorn==0.12.2
+yappi==1.3.0
 # Activator requirements
 ssh2-python==0.23.0; extra == "activator"
 # Classifier
 bitarray==0.8.1; extra == "classifier"
 # Cache-Redis
-hiredis==1.0.1; extra == "cache-redis"
-redis==3.5.2; extra == "cache-redis"
+hiredis==1.1.0; extra == "cache-redis"
+redis==3.5.3; extra == "cache-redis"
 # Cache-Memcached
 pylibmc==1.5.1; extra == "cache-memcached"
 # Dev requirements
@@ -92,11 +91,11 @@ alerta==4.7.16; extra == "prod-tools"
 sentry-sdk==0.16.5; extra == "prod-tools"
 supervisor-wildcards==0.1.3; extra == "prod-tools"
 # Test
-Coverage[toml]==5.0.3; extra == "testing"
+Coverage[toml]==5.3; extra == "testing"
 pytest==5.4.1; extra == "testing"
 pytest-assume==2.2.1; extra == "testing"
 pytest-dependency==0.5.1; extra == "testing"
 # Cython
-Cython==0.29.20; extra == "cython"
+Cython==0.29.21; extra == "cython"
 # Kafka
 aiokafka==0.6.0; extra == "sender-kafka"
