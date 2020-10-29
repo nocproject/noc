@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,10 @@ class Script(BaseScript):
         try:
             v = self.cli("display link-aggregation member-port")
         except self.CLISyntaxError:
-            v = self.cli("display link-aggregation verbose")
+            try:
+                v = self.cli("display link-aggregation verbose")
+            except self.CLISyntaxError:
+                v = ""
         r = []
         for match in self.rx_po_members.finditer(v):
             found = False
