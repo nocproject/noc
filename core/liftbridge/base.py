@@ -15,7 +15,7 @@ import asyncio
 import socket
 
 # Third-party modules
-from grpc.aio import insecure_channel
+from grpc.aio import insecure_channel, AioRpcError
 from grpc import StatusCode, ChannelConnectivity
 from grpc._cython.cygrpc import EOF
 
@@ -160,6 +160,13 @@ class GRPCChannel(object):
 
 
 class LiftBridgeClient(object):
+    GRPC_RESTARTABLE_CODES = {
+        StatusCode.UNAVAILABLE,
+        StatusCode.FAILED_PRECONDITION,
+        StatusCode.NOT_FOUND,
+        StatusCode.INTERNAL,
+    }
+
     def __init__(self):
         self.channels: Dict[str, GRPCChannel] = {}  # broker -> GRPCChannel
         self.open_brokers: List[str] = []
@@ -212,6 +219,13 @@ class LiftBridgeClient(object):
             self.channels[broker] = channel
             self.open_brokers = list(self.channels)
         return channel
+
+    async def _sleep_on_error(self):
+        """
+        Wait random time on error
+        :return:
+        """
+        await asyncio.sleep(1.0 + random.random())
 
     async def get_leader(self, stream: str, partition: int) -> str:
         """
@@ -297,6 +311,9 @@ class LiftBridgeClient(object):
 
     async def __refresh_leaders(self):
         await self.fetch_metadata(wait_for_stream=True)
+
+    def __reset_leaders(self):
+        self.leaders = {}
 
     async def fetch_metadata(
         self, stream: Optional[str] = None, wait_for_stream: bool = False
@@ -519,7 +536,8 @@ class LiftBridgeClient(object):
             except ErrorUnavailable as e:
                 logger.error("Subscriber looses connection to partition node: %s", e)
                 logger.info("Reconnecting")
-                await asyncio.sleep(1)
+                self.__reset_leaders()
+                await self._sleep_on_error()
                 if not to_restore_position and last_offset is not None:
                     # Continue from last seen position
                     req.startPosition = StartPosition.OFFSET
@@ -577,30 +595,53 @@ class LiftBridgeClient(object):
                     msg = await call._read()
                 # Get core message to explain the result
                 code = await call.code()
-                if (
-                    code is StatusCode.UNAVAILABLE
-                    or code is StatusCode.FAILED_PRECONDITION
-                    or code is StatusCode.NOT_FOUND
-                    or code is StatusCode.INTERNAL
-                ):
+                if code in self.GRPC_RESTARTABLE_CODES:
                     raise ErrorUnavailable()
                 raise ErrorChannelClosed(str(code))
 
     async def fetch_cursor(self, stream: str, partition: int, cursor_id: str) -> int:
-        channel = await self.get_leader_channel(CURSOR_STREAM, 0)
-        r = await channel.FetchCursor(
-            FetchCursorRequest(stream=stream, partition=partition, cursorId=cursor_id)
-        )
-        v = r.offset or 0
-        logger.debug(
-            "Fetching cursor %s for %s:%s: current value is %s", cursor_id, stream, partition, v
-        )
-        return v
+        with rpc_error():
+            while True:
+                channel = await self.get_leader_channel(CURSOR_STREAM, 0)
+                try:
+                    r = await channel.FetchCursor(
+                        FetchCursorRequest(stream=stream, partition=partition, cursorId=cursor_id)
+                    )
+                except AioRpcError as e:
+                    logger.info("Failed to get cursor: %s", e)
+                    if e.code() in self.GRPC_RESTARTABLE_CODES:
+                        self.__reset_leaders()
+                        await self._sleep_on_error()
+                        continue
+                    raise e
+                v = r.offset or 0
+                logger.debug(
+                    "Fetching cursor %s for %s:%s: current value is %s",
+                    cursor_id,
+                    stream,
+                    partition,
+                    v,
+                )
+                return v
 
     async def set_cursor(self, stream: str, partition: int, cursor_id: str, offset: int) -> None:
-        channel = await self.get_leader_channel(CURSOR_STREAM, 0)
-        await channel.SetCursor(
-            SetCursorRequest(
-                stream=stream, partition=partition, cursorId=cursor_id, offset=offset + 1
-            )
-        )
+        with rpc_error():
+            while True:
+                channel = await self.get_leader_channel(CURSOR_STREAM, 0)
+                try:
+                    await channel.SetCursor(
+                        SetCursorRequest(
+                            stream=stream,
+                            partition=partition,
+                            cursorId=cursor_id,
+                            offset=offset + 1,
+                        )
+                    )
+                    return
+                except AioRpcError as e:
+                    logger.info("Failed to set cursor: %s", e)
+                    if e.code() in self.GRPC_RESTARTABLE_CODES:
+                        self.__reset_leaders()
+                        await self._sleep_on_error()
+                        continue
+                    raise e
