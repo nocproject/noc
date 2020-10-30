@@ -315,6 +315,7 @@ build_frontend:
   rules:
     - changes:
         - frontend/**/*
+        - frontend/*
 
 build:rust:
   stage: Build
