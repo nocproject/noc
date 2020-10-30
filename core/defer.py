@@ -48,9 +48,11 @@ def call_later(
         set_op[Job.ATTR_DATA] = data
 
     q = {Job.ATTR_CLASS: job_class or DEFAULT_JOB_CLASS, Job.ATTR_KEY: name}
-    for k in data:
+    for k in list(data):
         if k.startswith("_"):
+            # Hidden attribute JobClass, remove it from data
             q[k] = data[k]
+            del set_op[Job.ATTR_DATA][k]
             continue
         q["%s.%s" % (Job.ATTR_DATA, k)] = data[k]
     op = {"$set": set_op, "$setOnInsert": iset_op}
